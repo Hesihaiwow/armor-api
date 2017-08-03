@@ -1,0 +1,24 @@
+#数据源
+datasource:
+  druid:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.1.251:3307/zsy_armor?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: printer
+    password: HnTqLszULNvNRR5b
+    initialSize: 5
+    maxActive: 50
+    logAbandoned: true
+    validationQuery: SELECT 1
+    validationQueryTimeout: 1800
+    filters: stat
+    removeAbandoned: true
+    removeAbandonedTimeout: 1800
+
+
+
+#Druid后台账号配置
+druid:
+  stat:
+    username: zxhx
+    password: zxhx
+

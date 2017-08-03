@@ -1,0 +1,22 @@
+
+server:
+  context-path: /armor
+  port: 10012
+
+spring:
+  profiles:
+    active: dev #开发环境
+
+#Mybatis配置
+mybatis:
+  type-aliases-package: com.zhixinhuixue.armor.pojo
+  mapper-locations:
+    - classpath*:com/zhixinhuixue/armor/dao/**/*.xml
+
+#分页插件
+pagehelper:
+  auto-dialect: true
+  reasonable: true
+  offset-as-page-num: true
+  row-bounds-with-count: true
+  page-size-zero: true
