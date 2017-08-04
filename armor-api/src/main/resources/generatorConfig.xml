@@ -33,8 +33,94 @@
 
         <!--mvn mybatis-generator:generate-->
 
-        <table tableName="test"
-               domainObjectName="Test"
+        <table tableName="department"
+               domainObjectName="Department"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="permission"
+               domainObjectName="Permission"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="project"
+               domainObjectName="Project"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="stage"
+               domainObjectName="Stage"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="tag"
+               domainObjectName="Tag"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="task"
+               domainObjectName="Task"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="task_comment"
+               domainObjectName="TaskComment"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="task_log"
+               domainObjectName="TaskLog"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="task_tag"
+               domainObjectName="TaskTag"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="task_user"
+               domainObjectName="TaskUser"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+        <table tableName="user"
+               domainObjectName="User"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+
+        <table tableName="user_integral"
+               domainObjectName="UserIntegral"
+               enableCountByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false" />
+
+
+        <table tableName="user_perm"
+               domainObjectName="UserPerm"
                enableCountByExample="false"
                enableSelectByExample="false"
                enableUpdateByExample="false"

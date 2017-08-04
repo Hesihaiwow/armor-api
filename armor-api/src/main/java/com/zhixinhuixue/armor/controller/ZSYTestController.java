@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.controller;
 
-import com.zhixinhuixue.armor.dao.TestMapper;
+import com.zhixinhuixue.armor.dao.IZSYTestMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ZSYTestController {
 
     @Autowired
-    private TestMapper testMapper;
+    private IZSYTestMapper testMapper;
 
-    @GetMapping("/test")
+    @GetMapping(value = "/test")
     public String test(){
         return testMapper.selectByPrimaryKey(1).getName();
     }

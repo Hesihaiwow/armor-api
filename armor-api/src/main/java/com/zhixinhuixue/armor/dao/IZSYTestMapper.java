@@ -2,7 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.pojo.Test;
 
-public interface TestMapper {
+public interface IZSYTestMapper {
     int deleteByPrimaryKey(Integer id);
 
     int insert(Test record);
