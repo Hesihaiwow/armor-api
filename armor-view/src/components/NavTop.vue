@@ -12,8 +12,6 @@
     <div class="personal-name">小花</div>
   </div>
   <nav-index v-show="showIndex"></nav-index>
-
-
 </div>
 </template>
 <script>
