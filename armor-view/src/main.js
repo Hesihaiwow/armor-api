@@ -6,6 +6,8 @@ import router from './router'
 //饿了么ui
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
+// 公用css
+import './assets/css/base.css'
 
 Vue.use(ElementUI)
 
