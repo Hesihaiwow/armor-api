@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.pojo;
 
 public class Test {
+
     private Integer id;
 
     private String name;
