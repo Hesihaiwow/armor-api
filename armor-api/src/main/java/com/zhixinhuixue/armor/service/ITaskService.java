@@ -1,12 +1,7 @@
 package com.zhixinhuixue.armor.service;
 
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
-import com.zhixinhuixue.armor.model.pojo.Task;
-import com.zhixinhuixue.armor.model.pojo.TaskTag;
-import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import com.zhixinhuixue.armor.source.ZSYResult;
-
-import java.util.List;
 
 /**
  * Created by Tate on 2017/8/7.
@@ -20,5 +15,5 @@ public interface ITaskService {
      * @param loginUserId
      * @return
      */
-    ZSYResult addTask(TaskReqDTO taskReqDTO, Long loginUserId);
+    ZSYResult addTask(TaskReqDTO taskReqDTO);
 }
