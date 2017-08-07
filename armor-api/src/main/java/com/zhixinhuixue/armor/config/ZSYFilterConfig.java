@@ -13,21 +13,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ZSYFilterConfig {
 
-    /**
-     * jwt密钥
-     */
+    //jwt密钥
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    /**
-     * jwt发行者
-     */
+    //jwt发行者
     @Value("${jwt.issuer}")
     private String jwtIssuer;
 
-    /**
-     * jwt过期时间
-     */
+    //jwt过期时间
     @Value("${jwt.exp}")
     private int jwtExp;
 
@@ -45,7 +39,7 @@ public class ZSYFilterConfig {
         frb.addInitParameter("jwtSecret",jwtSecret);
         frb.addInitParameter("jwtIssuer",jwtIssuer);
         frb.addInitParameter("jwtExp",String.valueOf(jwtExp));
-        frb.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,");
+        frb.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,/user/login");
         return frb;
     }
 

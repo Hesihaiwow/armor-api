@@ -24,7 +24,7 @@ public class ZSYGlobeException {
      */
     @ExceptionHandler
     public @ResponseBody String handleZSYServiceException(ZSYServiceException e) {
-        logger.error("业务异常:",e);
+        logger.warn("业务异常:",e);
         return ZSYResult.fail().msg(e.getMessage()).build();
     }
 
@@ -59,5 +59,17 @@ public class ZSYGlobeException {
     public @ResponseBody String handleZSYServerException(ZSYServerException e) {
         logger.error("服务异常:",e);
         return ZSYResult.fail(ZSYResult.RESPONSE.SERVER_ERROR).msg(e.getMessage()).build();
+    }
+
+
+    /**
+     * 微服务异常
+     * @param e
+     * @return JSON数据
+     */
+    @ExceptionHandler
+    public @ResponseBody String handleZSYUserInfoException(ZSYUserInfoException e) {
+        logger.warn("用户信息异常:",e);
+        return ZSYResult.fail(ZSYResult.RESPONSE.NO_SESSION_ERROR).msg(e.getMessage()).build();
     }
 }

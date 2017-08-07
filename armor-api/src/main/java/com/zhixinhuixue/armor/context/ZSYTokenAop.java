@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.context;
 
+import com.zhixinhuixue.armor.exception.ZSYUserInfoException;
+import com.zhixinhuixue.armor.model.dto.request.LoginInfoReqDTO;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -34,15 +36,19 @@ public class ZSYTokenAop {
     @Around("token()")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        ZSYTokenRequestContext.set(Optional.ofNullable(request.getHeader("teacherId"))
-                .map(teacherId->teacherId.toString())
-                .orElse(""));
-        ZSYTokenRequestContext.setSchoolId(Optional.ofNullable(request.getHeader("schoolId"))
-                .map(schoolId->Integer.parseInt(schoolId.toString()))
-                .orElse(0));
+        LoginInfoReqDTO loginInfo = new LoginInfoReqDTO();
+        loginInfo.setUserId(Optional.ofNullable(request.getAttribute("userId"))
+                .map(userId->Long.parseLong(userId.toString()))
+                .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
+        loginInfo.setUserName(Optional.ofNullable(request.getAttribute("userName"))
+                .map(userName->userName.toString())
+                .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
+        loginInfo.setPermissions(Optional.ofNullable(request.getAttribute("permissions"))
+                .map(permissions->(String[])permissions)
+                .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
+        ZSYTokenRequestContext.set(loginInfo);
         Object object = pjp.proceed();
         ZSYTokenRequestContext.remove();
-        ZSYTokenRequestContext.removeSchoolId();
         return object;
     }
 
@@ -52,10 +58,8 @@ public class ZSYTokenAop {
      * @param joinPoint
      * @param e
      */
-    @AfterThrowing(pointcut = "teacherId()", throwing = "e")
+    @AfterThrowing(pointcut = "token()", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Throwable e){
         ZSYTokenRequestContext.remove();
-        ZSYTokenRequestContext.removeSchoolId();
-        e.printStackTrace();
     }
 }
