@@ -18,3 +18,9 @@ spring:
         url-pattern: /druid/*
         login-username: zxhx
         login-password: zxhx
+
+
+jwt:
+  issuer: xueping.com
+  secret: 86a1e6b06a8e4ee29285158943931e9d
+  exp: 360
