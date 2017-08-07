@@ -18,7 +18,7 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="com.zhixinhuixue.armor.pojo" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.zhixinhuixue.armor.model" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
@@ -33,7 +33,7 @@
 
         <!--mvn mybatis-generator:generate-->
 
-        <table tableName="department"
+       <!-- <table tableName="department"
                domainObjectName="Department"
                enableCountByExample="false"
                enableSelectByExample="false"
@@ -124,7 +124,7 @@
                enableCountByExample="false"
                enableSelectByExample="false"
                enableUpdateByExample="false"
-               enableDeleteByExample="false" />
+               enableDeleteByExample="false" />-->
 
     </context>
 

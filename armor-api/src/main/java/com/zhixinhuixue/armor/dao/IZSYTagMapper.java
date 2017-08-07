@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Tag;
+import com.zhixinhuixue.armor.model.pojo.Tag;
 
 public interface IZSYTagMapper {
     int deleteByPrimaryKey(Long id);

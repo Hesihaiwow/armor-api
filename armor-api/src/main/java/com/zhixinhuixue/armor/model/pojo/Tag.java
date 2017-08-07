@@ -1,18 +1,18 @@
-package com.zhixinhuixue.armor.pojo;
+package com.zhixinhuixue.armor.model.pojo;
 
 import java.util.Date;
 
-public class Project {
+public class Tag {
 
     private Long id;
 
     private String name;
 
-    private String description;
-
-    private Long createBy;
+    private String color;
 
     private Date createTime;
+
+    private Long createBy;
 
     public Long getId() {
         return id;
@@ -30,20 +30,12 @@ public class Project {
         this.name = name == null ? null : name.trim();
     }
 
-    public String getDescription() {
-        return description;
+    public String getColor() {
+        return color;
     }
 
-    public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
-    }
-
-    public Long getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
+    public void setColor(String color) {
+        this.color = color == null ? null : color.trim();
     }
 
     public Date getCreateTime() {
@@ -52,5 +44,13 @@ public class Project {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(Long createBy) {
+        this.createBy = createBy;
     }
 }

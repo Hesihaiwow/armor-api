@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.pojo.TaskComment">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskComment">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="task_user_id" jdbcType="BIGINT" property="taskUserId" />
@@ -24,7 +24,7 @@
     delete from task_comment
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.pojo.TaskComment">
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskComment">
     insert into task_comment (id, task_id, task_user_id, 
       grade, integral, description, 
       create_time, create_by)
@@ -32,7 +32,7 @@
       #{grade,jdbcType=VARCHAR}, #{integral,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.pojo.TaskComment">
+  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.TaskComment">
     insert into task_comment
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -87,7 +87,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.pojo.TaskComment">
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.TaskComment">
     update task_comment
     <set>
       <if test="taskId != null">
@@ -114,7 +114,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.pojo.TaskComment">
+  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.TaskComment">
     update task_comment
     set task_id = #{taskId,jdbcType=BIGINT},
       task_user_id = #{taskUserId,jdbcType=BIGINT},

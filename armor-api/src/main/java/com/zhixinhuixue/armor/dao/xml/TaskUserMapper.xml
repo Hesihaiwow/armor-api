@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.pojo.TaskUser">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskUser">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="stage_id" jdbcType="BIGINT" property="stageId" />
@@ -25,7 +25,7 @@
     delete from task_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
     insert into task_user (id, task_id, stage_id, 
       user_id, task_hours, begin_time, 
       end_time, description, create_time
@@ -35,107 +35,19 @@
       #{endTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
-    insert into task_user
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="taskId != null">
-        task_id,
-      </if>
-      <if test="stageId != null">
-        stage_id,
-      </if>
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="taskHours != null">
-        task_hours,
-      </if>
-      <if test="beginTime != null">
-        begin_time,
-      </if>
-      <if test="endTime != null">
-        end_time,
-      </if>
-      <if test="description != null">
-        description,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="taskId != null">
-        #{taskId,jdbcType=BIGINT},
-      </if>
-      <if test="stageId != null">
-        #{stageId,jdbcType=BIGINT},
-      </if>
-      <if test="userId != null">
-        #{userId,jdbcType=BIGINT},
-      </if>
-      <if test="taskHours != null">
-        #{taskHours,jdbcType=INTEGER},
-      </if>
-      <if test="beginTime != null">
-        #{beginTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endTime != null">
-        #{endTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="description != null">
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
+
+  <insert id="insertList" parameterType="java.util.List">
+    insert into task_user (id, task_id, stage_id,
+      user_id, task_hours, begin_time,
+      end_time, description, create_time
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.stageId,jdbcType=BIGINT},
+      #{item.userId,jdbcType=BIGINT}, #{item.taskHours,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP},
+      #{item.endTime,jdbcType=TIMESTAMP}, #{item.description,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}
+      )
+    </foreach>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
-    update task_user
-    <set>
-      <if test="taskId != null">
-        task_id = #{taskId,jdbcType=BIGINT},
-      </if>
-      <if test="stageId != null">
-        stage_id = #{stageId,jdbcType=BIGINT},
-      </if>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=BIGINT},
-      </if>
-      <if test="taskHours != null">
-        task_hours = #{taskHours,jdbcType=INTEGER},
-      </if>
-      <if test="beginTime != null">
-        begin_time = #{beginTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endTime != null">
-        end_time = #{endTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="description != null">
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
-    update task_user
-    set task_id = #{taskId,jdbcType=BIGINT},
-      stage_id = #{stageId,jdbcType=BIGINT},
-      user_id = #{userId,jdbcType=BIGINT},
-      task_hours = #{taskHours,jdbcType=INTEGER},
-      begin_time = #{beginTime,jdbcType=TIMESTAMP},
-      end_time = #{endTime,jdbcType=TIMESTAMP},
-      description = #{description,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+
 </mapper>

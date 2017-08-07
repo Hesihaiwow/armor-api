@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.TaskComment;
+import com.zhixinhuixue.armor.model.pojo.TaskComment;
 
 public interface IZSYTaskCommentMapper {
     int deleteByPrimaryKey(Long id);

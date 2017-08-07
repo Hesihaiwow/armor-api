@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Stage;
+import com.zhixinhuixue.armor.model.pojo.Stage;
 
 public interface IZSYStageMapper {
     int deleteByPrimaryKey(Long id);

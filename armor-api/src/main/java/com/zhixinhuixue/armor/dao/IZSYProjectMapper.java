@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Project;
+import com.zhixinhuixue.armor.model.pojo.Project;
 
 public interface IZSYProjectMapper {
     int deleteByPrimaryKey(Long id);

@@ -1,42 +1,21 @@
-package com.zhixinhuixue.armor.pojo;
+package com.zhixinhuixue.armor.model.dto.request;
 
 import java.util.Date;
 
-public class TaskUser {
-
-    private Long id;
-
-    private Long taskId;
-
+/**
+ * Created by Tate on 2017/8/7.
+ */
+public class TaskUserReqDTO {
+    // 阶段id
     private Long stageId;
-
+    // 负责人
     private Long userId;
-
+    // 工时
     private Integer taskHours;
-
+    // 开始时间
     private Date beginTime;
-
+    //结束时间
     private Date endTime;
-
-    private String description;
-
-    private Date createTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
 
     public Long getStageId() {
         return stageId;
@@ -76,21 +55,5 @@ public class TaskUser {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
     }
 }
