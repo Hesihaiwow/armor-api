@@ -32,7 +32,7 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
 
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Task">
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Task" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into task (id, name, description, 
       project_id, end_time, status, 
       review_status, priority, create_time, 

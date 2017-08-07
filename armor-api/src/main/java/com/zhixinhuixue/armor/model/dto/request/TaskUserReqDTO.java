@@ -6,6 +6,7 @@ import java.util.Date;
  * Created by Tate on 2017/8/7.
  */
 public class TaskUserReqDTO {
+
     // 阶段id
     private Long stageId;
     // 负责人
@@ -16,6 +17,8 @@ public class TaskUserReqDTO {
     private Date beginTime;
     //结束时间
     private Date endTime;
+    // 阶段描述
+    private String description;
 
     public Long getStageId() {
         return stageId;
@@ -55,5 +58,13 @@ public class TaskUserReqDTO {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

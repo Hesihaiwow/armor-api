@@ -2,16 +2,22 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.pojo.TaskTag;
 
-public interface IZSYTaskTagMapper {
-    int deleteByPrimaryKey(Long id);
+import java.util.List;
 
+public interface IZSYTaskTagMapper {
+
+    /**
+     * 插入单条
+     * @param record
+     * @return
+     */
     int insert(TaskTag record);
 
-    int insertSelective(TaskTag record);
+    /**
+     * 批量插入标签
+     * @param taskTagList
+     * @return
+     */
+    int insertList(List<TaskTag> taskTagList);
 
-    TaskTag selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(TaskTag record);
-
-    int updateByPrimaryKey(TaskTag record);
 }
