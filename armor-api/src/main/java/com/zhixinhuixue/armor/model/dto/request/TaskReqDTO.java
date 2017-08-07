@@ -19,7 +19,7 @@ public class TaskReqDTO {
     // 任务优先级
     private Integer priority;
     // 标签
-    private List<Integer> tags;
+    private List<Long> tags;
     // 任务负责人
     private List<TaskUserReqDTO> taskUsers;
 
@@ -63,11 +63,11 @@ public class TaskReqDTO {
         this.priority = priority;
     }
 
-    public List<Integer> getTags() {
+    public List<Long> getTags() {
         return tags;
     }
 
-    public void setTags(List<Integer> tags) {
+    public void setTags(List<Long> tags) {
         this.tags = tags;
     }
 

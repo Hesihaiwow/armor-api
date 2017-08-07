@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.service;
 
+import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
+import com.zhixinhuixue.armor.model.pojo.TaskTag;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import com.zhixinhuixue.armor.source.ZSYResult;
 
@@ -14,9 +16,9 @@ public interface ITaskService {
     /**
      * 添加任务
      *
-     * @param task
-     * @param taskUserList
+     * @param taskReqDTO
+     * @param loginUserId
      * @return
      */
-    ZSYResult addTask(Task task, List<TaskUser> taskUserList);
+    ZSYResult addTask(TaskReqDTO taskReqDTO, Long loginUserId);
 }
