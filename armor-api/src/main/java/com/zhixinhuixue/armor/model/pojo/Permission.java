@@ -1,4 +1,4 @@
-package com.zhixinhuixue.armor.pojo;
+package com.zhixinhuixue.armor.model.pojo;
 
 public class Permission {
 

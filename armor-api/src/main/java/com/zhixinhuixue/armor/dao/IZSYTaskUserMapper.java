@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.TaskUser;
+import com.zhixinhuixue.armor.model.pojo.TaskUser;
 
 public interface IZSYTaskUserMapper {
     int deleteByPrimaryKey(Long id);

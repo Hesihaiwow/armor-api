@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.UserPerm;
+import com.zhixinhuixue.armor.model.pojo.UserPerm;
 
 public interface IZSYUserPermMapper {
     int deleteByPrimaryKey(Long id);

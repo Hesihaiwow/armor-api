@@ -1,14 +1,12 @@
-package com.zhixinhuixue.armor.pojo;
+package com.zhixinhuixue.armor.model.pojo;
 
 import java.util.Date;
 
-public class Tag {
+public class Stage {
 
     private Long id;
 
     private String name;
-
-    private String color;
 
     private Date createTime;
 
@@ -28,14 +26,6 @@ public class Tag {
 
     public void setName(String name) {
         this.name = name == null ? null : name.trim();
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color == null ? null : color.trim();
     }
 
     public Date getCreateTime() {

@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.TaskTag;
+import com.zhixinhuixue.armor.model.pojo.TaskTag;
 
 public interface IZSYTaskTagMapper {
     int deleteByPrimaryKey(Long id);

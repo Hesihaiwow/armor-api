@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.pojo.TaskUser">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskUser">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="stage_id" jdbcType="BIGINT" property="stageId" />
@@ -25,7 +25,7 @@
     delete from task_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
     insert into task_user (id, task_id, stage_id, 
       user_id, task_hours, begin_time, 
       end_time, description, create_time
@@ -35,7 +35,7 @@
       #{endTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
+  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
     insert into task_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -96,7 +96,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
     update task_user
     <set>
       <if test="taskId != null">
@@ -126,7 +126,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.pojo.TaskUser">
+  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
     update task_user
     set task_id = #{taskId,jdbcType=BIGINT},
       stage_id = #{stageId,jdbcType=BIGINT},

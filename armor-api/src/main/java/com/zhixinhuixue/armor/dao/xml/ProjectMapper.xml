@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYProjectMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.pojo.Project">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Project">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
@@ -21,13 +21,13 @@
     delete from project
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.pojo.Project">
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     insert into project (id, name, description, 
       create_by, create_time)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.pojo.Project">
+  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     insert into project
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -64,7 +64,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.pojo.Project">
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     update project
     <set>
       <if test="name != null">
@@ -82,7 +82,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.pojo.Project">
+  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     update project
     set name = #{name,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},

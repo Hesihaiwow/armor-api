@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.UserIntegral;
+import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 
 public interface IZSYUserIntegralMapper {
     int deleteByPrimaryKey(Long id);

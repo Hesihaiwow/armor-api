@@ -1,8 +1,8 @@
-package com.zhixinhuixue.armor.pojo;
+package com.zhixinhuixue.armor.model.pojo;
 
 import java.util.Date;
 
-public class Department {
+public class Project {
 
     private Long id;
 
@@ -10,9 +10,7 @@ public class Department {
 
     private String description;
 
-    private Long parentId;
-
-    private Integer status;
+    private Long createBy;
 
     private Date createTime;
 
@@ -40,20 +38,12 @@ public class Department {
         this.description = description == null ? null : description.trim();
     }
 
-    public Long getParentId() {
-        return parentId;
+    public Long getCreateBy() {
+        return createBy;
     }
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setCreateBy(Long createBy) {
+        this.createBy = createBy;
     }
 
     public Date getCreateTime() {

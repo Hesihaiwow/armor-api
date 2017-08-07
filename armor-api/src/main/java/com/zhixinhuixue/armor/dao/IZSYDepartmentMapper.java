@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Department;
+import com.zhixinhuixue.armor.model.pojo.Department;
 
 public interface IZSYDepartmentMapper {
     int deleteByPrimaryKey(Long id);

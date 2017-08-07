@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.TaskLog;
+import com.zhixinhuixue.armor.model.pojo.TaskLog;
 
 public interface IZSYTaskLogMapper {
     int deleteByPrimaryKey(Long id);
