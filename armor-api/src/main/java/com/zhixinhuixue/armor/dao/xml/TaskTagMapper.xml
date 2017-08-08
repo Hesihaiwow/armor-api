@@ -19,7 +19,7 @@
       )
     values
     <foreach collection="list" item="item" separator=",">
-      (#{list.id,jdbcType=BIGINT}, #{list.taskId,jdbcType=BIGINT}, #{list.tagId,jdbcType=BIGINT}
+      (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.tagId,jdbcType=BIGINT}
       )
     </foreach>
   </insert>
