@@ -8,6 +8,13 @@
     <result column="integral" jdbcType="INTEGER" property="integral" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
+
+  <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.UserIntegral" extends="BaseResultMap">
+    <association property="user" javaType="com.zhixinhuixue.armor.model.pojo.User">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="name" jdbcType="VARCHAR" property="name" />
+    </association>
+  </resultMap>
   <sql id="Base_Column_List">
     id, task_id, user_id, integral, create_time
   </sql>
@@ -17,15 +24,15 @@
     from user_integral
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="findIntegral" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from user_integral
+  <select id="findIntegral"  resultMap="BaseMap">
+    select i.*,u.name
+    from user_integral i,user u
     <where>
-      create_time &gt; #{startTime,jdbcType=TIMESTAMP}
+      i.create_time &gt; #{startTime,jdbcType=TIMESTAMP}
       <if test="endTime!=null">
-        and create_time &gt; #{startTime,jdbcType=TIMESTAMP}
+        and i.create_time &gt; #{startTime,jdbcType=TIMESTAMP}
       </if>
+        and i.user_id = u.id
     </where>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
