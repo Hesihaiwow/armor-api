@@ -142,6 +142,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setId(taskId);
         task.setReviewStatus(auditStatus);
         task.setUpdateTime(new Date());
+        taskMapper.updateByPrimaryKeySelective(task);
         // 插入日志
         taskLogMapper.insert(buildLog(ZSYReviewStatus.getName(auditStatus), task.getName(), task.getId()));
         return ZSYResult.success();

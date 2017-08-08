@@ -23,16 +23,16 @@ public class ZSYTaskController extends ZSYController {
         return taskService.addTask(taskReqDTO).build();
     }
 
-    @ApiOperation("任务审核通过")
-    @PostMapping(value = "/auditing/reject/{taskId}")
+    @ApiOperation("任务审核打回")
+    @PutMapping(value = "/auditing/reject/{taskId}")
     public String taskReject(@PathVariable("taskId") Long taskId) {
-        return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
+        return taskService.auditTask(taskId, ZSYReviewStatus.REJECT.getValue()).build();
     }
 
-    @ApiOperation("任务审核打回")
-    @PostMapping(value = "/auditing/accept/{taskId}")
+    @ApiOperation("任务审核通过")
+    @PutMapping(value = "/auditing/accept/{taskId}")
     public String taskAccept(@PathVariable("taskId") Long taskId) {
-        return taskService.auditTask(taskId, ZSYReviewStatus.REJECT.getValue()).build();
+        return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 
 }
