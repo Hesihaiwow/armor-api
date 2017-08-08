@@ -17,6 +17,17 @@
     from user_integral
     where id = #{id,jdbcType=BIGINT}
   </select>
+  <select id="findIntegral" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user_integral
+    <where>
+      create_time &gt; #{startTime,jdbcType=TIMESTAMP}
+      <if test="endTime!=null">
+        and create_time &gt; #{startTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from user_integral
     where id = #{id,jdbcType=BIGINT}

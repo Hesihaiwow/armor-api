@@ -247,4 +247,14 @@ public class DateHelper {
         return null;
     }
 
+    /**
+     * 时间戳转日期
+     * @param date
+     * @return
+     */
+    public static Date TimestampToDate(String date){
+        Date datef = new Date(new Long(date));
+        return datef;
+    }
+
 }
