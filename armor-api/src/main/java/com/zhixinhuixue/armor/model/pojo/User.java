@@ -20,7 +20,7 @@ public class User {
 
     private String jobName;
 
-    private Integer integral;
+    private int integral;
 
     private Integer status;
 
@@ -92,11 +92,11 @@ public class User {
         this.jobName = jobName == null ? null : jobName.trim();
     }
 
-    public Integer getIntegral() {
+    public int getIntegral() {
         return integral;
     }
 
-    public void setIntegral(Integer integral) {
+    public void setIntegral(int integral) {
         this.integral = integral;
     }
 

@@ -57,7 +57,9 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        logger.info("进入过滤器");
+        if (logger.isDebugEnabled()){
+            logger.debug("进入过滤器");
+        }
         //允许跨域
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "Authorization,content-type,x-requested-with,X-Custom-Header");

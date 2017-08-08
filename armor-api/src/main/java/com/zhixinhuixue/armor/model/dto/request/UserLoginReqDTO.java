@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -10,14 +11,14 @@ public class UserLoginReqDTO {
     /**
      * 用户账号
      */
+    @NotNull(message = "登录账号不能为空")
     private String account;
 
     /**
      * 用户密码
      */
+    @NotNull(message = "登录密码不能为空")
     private String password;
-
-    private Date createTime;
 
     public String getAccount() {
         return account;

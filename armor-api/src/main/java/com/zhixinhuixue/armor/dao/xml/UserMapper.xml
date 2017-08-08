@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserMapper">
+
   <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.User">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
@@ -15,10 +16,43 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
   </resultMap>
+
   <sql id="Base_Column_List">
     id, name, account, password, phone, last_login, department_id, job_name, integral, 
     status, create_time, is_delete
   </sql>
+
+  <!-- 添加用户 -->
+  <insert id="insertUser" parameterType="com.zhixinhuixue.armor.model.pojo.User">
+    insert into `user` (id, `name`, account,
+    password, phone, last_login,
+    department_id, job_name, integral,
+    status, create_time, is_delete
+    )
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
+    #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP},
+    #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{integral,jdbcType=INTEGER},
+    #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER}
+    )
+  </insert>
+
+  <!-- 根据账号查询用户 -->
+  <select id="selectByAccount" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from `user` where is_delete=0 and account = #{account}
+  </select>
+
+  <!-- 根据账号和密码查询用户 -->
+  <select id="selectByAccountAndPassword" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select * from `user` where is_delete=0 and account = #{account} and password = #{password}
+  </select>
+
+  <!-- 查询有效用户 -->
+  <select id="selectEffectiveUsers" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select * from `user` where is_delete=0 and `status`=0 order by create_time asc
+  </select>
+
+
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
@@ -29,18 +63,7 @@
     delete from user
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.User">
-    insert into user (id, name, account, 
-      password, phone, last_login, 
-      department_id, job_name, integral, 
-      status, create_time, is_delete
-      )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, 
-      #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP}, 
-      #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{integral,jdbcType=INTEGER}, 
-      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER}
-      )
-  </insert>
+
   <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.User">
     insert into user
     <trim prefix="(" suffix=")" suffixOverrides=",">
