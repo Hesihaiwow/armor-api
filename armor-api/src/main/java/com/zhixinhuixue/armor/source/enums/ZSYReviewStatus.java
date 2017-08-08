@@ -1,24 +1,23 @@
 package com.zhixinhuixue.armor.source.enums;
 
 /**
- * 任务状态
+ * 审核状态
  * Created by Tate on 2017/8/7.
  */
-public enum TaskStatus {
-
-    DOING(1, "进行中"), COMPLETED(2, "已完成"), CLOSED(3, "已结束");
+public enum ZSYReviewStatus {
+    PENDING(1, "待审核"), REJECT(2, "审核打回"), ACCEPT(3, "审核通过");
     private int value;
     private String name;
 
-    TaskStatus(int value, String name) {
+    ZSYReviewStatus(int value, String name) {
         this.value = value;
         this.name = name;
     }
 
     public static String getName(int value) {
-        for (TaskStatus taskStatus : TaskStatus.values()) {
-            if (taskStatus.getValue() == value) {
-                return taskStatus.getName();
+        for (ZSYReviewStatus reviewStatus : ZSYReviewStatus.values()) {
+            if (reviewStatus.getValue() == value) {
+                return reviewStatus.getName();
             }
         }
         return "";
@@ -31,5 +30,4 @@ public enum TaskStatus {
     public String getName() {
         return name;
     }
-
 }
