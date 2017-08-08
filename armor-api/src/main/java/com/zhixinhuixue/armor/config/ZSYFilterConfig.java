@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.config;
 
 import com.zhixinhuixue.armor.filter.ZSYUrlFilter;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +40,7 @@ public class ZSYFilterConfig {
         frb.addInitParameter("jwtSecret",jwtSecret);
         frb.addInitParameter("jwtIssuer",jwtIssuer);
         frb.addInitParameter("jwtExp",String.valueOf(jwtExp));
-        frb.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,/user/login");
+        frb.addInitParameter("exclusions",String.format("*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,%s", ZSYConstants.LOGIN_URI));
         return frb;
     }
 

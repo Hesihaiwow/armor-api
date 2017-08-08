@@ -51,8 +51,8 @@ public class ZSYUserController extends ZSYController {
      * @param userLoginReqDTO 登陆信息
      * @return
      */
-    @PostMapping("/login")
-    public ZSYResult login(@RequestBody UserLoginReqDTO userLoginReqDTO){
+    @PostMapping(value = "/login")
+    public String login(@RequestBody UserLoginReqDTO userLoginReqDTO){
 
         Algorithm algorithm = null;
         try {
@@ -72,8 +72,8 @@ public class ZSYUserController extends ZSYController {
         String loginKey = String.format(ZSYConstants.LOGIN_KEY,1L);
         stringRedisTemplate.opsForValue().set(loginKey,"1");
 //        stringRedisTemplate.expire(loginKey,ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
-        logger.info("{}({})登录成功,token:{}",1L,"John Doe",jwt);
-        return ZSYResult.success().msg("登录成功").data(jwt);
+        logger.info("{}({})登录成功,token:{}","John Doe",1L,jwt);
+        return ZSYResult.success().msg("登录成功").data(jwt).build();
     }
 
 

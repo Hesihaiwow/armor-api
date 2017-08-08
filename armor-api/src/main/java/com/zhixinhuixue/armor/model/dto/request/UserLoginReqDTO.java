@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import java.util.Date;
+
 /**
  * Created by Akuma on 2017/8/7.
  */
@@ -14,6 +16,8 @@ public class UserLoginReqDTO {
      * 用户密码
      */
     private String password;
+
+    private Date createTime;
 
     public String getAccount() {
         return account;

@@ -77,7 +77,9 @@ public class TaskService implements ITaskService {
                 taskUser.setStageId(user.getStageId());
                 taskUser.setDescription(user.getDescription());
                 taskUser.setBeginTime(user.getBeginTime());
+                taskUser.setEndTime(user.getEndTime());
                 taskUser.setTaskHours(user.getTaskHours());
+                taskUser.setCreateTime(new Date());
                 taskUsers.add(taskUser);
             });
             taskUserMapper.insertList(taskUsers);

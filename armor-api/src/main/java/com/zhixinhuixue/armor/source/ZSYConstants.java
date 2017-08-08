@@ -15,4 +15,9 @@ public class ZSYConstants {
      */
     public static final long LOGIN_KEY_EXPIRE_DAYS = 15;
 
+    /**
+     * 登陆URI
+     */
+    public static final String LOGIN_URI = "/user/login";
+
 }
