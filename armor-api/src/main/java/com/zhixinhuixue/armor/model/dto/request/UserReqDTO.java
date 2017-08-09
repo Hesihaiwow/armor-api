@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import io.swagger.annotations.ApiModel;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

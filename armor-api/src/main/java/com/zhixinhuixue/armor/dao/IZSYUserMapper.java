@@ -35,16 +35,25 @@ public interface IZSYUserMapper {
      */
     List<User> selectEffectiveUsers();
 
+    /**
+     * 删除用户(逻辑删除)
+     * @param userId 用户ID
+     * @return
+     */
+    int deleteById(Long userId);
 
-    int deleteByPrimaryKey(Long id);
+    /**
+     * 查询用户
+     * @param userId 用户ID
+     * @return
+     */
+    User selectById(Long userId);
 
+    /**
+     * 更新用户
+     * @param user
+     * @return
+     */
+    int updateSelectiveById(User user);
 
-
-    int insertSelective(User record);
-
-    User selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(User record);
-
-    int updateByPrimaryKey(User record);
 }

@@ -3,7 +3,7 @@ package com.zhixinhuixue.armor.service.impl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.common.collect.Lists;
-import com.zhixinhuixue.armor.controller.ZSYUserController;
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
@@ -11,6 +11,7 @@ import com.zhixinhuixue.armor.helper.MD5Helper;
 import com.zhixinhuixue.armor.helper.SHA1Helper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.pojo.User;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -126,5 +128,41 @@ public class ZSYUserService implements IZSYUserService{
             effectUserResDTOS.add(effectUserResDTO);
         });
         return effectUserResDTOS;
+    }
+
+    @Override
+    public void deleteUserById(Long userId) {
+        int i = userMapper.deleteById(userId);
+        if (i==0){
+            throw new ZSYServiceException("删除用户失败");
+        }
+    }
+
+    @Override
+    public void modifyUserPassword(UserPwdReqDTO userPwdReqDTO) {
+        User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
+        Optional.ofNullable(user).orElseThrow(()->new ZSYServiceException("用户不存在"));
+        //校验用户状态
+        if (user.getStatus()!=0||user.getIsDelete()!=0){
+            throw new ZSYServiceException("账户冻结或已删除,操作失败");
+        }
+        //校验原始密码
+        String secretOriginalPwd = MD5Helper.convert(
+                String.format("%s%s", SHA1Helper.Sha1(userPwdReqDTO.getOriginalPassword()),
+                        ZSYConstants.HINT_PASSWORD_KEY), 32 , false);
+        if (!secretOriginalPwd.equals(user.getPassword())){
+            throw new ZSYServiceException("旧密码不正确");
+        }
+        //校验通过,修改密码
+        User modifyUser = new User();
+        modifyUser.setId(ZSYTokenRequestContext.get().getUserId());
+        String secretNewPwd = MD5Helper.convert(
+                String.format("%s%s", SHA1Helper.Sha1(userPwdReqDTO.getNewPassword()),
+                        ZSYConstants.HINT_PASSWORD_KEY), 32 , false);
+        modifyUser.setPassword(secretNewPwd);
+        int i = userMapper.updateSelectiveById(modifyUser);
+        if (i==0){
+            throw new ZSYServiceException("更新密码失败");
+        }
     }
 }

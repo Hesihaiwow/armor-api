@@ -41,6 +41,11 @@
     select * from `user` where is_delete=0 and account = #{account}
   </select>
 
+  <!-- 根据ID查询用户 -->
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select * from `user` where `id` = #{id}
+  </select>
+
   <!-- 根据账号和密码查询用户 -->
   <select id="selectByAccountAndPassword" parameterType="java.util.Map" resultMap="BaseResultMap">
     select * from `user` where is_delete=0 and account = #{account} and password = #{password}
@@ -51,111 +56,25 @@
     select * from `user` where is_delete=0 and `status`=0 order by create_time asc
   </select>
 
-
-
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from user
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from user
-    where id = #{id,jdbcType=BIGINT}
+  <!-- 删除用户 -->
+  <delete id="deleteById" parameterType="java.lang.Long">
+    UPDATE `user` SET is_delete = 1 where id = #{id}
   </delete>
 
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.User">
-    insert into user
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="account != null">
-        account,
-      </if>
-      <if test="password != null">
-        password,
-      </if>
-      <if test="phone != null">
-        phone,
-      </if>
-      <if test="lastLogin != null">
-        last_login,
-      </if>
-      <if test="departmentId != null">
-        department_id,
-      </if>
-      <if test="jobName != null">
-        job_name,
-      </if>
-      <if test="integral != null">
-        integral,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="isDelete != null">
-        is_delete,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="account != null">
-        #{account,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
-        #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="phone != null">
-        #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="lastLogin != null">
-        #{lastLogin,jdbcType=TIMESTAMP},
-      </if>
-      <if test="departmentId != null">
-        #{departmentId,jdbcType=BIGINT},
-      </if>
-      <if test="jobName != null">
-        #{jobName,jdbcType=VARCHAR},
-      </if>
-      <if test="integral != null">
-        #{integral,jdbcType=INTEGER},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDelete != null">
-        #{isDelete,jdbcType=INTEGER},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.User">
+  <!-- 更新用户 -->
+  <update id="updateSelectiveById" parameterType="com.zhixinhuixue.armor.model.pojo.User">
     update user
     <set>
-      <if test="name != null">
+      <if test="name != null and name!=''">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="account != null">
+      <if test="account != null and account!=''">
         account = #{account,jdbcType=VARCHAR},
       </if>
-      <if test="password != null">
+      <if test="password != null and password!=''">
         password = #{password,jdbcType=VARCHAR},
       </if>
-      <if test="phone != null">
+      <if test="phone != null and phone!=''">
         phone = #{phone,jdbcType=VARCHAR},
       </if>
       <if test="lastLogin != null">
@@ -164,7 +83,7 @@
       <if test="departmentId != null">
         department_id = #{departmentId,jdbcType=BIGINT},
       </if>
-      <if test="jobName != null">
+      <if test="jobName != null and jobName!=''">
         job_name = #{jobName,jdbcType=VARCHAR},
       </if>
       <if test="integral != null">
@@ -182,19 +101,5 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.User">
-    update user
-    set name = #{name,jdbcType=VARCHAR},
-      account = #{account,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      last_login = #{lastLogin,jdbcType=TIMESTAMP},
-      department_id = #{departmentId,jdbcType=BIGINT},
-      job_name = #{jobName,jdbcType=VARCHAR},
-      integral = #{integral,jdbcType=INTEGER},
-      status = #{status,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=INTEGER}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+
 </mapper>

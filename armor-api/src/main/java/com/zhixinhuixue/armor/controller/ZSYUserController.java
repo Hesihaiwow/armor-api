@@ -1,9 +1,9 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
-import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.service.IZSYUserService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.*;
@@ -51,5 +51,24 @@ public class ZSYUserController extends ZSYController {
         List<EffectUserResDTO> users = userService.getEffectiveUsers();
         return ZSYResult.success().data(users).build();
     }
+
+
+    @ApiOperation("删除用户")
+    @ApiImplicitParam(name = "userId",value = "用户ID",required = true,paramType = "path",dataType = "long")
+    @DeleteMapping("/{userId}")
+    public String deleteUser(@PathVariable("userId")Long userId){
+        userService.deleteUserById(userId);
+        return ZSYResult.success().build();
+    }
+
+
+    @ApiOperation("修改密码")
+    @PutMapping("/password")
+    public String modifyUserPwd(@Valid @RequestBody UserPwdReqDTO userPwdReqDTO){
+        userService.modifyUserPassword(userPwdReqDTO);
+        return ZSYResult.success().build();
+    }
+
+
 
 }
