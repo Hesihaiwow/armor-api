@@ -5,6 +5,7 @@ import com.zhixinhuixue.armor.helper.PageProxy;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class ZSYIntegralController {
      */
     @ApiOperation("获取积分列表")
     @GetMapping("/integral/{startTime}/{endTime}/{pageIndex}")
-    public Object getIntegral(@PathVariable String startTime, @PathVariable String endTime, @PathVariable int pageIndex){
+    public Object getIntegral(@ApiParam(value = "开始结束时间,类型:时间戳", required = true)@PathVariable String startTime, @PathVariable String endTime, @PathVariable int pageIndex){
         Map<String, Object> map = new HashMap<>();
         map.put("pageIndex", pageIndex);
         PageProxy ds = new PageProxy<>(integraService, getRequest(), map);
