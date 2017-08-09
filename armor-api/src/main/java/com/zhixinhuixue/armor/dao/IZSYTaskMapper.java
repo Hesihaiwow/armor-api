@@ -25,4 +25,12 @@ public interface IZSYTaskMapper {
      */
     Task selectByPrimaryKey(Long id);
 
+
+    /**
+     * 根据主键更新
+     * @param record
+     * @return
+     */
+    int updateByPrimaryKeySelective(Task record);
+
 }

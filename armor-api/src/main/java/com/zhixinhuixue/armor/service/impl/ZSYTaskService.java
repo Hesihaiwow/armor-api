@@ -6,16 +6,20 @@ import com.zhixinhuixue.armor.dao.IZSYTaskLogMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskTagMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
+import com.zhixinhuixue.armor.exception.ZSYGlobeException;
+import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskLog;
 import com.zhixinhuixue.armor.model.pojo.TaskTag;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
-import com.zhixinhuixue.armor.service.ITaskService;
+import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import com.zhixinhuixue.armor.source.enums.ReviewStatus;
-import com.zhixinhuixue.armor.source.enums.TaskStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +31,7 @@ import java.util.List;
  * Created by Tate on 2017/8/7.
  */
 @Service
-public class TaskService implements ITaskService {
+public class ZSYTaskService implements IZSYTaskService {
 
     @Autowired
     private IZSYTaskMapper taskMapper;
@@ -39,6 +43,21 @@ public class TaskService implements ITaskService {
     private IZSYTaskLogMapper taskLogMapper;
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+
+    private static final Logger logger = LoggerFactory.getLogger(ZSYGlobeException.class);
+
+    protected TaskLog buildLog(String title, String content, Long taskId) {
+        TaskLog taskLog = new TaskLog();
+        taskLog.setId(snowFlakeIDHelper.nextId());
+        taskLog.setTaskId(taskId);
+        taskLog.setTitle(title);
+        taskLog.setContent(content);
+        taskLog.setCreateTime(new Date());
+        taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
+        taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
+        return taskLog;
+    }
+
 
     /**
      * 添加任务
@@ -57,8 +76,8 @@ public class TaskService implements ITaskService {
         task.setProjectId(taskReqDTO.getProjectId());
         task.setEndTime(taskReqDTO.getEndTime());
         task.setPriority(taskReqDTO.getPriority());
-        task.setStatus(TaskStatus.DOING.getValue());
-        task.setReviewStatus(ReviewStatus.PENDING.getValue());
+        task.setStatus(ZSYTaskStatus.DOING.getValue());
+        task.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
         task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
@@ -104,15 +123,28 @@ public class TaskService implements ITaskService {
         return ZSYResult.success();
     }
 
-    protected TaskLog buildLog(String title, String content, Long taskId) {
-        TaskLog taskLog = new TaskLog();
-        taskLog.setId(snowFlakeIDHelper.nextId());
-        taskLog.setTaskId(taskId);
-        taskLog.setTitle(title);
-        taskLog.setContent(content);
-        taskLog.setCreateTime(new Date());
-        taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
-        taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
-        return taskLog;
+
+    /**
+     * 审核任务
+     *
+     * @param taskId
+     * @param auditStatus
+     * @return
+     */
+    @Override
+    public ZSYResult auditTask(Long taskId, Integer auditStatus) {
+        Task taskTemp = taskMapper.selectByPrimaryKey(taskId);
+        if (taskTemp == null) {
+            logger.warn("无法找到任务,id:{}", taskId);
+            throw new ZSYServiceException("系统繁忙");
+        }
+        Task task = new Task();
+        task.setId(taskId);
+        task.setReviewStatus(auditStatus);
+        task.setUpdateTime(new Date());
+        taskMapper.updateByPrimaryKeySelective(task);
+        // 插入日志
+        taskLogMapper.insert(buildLog(ZSYReviewStatus.getName(auditStatus), task.getName(), task.getId()));
+        return ZSYResult.success();
     }
 }
