@@ -6,6 +6,8 @@ import com.zhixinhuixue.armor.helper.UUIDHelper;
 import com.zhixinhuixue.armor.model.pojo.Project;
 import com.zhixinhuixue.armor.service.IZSYProjectService;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,7 @@ public class ZSYProjectController {
      * 获取项目列表
      * @return
      */
+    @ApiOperation("项目列表")
     @GetMapping(value = "/project")
     public Object getProject(){
         List<Project> project = projectService.getProject();
@@ -35,6 +38,7 @@ public class ZSYProjectController {
      * 添加项目
      * @return
      */
+    @ApiOperation("添加项目")
     @PutMapping(value = "/project")
     public ZSYResult putProject(@RequestBody Project project){
         project.setCreateBy(ZSYTokenRequestContext.get().getUserId());
