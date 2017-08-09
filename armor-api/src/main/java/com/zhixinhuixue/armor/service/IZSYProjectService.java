@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.service;
 
 
 
+import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Project;
 
 import java.util.List;
@@ -11,8 +12,17 @@ import java.util.List;
  */
 public interface IZSYProjectService {
 
+    /**
+     * 获取项目列表
+     * @return
+     */
     List<Project> getProject();
 
-    int putProject(Project project);
+    /**
+     * 添加项目
+     * @param project
+     * @return
+     */
+    void addProject(ProjectReqDTO project);
 
 }
