@@ -4,6 +4,7 @@ import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,6 @@ public class ZSYTaskController extends ZSYController {
         return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 
-
     @ApiOperation("个人任务完成")
     @PutMapping(value = "/complete/private")
     public String completePrivate(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
@@ -49,5 +49,32 @@ public class ZSYTaskController extends ZSYController {
     @PutMapping(value = "/complete/public")
     public String completePublic(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
         return taskService.completePublicTask(taskCompleteReqDTO).build();
+    }
+
+    @ApiOperation("获取任务详情")
+    @GetMapping(value = "/detail/{taskId}")
+    public String getTaskDetail(@PathVariable("taskId") Long taskId) {
+        return taskService.getTaskDetail(taskId).build();
+    }
+
+    @ApiOperation("获取用户待审核的任务")
+    @GetMapping(value = "/pending")
+    public String getPendingTask() {
+        return taskService.getTaskByStatus(ZSYTaskStatus.DOING.getValue(),
+                ZSYReviewStatus.PENDING.getValue()).build();
+    }
+
+    @ApiOperation("获取用户进行中的任务")
+    @GetMapping(value = "/doing")
+    public String getDoingTask() {
+        return taskService.getTaskByStatus(ZSYTaskStatus.DOING.getValue(),
+                ZSYReviewStatus.ACCEPT.getValue()).build();
+    }
+
+    @ApiOperation("获取用户已完成的任务")
+    @GetMapping(value = "/finished")
+    public String getClosedTask() {
+        return taskService.getTaskByStatus(ZSYTaskStatus.FINISHED.getValue(),
+                ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 }

@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYTaskStatus {
 
-    DOING(1, "进行中"), COMPLETED(2, "已完成"), CLOSED(3, "已结束");
+    DOING(1, "进行中"), COMPLETED(2, "已完成"), FINISHED(3, "已结束");
     private int value;
     private String name;
 
