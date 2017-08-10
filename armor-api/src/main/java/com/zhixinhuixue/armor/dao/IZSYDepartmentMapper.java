@@ -1,17 +1,40 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.zhixinhuixue.armor.model.bo.DeptBo;
 import com.zhixinhuixue.armor.model.pojo.Department;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface IZSYDepartmentMapper {
-    int deleteByPrimaryKey(Long id);
 
-    int insert(Department record);
+    /**
+     * 添加部门
+     * @param dept 部门信息
+     */
+    void insertDept(Department dept);
 
-    int insertSelective(Department record);
+    /**
+     * 查询部门(校验部门名称)
+     * @param deptName 部门名称
+     * @return
+     */
+    List<Department> selectByDeptName(String deptName);
 
-    Department selectByPrimaryKey(Long id);
+    /**
+     * 查询部门树结构
+     * @param pDeptId 父级部门ID
+     * @return
+     */
+    DeptBo selectRootDept(@Param("pDeptId") Long pDeptId);
+
+    /**
+     * 查询部门
+     * @param id 部门ID
+     * @return
+     */
+    Department selectById(@Param("id") Long id);
 
     int updateByPrimaryKeySelective(Department record);
 
-    int updateByPrimaryKey(Department record);
 }

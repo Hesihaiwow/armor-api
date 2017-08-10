@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * Created by Akuma on 2017/8/7.

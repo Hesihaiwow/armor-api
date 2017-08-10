@@ -12,7 +12,7 @@ public class Department {
 
     private Long parentId;
 
-    private Integer status;
+    private Integer isDelete;
 
     private Date createTime;
 
@@ -48,12 +48,13 @@ public class Department {
         this.parentId = parentId;
     }
 
-    public Integer getStatus() {
-        return status;
+
+    public Integer getIsDelete() {
+        return isDelete;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
     }
 
     public Date getCreateTime() {

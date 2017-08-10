@@ -4,25 +4,32 @@ package com.zhixinhuixue.armor.service;
 
 import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Project;
+import com.zhixinhuixue.armor.model.pojo.Tag;
 
 import java.util.List;
 
 /**
  * Created by Lang on 2017/8/7 0007.
  */
-public interface IZSYProjectService {
+public interface IZSYTagService {
 
     /**
-     * 获取项目列表
+     * 获取标签列表
      * @return
      */
-    List<Project> getProject();
+    List<Tag> getTag();
 
     /**
-     * 添加项目
-     * @param project
+     * 添加标签
+     * @param name
      * @return
      */
-    void addProject(ProjectReqDTO project);
+    void addTag(String name);
+
+    /**
+     * 删除标签
+     * @param id
+     */
+    void deleteTag(String id);
 
 }

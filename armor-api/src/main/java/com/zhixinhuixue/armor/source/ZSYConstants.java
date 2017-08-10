@@ -35,4 +35,14 @@ public class ZSYConstants {
      */
     public static final String HINT_PASSWORD_KEY = "fuck";
 
+    /**
+     * 部门根节点默认ID
+     */
+    public static final long DEFAULT_DEPT_ROOT_ID = 1L;
+
+    /**
+     * 默认10条一页
+     */
+    public static final int PAGE_SIZE = 10;
+
 }

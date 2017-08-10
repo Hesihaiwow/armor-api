@@ -1,78 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYDepartmentMapper">
+
   <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Department">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="parent_id" jdbcType="BIGINT" property="parentId" />
-    <result column="status" jdbcType="INTEGER" property="status" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
   </resultMap>
-  <sql id="Base_Column_List">
-    id, name, description, parent_id, status, create_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from department
-    where id = #{id,jdbcType=BIGINT}
+
+  <resultMap id="TreeResultMap" type="com.zhixinhuixue.armor.model.bo.DeptBo" extends="BaseResultMap">
+    <collection column="id" property="children" ofType="com.zhixinhuixue.armor.model.bo.DeptBo"
+                select="selectByParentId"/>
+  </resultMap>
+
+
+  <!-- 添加部门 -->
+  <insert id="insertDept" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
+    insert into department (id, name, description,
+    parent_id, is_delete, create_time
+    )
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+    #{parentId,jdbcType=BIGINT}, #{isDelete,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+
+  <!-- 校验部门名称 -->
+  <select id="selectByDeptName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT * FROM department WHERE `name` = #{deptName}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from department
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
-    insert into department (id, name, description, 
-      parent_id, status, create_time
-      )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{parentId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
-    insert into department
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="description != null">
-        description,
-      </if>
-      <if test="parentId != null">
-        parent_id,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null">
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="parentId != null">
-        #{parentId,jdbcType=BIGINT},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
+
+  <!-- 查询root菜单 -->
+  <select id="selectRootDept" resultMap="TreeResultMap">
+    SELECT * FROM department WHERE is_delete = 0 AND parent_id = 0
+  </select>
+
+  <!-- 查询父级菜单的子菜单 -->
+  <select id="selectByParentId" parameterType="java.lang.Long" resultMap="TreeResultMap">
+    SELECT * FROM department WHERE is_delete = 0 AND parent_id = #{pDeptId} ORDER BY create_time ASC
+  </select>
+
+  <!-- 查询父级菜单的子菜单 -->
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT * FROM department WHERE `id`=#{id}
+  </select>
+  
+
+
   <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
     update department
     <set>
@@ -92,15 +69,6 @@
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
-    update department
-    set name = #{name,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      parent_id = #{parentId,jdbcType=BIGINT},
-      status = #{status,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

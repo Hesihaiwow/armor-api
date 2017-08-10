@@ -1,6 +1,6 @@
 <template>
 	<div class="task-doing">
-    <task-list :taskItem="taskItem" taskStatus="TaskDoing"></task-list>
+    <task-list :taskItem="taskItem" @showFinishedPop="showFinishedPopHook" taskStatus="TaskDoing"></task-list>
 	</div>
 </template>
 <script>
@@ -35,7 +35,11 @@ import TaskList from './TaskList.vue'
       };
     },
     methods: {
-       
+     showFinishedPopHook (val) {
+        if (val) {
+          this.$emit("showFinishedPop", true);
+        }
+      }
     },
     components: {
       TaskList: TaskList

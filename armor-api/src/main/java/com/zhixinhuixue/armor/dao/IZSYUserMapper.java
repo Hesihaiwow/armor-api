@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.pojo.User;
 import org.apache.ibatis.annotations.Param;
 
@@ -35,16 +37,31 @@ public interface IZSYUserMapper {
      */
     List<User> selectEffectiveUsers();
 
+    /**
+     * 删除用户(逻辑删除)
+     * @param userId 用户ID
+     * @return
+     */
+    int deleteById(Long userId);
 
-    int deleteByPrimaryKey(Long id);
+    /**
+     * 查询用户
+     * @param userId 用户ID
+     * @return
+     */
+    User selectById(Long userId);
 
+    /**
+     * 更新用户
+     * @param user
+     * @return
+     */
+    int updateSelectiveById(User user);
 
-
-    int insertSelective(User record);
-
-    User selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(User record);
-
-    int updateByPrimaryKey(User record);
+    /**
+     * 用户分页查询
+     * @param deptId 部门ID
+     * @return
+     */
+    Page<UserBo> selectPage(Long deptId);
 }

@@ -4,6 +4,8 @@ import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.PageProxy;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,20 +18,19 @@ import java.util.Map;
  * Created by Lang on 2017/8/7 0007.
  */
 @RestController
-public class ZSYIntegralController {
+public class ZSYIntegralController extends ZSYController{
 
     @Autowired
     private IZSYIntegralService integraService;
 
-    @Autowired
-    private HttpServletRequest request;
 
     /**
      * 获取积分列表,按时间区分
      * @return
      */
+    @ApiOperation("获取积分列表")
     @GetMapping("/integral/{startTime}/{endTime}/{pageIndex}")
-    public Object getIntegral(@PathVariable String startTime, @PathVariable String endTime, @PathVariable int pageIndex){
+    public String getIntegral(@ApiParam(value = "开始结束时间,类型:时间戳", required = true)@PathVariable String startTime, @PathVariable String endTime, @PathVariable int pageIndex){
         Map<String, Object> map = new HashMap<>();
         map.put("pageIndex", pageIndex);
         PageProxy ds = new PageProxy<>(integraService, getRequest(), map);
@@ -42,8 +43,4 @@ public class ZSYIntegralController {
         return ZSYResult.success().data(map).build();
     }
 
-
-    public HttpServletRequest getRequest() {
-        return request;
-    }
 }

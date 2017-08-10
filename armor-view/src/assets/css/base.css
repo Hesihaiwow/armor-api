@@ -54,3 +54,47 @@ button.header-icon img { margin-bottom: -0.04rem; }
 
 .nav-top .el-tabs__header{background: #fff;padding: 10px 200px;}
 .my-task-con .el-tabs__header{display: inline-block;}
+.intergral-data-detail .el-table__footer-wrapper thead div, .intergral-data-detail .el-table__header-wrapper thead div {
+    background-color: #36A8FF;
+    color: #fff;
+}
+.department-member-table .el-table__footer-wrapper thead div, .department-member-table .el-table__header-wrapper thead div {
+    background-color: #F2F2F2;
+}
+.intergral-data-detail .el-table th{background-color: #36A8FF;}
+.intergral-data-detail .el-table--striped .el-table__body tr.el-table__row--striped td ,.department-member-table .el-table--striped .el-table__body tr.el-table__row--striped td {
+    background: #F2F2F2;
+}
+.intergral-data-detail .el-table td,.intergral-data-detail  .el-table th, .department-member-table .el-table td,.department-member-table .el-table th {
+    height: 30px;
+}
+.intergral-data-detail .el-table td, .intergral-data-detail .el-table th.is-leaf {
+    border: none;
+}
+.intergral-data-detail .el-table_1_column_1{
+	border-right: 2px solid #fff !important;
+}
+
+.department-structure .el-tree{border: none;margin: 0 10px;}
+
+.department-member-table .el-table .cell, .department-member-table .el-table th>div {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.task-top-list .el-select .el-input .el-input__icon{color: #666;}
+.task-top-list .el-input__inner{color: #666;border: 1px solid #999;}
+.mint-cell-wrapper { background: none !important; }
+
+.task-top-list .el-input__inner, .ctpc-list-con .el-input__inner,.add-member-basic-msg .el-input__inner{height: 30px;}
+
+
+
+/*placeholder颜色*/
+:-moz-placeholder {    /* Mozilla Firefox 4 to 18 */
+color: #666 !important; }
+::-moz-placeholder {    /* Mozilla Firefox 19+ */
+color: #666 !important; }
+input:-ms-input-placeholder, textarea:-ms-input-placeholder { color: #666 !important; }
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { color: #666 !important; }
+

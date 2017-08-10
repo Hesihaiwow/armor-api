@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import io.swagger.annotations.ApiModel;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -10,6 +9,8 @@ import javax.validation.constraints.Size;
  * Created by Akuma on 2017/8/8.
  */
 public class UserReqDTO {
+
+    private Long userId;
 
     @Size(min = 1,max = 20,message = "用户名称长度在{min}~{max}之间")
     @NotNull(message = "用户名称不能为空")
@@ -28,6 +29,14 @@ public class UserReqDTO {
     @Size(min = 1,max = 15,message = "用户职位字符长度在{min}~{max}之间")
     @NotNull(message = "用户职位不能为空")
     private String jobName;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getName() {
         return name;

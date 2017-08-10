@@ -11,88 +11,18 @@
   <sql id="Base_Column_List">
     id, name, description, create_by, create_time
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from project
-    where id = #{id,jdbcType=BIGINT}
-  </select>
+  <!--查询所有项目并按照时间倒序排列-->
   <select id="selectAll" resultMap="BaseResultMap">
-    select
+    SELECT
     <include refid="Base_Column_List" />
-    from project
+    FROM project
+    ORDER BY create_time DESC
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from project
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+  <!--添加项目-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     insert into project (id, name, description, 
       create_by, create_time)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
-    insert into project
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="description != null">
-        description,
-      </if>
-      <if test="createBy != null">
-        create_by,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null">
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="createBy != null">
-        #{createBy,jdbcType=BIGINT},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
-    update project
-    <set>
-      <if test="name != null">
-        name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null">
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="createBy != null">
-        create_by = #{createBy,jdbcType=BIGINT},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
-    update project
-    set name = #{name,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      create_by = #{createBy,jdbcType=BIGINT},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
 </mapper>
