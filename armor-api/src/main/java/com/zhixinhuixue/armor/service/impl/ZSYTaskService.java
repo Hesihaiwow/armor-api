@@ -179,9 +179,9 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("用户不存在");
         }
         Task taskTemp = taskMapper.selectByPrimaryKey(taskCompleteReqDTO.getTaskId());
-        Optional.ofNullable(taskTemp).orElseThrow(() -> new ZSYServiceException("系统繁忙"));
+        Optional.ofNullable(taskTemp).orElseThrow(() -> new ZSYServiceException("找不到任务,id:" + taskCompleteReqDTO.getTaskId()));
         TaskUser taskUserTemp = taskUserMapper.selectByPrimaryKey(taskCompleteReqDTO.getTaskUserId());
-        Optional.ofNullable(taskUserTemp).orElseThrow(() -> new ZSYServiceException("系统繁忙"));
+        Optional.ofNullable(taskUserTemp).orElseThrow(() -> new ZSYServiceException("找不到任务用户,id:" + taskCompleteReqDTO.getTaskUserId()));
 
         if (taskTemp.getType() != ZSYTaskType.PRIVATE_TASK.getValue()) {
             logger.warn("该任务非个人任务,id:{}", taskTemp.getId());
@@ -342,7 +342,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     /**
-     * 查询正在进行的任务
+     * 按状态查询任务
      *
      * @return
      */
