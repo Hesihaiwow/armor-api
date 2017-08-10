@@ -45,8 +45,8 @@ public class ZSYTokenAop {
             loginInfo.setUserName(Optional.ofNullable(request.getAttribute("userName"))
                     .map(userName->userName.toString())
                     .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
-            loginInfo.setPermissions(Optional.ofNullable(request.getAttribute("permissions"))
-                    .map(permissions->(String[])permissions)
+            loginInfo.setUserRole(Optional.ofNullable(request.getAttribute("userRole"))
+                    .map(userRole->Integer.parseInt(userRole.toString()))
                     .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
             ZSYTokenRequestContext.set(loginInfo);
         }

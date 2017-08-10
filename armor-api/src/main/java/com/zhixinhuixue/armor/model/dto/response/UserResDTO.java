@@ -1,12 +1,15 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
 
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
 
 /**
  * Created by Akuma on 2017/8/9.
  */
 public class UserResDTO {
+
+    private Long id;
 
     private String name;
 
@@ -19,6 +22,8 @@ public class UserResDTO {
     private String jobName;
 
     private Integer status;
+
+    private Integer userRole;
 
     public String getName() {
         return name;
@@ -70,5 +75,25 @@ public class UserResDTO {
 
     public String getStatusName(){
         return ZSYUserStatus.getName(status);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(Integer userRole) {
+        this.userRole = userRole;
+    }
+
+    public String getUserRoleName(){
+        return ZSYUserRole.getName(userRole);
     }
 }

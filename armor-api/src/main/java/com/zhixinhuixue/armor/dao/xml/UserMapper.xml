@@ -8,13 +8,14 @@
     <result column="account" jdbcType="VARCHAR" property="account" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="last_login" jdbcType="TIMESTAMP" property="lastLogin" />
     <result column="department_id" jdbcType="BIGINT" property="departmentId" />
     <result column="job_name" jdbcType="VARCHAR" property="jobName" />
     <result column="integral" jdbcType="INTEGER" property="integral" />
     <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="user_role" jdbcType="INTEGER" property="userRole" />
+    <result column="last_login" jdbcType="TIMESTAMP" property="lastLogin" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
 
   <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.UserBo" extends="BaseResultMap">
@@ -27,13 +28,13 @@
     insert into `user` (id, `name`, account,
     password, phone, last_login,
     department_id, job_name, integral,
-    status, create_time, is_delete
+    status, create_time, is_delete,user_role
     )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
     #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP},
     #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{integral,jdbcType=INTEGER},
-    #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER}
-    )
+    #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER},
+    #{userRole,jdbcType=INTEGER})
   </insert>
 
   <!-- 根据账号查询用户 -->
@@ -98,6 +99,9 @@
       <if test="isDelete != null">
         is_delete = #{isDelete,jdbcType=INTEGER},
       </if>
+      <if test="userRole != null">
+        user_role = #{userRole,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -106,6 +110,6 @@
   <select id="selectPage" parameterType="java.lang.Long" resultMap="PageResultMap">
     SELECT * FROM `user`
     WHERE is_delete = 0 AND department_id = #{deptId}
-    ORDER BY `status` ASC,create_time ASC
+    ORDER BY user_role ASC ,create_time ASC
   </select>
 </mapper>
