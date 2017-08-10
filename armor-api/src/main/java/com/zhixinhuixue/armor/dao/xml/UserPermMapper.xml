@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserPermMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.pojo.UserPerm">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserPerm">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="perm_id" jdbcType="BIGINT" property="permId" />
@@ -19,13 +19,13 @@
     delete from user_perm
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.pojo.UserPerm">
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserPerm">
     insert into user_perm (id, user_id, perm_id
       )
     values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{permId,jdbcType=BIGINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.pojo.UserPerm">
+  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.UserPerm">
     insert into user_perm
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -50,7 +50,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.pojo.UserPerm">
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.UserPerm">
     update user_perm
     <set>
       <if test="userId != null">
@@ -62,7 +62,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.pojo.UserPerm">
+  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.UserPerm">
     update user_perm
     set user_id = #{userId,jdbcType=BIGINT},
       perm_id = #{permId,jdbcType=BIGINT}

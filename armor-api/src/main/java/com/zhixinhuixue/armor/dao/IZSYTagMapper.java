@@ -1,17 +1,35 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Tag;
+import com.zhixinhuixue.armor.model.pojo.Tag;
+
+import java.util.List;
 
 public interface IZSYTagMapper {
-    int deleteByPrimaryKey(Long id);
 
+    /**
+     * 标签列表
+     * @return
+     */
+    List<Tag> selectTag();
+
+    /**
+     *添加标签
+     * @param record
+     * @return
+     */
     int insert(Tag record);
 
-    int insertSelective(Tag record);
+    /**
+     *删除标签
+     * @param id
+     * @return
+     */
+    int deleteTag(long id);
 
-    Tag selectByPrimaryKey(Long id);
+    /**
+     * 标签条数
+     * @return
+     */
+    int countTag();
 
-    int updateByPrimaryKeySelective(Tag record);
-
-    int updateByPrimaryKey(Tag record);
 }

@@ -1,17 +1,23 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Project;
+import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
+import com.zhixinhuixue.armor.model.pojo.Project;
+
+import java.util.List;
 
 public interface IZSYProjectMapper {
-    int deleteByPrimaryKey(Long id);
 
-    int insert(Project record);
+    /**
+     * 查询项目列表
+     * @return
+     */
+    List<Project> selectAll();
 
-    int insertSelective(Project record);
+    /**
+     * 添加项目
+     * @param project
+     * @return
+     */
+    void insert(Project project);
 
-    Project selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(Project record);
-
-    int updateByPrimaryKey(Project record);
 }

@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Test;
+import com.zhixinhuixue.armor.model.pojo.Test;
 
 public interface IZSYTestMapper {
     int deleteByPrimaryKey(Integer id);

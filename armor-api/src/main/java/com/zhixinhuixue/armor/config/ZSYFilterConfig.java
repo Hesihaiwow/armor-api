@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.config;
 
 import com.zhixinhuixue.armor.filter.ZSYUrlFilter;
+import com.zhixinhuixue.armor.source.ZSYConstants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,20 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ZSYFilterConfig {
 
+    //jwt密钥
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    //jwt发行者
+    @Value("${jwt.issuer}")
+    private String jwtIssuer;
+
+    //jwt过期时间
+    @Value("${jwt.exp}")
+    private int jwtExp;
+
+
+
     /**
      * 登陆拦截器
      * @return
@@ -21,7 +37,10 @@ public class ZSYFilterConfig {
         FilterRegistrationBean frb = new FilterRegistrationBean();
         frb.setFilter(new ZSYUrlFilter());
         frb.addUrlPatterns("/*");
-        frb.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,");
+        frb.addInitParameter("jwtSecret",jwtSecret);
+        frb.addInitParameter("jwtIssuer",jwtIssuer);
+        frb.addInitParameter("jwtExp",String.valueOf(jwtExp));
+        frb.addInitParameter("exclusions",String.format("*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,%s", ZSYConstants.LOGIN_URI));
         return frb;
     }
 

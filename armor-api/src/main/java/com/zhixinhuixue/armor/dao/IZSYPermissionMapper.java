@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Permission;
+import com.zhixinhuixue.armor.model.pojo.Permission;
 
 public interface IZSYPermissionMapper {
     int deleteByPrimaryKey(Long id);

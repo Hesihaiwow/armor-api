@@ -1,17 +1,37 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.TaskUser;
+import com.zhixinhuixue.armor.model.pojo.TaskUser;
+
+import java.util.List;
 
 public interface IZSYTaskUserMapper {
+
+    /**
+     * 根据主键删除
+     * @param id
+     * @return
+     */
     int deleteByPrimaryKey(Long id);
 
+    /**
+     * 插入任务用户
+     * @param record
+     * @return
+     */
     int insert(TaskUser record);
 
-    int insertSelective(TaskUser record);
-
+    /**
+     * 根据主键查询
+     * @param id
+     * @return
+     */
     TaskUser selectByPrimaryKey(Long id);
 
-    int updateByPrimaryKeySelective(TaskUser record);
+    /**
+     * 批量插入taskUser
+     * @param taskUserList
+     * @return
+     */
+    int insertList(List<TaskUser> taskUserList);
 
-    int updateByPrimaryKey(TaskUser record);
 }

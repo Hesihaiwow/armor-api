@@ -1,17 +1,67 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.User;
+import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.UserBo;
+import com.zhixinhuixue.armor.model.pojo.User;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface IZSYUserMapper {
-    int deleteByPrimaryKey(Long id);
 
-    int insert(User record);
+    /**
+     * 添加用户
+     * @param user
+     * @return
+     */
+    void insertUser(User user);
 
-    int insertSelective(User record);
+    /**
+     * 查询用户
+     * @param account 账户
+     * @return
+     */
+    List<User> selectByAccount(String account);
 
-    User selectByPrimaryKey(Long id);
+    /**
+     * 查询用户
+     * @param account 账号
+     * @param password 密码
+     * @return
+     */
+    User selectByAccountAndPassword(@Param("account") String account, @Param("password") String password);
 
-    int updateByPrimaryKeySelective(User record);
+    /**
+     * 查询有效用户
+     * @return
+     */
+    List<User> selectEffectiveUsers();
 
-    int updateByPrimaryKey(User record);
+    /**
+     * 删除用户(逻辑删除)
+     * @param userId 用户ID
+     * @return
+     */
+    int deleteById(Long userId);
+
+    /**
+     * 查询用户
+     * @param userId 用户ID
+     * @return
+     */
+    User selectById(Long userId);
+
+    /**
+     * 更新用户
+     * @param user
+     * @return
+     */
+    int updateSelectiveById(User user);
+
+    /**
+     * 用户分页查询
+     * @param deptId 部门ID
+     * @return
+     */
+    Page<UserBo> selectPage(Long deptId);
 }

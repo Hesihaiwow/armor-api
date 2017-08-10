@@ -49,20 +49,41 @@ public class ZSYResult<T> implements Serializable {
 		 */
 		public static final String FAIL = "01";
 
+
 		/**
-		 * 调用外部http接口异常
+		 * 没有登录
 		 */
-		public static final String API_ERROR = "407";
+		public static final String NO_SESSION_ERROR = "02";
+
+		/**
+		 * 请求参数错误
+		 */
+		public static final String PARAM_ERROR = "03";
+
+		/**
+		 * 数据异常
+		 */
+		public static final String CODE_ERROR = "04";
 
 		/**
 		 * 数据库操作异常
 		 */
-		public static final String DB_ERROR = "402";
+		public static final String DB_ERROR = "05";
+
+		/**
+		 * 调用外部http接口异常
+		 */
+		public static final String API_ERROR = "06";
 
 		/**
 		 * 服务异常
 		 */
-		public static final String SERVER_ERROR = "500";
+		public static final String SERVER_ERROR = "07";
+
+		/**
+		 * 没有权限
+		 */
+		public static final String AUTH_FORBIDDEN_ERROR = "08";
 
 		/**
 		 * 请求成功通用返回信息

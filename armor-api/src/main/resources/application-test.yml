@@ -1,6 +1,10 @@
 
 #数据源
 spring:
+  redis:
+    database: 10
+    host: 192.168.1.240
+    port: 6379
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
@@ -18,3 +22,9 @@ spring:
         url-pattern: /druid/*
         login-username: zxhx
         login-password: zxhx
+
+
+jwt:
+  issuer: xueping.com
+  secret: 86a1e6b06a8e4ee29285158943931e9d
+  exp: 360

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskLogMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.pojo.TaskLog">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskLog">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
@@ -23,7 +23,7 @@
     delete from task_log
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.pojo.TaskLog">
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskLog">
     insert into task_log (id, task_id, user_id, 
       user_name, title, content, 
       create_time)
@@ -31,7 +31,7 @@
       #{userName,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.pojo.TaskLog">
+  <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.TaskLog">
     insert into task_log
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -80,7 +80,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.pojo.TaskLog">
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.TaskLog">
     update task_log
     <set>
       <if test="taskId != null">
@@ -104,7 +104,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.pojo.TaskLog">
+  <update id="updateByPrimaryKey" parameterType="com.zhixinhuixue.armor.model.pojo.TaskLog">
     update task_log
     set task_id = #{taskId,jdbcType=BIGINT},
       user_id = #{userId,jdbcType=BIGINT},

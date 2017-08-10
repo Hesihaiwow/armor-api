@@ -1,17 +1,30 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.pojo.Stage;
+import com.zhixinhuixue.armor.model.pojo.Stage;
+
+import java.util.List;
 
 public interface IZSYStageMapper {
-    int deleteByPrimaryKey(Long id);
 
+    /**
+     * 阶段列表
+     * @return
+     */
+    List<Stage> selectStage();
+
+    /**
+     * 添加阶段
+     * @param record
+     * @return
+     */
     int insert(Stage record);
 
-    int insertSelective(Stage record);
+    /**
+     * 删除阶段
+     * @param id
+     * @return
+     */
+    int deleteStage(long id);
 
-    Stage selectByPrimaryKey(Long id);
 
-    int updateByPrimaryKeySelective(Stage record);
-
-    int updateByPrimaryKey(Stage record);
 }
