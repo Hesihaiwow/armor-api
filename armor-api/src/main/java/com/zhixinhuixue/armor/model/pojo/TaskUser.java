@@ -20,6 +20,12 @@ public class TaskUser {
 
     private String description;
 
+    private Integer completeHours;
+
+    private Date completeTime;
+
+    private Integer status;
+
     private Date createTime;
 
     public Long getId() {
@@ -92,5 +98,29 @@ public class TaskUser {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getCompleteHours() {
+        return completeHours;
+    }
+
+    public void setCompleteHours(Integer completeHours) {
+        this.completeHours = completeHours;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

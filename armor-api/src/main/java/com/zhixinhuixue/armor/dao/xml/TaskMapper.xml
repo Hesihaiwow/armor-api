@@ -7,17 +7,19 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="project_id" jdbcType="BIGINT" property="projectId" />
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="type" jdbcType="INTEGER" property="type" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="review_status" jdbcType="INTEGER" property="reviewStatus" />
     <result column="priority" jdbcType="INTEGER" property="priority" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="create_by" jdbcType="BIGINT" property="createBy" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, name, description, project_id, end_time, status, review_status, priority, create_time, 
-    update_time, create_by
+    id, name, description, project_id, end_time, `type`, status, review_status, priority, create_by,
+    complete_time, create_time, update_time
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -33,14 +35,17 @@
   </delete>
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Task">
-    insert into task (id, name, description, 
-      project_id, end_time, status, 
-      review_status, priority, create_time, 
-      update_time, create_by)
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{projectId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
-      #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=BIGINT})
+      insert into task (id, name, description,
+      project_id, end_time, `type`, status,
+      review_status, priority, create_by,
+      complete_time, create_time, update_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+      #{projectId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
+      #{status,jdbcType=INTEGER},
+      #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
+      #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Task">
@@ -58,6 +63,9 @@
       <if test="endTime != null">
         end_time = #{endTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="type != null">
+        status = #{type,jdbcType=INTEGER},
+      </if>
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
@@ -66,6 +74,9 @@
       </if>
       <if test="priority != null">
         priority = #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="completeTime != null">
+        complete_time = #{completeTime,jdbcType=TIMESTAMP},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},

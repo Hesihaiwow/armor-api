@@ -14,11 +14,15 @@ public class Task {
 
     private Date endTime;
 
+    private Integer type;
+
     private Integer status;
 
     private Integer reviewStatus;
 
     private Integer priority;
+
+    private Date completeTime;
 
     private Date createTime;
 
@@ -112,5 +116,21 @@ public class Task {
 
     public void setCreateBy(Long createBy) {
         this.createBy = createBy;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

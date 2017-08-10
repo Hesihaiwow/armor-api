@@ -1,5 +1,8 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -8,20 +11,63 @@ import java.util.List;
  */
 public class TaskReqDTO {
 
-    // 任务名称
+    /**
+     * 任务类型(1:个人任务 2:多人任务)
+     */
+    @NotNull(message = "任务类型不能为空")
+    private Integer taskType;
+
+    /**
+     * 任务名称
+     */
+    @NotNull(message = "任务名称不能为空")
+    @Size(min = 1, max = 100, message = "任务名称长度在{min}~{max}之间")
     private String taskName;
-    // 任务描述
+
+    /**
+     * 任务描述
+     */
+    @NotNull(message = "任务描述不能为空")
+    @Size(min = 1, max = 1000, message = "任务描述长度在{min}~{max}之间")
     private String description;
-    // 项目ID
+
+    /**
+     * 项目ID
+     */
+    @NotNull(message = "项目ID不能为空")
     private Long projectId;
-    // 任务截止日期
+
+    /**
+     * 任务截止日期
+     */
+    @NotNull(message = "任务截止日期不能为空")
     private Date endTime;
-    // 任务优先级
+
+    /**
+     * 任务优先级
+     */
+    @NotNull(message = "任务优先级不能为空")
     private Integer priority;
-    // 标签
+
+    /**
+     * 标签
+     */
     private List<Long> tags;
-    // 任务负责人
+
+    /**
+     * 任务负责人
+     */
+    @Size(min = 1, message = "任务负责人不能为空")
+    @Valid
     private List<TaskUserReqDTO> taskUsers;
+
+    public Integer getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(Integer taskType) {
+        this.taskType = taskType;
+    }
 
     public String getTaskName() {
         return taskName;
