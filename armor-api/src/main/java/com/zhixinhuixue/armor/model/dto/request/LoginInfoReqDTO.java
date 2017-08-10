@@ -12,7 +12,8 @@ public class LoginInfoReqDTO {
     private String userName;
 
     //用户权限
-    private String[] permissions;
+//    private String[] permissions;
+    private Integer userRole;
 
     public Long getUserId() {
         return userId;
@@ -30,11 +31,11 @@ public class LoginInfoReqDTO {
         this.userName = userName;
     }
 
-    public String[] getPermissions() {
-        return permissions;
+    public Integer getUserRole() {
+        return userRole;
     }
 
-    public void setPermissions(String[] permissions) {
-        this.permissions = permissions;
+    public void setUserRole(Integer userRole) {
+        this.userRole = userRole;
     }
 }

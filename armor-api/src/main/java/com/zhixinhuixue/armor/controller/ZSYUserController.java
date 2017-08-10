@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.controller;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
