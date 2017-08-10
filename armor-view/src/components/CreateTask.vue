@@ -58,7 +58,10 @@
               <div class="add-member-basic">
                 <div class="add-member-basic-list add-member-stage clearfix">
                   <div class="add-member-basic-menu fl">阶段：</div>
-                  <div class="add-member-basic-msg add-stage-opt fl">添加阶段</div>
+                  <div class="add-member-basic-msg add-stage-opt fl" @click="addStage">添加阶段</div>
+                  <el-select v-model="valueStage" multiple filterable allow-create placeholder="添加标签">
+                    <el-option v-for="item in optionsStage" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                  </el-select>
                 </div>
                 <div class="add-member-basic-list clearfix">
                   <div class="add-member-basic-menu fl">负责人：</div>
@@ -210,7 +213,18 @@
         value10: [],
         showAddTag: false,
         showAddDetail: false,
-        showAddBtn: true
+        showAddBtn: true,
+        valueStage: [],
+        optionsStage: [{
+          value: '产品设计',
+          label: '产品设计'
+        }, {
+          value: 'UI设计',
+          label: 'UI设计'
+        }, {
+          value: '前端开发',
+          label: '前端开发'
+        }],
       };
     },
     methods: {
@@ -243,15 +257,19 @@
       },
       deleteMember (index) {
         this.memberList.splice(index,1);
+      },
+      addStage () {
+        
       }
     }
   }
 </script>
-<style>
+<style scoped>
 .create-task-pop{/* display: none; */position: fixed;top: 0;left: 0;bottom: 0;right: 0;z-index: 100;background: rgba(0,0,0,0.5);}
-.create-task-pop-con{position: absolute;background: #F2F2F2;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;height: 566px;}
-.ctpc-top{font-size: 14px;line-height: 30px;}
-.ctpc-top-close{font-size: 30px;width: 30px;line-height: 24px;cursor: pointer;}
+.create-task-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 546px;padding: 16px 26px 44px;height: 566px;box-shadow: 0 0 10px #fff;}
+.ctpc-top{font-size: 16px;line-height: 30px;font-weight: 700;color: #333;margin-bottom: 10px;}
+.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 22px;cursor: pointer;transition:0.8s ease all;text-align: center;}
+.ctpc-top-close:hover{color:#36A8FF;transform:rotate(360deg);}
 .ctpc-instruction{background: #E4E4E4;border-radius: 3px;padding: 6px 10px;margin: 6px 0;line-height: 22px;font-size: 14px;color: #000;width: 496px;}
 .ctpc-main-con{border-top: 1px solid #ccc;padding: 10px 0;margin-top: 10px;}
 .ctpc-list-con .el-select{width: 188px;}
@@ -260,8 +278,9 @@
 .ctpc-list{background: #fff;padding: 6px 10px;border: 1px solid #ccc;margin-bottom: 10px;}
 .ctpc-tags{position: relative;}
 .ctpc-tags > li{display: inline-block;line-height: 30px;}
-.ctpc-tag-lis{background: #F2F2F2;padding: 0 16px;border-radius: 15px;margin-right: 10px;margin-bottom: 10px;}
+.ctpc-tag-lis{background: #F2F2F2;padding: 0 16px;border-radius: 15px;margin-right: 14px;margin-bottom: 14px;box-shadow: 0 0 10px #ccc;}
 .ctpc-tag-lis > span{display: inline-block;vertical-align: middle;font-size: 14px;}
+.ctpc-tag-lis .tag-lis-delete:hover{text-shadow: 0 0 8px #ccc;font-size: 18px !important;}
 .tag-lis-circle{width: 8px;height: 8px;border-radius: 50%;background: #FF9D6E;margin-right: 4px;}
 .tag-lis-delete{font-size: 18px !important;padding: 0 2px;cursor: pointer;}
 .tag-lis-add{position: relative;margin-left: 10px;cursor: pointer;}
@@ -292,9 +311,10 @@
 .add-member-msg{color: #36A8FF;margin-left: 6px;}
 
 
-.ctpc-btns{margin-top: 10px;text-align: right;}
-.ctpc-btns > input{display: inline-block;width: 80px;height: 24px;margin-left: 12px;cursor: pointer;}
-.ctpc-cancel{}
+.ctpc-btns{text-align: right;margin-top: 20px;}
+.ctpc-btns > input{display: inline-block;width: 80px;height: 28px;margin-left: 12px;cursor: pointer;border-radius: 4px;}
+.ctpc-cancel{background: #fff;border: 1px solid #ccc;}
+.ctpc-cancel:hover{background: #fff;border: 1px solid #36A8FF;color: #36A8FF;font-weight: 700;}
 .ctpc-save{background: #36A8FF;color: #fff;}
 
 .ctpc-con{height: 500px;overflow-y: auto;}
@@ -303,9 +323,10 @@
 .add-member-basic{background: #fff;border: 1px solid #ccc;margin-top: 10px;padding: 10px;font-size: 14px;}
 .add-member-basic-menu{width: 78px;text-align: right;}
 .add-member-basic-list{border-bottom: 1px solid #ccc;padding: 5px 0;line-height: 34px;}
-.add-stage-opt{color: #36A8FF;}
+.add-member-basic-list:last-child{border: none;}
+.add-stage-opt{color: #36A8FF;cursor: pointer;}
 .add-member-basic-msg .el-select{width: 140px;}
-.member-time-count{width: 40px;border: 1px solid #ccc;height: 26px;border-radius: 4px;margin-right: 4px;text-indent: 4px;}
+.member-time-count{width: 40px;border: 1px solid #ccc;height: 26px;border-radius: 4px;margin-right: 4px;text-indent: 4px;box-shadow: 0 0 10px #ccc;}
 .add-member-basic-time{margin-left: 40px;}
 
 .add-member-basic-msg .el-date-editor.el-input{width: 140px;}
@@ -317,6 +338,6 @@
 .add-tag-btn{background: #36A8FF;color: #fff;position: absolute;right: 0;top: 50%;width: 40px;height: 30px;z-index: 200;text-align: center;transform: translateY(-50%);border-radius: 4px;}
 
 .ctpc-member-delete{font-size: 26px;cursor: pointer;}
-
+.add-member-stage{position: relative;}
 
 </style>

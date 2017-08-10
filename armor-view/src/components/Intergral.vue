@@ -4,8 +4,8 @@
       <div class="fl menu-list" v-for="(list,index) in menuList" @click="togTable(index)" :style="tabActive(index)">{{list.name}}</div>
       
       <div class="fl menu-list" @click="togTable(4)" :style="tabActive(4)"><span class="self-define">自定义</span>
-        <el-date-picker v-model="value1" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker><span class="div-line">-</span>
-        <el-date-picker v-model="value2" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker>
+        <el-date-picker v-model="startValue" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker><span class="div-line">-</span>
+        <el-date-picker v-model="endValue" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker>
         <img src="../assets/img/u1221.png" alt="" class="serch-btn">
       </div>
     </div>
@@ -39,8 +39,8 @@
             return time.getTime() < Date.now() - 8.64e7;
           }
         },
-        value1: '',
-        value2: '',
+        startValue: '',
+        endValue: '',
         tableData: [{
           member: '小花',
           intergral: '122'
@@ -55,18 +55,17 @@
     },
     methods: {
       togTable(index) {
+        // 点击菜单
         this.activeIdx = index;
       },
       tabActive (index) {
+        // 颜色变化
         if (index == this.activeIdx) {
           return {
             color: '#36A8FF'
           }
         }
       }
-
-
-
 
     }
   }

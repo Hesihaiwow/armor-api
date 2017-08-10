@@ -1,40 +1,17 @@
 <template>
   <div class="task-con">
     <div class="task-top clearfix">
-      <div class="task-top-list fl">
-        <span class="ttl-name">项目</span>
-        <el-select v-model="projectValue" placeholder="请选择">
-          <el-option v-for="item in projectItem" :key="item.value" :label="item.label" :value="item.value"></el-option>
+      <div class="task-top-list fl" v-for="slist in taskTop">
+        <span class="ttl-name">{{slist.label}}</span>
+        <el-select v-model="slist.selValue" placeholder="请选择">
+          <el-option v-for="item in slist.ListItem" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
       </div>
-      <div class="task-top-list fl">
-        <span class="ttl-name">成员</span>
-        <el-select v-model="memberValue" placeholder="请选择">
-          <el-option v-for="item in memberItem" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-      </div>
-      <div class="task-top-list fl">
-        <span class="ttl-name">阶段</span>
-        <el-select v-model="stageValue" placeholder="请选择">
-          <el-option v-for="item in stageItem" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-      </div>
-      <div class="task-top-list fl">
-        <span class="ttl-name">标签</span>
-        <el-select v-model="tagValue" placeholder="请选择">
-          <el-option v-for="item in tagItem" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-      </div>
-      <div class="task-top-list fl">
-        <span class="ttl-name">状态</span>
-        <el-select v-model="statusValue" placeholder="请选择">
-          <el-option v-for="item in statusItem" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-      </div>
+
       <div class="task-top-list fl">
         <span class="ttl-name">截止日期</span>
-        <el-date-picker v-model="value1" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker><span class="div-line">-</span>
-        <el-date-picker v-model="value2" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker>
+        <el-date-picker v-model="startValue" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker><span class="div-line">-</span>
+        <el-date-picker v-model="endValue" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker>
         <img src="../assets/img/u1221.png" alt="" class="serch-btn">
       </div>
       <div class="task-top-list fl creat-task" @click="createTaskClick">
@@ -47,11 +24,6 @@
     <create-task ref="createTaskPop"></create-task>
 
 
-
-
-
-
-
   </div>
 </template>
 <script>
@@ -62,57 +34,70 @@ import CreateTask from './CreateTask'
     name: 'Task',
     data() {
       return {
-        projectItem: [{
-          value: '选项1',
-          label: '知心慧学'
-        }, {
-          value: '选项2',
-          label: '会学本'
-        }],
-        projectValue: '',
-
-        memberItem: [{
-          value: '选项1',
-          label: '知心慧学'
-        }, {
-          value: '选项2',
-          label: '会学本'
-        }],
-        memberValue: '',
-
-        stageItem: [{
-          value: '选项1',
-          label: '知心慧学'
-        }, {
-          value: '选项2',
-          label: '会学本'
-        }],
-        stageValue: '',
-
-        tagItem: [{
-          value: '选项1',
-          label: '知心慧学'
-        }, {
-          value: '选项2',
-          label: '会学本'
-        }],
-        tagValue: '',
-
-        statusItem: [{
-          value: '选项1',
-          label: '知心慧学'
-        }, {
-          value: '选项2',
-          label: '会学本'
-        }],
-        statusValue: '',
+        taskTop: [
+          {
+            label: '项目',
+            selValue: '',
+            ListItem:  [{
+              value: '选项1',
+              label: '知心慧学'
+            }, {
+              value: '选项2',
+              label: '会学本'
+            }]
+          },
+          {
+            label: '成员',
+            selValue: '',
+            ListItem:  [{
+              value: '选项1',
+              label: '知心慧学'
+            }, {
+              value: '选项2',
+              label: '会学本'
+            }]
+          },
+          {
+            label: '阶段',
+            selValue: '',
+            ListItem:  [{
+              value: '选项1',
+              label: '知心慧学'
+            }, {
+              value: '选项2',
+              label: '会学本'
+            }]
+          },
+          {
+            label: '标签',
+            selValue: '',
+            ListItem:  [{
+              value: '选项1',
+              label: '知心慧学'
+            }, {
+              value: '选项2',
+              label: '会学本'
+            }]
+          },
+          {
+            label: '状态',
+            selValue: '',
+            ListItem:  [{
+              value: '选项1',
+              label: '知心慧学'
+            }, {
+              value: '选项2',
+              label: '会学本'
+            }]
+          }
+        ],
         pickerOptions0: {
           disabledDate(time) {
             return time.getTime() < Date.now() - 8.64e7;
           }
         },
-        value1: '',
-        value2: '',
+        startValue: '',
+        endValue: '',
         taskItem: [
           {
             taskName: '教师端选题组卷流程优化',
@@ -162,6 +147,7 @@ import CreateTask from './CreateTask'
     },
     methods: {
       createTaskClick () {
+        // 点击建任务
         this.$refs.createTaskPop.show();
       }
     },

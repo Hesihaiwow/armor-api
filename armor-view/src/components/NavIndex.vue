@@ -112,23 +112,27 @@ import AssessTaskPop from './AssessTaskPop'
     },
     methods: {
       handleClick(tab, event) {
+        // 点击进行中和已完成
         console.log(tab, event);
       },
       createTaskClick () {
+        // 建任务
         this.$refs.createTaskPop.show();
       },
       showAuditPopHook (val) {
-        console.log('aaa');
+        // 点击待审核处的icon
         if (val) {
           this.$refs.createTaskPop.show();
         }
       },
       showAssessPopHook (val) {
+        // 点击待评价处的icon
         if (val) {
           this.$refs.assessPop.show();
         }
       },
       showFinishedPopHook (val) {
+        // 点击进行中的icon
         if (val) {
           this.$refs.finishedPop.show();
         }
@@ -148,7 +152,6 @@ import AssessTaskPop from './AssessTaskPop'
 <style scoped>
 .nav-index-con{width: 1100px;margin: auto;}
 .mic-title{font-size: 18px;color: #000;position: relative;}
-.mic-main{}
 .mic-item{margin: 18px 12px;width: 200px;text-align: center;box-shadow: 0 0 20px #ccc;}
 .mic-item-title{line-height: 40px;background: #D7D7D7;font-size: 20px;}
 .mic-item-integral{font-size: 26px;color: #000;background: #fff;line-height: 30px;padding: 14px 0; word-wrap:break-word;}
@@ -159,7 +162,4 @@ import AssessTaskPop from './AssessTaskPop'
 .add-task{position: absolute;right: 20px;font-size: 16px;cursor: pointer;color: #36A8FF;z-index: 30;}
 .add-task > span{display: inline-block;vertical-align: middle;}
 .add-task-icon{width: 22px;height: 22px;line-height: 22px;border-radius: 50%;background: #36A8FF;color: #fff;text-align: center;font-size: 14px;cursor: pointer;}
-
-
-
 </style>
