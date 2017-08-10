@@ -10,9 +10,18 @@ public interface IZSYUserIntegralMapper {
 
     /**
      * 积分列表
+     *
      * @param startTime
      * @param endTime
      * @return
      */
-    Page findIntegral(@Param("startTime")Date startTime,@Param("endTime")Date endTime);
+    Page findIntegral(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    /**
+     * 插入用户积分
+     *
+     * @param userIntegral
+     * @return
+     */
+    int insert(UserIntegral userIntegral);
 }

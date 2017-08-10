@@ -30,4 +30,11 @@
       ORDER BY create_time DESC
   </select>
 
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserIntegral">
+    insert into user_integral (id, task_id, user_id,
+    integral, create_time)
+    values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
+    #{integral,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
 </mapper>

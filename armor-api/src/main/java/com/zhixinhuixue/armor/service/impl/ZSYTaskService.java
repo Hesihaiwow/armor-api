@@ -159,7 +159,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     @Transactional
     public ZSYResult completePrivateTask(TaskCompleteReqDTO taskCompleteReqDTO) {
-        User userTemp = userMapper.selectByPrimaryKey(ZSYTokenRequestContext.get().getUserId());
+        User userTemp = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
         if (userTemp == null || userTemp.getIsDelete() == 1) {
             throw new ZSYServiceException("用户不存在");
         }
@@ -230,7 +230,7 @@ public class ZSYTaskService implements IZSYTaskService {
         User user = new User();
         user.setId(ZSYTokenRequestContext.get().getUserId());
         user.setIntegral(currentIntegral + ZSYIntegral.A.getValue());
-        userMapper.updateByPrimaryKeySelective(user);
+        userMapper.updateSelectiveById(user);
         return ZSYResult.success();
     }
 
@@ -242,7 +242,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public ZSYResult completePublicTask(TaskCompleteReqDTO taskCompleteReqDTO) {
-        User userTemp = userMapper.selectByPrimaryKey(ZSYTokenRequestContext.get().getUserId());
+        User userTemp = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
         if (userTemp == null || userTemp.getIsDelete() == 1) {
             throw new ZSYServiceException("用户不存在");
         }
