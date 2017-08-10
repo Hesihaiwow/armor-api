@@ -11,7 +11,7 @@
     </div>
 
     <div class="my-task-con">
-      <div class="add-task">
+      <div class="add-task" @click="createTaskClick">
         <span class="add-task-icon"><i class="el-icon-plus"></i></span>
         <span>建任务</span>
       </div>
@@ -19,23 +19,28 @@
       <div class="my-task-detail">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">
-            <component :is="item.name"></component>
+            <component @showFinishedPop="showFinishedPopHook" :is="item.name" ></component>
           </el-tab-pane>
         </el-tabs>
       </div>
 
       <p class="mic-title">待评价任务</p>
-      <task-list :taskItem="taskAseess" taskStatus="WaitAssess"></task-list>
+      <task-list :taskItem="taskAseess" @showAssessPop="showAssessPopHook"  taskStatus="WaitAssess"></task-list>
       <p class="mic-title">待审核</p>
-      <task-list :taskItem="taskAudit" taskStatus="WaitAuditing"></task-list>
+      <task-list :taskItem="taskAudit" @showAuditPop="showAuditPopHook" taskStatus="WaitAuditing"></task-list>
     </div>
-
+    <create-task ref="createTaskPop"></create-task>
+    <finished-task-pop ref="finishedPop"></finished-task-pop>
+    <assess-task-pop ref="assessPop"></assess-task-pop>
   </div>
 </template>
 <script>
 import TaskDoing from './TaskDoing'
 import TaskFinished from './TaskFinished'
-import TaskList from './TaskList.vue'
+import TaskList from './TaskList'
+import CreateTask from './CreateTask'
+import FinishedTaskPop from './FinishedTaskPop'
+import AssessTaskPop from './AssessTaskPop'
 
 
   export default {
@@ -106,14 +111,37 @@ import TaskList from './TaskList.vue'
       };
     },
     methods: {
-       handleClick(tab, event) {
+      handleClick(tab, event) {
         console.log(tab, event);
+      },
+      createTaskClick () {
+        this.$refs.createTaskPop.show();
+      },
+      showAuditPopHook (val) {
+        console.log('aaa');
+        if (val) {
+          this.$refs.createTaskPop.show();
+        }
+      },
+      showAssessPopHook (val) {
+        if (val) {
+          this.$refs.assessPop.show();
+        }
+      },
+      showFinishedPopHook (val) {
+        if (val) {
+          this.$refs.finishedPop.show();
+        }
       }
+
     },
     components: {
       TaskDoing: TaskDoing,
       TaskFinished: TaskFinished,
-      TaskList: TaskList
+      TaskList: TaskList,
+      CreateTask: CreateTask,
+      FinishedTaskPop: FinishedTaskPop,
+      AssessTaskPop: AssessTaskPop
     },
   }
 </script>
@@ -128,7 +156,7 @@ import TaskList from './TaskList.vue'
 .mic-item:last-child{margin-right: 0;}
 .my-integral-con,.my-task-con{margin-top: 16px;position: relative;}
 .my-task-detail{margin-top: 6px;}
-.add-task{position: absolute;right: 20px;font-size: 16px;cursor: pointer;color: #36A8FF;}
+.add-task{position: absolute;right: 20px;font-size: 16px;cursor: pointer;color: #36A8FF;z-index: 30;}
 .add-task > span{display: inline-block;vertical-align: middle;}
 .add-task-icon{width: 22px;height: 22px;line-height: 22px;border-radius: 50%;background: #36A8FF;color: #fff;text-align: center;font-size: 14px;cursor: pointer;}
 
