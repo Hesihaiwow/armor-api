@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTag">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="task_id" jdbcType="BIGINT" property="taskId" />
-    <result column="tag_id" jdbcType="BIGINT" property="tagId" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTag">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <result column="tag_id" jdbcType="BIGINT" property="tagId"/>
+    </resultMap>
 
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTag">
+    <!-- 查询任务tag -->
+    <select id="selectByTaskId" parameterType="java.lang.Long"
+            resultMap="com.zhixinhuixue.armor.dao.IZSYTagMapper.BaseResultMap">
+    select t2.* from task_tag t1
+    inner join tag t2 on t1.tag_id = t2.id
+    inner join task t3 on t1.task_id = t3.id
+    where t1.task_id = #{id}
+  </select>
+
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTag">
     insert into task_tag (id, task_id, tag_id
       )
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{tagId,jdbcType=BIGINT}
       )
   </insert>
 
-  <insert id="insertList" parameterType="java.util.List">
-      insert into task_tag (id, task_id, tag_id
-      )
-    values
-    <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.tagId,jdbcType=BIGINT}
-      )
-    </foreach>
-  </insert>
+    <insert id="insertList" parameterType="java.util.List">
+        insert into task_tag (id, task_id, tag_id
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.tagId,jdbcType=BIGINT}
+            )
+        </foreach>
+    </insert>
 
 </mapper>

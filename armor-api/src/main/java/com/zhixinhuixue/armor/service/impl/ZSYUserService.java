@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -70,6 +71,7 @@ public class ZSYUserService implements IZSYUserService{
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
+    @Transactional
     public ZSYResult<String> userLogin(UserLoginReqDTO userLoginReqDTO) {
         //验证登录用户
         User user = userMapper.selectByAccountAndPassword(userLoginReqDTO.getAccount(),
@@ -80,6 +82,14 @@ public class ZSYUserService implements IZSYUserService{
             throw new ZSYServiceException("账号或密码错误");
         }
         //验证通过
+        //修改登录时间
+        User modifyUser = new User();
+        modifyUser.setId(user.getId());
+        modifyUser.setLastLogin(new Date());
+        if (userMapper.updateSelectiveById(modifyUser)==0){
+            throw new ZSYServiceException("更新登录时间失败,登录异常.");
+        }
+        //生成Token
         Algorithm algorithm = null;
         try {
             algorithm = Algorithm.HMAC256(jwtSecret);
@@ -92,7 +102,7 @@ public class ZSYUserService implements IZSYUserService{
                 .withIssuedAt(new Date())
                 .withClaim("userId", user.getId())
                 .withClaim("userName", user.getName())
-                .withArrayClaim("permissions",new String[]{"a","b","c"})
+                .withClaim("userRole",user.getUserRole())
                 .sign(algorithm);
 
         String loginKey = String.format(ZSYConstants.LOGIN_KEY,user.getId());
@@ -140,6 +150,7 @@ public class ZSYUserService implements IZSYUserService{
         user.setCreateTime(new Date());
         user.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         user.setStatus(ZSYUserStatus.NORMAL.getValue());
+        user.setIntegral(ZSYConstants.DEFAULT_INTEGRAL);
         user.setPassword(MD5Helper.convert(
                 String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
                         ZSYConstants.HINT_PASSWORD_KEY), 32 , false));

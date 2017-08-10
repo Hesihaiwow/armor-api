@@ -73,7 +73,7 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                 response.setStatus(204);
             }else{
 //                String auth = request.getHeader("Authorization");
-                String auth = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJtaXNzaW9ucyI6WyJhIiwiYiIsImMiXSwiaXNzIjoiQWt1bWEiLCJleHAiOjE1MzMyMDAzNjQsInVzZXJOYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MDIwOTYzNjQsInVzZXJJZCI6MX0.RsJoLgJ9vFOZOwFqZxyc8gxeZPjryE4KjH1THu2z0xo";
+                String auth = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBa3VtYSIsImV4cCI6MTUzMzQ1Mzk3OCwidXNlck5hbWUiOiJKb2huIERvZSIsInVzZXJSb2xlIjowLCJpYXQiOjE1MDIzNDk5NzgsInVzZXJJZCI6MX0.dqXGCr_CDAz23ax7joIW8Qn0V5-81kUKaBUMV0Dknd4";
                 if (Strings.isNullOrEmpty(auth)){
                     auth = request.getHeader("authorization");
                 }
@@ -95,7 +95,8 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
 
                     Long userId = jwt.getClaim("userId").asLong();
                     String userName = jwt.getClaim("userName").asString();
-                    String[] permissions = jwt.getClaim("permissions").asArray(String.class);
+                    Integer userRole = jwt.getClaim("userRole").asInt();
+//                    String[] permissions = jwt.getClaim("permissions").asArray(String.class);
 
 
                     StringRedisTemplate redisTemplate = SpringHelper.getBean("stringRedisTemplate",StringRedisTemplate.class);
@@ -109,7 +110,7 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                                 request.getRequestURI());
                         request.setAttribute("userId",userId);
                         request.setAttribute("userName",userName);
-                        request.setAttribute("permissions",permissions);
+                        request.setAttribute("userRole",userRole);
                         filterChain.doFilter(servletRequest, servletResponse);
                     }else{
                         logger.warn("Session已过期,token:{}",token);

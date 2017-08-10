@@ -15,10 +15,46 @@
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
+
     <sql id="Base_Column_List">
-      id, task_id, stage_id, user_id, task_hours, begin_time, end_time, description, complete_hours,
-    complete_time, status, create_time
-  </sql>
+        id, task_id, stage_id, user_id, task_hours, begin_time, end_time, description, complete_hours,
+        complete_time, status, create_time
+    </sql>
+
+    <resultMap id="DetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskUserBO" extends="BaseResultMap">
+        <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <collection property="taskComments" column="id"
+                    select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByTaskUserId"
+                    ofType="com.zhixinhuixue.armor.model.bo.TaskCommentBO"/>
+    </resultMap>
+
+    <!-- 根据task_id查询详情 -->
+    <select id="selectDetailByTaskId" parameterType="java.lang.Long" resultMap="DetailResultMap">
+        select t1.*,t2.`name` as stageName, t3.`name` as userName from task_user t1 
+        left join stage t2 on t1.stage_id = t2.id
+        left join `user` t3 on t1.user_id = t3.id
+        where task_id = #{id};
+    </select>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into task_user (id, task_id, stage_id,
+        user_id, task_hours, begin_time,
+        end_time, description, complete_hours,
+        complete_time, status,create_time
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.stageId,jdbcType=BIGINT},
+            #{item.userId,jdbcType=BIGINT}, #{item.taskHours,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP},
+            #{item.endTime,jdbcType=TIMESTAMP}, #{item.description,jdbcType=VARCHAR},
+            #{item.completeHours,jdbcType=INTEGER},
+            #{item.completeTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -66,6 +102,12 @@
             <if test="description != null">
                 description = #{description,jdbcType=VARCHAR},
             </if>
+            <if test="completeHours != null">
+                complete_hours = #{completeHours,jdbcType=INTEGER},
+            </if>
+            <if test="completeTime != null">
+                complete_time = #{completeTime,jdbcType=TIMESTAMP},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=INTEGER},
             </if>
@@ -76,22 +118,5 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <insert id="insertList" parameterType="java.util.List">
-        insert into task_user (id, task_id, stage_id,
-        user_id, task_hours, begin_time,
-        end_time, description, complete_hours,
-        complete_time, status,create_time
-        )
-        values
-        <foreach collection="list" item="item" separator=",">
-            (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.stageId,jdbcType=BIGINT},
-            #{item.userId,jdbcType=BIGINT}, #{item.taskHours,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP},
-            #{item.endTime,jdbcType=TIMESTAMP}, #{item.description,jdbcType=VARCHAR},
-            #{item.completeHours,jdbcType=INTEGER},
-            #{item.completeTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=INTEGER},
-            #{item.createTime,jdbcType=TIMESTAMP}
-            )
-        </foreach>
-    </insert>
 
 </mapper>

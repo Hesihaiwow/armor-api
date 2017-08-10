@@ -6,18 +6,23 @@ import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYGlobeException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.model.bo.TaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +64,13 @@ public class ZSYTaskService implements IZSYTaskService {
         return taskLog;
     }
 
+    protected void checkUser() {
+        User userTemp = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
+        if (userTemp == null || userTemp.getIsDelete() == 1) {
+            throw new ZSYServiceException("用户不存在");
+        }
+    }
+
 
     /**
      * 添加任务
@@ -69,6 +81,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     @Transactional
     public ZSYResult addTask(TaskReqDTO taskReqDTO) {
+        checkUser();
         Task task = new Task();
         task.setId(snowFlakeIDHelper.nextId());
         task.setName(taskReqDTO.getTaskName());
@@ -131,14 +144,16 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     @Transactional
     public ZSYResult auditTask(Long taskId, Integer auditStatus) {
+        checkUser();
         Task taskTemp = taskMapper.selectByPrimaryKey(taskId);
         if (taskTemp == null) {
             logger.warn("无法找到任务,id:{}", taskId);
             throw new ZSYServiceException("无法找到任务,id:" + taskId);
         }
-        if (auditStatus != null && auditStatus == taskTemp.getReviewStatus()) {
-            logger.warn("该任务已经是{}状态了,id:{}", ZSYReviewStatus.getName(auditStatus), taskId);
-            throw new ZSYServiceException("该任务已经是" + ZSYReviewStatus.getName(auditStatus) + "状态了");
+        if (taskTemp.getReviewStatus() != null && (taskTemp.getReviewStatus() == ZSYReviewStatus.REJECT.getValue()
+                || taskTemp.getReviewStatus() == ZSYReviewStatus.ACCEPT.getValue())) {
+            logger.warn("该任务已被审核,id:{}", ZSYReviewStatus.getName(auditStatus), taskId);
+            throw new ZSYServiceException("该任务已被审核");
         }
         Task task = new Task();
         task.setId(taskId);
@@ -176,7 +191,7 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.warn("该任务未审核通过,id:{}", taskTemp.getId());
             throw new ZSYServiceException("该任务未审核通过");
         }
-        if (taskTemp.getStatus() == ZSYTaskStatus.CLOSED.getValue()) {
+        if (taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
             logger.warn("该任务已被关闭,id:{}", taskTemp.getId());
             throw new ZSYServiceException("该任务已被关闭");
         }
@@ -199,8 +214,9 @@ public class ZSYTaskService implements IZSYTaskService {
         // 关闭主任务
         Task task = new Task();
         task.setId(taskCompleteReqDTO.getTaskId());
-        task.setStatus(ZSYTaskStatus.CLOSED.getValue());
+        task.setStatus(ZSYTaskStatus.FINISHED.getValue());
         task.setCompleteTime(taskCompleteReqDTO.getCompleteTime());
+        taskMapper.updateByPrimaryKeySelective(task);
         // 插入日志
         taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "关闭了任务",
                 taskTemp.getName(), taskTemp.getId()));
@@ -259,7 +275,7 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.warn("该任务未审核通过,id:{}", taskTemp.getId());
             throw new ZSYServiceException("该任务未审核通过");
         }
-        if (taskTemp.getStatus() == ZSYTaskStatus.CLOSED.getValue()) {
+        if (taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
             logger.warn("该任务已被关闭,id:{}", taskTemp.getId());
             throw new ZSYServiceException("该任务已被关闭");
         }
@@ -279,5 +295,68 @@ public class ZSYTaskService implements IZSYTaskService {
         taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "完成了任务",
                 taskUserTemp.getDescription(), taskTemp.getId()));
         return ZSYResult.success();
+    }
+
+
+    /**
+     * 获取任务详情
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public ZSYResult<TaskDetailResDTO> getTaskDetail(Long taskId) {
+        TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
+        Optional.ofNullable(taskDetailBO).orElseThrow(() -> new ZSYServiceException("无法找到任务,id:" + taskId));
+
+        // copy 任务基本属性
+        TaskDetailResDTO taskDetailResDTO = new TaskDetailResDTO();
+        BeanUtils.copyProperties(taskDetailBO, taskDetailResDTO);
+
+        // copy 任务标签
+        List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+        taskDetailBO.getTaskTags().stream().forEach(tag -> {
+            TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+            BeanUtils.copyProperties(tag, taskTagResDTO, "id", "createTime", "createBy");
+            taskTagResDTOS.add(taskTagResDTO);
+        });
+        taskDetailResDTO.setTags(taskTagResDTOS);
+
+        // copy 任务阶段
+        List<TaskUserResDTO> taskUserResDTOS = new ArrayList<>();
+        taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
+            TaskUserResDTO taskUserResDTO = new TaskUserResDTO();
+            BeanUtils.copyProperties(taskUserBO, taskUserResDTO);
+            // copy 评价
+            List<TaskCommentResDTO> taskCommentResDTOS = new ArrayList<>();
+            taskUserBO.getTaskComments().stream().forEach(taskCommentBO -> {
+                TaskCommentResDTO taskCommentResDTO = new TaskCommentResDTO();
+                BeanUtils.copyProperties(taskCommentBO, taskCommentResDTO, "taskId", "taskUserId");
+                taskCommentResDTOS.add(taskCommentResDTO);
+            });
+            taskUserResDTO.setComments(taskCommentResDTOS);
+            taskUserResDTOS.add(taskUserResDTO);
+        });
+        taskDetailResDTO.setUsers(taskUserResDTOS);
+        return ZSYResult.success().data(taskDetailResDTO);
+    }
+
+    /**
+     * 查询正在进行的任务
+     *
+     * @return
+     */
+    @Override
+    public ZSYResult<List<TaskResDTO>> getTaskByStatus(Integer status, Integer reviewStatus) {
+        List<TaskBO> taskBOS = taskMapper.selectTaskByStatus(status, reviewStatus, ZSYTokenRequestContext.get().getUserId());
+        List<TaskResDTO> taskList = new ArrayList<>();
+        if (taskBOS != null && taskBOS.size() >= 0) {
+            taskBOS.stream().forEach(taskBO -> {
+                TaskResDTO taskResDTO = new TaskResDTO();
+                BeanUtils.copyProperties(taskBO, taskResDTO);
+                taskList.add(taskResDTO);
+            });
+        }
+        return ZSYResult.success().data(taskList);
     }
 }

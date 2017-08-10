@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.model.dto.response;
 
 
 import com.zhixinhuixue.armor.helper.DateHelper;
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
 
 import java.util.Date;
@@ -10,6 +11,8 @@ import java.util.Date;
  * Created by Akuma on 2017/8/9.
  */
 public class UserPageResDTO {
+
+    private Long id;
 
     private String name;
 
@@ -28,6 +31,8 @@ public class UserPageResDTO {
     private Date createTime;
 
     private Date lastLogin;
+
+    private Integer userRole;
 
     public String getName() {
         return name;
@@ -106,5 +111,25 @@ public class UserPageResDTO {
 
     public String getStatusName(){
         return ZSYUserStatus.getName(status);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(Integer userRole) {
+        this.userRole = userRole;
+    }
+
+    public String getUserRoleName(){
+        return ZSYUserRole.getName(userRole);
     }
 }

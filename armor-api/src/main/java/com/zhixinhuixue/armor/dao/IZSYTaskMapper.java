@@ -1,11 +1,18 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.zhixinhuixue.armor.model.bo.TaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.pojo.Task;
+import io.swagger.models.auth.In;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface IZSYTaskMapper {
 
     /**
      * 根据主键删除
+     *
      * @param id
      * @return
      */
@@ -13,6 +20,7 @@ public interface IZSYTaskMapper {
 
     /**
      * 插入任务
+     *
      * @param record
      * @return
      */
@@ -20,6 +28,7 @@ public interface IZSYTaskMapper {
 
     /**
      * 根据主键查询
+     *
      * @param id
      * @return
      */
@@ -28,9 +37,29 @@ public interface IZSYTaskMapper {
 
     /**
      * 根据主键更新
+     *
      * @param record
      * @return
      */
     int updateByPrimaryKeySelective(Task record);
+
+
+    /**
+     * 查询任务详情
+     * @param taskId
+     * @return
+     */
+    TaskDetailBO selectTaskDetailByTaskId(Long taskId);
+
+
+    /**
+     * 根据状态查询任务
+     * @param status
+     * @param reviewStatus
+     * @return
+     */
+    List<TaskBO> selectTaskByStatus(@Param("status") Integer status,
+                                    @Param("reviewStatus")Integer reviewStatus,
+                                    @Param("userId")Long userId);
 
 }
