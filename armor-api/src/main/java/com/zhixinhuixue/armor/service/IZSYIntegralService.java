@@ -10,6 +10,12 @@ import java.util.Date;
  */
 public interface IZSYIntegralService {
 
+    /**
+     * 查询积分列表
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     Page findIntegral(Date startTime,Date endTime);
 
 }
