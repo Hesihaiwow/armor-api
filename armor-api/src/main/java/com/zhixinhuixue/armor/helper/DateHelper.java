@@ -122,6 +122,63 @@ public class DateHelper {
     }
 
     /**
+     * 当季度第一天
+     * @return
+     */
+    public static String  getThisQuarterFirstDay(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        try {
+            if (currentMonth >= 1 && currentMonth <= 3)
+                calendar.set(Calendar.MONTH, 0);
+            else if (currentMonth >= 4 && currentMonth <= 6)
+                calendar.set(Calendar.MONTH, 3);
+            else if (currentMonth >= 7 && currentMonth <= 9)
+                calendar.set(Calendar.MONTH, 6);
+            else if (currentMonth >= 10 && currentMonth <= 12)
+                calendar.set(Calendar.MONTH, 9);
+            calendar.set(Calendar.DATE, 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String s = dateFormatter(calendar.getTime(), DATE_FORMAT);
+        StringBuffer str = new StringBuffer().append(s).append(" ").append(TIME_BEGIN);
+        return str.toString();
+    }
+
+    /**
+     * 当季度最后一天
+     * @return
+     */
+    public static String  getThisQuarterLastDay(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        try {
+            if (currentMonth >= 1 && currentMonth <= 3) {
+                calendar.set(Calendar.MONTH, 2);
+                calendar.set(Calendar.DATE, 31);
+            } else if (currentMonth >= 4 && currentMonth <= 6) {
+                calendar.set(Calendar.MONTH, 5);
+                calendar.set(Calendar.DATE, 30);
+            } else if (currentMonth >= 7 && currentMonth <= 9) {
+                calendar.set(Calendar.MONTH, 8);
+                calendar.set(Calendar.DATE, 30);
+            } else if (currentMonth >= 10 && currentMonth <= 12) {
+                calendar.set(Calendar.MONTH, 11);
+                calendar.set(Calendar.DATE, 31);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String s = dateFormatter(calendar.getTime(), DATE_FORMAT);
+        StringBuffer str = new StringBuffer().append(s).append(" ").append(TIME_END);
+        return str.toString();
+    }
+
+
+    /**
      * 查询这个月所有天数
      * @return
      */

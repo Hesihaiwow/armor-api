@@ -5,7 +5,7 @@ import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 /**
  * Created by Lang on 2017/8/9 0009.
  */
-public class UserIntegralNameBO extends UserIntegral{
+public class UserIntegralInfoBO extends UserIntegral{
 
     //用户姓名
     private String name;

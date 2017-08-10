@@ -25,4 +25,8 @@
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
+  <!--验证项目名是否存在-->
+  <select id="validateProject" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT count(*) FROM project  WHERE name= #{name,jdbcType=VARCHAR}
+  </select>
 </mapper>

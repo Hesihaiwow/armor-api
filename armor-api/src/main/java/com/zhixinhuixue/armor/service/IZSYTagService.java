@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.service;
 
 
-
-import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
-import com.zhixinhuixue.armor.model.pojo.Project;
-import com.zhixinhuixue.armor.model.pojo.Tag;
+import com.zhixinhuixue.armor.model.dto.response.TagDTO;
 
 import java.util.List;
 
@@ -17,7 +14,7 @@ public interface IZSYTagService {
      * 获取标签列表
      * @return
      */
-    List<Tag> getTag();
+    List<TagDTO> getTag();
 
     /**
      * 添加标签

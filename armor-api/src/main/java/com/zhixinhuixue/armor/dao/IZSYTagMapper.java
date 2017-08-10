@@ -32,4 +32,11 @@ public interface IZSYTagMapper {
      */
     int countTag();
 
+    /**
+     * 验证标签是否存在
+     * @param name
+     * @return
+     */
+    int validateTag(String name);
+
 }

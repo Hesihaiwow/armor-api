@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
+
 import com.zhixinhuixue.armor.model.pojo.Project;
 
 import java.util.List;
@@ -19,5 +19,11 @@ public interface IZSYProjectMapper {
      * @return
      */
     void insert(Project project);
+
+    /**
+     * 验证项目名是否存在
+     * @return
+     */
+    int validateProject(String name);
 
 }
