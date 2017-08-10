@@ -1,24 +1,25 @@
 package com.zhixinhuixue.armor.source.enums;
 
 /**
- * 任务状态
+ * 积分
  * Created by Tate on 2017/8/7.
  */
-public enum ZSYTaskStatus {
+public enum ZSYIntegral {
 
-    DOING(1, "进行中"), COMPLETED(2, "已完成"), FINISHED(3, "已结束");
+    A(100, "A"), B(90, "B"), C(80, "C");
+
     private int value;
     private String name;
 
-    ZSYTaskStatus(int value, String name) {
+    ZSYIntegral(int value, String name) {
         this.value = value;
         this.name = name;
     }
 
     public static String getName(int value) {
-        for (ZSYTaskStatus taskStatus : ZSYTaskStatus.values()) {
-            if (taskStatus.getValue() == value) {
-                return taskStatus.getName();
+        for (ZSYIntegral status : ZSYIntegral.values()) {
+            if (status.getValue() == value) {
+                return status.getName();
             }
         }
         return "";

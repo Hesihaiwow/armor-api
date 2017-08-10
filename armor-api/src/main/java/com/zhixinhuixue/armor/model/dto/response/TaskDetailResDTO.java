@@ -1,8 +1,12 @@
-package com.zhixinhuixue.armor.model.pojo;
+package com.zhixinhuixue.armor.model.dto.response;
 
 import java.util.Date;
+import java.util.List;
 
-public class Task {
+/**
+ * Created by Tate on 2017/8/10.
+ */
+public class TaskDetailResDTO {
 
     private Long id;
 
@@ -29,6 +33,20 @@ public class Task {
     private Date updateTime;
 
     private Long createBy;
+    /**
+     * 项目名称
+     */
+    private String projectName;
+
+    /**
+     * 任务标签
+     */
+    private List<TaskTagResDTO> tags;
+
+    /**
+     * 任务用户（阶段）
+     */
+    private List<TaskUserResDTO> users;
 
     public Long getId() {
         return id;
@@ -43,7 +61,7 @@ public class Task {
     }
 
     public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+        this.name = name;
     }
 
     public String getDescription() {
@@ -51,7 +69,7 @@ public class Task {
     }
 
     public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
+        this.description = description;
     }
 
     public Long getProjectId() {
@@ -68,6 +86,14 @@ public class Task {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Integer getStatus() {
@@ -94,20 +120,20 @@ public class Task {
         this.priority = priority;
     }
 
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
     }
 
     public Long getCreateBy() {
@@ -118,19 +144,35 @@ public class Task {
         this.createBy = createBy;
     }
 
-    public Date getCompleteTime() {
-        return completeTime;
+    public List<TaskTagResDTO> getTags() {
+        return tags;
     }
 
-    public void setCompleteTime(Date completeTime) {
-        this.completeTime = completeTime;
+    public void setTags(List<TaskTagResDTO> tags) {
+        this.tags = tags;
     }
 
-    public Integer getType() {
-        return type;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public List<TaskUserResDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<TaskUserResDTO> users) {
+        this.users = users;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }

@@ -26,4 +26,8 @@
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{createBy,jdbcType=BIGINT})
   </insert>
+  <!--验证阶段名是否存在-->
+  <select id="validateStage" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT count(*) FROM stage  WHERE name= #{name,jdbcType=VARCHAR}
+  </select>
 </mapper>

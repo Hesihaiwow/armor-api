@@ -30,6 +30,9 @@ public class UserReqDTO {
     @NotNull(message = "用户职位不能为空")
     private String jobName;
 
+    @NotNull(message = "用户角色不能为空")
+    private Integer userRole;
+
     public Long getUserId() {
         return userId;
     }
@@ -76,5 +79,13 @@ public class UserReqDTO {
 
     public void setJobName(String jobName) {
         this.jobName = jobName;
+    }
+
+    public Integer getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(Integer userRole) {
+        this.userRole = userRole;
     }
 }

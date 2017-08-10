@@ -2,8 +2,7 @@ package com.zhixinhuixue.armor.service;
 
 
 
-import com.zhixinhuixue.armor.model.pojo.Stage;
-import com.zhixinhuixue.armor.model.pojo.Tag;
+import com.zhixinhuixue.armor.model.dto.response.StageDTO;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface IZSYStageService {
      * 获取阶段列表
      * @return
      */
-    List<Stage> getStage();
+    List<StageDTO> getStage();
 
     /**
      * 添加阶段

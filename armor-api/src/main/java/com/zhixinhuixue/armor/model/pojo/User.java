@@ -28,6 +28,8 @@ public class User {
 
     private Integer isDelete;
 
+    private Integer userRole;
+
     public Long getId() {
         return id;
     }
@@ -122,5 +124,13 @@ public class User {
 
     public void setIsDelete(Integer isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public Integer getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(Integer userRole) {
+        this.userRole = userRole;
     }
 }

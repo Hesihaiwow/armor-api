@@ -1,25 +1,52 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
  * Created by Tate on 2017/8/7.
  */
 public class TaskUserReqDTO {
-
-    // 阶段id
+    /**
+     * 阶段id
+     */
+    @NotNull(message = "阶段id不能为空")
     private Long stageId;
-    // 负责人
+
+    /**
+     * 负责人
+     */
+    @NotNull(message = "负责人不能为空")
     private Long userId;
-    // 工时
+
+    /**
+     * 工时
+     */
+    @NotNull(message = "工时不能为空")
+    @Min(value = 1,message = "工时不能小于{value}")
+    @Max(value = 99,message = "工时不能大于{value}")
     private Integer taskHours;
-    // 开始时间
+
+    /**
+     * 开始时间
+     */
+    @NotNull(message = "开始时间不能为空")
     private Date beginTime;
-    //结束时间
+
+    /**
+     * 结束时间
+     */
+    @NotNull(message = "结束时间不能为空")
     private Date endTime;
-    // 阶段描述
+
+    /**
+     * 阶段描述
+     */
+    @NotNull(message = "阶段描述不能为空")
+    @Size(min = 1, max = 500, message = "阶段描述长度在{min}~{max}之间")
     private String description;
 
     public Long getStageId() {

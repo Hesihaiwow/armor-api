@@ -2,13 +2,17 @@ package com.zhixinhuixue.armor.service.impl;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYProjectMapper;
+import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.ProjectDTO;
 import com.zhixinhuixue.armor.model.pojo.Project;
 import com.zhixinhuixue.armor.service.IZSYProjectService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,23 +32,39 @@ public class ZSYProjectService implements IZSYProjectService{
      * 获取项目列表
      * @return
      */
-    public List<Project> getProject(){
+    @Override
+    public List<ProjectDTO> getProject(){
         List<Project> projects = projectMapper.selectAll();
-        return projects;
+        List<ProjectDTO> projectDTOS = new ArrayList<>();
+
+        projects.stream().forEach(project -> {
+            ProjectDTO projectDTO = new ProjectDTO();
+            BeanUtils.copyProperties(projects,projectDTO);
+            projectDTO.setDescription(project.getDescription());
+            projectDTO.setName(project.getName());
+            projectDTO.setId(project.getId());
+            projectDTOS.add(projectDTO);
+        });
+        return projectDTOS;
     }
 
     /**
      * 添加项目
      * @param projectReqDTO
      */
+    @Override
     public void addProject(ProjectReqDTO projectReqDTO){
-        Project project = new Project();
-        project.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-//        project.setCreateBy(1231231221l);
-        project.setCreateTime(new Date());
-        project.setId(snowFlakeIDHelper.nextId());
-        project.setDescription(projectReqDTO.getDescription());
-        project.setName(projectReqDTO.getName());
-        projectMapper.insert(project);
+        String name = projectReqDTO.getName();
+        if(projectMapper.validateProject(name.trim())>0){
+            throw new ZSYServiceException("项目名称已存在");
+        }else{
+            Project project = new Project();
+            project.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            project.setCreateTime(new Date());
+            project.setId(snowFlakeIDHelper.nextId());
+            project.setDescription(projectReqDTO.getDescription());
+            project.setName(projectReqDTO.getName());
+            projectMapper.insert(project);
+        }
     }
 }

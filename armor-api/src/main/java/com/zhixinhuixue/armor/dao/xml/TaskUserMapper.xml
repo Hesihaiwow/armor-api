@@ -1,53 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskUser">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="task_id" jdbcType="BIGINT" property="taskId" />
-    <result column="stage_id" jdbcType="BIGINT" property="stageId" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="task_hours" jdbcType="INTEGER" property="taskHours" />
-    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
-    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    id, task_id, stage_id, user_id, task_hours, begin_time, end_time, description, create_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from task_user
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskUser">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="task_hours" jdbcType="INTEGER" property="taskHours"/>
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="complete_hours" jdbcType="INTEGER" property="completeHours"/>
+        <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, task_id, stage_id, user_id, task_hours, begin_time, end_time, description, complete_hours,
+        complete_time, status, create_time
+    </sql>
+
+    <resultMap id="DetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskUserBO" extends="BaseResultMap">
+        <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <collection property="taskComments" column="id"
+                    select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByTaskUserId"
+                    ofType="com.zhixinhuixue.armor.model.bo.TaskCommentBO"/>
+    </resultMap>
+
+    <!-- 根据task_id查询详情 -->
+    <select id="selectDetailByTaskId" parameterType="java.lang.Long" resultMap="DetailResultMap">
+        select t1.*,t2.`name` as stageName, t3.`name` as userName from task_user t1 
+        left join stage t2 on t1.stage_id = t2.id
+        left join `user` t3 on t1.user_id = t3.id
+        where task_id = #{id};
+    </select>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into task_user (id, task_id, stage_id,
+        user_id, task_hours, begin_time,
+        end_time, description, complete_hours,
+        complete_time, status,create_time
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.stageId,jdbcType=BIGINT},
+            #{item.userId,jdbcType=BIGINT}, #{item.taskHours,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP},
+            #{item.endTime,jdbcType=TIMESTAMP}, #{item.description,jdbcType=VARCHAR},
+            #{item.completeHours,jdbcType=INTEGER},
+            #{item.completeTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from task_user
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from task_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
-    insert into task_user (id, task_id, stage_id, 
-      user_id, task_hours, begin_time, 
-      end_time, description, create_time
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
+   insert into task_user (id, task_id, stage_id,
+      user_id, task_hours, begin_time,
+      end_time, description, complete_hours,
+      complete_time, status, create_time
       )
-    values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{stageId,jdbcType=BIGINT}, 
-      #{userId,jdbcType=BIGINT}, #{taskHours,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, 
-      #{endTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+    values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{stageId,jdbcType=BIGINT},
+      #{userId,jdbcType=BIGINT}, #{taskHours,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP},
+      #{endTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, #{completeHours,jdbcType=INTEGER},
+      #{completeTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
 
-  <insert id="insertList" parameterType="java.util.List">
-    insert into task_user (id, task_id, stage_id,
-      user_id, task_hours, begin_time,
-      end_time, description, create_time
-      )
-    values
-    <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.stageId,jdbcType=BIGINT},
-      #{item.userId,jdbcType=BIGINT}, #{item.taskHours,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP},
-      #{item.endTime,jdbcType=TIMESTAMP}, #{item.description,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}
-      )
-    </foreach>
-  </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
+        update task_user
+        <set>
+            <if test="taskId != null">
+                task_id = #{taskId,jdbcType=BIGINT},
+            </if>
+            <if test="stageId != null">
+                stage_id = #{stageId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="taskHours != null">
+                task_hours = #{taskHours,jdbcType=INTEGER},
+            </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="completeHours != null">
+                complete_hours = #{completeHours,jdbcType=INTEGER},
+            </if>
+            <if test="completeTime != null">
+                complete_time = #{completeTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 
 </mapper>

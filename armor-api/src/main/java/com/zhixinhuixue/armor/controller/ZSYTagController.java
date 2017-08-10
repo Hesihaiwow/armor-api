@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 
-import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
-import com.zhixinhuixue.armor.model.pojo.Project;
-import com.zhixinhuixue.armor.model.pojo.Tag;
-import com.zhixinhuixue.armor.service.IZSYProjectService;
+import com.zhixinhuixue.armor.model.dto.response.TagDTO;
 import com.zhixinhuixue.armor.service.IZSYTagService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -23,7 +20,7 @@ import java.util.List;
 public class ZSYTagController extends ZSYController{
 
     @Autowired
-    private IZSYTagService izsyTagService;
+    private IZSYTagService tagService;
 
     /**
      * 获取标签列表
@@ -32,8 +29,8 @@ public class ZSYTagController extends ZSYController{
     @ApiOperation("标签列表")
     @GetMapping(value = "/list")
     public String getTag(){
-        List<Tag> tag = izsyTagService.getTag();
-        return ZSYResult.success().data(tag).build();
+        List<TagDTO> tagDTOS = tagService.getTag();
+        return ZSYResult.success().data(tagDTOS).build();
     }
     /**
      * 添加标签
@@ -42,7 +39,7 @@ public class ZSYTagController extends ZSYController{
     @ApiOperation("添加标签")
     @PostMapping(value = "/add")
     public String addTag(@RequestParam String name){
-        izsyTagService.addTag(name);
+        tagService.addTag(name);
         return ZSYResult.success().build();
     }
 
@@ -51,9 +48,9 @@ public class ZSYTagController extends ZSYController{
      * @return
      */
     @ApiOperation("删除标签")
-    @DeleteMapping(value = "/delete")
+    @DeleteMapping(value = "/{id}")
     public String deleteTag(@RequestParam String id){
-        izsyTagService.deleteTag(id);
+        tagService.deleteTag(id);
         return ZSYResult.success().build();
     }
 

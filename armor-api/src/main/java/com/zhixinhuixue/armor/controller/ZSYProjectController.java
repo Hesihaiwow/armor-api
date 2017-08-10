@@ -2,7 +2,7 @@ package com.zhixinhuixue.armor.controller;
 
 
 import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
-import com.zhixinhuixue.armor.model.pojo.Project;
+import com.zhixinhuixue.armor.model.dto.response.ProjectDTO;
 import com.zhixinhuixue.armor.service.IZSYProjectService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -30,24 +31,18 @@ public class ZSYProjectController extends ZSYController{
     @ApiOperation("项目列表")
     @GetMapping(value = "/list")
     public String getProject(){
-        List<Project> project = projectService.getProject();
-        return ZSYResult.success().data(project).build();
+        List<ProjectDTO> projectDTOS = projectService.getProject();
+        return ZSYResult.success().data(projectDTOS).build();
     }
     /**
      * 添加项目
      * @return
      */
-    @ApiOperation("添加项目")
     @PostMapping(value = "/add")
-    public String putProject(@RequestBody ProjectReqDTO project){
+    public String putProject(@Valid @RequestBody ProjectReqDTO project){
         projectService.addProject(project);
         return ZSYResult.success().build();
     }
-
-
-
-
-
 
 
 }

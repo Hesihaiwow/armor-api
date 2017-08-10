@@ -28,6 +28,13 @@ public interface IZSYTaskUserMapper {
     TaskUser selectByPrimaryKey(Long id);
 
     /**
+     * 根据主键修改
+     * @param record
+     * @return
+     */
+    int updateByPrimaryKeySelective(TaskUser record);
+
+    /**
      * 批量插入taskUser
      * @param taskUserList
      * @return

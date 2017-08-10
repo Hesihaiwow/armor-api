@@ -1,8 +1,12 @@
-package com.zhixinhuixue.armor.model.pojo;
+package com.zhixinhuixue.armor.model.dto.response;
 
 import java.util.Date;
+import java.util.List;
 
-public class TaskUser {
+/**
+ * Created by Tate on 2017/8/10.
+ */
+public class TaskUserResDTO{
 
     private Long id;
 
@@ -27,6 +31,45 @@ public class TaskUser {
     private Integer status;
 
     private Date createTime;
+
+    /**
+     * 阶段名称
+     */
+    private String stageName;
+
+    /**
+     * 负责人
+     */
+    private String userName;
+
+    /**
+     * 评论
+     */
+    private List<TaskCommentResDTO> comments;
+
+    public String getStageName() {
+        return stageName;
+    }
+
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public List<TaskCommentResDTO> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<TaskCommentResDTO> comments) {
+        this.comments = comments;
+    }
 
     public Long getId() {
         return id;
@@ -89,15 +132,7 @@ public class TaskUser {
     }
 
     public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+        this.description = description;
     }
 
     public Integer getCompleteHours() {
@@ -122,5 +157,13 @@ public class TaskUser {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }
