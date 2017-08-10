@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.pojo.User;
 import org.apache.ibatis.annotations.Param;
 
@@ -56,4 +58,10 @@ public interface IZSYUserMapper {
      */
     int updateSelectiveById(User user);
 
+    /**
+     * 用户分页查询
+     * @param deptId 部门ID
+     * @return
+     */
+    Page<UserBo> selectPage(Long deptId);
 }

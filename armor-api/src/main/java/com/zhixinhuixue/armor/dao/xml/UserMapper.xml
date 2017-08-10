@@ -17,10 +17,10 @@
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
   </resultMap>
 
-  <sql id="Base_Column_List">
-    id, name, account, password, phone, last_login, department_id, job_name, integral, 
-    status, create_time, is_delete
-  </sql>
+  <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.UserBo" extends="BaseResultMap">
+    <association property="department" column="department_id" javaType="com.zhixinhuixue.armor.model.pojo.Department"
+                 select="com.zhixinhuixue.armor.dao.IZSYDepartmentMapper.selectById"/>
+  </resultMap>
 
   <!-- 添加用户 -->
   <insert id="insertUser" parameterType="com.zhixinhuixue.armor.model.pojo.User">
@@ -102,4 +102,10 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+  <!-- 用户列表(分页) -->
+  <select id="selectPage" parameterType="java.lang.Long" resultMap="PageResultMap">
+    SELECT * FROM `user`
+    WHERE is_delete = 0 AND department_id = #{deptId}
+    ORDER BY `status` ASC,create_time ASC
+  </select>
 </mapper>

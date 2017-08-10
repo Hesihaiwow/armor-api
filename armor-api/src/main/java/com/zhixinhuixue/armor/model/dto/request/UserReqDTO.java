@@ -10,6 +10,8 @@ import javax.validation.constraints.Size;
  */
 public class UserReqDTO {
 
+    private Long userId;
+
     @Size(min = 1,max = 20,message = "用户名称长度在{min}~{max}之间")
     @NotNull(message = "用户名称不能为空")
     private String name;
@@ -27,6 +29,14 @@ public class UserReqDTO {
     @Size(min = 1,max = 15,message = "用户职位字符长度在{min}~{max}之间")
     @NotNull(message = "用户职位不能为空")
     private String jobName;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getName() {
         return name;
