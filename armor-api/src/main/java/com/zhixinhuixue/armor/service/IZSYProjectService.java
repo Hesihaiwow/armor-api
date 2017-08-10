@@ -3,7 +3,7 @@ package com.zhixinhuixue.armor.service;
 
 
 import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
-import com.zhixinhuixue.armor.model.pojo.Project;
+import com.zhixinhuixue.armor.model.dto.response.ProjectDTO;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface IZSYProjectService {
      * 获取项目列表
      * @return
      */
-    List<Project> getProject();
+    List<ProjectDTO> getProject();
 
     /**
      * 添加项目

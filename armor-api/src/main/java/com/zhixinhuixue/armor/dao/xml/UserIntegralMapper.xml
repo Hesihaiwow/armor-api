@@ -9,27 +9,51 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
 
-  <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.bo.UserIntegralNameBO" extends="BaseResultMap">
-      <id column="id" jdbcType="BIGINT" property="id" />
+  <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO" extends="BaseResultMap">
       <result column="name" jdbcType="VARCHAR" property="name" />
   </resultMap>
   <sql id="Base_Column_List">
     id, task_id, user_id, integral, create_time
   </sql>
   <!--查询查询积分列表 通过时间倒序排列-->
-  <select id="findIntegral"  resultMap="BaseMap">
-    SELECT i.*,u.name
-    FROM user_integral i,user u
+  <select id="getIntegralPage" parameterType="String"  resultMap="BaseMap">
+    SELECT sum(i.integral) as integral,u.name
+    FROM user_integral i,`user` u
     <where>
-      i.create_time &gt; #{startTime,jdbcType=TIMESTAMP}
-      <if test="endTime!=null">
-        AND i.create_time &gt; #{startTime,jdbcType=TIMESTAMP}
+      i.user_id = u.id
+      <if test="startTime!=null">
+      <![CDATA[AND i.create_time > FROM_UNIXTIME(#{startTime,jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i:%s')]]>
       </if>
-        AND i.user_id = u.id
+      <if test="endTime!=null">
+        <![CDATA[AND i.create_time < FROM_UNIXTIME(#{endTime,jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i:%s')]]>
+      </if>
     </where>
-      ORDER BY create_time DESC
+      GROUP BY i.user_id
+      ORDER BY i.create_time DESC
   </select>
-
+  <!--查询积分-->
+  <select id="getUserIntegral" parameterType="String"  resultType="java.lang.Integer">
+    SELECT sum(integral)  FROM user_integral
+    <where>
+      user_id = #{id,jdbcType=BIGINT}
+        <![CDATA[AND create_time > #{startTime,jdbcType=TIMESTAMP}
+                  AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
+    </where>
+  </select>
+  <!--查询排名-->
+  <select id="getRank" resultType="java.lang.Integer">
+    SELECT b.rownum
+        FROM (
+            SELECT  a.user_id,a.sums,@rownum := @rownum + 1 AS num_tmp,@incrnum := CASE
+            WHEN @rowtotal = a.sums THEN @incrnum
+            WHEN @rowtotal := a.sums THEN @rownum
+            END AS rownum FROM (
+                    SELECT *,SUM(integral) as sums FROM user_integral
+                    WHERE create_time&gt;#{startTime,jdbcType=TIMESTAMP} AND create_time &lt;#{endTime,jdbcType=TIMESTAMP}
+                    GROUP By user_id ORDER BY sums desc) AS a,
+                    (SELECT  @rownum := 0 ,@rowtotal := NULL ,@incrnum := 0) r) AS b
+      WHERE b.user_id=#{userId,jdbcType=BIGINT}
+  </select>
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserIntegral">
     insert into user_integral (id, task_id, user_id,
     integral, create_time)

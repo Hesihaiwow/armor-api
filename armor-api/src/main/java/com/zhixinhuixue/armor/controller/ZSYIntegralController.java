@@ -1,22 +1,24 @@
 package com.zhixinhuixue.armor.controller;
 
-import com.zhixinhuixue.armor.helper.DateHelper;
-import com.zhixinhuixue.armor.helper.PageProxy;
+import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.dto.response.IntegralPageDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserIntegralDTO;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Lang on 2017/8/7 0007.
  */
+@Api(value = "积分信息",description="积分列表与相关信息接口",tags = "/integral")
+@RequestMapping("/integral")
 @RestController
 public class ZSYIntegralController extends ZSYController{
 
@@ -29,18 +31,29 @@ public class ZSYIntegralController extends ZSYController{
      * @return
      */
     @ApiOperation("获取积分列表")
-    @GetMapping("/integral/{startTime}/{endTime}/{pageIndex}")
-    public String getIntegral(@ApiParam(value = "开始结束时间,类型:时间戳", required = true)@PathVariable String startTime, @PathVariable String endTime, @PathVariable int pageIndex){
-        Map<String, Object> map = new HashMap<>();
-        map.put("pageIndex", pageIndex);
-        PageProxy ds = new PageProxy<>(integraService, getRequest(), map);
-        IZSYIntegralService integral = (IZSYIntegralService) ds.proxyInstance();
-        if(endTime!="0"){
-            integral.findIntegral(DateHelper.TimestampToDate(startTime), DateHelper.TimestampToDate(endTime));
-        }else{
-            integral.findIntegral(DateHelper.TimestampToDate(startTime), null);
-        }
-        return ZSYResult.success().data(map).build();
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "startTime",value = "开始时间",required = false,paramType = "query",dataType = "String"),
+            @ApiImplicitParam(name = "endTime",value = "结束时间",required = false,paramType = "query",dataType = "String"),
+            @ApiImplicitParam(name = "pageIndex",value = "页码",required = true,paramType = "path",dataType = "int")
+    })
+    @GetMapping("/{pageIndex}")
+    public String getIntegralPage(@PathVariable int pageIndex,HttpServletRequest request){
+        String startTime = request.getParameter("startTime");
+        String endTime = request.getParameter("endTime");
+        PageInfo<IntegralPageDTO> pageInfo = integraService.getIntegralPage(pageIndex,startTime,endTime);
+        return ZSYResult.success().data(pageInfo).build();
+    }
+
+    /**
+     * 用户积分记录
+     * @return
+     */
+    @ApiOperation("获取用户积分记录")
+    @GetMapping("/user")
+    public String getUserIntegral(){
+        UserIntegralDTO userIntegralDTO = new UserIntegralDTO();
+        userIntegralDTO = integraService.getUserIntegral();
+        return ZSYResult.success().data(userIntegralDTO).build();
     }
 
 }

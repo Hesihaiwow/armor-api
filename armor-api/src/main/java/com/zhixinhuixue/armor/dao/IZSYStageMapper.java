@@ -14,7 +14,7 @@ public interface IZSYStageMapper {
 
     /**
      * 添加阶段
-     * @param record
+     * @param record 阶段记录
      * @return
      */
     int insert(Stage record);
@@ -25,6 +25,13 @@ public interface IZSYStageMapper {
      * @return
      */
     int deleteStage(long id);
+
+    /**
+     * 验证阶段名
+     * @param name
+     * @return
+     */
+    int validateStage(String name);
 
 
 }
