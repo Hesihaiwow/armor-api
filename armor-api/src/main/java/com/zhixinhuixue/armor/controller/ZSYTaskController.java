@@ -73,7 +73,7 @@ public class ZSYTaskController extends ZSYController {
 
     @ApiOperation("获取用户已完成的任务")
     @GetMapping(value = "/finished")
-    public String getClosedTask() {
+    public String getFinishedTask() {
         return taskService.getTaskByStatus(ZSYTaskStatus.FINISHED.getValue(),
                 ZSYReviewStatus.ACCEPT.getValue()).build();
     }
