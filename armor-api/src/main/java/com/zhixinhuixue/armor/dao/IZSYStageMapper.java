@@ -17,7 +17,7 @@ public interface IZSYStageMapper {
      * @param record 阶段记录
      * @return
      */
-    void insert(Stage record);
+    int insert(Stage record);
 
     /**
      * 删除阶段
