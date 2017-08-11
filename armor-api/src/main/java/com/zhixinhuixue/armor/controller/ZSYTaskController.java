@@ -71,10 +71,17 @@ public class ZSYTaskController extends ZSYController {
                 ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 
-    @ApiOperation("获取用户已完成的任务")
-    @GetMapping(value = "/finished")
-    public String getFinishedTask() {
-        return taskService.getTaskByStatus(ZSYTaskStatus.FINISHED.getValue(),
+    @ApiOperation("获取用户已完成待评价的任务")
+    @GetMapping(value = "/completed")
+    public String getCompletedTask() {
+        return taskService.getTaskByStatus(ZSYTaskStatus.COMPLETED.getValue(),
                 ZSYReviewStatus.ACCEPT.getValue()).build();
     }
+
+    @ApiOperation("获取用户已完成已评价的任务")
+    @GetMapping(value = "/finished")
+    public String getFinishedTask() {
+        return taskService.getFinishedTask().build();
+    }
+
 }

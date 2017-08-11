@@ -59,4 +59,11 @@ public interface IZSYTaskService {
      * @return
      */
     ZSYResult<List<TaskResDTO>> getTaskByStatus(Integer status, Integer reviewStatus);
+
+    /**
+     * 获取已完成&已评价的任务，包含积分
+     *
+     * @return
+     */
+    ZSYResult<List<TaskResDTO>> getFinishedTask();
 }

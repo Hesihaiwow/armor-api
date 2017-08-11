@@ -26,6 +26,11 @@
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
     </resultMap>
 
+    <resultMap id="TaskFinishedResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
+        <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <association property="userIntegral" column="{taskId=task_id,userId=user_id}" select="selectUserIntegral" javaType="java.lang.Integer" />
+    </resultMap>
+
     <!-- 任务详情Map -->
     <resultMap id="TaskDetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskDetailBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
@@ -52,6 +57,20 @@
         left join project t3 on t1.project_id = t3.id
         where t1.`status` = #{status} and t1.review_status = #{reviewStatus}
         and t2.user_id = #{userId}
+    </select>
+
+    <!-- 查询已结束的任务，包含评价 -->
+    <select id="selectFinishedTask" resultMap="TaskFinishedResultMap" parameterType="java.lang.Long">
+     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName from task t1
+            join task_user t2 on t1.id = t2.task_id
+            left join project t3 on t1.project_id = t3.id
+            where t1.`status` = 3 and t1.review_status = 3
+            and t2.user_id = #{userId}
+    </select>
+
+    <!-- 查询用户完成任务后的积分 -->
+    <select id="selectUserIntegral" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select sum(integral) from user_integral where task_id = #{taskId} and user_id = #{userId}
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
