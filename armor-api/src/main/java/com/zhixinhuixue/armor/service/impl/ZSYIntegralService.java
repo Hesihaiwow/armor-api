@@ -34,9 +34,7 @@ public class ZSYIntegralService implements IZSYIntegralService{
         BeanUtils.copyProperties(userIntegralInfoBOS,page);
         userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
             IntegralPageDTO integralPageDTO = new IntegralPageDTO();
-            BeanUtils.copyProperties(userIntegralInfoBOS,integralPageDTO);
-            integralPageDTO.setIntegral(userIntegralInfoBO.getIntegral());
-            integralPageDTO.setName(userIntegralInfoBO.getName());
+            BeanUtils.copyProperties(userIntegralInfoBO,integralPageDTO);
             page.add(integralPageDTO);
         });
         PageInfo<IntegralPageDTO> pageInfo = new PageInfo<>(page);
@@ -45,7 +43,7 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     @Override
     public UserIntegralDTO getUserIntegral(){
-        long id = ZSYTokenRequestContext.get().getUserId();
+        Long id = ZSYTokenRequestContext.get().getUserId();
         UserIntegralDTO userIntegralDTO = new UserIntegralDTO();
         userIntegralDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(),DateHelper.getThisWeekLastDay(),id));
         userIntegralDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(),DateHelper.getThisMonthLastDay(),id));

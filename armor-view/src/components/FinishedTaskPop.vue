@@ -18,7 +18,7 @@
           </el-date-picker>
         </div>
       </div>  
-      <div class="ftp-btns">
+      <div class="ctpc-btns">
         <input type="button" class="ctpc-cancel" value="取消">
         <input type="button" class="ctpc-save" value="保存">
       </div>
@@ -50,20 +50,24 @@
 </script>
 <style scoped>
 .finished-task-pop{position: fixed;top: 0;left: 0;bottom: 0;right: 0;z-index: 100;background: rgba(0,0,0,0.5);}
-.finished-task-pop-con{position: absolute;background: #F2F2F2;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;height: 196px;}
+.finished-task-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;height: 196px;box-shadow: 0 0 10px #fff;}
+.ctpc-top{font-size: 16px;line-height: 30px;font-weight: 700;color: #333;margin-bottom: 10px;}
+.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 22px;cursor: pointer;transition:0.8s ease all;text-align: center;}
+.ctpc-top-close:hover{color:#36A8FF;transform:rotate(360deg);}
 .ftp-list{margin: 20px 0;font-size: 14px;}
 .ftp-menus{width: 90px;text-align: right;margin-right: 16px;line-height: 30px;}
-.actual-expend-time{width: 200px;height: 30px;border: 1px solid #bfcbd9;border-radius: 4px;text-indent: 6px;}
+.actual-expend-time{width: 200px;height: 30px;border: 1px solid #bfcbd9;border-radius: 4px;text-indent: 6px;box-shadow: 0 0 10px #ccc;}
 .star-warn{color: red;font-size: 18px;margin: 0 6px;}
-.ftp-btns{text-align: right;}
-.ftp-btns > input{display: inline-block;width: 80px;height: 24px;margin-left: 12px;cursor: pointer;}
-.ctpc-cancel{}
+
+.ctpc-btns{text-align: right;}
+.ctpc-btns > input{display: inline-block;width: 80px;height: 28px;margin-left: 12px;cursor: pointer;border-radius: 4px;}
+.ctpc-cancel{background: #fff;border: 1px solid #ccc;}
+.ctpc-cancel:hover{background: #fff;border: 1px solid #36A8FF;color: #36A8FF;font-weight: 700;}
 .ctpc-save{background: #36A8FF;color: #fff;}
 
-
-
-
-
+.ftp-msg .el-date-editor.el-input{
+  width: 200px;box-shadow: 0 0 10px #ccc;
+}
 
 
 

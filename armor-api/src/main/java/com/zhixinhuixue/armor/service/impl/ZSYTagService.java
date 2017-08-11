@@ -39,9 +39,7 @@ public class ZSYTagService implements IZSYTagService {
 
         tags.stream().forEach(tag -> {
             TagDTO stageDTO = new TagDTO();
-            BeanUtils.copyProperties(tags,stageDTO);
-            stageDTO.setName(tag.getName());
-            stageDTO.setId(tag.getId());
+            BeanUtils.copyProperties(tag,stageDTO);
             tagDTOS.add(stageDTO);
         });
 
@@ -53,10 +51,10 @@ public class ZSYTagService implements IZSYTagService {
      * @param name
      */
     @Override
-    public void addTag(String name){
+    public Long addTag(String name){
         if(tagMapper.validateTag(name.replace(" ", ""))>0){
             throw new ZSYServiceException("标签名称已存在");
-        }else{
+        }
             Tag tag = new Tag();
             tag.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             tag.setCreateTime(new Date());
@@ -69,7 +67,7 @@ public class ZSYTagService implements IZSYTagService {
             }
             tag.setName(name);
             tagMapper.insert(tag);
-        }
+            return tag.getId();
     }
 
     /**
@@ -77,8 +75,8 @@ public class ZSYTagService implements IZSYTagService {
      * @param id
      */
     @Override
-    public void deleteTag(String id){
-        if(tagMapper.deleteTag(new Long(id))==0){
+    public void deleteTag(Long id){
+        if(tagMapper.deleteTag(id)==0){
             throw new ZSYServiceException("删除失败");
         }
     }

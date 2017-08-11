@@ -39,8 +39,8 @@ public class ZSYTagController extends ZSYController{
     @ApiOperation("添加标签")
     @PostMapping(value = "/add")
     public String addTag(@RequestParam String name){
-        tagService.addTag(name);
-        return ZSYResult.success().build();
+        Long id = tagService.addTag(name);
+        return ZSYResult.success().data(id).build();
     }
 
     /**
@@ -49,7 +49,7 @@ public class ZSYTagController extends ZSYController{
      */
     @ApiOperation("删除标签")
     @DeleteMapping(value = "/{id}")
-    public String deleteTag(@RequestParam String id){
+    public String deleteTag(@PathVariable Long id){
         tagService.deleteTag(id);
         return ZSYResult.success().build();
     }

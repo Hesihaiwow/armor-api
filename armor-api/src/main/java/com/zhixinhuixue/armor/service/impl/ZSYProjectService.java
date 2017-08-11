@@ -39,10 +39,7 @@ public class ZSYProjectService implements IZSYProjectService{
 
         projects.stream().forEach(project -> {
             ProjectDTO projectDTO = new ProjectDTO();
-            BeanUtils.copyProperties(projects,projectDTO);
-            projectDTO.setDescription(project.getDescription());
-            projectDTO.setName(project.getName());
-            projectDTO.setId(project.getId());
+            BeanUtils.copyProperties(project,projectDTO);
             projectDTOS.add(projectDTO);
         });
         return projectDTOS;
@@ -55,9 +52,9 @@ public class ZSYProjectService implements IZSYProjectService{
     @Override
     public void addProject(ProjectReqDTO projectReqDTO){
         String name = projectReqDTO.getName();
-        if(projectMapper.validateProject(name.trim())>0){
+        if(projectMapper.validateProject(name.trim())>0) {
             throw new ZSYServiceException("项目名称已存在");
-        }else{
+        }
             Project project = new Project();
             project.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             project.setCreateTime(new Date());
@@ -65,6 +62,6 @@ public class ZSYProjectService implements IZSYProjectService{
             project.setDescription(projectReqDTO.getDescription());
             project.setName(projectReqDTO.getName());
             projectMapper.insert(project);
-        }
+
     }
 }

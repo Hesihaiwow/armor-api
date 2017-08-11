@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 
 /**
  * Created by Lang on 2017/8/7 0007.
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 public class ZSYIntegralController extends ZSYController{
 
     @Autowired
-    private IZSYIntegralService integraService;
+    private IZSYIntegralService integralService;
 
 
     /**
@@ -32,15 +32,13 @@ public class ZSYIntegralController extends ZSYController{
      */
     @ApiOperation("获取积分列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "startTime",value = "开始时间",required = false,paramType = "query",dataType = "String"),
-            @ApiImplicitParam(name = "endTime",value = "结束时间",required = false,paramType = "query",dataType = "String"),
+            @ApiImplicitParam(name = "startTime",value = "开始时间",required = false,paramType = "query",dataType = "string"),
+            @ApiImplicitParam(name = "endTime",value = "结束时间",required = false,paramType = "query",dataType = "string"),
             @ApiImplicitParam(name = "pageIndex",value = "页码",required = true,paramType = "path",dataType = "int")
     })
     @GetMapping("/{pageIndex}")
-    public String getIntegralPage(@PathVariable int pageIndex,HttpServletRequest request){
-        String startTime = request.getParameter("startTime");
-        String endTime = request.getParameter("endTime");
-        PageInfo<IntegralPageDTO> pageInfo = integraService.getIntegralPage(pageIndex,startTime,endTime);
+    public String getIntegralPage(@PathVariable Integer pageIndex,@PathParam("startTime")String startTime,@PathParam("endTime")String endTime){
+        PageInfo<IntegralPageDTO> pageInfo = integralService.getIntegralPage(pageIndex,startTime,endTime);
         return ZSYResult.success().data(pageInfo).build();
     }
 
@@ -51,8 +49,7 @@ public class ZSYIntegralController extends ZSYController{
     @ApiOperation("获取用户积分记录")
     @GetMapping("/user")
     public String getUserIntegral(){
-        UserIntegralDTO userIntegralDTO = new UserIntegralDTO();
-        userIntegralDTO = integraService.getUserIntegral();
+        UserIntegralDTO userIntegralDTO = integralService.getUserIntegral();
         return ZSYResult.success().data(userIntegralDTO).build();
     }
 
