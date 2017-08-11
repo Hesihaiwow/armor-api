@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 
 /**
@@ -38,7 +37,7 @@ public class ZSYIntegralController extends ZSYController{
             @ApiImplicitParam(name = "pageIndex",value = "页码",required = true,paramType = "path",dataType = "int")
     })
     @GetMapping("/{pageIndex}")
-    public String getIntegralPage(@PathVariable int pageIndex,@PathParam("startTime")String startTime,@PathParam("endTime")String endTime){
+    public String getIntegralPage(@PathVariable Integer pageIndex,@PathParam("startTime")String startTime,@PathParam("endTime")String endTime){
         PageInfo<IntegralPageDTO> pageInfo = integralService.getIntegralPage(pageIndex,startTime,endTime);
         return ZSYResult.success().data(pageInfo).build();
     }

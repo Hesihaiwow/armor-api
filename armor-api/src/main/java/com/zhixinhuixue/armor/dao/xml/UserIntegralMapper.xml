@@ -16,16 +16,16 @@
     id, task_id, user_id, integral, create_time
   </sql>
   <!--查询查询积分列表 通过时间倒序排列-->
-  <select id="getIntegralPage" parameterType="String"  resultMap="BaseMap">
-    SELECT sum(i.integral) as integral,u.name
+  <select id="getIntegralPage" parameterType="Map"  resultMap="BaseMap">
+    SELECT sum(i.integral) as integral, u.name
     FROM user_integral i,`user` u
     <where>
       i.user_id = u.id
-      <if test="startTime!=null">
-      <![CDATA[AND i.create_time > FROM_UNIXTIME(#{startTime,jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i:%s')]]>
+      <if test="startTime!=null and startTime!=''">
+      <![CDATA[AND i.create_time >= #{startTime}]]>
       </if>
-      <if test="endTime!=null">
-        <![CDATA[AND i.create_time < FROM_UNIXTIME(#{endTime,jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i:%s')]]>
+      <if test="endTime!=null and endTime!=''" >
+        <![CDATA[AND i.create_time <#{endTime}]]>
       </if>
     </where>
       GROUP BY i.user_id
@@ -33,7 +33,7 @@
   </select>
   <!--查询个人时段积分-->
   <select id="getUserIntegral" parameterType="String"  resultType="java.lang.Integer">
-    SELECT sum(integral)  FROM user_integral
+    SELECT  sum(integral)  FROM user_integral
     <where>
       user_id = #{id,jdbcType=BIGINT}
         <![CDATA[AND create_time > #{startTime,jdbcType=TIMESTAMP}
@@ -44,11 +44,11 @@
   <select id="getRank" resultType="java.lang.Integer">
     SELECT b.rownum
         FROM (
-            SELECT  a.user_id,a.sums,@rownum := @rownum + 1 AS num_tmp,@incrnum := CASE
+            SELECT  a.user_id,a.sums, @rownum := @rownum + 1 AS num_tmp, @incrnum := CASE
             WHEN @rowtotal = a.sums THEN @incrnum
             WHEN @rowtotal := a.sums THEN @rownum
             END AS rownum FROM (
-                    SELECT *,SUM(integral) as sums FROM user_integral
+                    SELECT *, SUM(integral) as sums FROM user_integral
                      <![CDATA[ WHERE create_time > #{startTime,jdbcType=TIMESTAMP} AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
                     GROUP By user_id ORDER BY sums desc) AS a,
                     (SELECT  @rownum := 0 ,@rowtotal := NULL ,@incrnum := 0) r) AS b
