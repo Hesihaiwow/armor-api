@@ -27,6 +27,6 @@ public interface IZSYTagService {
      * 删除标签
      * @param id
      */
-    void deleteTag(String id);
+    void deleteTag(long id);
 
 }

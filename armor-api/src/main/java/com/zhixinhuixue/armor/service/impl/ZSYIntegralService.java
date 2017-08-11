@@ -34,7 +34,7 @@ public class ZSYIntegralService implements IZSYIntegralService{
         BeanUtils.copyProperties(userIntegralInfoBOS,page);
         userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
             IntegralPageDTO integralPageDTO = new IntegralPageDTO();
-            BeanUtils.copyProperties(userIntegralInfoBOS,integralPageDTO);
+            BeanUtils.copyProperties(userIntegralInfoBO,integralPageDTO);
             integralPageDTO.setIntegral(userIntegralInfoBO.getIntegral());
             integralPageDTO.setName(userIntegralInfoBO.getName());
             page.add(integralPageDTO);

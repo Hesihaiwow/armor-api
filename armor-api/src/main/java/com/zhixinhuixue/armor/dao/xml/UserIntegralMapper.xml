@@ -49,7 +49,7 @@
             WHEN @rowtotal := a.sums THEN @rownum
             END AS rownum FROM (
                     SELECT *,SUM(integral) as sums FROM user_integral
-                    WHERE create_time&gt;#{startTime,jdbcType=TIMESTAMP} AND create_time &lt;#{endTime,jdbcType=TIMESTAMP}
+                     <![CDATA[ WHERE create_time > #{startTime,jdbcType=TIMESTAMP} AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
                     GROUP By user_id ORDER BY sums desc) AS a,
                     (SELECT  @rownum := 0 ,@rowtotal := NULL ,@incrnum := 0) r) AS b
       WHERE b.user_id=#{userId,jdbcType=BIGINT}

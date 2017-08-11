@@ -28,6 +28,6 @@ public interface IZSYStageService {
      * 删除阶段
      * @param id
      */
-    void deleteStage(String id);
+    void deleteStage(long id);
 
 }

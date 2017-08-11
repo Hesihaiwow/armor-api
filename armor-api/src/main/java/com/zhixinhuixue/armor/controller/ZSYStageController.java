@@ -53,7 +53,7 @@ public class ZSYStageController extends ZSYController {
      */
     @ApiOperation("删除阶段")
     @DeleteMapping(value = "/{stageId}")
-    public String deleteStage(@PathVariable String stageId) {
+    public String deleteStage(@PathVariable long stageId) {
         stageService.deleteStage(stageId);
         return ZSYResult.success().build();
     }

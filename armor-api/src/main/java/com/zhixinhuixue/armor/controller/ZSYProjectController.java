@@ -38,6 +38,7 @@ public class ZSYProjectController extends ZSYController{
      * 添加项目
      * @return
      */
+    @ApiOperation("添加项目")
     @PostMapping(value = "/add")
     public String putProject(@Valid @RequestBody ProjectReqDTO project){
         projectService.addProject(project);
