@@ -35,6 +35,10 @@ public class TaskResDTO {
 
     private Long createBy;
 
+    private Integer userIntegral;
+
+    private String integralGrade;
+
     public Long getId() {
         return id;
     }
@@ -145,5 +149,21 @@ public class TaskResDTO {
 
     public void setCreateBy(Long createBy) {
         this.createBy = createBy;
+    }
+
+    public Integer getUserIntegral() {
+        return userIntegral;
+    }
+
+    public void setUserIntegral(Integer userIntegral) {
+        this.userIntegral = userIntegral;
+    }
+
+    public String getIntegralGrade() {
+        return integralGrade;
+    }
+
+    public void setIntegralGrade(String integralGrade) {
+        this.integralGrade = integralGrade;
     }
 }

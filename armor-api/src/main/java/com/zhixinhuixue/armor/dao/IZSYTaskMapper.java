@@ -3,7 +3,6 @@ package com.zhixinhuixue.armor.dao;
 import com.zhixinhuixue.armor.model.bo.TaskBO;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.pojo.Task;
-import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -61,5 +60,11 @@ public interface IZSYTaskMapper {
     List<TaskBO> selectTaskByStatus(@Param("status") Integer status,
                                     @Param("reviewStatus")Integer reviewStatus,
                                     @Param("userId")Long userId);
+
+    /**
+     * 查询已结束的任务，包含评价
+     * @return
+     */
+    List<TaskBO> selectFinishedTask(Long userId);
 
 }

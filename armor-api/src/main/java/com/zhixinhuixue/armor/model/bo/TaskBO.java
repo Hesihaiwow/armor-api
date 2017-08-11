@@ -11,6 +11,19 @@ public class TaskBO extends Task{
      */
     private String projectName;
 
+    /**
+     * 用户积分
+     */
+    private Integer userIntegral;
+
+    public Integer getUserIntegral() {
+        return userIntegral;
+    }
+
+    public void setUserIntegral(Integer userIntegral) {
+        this.userIntegral = userIntegral;
+    }
+
     public String getProjectName() {
         return projectName;
     }
@@ -18,4 +31,5 @@ public class TaskBO extends Task{
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
+
 }

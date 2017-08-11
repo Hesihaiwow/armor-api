@@ -37,9 +37,7 @@ public class ZSYStageService implements IZSYStageService {
         List<StageDTO> stageDTOS = new ArrayList<>();
         stags.stream().forEach(stage -> {
             StageDTO stageDTO = new StageDTO();
-            BeanUtils.copyProperties(stags,stageDTO);
-            stageDTO.setName(stage.getName());
-            stageDTO.setId(stage.getId());
+            BeanUtils.copyProperties(stage,stageDTO);
             stageDTOS.add(stageDTO);
         });
         return stageDTOS;
@@ -50,17 +48,17 @@ public class ZSYStageService implements IZSYStageService {
      * @param name
      */
     @Override
-    public void addStage(String name){
+    public Long addStage(String name){
         if(stageMapper.validateStage(name.replace(" ", ""))>0){
             throw new ZSYServiceException("阶段名称已存在");
-        }else{
+        }
             Stage stage = new Stage();
             stage.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             stage.setCreateTime(new Date());
             stage.setId(snowFlakeIDHelper.nextId());
             stage.setName(name);
             stageMapper.insert(stage);
-        }
+            return stage.getId();
     }
 
     /**
@@ -68,8 +66,8 @@ public class ZSYStageService implements IZSYStageService {
      * @param id
      */
     @Override
-    public void deleteStage(String id){
-        if(stageMapper.deleteStage(new Long(id))==0){
+    public void deleteStage(Long id){
+        if(stageMapper.deleteStage(id)==0){
             throw new ZSYServiceException("删除失败");
         }
     }

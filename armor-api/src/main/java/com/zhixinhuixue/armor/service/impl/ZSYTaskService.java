@@ -12,6 +12,7 @@ import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
+import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
@@ -30,6 +31,7 @@ import java.util.Optional;
 /**
  * Created by Tate on 2017/8/7.
  */
+@SuppressWarnings("Duplicates")
 @Service
 public class ZSYTaskService implements IZSYTaskService {
 
@@ -349,6 +351,25 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public ZSYResult<List<TaskResDTO>> getTaskByStatus(Integer status, Integer reviewStatus) {
         List<TaskBO> taskBOS = taskMapper.selectTaskByStatus(status, reviewStatus, ZSYTokenRequestContext.get().getUserId());
+        List<TaskResDTO> taskList = new ArrayList<>();
+        if (taskBOS != null && taskBOS.size() >= 0) {
+            taskBOS.stream().forEach(taskBO -> {
+                TaskResDTO taskResDTO = new TaskResDTO();
+                BeanUtils.copyProperties(taskBO, taskResDTO);
+                taskList.add(taskResDTO);
+            });
+        }
+        return ZSYResult.success().data(taskList);
+    }
+
+    /**
+     * 获取已完成&已评价的任务，包含积分
+     *
+     * @return
+     */
+    @Override
+    public ZSYResult<List<TaskResDTO>> getFinishedTask() {
+        List<TaskBO> taskBOS = taskMapper.selectFinishedTask(ZSYTokenRequestContext.get().getUserId());
         List<TaskResDTO> taskList = new ArrayList<>();
         if (taskBOS != null && taskBOS.size() >= 0) {
             taskBOS.stream().forEach(taskBO -> {

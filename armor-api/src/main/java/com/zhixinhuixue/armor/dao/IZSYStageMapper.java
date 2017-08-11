@@ -24,7 +24,7 @@ public interface IZSYStageMapper {
      * @param id
      * @return
      */
-    int deleteStage(long id);
+    int deleteStage(Long id);
 
     /**
      * 验证阶段名
