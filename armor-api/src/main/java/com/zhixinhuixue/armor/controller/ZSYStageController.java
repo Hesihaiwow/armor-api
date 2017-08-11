@@ -42,8 +42,8 @@ public class ZSYStageController extends ZSYController {
     @ApiOperation("添加阶段")
     @PostMapping(value = "/add")
     public String addStage(@RequestParam String name) {
-        stageService.addStage(name);
-        return ZSYResult.success().build();
+        Long id = stageService.addStage(name);
+        return ZSYResult.success().data(id).build();
     }
 
     /**
@@ -53,7 +53,7 @@ public class ZSYStageController extends ZSYController {
      */
     @ApiOperation("删除阶段")
     @DeleteMapping(value = "/{stageId}")
-    public String deleteStage(@PathVariable long stageId) {
+    public String deleteStage(@PathVariable Long stageId) {
         stageService.deleteStage(stageId);
         return ZSYResult.success().build();
     }

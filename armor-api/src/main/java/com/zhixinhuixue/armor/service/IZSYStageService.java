@@ -22,12 +22,12 @@ public interface IZSYStageService {
      * @param name
      * @return
      */
-    void addStage(String name);
+    Long addStage(String name);
 
     /**
      * 删除阶段
      * @param id
      */
-    void deleteStage(long id);
+    void deleteStage(Long id);
 
 }

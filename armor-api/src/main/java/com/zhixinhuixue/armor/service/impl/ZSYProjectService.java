@@ -40,9 +40,6 @@ public class ZSYProjectService implements IZSYProjectService{
         projects.stream().forEach(project -> {
             ProjectDTO projectDTO = new ProjectDTO();
             BeanUtils.copyProperties(project,projectDTO);
-            projectDTO.setDescription(project.getDescription());
-            projectDTO.setName(project.getName());
-            projectDTO.setId(project.getId());
             projectDTOS.add(projectDTO);
         });
         return projectDTOS;

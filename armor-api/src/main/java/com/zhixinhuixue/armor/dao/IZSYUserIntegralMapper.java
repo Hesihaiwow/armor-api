@@ -25,7 +25,7 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    int getUserIntegral(@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("id") long id);
+    int getUserIntegral(@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("id") Long id);
 
     /**
      * 插入用户积分
@@ -42,5 +42,5 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    int getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")long id);
+    int getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id);
 }

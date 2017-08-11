@@ -24,7 +24,7 @@ public interface IZSYTagMapper {
      * @param id
      * @return
      */
-    int deleteTag(long id);
+    int deleteTag(Long id);
 
     /**
      * 标签条数

@@ -17,14 +17,14 @@ public interface IZSYStageMapper {
      * @param record 阶段记录
      * @return
      */
-    int insert(Stage record);
+    void insert(Stage record);
 
     /**
      * 删除阶段
      * @param id
      * @return
      */
-    int deleteStage(long id);
+    int deleteStage(Long id);
 
     /**
      * 验证阶段名

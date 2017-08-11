@@ -21,12 +21,12 @@ public interface IZSYTagService {
      * @param name
      * @return
      */
-    void addTag(String name);
+    Long addTag(String name);
 
     /**
      * 删除标签
      * @param id
      */
-    void deleteTag(long id);
+    void deleteTag(Long id);
 
 }
