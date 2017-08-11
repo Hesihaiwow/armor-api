@@ -6,24 +6,34 @@
     </div>
     <div class="department-member fl">
       <div class="dm-title">成员<span class="add-department" @click="AddMemberShow">+</span></div>
-      <div class="department-member-table">
-        <el-table :data="tableData" stripe style="width: 100%">
-          <el-table-column prop="name" label="姓名" width="100" align="center"></el-table-column>
-          <el-table-column prop="username" label="用户名" width="100" align="center"></el-table-column>
-          <el-table-column prop="job" label="职位" width="100" align="center"></el-table-column>
-          <el-table-column prop="tel" label="手机号" width="116" align="center"></el-table-column>
-          <el-table-column prop="createDate" label="创建日期" width="106" align="center"></el-table-column>
-          <el-table-column prop="lastLogin" label="最后登录" width="106" align="center"></el-table-column>
-          <el-table-column prop="operate" label="操作" align="center">
-            <template scope="scope">
-              <!-- <el-button type="text" size="small" @click.native.prevent="authorityOpt(scope.$index, tableData)">权限</el-button> -->
-              <el-button type="text" size="small" @click.native.prevent="editRow(scope.$index, tableData)">编辑</el-button>
-              <el-button type="text" size="small" @click.native.prevent="resetRow(scope.$index, tableData)">重置密码</el-button>
-              <el-button type="text" size="small" @click.native.prevent="deleteRow(scope.$index, tableData)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+      <div class="white-bg">
+        <div class="department-member-table">
+          <el-table :data="tableData" stripe style="width: 100%">
+            <el-table-column prop="name" label="姓名" width="100" align="center"></el-table-column>
+            <el-table-column prop="username" label="用户名" width="100" align="center"></el-table-column>
+            <el-table-column prop="job" label="职位" width="100" align="center"></el-table-column>
+            <el-table-column prop="tel" label="手机号" width="116" align="center"></el-table-column>
+            <el-table-column prop="createDate" label="创建日期" width="106" align="center"></el-table-column>
+            <el-table-column prop="lastLogin" label="最后登录" width="106" align="center"></el-table-column>
+            <el-table-column prop="operate" label="操作" align="center">
+              <template scope="scope">
+                <!-- <el-button type="text" size="small" @click.native.prevent="authorityOpt(scope.$index, tableData)">权限</el-button> -->
+                <el-button type="text" size="small" @click.native.prevent="editRow(scope.$index, tableData)">编辑</el-button>
+                <el-button type="text" size="small" @click.native.prevent="resetRow(scope.$index, tableData)">重置密码</el-button>
+                <el-button type="text" size="small" @click.native.prevent="deleteRow(scope.$index, tableData)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage1"
+        :page-size="100"
+        layout="total, prev, pager, next"
+        :total="1000">
+      </el-pagination>
     </div>
     <add-member ref="showAddMember" :ftpList="ftpList" @addMemberDetail="newMember"></add-member>
     <add-department ref="showAddDepartment" @addNewDept="newDeptMsg"></add-department>
@@ -94,6 +104,54 @@ import AddDepartment from './AddDepartment'
             lastLogin: '2014-02-02'
           },
           {
+            name: '小花2',
+            username: '122',
+            job: '开发',
+            tel: 18288888888,
+            createDate: '2014-02-02',
+            lastLogin: '2014-02-02'
+          },
+          {
+            name: '小花2',
+            username: '122',
+            job: '开发',
+            tel: 18288888888,
+            createDate: '2014-02-02',
+            lastLogin: '2014-02-02'
+          },
+          {
+            name: '小花2',
+            username: '122',
+            job: '开发',
+            tel: 18288888888,
+            createDate: '2014-02-02',
+            lastLogin: '2014-02-02'
+          },
+          {
+            name: '小花2',
+            username: '122',
+            job: '开发',
+            tel: 18288888888,
+            createDate: '2014-02-02',
+            lastLogin: '2014-02-02'
+          },
+          {
+            name: '小花2',
+            username: '122',
+            job: '开发',
+            tel: 18288888888,
+            createDate: '2014-02-02',
+            lastLogin: '2014-02-02'
+          },
+          {
+            name: '小花2',
+            username: '122',
+            job: '开发',
+            tel: 18288888888,
+            createDate: '2014-02-02',
+            lastLogin: '2014-02-02'
+          },
+          {
             name: '小花3',
             username: '122',
             job: '开发',
@@ -123,7 +181,8 @@ import AddDepartment from './AddDepartment'
         ],
         editStatusIndex: '',
         nowCreateDate: '',
-        newLastLogin: ''
+        newLastLogin: '',
+        currentPage1: 5,
       };
     },
     methods: {
@@ -231,6 +290,12 @@ import AddDepartment from './AddDepartment'
           dptree.label = val.addNewDept;
           this.departmentTree[0].children.push(dptree);
         }
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
       }
     },
     components: {
@@ -241,11 +306,25 @@ import AddDepartment from './AddDepartment'
 </script>
 <style scoped>
 .organization-con{width: 1100px;margin: auto;}
-.department-structure{width: 260px;background: #fff;padding-bottom: 30px;min-height: 500px;}
+.department-structure{width: 260px;background: #fff;padding-bottom: 30px;height: 564px;overflow-y: scroll;}
+.department-structure::-webkit-scrollbar {
+    width: 3px;
+    background-color: #F5F5F5;
+}
+.department-structure::-webkit-scrollbar-thumb {
+    background-color: rgb(255, 255, 255);
+    background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(rgb(54, 168, 255)), color-stop(0.6, rgb(54, 229, 255)), to(rgb(54, 192, 255)));
+    border-radius: 10px;
+}
+.department-structure::-webkit-scrollbar-track {
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);*/
+    background-color: #f5f5f5;
+    border-radius: 10px;
+}
 .ds-title,.dm-title{position: relative;line-height: 34px;background: #36A8FF;color: #fff;font-size: 14px;padding: 0 10px;margin-bottom: 10px;}
 .add-department{position: absolute;display: block;border: 1px solid #fff;width: 22px;height: 22px;border-radius: 50%;text-align: center;line-height: 20px;right: 10px;top: 5px;font-size: 24px;cursor: pointer;}
-.department-member{width: 820px;margin-left: 20px;}
+.department-member{width: 820px;height: 594px;margin-left: 20px;background: #fff;}
 .dm-title{margin-bottom: 0;}
-
+.white-bg{background: #fff;}
 
 </style>

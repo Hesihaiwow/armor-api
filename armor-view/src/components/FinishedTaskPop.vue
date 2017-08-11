@@ -50,13 +50,13 @@
 </script>
 <style scoped>
 .finished-task-pop{position: fixed;top: 0;left: 0;bottom: 0;right: 0;z-index: 100;background: rgba(0,0,0,0.5);}
-.finished-task-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;height: 196px;box-shadow: 0 0 10px #fff;}
+.finished-task-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;height: 196px;}
 .ctpc-top{font-size: 16px;line-height: 30px;font-weight: 700;color: #333;margin-bottom: 10px;}
-.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 22px;cursor: pointer;transition:0.8s ease all;text-align: center;}
+.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 27px;cursor: pointer;transition:0.8s ease all;text-align: center;}
 .ctpc-top-close:hover{color:#36A8FF;transform:rotate(360deg);}
 .ftp-list{margin: 20px 0;font-size: 14px;}
 .ftp-menus{width: 90px;text-align: right;margin-right: 16px;line-height: 30px;}
-.actual-expend-time{width: 200px;height: 30px;border: 1px solid #bfcbd9;border-radius: 4px;text-indent: 6px;box-shadow: 0 0 10px #ccc;}
+.actual-expend-time{width: 200px;height: 30px;border: 1px solid #bfcbd9;border-radius: 4px;text-indent: 6px;}
 .star-warn{color: red;font-size: 18px;margin: 0 6px;}
 
 .ctpc-btns{text-align: right;}
@@ -66,7 +66,7 @@
 .ctpc-save{background: #36A8FF;color: #fff;}
 
 .ftp-msg .el-date-editor.el-input{
-  width: 200px;box-shadow: 0 0 10px #ccc;
+  width: 200px;
 }
 
 

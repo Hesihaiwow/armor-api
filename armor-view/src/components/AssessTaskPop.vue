@@ -89,11 +89,11 @@
 </script>
 <style scoped>
 .assess-task-pop{position: fixed;top: 0;left: 0;bottom: 0;right: 0;z-index: 100;background: rgba(0,0,0,0.5);}
-.assess-task-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;font-size: 14px;box-shadow: 0 0 10px #fff;}
+.assess-task-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;font-size: 14px;}
 .ctpc-top{font-size: 16px;line-height: 30px;font-weight: 700;color: #333;margin-bottom: 10px;}
-.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 22px;cursor: pointer;transition:0.8s ease all;text-align: center;}
+.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 27px;cursor: pointer;transition:0.8s ease all;text-align: center;}
 .ctpc-top-close:hover{color:#36A8FF;transform:rotate(360deg);}
-.assess-man-detail{background: #fff;border: 1px solid #ccc;padding: 2px 6px;line-height: 36px;}
+.assess-man-detail{background: #fff;border: 1px solid #ccc;padding: 2px 6px;line-height: 36px;margin-right: 10px;}
 .assess-man-detail > span{display: inline-block;}
 .amd-job{width: 130px;}
 .amd-job-time{width: 120px;}
@@ -104,7 +104,21 @@
 .alo-radio{margin-left: 10px;}
 .alo-radio > input, .alo-radio > label{cursor: pointer;}
 .assess-task-list{margin-top: 16px;}
-.assess-task{height: 500px;overflow: auto;}
+.assess-task{height: 500px;overflow-y: scroll;}
+.assess-task::-webkit-scrollbar {
+    width: 10px;
+    background-color: #fff;
+}
+.assess-task::-webkit-scrollbar-thumb {
+    background-color: rgb(255, 255, 255);
+    background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(rgb(54, 168, 255)), color-stop(0.6, rgb(54, 229, 255)), to(rgb(54, 192, 255)));
+    border-radius: 10px;
+}
+.assess-task::-webkit-scrollbar-track {
+    /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1); */
+    background-color: #fff;
+    border-radius: 10px;
+}
 
 .ctpc-btns{text-align: right;margin-top: 20px;}
 .ctpc-btns > input{display: inline-block;width: 80px;height: 28px;margin-left: 12px;cursor: pointer;border-radius: 4px;}

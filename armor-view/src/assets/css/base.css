@@ -17,7 +17,7 @@ img { max-width: 100%; height: auto; width: auto\9;    /* ie8 */ -ms-interpolati
 
 /* 初始化 */
 body, div, ul, li, ol, h1, h2, h3, h4, h5, h6, input, textarea, select, p, dl, dt, dd, a, img, button, form, table, th, tr, td, tbody, article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { margin: 0; padding: 0; border: none; list-style: none; }
-html, body { font: 12px 'Droid Sans Fallback', Microsoft YaHei, Tahoma, Arial, sans-serif; color: #545454; background-color: #F2F2F2; }
+html, body { font: 12px 'Droid Sans Fallback', Microsoft YaHei, Tahoma, Arial, sans-serif; color: #545454; background-color: #f5f5f5; }
 em, i { font-style: normal; }
 strong { font-weight: normal; }
 a { text-decoration: none; color: #999; font-family: 'Droid Sans Fallback', Microsoft YaHei, Tahoma, Arial, sans-serif; }
@@ -52,7 +52,7 @@ button.header-icon img { margin-bottom: -0.04rem; }
 .model .mintui-back {font-size: 0.24rem;}
 
 
-.nav-top .el-tabs__header{background: #fff;padding: 10px 200px;}
+.nav-top .el-tabs__header{background: #fff;padding: 10px 0;}
 .my-task-con .el-tabs__header{display: inline-block;}
 .intergral-data-detail .el-table__footer-wrapper thead div, .intergral-data-detail .el-table__header-wrapper thead div {
     background-color: #36A8FF;
@@ -63,7 +63,7 @@ button.header-icon img { margin-bottom: -0.04rem; }
 }
 .intergral-data-detail .el-table th{background-color: #36A8FF;}
 .intergral-data-detail .el-table--striped .el-table__body tr.el-table__row--striped td ,.department-member-table .el-table--striped .el-table__body tr.el-table__row--striped td {
-    background: #F2F2F2;
+    background: #F5F5F5;
 }
 .intergral-data-detail  .el-table th.department-member-table .el-table th {
     height: 30px;
@@ -92,7 +92,18 @@ button.header-icon img { margin-bottom: -0.04rem; }
 .task-top-list .el-input__inner{color: #666;border: 1px solid #999;}
 .mint-cell-wrapper { background: none !important; }
 
-.task-top-list .el-input__inner, .ctpc-list-con .el-input__inner,.add-member-basic-msg .el-input__inner{height: 30px;box-shadow: 0 0 10px #ccc;}
+.task-top-list .el-input__inner, .ctpc-list-con .el-input__inner,.add-member-basic-msg .el-input__inner{height: 30px;}
+
+.nav-top-bg .el-tabs__header{margin: 0;border-bottom: none;}
+
+
+
+.nav-top .el-tabs__item{padding: 0 36px;font-size: 16px;font-weight: 700;color: #666;}
+
+.nav-top .el-tabs__content{padding-top: 80px;}
+.nav-top .el-tabs__header{position: fixed;left: 50%;top: 0;width:900px;transform:translateX(-50%);z-index: 100;}
+
+.organization-con .el-pagination{text-align: right;padding-right: 0;margin-top: 20px;margin-right: 10px;}
 
 
 

@@ -73,8 +73,8 @@
   }
 </script>
 <style scoped>
-.task-lis{background: #fff;display: -webkit-flex;display: -moz-flex;display: -ms-flex;display: -o-flex;display: flex;margin-bottom: 20px;box-shadow: 0 0 10px #ccc;margin: 10px 10px 20px;cursor: pointer;}
-.task-lis:hover{box-shadow: 0 0 10px #5EC4FA;}
+.task-lis{background: #fff;display: -webkit-flex;display: -moz-flex;display: -ms-flex;display: -o-flex;display: flex;margin-bottom: 20px;margin: 10px 10px 20px;cursor: pointer;}
+.task-lis:hover{box-shadow: 0 0 10px #ccc;}
 .head-img{width: 60px;height: 60px;border-radius: 50%;overflow: hidden;margin: 16px;}
 .main-task-detail{flex: 1;-webkit-flex:1;-moz-flex:1;-ms-flex:1;-o-flex:1;}
 .task-mark{line-height: 90px;font-size: 18px;}

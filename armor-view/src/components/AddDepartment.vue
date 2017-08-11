@@ -64,14 +64,14 @@
 </script>
 <style scoped>
 .add-member-pop{position: fixed;top: 0;left: 0;bottom: 0;right: 0;z-index: 100;background: rgba(0,0,0,0.5);}
-.add-member-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;padding-bottom: 30px;box-shadow: 0 0 10px #fff;}
+.add-member-pop-con{position: absolute;background: #fff;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 536px;padding: 16px;padding-bottom: 30px;}
 .ctpc-top{font-size: 16px;line-height: 30px;font-weight: 700;color: #333;}
-.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 22px;cursor: pointer;transition:0.8s ease all;text-align: center;}
+.ctpc-top-close{font-size: 30px;width: 30px;height: 30px;line-height: 27px;cursor: pointer;transition:0.8s ease all;text-align: center;}
 .ctpc-top-close:hover{color:#36A8FF;transform:rotate(360deg);}
 .ftp-list{margin: 20px 0;font-size: 14px;}
 .ftp-menus{width: 130px;text-align: right;margin-right: 16px;line-height: 30px;}
 .ftp-msg{line-height: 30px;}
-.ftp-msg > input{height: 28px;width: 280px;border: 1px solid #ccc;border-radius: 3px;text-indent: 4px;box-shadow: 0 0 10px #ccc;}
+.ftp-msg > input{height: 28px;width: 280px;border: 1px solid #ccc;border-radius: 3px;text-indent: 4px;}
 .am-warn{height: 20px;line-height: 20px;text-indent: 84px;color: red;}
 
 

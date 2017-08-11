@@ -19,9 +19,10 @@
         <span class="ttl-add-msg">建任务</span>
       </div>
     </div>
-    
-    <task-list :taskItem="taskItem" taskStatus="Task"></task-list>
-    <create-task ref="createTaskPop"></create-task>
+    <div class="task-lis-con">
+      <task-list :taskItem="taskItem" taskStatus="Task"></task-list>
+      <create-task ref="createTaskPop"></create-task>
+    </div>
 
 
   </div>
@@ -133,6 +134,105 @@ import CreateTask from './CreateTask'
             ]
           },
           {
+            taskName: '教师端选题组卷流程优化',
+            taskEnd: '昨天',
+            endMark: '-1',
+            key: [
+              {
+                keyMsg: '教师端'
+              }
+            ]
+          },
+          {
+            taskName: '散步提分宝散步提分宝散步提分宝散步提分宝',
+            taskEnd: '今天 19:00',
+            endMark: '0',
+            key: [
+              {
+                keyMsg: '抽题'
+              },
+              {
+                keyMsg: '接口'
+              }
+            ]
+          },
+          {
+            taskName: '教师端教师端选题组卷流程优化选题组卷流程优化',
+            taskEnd: '明天',
+            endMark: '1',
+            key: [
+              {
+                keyMsg: '题库'
+              }
+            ]
+          },
+          {
+            taskName: '教师端选题组卷流程优化',
+            taskEnd: '昨天',
+            endMark: '-1',
+            key: [
+              {
+                keyMsg: '教师端'
+              }
+            ]
+          },
+          {
+            taskName: '散步提分宝散步提分宝散步提分宝散步提分宝',
+            taskEnd: '今天 19:00',
+            endMark: '0',
+            key: [
+              {
+                keyMsg: '抽题'
+              },
+              {
+                keyMsg: '接口'
+              }
+            ]
+          },
+          {
+            taskName: '教师端教师端选题组卷流程优化选题组卷流程优化',
+            taskEnd: '明天',
+            endMark: '1',
+            key: [
+              {
+                keyMsg: '题库'
+              }
+            ]
+          },
+          {
+            taskName: '教师端选题组卷流程优化',
+            taskEnd: '昨天',
+            endMark: '-1',
+            key: [
+              {
+                keyMsg: '教师端'
+              }
+            ]
+          },
+          {
+            taskName: '散步提分宝散步提分宝散步提分宝散步提分宝',
+            taskEnd: '今天 19:00',
+            endMark: '0',
+            key: [
+              {
+                keyMsg: '抽题'
+              },
+              {
+                keyMsg: '接口'
+              }
+            ]
+          },
+          {
+            taskName: '教师端教师端选题组卷流程优化选题组卷流程优化',
+            taskEnd: '明天',
+            endMark: '1',
+            key: [
+              {
+                keyMsg: '题库'
+              }
+            ]
+          },
+          {
             taskName: '教师端选题教师端选题组卷流程优化教师端选题组卷流程优化组卷流程优化',
             taskEnd: '昨天',
             endMark: 1,
@@ -159,8 +259,8 @@ import CreateTask from './CreateTask'
 </script>
 <style scoped>
 .task-con{width: 1100px;margin: auto;}
-.task-top{position: relative;margin-bottom: 26px;}
-.task-top-list{margin: 10px 20px 0 10px;}
+.task-top{position: fixed;top: 80px;width: 1080px;left: 50%;transform:translateX(-50%);background: #fff;padding-top: 20px;border-radius: 4px;box-shadow: 0 0 10px #ccc;margin-bottom: 24px;}
+.task-top-list{margin: 0 20px 20px 20px;}
 .task-top-list:last-child{margin-top: 16px;}
 .task-top-list .el-select{width: 148px;}
 .ttl-name{margin-right: 10px;font-size: 14px;}
@@ -170,4 +270,7 @@ import CreateTask from './CreateTask'
 .creat-task > span{display: inline-block;vertical-align: middle;}
 .ttl-add-msg{font-size: 16px;color: #36A8FF;margin-left: 10px;}
 .ttl-add-icon{width: 24px;height: 24px;line-height: 22px;text-align: center;font-size: 24px;border-radius: 50%;color: #fff;background: #36A8FF;}
+.task-lis-con{margin-top: 140px;}
+
+
 </style>
