@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.source.enums;
 
+
 /**
  * 积分
  * Created by Tate on 2017/8/7.
@@ -23,6 +24,14 @@ public enum ZSYIntegral {
             }
         }
         return "";
+    }
+    public static Integer getValue(String name) {
+        for (ZSYIntegral status : ZSYIntegral.values()) {
+            if (status.getName().equals(name)) {
+                return status.getValue();
+            }
+        }
+        return null;
     }
 
     public int getValue() {

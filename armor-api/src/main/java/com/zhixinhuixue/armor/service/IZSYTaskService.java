@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.service;
 
+import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
@@ -66,4 +67,19 @@ public interface IZSYTaskService {
      * @return
      */
     ZSYResult<List<TaskResDTO>> getFinishedTask();
+
+    /**
+     * 完成主任务
+     * @param taskId
+     * @return
+     */
+    ZSYResult completeMasterTask(Long taskId);
+
+
+    /**
+     * 添加评价
+     * @param commentReqDTO
+     * @return
+     */
+    ZSYResult addComment(CommentReqDTO commentReqDTO);
 }

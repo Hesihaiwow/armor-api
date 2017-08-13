@@ -97,13 +97,7 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                     String userName = jwt.getClaim("userName").asString();
                     Integer userRole = jwt.getClaim("userRole").asInt();
 //                    String[] permissions = jwt.getClaim("permissions").asArray(String.class);
-
-
-                    StringRedisTemplate redisTemplate = SpringHelper.getBean("stringRedisTemplate",StringRedisTemplate.class);
-                    String loginKey = String.format(ZSYConstants.LOGIN_KEY,userId);
-                    String loginValue = redisTemplate.opsForValue().get(loginKey);
-                    if (loginValue!=null&&loginValue.equals("1")){
-                        redisTemplate.expire(loginKey,ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
+                    if (true){
                         //验证通过
                         logger.info("{}({})请求{}接口",
                                 userName,userId,

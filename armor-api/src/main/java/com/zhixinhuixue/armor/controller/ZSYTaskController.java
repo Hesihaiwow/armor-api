@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.controller;
 
+import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
@@ -39,13 +40,13 @@ public class ZSYTaskController extends ZSYController {
         return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 
-    @ApiOperation("个人任务完成")
+    @ApiOperation("单人任务我的任务完成")
     @PutMapping(value = "/complete/private")
     public String completePrivate(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
         return taskService.completePrivateTask(taskCompleteReqDTO).build();
     }
 
-    @ApiOperation("多人任务完成")
+    @ApiOperation("多人任务我的任务完成")
     @PutMapping(value = "/complete/public")
     public String completePublic(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
         return taskService.completePublicTask(taskCompleteReqDTO).build();
@@ -82,6 +83,19 @@ public class ZSYTaskController extends ZSYController {
     @GetMapping(value = "/finished")
     public String getFinishedTask() {
         return taskService.getFinishedTask().build();
+    }
+
+
+    @ApiOperation("多人任务主任务完成")
+    @PutMapping(value = "/complete/master/{taskId}")
+    public String completeMasterTask(@PathVariable("taskId") Long taskId) {
+        return taskService.completeMasterTask(taskId).build();
+    }
+
+    @ApiOperation("任务评论")
+    @PostMapping(value = "/comment")
+    public String comment(@Valid @RequestBody CommentReqDTO commentReqDTO) {
+        return taskService.addComment(commentReqDTO).build();
     }
 
 }

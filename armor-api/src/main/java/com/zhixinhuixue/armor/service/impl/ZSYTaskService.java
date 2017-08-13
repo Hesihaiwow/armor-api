@@ -8,6 +8,7 @@ import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TaskBO;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
@@ -23,10 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Tate on 2017/8/7.
@@ -66,6 +68,9 @@ public class ZSYTaskService implements IZSYTaskService {
         return taskLog;
     }
 
+    /**
+     * 检查当前登录用户是否有效
+     */
     protected void checkUser() {
         User userTemp = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
         if (userTemp == null || userTemp.getIsDelete() == 1) {
@@ -379,5 +384,106 @@ public class ZSYTaskService implements IZSYTaskService {
             });
         }
         return ZSYResult.success().data(taskList);
+    }
+
+    /**
+     * 完成主任务
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public ZSYResult completeMasterTask(Long taskId) {
+        checkUser();
+        // TODO: 2017/8/12 权限验证
+        TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
+        // 验证子任务是否都已经完成了
+        if (taskDetailBO != null && taskDetailBO.getTaskUsers() != null && taskDetailBO.getTaskUsers().size() > 0) {
+            long count = taskDetailBO.getTaskUsers().stream().filter(taskUserBO -> taskUserBO.getStatus() == ZSYTaskUserStatus.COMPLETED.getValue()).count();
+            if (count == taskDetailBO.getTaskUsers().size()) {
+                Task task = new Task();
+                task.setId(taskId);
+                task.setStatus(ZSYTaskStatus.COMPLETED.getValue());
+                task.setUpdateTime(new Date());
+                // 将任务状态改为已完成（待评价）
+                taskMapper.updateByPrimaryKeySelective(task);
+                // 插入日志
+                taskLogMapper.insert(buildLog("阶段全部完成", "将全部阶段标记为已完成", taskId));
+                return ZSYResult.success();
+            }
+        }
+        return ZSYResult.fail().msg("任务阶段未完成");
+    }
+
+    /**
+     * 添加评价
+     *
+     * @param commentReqDTO
+     * @return
+     */
+    @Override
+    public ZSYResult addComment(CommentReqDTO commentReqDTO) {
+        // 检查是否登录
+        checkUser();
+        Long taskId = commentReqDTO.getTaskId();
+        TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
+        if (taskDetailBO.getTaskUsers() == null || taskDetailBO.getTaskUsers().size() == 0) {
+            throw new ZSYServiceException("任务阶段为空，无法评价");
+        }
+        if (taskDetailBO.getStatus() != ZSYTaskStatus.COMPLETED.getValue()) {
+            throw new ZSYServiceException("该任务暂未完成，无法评价");
+        }
+        if (taskDetailBO.getType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
+            throw new ZSYServiceException("该任务为单人任务无需评价");
+        }
+        // 检查是否已经评价完了
+        List<Long> userIds = taskDetailBO.getTaskUsers().stream().map(TaskUser::getUserId).distinct().collect(Collectors.toList());
+        boolean commentCompleted;
+        List<Long> commentedNum = new ArrayList<>();
+        taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
+            if (taskUserBO.getTaskComments() != null && userIds != null) {
+                if (taskUserBO.getTaskComments().size() == (userIds.size() - 1)) {
+                    userIds.stream().forEach(uid -> {
+                        // 过滤评论中的重复uid，并找出uid的所有评论
+                        long count = taskUserBO.getTaskComments().stream()
+                                .filter(distinctByKey(p -> p.getCreateBy()))
+                                .filter(taskCommentBO -> taskCommentBO.getCreateBy().equals(uid)).count();
+                        commentedNum.add(count);
+                    });
+                }
+            }
+        });
+        int sum = commentedNum.stream().mapToInt(i -> i.intValue()).sum();
+        commentCompleted = sum == ((userIds.size() - 1) * taskDetailBO.getTaskUsers().size());
+        if (commentCompleted || taskDetailBO.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
+            throw new ZSYServiceException("任务已结束");
+        }
+        if (commentReqDTO.getComments() == null || commentReqDTO.getComments().size() == 0) {
+            throw new ZSYServiceException("评价不能为空");
+        }
+        List<TaskComment> commentList = new ArrayList<>();
+        commentReqDTO.getComments().stream().forEach(commentSalveDTO -> {
+            Integer value = ZSYIntegral.getValue(commentSalveDTO.getGrade());
+            if (value == null) {
+                throw new ZSYServiceException("无法找到评价等级:" + commentSalveDTO.getGrade());
+            }
+            TaskComment taskComment = new TaskComment();
+            taskComment.setId(snowFlakeIDHelper.nextId());
+            taskComment.setTaskId(commentReqDTO.getTaskId());
+            taskComment.setTaskUserId(commentSalveDTO.getTaskUserId());
+            taskComment.setGrade(commentSalveDTO.getGrade());
+            taskComment.setIntegral(value);
+            taskComment.setDescription(commentSalveDTO.getDescription());
+            taskComment.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            taskComment.setCreateTime(new Date());
+            commentList.add(taskComment);
+        });
+        taskCommentMapper.insertList(commentList);
+        return ZSYResult.success();
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 }

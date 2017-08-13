@@ -27,6 +27,19 @@
     where task_user_id = #{id}
   </select>
 
+  <!-- 批量插入 -->
+  <insert id="insertList" parameterType="java.util.List">
+    insert into task_comment (id, task_id, task_user_id,
+      grade, integral, description,
+      create_time, create_by)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.taskUserId,jdbcType=BIGINT},
+      #{item.grade,jdbcType=VARCHAR}, #{item.integral,jdbcType=INTEGER}, #{item.description,jdbcType=VARCHAR},
+      #{item.createTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=BIGINT})
+    </foreach>
+  </insert>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
