@@ -4,31 +4,17 @@
       <div class="login-title">任务管理系统</div>
       <div class="username-list">
         <img src="../assets/img/account.png" alt="">
-        <input type="text" class="username-inp" placeholder="用户名">
+        <input type="text" class="username-inp" v-model="loginForm.account" placeholder="用户名">
       </div> 
       <div class="pwd-list">
         <img src="../assets/img/password.png" alt="">
-        <input type="password" class="pwd-inp" placeholder="密码">
+        <input type="password" class="pwd-inp" v-model="loginForm.password" placeholder="密码">
       </div> 
       <!-- <div class="forget-pwd"><span @click="goForgetPwd">忘记密码？</span></div>   -->
-		  <input type="button" class="login-btn" value="登录" @click="goIndex">
+		  <input type="button" class="login-btn" v-model="button.btnName"  @click="login">
     </div>
 	</div>
 </template>
-<script>
-  export default {
-    data() {
-      return {
-        
-      };
-    },
-    methods: {
-      goIndex () {
-      	this.$router.push('/navTop');
-      }
-    }
-  }
-</script>
 <style scoped>
 .login-con{position: fixed;left: 0;top: 0;bottom: 0;right: 0;background: url(../assets/img/login2.jpg) no-repeat;-webkit-background-size: 100% 100%;
 background-size: 100% 100%;}
@@ -45,5 +31,57 @@ background-size: 100% 100%;}
 }
 .username-list > img,.pwd-list > img{margin-right: 12px;}
 .login-btn{cursor: pointer;width: 300px;height: 34px;display: block;margin: 30px auto;border-radius: 4px;font-size: 16px;color: #fff;background: #36A8FF;}
-
 </style>
+<script>
+    import Http from '../lib/Http.js'
+    import { Message } from 'element-ui';
+
+    export default {
+        data() {
+            return {
+                loginForm:{
+                    account:'',
+                    password:''
+                },
+                button:{
+                    click:true,
+                    btnName:'登录'
+                }
+            };
+        },
+        methods: {
+            login () {
+                let _this = this;
+                if (!_this.button.click){
+                    return;
+                }
+                if (_this.loginForm.account == ''){
+                    Message.warning('请输入用户名');
+                    return;
+                }
+                if (_this.loginForm.password == ''){
+                    Message.warning('请输入密码');
+                    return;
+                }
+                _this.button.click = false;
+                _this.button.btnName = '登录中...';
+                Http.zsyPostHttp(Http.API_URI.LOGIN, _this.loginForm,(res)=>{
+                    if (res.errCode!='00'){
+                        Message.error(res.errMsg);
+                    }else{
+                        _this.button.btnName = '登录成功,跳转中...';
+                        window.localStorage.setItem("token", res.data);
+                        _this.$router.push('/index');
+                    }
+                },(res)=>{
+                    _this.button.click = true;
+                    _this.button.btnName = '登录';
+                    Message.error(res.errMsg);
+                },(e)=>{
+                    _this.button.click = true;
+                    _this.button.btnName = '登录';
+                });
+            }
+        }
+    }
+</script>

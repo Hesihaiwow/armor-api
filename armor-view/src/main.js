@@ -3,15 +3,16 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-//饿了么ui
+// element-ui
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
-// 公用css
+// common css
 import './assets/css/base.css'
 
-Vue.use(ElementUI)
 
-Vue.config.productionTip = false
+Vue.use(ElementUI);
+Vue.config.productionTip = false;
+
 
 /* eslint-disable no-new */
 new Vue({
