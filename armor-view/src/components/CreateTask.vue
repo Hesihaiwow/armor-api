@@ -43,7 +43,7 @@
                     <span class="tag-lis-add-msg" @click="addTag">添加标签</span>
                     <div class="tag-add-sel" v-show="showAddTag">
                       <div class="add-tag-btn" @click="addSelTag">添加</div>
-                      <el-select v-model="value10" multiple filterable allow-create placeholder="添加标签">
+                      <el-select v-model="value10" multiple filterable allow-create default-first-option placeholder="添加标签">
                         <el-option v-for="item in options5" :key="item.value" :label="item.label" :value="item.value"></el-option>
                       </el-select>
                     </div>
@@ -67,10 +67,28 @@
               <div class="add-member-basic">
                 <div class="add-member-basic-list add-member-stage clearfix">
                   <div class="add-member-basic-menu fl">阶段：</div>
-                  <div class="add-member-basic-msg add-stage-opt fl" @click="addStage">添加阶段</div>
-                  <el-select v-model="valueStage" multiple filterable allow-create placeholder="添加标签">
+                  <!-- <div class="add-member-basic-msg add-stage-opt fl" @click="addStage">添加阶段</div> -->
+                  <ul class="add-member-basic-msg add-stage-opt ctpc-tags fl">
+                    <li class="ctpc-tag-lis" v-show="valueStage!==''">
+                      <span class="tag-lis-circle"></span>
+                      <span class="tag-lis-msg">{{valueStage}}</span>
+                      <span class="tag-lis-delete" @click="deleteStageTag">×</span>
+                    </li>
+                    <li class="tag-lis-add">
+                      <span class="tag-lis-add-msg" @click="addStage">阶段</span>
+                      <div class="tag-add-sel" v-show="showAddStageTag">
+                        <div class="add-tag-btn" @click="addSelTag">添加</div>
+                        <el-select v-model="valueStage" filterable allow-create :multiple-limit="1" default-first-option placeholder="添加标签">
+                          <el-option v-for="item in optionsStage" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                      </div>
+                    </li>
+                  </ul>
+                  <!-- <el-select v-model="valueStage" filterable allow-create placeholder="添加标签"> -->
+                  <!-- <el-select v-model="valueStage" filterable allow-create :multiple-limit="1" default-first-option placeholder="添加标签">
+
                     <el-option v-for="item in optionsStage" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                  </el-select>
+                  </el-select> -->
                 </div>
                 <div class="add-member-basic-list clearfix">
                   <div class="add-member-basic-menu fl">负责人：</div>
@@ -132,6 +150,7 @@
             label: '会学本'
           }
         ],
+        stageTagShow: false,
         projectValue: '',
         pickerOptions0: {
           disabledDate(time) {
@@ -203,7 +222,7 @@
         showAddTag: false,
         showAddDetail: false,
         showAddBtn: true,
-        valueStage: [],
+        valueStage: '',
         optionsStage: [{
           value: '产品设计',
           label: '产品设计'
@@ -214,6 +233,7 @@
           value: '前端开发',
           label: '前端开发'
         }],
+        showAddStageTag: false
       };
     },
     methods: {
@@ -240,6 +260,7 @@
       },
       addSelTag () {
         this.showAddTag = false;
+        this.showAddStageTag = false;
         for (var i = 0; i < this.value10.length; i++){
           // debugger;
           var tagLis = {};
@@ -260,7 +281,14 @@
         this.showAddDetail = !this.showAddDetail;
         console.log(this.answerMan)
         console.log(this.memberTimeCount)
-        console.log(this.endTime)
+        console.log(this.valueEnd)
+        var addmemberObj = {};
+        addmemberObj.name = this.answerMan;
+        addmemberObj.jobTime = this.memberTimeCount;
+        addmemberObj.endTime = this.valueEnd;
+        addmemberObj.jobLevel = '';
+        addmemberObj.job = '';
+        this.memberList.push(addmemberObj);
       },
       show () {
         this.showCreateTask = true;
@@ -272,7 +300,10 @@
         this.memberList.splice(index,1);
       },
       addStage () {
-        
+        this.showAddStageTag = true;
+      },
+      deleteStageTag () {
+
       }
     }
   }
@@ -362,7 +393,7 @@ flex: 1;}
 .add-member-basic-menu{width: 78px;text-align: right;}
 .add-member-basic-list{/* border-bottom: 1px solid #ccc; */padding: 5px 0;line-height: 34px;}
 .add-member-basic-list:last-child{border: none;}
-.add-stage-opt{color: #36A8FF;cursor: pointer;}
+.add-stage-opt{color: #36A8FF;cursor: pointer;width: 400px;}
 .add-member-basic-msg .el-select{width: 140px;}
 .member-time-count{width: 40px;border: 1px solid #ccc;height: 26px;border-radius: 4px;margin-right: 4px;text-indent: 4px;}
 .add-member-basic-time{margin-left: 40px;}
