@@ -9,7 +9,7 @@ public class DeptResDTO {
 
     private Long id;
 
-    private String name;
+    private String label;
 
     private List<DeptResDTO> children;
 
@@ -21,12 +21,12 @@ public class DeptResDTO {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public List<DeptResDTO> getChildren() {
