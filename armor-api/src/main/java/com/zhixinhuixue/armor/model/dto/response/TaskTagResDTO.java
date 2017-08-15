@@ -9,6 +9,8 @@ public class TaskTagResDTO {
 
     private String color;
 
+    private String colorValue;
+
     public String getName() {
         return name;
     }
@@ -23,5 +25,13 @@ public class TaskTagResDTO {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getColorValue() {
+        return colorValue;
+    }
+
+    public void setColorValue(String colorValue) {
+        this.colorValue = colorValue;
     }
 }

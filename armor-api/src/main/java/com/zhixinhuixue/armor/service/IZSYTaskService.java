@@ -1,9 +1,14 @@
 package com.zhixinhuixue.armor.service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
 
@@ -70,6 +75,7 @@ public interface IZSYTaskService {
 
     /**
      * 完成主任务
+     *
      * @param taskId
      * @return
      */
@@ -78,8 +84,21 @@ public interface IZSYTaskService {
 
     /**
      * 添加评价
+     *
      * @param commentReqDTO
      * @return
      */
     ZSYResult addComment(CommentReqDTO commentReqDTO);
+
+    /**
+     * 主任务完成，结算积分
+     */
+    void finishTask(Long taskId);
+
+    /**
+     * 分页查询任务
+     * @param taskListReqDTO
+     * @return
+     */
+    PageInfo<TaskListResDTO> getTaskListPage(TaskListReqDTO taskListReqDTO);
 }
