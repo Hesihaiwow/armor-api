@@ -29,5 +29,8 @@ jwt:
   secret: a8eac6910ede47b9bedf62127b837e56
   exp: 360
 
+logging:
+  level:
+    com.zhixinhuixue.armor: debug
 
 

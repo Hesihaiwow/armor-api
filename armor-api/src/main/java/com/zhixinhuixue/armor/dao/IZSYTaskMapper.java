@@ -1,7 +1,10 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.TaskBO;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.TaskListBO;
+import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import org.apache.ibatis.annotations.Param;
 
@@ -45,6 +48,7 @@ public interface IZSYTaskMapper {
 
     /**
      * 查询任务详情
+     *
      * @param taskId
      * @return
      */
@@ -53,18 +57,28 @@ public interface IZSYTaskMapper {
 
     /**
      * 根据状态查询任务
+     *
      * @param status
      * @param reviewStatus
      * @return
      */
     List<TaskBO> selectTaskByStatus(@Param("status") Integer status,
-                                    @Param("reviewStatus")Integer reviewStatus,
-                                    @Param("userId")Long userId);
+                                    @Param("reviewStatus") Integer reviewStatus,
+                                    @Param("userId") Long userId);
 
     /**
      * 查询已结束的任务，包含评价
+     *
      * @return
      */
     List<TaskBO> selectFinishedTask(Long userId);
+
+    /**
+     * 分页查询任务列表
+     *
+     * @param taskListReqDTO
+     * @return
+     */
+    Page<TaskListBO> selectPage(TaskListReqDTO taskListReqDTO);
 
 }
