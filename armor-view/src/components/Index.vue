@@ -70,7 +70,8 @@ export default {
     computed: {
         //获取用户名称
         getUserName(){
-           return Helper.decodeToken().userName;
+//           return Helper.decodeToken().userName;
+           return '';
 
         }
     },

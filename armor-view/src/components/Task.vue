@@ -4,35 +4,35 @@
             <div class="task-top-list fl">
                 <span class="ttl-name">项目</span>
                 <el-select v-model="form.projectId" placeholder="请选择">
-                    <el-option v-for="item in origin.projectList" :key="item.id" :label="item.name"
+                    <el-option v-for="item in projectList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">成员</span>
                 <el-select v-model="form.userId" placeholder="请选择">
-                    <el-option v-for="item in origin.usersList" :key="item.id" :label="item.name"
+                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">阶段</span>
                 <el-select v-model="form.stageId" placeholder="请选择">
-                    <el-option v-for="item in origin.stageList" :key="item.id" :label="item.name"
+                    <el-option v-for="item in stageList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">标签</span>
                 <el-select v-model="form.tagId" placeholder="请选择">
-                    <el-option v-for="item in origin.tagList" :key="item.id" :label="item.name"
+                    <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">状态</span>
                 <el-select v-model="form.status" placeholder="请选择">
-                    <el-option v-for="item in origin.status" :key="item.value" :label="item.name"
+                    <el-option v-for="item in status" :key="item.value" :label="item.name"
                                :value="item.value"></el-option>
                 </el-select>
             </div>
@@ -50,20 +50,27 @@
         <div class="task-lis-con">
             <create-task ref="createTaskPop"></create-task>
         </div>
-
-
     </div>
 </template>
 <script>
-    import TaskList from './TaskList.vue'
     import CreateTask from './CreateTask'
+    import http from '../lib/Http'
+    import moment from 'moment';
+    moment.locale('zh-CN');
 
     export default {
         name: 'Task',
         data() {
             return {
                 timeRange: '',
+                projectList: [],
+                userList: [],
+                stageList: [],
+                tagList: [],
+                status: [{value: 1, name: '进行中'}, {value: 2, name: '已结束'}],
+                taskList: [],
                 form: {
+                    pageSize: 10,
                     projectId: '',
                     userId: '',
                     stageId: '',
@@ -71,38 +78,7 @@
                     status: '',
                     beginTime: '',
                     endTime: ''
-                },
-                origin: {
-                    projectList: [{
-                        id: 1,
-                        name: "测试"
-                    }],
-                    usersList: [{
-                        id: 1,
-                        name: "测试"
-                    }],
-                    stageList: [{
-                        id: 1,
-                        name: "测试"
-                    }],
-                    tagList: [{
-                        id: 1,
-                        name: "测试"
-                    }],
-                    status: [{value: 1, name: '进行中'}, {value: 2, name: '已结束'}]
-                },
-                taskItem: [
-                    {
-                        taskName: '教师端选题组卷流程优化',
-                        taskEnd: '昨天',
-                        endMark: '-1',
-                        key: [
-                            {
-                                keyMsg: '教师端'
-                            }
-                        ]
-                    }
-                ], pickerOptions: {
+                }, pickerOptions: {
                     shortcuts: [{
                         text: '最近一周',
                         onClick(picker) {
@@ -131,6 +107,30 @@
                 }
             };
         },
+        created(){
+            console.info('created..')
+            console.info(moment('2017-08-16').calendar(null, {
+                sameDay: '[今天]',
+                nextDay: '[明天]',
+                nextWeek: '[下]ddd',
+                lastDay: '[昨天]',
+                lastWeek: '[上]ddd',
+                sameElse: 'L'
+            }))
+            let diffDays = moment('2017-08-16').diff(moment('2017-08-20'), 'days');
+            if (diffDays == 0) {
+                console.info('yellow')
+            } else if (diffDays > 0) {
+                console.info('red')
+            } else if (diffDays < 0) {
+                console.info('blue')
+            }
+            this.fetchProjectList()
+            this.fetchUserList()
+            this.fetchStageList()
+            this.fetchTagList()
+            this.fetchTaskList()
+        },
         methods: {
             createTaskClick() {
                 // 点击建任务
@@ -143,10 +143,39 @@
                 } else {
                     this.form.beginTime = this.form.endTime = ''
                 }
+            },
+            fetchProjectList(){
+                let vm = this
+                http.zsyGetHttp('/project/list', {}, (resp) => {
+                    vm.projectList = resp.data
+                })
+            },
+            fetchUserList(){
+                let vm = this
+                http.zsyGetHttp('/user/effective', {}, (resp) => {
+                    vm.userList = resp.data
+                })
+            },
+            fetchStageList(){
+                let vm = this
+                http.zsyGetHttp('/stage/list', {}, (resp) => {
+                    vm.stageList = resp.data
+                })
+            },
+            fetchTagList(){
+                let vm = this
+                http.zsyGetHttp('/tag/list', {}, (resp) => {
+                    vm.tagList = resp.data
+                })
+            },
+            fetchTaskList(){
+                let vm = this
+                http.zsyGetHttp('/task/public/master/all', this.form, (resp) => {
+                    vm.taskList = resp.data
+                })
             }
         },
         components: {
-            TaskList: TaskList,
             CreateTask: CreateTask
         }
     }
