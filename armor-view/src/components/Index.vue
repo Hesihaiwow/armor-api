@@ -3,10 +3,10 @@
   <div class="nav-top-bg">
     <div class="ntb-con">
       <div class="logo" @click="showIndexEvent"><img src="../assets/img/site-icon.png" alt=""></div>
-      <div class="personal-name" @click.prevent.stop="personalOpt">  小花
+      <div class="personal-name" @click.prevent.stop="personalOpt">  {{getUserName}}
         <div class="personal-opt" v-show="showPerOpt">
           <div class="alter-pwd" @click.stop.prevent="alterPwd">修改密码</div>
-          <div class="logout-btn" @click.stop.prevent="logoutBtn">退出登录</div>
+          <div class="logout-btn" @click.stop.prevent="handleLogout">退出登录</div>
         </div>
       </div>
     </div>
@@ -33,6 +33,7 @@ import Intergral from './Intergral'
 import Organization from './Organization'
 import NavIndex from './NavIndex'
 import AlterPassword from './AlterPassword'
+import Helper from "../lib/Helper";
 
 
 
@@ -66,6 +67,13 @@ export default {
         showAlterPwd: false
       };
     },
+    computed: {
+        //获取用户名称
+        getUserName(){
+           return Helper.decodeToken().userName;
+
+        }
+    },
     methods: {
       handleClick(tab, event) {
         // 点击tab
@@ -89,9 +97,10 @@ export default {
         this.showPerOpt = false;
         this.$refs.alterPwdPop.show();
       },
-      logoutBtn () {
-        // 退出登录
+      // 退出登录
+      handleLogout () {
         this.showPerOpt = false;
+        window.localStorage.clear();
         this.$router.push('/');
       }
     },

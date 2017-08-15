@@ -5,22 +5,34 @@
       <div class="alter-con">
           <div class="alter-list clearfix">
             <div class="alter-menu fl">旧密码</div>
-            <div class="alter-con fl"><input type="password" v-model="oldPwd" class="pwd-inp"></div>
+            <div class="alter-con fl">
+                <!--<input type="password" v-model="oldPwd" class="pwd-inp">-->
+                <el-input type="text" v-model="modifyForm.originalPassword" placeholder="请输入旧密码"></el-input>
+            </div>
           </div>
           <div class="alter-list clearfix">
             <div class="alter-menu fl">新密码</div>
-            <div class="alter-con fl"><input type="password" v-model="newPwd" class="pwd-inp"></div>
+            <div class="alter-con fl">
+                <!--<input type="password" v-model="newPwd" class="pwd-inp">-->
+                <el-input type="password" v-model="modifyForm.newPassword" placeholder="请输入新密码"></el-input>
+            </div>
           </div>
           <div class="alter-list clearfix">
             <div class="alter-menu fl">确认新密码</div>
-            <div class="alter-con fl"><input type="password" v-model="sureNewPwd" class="pwd-inp"></div>
+            <div class="alter-con fl">
+                <!--<input type="password" v-model="sureNewPwd" class="pwd-inp">-->
+                <el-input type="password" v-model="modifyForm.sureNewPwd" placeholder="请再次输入新密码"></el-input>
+            </div>
           </div>
-          <input type="button" class="save-alter-btn" value="保存">
+          <!--<input type="button" class="save-alter-btn" @click="handleModifyPwd" value="保存">-->
+          <el-button type="primary" size="small" class="save-alter-btn" :loading="button.loading" @click="handleModifyPwd">{{button.btnName}}</el-button>
       </div>
     </div>
 	</div>
 </template>
 <script>
+    import Helper from '../lib/Helper'
+    import Http from '../lib/Http'
   export default {
     props: {
       ftpList: {
@@ -29,11 +41,17 @@
     },
     data() {
       return {
-        showAlterPwd: false,
-        amWarn: '',
-        oldPwd: '',
-        newPwd: '',
-        sureNewPwd: ''
+          showAlterPwd: false,
+          amWarn: '',
+          modifyForm:{
+              originalPassword: '',
+              newPassword: '',
+              sureNewPwd: ''
+          },
+          button:{
+              loading:false,
+              btnName:'保存'
+          }
       };
     },
     methods: {
@@ -43,6 +61,44 @@
       hide () {
         this.showAlterPwd = false;
         this.amWarn = '';
+      },
+      //修改用户密码
+      handleModifyPwd(){
+          let _this = this;
+          let oldPwd = Helper.trim(this.modifyForm.originalPassword);
+          let newPwd = Helper.trim(this.modifyForm.newPassword);
+          let sureNewPwd = Helper.trim(this.modifyForm.sureNewPwd);
+          if (oldPwd==''){
+              this.$message.warning("请输入旧密码");
+              return;
+          }
+          if (newPwd==''){
+              this.$message.warning("请输入新密码");
+              return;
+          }
+          if (sureNewPwd==''){
+              this.$message.warning("请再次输入新密码");
+              return;
+          }
+          if (newPwd!=sureNewPwd){
+              this.$message.warning("两次输入的新密码不一致");
+              return;
+          }
+          this.button.loading = true;
+          this.button.btnName = '保存中';
+          Http.zsyPutHttp('/user/password',this.modifyForm,(res)=> {
+              this.$message.success("修改成功");
+              setTimeout(function () {
+                  _this.$router.push("/");
+              },1000)
+          },(fail)=>{
+              this.$message.error(fail.errMsg);
+              this.button.loading = false;
+              this.button.btnName = '保存';
+          },(err)=>{
+              this.button.loading = false;
+              this.button.btnName = '保存';
+          });
       },
       saveMember () {
         if (this.newDept=='') {

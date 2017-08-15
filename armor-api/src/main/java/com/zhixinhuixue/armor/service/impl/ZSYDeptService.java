@@ -50,6 +50,7 @@ public class ZSYDeptService implements IZSYDeptService {
         DeptBo deptBo = departmentMapper.selectRootDept(ZSYConstants.DEFAULT_DEPT_ROOT_ID);
         DeptResDTO deptResDTO = new DeptResDTO();
         BeanUtils.copyProperties(deptBo,deptResDTO,"children");
+        deptResDTO.setLabel(deptBo.getName());
         deptResDTO.setChildren(deepCopy(deptBo.getChildren()));
         return deptResDTO;
     }
@@ -64,6 +65,7 @@ public class ZSYDeptService implements IZSYDeptService {
         children.stream().forEach(child->{
             DeptResDTO tmp = new DeptResDTO();
             BeanUtils.copyProperties(child,tmp);
+            tmp.setLabel(child.getName());
             tmp.setChildren(deepCopy(child.getChildren()));
             childDept.add(tmp);
         });
