@@ -60,8 +60,8 @@ public interface IZSYUserMapper {
 
     /**
      * 用户分页查询
-     * @param deptId 部门ID
+     * @param deptIds 部门ID
      * @return
      */
-    Page<UserBo> selectPage(Long deptId);
+    Page<UserBo> selectPage(List<Long> deptIds);
 }

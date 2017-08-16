@@ -2,26 +2,47 @@
 	<div class="intergral-con">
 		<div class="intergral-con-top clearfix">
       <div class="fl menu-list" v-for="(list,index) in menuList" @click="togTable(index)" :style="tabActive(index)">{{list.name}}</div>
-      
-      <div class="fl menu-list" @click="togTable(4)" :style="tabActive(4)"><span class="self-define">自定义</span>
-        <el-date-picker v-model="startValue" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker><span class="div-line">-</span>
-        <el-date-picker v-model="endValue" type="date" placeholder="选择日期" :picker-options="pickerOptions0"></el-date-picker>
-        <img src="../assets/img/u1221.png" alt="" class="serch-btn">
+      <div class="fl menu-list" @click="togTable(4)" :style="tabActive(4)">自定义</div>
+      <div class="fl menu-list" id="diy" style="display: none">
+        <el-date-picker v-model="queryForm.startTime" type="datetime" placeholder="选择日期" ></el-date-picker><span class="div-line">-</span>
+        <el-date-picker v-model="queryForm.endTime" type="datetime" placeholder="选择日期" ></el-date-picker>
+        <img src="../assets/img/u1221.png" alt="" @click="integralPage('0')" class="serch-btn">
       </div>
     </div>
     <div class="intergral-data-detail">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="member" label="成员" align="center"></el-table-column>
-        <el-table-column prop="intergral" label="积分" align="center"></el-table-column>
+        <el-table-column prop="name" label="成员" align="center"></el-table-column>
+        <el-table-column prop="integral" label="积分" align="center"></el-table-column>
       </el-table>
     </div>
+    <el-pagination
+      @size-change=""
+      @current-change="integralPage"
+      :page-size="pageSize"
+      :current-page="currentPage"
+      layout="total, prev, pager, next"
+      :total="totals">
+    </el-pagination>
 	</div>
 </template>
 <script>
+  import Http from '../lib/Http.js'
+  import { Message } from 'element-ui';
+
   export default {
     name: 'Intergral',
     data() {
       return {
+        queryForm:{
+          startTime:'',
+          endTime:''
+        },
+        dateForm:{
+          startTime:'0'
+        },
+        currentPage:1,
+        pageSize:10,
+        totals:0,
         menuList: [
           {
             name: '本月'
@@ -34,35 +55,75 @@
           }
         ],
         activeIdx: 0,
-        pickerOptions0: {
-          disabledDate(time) {
-            return time.getTime() < Date.now() - 8.64e7;
-          }
-        },
         startValue: '',
         endValue: '',
-        tableData: [{
-          member: '小花',
-          intergral: '122'
-        }, {
-          member: '大花',
-          intergral: '22'
-        }, {
-          member: '小希',
-          intergral: '111'
-        }]
-      };
+        tableData:''
+      }
     },
+    beforeMount:function () {
+      Http.zsyGetHttp(Http.API_URI.INTEGRAL+this.currentPage,this.queryForm,(res)=>{
+        this.tableData = res.data.list;
+        this.totals=res.data.total;
+        this.pageSize =res.data.pagesize;
+      })
+    },
+
     methods: {
       togTable(index) {
         // 点击菜单
         this.activeIdx = index;
+
+        switch (index) {
+          case 0:
+            this.integralDate("month");
+            this.displayTest();
+            break;
+          case 1:
+            this.integralDate("quarter");
+            this.displayTest();
+            break;
+          case 2:
+            this.integralDate("year");
+            this.displayTest();
+            break;
+          case 4:
+            this.displayTest(4);
+            break;
+        }
       },
       tabActive (index) {
         // 颜色变化
         if (index == this.activeIdx) {
           return {
             color: '#36A8FF'
+          }
+        }
+      },
+      integralDate(time){
+        this.dateForm.startTime = time ;
+        Http.zsyGetHttp(Http.API_URI.INTEGRAL+this.currentPage,this.dateForm,(res)=>{
+          this.tableData = res.data.list;
+          this.totals=res.data.total;
+          this.pageSize =res.data.pagesize;
+        })
+
+      },
+      integralPage(currentPage){
+        Http.zsyGetHttp(Http.API_URI.INTEGRAL+currentPage,this.queryForm,(res)=>{
+          this.tableData = res.data.list;
+          this.totals=res.data.total;
+          this.pageSize =res.data.pagesize;
+        })
+      },
+      displayTest(id){
+        let diy = document.getElementById("diy");
+        if(id!=4){
+            diy.style.display='none';
+        }else{
+          if(diy.style.display=="block"){
+            diy.style.display='none';
+          }else{
+            diy.style.display='block';
           }
         }
       }

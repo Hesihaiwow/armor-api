@@ -115,3 +115,6 @@ color: #666 !important; }
 input:-ms-input-placeholder, textarea:-ms-input-placeholder { color: #666 !important; }
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { color: #666 !important; }
 
+/*部门树结构点击颜色*/
+.el-tree .is-current>.el-tree-node__content span{  color: #36A8FF !important;}
+.el-input input{width: 280px;}

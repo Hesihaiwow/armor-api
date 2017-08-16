@@ -5,7 +5,7 @@ import com.zhixinhuixue.armor.dao.IZSYProjectMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.ProjectDTO;
+import com.zhixinhuixue.armor.model.dto.response.ProjectResDTO;
 import com.zhixinhuixue.armor.model.pojo.Project;
 import com.zhixinhuixue.armor.service.IZSYProjectService;
 import org.springframework.beans.BeanUtils;
@@ -33,14 +33,14 @@ public class ZSYProjectService implements IZSYProjectService{
      * @return
      */
     @Override
-    public List<ProjectDTO> getProject(){
+    public List<ProjectResDTO> getProject(){
         List<Project> projects = projectMapper.selectAll();
-        List<ProjectDTO> projectDTOS = new ArrayList<>();
+        List<ProjectResDTO> projectDTOS = new ArrayList<>();
 
         projects.stream().forEach(project -> {
-            ProjectDTO projectDTO = new ProjectDTO();
-            BeanUtils.copyProperties(project,projectDTO);
-            projectDTOS.add(projectDTO);
+            ProjectResDTO projectResDTO = new ProjectResDTO();
+            BeanUtils.copyProperties(project, projectResDTO);
+            projectDTOS.add(projectResDTO);
         });
         return projectDTOS;
     }

@@ -7,8 +7,8 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralPageDTO;
-import com.zhixinhuixue.armor.model.dto.response.UserIntegralDTO;
+import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import org.springframework.beans.BeanUtils;
@@ -27,30 +27,47 @@ public class ZSYIntegralService implements IZSYIntegralService{
     private IZSYUserIntegralMapper userIntegralMapper;
 
     @Override
-    public PageInfo<IntegralPageDTO> getIntegralPage(int pageIndex,String startTime,String endTime){
+    public PageInfo<IntegralPageResDTO> getIntegralPage(int pageIndex, String startTime, String endTime){
+        if(startTime!=null){
+            if(startTime.equals("month")){
+                startTime = DateHelper.getThisMonthFirstDay();
+                endTime = DateHelper.getThisMonthLastDay();
+            }
+            if(startTime.equals("quarter")){
+                startTime = DateHelper.getThisQuarterFirstDay();
+                endTime = DateHelper.getThisQuarterLastDay();
+            }
+            if(startTime.equals("year")){
+                startTime = DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT);
+                endTime = DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT);
+            }
+        }
+
+
         PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
         Page<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
-        Page<IntegralPageDTO> page = new Page<>();
+        Page<IntegralPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralInfoBOS,page);
         userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
-            IntegralPageDTO integralPageDTO = new IntegralPageDTO();
-            BeanUtils.copyProperties(userIntegralInfoBO,integralPageDTO);
-            page.add(integralPageDTO);
+            IntegralPageResDTO integralPageResDTO = new IntegralPageResDTO();
+            BeanUtils.copyProperties(userIntegralInfoBO, integralPageResDTO);
+            page.add(integralPageResDTO);
         });
-        PageInfo<IntegralPageDTO> pageInfo = new PageInfo<>(page);
+        PageInfo<IntegralPageResDTO> pageInfo = new PageInfo<>(page);
         return pageInfo;
     }
 
     @Override
-    public UserIntegralDTO getUserIntegral(){
+    public UserIntegralResDTO getUserIntegral(){
         Long id = ZSYTokenRequestContext.get().getUserId();
-        UserIntegralDTO userIntegralDTO = new UserIntegralDTO();
-        userIntegralDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(),DateHelper.getThisWeekLastDay(),id));
-        userIntegralDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(),DateHelper.getThisMonthLastDay(),id));
-        userIntegralDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id));
-        userIntegralDTO.setQuarterRank(userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(),DateHelper.getThisQuarterLastDay(),id));
-        userIntegralDTO.setYearRank(userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id));
-        return userIntegralDTO;
+        UserIntegralResDTO userIntegralResDTO = new UserIntegralResDTO();
+        userIntegralResDTO.setId(id);
+        userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(),DateHelper.getThisWeekLastDay(),id));
+        userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(),DateHelper.getThisMonthLastDay(),id));
+        userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id));
+        userIntegralResDTO.setQuarterRank(userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(),DateHelper.getThisQuarterLastDay(),id));
+        userIntegralResDTO.setYearRank(userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id));
+        return userIntegralResDTO;
     }
 
 

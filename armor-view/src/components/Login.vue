@@ -72,7 +72,7 @@ background-size: 100% 100%;}
                     }else{
                         _this.button.btnName = '登录成功,跳转中...';
                         window.localStorage.setItem("token", res.data);
-                        _this.$router.push('/index');
+                        _this.$router.push('/index/navIndex');
                     }
                 },(res)=>{
                     _this.button.click = true;

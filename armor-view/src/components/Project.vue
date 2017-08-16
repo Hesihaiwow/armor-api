@@ -4,8 +4,8 @@
     <div class="task-item" v-for="list in TaskItem">
       <img src="../assets/img/u431.png" alt="" class="task-logo">
       <div class="task-info">
-        <div class="task-name">{{list.taskName}}</div>
-        <div class="task-sub-name">{{list.subTaskName}}</div>
+        <div class="task-name">{{list.name}}</div>
+        <div class="task-sub-name">{{list.description}}</div>
       </div>
     </div>
     <div class="add-task-item" @click="addTask">
@@ -19,8 +19,8 @@
         </div>
         <img src="../assets/img/u1284.png" alt="" class="att-img">
         <p class="att-msg">为不同的事物建立各自的项目</p>
-        <input type="text" class="project-name" placeholder="项目名称" v-model="projrctName">
-        <textarea class="project-intro" placeholder="项目简介（选填）" v-model="projectIntro"></textarea>
+        <input type="text" class="project-name" placeholder="项目名称" v-model="name">
+        <textarea class="project-intro" placeholder="项目简介（选填）" v-model="description"></textarea>
         <div class="att-bents">
           <span class="cancel" @click="hidePop">取消</span>
           <span class="save" @click="saveAdd">保存</span>
@@ -30,24 +30,23 @@
   </div>
 </template>
 <script>
+  import Http from '../lib/Http.js'
+  import { Message } from 'element-ui';
+
   export default {
     name: 'Project',
     data() {
       return {
-        TaskItem: [
-          {
-            taskName: '知心慧学',
-            subTaskName: '知心慧学'
-          },
-          {
-            taskName: '慧学本',
-            subTaskName: '知心慧学'
-          }
-        ],
+        TaskItem:'',
         showAddTask: false,
-        projrctName: '',
-        projectIntro: ''
+        name: '',
+        description: ''
       };
+    },
+    beforeMount:function () {
+      Http.zsyGetHttp(Http.API_URI.PROJECT,null,(res)=>{
+        this.TaskItem = res.data;
+      })
     },
     methods: {
       addTask () {
@@ -61,14 +60,15 @@
         console.log(this.projrctName+'~~~'+this.projectIntro);
         if (this.projrctName !== ''){
           let addPro = {};
-          addPro.taskName = this.projrctName;
-          addPro.subTaskName = this.projectIntro;
+          addPro.name = this.name;
+          addPro.description = this.description;
 
           this.TaskItem.push(addPro);
           this.showAddTask = false;
           this.projrctName = this.projectIntro = '';
-        }
 
+          Http.zsyPostHttp(Http.API_URI.ADDPROJECT,addPro);
+        }
       }
     }
   }

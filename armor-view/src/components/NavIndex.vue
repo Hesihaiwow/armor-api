@@ -79,6 +79,7 @@
             };
         },
         created(){
+            this.fetchIntegral()
             this.fetchTaskDoing()
             this.fetchTaskFinished()
             this.fetchTaskWaitAssess()
@@ -92,6 +93,18 @@
             createTaskClick() {
                 // 建任务
                 this.$refs.createTaskPop.show();
+            },
+            fetchIntegral(){
+                Http.zsyGetHttp(Http.API_URI.USERINTEGRAL,null,(res)=>{
+                    let data = res.data;
+                    let items=[];
+                    items.push({label:'本周',score:'+'+data.week});
+                    items.push({label:'本月',score:'+'+data.month});
+                    items.push({label:'本年',score:'+'+data.year});
+                    items.push({label:'季度积分排名',score:'+'+data.quarterRank});
+                    items.push({label:'年度积分排名',score:'+'+data.yearRank});
+                    this.integralItem = items;
+                })
             },
             // 获取用户正在进行的任务
             fetchTaskDoing(){

@@ -2,8 +2,8 @@ package com.zhixinhuixue.armor.service;
 
 
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.dto.response.IntegralPageDTO;
-import com.zhixinhuixue.armor.model.dto.response.UserIntegralDTO;
+import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
 
 
 /**
@@ -18,13 +18,13 @@ public interface IZSYIntegralService {
      * @param endTime 页码
      * @return
      */
-    PageInfo<IntegralPageDTO> getIntegralPage(int pageIndex, String startTime, String endTime);
+    PageInfo<IntegralPageResDTO> getIntegralPage(int pageIndex, String startTime, String endTime);
 
     /**
      * 查询用户积分记录
      * @return
      */
-    UserIntegralDTO getUserIntegral();
+    UserIntegralResDTO getUserIntegral();
 
 
 }
