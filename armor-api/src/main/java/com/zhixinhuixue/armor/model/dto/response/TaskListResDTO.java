@@ -36,6 +36,9 @@ public class TaskListResDTO {
 
     private List<TaskTagResDTO> tags;
 
+    private String timeLabel;
+
+
     public Long getId() {
         return id;
     }
