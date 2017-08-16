@@ -2,10 +2,14 @@ package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
+import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/task")
+@Api(value = "任务相关接口", description = "任务管理系统任务相关接口", tags = "/task")
 public class ZSYTaskController extends ZSYController {
 
     @Autowired
@@ -29,6 +34,7 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("任务审核打回")
+    @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
     @PutMapping(value = "/auditing/reject/{taskId}")
     public String taskReject(@PathVariable("taskId") Long taskId) {
         return taskService.auditTask(taskId, ZSYReviewStatus.REJECT.getValue()).build();
@@ -36,6 +42,7 @@ public class ZSYTaskController extends ZSYController {
 
     @ApiOperation("任务审核通过")
     @PutMapping(value = "/auditing/accept/{taskId}")
+    @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
     public String taskAccept(@PathVariable("taskId") Long taskId) {
         return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
     }
@@ -54,6 +61,7 @@ public class ZSYTaskController extends ZSYController {
 
     @ApiOperation("获取任务详情")
     @GetMapping(value = "/detail/{taskId}")
+    @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
     public String getTaskDetail(@PathVariable("taskId") Long taskId) {
         return taskService.getTaskDetail(taskId).build();
     }
@@ -87,7 +95,8 @@ public class ZSYTaskController extends ZSYController {
 
 
     @ApiOperation("多人任务主任务完成")
-    @PutMapping(value = "/complete/master/{taskId}")
+    @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
+    @PutMapping(value = "/complete/public/master/{taskId}")
     public String completeMasterTask(@PathVariable("taskId") Long taskId) {
         return taskService.completeMasterTask(taskId).build();
     }
@@ -95,7 +104,16 @@ public class ZSYTaskController extends ZSYController {
     @ApiOperation("任务评论")
     @PostMapping(value = "/comment")
     public String comment(@Valid @RequestBody CommentReqDTO commentReqDTO) {
-        return taskService.addComment(commentReqDTO).build();
+        ZSYResult zsyResult = taskService.addComment(commentReqDTO);
+        if (zsyResult.getErrCode().equals("00")) {
+            taskService.finishTask(commentReqDTO.getTaskId());
+        }
+        return zsyResult.build();
     }
 
+    @ApiOperation("查询任务列表")
+    @GetMapping(value = "/public/master/all")
+    public String getTaskList(TaskListReqDTO taskListReqDTO) {
+        return ZSYResult.success().data(taskService.getTaskListPage(taskListReqDTO)).build();
+    }
 }

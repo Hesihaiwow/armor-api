@@ -15,8 +15,8 @@ mybatis:
 
 #分页插件
 pagehelper:
-  auto-dialect: true
-  reasonable: true
+  helper-dialect: mysql
+  reasonable: false
   offset-as-page-num: true
   row-bounds-with-count: true
   page-size-zero: true
