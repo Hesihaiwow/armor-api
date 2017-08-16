@@ -2,7 +2,11 @@
   <div class="organization-con clearfix">
     <div class="department-structure fl">
       <div class="ds-title">部门结构<span class="add-department" @click="addDepart">+</span></div>
-      <el-tree :data="departmentTree" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      <el-tree :data="departmentTree"
+               :props="defaultProps"
+               default-expand-all
+               :expand-on-click-node="false"
+               @node-click="handleNodeClick" />
     </div>
     <div class="department-member fl">
       <div class="dm-title">成员<span class="add-department" @click="AddMemberShow">+</span></div>
