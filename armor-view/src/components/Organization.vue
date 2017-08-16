@@ -126,6 +126,8 @@
             Http.zsyGetHttp('/dept/tree',null,(res)=>{
                 _this.departmentTree.push(res.data);
             });
+
+            this.$root.eventBus.$emit("actName", "organization");
         },
         methods: {
             //分页上一页和下一页样式

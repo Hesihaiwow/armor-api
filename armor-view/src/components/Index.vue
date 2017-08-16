@@ -67,6 +67,12 @@ export default {
         showAlterPwd: false
       };
     },
+    watch:{
+      activeName(curVal,oldVal){
+        if(oldVal == null) return;
+        console.log(curVal);
+      },
+    },
     computed: {
         //获取用户名称
         getUserName(){
@@ -76,6 +82,11 @@ export default {
         }
     },
     methods: {
+      listenSubject() {
+        this.$root.eventBus.$on("actName", (val) => {
+          this.activeName = val;
+        });
+      },
       handleClick(path){
         this.showIndex = false;
         /*tab切换*/
@@ -105,6 +116,9 @@ export default {
         window.localStorage.clear();
         this.$router.push('/');
       }
+    },
+    beforeMount(){
+      this.listenSubject();
     },
     components: {
       Task: Task,
