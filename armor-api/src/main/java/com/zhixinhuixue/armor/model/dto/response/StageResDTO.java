@@ -3,7 +3,7 @@ package com.zhixinhuixue.armor.model.dto.response;
 /**
  * Created by Lang on 2017/8/10 0010.
  */
-public class TagDTO {
+public class StageResDTO {
 
     private long id;
 

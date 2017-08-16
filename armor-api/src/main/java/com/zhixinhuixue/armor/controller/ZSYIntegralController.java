@@ -1,8 +1,8 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.dto.response.IntegralPageDTO;
-import com.zhixinhuixue.armor.model.dto.response.UserIntegralDTO;
+import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -38,7 +38,7 @@ public class ZSYIntegralController extends ZSYController{
     })
     @GetMapping("/{pageIndex}")
     public String getIntegralPage(@PathVariable Integer pageIndex,@PathParam("startTime")String startTime,@PathParam("endTime")String endTime){
-        PageInfo<IntegralPageDTO> pageInfo = integralService.getIntegralPage(pageIndex,startTime,endTime);
+        PageInfo<IntegralPageResDTO> pageInfo = integralService.getIntegralPage(pageIndex,startTime,endTime);
         return ZSYResult.success().data(pageInfo).build();
     }
 
@@ -49,8 +49,8 @@ public class ZSYIntegralController extends ZSYController{
     @ApiOperation("获取用户积分记录")
     @GetMapping("/user")
     public String getUserIntegral(){
-        UserIntegralDTO userIntegralDTO = integralService.getUserIntegral();
-        return ZSYResult.success().data(userIntegralDTO).build();
+        UserIntegralResDTO userIntegralResDTO = integralService.getUserIntegral();
+        return ZSYResult.success().data(userIntegralResDTO).build();
     }
 
 }

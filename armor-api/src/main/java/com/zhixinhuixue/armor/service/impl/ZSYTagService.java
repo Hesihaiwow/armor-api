@@ -4,7 +4,7 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYTagMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.dto.response.TagDTO;
+import com.zhixinhuixue.armor.model.dto.response.TagResDTO;
 import com.zhixinhuixue.armor.model.pojo.Tag;
 import com.zhixinhuixue.armor.service.IZSYTagService;
 import org.springframework.beans.BeanUtils;
@@ -32,18 +32,18 @@ public class ZSYTagService implements IZSYTagService {
      * @return
      */
     @Override
-    public List<TagDTO> getTag(){
+    public List<TagResDTO> getTag(){
         List<Tag> tags = tagMapper.selectTag();
 
-        List<TagDTO> tagDTOS = new ArrayList<>();
+        List<TagResDTO> tagResDTOS = new ArrayList<>();
 
         tags.stream().forEach(tag -> {
-            TagDTO stageDTO = new TagDTO();
-            BeanUtils.copyProperties(tag,stageDTO);
-            tagDTOS.add(stageDTO);
+            TagResDTO tagResDTO = new TagResDTO();
+            BeanUtils.copyProperties(tag,tagResDTO);
+            tagResDTOS.add(tagResDTO);
         });
 
-        return tagDTOS;
+        return tagResDTOS;
     }
 
     /**

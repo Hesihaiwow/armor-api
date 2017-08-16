@@ -4,7 +4,7 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYStageMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.dto.response.StageDTO;
+import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
 import com.zhixinhuixue.armor.model.pojo.Stage;
 import com.zhixinhuixue.armor.service.IZSYStageService;
 import org.springframework.beans.BeanUtils;
@@ -32,15 +32,15 @@ public class ZSYStageService implements IZSYStageService {
      * @return
      */
     @Override
-    public List<StageDTO> getStage(){
+    public List<StageResDTO> getStage(){
         List<Stage> stags = stageMapper.selectStage();
-        List<StageDTO> stageDTOS = new ArrayList<>();
+        List<StageResDTO> stageResDTOS = new ArrayList<>();
         stags.stream().forEach(stage -> {
-            StageDTO stageDTO = new StageDTO();
-            BeanUtils.copyProperties(stage,stageDTO);
-            stageDTOS.add(stageDTO);
+            StageResDTO stageResDTO = new StageResDTO();
+            BeanUtils.copyProperties(stage, stageResDTO);
+            stageResDTOS.add(stageResDTO);
         });
-        return stageDTOS;
+        return stageResDTOS;
     }
 
     /**
