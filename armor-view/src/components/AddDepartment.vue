@@ -5,21 +5,20 @@
         <span class="fl">添加部门</span><span class="ctpc-top-close fr" @click="hide">×</span>
       </div>
       <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">新加部门</div>
+        <div class="ftp-menus fl">部门名称</div>
         <div class="ftp-msg fl">
-          <input type="text" v-model="newDept">
+          <el-input v-model="addForm.name" placeholder="请输入部门名称"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">上级部门</div>
         <div class="ftp-msg fl">
-          <!--<input type="text" v-model="fatherDept">-->
-          <el-select v-model="fatherDept" placeholder="请选择部门">
+          <el-select v-model="addForm.parentId" placeholder="请选择部门">
             <el-option
-                    v-for="item in options"
-                    :key="item.value"
+                    v-for="item in departmentLevel"
+                    :key="item.id"
                     :label="item.label"
-                    :value="item.value">
+                    :value="item.id">
             </el-option>
           </el-select>
         </div>
@@ -27,45 +26,66 @@
       <div class="am-warn">{{amWarn}}</div>
       <div class="ctpc-btns">
         <input type="button" class="ctpc-cancel" value="取消" @click="hide">
-        <input type="button" class="ctpc-save" value="保存" @click="saveMember">
+        <input type="button" class="ctpc-save" value="保存" @click="handleAddDeptBtnClick">
       </div>
     </div>
 	</div>
 </template>
 <script>
+  import Http from '../lib/Http'
+  import Helper from '../lib/Helper'
+
   export default {
-    props: {
-      ftpList: {
-        type: Array
-      },
-    },
     data() {
       return {
+        //部门层级结构数据
+        departmentLevel:[],
+        addForm:{
+            name:'',
+            parentId:''
+        },
         showAddPop: false,
-        amWarn: '',
-        newDept: '',
-        fatherDept: ''
+        amWarn: ''
       };
     },
+    beforeMount(){
+        this.initDeptLevelData();
+    },
     methods: {
+        //初始化部门层级结构数据
+      initDeptLevelData(){
+          let _this = this;
+          Http.zsyGetHttp('/dept/level',null,(res)=>{
+              _this.departmentLevel=res.data;
+          });
+      },
+      //提示框显示
       show () {
         this.showAddPop = true;
       },
+      //提示框隐藏
       hide () {
         this.showAddPop = false;
+        this.addForm.name='';
+        this.addForm.parentId='';
         this.amWarn = '';
       },
-      saveMember () {
-        if (this.newDept=='') {
-          this.amWarn = '新加部门不能为空';
+      //添加部门
+      handleAddDeptBtnClick () {
+        if (Helper.trim(this.addForm.name)=='') {
+          this.amWarn = '部门名称不能为空';
           return;
         }
-        var newDept = {};
-        newDept.addNewDept = this.newDept;
-        newDept.addFatherDept = this.fatherDept;
-        this.$emit("addNewDept", newDept);
-        this.showAddPop = false;
-        this.amWarn = '';
+        if (Helper.trim(this.addForm.parentId)=='') {
+            this.amWarn = '请选择上级部门';
+            return;
+        }
+        Http.zsyPostHttp('/dept/add',this.addForm,(res)=>{
+            this.hide();
+            this.initDeptLevelData();
+            this.$emit("handleDeptDataRefresh");
+            this.$message.success("添加部门成功");
+        })
       }
     }
   }

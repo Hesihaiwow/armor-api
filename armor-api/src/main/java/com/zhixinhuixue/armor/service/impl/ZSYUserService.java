@@ -173,6 +173,7 @@ public class ZSYUserService implements IZSYUserService{
     public void modifyUser(UserReqDTO userReqDTO) {
         User user = new User();
         BeanUtils.copyProperties(userReqDTO,user);
+        user.setId(userReqDTO.getUserId());
         if (userMapper.updateSelectiveById(user)==0){
             throw new ZSYServiceException("更新用户失败");
         }

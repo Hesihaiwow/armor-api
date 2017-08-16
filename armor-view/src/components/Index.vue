@@ -67,6 +67,18 @@ export default {
         showAlterPwd: false
       };
     },
+    beforeMount(){
+        //监听子组件传过来的tab选中事件
+        this.$root.eventBus.$on("handleTabSelected", (val) => {
+            this.activeName = val;
+        });
+    },
+    watch:{
+      activeName(curVal,oldVal){
+        if(oldVal == null) return;
+        console.log(curVal);
+      },
+    },
     computed: {
         //获取用户名称
         getUserName(){
@@ -74,9 +86,6 @@ export default {
         }
     },
     methods: {
-      handleTabSelected(id){
-          console.log(id);
-      },
       handleClick(path){
         this.showIndex = false;
         /*tab切换*/

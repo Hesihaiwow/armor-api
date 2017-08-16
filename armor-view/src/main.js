@@ -19,5 +19,8 @@ new Vue({
   el: '#app',
   router,
   template: '<App/>',
+  data: {
+    eventBus: new Vue(),
+  },
   components: { App }
 })

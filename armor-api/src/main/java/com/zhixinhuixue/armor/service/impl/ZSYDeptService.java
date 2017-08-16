@@ -65,7 +65,7 @@ public class ZSYDeptService implements IZSYDeptService {
         BeanUtils.copyProperties(deptBo,deptLevelResDTO,"children");
         deptLevelResDTO.setLabel(deptBo.getName());
         deptLevelResDTOS.add(deptLevelResDTO);
-        deptLevelResDTOS.addAll(deepLevelCopy(deptBo.getChildren()));
+        deptLevelResDTOS.addAll(deepLevelCopy(1,deptBo.getChildren()));
         return deptLevelResDTOS;
     }
 
@@ -91,14 +91,19 @@ public class ZSYDeptService implements IZSYDeptService {
      * @param children 对象中的集合
      * @return
      */
-    private List<DeptLevelResDTO> deepLevelCopy(List<DeptBo> children){
+    private List<DeptLevelResDTO> deepLevelCopy(int level,List<DeptBo> children){
         List<DeptLevelResDTO> childDept = new ArrayList<>();
         children.stream().forEach(child->{
             DeptLevelResDTO tmp = new DeptLevelResDTO();
             tmp.setId(child.getId());
-            tmp.setLabel(String.format("--%s",child.getName()));
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < level; i++) {
+                sb.append("-");
+            }
+            sb.append(child.getName());
+            tmp.setLabel(sb.toString());
             childDept.add(tmp);
-            childDept.addAll(deepLevelCopy(child.getChildren()));
+            childDept.addAll(deepLevelCopy(level+1,child.getChildren()));
         });
         return childDept;
     }
