@@ -10,7 +10,16 @@ import java.util.List;
  */
 public class TaskListBO extends Task {
 
+    private String projectName;
     private List<Tag> tags;
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 
     public List<Tag> getTags() {
         return tags;

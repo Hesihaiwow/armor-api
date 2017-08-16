@@ -16,6 +16,8 @@ public class TaskListResDTO {
 
     private Long projectId;
 
+    private String projectName;
+
     private Date endTime;
 
     private Integer type;
@@ -149,5 +151,21 @@ public class TaskListResDTO {
 
     public void setTags(List<TaskTagResDTO> tags) {
         this.tags = tags;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getTimeLabel() {
+        return timeLabel;
+    }
+
+    public void setTimeLabel(String timeLabel) {
+        this.timeLabel = timeLabel;
     }
 }

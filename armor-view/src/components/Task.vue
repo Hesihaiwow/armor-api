@@ -3,35 +3,35 @@
         <div class="task-top clearfix">
             <div class="task-top-list fl">
                 <span class="ttl-name">项目</span>
-                <el-select v-model="form.projectId" placeholder="请选择">
+                <el-select clearable v-model="form.projectId" placeholder="请选择">
                     <el-option v-for="item in projectList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">成员</span>
-                <el-select v-model="form.userId" placeholder="请选择">
+                <el-select clearable v-model="form.userId" placeholder="请选择">
                     <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">阶段</span>
-                <el-select v-model="form.stageId" placeholder="请选择">
+                <el-select clearable v-model="form.stageId" placeholder="请选择">
                     <el-option v-for="item in stageList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">标签</span>
-                <el-select v-model="form.tagId" placeholder="请选择">
+                <el-select clearable v-model="form.tagId" placeholder="请选择">
                     <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                :value="item.id"></el-option>
                 </el-select>
             </div>
             <div class="task-top-list fl">
                 <span class="ttl-name">状态</span>
-                <el-select v-model="form.status" placeholder="请选择">
+                <el-select clearable v-model="form.status" placeholder="请选择">
                     <el-option v-for="item in status" :key="item.value" :label="item.name"
                                :value="item.value"></el-option>
                 </el-select>
@@ -42,35 +42,55 @@
                 <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions" placeholder="选择日期"
                                 @change="timeChange"></el-date-picker>
             </div>
+            <div class="task-top-list fl">
+                <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询</el-button>
+            </div>
             <div class="task-top-list fl creat-task" @click="createTaskClick">
                 <span class="ttl-add-icon">+</span>
                 <span class="ttl-add-msg">建任务</span>
             </div>
         </div>
         <div class="task-lis-con">
+            <task-item :taskItems="taskItems" :isPrivate="false"></task-item>
             <create-task ref="createTaskPop"></create-task>
+        </div>
+        <div class="pagination">
+            <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="page.pageNum"
+                    :page-size="page.pageSize"
+                    layout="total, prev, pager, next"
+                    :total="page.total">
+            </el-pagination>
         </div>
     </div>
 </template>
 <script>
     import CreateTask from './CreateTask'
+    import TaskItem from './TaskItem'
     import http from '../lib/Http'
     import moment from 'moment';
+
     moment.locale('zh-CN');
 
     export default {
         name: 'Task',
         data() {
             return {
+                loading:true,
                 timeRange: '',
                 projectList: [],
                 userList: [],
                 stageList: [],
                 tagList: [],
-                status: [{value: 1, name: '进行中'}, {value: 2, name: '已结束'}],
-                taskList: [],
+                status: [{value: 1, name: '进行中'}, {value: 2, name: '已完成'}],
+                taskItems: [],
+                page: {
+                    pageNum: '',
+                    pageSize: 6,
+                    total: '',
+                },
                 form: {
-                    pageSize: 10,
                     projectId: '',
                     userId: '',
                     stageId: '',
@@ -107,24 +127,7 @@
                 }
             };
         },
-        created(){
-            console.info('created..')
-            console.info(moment('2017-08-16').calendar(null, {
-                sameDay: '[今天]',
-                nextDay: '[明天]',
-                nextWeek: '[下]ddd',
-                lastDay: '[昨天]',
-                lastWeek: '[上]ddd',
-                sameElse: 'L'
-            }))
-            let diffDays = moment('2017-08-16').diff(moment('2017-08-20'), 'days');
-            if (diffDays == 0) {
-                console.info('yellow')
-            } else if (diffDays > 0) {
-                console.info('red')
-            } else if (diffDays < 0) {
-                console.info('blue')
-            }
+        created() {
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
@@ -132,55 +135,104 @@
             this.fetchTaskList()
         },
         methods: {
+            handleCurrentChange(currentPage) {
+                this.page.pageNum = currentPage
+                this.fetchTaskList()
+            },
             createTaskClick() {
                 // 点击建任务
                 this.$refs.createTaskPop.show();
-            }, timeChange() {
+            }, timeChange(time) {
                 // 选择结束时间
-                if (this.timeRange && this.timeRange.length == 2) {
-                    this.form.beginTime = this.timeRange[0]
-                    this.form.endTime = this.timeRange[1]
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.form.beginTime = `${time[0]} 00:00:00`
+                    this.form.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.form.beginTime = this.form.endTime = ''
                 }
             },
-            fetchProjectList(){
+            fetchProjectList() {
                 let vm = this
                 http.zsyGetHttp('/project/list', {}, (resp) => {
                     vm.projectList = resp.data
                 })
             },
-            fetchUserList(){
+            fetchUserList() {
                 let vm = this
                 http.zsyGetHttp('/user/effective', {}, (resp) => {
                     vm.userList = resp.data
                 })
             },
-            fetchStageList(){
+            fetchStageList() {
                 let vm = this
                 http.zsyGetHttp('/stage/list', {}, (resp) => {
                     vm.stageList = resp.data
                 })
             },
-            fetchTagList(){
+            fetchTagList() {
                 let vm = this
                 http.zsyGetHttp('/tag/list', {}, (resp) => {
                     vm.tagList = resp.data
                 })
             },
-            fetchTaskList(){
+            fetchTaskList() {
+                this.loading = true
+                this.taskItems = []
                 let vm = this
-                http.zsyGetHttp('/task/public/master/all', this.form, (resp) => {
-                    vm.taskList = resp.data
+                let param = this.form
+                param['pageNum'] = this.page.pageNum || 1
+                param['pageSize'] = this.page.pageSize
+                http.zsyGetHttp('/task/public/master/all', param, (resp) => {
+                    const list = resp.data.list
+                    list.forEach((el) => {
+                        const diffDays = moment().diff(moment(el.endTime), 'days')
+                        let endColor = '',endText = ''
+                        endText = moment(el.endTime).calendar(null, {
+                            sameDay: '[今天]lT',
+                            nextDay: '[明天]',
+                            nextWeek: '[下]ddd',
+                            lastDay: '[昨天]',
+                            lastWeek: '[上]ddd',
+                            sameElse: 'L'
+                        })
+                        if (el.status === 2) {
+                            if (diffDays == 0) {
+                                endColor = 'orange'
+                            } else if (diffDays > 0) {
+                                endColor = 'red'
+                            } else if (diffDays < 0) {
+                                endColor = 'blue'
+                            }
+                            endText += ' 截止'
+                        }else{
+                            endColor = 'green'
+                            endText += ' 完成'
+                        }
+                        el['endColor'] = endColor
+                        el['endText'] = endText
+
+                    })
+                    vm.loading = false
+                    vm.taskItems = resp.data.list
+                    vm.page.pageNum = resp.data.pageNum
+                    vm.page.pageSize = resp.data.pageSize
+                    vm.page.total = resp.data.total
                 })
             }
         },
         components: {
+            TaskItem: TaskItem,
             CreateTask: CreateTask
         }
     }
 </script>
 <style scoped>
+    .pagination {
+        margin: 20px 0;
+        text-align: right;
+    }
+
     .task-con {
         width: 1100px;
         margin: auto;
