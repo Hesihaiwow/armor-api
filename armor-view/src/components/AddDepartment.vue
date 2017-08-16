@@ -13,7 +13,15 @@
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">上级部门</div>
         <div class="ftp-msg fl">
-          <input type="text" v-model="fatherDept">
+          <!--<input type="text" v-model="fatherDept">-->
+          <el-select v-model="fatherDept" placeholder="请选择部门">
+            <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
         </div>
       </div>
       <div class="am-warn">{{amWarn}}</div>

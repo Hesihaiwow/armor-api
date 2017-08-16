@@ -70,12 +70,13 @@ export default {
     computed: {
         //获取用户名称
         getUserName(){
-//           return Helper.decodeToken().userName;
-           return '';
-
+           return Helper.decodeToken().userName;
         }
     },
     methods: {
+      handleTabSelected(id){
+          console.log(id);
+      },
       handleClick(path){
         this.showIndex = false;
         /*tab切换*/

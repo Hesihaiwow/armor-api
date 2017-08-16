@@ -107,9 +107,15 @@
   </update>
 
   <!-- 用户列表(分页) -->
-  <select id="selectPage" parameterType="java.lang.Long" resultMap="PageResultMap">
+  <select id="selectPage" parameterType="java.util.List" resultMap="PageResultMap">
     SELECT * FROM `user`
-    WHERE is_delete = 0 AND department_id = #{deptId}
+    WHERE is_delete = 0
+     <if test="list!=null">
+       AND department_id IN
+       <foreach collection="list" open="(" separator="," close=")" item="item">
+         #{item}
+       </foreach>
+     </if>
     ORDER BY user_role ASC ,create_time ASC
   </select>
 </mapper>

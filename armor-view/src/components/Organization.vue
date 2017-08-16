@@ -87,6 +87,8 @@
                 },
                 //部门树结构数据
                 departmentTree: [],
+                //部门层级结构数据
+                departmentLevel:[],
                 //部门树结构父子传递字段
                 defaultProps: {
                     children: 'children',
@@ -124,11 +126,19 @@
                 }
             };
         },
+        //数据初始化
         beforeMount(){
             let _this = this;
-            //初始化部门数据
+            //选中组织tab
+            _this.$emit('handleTabSelected',10);
+            //初始化部门树结构数据
             Http.zsyGetHttp('/dept/tree',null,(res)=>{
                 _this.departmentTree.push(res.data);
+                _this.userPaging(_this.departmentTree[0].id,_this.queryForm.pageIndex);
+            });
+            //初始化部门层级结构数据
+            Http.zsyGetHttp('/dept/level',null,(res)=>{
+                _this.departmentLevel.push(res.data);
             });
         },
         methods: {
@@ -157,10 +167,8 @@
             },
             // 部门结构树点击
             handleNodeClick(data) {
-                if (data.children.length==0){
-                    //最小子节点,可点击
-                    this.userPaging(data.id,1);
-                }
+                //最小子节点,可点击
+                this.userPaging(data.id,1);
             },
             // 重置用户密码确认框
             resetUserPwdDlgShow (index) {

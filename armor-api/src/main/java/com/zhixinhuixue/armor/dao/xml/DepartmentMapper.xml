@@ -34,8 +34,8 @@
   </select>
 
   <!-- 查询root菜单 -->
-  <select id="selectRootDept" resultMap="TreeResultMap">
-    SELECT * FROM department WHERE is_delete = 0 AND parent_id = 0
+  <select id="selectRootDept" parameterType="java.lang.Long" resultMap="TreeResultMap">
+    SELECT * FROM department WHERE is_delete = 0 AND `id` = #{pDeptId}
   </select>
 
   <!-- 查询父级菜单的子菜单 -->

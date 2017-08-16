@@ -7,16 +7,19 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.MD5Helper;
 import com.zhixinhuixue.armor.helper.SHA1Helper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.model.bo.DeptBo;
 import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.DeptResDTO;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
@@ -36,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +73,9 @@ public class ZSYUserService implements IZSYUserService{
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private IZSYDepartmentMapper departmentMapper;
 
     @Override
     @Transactional
@@ -120,8 +127,13 @@ public class ZSYUserService implements IZSYUserService{
 
     @Override
     public PageInfo<UserPageResDTO> userPage(long deptId, int pageIndex) {
+        List<Long> deptIds = Lists.newArrayList();
+        DeptBo deptBo = departmentMapper.selectRootDept(deptId);
+        deptIds.add(deptBo.getId());
+        deptIds.addAll(deepCopyDeptIds(deptBo.getChildren()));
+
         PageHelper.startPage(pageIndex,ZSYConstants.PAGE_SIZE);
-        Page<UserBo> userBos = userMapper.selectPage(deptId);
+        Page<UserBo> userBos = userMapper.selectPage(deptIds);
         Page<UserPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userBos,page);
         userBos.stream().forEach(userBo -> {
@@ -240,5 +252,20 @@ public class ZSYUserService implements IZSYUserService{
         }
         BeanUtils.copyProperties(user,userResDTO);
         return userResDTO;
+    }
+
+
+    /**
+     * 对象深度拷贝
+     * @param children 对象中的集合
+     * @return
+     */
+    private List<Long> deepCopyDeptIds(List<DeptBo> children){
+        List<Long> ids = new ArrayList<>();
+        children.stream().forEach(child->{
+            ids.add(child.getId());
+            ids.addAll(deepCopyDeptIds(child.getChildren()));
+        });
+        return ids;
     }
 }
