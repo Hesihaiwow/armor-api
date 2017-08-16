@@ -2,7 +2,7 @@ package com.zhixinhuixue.armor.controller;
 
 
 import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.ProjectDTO;
+import com.zhixinhuixue.armor.model.dto.response.ProjectResDTO;
 import com.zhixinhuixue.armor.service.IZSYProjectService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -31,7 +31,7 @@ public class ZSYProjectController extends ZSYController{
     @ApiOperation("项目列表")
     @GetMapping(value = "/list")
     public String getProject(){
-        List<ProjectDTO> projectDTOS = projectService.getProject();
+        List<ProjectResDTO> projectDTOS = projectService.getProject();
         return ZSYResult.success().data(projectDTOS).build();
     }
     /**

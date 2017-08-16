@@ -16,7 +16,15 @@ export default {
     //所有请求URI
     API_URI:{
         //用户登陆
-        LOGIN:'/user/login'
+        LOGIN:'/user/login',
+        //积分列表
+        INTEGRAL:'/integral/',
+        //项目列表
+        PROJECT:'/project/list',
+        //添加项目
+        ADDPROJECT:'/project/add',
+        //个人积分记录
+        USERINTEGRAL:'/integral/user'
     },
     //请求方法
     HTTP_METHOD:{

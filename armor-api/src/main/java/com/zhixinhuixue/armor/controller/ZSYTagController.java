@@ -1,7 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 
-import com.zhixinhuixue.armor.model.dto.response.TagDTO;
+import com.zhixinhuixue.armor.model.dto.response.TagResDTO;
 import com.zhixinhuixue.armor.service.IZSYTagService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -29,7 +29,7 @@ public class ZSYTagController extends ZSYController{
     @ApiOperation("标签列表")
     @GetMapping(value = "/list")
     public String getTag(){
-        List<TagDTO> tagDTOS = tagService.getTag();
+        List<TagResDTO> tagDTOS = tagService.getTag();
         return ZSYResult.success().data(tagDTOS).build();
     }
     /**

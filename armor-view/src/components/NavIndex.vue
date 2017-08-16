@@ -35,40 +35,20 @@
   </div>
 </template>
 <script>
+import Http from '../lib/Http.js'
+import { Message } from 'element-ui';
 import TaskDoing from './TaskDoing'
-import TaskFinished from './TaskFinished'
-import TaskList from './TaskList'
+import  TaskFinished from './TaskFinished'
+import  TaskList from './TaskList'
 import CreateTask from './CreateTask'
-import FinishedTaskPop from './FinishedTaskPop'
+import  FinishedTaskPop from './FinishedTaskPop'
 import AssessTaskPop from './AssessTaskPop'
-
 
   export default {
     name: 'NavIndex',
     data() {
       return {
-        integralItem: [
-          {
-            label: '本周',
-            score: '+42'
-          },
-          {
-            label: '本月',
-            score: '+422'
-          },
-          {
-            label: '年度总积分',
-            score: '9000'
-          },
-          {
-            label: '季度积分排名',
-            score: '12'
-          },
-          {
-            label: '年度积分排名',
-            score: '22'
-          }
-        ],
+        integralItem:'',
         activeName: 'taskDoing',
         tabs: [
             {
@@ -109,6 +89,18 @@ import AssessTaskPop from './AssessTaskPop'
           }
         ]
       };
+    },
+    created:function () {
+      Http.zsyGetHttp(Http.API_URI.USERINTEGRAL,null,(res)=>{
+          let data = res.data;
+          let items=[];
+          items.push({label:'本周',score:'+'+data.week});
+          items.push({label:'本月',score:'+'+data.month});
+          items.push({label:'本年',score:'+'+data.year});
+          items.push({label:'季度积分排名',score:'+'+data.quarterRank});
+          items.push({label:'年度积分排名',score:'+'+data.yearRank});
+          this.integralItem = items;
+      })
     },
     methods: {
       handleClick(tab, event) {

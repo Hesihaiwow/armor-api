@@ -1,7 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 
-import com.zhixinhuixue.armor.model.dto.response.StageDTO;
+import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
 import com.zhixinhuixue.armor.service.IZSYStageService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -30,7 +30,7 @@ public class ZSYStageController extends ZSYController {
     @ApiOperation("阶段列表")
     @GetMapping(value = "/list")
     public String getStage() {
-        List<StageDTO> stageDTOS = stageService.getStage();
+        List<StageResDTO> stageDTOS = stageService.getStage();
         return ZSYResult.success().data(stageDTOS).build();
     }
 

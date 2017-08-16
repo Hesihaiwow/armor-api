@@ -2,7 +2,7 @@ package com.zhixinhuixue.armor.service;
 
 
 
-import com.zhixinhuixue.armor.model.dto.response.StageDTO;
+import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface IZSYStageService {
      * 获取阶段列表
      * @return
      */
-    List<StageDTO> getStage();
+    List<StageResDTO> getStage();
 
     /**
      * 添加阶段
