@@ -3,10 +3,10 @@
   <div class="nav-top-bg">
     <div class="ntb-con">
       <div class="logo" @click="showIndexEvent"><img src="../assets/img/site-icon.png" alt=""></div>
-      <div class="personal-name" @click.prevent.stop="personalOpt">  {{getUserName}}
+      <div class="personal-name" @click.prevent.stop="personalOpt">  小花
         <div class="personal-opt" v-show="showPerOpt">
           <div class="alter-pwd" @click.stop.prevent="alterPwd">修改密码</div>
-          <div class="logout-btn" @click.stop.prevent="handleLogout">退出登录</div>
+          <div class="logout-btn" @click.stop.prevent="logoutBtn">退出登录</div>
         </div>
       </div>
     </div>
@@ -15,14 +15,14 @@
     <div class="el-tab-bar">
       <el-tabs v-model="activeName" @tab-click="handleClick(activeName)">
         <el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">
-          <!-- <component :is="item.name"></component> -->
+          <component :is="item.name"></component>
         </el-tab-pane>
       </el-tabs>
     </div>
     
   </div>
   <router-view></router-view>
-  <!-- <nav-index v-show="showIndex"></nav-index> -->
+  <nav-index v-show="showIndex"></nav-index>
   <alter-password ref="alterPwdPop"></alter-password>
 </div>
 </template>
@@ -33,7 +33,6 @@ import Intergral from './Intergral'
 import Organization from './Organization'
 import NavIndex from './NavIndex'
 import AlterPassword from './AlterPassword'
-import Helper from "../lib/Helper";
 
 
 
@@ -67,25 +66,21 @@ export default {
         showAlterPwd: false
       };
     },
-    computed: {
-        //获取用户名称
-        getUserName(){
-//           return Helper.decodeToken().userName;
-           return '';
-
-        }
-    },
     methods: {
-      handleClick(path){
+      handleClick(activeName) {
+        // 点击tab
+        console.log(tab, event);
         this.showIndex = false;
+      },
+      handleClick(path){
         /*tab切换*/
-        this.$router.push(`/index/${path}`);
+        // this.$store.commit("SET_ACTIVETAB",path);
+        this.$router.push(`/topicindex/${path}`);
       },
       showIndexEvent () {
         // 显示首页
-        // this.showIndex = true;
+        this.showIndex = true;
         this.activeName = '';
-        this.$router.push(`/index/navIndex`);
       },
       personalOpt () {
         // 个人
@@ -99,10 +94,9 @@ export default {
         this.showPerOpt = false;
         this.$refs.alterPwdPop.show();
       },
-      // 退出登录
-      handleLogout () {
+      logoutBtn () {
+        // 退出登录
         this.showPerOpt = false;
-        window.localStorage.clear();
         this.$router.push('/');
       }
     },
