@@ -3,7 +3,7 @@
 		<div class="intergral-con-top clearfix">
       <div class="fl menu-list" v-for="(list,index) in menuList" @click="togTable(index)" :style="tabActive(index)">{{list.name}}</div>
       <div class="fl menu-list" @click="togTable(4)" :style="tabActive(4)">自定义</div>
-      <div class="fl menu-list" id="diy" style="display: none">
+      <div class="fl menu-list" :style="{display:diyStyle}">
         <el-date-picker v-model="queryForm.startTime" type="datetime" placeholder="选择日期" ></el-date-picker><span class="div-line">-</span>
         <el-date-picker v-model="queryForm.endTime" type="datetime" placeholder="选择日期" ></el-date-picker>
         <img src="../assets/img/u1221.png" alt="" @click="integralPage('0')" class="serch-btn">
@@ -11,6 +11,7 @@
     </div>
     <div class="intergral-data-detail">
       <el-table :data="tableData" stripe style="width: 100%">
+        <el-table-column prop="id" label="排名" align="center"></el-table-column>
         <el-table-column prop="name" label="成员" align="center"></el-table-column>
         <el-table-column prop="integral" label="积分" align="center"></el-table-column>
       </el-table>
@@ -43,6 +44,7 @@
         currentPage:1,
         pageSize:10,
         totals:0,
+        diyStyle:"none",
         menuList: [
           {
             name: '本月'
@@ -116,14 +118,13 @@
         })
       },
       displayTest(id){
-        let diy = document.getElementById("diy");
         if(id!=4){
-            diy.style.display='none';
+            this.diyStyle ='none';
         }else{
-          if(diy.style.display=="block"){
-            diy.style.display='none';
+          if(this.diyStyle=="block"){
+            this.diyStyle='none';
           }else{
-            diy.style.display='block';
+            this.diyStyle='block';
           }
         }
       }

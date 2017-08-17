@@ -65,8 +65,10 @@ public class ZSYIntegralService implements IZSYIntegralService{
         userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(),DateHelper.getThisWeekLastDay(),id));
         userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(),DateHelper.getThisMonthLastDay(),id));
         userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id));
-        userIntegralResDTO.setQuarterRank(userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(),DateHelper.getThisQuarterLastDay(),id));
-        userIntegralResDTO.setYearRank(userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id));
+        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(),DateHelper.getThisQuarterLastDay(),id);//季度排名为空设为0
+        userIntegralResDTO.setQuarterRank(quarterRank!=null?quarterRank:0);
+        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id);//年度排名为空设为0
+        userIntegralResDTO.setYearRank(yearRank!=null?yearRank:0);
         return userIntegralResDTO;
     }
 

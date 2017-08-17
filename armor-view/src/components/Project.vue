@@ -57,17 +57,18 @@
       },
       saveAdd () {
         // 保存
-        console.log(this.projrctName+'~~~'+this.projectIntro);
-        if (this.projrctName !== ''){
+
+        if (this.name!= ''&&/\s/.test(this.name)!=true){
           let addPro = {};
           addPro.name = this.name;
           addPro.description = this.description;
-
           this.TaskItem.push(addPro);
           this.showAddTask = false;
-          this.projrctName = this.projectIntro = '';
+          this.name = this.description = '';
 
           Http.zsyPostHttp(Http.API_URI.ADDPROJECT,addPro);
+        }else{
+            Message.error("项目名称不能为空");
         }
       }
     }

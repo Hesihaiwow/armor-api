@@ -42,5 +42,5 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    int getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id);
+    Integer getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id);
 }

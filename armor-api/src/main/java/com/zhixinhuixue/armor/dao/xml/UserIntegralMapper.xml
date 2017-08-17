@@ -15,8 +15,9 @@
   <sql id="Base_Column_List">
     id, task_id, user_id, integral, create_time
   </sql>
-  <!--查询查询积分列表 通过时间倒序排列-->
+  <!--查询查询积分列表 通过积分排列-->
   <select id="getIntegralPage" parameterType="Map"  resultMap="BaseMap">
+    SELECT (@rowid := @rowid+1) AS id,integral,name FROM(
     SELECT sum(i.integral) as integral, u.name
     FROM user_integral i,`user` u
     <where>
@@ -29,11 +30,12 @@
       </if>
     </where>
       GROUP BY i.user_id
-      ORDER BY integral DESC
+      ORDER BY integral DESC)as a,
+    (SELECT (@rowid:=0))as b
   </select>
   <!--查询个人时段积分-->
   <select id="getUserIntegral" parameterType="String"  resultType="java.lang.Integer">
-    SELECT  sum(integral)  FROM user_integral
+    SELECT  IFNULL(sum(integral),0) FROM user_integral
     <where>
       user_id = #{id,jdbcType=BIGINT}
         <![CDATA[AND create_time > #{startTime,jdbcType=TIMESTAMP}
