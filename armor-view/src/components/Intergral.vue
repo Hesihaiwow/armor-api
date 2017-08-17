@@ -5,7 +5,7 @@
       <div class="fl menu-list" @click="togTable(4)" :style="tabActive(4)">自定义</div>
       <div class="fl menu-list" :style="{display:diyStyle}">
         <el-date-picker v-model="queryForm.startTime" type="datetime" placeholder="选择日期" ></el-date-picker><span class="div-line">-</span>
-        <el-date-picker v-model="queryForm.endTime" type="datetime" placeholder="选择日期" ></el-date-picker>
+        <el-date-picker v-model="queryForm.endTime" type="datetime" placeholder="选择日期"  ></el-date-picker>
         <img src="../assets/img/u1221.png" alt="" @click="integralPage('0')" class="serch-btn">
       </div>
     </div>
@@ -17,11 +17,10 @@
       </el-table>
     </div>
     <el-pagination
-      @size-change=""
       @current-change="integralPage"
       :page-size="pageSize"
       :current-page="currentPage"
-      layout="total, prev, pager, next"
+      :layout="layout"
       :total="totals">
     </el-pagination>
 	</div>
@@ -41,6 +40,7 @@
         dateForm:{
           startTime:'0'
         },
+        layout:"total, pager",
         currentPage:1,
         pageSize:10,
         totals:0,
@@ -67,6 +67,7 @@
         this.tableData = res.data.list;
         this.totals=res.data.total;
         this.pageSize =res.data.pagesize;
+        this.pagingLayout(this.totals);
       })
     },
 
@@ -107,6 +108,7 @@
           this.tableData = res.data.list;
           this.totals=res.data.total;
           this.pageSize =res.data.pagesize;
+          this.pagingLayout(this.totals);
         })
 
       },
@@ -115,6 +117,7 @@
           this.tableData = res.data.list;
           this.totals=res.data.total;
           this.pageSize =res.data.pagesize;
+          this.pagingLayout(this.totals);
         })
       },
       displayTest(id){
@@ -126,6 +129,13 @@
           }else{
             this.diyStyle='block';
           }
+        }
+      },
+      pagingLayout() {
+        if (this.totals>0){
+          this.layout = 'total,prev,pager,next';
+        }else{
+          this.layout = 'total,pager';
         }
       }
 
