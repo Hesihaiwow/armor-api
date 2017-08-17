@@ -8,6 +8,9 @@ export default {
     //解Token
     decodeToken: function () {
         let token = window.localStorage.getItem("token");
+        if (token==null||token==''){
+            this.$router.push("/");
+        }
         let tokens = token.split(".");
         var output = tokens[1].replace(/-/g, '+').replace(/_/g, '/');
         switch (output.length % 4) {

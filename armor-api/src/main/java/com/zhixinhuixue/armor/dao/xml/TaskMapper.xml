@@ -23,6 +23,7 @@
     </sql>
     
     <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.TaskListBO" extends="BaseResultMap">
+        <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
         <collection property="tags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
     </resultMap>
@@ -33,7 +34,7 @@
 
     <resultMap id="TaskFinishedResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
-        <association property="userIntegral" column="{taskId=task_id,userId=user_id}" select="selectUserIntegral" javaType="java.lang.Integer" />
+        <association property="userIntegral" column="{taskId=id,userId=user_id}" select="selectUserIntegral" javaType="java.lang.Integer" />
     </resultMap>
 
     <!-- 任务详情Map -->
@@ -66,7 +67,7 @@
 
     <!-- 查询已结束的任务，包含评价 -->
     <select id="selectFinishedTask" resultMap="TaskFinishedResultMap" parameterType="java.lang.Long">
-     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName from task t1
+     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
             where t1.`status` = 3 and t1.review_status = 3
@@ -80,9 +81,10 @@
 
     <!-- 分页查询 -->
     <select id="selectPage" parameterType="com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO" resultMap="PageResultMap">
-        select DISTINCT(t1.id) as dist, t1.* from task t1
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName from task t1
         left join task_user t2 on t1.id =t2.task_id
         left join task_tag t3 on t1.id = t3.task_id
+        left join project t4 on t1.project_id = t4.id
         <where>
             t1.review_status = 3 and t1.`type` = 2
             <if test="projectId!=null and projectId!=0">
@@ -98,7 +100,7 @@
                 and t3.tag_id = #{tagId}
             </if>
             <if test="status!=null and status!=0">
-                and t3.`status` = #{status}
+                and t1.`status` = #{status}
             </if>
             <if test="beginTime!=null">
                 and t1.create_time &gt;= #{beginTime}

@@ -463,10 +463,12 @@ public class ZSYTaskService implements IZSYTaskService {
                 }
             }
         });
-        int sum = commentedNum.stream().mapToInt(i -> i.intValue()).sum();
-        commentCompleted = (sum == ((userIds.size() - 1) * taskDetailBO.getTaskUsers().size()));
-        if (commentCompleted || taskDetailBO.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
-            throw new ZSYServiceException("任务已结束");
+        if (userIds.size()>1) {
+            int sum = commentedNum.stream().mapToInt(i -> i.intValue()).sum();
+            commentCompleted = (sum == ((userIds.size() - 1) * taskDetailBO.getTaskUsers().size()));
+            if (commentCompleted || taskDetailBO.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
+                throw new ZSYServiceException("任务已结束");
+            }
         }
         if (commentReqDTO.getComments() == null || commentReqDTO.getComments().size() == 0) {
             throw new ZSYServiceException("评价不能为空");
@@ -539,6 +541,11 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setIntegral((int) average.getAsDouble());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
+                Task task = new Task();
+                task.setId(taskId);
+                task.setStatus(ZSYTaskStatus.FINISHED.getValue());
+                task.setUpdateTime(new Date());
+                taskMapper.updateByPrimaryKeySelective(task);
             });
         }
     }

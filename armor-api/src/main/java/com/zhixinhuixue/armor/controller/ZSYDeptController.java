@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.model.dto.request.DeptReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.DeptLevelResDTO;
 import com.zhixinhuixue.armor.model.dto.response.DeptResDTO;
 import com.zhixinhuixue.armor.service.IZSYDeptService;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by Akuma on 2017/8/9.
@@ -38,4 +40,10 @@ public class ZSYDeptController extends ZSYController {
         return ZSYResult.success().data(deptResDTO).build();
     }
 
+    @ApiOperation("部门级别结构")
+    @GetMapping("/level")
+    public String level(){
+        List<DeptLevelResDTO> deptLevelResDTOS = deptService.getDeptLevel();
+        return ZSYResult.success().data(deptLevelResDTOS).build();
+    }
 }

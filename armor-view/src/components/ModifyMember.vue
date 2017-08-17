@@ -2,36 +2,36 @@
 	<div class="add-member-pop" v-show="showAddPop">
     <div class="add-member-pop-con">
       <div class="ctpc-top clearfix">
-        <span class="fl">添加成员</span><span class="ctpc-top-close fr" @click="hide">×</span>
+        <span class="fl">修改成员</span><span class="ctpc-top-close fr" @click="hide">×</span>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">姓名</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.name" placeholder="请输入姓名"></el-input>
+          <el-input v-model="modifyForm.name" placeholder="请输入姓名"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">账号</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.account" placeholder="请输入账号"></el-input>
+          <el-input v-model="modifyForm.account" placeholder="请输入账号"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">职位</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.jobName" placeholder="请输入职位"></el-input>
+          <el-input v-model="modifyForm.jobName" placeholder="请输入职位"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">手机号</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.phone" placeholder="请输入手机号"></el-input>
+          <el-input v-model="modifyForm.phone" placeholder="请输入手机号"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">用户权限</div>
         <div class="ftp-msg fl">
-          <el-select v-model="addForm.userRole" placeholder="请选择权限">
+          <el-select v-model="modifyForm.userRole" placeholder="请选择权限">
             <el-option
                     v-for="item in options"
                     :key="item.value"
@@ -44,7 +44,7 @@
       <!--<div class="am-warn">{{amWarn}}</div>-->
       <div class="ctpc-btns">
         <input type="button" class="ctpc-cancel" value="取消" @click="hide">
-        <input type="button" class="ctpc-save" value="保存" @click="handleAddUserClick">
+        <input type="button" class="ctpc-save" value="保存" @click="handleModifyUserClick">
       </div>
     </div>
 	</div>
@@ -57,7 +57,8 @@
     data() {
       return {
         //添加用户表单
-        addForm:{
+        modifyForm:{
+          userId:'',
           name:'',
           account:'',
           jobName:'',
@@ -82,44 +83,54 @@
     methods: {
       //显示弹框
       show () {
-        this.showAddPop = true;
+        Http.zsyGetHttp(`/user/${this.modifyForm.userId}`,null,(res)=>{
+            this.modifyForm.userId=res.data.id;
+            this.modifyForm.name=res.data.name;
+            this.modifyForm.account=res.data.account;
+            this.modifyForm.jobName=res.data.jobName;
+            this.modifyForm.phone=res.data.phone;
+            this.modifyForm.userRole=res.data.userRole;
+            this.modifyForm.departmentId=res.data.departmentId;
+            this.showAddPop = true;
+        });
       },
       //隐藏弹框
       hide () {
         this.showAddPop = false;
-        this.addForm.name='';
-        this.addForm.account='';
-        this.addForm.jobName='';
-        this.addForm.phone='';
-        this.addForm.userRole='';
+        this.modifyForm.userId='';
+        this.modifyForm.name='';
+        this.modifyForm.account='';
+        this.modifyForm.jobName='';
+        this.modifyForm.phone='';
+        this.modifyForm.userRole='';
       },
       //部门ID
-      setDeptId(deptId){
-          this.addForm.departmentId=deptId;
+      setUserId(userId){
+          this.modifyForm.userId=userId;
       },
-      //添加用户
-      handleAddUserClick () {
-        if (Helper.trim(this.addForm.name)==''){
+      //修改用户
+      handleModifyUserClick () {
+        if (Helper.trim(this.modifyForm.name)==''){
             this.$message.warning("请填写用户名称");
             return;
         }
-        if (Helper.trim(this.addForm.account)==''){
+        if (Helper.trim(this.modifyForm.account)==''){
               this.$message.warning("请填写用户账号");
               return;
         }
-        if (Helper.trim(this.addForm.jobName)==''){
+        if (Helper.trim(this.modifyForm.jobName)==''){
               this.$message.warning("请填写用户职位");
               return;
         }
-        if (Helper.trim(this.addForm.phone)==''){
+        if (Helper.trim(this.modifyForm.phone)==''){
               this.$message.warning("请填写用户手机号");
               return;
         }
-        if (Helper.trim(this.addForm.userRole)==''){
+        if (Helper.trim(this.modifyForm.userRole)==''){
               this.$message.warning("请选择用户权限");
             return;
         }
-        Http.zsyPostHttp('/user/add',this.addForm,(res)=>{
+        Http.zsyPutHttp(`/user/${this.modifyForm.userId}`,this.modifyForm,(res)=>{
             this.hide();
             this.$message.success("用户添加成功");
             this.$emit("handleUserDataRefresh");

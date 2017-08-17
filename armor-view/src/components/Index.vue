@@ -67,6 +67,12 @@ export default {
         showAlterPwd: false
       };
     },
+    beforeMount(){
+        //监听子组件传过来的tab选中事件
+        this.$root.eventBus.$on("handleTabSelected", (val) => {
+            this.activeName = val;
+        });
+    },
     watch:{
       activeName(curVal,oldVal){
         if(oldVal == null) return;
@@ -76,17 +82,10 @@ export default {
     computed: {
         //获取用户名称
         getUserName(){
-//           return Helper.decodeToken().userName;
-           return '';
-
+           return Helper.decodeToken().userName;
         }
     },
     methods: {
-      listenSubject() {
-        this.$root.eventBus.$on("actName", (val) => {
-          this.activeName = val;
-        });
-      },
       handleClick(path){
         this.showIndex = false;
         /*tab切换*/
@@ -116,9 +115,6 @@ export default {
         window.localStorage.clear();
         this.$router.push('/');
       }
-    },
-    beforeMount(){
-      this.listenSubject();
     },
     components: {
       Task: Task,

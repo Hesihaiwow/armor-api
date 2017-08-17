@@ -1,11 +1,15 @@
 <template>
   <div class="organization-con clearfix">
     <div class="department-structure fl">
-      <div class="ds-title">部门结构<span class="add-department" @click="addDepart">+</span></div>
-      <el-tree :data="departmentTree" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      <div class="ds-title">部门结构<span class="add-department" @click="addDepartDlgShow">+</span></div>
+      <el-tree :data="departmentTree"
+               :props="defaultProps"
+               default-expand-all
+               :expand-on-click-node="false"
+               @node-click="handleNodeClick" />
     </div>
     <div class="department-member fl">
-      <div class="dm-title">成员<span class="add-department" @click="AddMemberShow">+</span></div>
+      <div class="dm-title">成员<span class="add-department" @click="addUserDlgShow">+</span></div>
       <div class="white-bg">
         <div class="department-member-table">
           <el-table :data="tableData" stripe style="width: 100%">
@@ -18,9 +22,9 @@
             <el-table-column prop="operate" label="操作" align="center">
               <template scope="scope">
                 <!-- <el-button type="text" size="small" @click.native.prevent="authorityOpt(scope.$index, tableData)">权限</el-button> -->
-                <el-button type="text" size="small" @click.native.prevent="editRow(scope.$index, tableData)">编辑</el-button>
+                <el-button type="text" size="small" @click.native.prevent="modifyUserDlgShow(scope.$index)">编辑</el-button>
                 <el-button type="text" size="small" @click.native.prevent="resetUserPwdDlgShow(scope.$index)">重置密码</el-button>
-                <el-button type="text" size="small" @click.native.prevent="deleteUserDlgShow(scope.$index, tableData)">删除</el-button>
+                <el-button type="text" size="small" @click.native.prevent="deleteUserDlgShow(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -34,8 +38,9 @@
               :total="pagination.total">
       </el-pagination>
     </div>
-    <add-member ref="showAddMember" :ftpList="ftpList" @addMemberDetail="newMember"></add-member>
-    <add-department ref="showAddDepartment" @addNewDept="newDeptMsg"></add-department>
+    <add-member ref="showAddMember" @handleUserDataRefresh="handleUserDataRefresh"></add-member>
+    <modify-member ref="showModifyMember" @handleUserDataRefresh="handleUserDataRefresh"></modify-member>
+    <add-department ref="showAddDepartment" @handleDeptDataRefresh="handleDeptDataRefresh"></add-department>
   </div>
 </template>
 <style type="text/css" scoped>
@@ -63,6 +68,7 @@
 <script type="text/javascript">
 
     import AddMember from './AddMember'
+    import ModifyMember from './ModifyMember'
     import AddDepartment from './AddDepartment'
     import Http from '../lib/Http'
 
@@ -90,25 +96,6 @@
                 },
                 //分页表数据
                 tableData: [],
-                /*添加或编辑成员的数据*/
-                ftpList: [
-                    {
-                        label: '姓名',
-                        value: ''
-                    },
-                    {
-                        label: '用户名',
-                        value: ''
-                    },
-                    {
-                        label: '职位',
-                        value: ''
-                    },
-                    {
-                        label: '手机号',
-                        value: ''
-                    }
-                ],
                 editStatusIndex: '',
                 nowCreateDate: '',
                 newLastLogin: '',
@@ -120,14 +107,16 @@
                 }
             };
         },
+        //数据初始化
         beforeMount(){
             let _this = this;
-            //初始化部门数据
+            //选中组织tab
+            _this.$root.eventBus.$emit("handleTabSelected", "organization");
+            //初始化部门树结构数据
             Http.zsyGetHttp('/dept/tree',null,(res)=>{
                 _this.departmentTree.push(res.data);
+                _this.userPaging(_this.departmentTree[0].id,_this.queryForm.pageIndex);
             });
-
-            this.$root.eventBus.$emit("actName", "organization");
         },
         methods: {
             //分页上一页和下一页样式
@@ -155,10 +144,8 @@
             },
             // 部门结构树点击
             handleNodeClick(data) {
-                if (data.children.length==0){
-                    //最小子节点,可点击
-                    this.userPaging(data.id,1);
-                }
+                //最小子节点,可点击
+                this.userPaging(data.id,1);
             },
             // 重置用户密码确认框
             resetUserPwdDlgShow (index) {
@@ -196,69 +183,38 @@
                     this.userPaging(this.queryForm.deptId,this.queryForm.pageIndex);
                 });
             },
-            editRow(index, rows) {
-                // 点击编辑
-                this.editStatusIndex = index;
-                this.ftpList[0].value = rows[index].name;
-                this.ftpList[1].value = rows[index].username;
-                this.ftpList[2].value = rows[index].job;
-                this.ftpList[3].value = rows[index].tel;
-                this.nowCreateDate = rows[index].createDate;
-                this.newLastLogin = rows[index].lastLogin;
-                // console.log(this.ftpList);
-                this.$refs.showAddMember.show();
-            },
-            AddMemberShow () {
-                // 添加数据
-                for (var i = 0;i < this.ftpList.length; i++){
-                    this.ftpList[i].value = "";
-                }
-                this.editStatusIndex = '';
-                this.$refs.showAddMember.show();
-            },
-            newMember (val) {
-                // 新增成员
-                // 获取时间
-                var now = new Date();
-                var month = now.getMonth()+1;
-                var day = now.getDate();
-                if (month < 10){ month = '0'+month;}
-                if (day < 10){ day = '0'+day;}
-                var currentDate = now.getFullYear()+'-'+month+'-'+day;
-
-                var newMember = {};
-                newMember.name = val[0].value;
-                newMember.username = val[1].value;
-                newMember.job = val[2].value;
-                newMember.tel = val[3].value;
-
-                if (this.editStatusIndex === '') {
-                    newMember.createDate = currentDate;
-                    newMember.lastLogin = '';
-                    this.tableData.push(newMember);
-                } else {
-                    newMember.createDate = this.nowCreateDate;
-                    newMember.lastLogin = this.newLastLogin;
-                    this.tableData.splice(this.editStatusIndex,1,newMember);
-                    // this.tableData[this.editStatusIndex] = newMember;
-                    console.log(this.tableData[this.editStatusIndex]);
-                }
-            },
-            addDepart () {
+            //添加部门弹窗
+            addDepartDlgShow () {
                 // 添加部门
                 this.$refs.showAddDepartment.show();
             },
-            newDeptMsg (val) {
+            //添加部门成功,刷新部门数据
+            handleDeptDataRefresh () {
                 // 部门结构数据
-                if (val.addFatherDept === ""){
-                    var dptree = {};
-                    dptree.label = val.addNewDept;
-                    this.departmentTree[0].children.push(dptree);
-                }
+                Http.zsyGetHttp('/dept/tree',null,(res)=>{
+                    this.departmentTree = [];
+                    this.departmentTree.push(res.data);
+                });
             },
+            //添加用户弹窗
+            addUserDlgShow () {
+                this.$refs.showAddMember.setDeptId(this.queryForm.deptId);
+                this.$refs.showAddMember.show();
+            },
+            //修改用户弹窗
+            modifyUserDlgShow (index) {
+                let userId = this.tableData[index].id;
+                this.$refs.showModifyMember.setUserId(userId);
+                this.$refs.showModifyMember.show();
+            },
+            //添加用户成功,刷新用户数据
+            handleUserDataRefresh () {
+                this.userPaging(this.queryForm.deptId,this.queryForm.pageIndex);
+            }
         },
         components: {
             AddMember: AddMember,
+            ModifyMember: ModifyMember,
             AddDepartment: AddDepartment
         }
     }

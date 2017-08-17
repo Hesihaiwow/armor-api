@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
 import Index from '@/components/Index'
 import Login from '@/components/Login'
 import Task from '@/components/Task'
@@ -45,11 +44,6 @@ export default new Router({
           component: NavIndex
         }
       ]
-    },
-    {
-      path: '/hello',
-      name: 'Hello',
-      component: Hello
     }
   ]
 })

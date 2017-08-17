@@ -9,7 +9,7 @@ spring:
 
 #Mybatis配置
 mybatis:
-  type-aliases-package: com.zhixinhuixue.armor.modell
+  type-aliases-package: com.zhixinhuixue.armor.model
   mapper-locations:
     - classpath*:com/zhixinhuixue/armor/dao/**/*.xml
 
