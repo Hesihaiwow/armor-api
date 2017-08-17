@@ -26,7 +26,7 @@
 	</div>
 </template>
 <script>
-  import Http from '../lib/Http.js'
+  import Http from '../lib/Http'
   import { Message } from 'element-ui';
 
   export default {
@@ -57,7 +57,7 @@
         activeIdx: 0,
         startValue: '',
         endValue: '',
-        tableData:''
+        tableData:[]
       }
     },
     beforeMount:function () {
