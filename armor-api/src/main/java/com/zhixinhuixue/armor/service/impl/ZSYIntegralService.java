@@ -28,22 +28,6 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     @Override
     public PageInfo<IntegralPageResDTO> getIntegralPage(int pageIndex, String startTime, String endTime){
-        if(startTime!=null){
-            if(startTime.equals("month")){
-                startTime = DateHelper.getThisMonthFirstDay();
-                endTime = DateHelper.getThisMonthLastDay();
-            }
-            if(startTime.equals("quarter")){
-                startTime = DateHelper.getThisQuarterFirstDay();
-                endTime = DateHelper.getThisQuarterLastDay();
-            }
-            if(startTime.equals("year")){
-                startTime = DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT);
-                endTime = DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT);
-            }
-        }
-
-
         PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
         Page<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
         Page<IntegralPageResDTO> page = new Page<>();

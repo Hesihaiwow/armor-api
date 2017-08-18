@@ -65,7 +65,9 @@
           this.showAddTask = false;
           this.name = this.description = '';
 
-          Http.zsyPostHttp(Http.API_URI.ADDPROJECT,addPro);
+          Http.zsyPostHttp(Http.API_URI.ADDPROJECT,addPro,(res)=>{
+              Message.success("项目添加成功");
+          });
         }else{
             Message.error("项目名称不能为空");
         }
