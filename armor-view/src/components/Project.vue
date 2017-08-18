@@ -57,8 +57,7 @@
       },
       saveAdd () {
         // 保存
-
-        if (this.name!= ''&&/\s/.test(this.name)!=true){
+        if (this.name!= ''&&this.name.trim().length!=0){
           let addPro = {};
           addPro.name = this.name;
           addPro.description = this.description;
