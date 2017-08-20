@@ -169,23 +169,23 @@
                 integralItem: [
                     {
                         label: '本周',
-                        score: '+42'
+                        score: ''
                     },
                     {
                         label: '本月',
-                        score: '+422'
+                        score: ''
                     },
                     {
                         label: '年度总积分',
-                        score: '9000'
+                        score: ''
                     },
                     {
                         label: '季度积分排名',
-                        score: '12'
+                        score: ''
                     },
                     {
                         label: '年度积分排名',
-                        score: '22'
+                        score: ''
                     }
                 ]
             };
@@ -285,7 +285,7 @@
                 return list
             },
             fetchIntegral() {
-                /* http.zsyGetHttp(http.API_URI.USERINTEGRAL,null,(res)=>{
+                 http.zsyGetHttp(http.API_URI.USERINTEGRAL,null,(res)=>{
                      let data = res.data;
                      let items=[];
                      items.push({label:'本周',score:'+'+data.week});
@@ -294,7 +294,7 @@
                      items.push({label:'季度积分排名',score:'+'+data.quarterRank});
                      items.push({label:'年度积分排名',score:'+'+data.yearRank});
                      this.integralItem = items;
-                 })*/
+                 })
             },
             // 获取用户正在进行的任务
             fetchTaskDoing() {

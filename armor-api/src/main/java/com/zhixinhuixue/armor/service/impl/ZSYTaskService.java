@@ -465,6 +465,15 @@ public class ZSYTaskService implements IZSYTaskService {
             taskBOS.stream().forEach(taskBO -> {
                 TaskResDTO taskResDTO = new TaskResDTO();
                 BeanUtils.copyProperties(taskBO, taskResDTO);
+                if (taskResDTO.getUserIntegral()!=null) {
+                    if (taskResDTO.getUserIntegral()>=90) {
+                        taskResDTO.setIntegralGrade("A");
+                    }else if(taskResDTO.getUserIntegral()>=80){
+                        taskResDTO.setIntegralGrade("B");
+                    }else{
+                        taskResDTO.setIntegralGrade("C");
+                    }
+                }
                 taskList.add(taskResDTO);
             });
         }

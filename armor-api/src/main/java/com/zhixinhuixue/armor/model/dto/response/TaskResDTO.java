@@ -168,15 +168,6 @@ public class TaskResDTO {
     }
 
     public String getIntegralGrade() {
-        if (integralGrade!=null) {
-            if (userIntegral>=90) {
-                return "A";
-            }else if(userIntegral>=80){
-                return "B";
-            }else{
-                return "C";
-            }
-        }
         return integralGrade;
     }
 
