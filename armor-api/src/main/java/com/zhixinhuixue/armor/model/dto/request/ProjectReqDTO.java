@@ -14,7 +14,7 @@ public class ProjectReqDTO {
     private String name;
 
     //项目描述
-    @Size(min = 1,max = 500,message = "项目描述长度在{min}~{max}之间")
+    @Size(min = 0,max = 500,message = "项目描述长度在{min}~{max}之间")
     private String description;
 
     public String getName() {

@@ -5,9 +5,20 @@ package com.zhixinhuixue.armor.model.dto.response;
  */
 public class IntegralPageResDTO {
 
+    //作为排列序号
+    private long id;
+
     private String name ;
 
     private int integral;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

@@ -57,17 +57,19 @@
       },
       saveAdd () {
         // 保存
-        console.log(this.projrctName+'~~~'+this.projectIntro);
-        if (this.projrctName !== ''){
+        if (this.name!= ''&&this.name.trim().length!=0){
           let addPro = {};
           addPro.name = this.name;
           addPro.description = this.description;
-
           this.TaskItem.push(addPro);
           this.showAddTask = false;
-          this.projrctName = this.projectIntro = '';
+          this.name = this.description = '';
 
-          Http.zsyPostHttp(Http.API_URI.ADDPROJECT,addPro);
+          Http.zsyPostHttp(Http.API_URI.ADDPROJECT,addPro,(res)=>{
+              Message.success("项目添加成功");
+          });
+        }else{
+            Message.error("项目名称不能为空");
         }
       }
     }

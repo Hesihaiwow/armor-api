@@ -104,6 +104,8 @@ button.header-icon img { margin-bottom: -0.04rem; }
 .nav-top .el-tabs__header{position: fixed;left: 50%;top: 0;width:900px;transform:translateX(-50%);z-index: 100;}
 
 .organization-con .el-pagination{text-align: right;padding-right: 0;margin-top: 20px;margin-right: 10px;}
+.intergral-con .el-pagination{text-align: right;padding-right: 0;margin-top: 20px;margin-right: 10px;}
+.intergral-con .el-input input{width: 190px;}
 
 
 
