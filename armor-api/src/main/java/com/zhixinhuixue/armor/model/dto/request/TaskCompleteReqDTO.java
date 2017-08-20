@@ -14,6 +14,10 @@ public class TaskCompleteReqDTO {
     @NotNull(message = "任务ID不能为空")
     private Long taskId;
 
+    @NotNull(message = "任务类型不能为空")
+    @Min(value = 1, message = "任务类型不能为空")
+    private Integer taskType;
+
     @NotNull(message = "任务用户阶段id不能为空")
     private Long taskUserId;
 
@@ -55,5 +59,13 @@ public class TaskCompleteReqDTO {
 
     public void setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
+    }
+
+    public Integer getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(Integer taskType) {
+        this.taskType = taskType;
     }
 }

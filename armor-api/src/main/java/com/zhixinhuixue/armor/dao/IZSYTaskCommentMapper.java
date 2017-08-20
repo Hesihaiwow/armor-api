@@ -24,4 +24,11 @@ public interface IZSYTaskCommentMapper {
      * @return
      */
     int insertList(List<TaskComment> taskComments);
+
+    /**
+     * 删除任务评价
+     * @param taskId
+     * @return
+     */
+    int deleteByTaskId(Long taskId);
 }

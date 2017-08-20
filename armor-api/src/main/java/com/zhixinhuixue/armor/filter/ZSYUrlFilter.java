@@ -72,8 +72,8 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
             if (request.getMethod().equals("OPTIONS")){
                 response.setStatus(204);
             }else{
-//                String auth = request.getHeader("Authorization");
-                String auth = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBa3VtYSIsImV4cCI6MTUzMzQ1Mzk3OCwidXNlck5hbWUiOiJKb2huIERvZSIsInVzZXJSb2xlIjowLCJpYXQiOjE1MDIzNDk5NzgsInVzZXJJZCI6MX0.dqXGCr_CDAz23ax7joIW8Qn0V5-81kUKaBUMV0Dknd4";
+                String auth = request.getHeader("Authorization");
+                //String auth = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBa3VtYSIsImV4cCI6MTUzMzQ1Mzk3OCwidXNlck5hbWUiOiJKb2huIERvZSIsInVzZXJSb2xlIjowLCJpYXQiOjE1MDIzNDk5NzgsInVzZXJJZCI6MX0.dqXGCr_CDAz23ax7joIW8Qn0V5-81kUKaBUMV0Dknd4";
                 if (Strings.isNullOrEmpty(auth)){
                     auth = request.getHeader("authorization");
                 }

@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import com.zhixinhuixue.armor.model.pojo.UserIntegral;
+
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +48,29 @@ public class TaskUserResDTO{
      * 评论
      */
     private List<TaskCommentResDTO> comments;
+
+    /**
+     * 任务结束时，最终评价等级
+     */
+    private String commentGrade;
+
+    public String getCommentGrade() {
+        if (comments!=null && comments.size()>0) {
+            double average = comments.stream().mapToInt(TaskCommentResDTO::getIntegral).average().getAsDouble();
+            if (average>=90) {
+                return "A";
+            }else if(average>=80){
+                return "B";
+            }else{
+                return "C";
+            }
+        }
+        return commentGrade;
+    }
+
+    public void setCommentGrade(String commentGrade) {
+        this.commentGrade = commentGrade;
+    }
 
     public String getStageName() {
         return stageName;
@@ -166,4 +191,6 @@ public class TaskUserResDTO{
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
+
 }

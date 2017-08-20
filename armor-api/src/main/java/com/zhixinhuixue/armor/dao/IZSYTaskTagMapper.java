@@ -20,4 +20,10 @@ public interface IZSYTaskTagMapper {
      */
     int insertList(List<TaskTag> taskTagList);
 
+    /**
+     * 删除任务标签
+     * @param taskId
+     * @return
+     */
+    int deleteByTaskId(Long taskId);
 }

@@ -9,6 +9,7 @@
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
         <result column="review_status" jdbcType="INTEGER" property="reviewStatus"/>
         <result column="priority" jdbcType="INTEGER" property="priority"/>
         <result column="create_by" jdbcType="BIGINT" property="createBy"/>
@@ -30,11 +31,21 @@
 
     <resultMap id="TaskResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <!-- 查询任务用户（阶段） -->
+        <collection property="taskUsers" column="{taskId=id,userId=user_id}" select="selectTaskUser" ofType="com.zhixinhuixue.armor.model.pojo.TaskUser"></collection>
+    </resultMap>
+
+    <resultMap id="WaitAuditResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
+        <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <!-- 查询任务用户（阶段） -->
+        <collection property="taskUsers" column="{taskId=id,userId=user_id}" select="selectTaskUser" ofType="com.zhixinhuixue.armor.model.pojo.TaskUser"></collection>
     </resultMap>
 
     <resultMap id="TaskFinishedResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
-        <association property="userIntegral" column="{taskId=id,userId=user_id}" select="selectUserIntegral" javaType="java.lang.Integer" />
+        <association property="userIntegral" column="{taskId=id,userId=user_id}" select="selectUserIntegral" javaType="java.lang.Double" />
+        <!-- 查询任务用户（阶段） -->
+        <collection property="taskUsers" column="{taskId=id,userId=user_id}" select="selectTaskUser" ofType="com.zhixinhuixue.armor.model.pojo.TaskUser"></collection>
     </resultMap>
 
     <!-- 任务详情Map -->
@@ -45,7 +56,6 @@
         <collection property="taskUsers" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper.selectDetailByTaskId"
                     ofType="com.zhixinhuixue.armor.model.bo.TaskUserBO">
-
         </collection>
     </resultMap>
 
@@ -53,30 +63,53 @@
     <select id="selectTaskDetailByTaskId" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
     select t1.*,t2.`name` as projectName from task t1
     left join project t2 on t1.project_id = t2.id
-    where t1.id = #{taskId}
+    where t1.id = #{taskId} and t1.is_delete = 0
     </select>
 
     <!-- 根据状态查询任务 -->
     <select id="selectTaskByStatus" resultMap="TaskResultMap">
-        select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName from task t1
+        select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
         where t1.`status` = #{status} and t1.review_status = #{reviewStatus}
+        and t2.`status`=#{taskUserStatus}
+        and t1.is_delete = 0
         and t2.user_id = #{userId}
+        order by t1.create_time
     </select>
 
-    <!-- 查询已结束的任务，包含评价 -->
+    <!-- 查询所有待审核的任务 -->
+    <select id="selectAllWaitAudit" resultMap="WaitAuditResultMap" >
+         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
+        join task_user t2 on t1.id = t2.task_id
+        left join project t3 on t1.project_id = t3.id
+        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0
+    </select>
+
+    <!-- 查询还未评价完的任务 -->
+    <select id="selectAllNotClosed" parameterType="java.lang.Long" resultMap="TaskResultMap">
+         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
+        join task_user t2 on t1.id = t2.task_id
+        left join project t3 on t1.project_id = t3.id
+        where t1.`status` = 2 and t1.review_status = 3
+        and t2.`status`=2
+        and t1.is_delete = 0
+        and t1.id in (select DISTINCT task_id from task_user where `status`>1 and user_id =#{userId})
+        order by t1.create_time;
+    </select>
+
+    <!-- 查询已完成的任务，包含评价 -->
     <select id="selectFinishedTask" resultMap="TaskFinishedResultMap" parameterType="java.lang.Long">
      select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
-            where t1.`status` = 3 and t1.review_status = 3
-            and t2.user_id = #{userId}
+            where t1.review_status = 3 and t2.`status` &gt; 1
+            and t2.user_id = #{userId} and t1.is_delete = 0
     </select>
 
     <!-- 查询用户完成任务后的积分 -->
-    <select id="selectUserIntegral" resultType="java.lang.Integer" parameterType="java.util.Map">
-        select sum(integral) from user_integral where task_id = #{taskId} and user_id = #{userId}
+    <select id="selectUserIntegral" resultType="java.lang.Double" parameterType="java.util.Map">
+        select avg(integral) from user_integral where task_id = #{taskId} and user_id = #{userId}
     </select>
 
     <!-- 分页查询 -->
@@ -86,7 +119,7 @@
         left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id
         <where>
-            t1.review_status = 3 and t1.`type` = 2
+            t1.review_status = 3 and t1.`type` = 2 and t1.is_delete = 0
             <if test="projectId!=null and projectId!=0">
                 and t1.project_id = #{projectId}
             </if>
@@ -112,11 +145,16 @@
         order by t1.create_time desc
     </select>
 
+    <!-- 查询已完成的任务用户（阶段） -->
+    <select id="selectTaskUser" parameterType="java.util.Map" resultMap="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper.BaseResultMap">
+        select * from task_user where  task_id = #{taskId} and user_id=#{userId}
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from task
-        where id = #{id,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT} and is_delete = 0
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -128,13 +166,14 @@
       insert into task (id, name, description,
       project_id, end_time, `type`, status,
       review_status, priority, create_by,
-      complete_time, create_time, update_time
+      complete_time, create_time, update_time, is_delete
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
       #{projectId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
       #{status,jdbcType=INTEGER},
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
-      #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+       #{isDelete,jdbcType=INTEGER}
       )
   </insert>
 
@@ -176,6 +215,9 @@
             </if>
             <if test="createBy != null">
                 create_by = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="isDelete != null or isDelete == 0">
+                is_delete = #{isDelete,jdbcType=BIGINT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

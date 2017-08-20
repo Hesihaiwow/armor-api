@@ -1,6 +1,9 @@
 package com.zhixinhuixue.armor.model.bo;
 
 import com.zhixinhuixue.armor.model.pojo.Task;
+import com.zhixinhuixue.armor.model.pojo.TaskUser;
+
+import java.util.List;
 
 /**
  * Created by Tate on 2017/8/10.
@@ -14,13 +17,18 @@ public class TaskBO extends Task{
     /**
      * 用户积分
      */
-    private Integer userIntegral;
+    private Double userIntegral;
 
-    public Integer getUserIntegral() {
+    /**
+     * 任务用户
+     */
+    private List<TaskUser> taskUsers;
+
+    public Double getUserIntegral() {
         return userIntegral;
     }
 
-    public void setUserIntegral(Integer userIntegral) {
+    public void setUserIntegral(Double userIntegral) {
         this.userIntegral = userIntegral;
     }
 
@@ -32,4 +40,11 @@ public class TaskBO extends Task{
         this.projectName = projectName;
     }
 
+    public List<TaskUser> getTaskUsers() {
+        return taskUsers;
+    }
+
+    public void setTaskUsers(List<TaskUser> taskUsers) {
+        this.taskUsers = taskUsers;
+    }
 }

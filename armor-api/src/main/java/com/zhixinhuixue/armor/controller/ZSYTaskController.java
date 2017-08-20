@@ -1,13 +1,13 @@
 package com.zhixinhuixue.armor.controller;
 
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
-import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
+import com.zhixinhuixue.armor.source.enums.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -47,16 +47,21 @@ public class ZSYTaskController extends ZSYController {
         return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 
-    @ApiOperation("单人任务我的任务完成")
-    @PutMapping(value = "/complete/private")
-    public String completePrivate(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
-        return taskService.completePrivateTask(taskCompleteReqDTO).build();
-    }
+//    @ApiOperation("单人任务我的任务完成")
+//    @PutMapping(value = "/complete/private")
+//    public String completePrivate(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
+//        return taskService.completePrivateTask(taskCompleteReqDTO).build();
+//    }
 
-    @ApiOperation("多人任务我的任务完成")
-    @PutMapping(value = "/complete/public")
-    public String completePublic(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
-        return taskService.completePublicTask(taskCompleteReqDTO).build();
+    @ApiOperation("完成我的任务完成")
+    @PutMapping(value = "/complete")
+    public String complete(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
+        if (taskCompleteReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
+            // 个人任务完成后直接关闭
+            return taskService.completePrivateTask(taskCompleteReqDTO).build();
+        } else {
+            return taskService.completePublicTask(taskCompleteReqDTO).build();
+        }
     }
 
     @ApiOperation("获取任务详情")
@@ -69,34 +74,37 @@ public class ZSYTaskController extends ZSYController {
     @ApiOperation("获取用户待审核的任务")
     @GetMapping(value = "/pending")
     public String getPendingTask() {
+        // 权限更高能看到所有审核任务
+        if (ZSYTokenRequestContext.get().getUserRole() < ZSYUserRole.EMPLOYEE.getValue()) {
+            return taskService.getAllWaitAudit().build();
+        }
         return taskService.getTaskByStatus(ZSYTaskStatus.DOING.getValue(),
-                ZSYReviewStatus.PENDING.getValue()).build();
+                ZSYReviewStatus.PENDING.getValue(), ZSYTaskUserStatus.DOING.getValue(), ZSYTokenRequestContext.get().getUserId()).build();
     }
 
     @ApiOperation("获取用户进行中的任务")
     @GetMapping(value = "/doing")
     public String getDoingTask() {
         return taskService.getTaskByStatus(ZSYTaskStatus.DOING.getValue(),
-                ZSYReviewStatus.ACCEPT.getValue()).build();
+                ZSYReviewStatus.ACCEPT.getValue(), ZSYTaskUserStatus.DOING.getValue(), ZSYTokenRequestContext.get().getUserId()).build();
     }
 
-    @ApiOperation("获取用户已完成待评价的任务")
-    @GetMapping(value = "/completed")
-    public String getCompletedTask() {
-        return taskService.getTaskByStatus(ZSYTaskStatus.COMPLETED.getValue(),
-                ZSYReviewStatus.ACCEPT.getValue()).build();
+    @ApiOperation("获取用户待评价的任务")
+    @GetMapping(value = "/waitAssess")
+    public String getWaitAssessTask() {
+        return taskService.getAllWaitComment(ZSYTokenRequestContext.get().getUserId()).build();
     }
 
-    @ApiOperation("获取用户已完成已评价的任务")
+    @ApiOperation("获取用户已完成的任务")
     @GetMapping(value = "/finished")
     public String getFinishedTask() {
         return taskService.getFinishedTask().build();
     }
 
 
-    @ApiOperation("多人任务主任务完成")
+    @ApiOperation("主任务完成")
     @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
-    @PutMapping(value = "/complete/public/master/{taskId}")
+    @PutMapping(value = "/complete/master/{taskId}")
     public String completeMasterTask(@PathVariable("taskId") Long taskId) {
         return taskService.completeMasterTask(taskId).build();
     }
@@ -116,4 +124,27 @@ public class ZSYTaskController extends ZSYController {
     public String getTaskList(TaskListReqDTO taskListReqDTO) {
         return ZSYResult.success().data(taskService.getTaskListPage(taskListReqDTO)).build();
     }
+
+    @ApiOperation("删除任务")
+    @DeleteMapping("/delete/{taskId}")
+    public String deleteTask(@PathVariable("taskId") Long taskId) {
+        return ZSYResult.success().data(taskService.deleteTaskById(taskId)).build();
+    }
+
+    @ApiOperation("获取任务日志")
+    @GetMapping("/log/{taskId}/{pageNum}")
+    public String getTaskLog(@PathVariable("taskId") Long taskId,
+                             @PathVariable("pageNum") Integer pageNum) {
+        return ZSYResult.success().data(taskService.getTaskLog(taskId, pageNum)).build();
+    }
+
+    @ApiOperation("修改任务")
+    @PutMapping("/modify/{taskId}")
+    public String modifyTask(@PathVariable("taskId") Long taskId, TaskReqDTO taskReqDTO) {
+        if (taskId == null) {
+            return ZSYResult.fail().msg("taskId不能为空").build();
+        }
+        return taskService.modifyTask(taskId, taskReqDTO).build();
+    }
+
 }

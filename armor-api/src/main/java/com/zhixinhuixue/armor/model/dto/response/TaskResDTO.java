@@ -1,6 +1,9 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import com.zhixinhuixue.armor.model.pojo.TaskUser;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Tate on 2017/8/10.
@@ -35,9 +38,14 @@ public class TaskResDTO {
 
     private Long createBy;
 
-    private Integer userIntegral;
+    private Double userIntegral;
 
     private String integralGrade;
+
+    /**
+     * 任务用户
+     */
+    private List<TaskUserResDTO> taskUsers;
 
     public Long getId() {
         return id;
@@ -151,19 +159,36 @@ public class TaskResDTO {
         this.createBy = createBy;
     }
 
-    public Integer getUserIntegral() {
+    public Double getUserIntegral() {
         return userIntegral;
     }
 
-    public void setUserIntegral(Integer userIntegral) {
+    public void setUserIntegral(Double userIntegral) {
         this.userIntegral = userIntegral;
     }
 
     public String getIntegralGrade() {
+        if (integralGrade!=null) {
+            if (userIntegral>=90) {
+                return "A";
+            }else if(userIntegral>=80){
+                return "B";
+            }else{
+                return "C";
+            }
+        }
         return integralGrade;
     }
 
     public void setIntegralGrade(String integralGrade) {
         this.integralGrade = integralGrade;
+    }
+
+    public List<TaskUserResDTO> getTaskUsers() {
+        return taskUsers;
+    }
+
+    public void setTaskUsers(List<TaskUserResDTO> taskUsers) {
+        this.taskUsers = taskUsers;
     }
 }

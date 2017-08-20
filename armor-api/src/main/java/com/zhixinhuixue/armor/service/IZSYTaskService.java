@@ -1,14 +1,13 @@
 package com.zhixinhuixue.armor.service;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskLogDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
 
@@ -26,6 +25,14 @@ public interface IZSYTaskService {
      * @return
      */
     ZSYResult addTask(TaskReqDTO taskReqDTO);
+
+    /***
+     * 修改任务
+     * @param taskId
+     * @param taskReqDTO
+     * @return
+     */
+    ZSYResult modifyTask(Long taskId, TaskReqDTO taskReqDTO);
 
     /**
      * 审核任务
@@ -64,7 +71,7 @@ public interface IZSYTaskService {
      *
      * @return
      */
-    ZSYResult<List<TaskResDTO>> getTaskByStatus(Integer status, Integer reviewStatus);
+    ZSYResult<List<TaskResDTO>> getTaskByStatus(Integer status, Integer reviewStatus, Integer taskUserStatus, Long userId);
 
     /**
      * 获取已完成&已评价的任务，包含积分
@@ -97,8 +104,39 @@ public interface IZSYTaskService {
 
     /**
      * 分页查询任务
+     *
      * @param taskListReqDTO
      * @return
      */
     PageInfo<TaskListResDTO> getTaskListPage(TaskListReqDTO taskListReqDTO);
+
+    /**
+     * 获取所有待审核状态的任务
+     *
+     * @return
+     */
+    ZSYResult<List<TaskResDTO>> getAllWaitAudit();
+
+    /**
+     * 获取所有待评价的任务
+     *
+     * @return
+     */
+    ZSYResult<List<TaskResDTO>> getAllWaitComment(Long userId);
+
+    /**
+     * 删除任务
+     *
+     * @param taskId
+     * @return
+     */
+    ZSYResult deleteTaskById(Long taskId);
+
+    /**
+     * 获取任务日志
+     *
+     * @param taskId
+     * @return
+     */
+    PageInfo<TaskLogDTO> getTaskLog(Long taskId, int pageNum);
 }

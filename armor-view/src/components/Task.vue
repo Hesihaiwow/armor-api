@@ -43,23 +43,24 @@
                                 @change="timeChange"></el-date-picker>
             </div>
             <div class="task-top-list fl">
-                <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询</el-button>
+                <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
+                </el-button>
             </div>
-            <div class="task-top-list fl creat-task" @click="createTaskClick">
+            <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
                 <span class="ttl-add-icon">+</span>
                 <span class="ttl-add-msg">建任务</span>
             </div>
         </div>
         <div class="task-lis-con">
-            <task-item :taskItems="taskItems" :isPrivate="false"></task-item>
-            <create-task ref="createTaskPop"></create-task>
+            <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList"></task-item>
+            <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"></create-task>
         </div>
         <div class="pagination">
             <el-pagination
                     @current-change="handleCurrentChange"
                     :current-page.sync="page.pageNum"
                     :page-size="page.pageSize"
-                    layout="total, prev, pager, next"
+                    :layout="pageLayout"
                     :total="page.total">
             </el-pagination>
         </div>
@@ -69,15 +70,15 @@
     import CreateTask from './CreateTask'
     import TaskItem from './TaskItem'
     import http from '../lib/Http'
+    import helper from '../lib/Helper'
     import moment from 'moment';
 
-    moment.locale('zh-CN');
-
+    moment.locale('zh-cn');
     export default {
         name: 'Task',
         data() {
             return {
-                loading:true,
+                loading: true,
                 timeRange: '',
                 projectList: [],
                 userList: [],
@@ -86,9 +87,9 @@
                 status: [{value: 1, name: '进行中'}, {value: 2, name: '已完成'}],
                 taskItems: [],
                 page: {
-                    pageNum: '',
-                    pageSize: 6,
-                    total: '',
+                    pageNum: 0,
+                    pageSize: 10,
+                    total: 0,
                 },
                 form: {
                     projectId: '',
@@ -133,6 +134,18 @@
             this.fetchStageList()
             this.fetchTagList()
             this.fetchTaskList()
+        },
+        computed: {
+            permit() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole <= 1;
+            },
+            pageLayout() {
+                if (this.taskItems.length > this.page.pageSize) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            }
         },
         methods: {
             handleCurrentChange(currentPage) {
@@ -186,17 +199,24 @@
                 http.zsyGetHttp('/task/public/master/all', param, (resp) => {
                     const list = resp.data.list
                     list.forEach((el) => {
-                        const diffDays = moment().diff(moment(el.endTime), 'days')
-                        let endColor = '',endText = ''
-                        endText = moment(el.endTime).calendar(null, {
-                            sameDay: '[今天]lT',
+                        let endTime = '';
+                        if (el.status ==1) {
+                            endTime = el.endTime
+                        } else {
+                            endTime = el.completeTime
+                        }
+                        const diffDays = moment().diff(moment(endTime), 'days')
+                        let endColor = '', endText = ''
+                        endText = moment(endTime).calendar(null, {
+                            sameDay: '[今天]LT',
                             nextDay: '[明天]',
                             nextWeek: '[下]ddd',
                             lastDay: '[昨天]',
                             lastWeek: '[上]ddd',
                             sameElse: 'L'
                         })
-                        if (el.status === 2) {
+                        if (el.status == 1) {
+
                             if (diffDays == 0) {
                                 endColor = 'orange'
                             } else if (diffDays > 0) {
@@ -205,7 +225,7 @@
                                 endColor = 'blue'
                             }
                             endText += ' 截止'
-                        }else{
+                        } else {
                             endColor = 'green'
                             endText += ' 完成'
                         }
@@ -216,7 +236,7 @@
                     vm.loading = false
                     vm.taskItems = resp.data.list
                     vm.page.pageNum = resp.data.pageNum
-                    vm.page.pageSize = resp.data.pageSize
+                    vm.page.pageSize = 10
                     vm.page.total = resp.data.total
                 })
             }

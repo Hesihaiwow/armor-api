@@ -5,6 +5,8 @@ package com.zhixinhuixue.armor.model.dto.response;
  */
 public class TaskTagResDTO {
 
+    private Long id;
+
     private String name;
 
     private String color;
@@ -33,5 +35,13 @@ public class TaskTagResDTO {
 
     public void setColorValue(String colorValue) {
         this.colorValue = colorValue;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

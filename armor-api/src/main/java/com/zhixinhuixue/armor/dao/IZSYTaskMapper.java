@@ -64,6 +64,7 @@ public interface IZSYTaskMapper {
      */
     List<TaskBO> selectTaskByStatus(@Param("status") Integer status,
                                     @Param("reviewStatus") Integer reviewStatus,
+                                    @Param("taskUserStatus") Integer taskUserStatus,
                                     @Param("userId") Long userId);
 
     /**
@@ -81,4 +82,16 @@ public interface IZSYTaskMapper {
      */
     Page<TaskListBO> selectPage(TaskListReqDTO taskListReqDTO);
 
+    /**
+     * 查询所有待审核任务
+     * @return
+     */
+    List<TaskBO> selectAllWaitAudit();
+
+    /**
+     * 查询所有未评价完的任务
+     * @param userId
+     * @return
+     */
+    List<TaskBO> selectAllNotClosed(Long userId);
 }

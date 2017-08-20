@@ -1,8 +1,8 @@
 <template>
-    <div class="create-task-pop" v-show="showCreateTask">
+    <div class="create-task-pop" v-show="showModifyTask">
         <div class="create-task-pop-con">
             <div class="ctpc-top clearfix">
-                <span class="fl">建任务</span><span class="ctpc-top-close fr" @click="hide">×</span>
+                <span class="fl">编辑任务</span><span class="ctpc-top-close fr" @click="hide">×</span>
             </div>
             <div class="ctpc-con">
                 <div class="ctpc-instruction-msg" v-show="!showDesc" @click="showInsChange">
@@ -143,9 +143,12 @@
 
     moment.locale('zh-CN');
     export default {
+        props: {
+            taskId: String
+        },
         data() {
             return {
-                showCreateTask: false,
+                showModifyTask: false,
                 projectList: [],
                 stageList: [],
                 tagList: [],
@@ -294,10 +297,13 @@
                 })
             },
             show() {
-                this.showCreateTask = true;
+                console.log("进来了")
+                console.log(this.taskId)
+                this.fetchTaskDetail()
+                this.showModifyTask = true;
             },
             hide() {
-                this.showCreateTask = false;
+                this.showModifyTask = false;
             },
             deleteMember(index) {
                 this.taskUsers.splice(index, 1);
@@ -331,6 +337,27 @@
                     vm.tagList = resp.data
                 })
             },
+            fetchTaskDetail(){
+                if (this.taskId=='') {
+                    return
+                }
+                console.log(this.taskId)
+                let vm = this
+                http.zsyGetHttp(`/task/detail/${this.taskId}`, {}, (resp) => {
+                    console.log(resp)
+                    vm.taskForm.description = resp.data.description;
+                    vm.taskForm.taskName = resp.data.name;
+                    vm.taskForm.endTime = resp.data.endTime;
+                    vm.taskForm.projectId = resp.data.projectId;
+                    vm.taskForm.priority = resp.data.priority;
+                    vm.taskForm.tags = resp.data.tags.map((tag)=>{
+                        tag.id
+                    });
+                    vm.taskUsers = resp.data.users;
+                })
+                console.log(vm.taskForm)
+
+            },
             saveTask() {
                 if (this.taskForm.description == '') {
                     this.$message.warning("请填写任务备注");
@@ -360,7 +387,7 @@
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
                 param['taskUsers'] = this.taskUsers;
                 let vm = this;
-                http.zsyPostHttp('/task/create', param, (resp) => {
+                http.zsyPostHttp('/task/modify', param, (resp) => {
                     vm.$message.success('任务创建成功');
                     vm.taskForm.description = '';
                     vm.taskForm.taskName = '';
@@ -371,7 +398,7 @@
                     vm.taskUsers = [];
                     vm.$emit('handleFetchTaskList')
                 })
-                this.showCreateTask = false;
+                this.showModifyTask = false;
             }
         }
     }

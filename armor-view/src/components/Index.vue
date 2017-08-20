@@ -36,7 +36,6 @@ import AlterPassword from './AlterPassword'
 import Helper from "../lib/Helper";
 
 
-
 export default {
     data() {
       return {

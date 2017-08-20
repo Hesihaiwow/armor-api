@@ -125,10 +125,4 @@
 .ctpc-cancel{background: #fff;border: 1px solid #ccc;}
 .ctpc-cancel:hover{background: #fff;border: 1px solid #36A8FF;color: #36A8FF;font-weight: 700;}
 .ctpc-save{background: #36A8FF;color: #fff;}
-
-
-
-
-
-
 </style>

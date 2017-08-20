@@ -19,6 +19,14 @@
     from task_log
     where id = #{id,jdbcType=BIGINT}
   </select>
+  <!-- 删除任务日志 -->
+  <delete id="deleteByTaskId" parameterType="java.lang.Long">
+    delete from task_log where task_id = #{taskId}
+  </delete>
+  <!-- 分页查询任务日志 -->
+  <select id="selectPage" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select * from task_log where task_id = #{taskId} order by create_time desc
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from task_log
     where id = #{id,jdbcType=BIGINT}

@@ -19,7 +19,8 @@
             <div class="my-task-detail">
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <el-tab-pane label="进行中" name="doing">
-                        <task-item :taskItems="task.doing" :isPrivate="true" taskStatus="TaskDoing"></task-item>
+                        <task-item :taskItems="task.doing" :isPrivate="true"
+                                   taskStatus="TaskDoing" @reload="reload"></task-item>
                     </el-tab-pane>
                     <el-tab-pane label="已完成" name="completed">
                         <task-item :taskItems="task.finished" :isPrivate="true"></task-item>
@@ -27,28 +28,144 @@
                 </el-tabs>
             </div>
             <p class="mic-title">待评价任务</p>
-            <task-item :taskItems="task.waitAssess" :isPrivate="true" taskStatus="WaitAssess"></task-item>
-            <p class="mic-title">待审核</p>
-            <task-item :taskItems="task.waitAudit" :isPrivate="true" taskStatus="WaitAuditing"></task-item>
+            <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
+                       taskStatus="WaitAssess"></task-item>
+            <div>
+                <p class="mic-title">待审核</p>
+                <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
+                           taskStatus="WaitAuditing"></task-item>
+            </div>
         </div>
-        <create-task ref="createTaskPop"></create-task>
-        <finished-task-pop ref="finishedPop"></finished-task-pop>
-        <assess-task-pop ref="assessPop"></assess-task-pop>
+        <el-dialog
+                title="创建个人任务"
+                size="tiny"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="createTaskVisible">
+            <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="80px">
+                <el-form-item label="项目" prop="projectId">
+                    <el-select v-model="taskForm.projectId" placeholder="请选择">
+                        <el-option
+                                v-for="item in projectList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="截止日期" prop="endTime">
+                    <el-date-picker
+                            v-model="taskForm.endTime"
+                            type="datetime"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="工作量" prop="taskHours">
+                    <el-input style="width:100px" v-model="taskForm.taskHours" :maxlength="2"></el-input>
+                    小时
+                </el-form-item>
+                <el-form-item label="任务名称" prop="taskName">
+                    <el-input v-model="taskForm.taskName"></el-input>
+                </el-form-item>
+
+                <el-form-item label="任务描述" prop="description">
+                    <el-input type="textarea" v-model="taskForm.description" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="阶段" prop="stageId">
+                    <el-select
+                            v-model="taskForm.stageId"
+                            filterable
+                            default-first-option
+                            placeholder="请选择阶段">
+                        <el-option
+                                v-for="item in stageList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="标签" prop="tags">
+                    <el-select
+                            v-model="taskForm.tags"
+                            multiple
+                            filterable
+                            default-first-option
+                            placeholder="请选择标签">
+                        <el-option
+                                v-for="item in tagList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveTaskInfo('taskForm')">立即创建</el-button>
+            <el-button @click="createTaskVisible = false">取 消</el-button>
+          </span>
+        </el-dialog>
     </div>
 </template>
 <script>
     import TaskItem from './TaskItem'
-    import CreateTask from './CreateTask'
-    import FinishedTaskPop from './FinishedTaskPop'
-    import AssessTaskPop from './AssessTaskPop'
 
     import http from '../lib/Http'
+    import helper from '../lib/Helper'
+    import moment from 'moment';
+
+    moment.locale('zh-cn');
 
     export default {
         name: 'NavIndex',
         data() {
             return {
                 activeName: 'doing',
+                createTaskVisible: false,
+                taskForm: {
+                    taskName: '',
+                    description: '',
+                    projectId: '',
+                    endTime: '',
+                    priority: 1,
+                    tags: [],
+                    taskType: 1,
+                    taskHours: '',
+                    stageId: ''
+                },
+                rules: {
+                    projectId: [
+                        {required: true, message: '项目不能为空', trigger: 'change'},
+                    ],
+                    endTime: [
+                        {type: 'date', required: true, message: '截止时间不能为空', trigger: 'change'},
+                    ],
+                    taskHours: [
+                        {required: true, message: '工作量不能为空', trigger: 'blur'},
+                    ],
+                    taskName: [
+                        {required: true, message: '任务名称不能为空', trigger: 'blur'},
+                    ],
+                    description: [
+                        {required: true, message: '描述不能为空', trigger: 'blur'},
+                    ],
+                    stageId: [
+                        {required: true, message: '阶段不能为空', trigger: 'change'},
+                    ],
+                    tags: [
+                        {type: 'array', required: true, message: '请至少选择一个标签', trigger: 'change'},
+                    ]
+                }, task: {
+                    doing: [],
+                    finished: [],
+                    waitAssess: [],
+                    waitAudit: []
+                },
+                projectList: [],
+                stageList: [],
+                tagList: [],
                 integralItem: [
                     {
                         label: '本周',
@@ -70,20 +187,17 @@
                         label: '年度积分排名',
                         score: '22'
                     }
-                ], task: {
-                    doing: [],
-                    finished: [],
-                    waitAssess: [],
-                    waitAudit: []
-                }
+                ]
             };
         },
-        created(){
-            this.fetchIntegral()
-            this.fetchTaskDoing()
-            this.fetchTaskFinished()
-            this.fetchTaskWaitAssess()
-            this.fetchTaskWaitAudit()
+        created() {
+            this.reload();
+        },
+        computed: {
+            permit() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole <= 1;
+            }
         },
         methods: {
             handleClick(tab, event) {
@@ -91,55 +205,146 @@
                 console.log(tab, event);
             },
             createTaskClick() {
-                // 建任务
-                this.$refs.createTaskPop.show();
+                // 建个人任务
+                this.createTaskVisible = true
             },
-            fetchIntegral(){
-                Http.zsyGetHttp(Http.API_URI.USERINTEGRAL,null,(res)=>{
-                    let data = res.data;
-                    let items=[];
-                    items.push({label:'本周',score:'+'+data.week});
-                    items.push({label:'本月',score:'+'+data.month});
-                    items.push({label:'本年',score:'+'+data.year});
-                    items.push({label:'季度积分排名',score:'+'+data.quarterRank});
-                    items.push({label:'年度积分排名',score:'+'+data.yearRank});
-                    this.integralItem = items;
+            reload() {
+                this.fetchIntegral()
+                this.fetchTaskDoing()
+                this.fetchTaskFinished()
+                this.fetchTaskWaitAssess()
+                this.fetchTaskWaitAudit()
+                this.fetchProjectList()
+                this.fetchStageList()
+                this.fetchTagList()
+            },
+            saveTaskInfo(formName) {
+                let vm = this;
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let userId = helper.decodeToken().userId;
+                        var param = this.taskForm;
+                        param.endTime = moment(param.beginTime).format('YYYY-MM-DD HH:mm:ss')
+                        var taskUsers = [{
+                            userId: userId,
+                            stageId: param.stageId,
+                            taskHours: param.taskHours,
+                            beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+                            endTime: param.endTime,
+                            description: param.description
+                        }];
+                        param['taskUsers'] = taskUsers;
+                        http.zsyPostHttp('/task/create', param, (resp) => {
+                            vm.$message.success('任务创建成功');
+                            this.$refs[formName].resetFields();
+                            this.createTaskVisible = false
+                            vm.fetchTaskWaitAudit()
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            makeUpItems(items) {
+                const list = items;
+                list.forEach((el) => {
+                    let endTime = '';
+                    if (el.status >=2) {
+                        endTime = el.completeTime
+                    } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
+                        endTime = el.endTime
+                    } else {
+                        endTime = el.taskUsers[0].completeTime
+                    }
+                    const diffDays = Math.round(moment().diff(moment(endTime), 'days', true))
+                    let endColor = '', endText = ''
+                    endText = moment(endTime).calendar(null, {
+                        sameDay: '[今天]LT',
+                        nextDay: '[明天]LT',
+                        nextWeek: 'L',
+                        lastDay: '[昨天]LT',
+                        lastWeek: 'L',
+                        sameElse: 'L'
+                    })
+                    if (el.status < 3 && el.taskUsers[0].status == 1) {
+                        if (diffDays == 0) {
+                            endColor = 'orange'
+                        } else if (diffDays > 0) {
+                            endColor = 'red'
+                        } else if (diffDays < 0) {
+                            endColor = 'blue'
+                        }
+                        endText += ' 截止'
+                    } else {
+                        endColor = 'green'
+                        endText += ' 完成'
+                    }
+                    el['endColor'] = endColor
+                    el['endText'] = endText
                 })
+                return list
+            },
+            fetchIntegral() {
+                /* http.zsyGetHttp(http.API_URI.USERINTEGRAL,null,(res)=>{
+                     let data = res.data;
+                     let items=[];
+                     items.push({label:'本周',score:'+'+data.week});
+                     items.push({label:'本月',score:'+'+data.month});
+                     items.push({label:'本年',score:'+'+data.year});
+                     items.push({label:'季度积分排名',score:'+'+data.quarterRank});
+                     items.push({label:'年度积分排名',score:'+'+data.yearRank});
+                     this.integralItem = items;
+                 })*/
             },
             // 获取用户正在进行的任务
-            fetchTaskDoing(){
+            fetchTaskDoing() {
                 let vm = this
                 http.zsyGetHttp('/task/doing', {}, (resp) => {
-                    vm.task.doing = resp.data
+                    vm.task.doing = this.makeUpItems(resp.data)
                 })
             },
             // 获取用户已完成的任务
-            fetchTaskFinished(){
+            fetchTaskFinished() {
                 let vm = this
                 http.zsyGetHttp('/task/finished', {}, (resp) => {
-                    vm.task.finished = resp.data
+                    vm.task.finished = this.makeUpItems(resp.data)
                 })
             },
             // 获取用户待评价的任务
-            fetchTaskWaitAssess(){
+            fetchTaskWaitAssess() {
                 let vm = this
-                http.zsyGetHttp('/task/completed', {}, (resp) => {
-                    vm.task.waitAssess = resp.data
+                http.zsyGetHttp('/task/waitAssess', {}, (resp) => {
+                    vm.task.waitAssess = this.makeUpItems(resp.data)
                 })
             },
             // 获取用户待审核的任务
-            fetchTaskWaitAudit(){
+            fetchTaskWaitAudit() {
                 let vm = this
                 http.zsyGetHttp('/task/pending', {}, (resp) => {
-                    vm.task.waitAudit = resp.data
+                    vm.task.waitAudit = this.makeUpItems(resp.data)
                 })
             },
+            fetchProjectList() {
+                let vm = this
+                http.zsyGetHttp('/project/list', {}, (resp) => {
+                    vm.projectList = resp.data
+                })
+            },
+            fetchStageList() {
+                let vm = this
+                http.zsyGetHttp('/stage/list', {}, (resp) => {
+                    vm.stageList = resp.data
+                })
+            },
+            fetchTagList() {
+                let vm = this
+                http.zsyGetHttp('/tag/list', {}, (resp) => {
+                    vm.tagList = resp.data
+                })
+            }
         },
         components: {
-            TaskItem: TaskItem,
-            CreateTask: CreateTask,
-            FinishedTaskPop: FinishedTaskPop,
-            AssessTaskPop: AssessTaskPop
+            TaskItem: TaskItem
         },
     }
 </script>

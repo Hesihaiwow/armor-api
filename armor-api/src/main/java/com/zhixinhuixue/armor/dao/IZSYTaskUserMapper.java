@@ -41,4 +41,11 @@ public interface IZSYTaskUserMapper {
      */
     int insertList(List<TaskUser> taskUserList);
 
+    /**
+     * 删除任务
+     * @param taskId
+     * @return
+     */
+    int deleteByTaskId(Long taskId);
+
 }
