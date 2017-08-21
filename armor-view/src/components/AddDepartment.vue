@@ -7,13 +7,13 @@
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">部门名称</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.name" placeholder="请输入部门名称"></el-input>
+          <el-input class="w280" v-model="addForm.name" placeholder="请输入部门名称"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">上级部门</div>
         <div class="ftp-msg fl">
-          <el-select v-model="addForm.parentId" placeholder="请选择部门">
+          <el-select class="w280" v-model="addForm.parentId" placeholder="请选择部门">
             <el-option
                     v-for="item in departmentLevel"
                     :key="item.id"
@@ -109,7 +109,5 @@
 .ctpc-cancel{background: #fff;border: 1px solid #ccc;}
 .ctpc-cancel:hover{background: #fff;border: 1px solid #36A8FF;color: #36A8FF;font-weight: 700;}
 .ctpc-save{background: #36A8FF;color: #fff;}
-
-
 
 </style>

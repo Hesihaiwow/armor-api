@@ -763,15 +763,15 @@ public class ZSYTaskService implements IZSYTaskService {
      * @return
      */
     @Override
-    public PageInfo<TaskLogDTO> getTaskLog(Long taskId, int pageNum) {
+    public PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum) {
         PageHelper.startPage(pageNum, 2);
         Page<TaskLog> taskLogs = taskLogMapper.selectPage(taskId);
-        List<TaskLogDTO> list = Lists.newArrayList();
+        List<TaskLogResDTO> list = Lists.newArrayList();
         taskLogs.stream().forEach(taskLog -> {
-            TaskLogDTO taskLogDTO = new TaskLogDTO();
-            BeanUtils.copyProperties(taskLog, taskLogDTO);
-            list.add(taskLogDTO);
+            TaskLogResDTO taskLogResDTO = new TaskLogResDTO();
+            BeanUtils.copyProperties(taskLog, taskLogResDTO);
+            list.add(taskLogResDTO);
         });
-        return new PageInfo<TaskLogDTO>(list);
+        return new PageInfo<TaskLogResDTO>(list);
     }
 }

@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by Tate on 2017/8/20.
  */
-public class TaskLogDTO {
+public class TaskLogResDTO {
 
     private Long id;
 

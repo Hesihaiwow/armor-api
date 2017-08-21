@@ -7,31 +7,31 @@
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">姓名</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.name" placeholder="请输入姓名"></el-input>
+          <el-input class="w280" v-model="addForm.name" placeholder="请输入姓名"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">账号</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.account" placeholder="请输入账号"></el-input>
+          <el-input class="w280" v-model="addForm.account" placeholder="请输入账号"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">职位</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.jobName" placeholder="请输入职位"></el-input>
+          <el-input class="w280" v-model="addForm.jobName" placeholder="请输入职位"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">手机号</div>
         <div class="ftp-msg fl">
-          <el-input v-model="addForm.phone" placeholder="请输入手机号"></el-input>
+          <el-input class="w280" v-model="addForm.phone" placeholder="请输入手机号"></el-input>
         </div>
       </div>
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">用户权限</div>
         <div class="ftp-msg fl">
-          <el-select v-model="addForm.userRole" placeholder="请选择权限">
+          <el-select class="w280" v-model="addForm.userRole" placeholder="请选择权限">
             <el-option
                     v-for="item in options"
                     :key="item.value"

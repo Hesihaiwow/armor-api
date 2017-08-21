@@ -9,13 +9,11 @@ import 'element-ui/lib/theme-default/index.css'
 // common css
 import './assets/css/base.css'
 
-
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 
-
 /* eslint-disable no-new */
-new Vue({
+window.vue = new Vue({
   el: '#app',
   router,
   template: '<App/>',
@@ -23,4 +21,4 @@ new Vue({
     eventBus: new Vue(),
   },
   components: { App }
-})
+});
