@@ -72,6 +72,7 @@
     },
     beforeMount:function () {
       this.integralPage();
+      this.togTable(6);
     },
     methods: {
       togTable(index) {
