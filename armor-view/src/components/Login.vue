@@ -33,9 +33,9 @@ background-size: 100% 100%;}
 .login-btn{cursor: pointer;width: 300px;height: 34px;display: block;margin: 30px auto;border-radius: 4px;font-size: 16px;color: #fff;background: #36A8FF;}
 </style>
 <script>
-    import Http from '../lib/Http'
     import { Message } from 'element-ui';
     import Helper from '../lib/Helper'
+    import Http from "../lib/Http";
 
     export default {
         data() {

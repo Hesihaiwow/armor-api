@@ -200,6 +200,15 @@
                 }
             }
         },
+        filters: {
+            getTagName(id, tagList) {
+                tagList.forEach((tag) => {
+                    if (tag.id === id) {
+                        return tag.name
+                    }
+                })
+            }
+        },
         methods: {
             showInsChange() {
                 this.showDesc = true;
@@ -225,6 +234,7 @@
                     var tagLis = {};
                     tagLis.tagName = this.value10[i];
                     this.tagList.push(tagLis);
+                    console.log(this.tagList);
                     // tagLis.tagName = '';
                 }
             },
@@ -252,14 +262,14 @@
                     this.step.endTime == '' ||
                     this.step.description == '';
                 if (valid) {
-                    this.$message.warning('请将阶段填写完整');
+                    this.$message.error('请将阶段填写完整');
                     return
                 }
                 this.showAddDetail = !this.showAddDetail;
                 let taskUser = {}
                 taskUser.stageId = this.step.stageId
                 taskUser.stageName = this.step.stageName
-                taskUser.userId = this.step.userId
+                taskUser.userId = this.step.stageId
                 taskUser.userName = this.step.userName
                 taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
                 taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
@@ -348,12 +358,12 @@
                     this.$message.warning("请选择结束时间");
                     return;
                 }
-                if (this.taskForm.tags.length == 0) {
+                if (this.taskForm.tags.length==0) {
                     this.$message.warning("请选择至少一项标签");
                     return;
                 }
-                if (this.taskUsers.length <2) {
-                    this.$message.warning("任务阶段至少为2步");
+                if (this.taskUsers.length<2) {
+                    this.$message.warning("请填写任务阶段信息，至少2步");
                     return;
                 }
                 let param = this.taskForm;
@@ -361,16 +371,16 @@
                 param['taskUsers'] = this.taskUsers;
                 let vm = this;
                 http.zsyPostHttp('/task/create', param, (resp) => {
-                    vm.$message.success('任务创建成功');
-                    vm.taskForm.description = '';
-                    vm.taskForm.taskName = '';
-                    vm.taskForm.endTime = '';
-                    vm.taskForm.projectId = '';
-                    vm.taskForm.priority = 1;
-                    vm.taskForm.tags = [];
-                    vm.taskUsers = [];
-                    vm.$emit('handleFetchTaskList')
-                })
+                        vm.$message.success('任务创建成功');
+                        vm.taskForm.description = '';
+                        vm.taskForm.taskName = '';
+                        vm.taskForm.endTime = '';
+                        vm.taskForm.projectId = '';
+                        vm.taskForm.priority = 1;
+                        vm.taskForm.tags = [];
+                        vm.taskUsers = [];
+                        vm.$emit('fetchTaskList')
+                    })
                 this.showCreateTask = false;
             }
         }

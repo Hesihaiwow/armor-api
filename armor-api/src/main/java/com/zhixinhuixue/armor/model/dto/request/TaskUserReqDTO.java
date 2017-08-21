@@ -49,6 +49,36 @@ public class TaskUserReqDTO {
     @Size(min = 1, max = 500, message = "阶段描述长度在{min}~{max}之间")
     private String description;
 
+    private Integer status;
+
+    private Integer completeHours;
+
+    private Date completeTime;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getCompleteHours() {
+        return completeHours;
+    }
+
+    public void setCompleteHours(Integer completeHours) {
+        this.completeHours = completeHours;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
     public Long getStageId() {
         return stageId;
     }

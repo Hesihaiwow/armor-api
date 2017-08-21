@@ -14,7 +14,6 @@ import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
-import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
@@ -201,7 +200,17 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUser.setEndTime(user.getEndTime());
                 taskUser.setTaskHours(user.getTaskHours());
                 taskUser.setCreateTime(new Date());
-                taskUser.setStatus(ZSYTaskUserStatus.DOING.getValue());
+                if (user.getStatus() != null) {
+                    taskUser.setStatus(user.getStatus());
+                } else {
+                    taskUser.setStatus(ZSYTaskUserStatus.DOING.getValue());
+                }
+                if (user.getCompleteHours() != null) {
+                    taskUser.setCompleteHours(user.getCompleteHours());
+                }
+                if (user.getCompleteTime() != null) {
+                    taskUser.setCompleteTime(user.getCompleteTime());
+                }
                 taskUsers.add(taskUser);
             });
             taskUserMapper.insertList(taskUsers);
@@ -465,12 +474,12 @@ public class ZSYTaskService implements IZSYTaskService {
             taskBOS.stream().forEach(taskBO -> {
                 TaskResDTO taskResDTO = new TaskResDTO();
                 BeanUtils.copyProperties(taskBO, taskResDTO);
-                if (taskResDTO.getUserIntegral()!=null) {
-                    if (taskResDTO.getUserIntegral()>=90) {
+                if (taskResDTO.getUserIntegral() != null) {
+                    if (taskResDTO.getUserIntegral() >= 90) {
                         taskResDTO.setIntegralGrade("A");
-                    }else if(taskResDTO.getUserIntegral()>=80){
+                    } else if (taskResDTO.getUserIntegral() >= 80) {
                         taskResDTO.setIntegralGrade("B");
-                    }else{
+                    } else {
                         taskResDTO.setIntegralGrade("C");
                     }
                 }
@@ -754,15 +763,15 @@ public class ZSYTaskService implements IZSYTaskService {
      * @return
      */
     @Override
-    public PageInfo<TaskLogDTO> getTaskLog(Long taskId, int pageNum) {
+    public PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum) {
         PageHelper.startPage(pageNum, 2);
         Page<TaskLog> taskLogs = taskLogMapper.selectPage(taskId);
-        List<TaskLogDTO> list = Lists.newArrayList();
+        List<TaskLogResDTO> list = Lists.newArrayList();
         taskLogs.stream().forEach(taskLog -> {
-            TaskLogDTO taskLogDTO = new TaskLogDTO();
-            BeanUtils.copyProperties(taskLog, taskLogDTO);
-            list.add(taskLogDTO);
+            TaskLogResDTO taskLogResDTO = new TaskLogResDTO();
+            BeanUtils.copyProperties(taskLog, taskLogResDTO);
+            list.add(taskLogResDTO);
         });
-        return new PageInfo<TaskLogDTO>(list);
+        return new PageInfo<TaskLogResDTO>(list);
     }
 }

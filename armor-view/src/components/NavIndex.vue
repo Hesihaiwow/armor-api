@@ -24,6 +24,12 @@
                     </el-tab-pane>
                     <el-tab-pane label="已完成" name="completed">
                         <task-item :taskItems="task.finished" :isPrivate="true"></task-item>
+                        <div class="pagination">
+                            <el-pagination
+                                    layout="prev, pager, next"
+                                    :total="1000">
+                            </el-pagination>
+                        </div>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -121,6 +127,13 @@
     export default {
         name: 'NavIndex',
         data() {
+            var validateEmpty = (rule, value, callback) => {
+                if (value.trim() == '') {
+                    callback(new Error());
+                } else {
+                    callback();
+                }
+            };
             return {
                 activeName: 'doing',
                 createTaskVisible: false,
@@ -143,13 +156,13 @@
                         {type: 'date', required: true, message: '截止时间不能为空', trigger: 'change'},
                     ],
                     taskHours: [
-                        {required: true, message: '工作量不能为空', trigger: 'blur'},
+                        {required: true, validator: validateEmpty, message: '工作量不能为空', trigger: 'blur'},
                     ],
                     taskName: [
-                        {required: true, message: '任务名称不能为空', trigger: 'blur'},
+                        {required: true, validator: validateEmpty, message: '任务名称不能为空', trigger: 'blur'},
                     ],
                     description: [
-                        {required: true, message: '描述不能为空', trigger: 'blur'},
+                        {required: true, validator: validateEmpty, message: '描述不能为空', trigger: 'blur'},
                     ],
                     stageId: [
                         {required: true, message: '阶段不能为空', trigger: 'change'},
@@ -249,7 +262,7 @@
                 const list = items;
                 list.forEach((el) => {
                     let endTime = '';
-                    if (el.status >=2) {
+                    if (el.status >= 2) {
                         endTime = el.completeTime
                     } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
                         endTime = el.endTime
@@ -285,16 +298,16 @@
                 return list
             },
             fetchIntegral() {
-                 http.zsyGetHttp(http.API_URI.USERINTEGRAL,null,(res)=>{
-                     let data = res.data;
-                     let items=[];
-                     items.push({label:'本周',score:'+'+data.week});
-                     items.push({label:'本月',score:'+'+data.month});
-                     items.push({label:'本年',score:'+'+data.year});
-                     items.push({label:'季度积分排名',score:'+'+data.quarterRank});
-                     items.push({label:'年度积分排名',score:'+'+data.yearRank});
-                     this.integralItem = items;
-                 })
+                http.zsyGetHttp(http.API_URI.USERINTEGRAL, null, (res) => {
+                    let data = res.data;
+                    let items = [];
+                    items.push({label: '本周', score: '+' + data.week});
+                    items.push({label: '本月', score: '+' + data.month});
+                    items.push({label: '本年', score: '+' + data.year});
+                    items.push({label: '季度积分排名', score: '+' + data.quarterRank});
+                    items.push({label: '年度积分排名', score: '+' + data.yearRank});
+                    this.integralItem = items;
+                })
             },
             // 获取用户正在进行的任务
             fetchTaskDoing() {
@@ -349,6 +362,10 @@
     }
 </script>
 <style scoped>
+    .pagination {
+        margin: 20px 0;
+        text-align: right;
+    }
     .nav-index-con {
         width: 1100px;
         margin: auto;

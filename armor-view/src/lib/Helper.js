@@ -1,5 +1,4 @@
 export default {
-    
     //去空格
     trim: function( text ) {
         let rTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
@@ -8,8 +7,12 @@ export default {
     //解Token
     decodeToken: function () {
         let token = window.localStorage.getItem("token");
-        if (token==null||token==''){
-            this.$router.push("/");
+        if (token==null||token=='') {
+            var tmp = {};
+            tmp.userName = null;
+            tmp.userId = null;
+            tmp.userRole = null;
+            return tmp;
         }
         let tokens = token.split(".");
         var output = tokens[1].replace(/-/g, '+').replace(/_/g, '/');
