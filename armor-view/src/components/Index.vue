@@ -75,7 +75,6 @@ export default {
     watch:{
       activeName(curVal,oldVal){
         if(oldVal == null) return;
-        console.log(curVal);
       },
     },
     computed: {

@@ -7,7 +7,7 @@ import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskLogDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
 
@@ -138,5 +138,5 @@ public interface IZSYTaskService {
      * @param taskId
      * @return
      */
-    PageInfo<TaskLogDTO> getTaskLog(Long taskId, int pageNum);
+    PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum);
 }

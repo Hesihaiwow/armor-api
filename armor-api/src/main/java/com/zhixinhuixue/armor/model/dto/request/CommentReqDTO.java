@@ -14,7 +14,7 @@ public class CommentReqDTO {
     private Long taskId;
     @Size(min = 1, message = "评论不能为空")
     @Valid
-    private List<CommentSalveDTO> comments;
+    private List<CommentSalveReqDTO> comments;
 
     public Long getTaskId() {
         return taskId;
@@ -24,11 +24,11 @@ public class CommentReqDTO {
         this.taskId = taskId;
     }
 
-    public List<CommentSalveDTO> getComments() {
+    public List<CommentSalveReqDTO> getComments() {
         return comments;
     }
 
-    public void setComments(List<CommentSalveDTO> comments) {
+    public void setComments(List<CommentSalveReqDTO> comments) {
         this.comments = comments;
     }
 }

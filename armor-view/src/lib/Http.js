@@ -39,7 +39,7 @@ export default {
     RESPONSE_TYPE: 'json',
 
     //AXIOS请求
-   zsyHttpBase: function(_url, _method, _data = {}, success, fail, _catch) {
+    zsyHttpBase(_url, _method, _data = {}, success, fail, _catch) {
         let _this = this;
         //请求全局配置
         let config = {};
@@ -60,8 +60,11 @@ export default {
             if (res.errCode != "00") {
                 if (res.errCode == "02") {
                     //重新登录
-                    _this.$router.push("/");
-                    window.localStorage.clear();
+                    Message.warning(res.errMsg);
+                    setTimeout(function () {
+                        window.vue.$router.push("/");
+                        window.localStorage.clear();
+                    },1000);
                 } else {
                     if (typeof fail == "function") {
                         fail(res);
@@ -83,28 +86,28 @@ export default {
             } else if (err.message.indexOf("code 503") != -1) {
                 Message.error('当前服务不可用');
             } else {
-                console.debug(err)
+                console.debug(err);
                 Message.error('系统异常');
             }
         })
     },
     // GET请求
-    zsyGetHttp: function (_url, _data = {}, success, fail, _catch) {
+    zsyGetHttp (_url, _data = {}, success, fail, _catch) {
         let _this = this;
         _this.zsyHttpBase(_url,_this.HTTP_METHOD.GET,_data,success,fail,_catch);
     },
     // POST请求
-    zsyPostHttp: function (_url, _data = {}, success, fail, _catch) {
+    zsyPostHttp (_url, _data = {}, success, fail, _catch) {
         let _this = this;
         _this.zsyHttpBase(_url,_this.HTTP_METHOD.POST,_data,success,fail,_catch);
     },
     // PUT请求
-    zsyPutHttp: function (_url, _data = {}, success, fail, _catch) {
+    zsyPutHttp (_url, _data = {}, success, fail, _catch) {
         let _this = this;
         _this.zsyHttpBase(_url,_this.HTTP_METHOD.PUT,_data,success,fail,_catch);
     },
     // DELETE请求
-    zsyDeleteHttp: function (_url, _data = {}, success, fail, _catch) {
+    zsyDeleteHttp (_url, _data = {}, success, fail, _catch) {
         let _this = this;
         _this.zsyHttpBase(_url,_this.HTTP_METHOD.DELETE,_data,success,fail,_catch);
     }

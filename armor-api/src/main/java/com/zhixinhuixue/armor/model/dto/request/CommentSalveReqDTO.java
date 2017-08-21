@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 /**
  * @author Tate<i@ridog.me>
  */
-public class CommentSalveDTO {
+public class CommentSalveReqDTO {
     @NotNull(message = "taskUserId不能为空")
     private Long taskUserId;
     @Size(max = 500, message = "评论内容最多{max}字")
