@@ -71,7 +71,6 @@
       }
     },
     beforeMount:function () {
-      this.integralPage();
       this.togTable(0);
     },
     methods: {
