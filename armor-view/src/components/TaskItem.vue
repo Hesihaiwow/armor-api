@@ -124,10 +124,10 @@
                     {{item.title}}
                 </div>
             </div>
-            <span slot="footer" class="dialog-footer" v-show="permit">
+            <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
                  <el-button type="text" @click="deleteTask" v-show="taskDetail.status!=3">删除</el-button>
                 <el-button type="primary" @click="completeTask" v-show="taskDetail.status!=3">完成</el-button>
-                <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status==3">确定</el-button>
+                <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -383,6 +383,10 @@
         filters: {
             formatDate: function (value) {
                 if (!value) return ''
+                return moment(value).format('YYYY-MM-DD')
+            },
+            formatTime: function (value) {
+                if (!value) return ''
                 return moment(value).format('YYYY-MM-DD HH:mm:ss')
             }
         },
@@ -465,6 +469,7 @@
                     return
                 }
                 var param = this.finishForm
+                param.completeHours = param.completeHours.trim()
                 param.completeTime = moment(param.completeTime).format('YYYY-MM-DD HH:mm:ss')
                 http.zsyPutHttp('/task/complete', param, (resp) => {
                     this.resetFinishForm()
@@ -595,7 +600,6 @@
                     }
                     this.modifyTaskForm.taskUsers = resp.data.users
                 });
-
             },
             hideTaskModify() {
                 this.modifyTaskForm.taskName = '';
@@ -712,10 +716,13 @@
                     return;
                 }
                 let param = this.modifyTaskForm;
+                param.taskName = param.taskName.trim()
+                param.description = param.description.trim()
+                param.taskUsers.forEach((user)=>{
+                    user.description = user.description.trim()
+                })
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
                 let vm = this;
-                console.log(param)
-                debugger
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
                     vm.$message.success('任务修改成功');
                     this.hideTaskModify()
