@@ -10,7 +10,7 @@ export default {
         } else if (process.env.NODE_ENV === 'testing') {
             return 'http://zsy.dev.xueping.com/armor/api';
         } else {
-            return 'http://localhost:10012/armor/';
+            return 'http://localhost:10012/armor/api';
         }
     },
     //所有请求URI
