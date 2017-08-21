@@ -52,10 +52,6 @@ export default {
             {
               label: '积分',
               name: 'intergral'
-            },
-            {
-              label: '组织',
-              name: 'organization'
             }
         ],
         showIndex: true,
@@ -71,6 +67,12 @@ export default {
         this.$root.eventBus.$on("handleTabSelected", (val) => {
             this.activeName = val;
         });
+        if (Helper.decodeToken().userRole<=1){
+            this.tabs.push({
+                label: '组织',
+                name: 'organization'
+            });
+        }
     },
     watch:{
       activeName(curVal,oldVal){

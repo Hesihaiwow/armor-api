@@ -2,12 +2,14 @@ package com.zhixinhuixue.armor.service.impl;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYProjectMapper;
+import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.ProjectReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ProjectResDTO;
 import com.zhixinhuixue.armor.model.pojo.Project;
 import com.zhixinhuixue.armor.service.IZSYProjectService;
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,11 @@ public class ZSYProjectService implements IZSYProjectService{
      */
     @Override
     public void addProject(ProjectReqDTO projectReqDTO){
+
+        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYAuthException("没有权限执行此操作");
+        }
+
         String name = projectReqDTO.getName();
         if(projectMapper.validateProject(name.trim())>0) {
             throw new ZSYServiceException("项目名称已存在");

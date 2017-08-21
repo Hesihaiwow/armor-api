@@ -57,9 +57,6 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if (logger.isDebugEnabled()){
-            logger.debug("进入过滤器");
-        }
         //允许跨域
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "Authorization,content-type,x-requested-with,X-Custom-Header");
@@ -72,6 +69,9 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
             if (request.getMethod().equals("OPTIONS")){
                 response.setStatus(204);
             }else{
+                if (logger.isDebugEnabled()){
+                    logger.debug("进入过滤器");
+                }
                 String auth = request.getHeader("Authorization");
 //                String auth = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBa3VtYSIsImV4cCI6MTUzMzQ1Mzk3OCwidXNlck5hbWUiOiJKb2huIERvZSIsInVzZXJSb2xlIjowLCJpYXQiOjE1MDIzNDk5NzgsInVzZXJJZCI6MX0.dqXGCr_CDAz23ax7joIW8Qn0V5-81kUKaBUMV0Dknd4";
                 if (Strings.isNullOrEmpty(auth)){

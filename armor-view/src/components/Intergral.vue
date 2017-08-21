@@ -73,7 +73,7 @@
     beforeMount:function () {
       //选中积分tab
       this.$root.eventBus.$emit("handleTabSelected", "intergral");
-      this.integralPage();
+      this.togTable(0);
     },
     methods: {
       togTable(index) {

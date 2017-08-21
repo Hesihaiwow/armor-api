@@ -84,4 +84,15 @@ public class ZSYGlobeException {
         logger.warn("请求参数异常:{}",e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
         return ZSYResult.fail(ZSYResult.RESPONSE.PARAM_ERROR).msg(e.getBindingResult().getAllErrors().get(0).getDefaultMessage()).build();
     }
+
+    /**
+     * 没有权限
+     * @param e
+     * @return JSON数据
+     */
+    @ExceptionHandler
+    public @ResponseBody String handleNoAuthException(ZSYAuthException e) {
+        logger.warn("权限异常:{}",e.getMessage());
+        return ZSYResult.fail(ZSYResult.RESPONSE.AUTH_FORBIDDEN_ERROR).msg(e.getMessage()).build();
+    }
 }
