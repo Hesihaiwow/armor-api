@@ -4,9 +4,9 @@
       <div class="fl menu-list" v-for="(list,index) in menuList" @click="togTable(index)" :style="tabActive(index)">{{list.name}}</div>
       <!--<div class="fl menu-list" @click="togTable(4)" :style="tabActive(4)">自定义</div>-->
       <div class="fl menu-list"  v-show="diyStyle">
-        <el-date-picker v-model="queryForm.startTime" type="datetime" placeholder="选择日期"></el-date-picker><span class="div-line">-</span>
-        <el-date-picker v-model="queryForm.endTime" type="datetime" placeholder="选择日期"  ></el-date-picker>
-        <img src="../assets/img/u1221.png" alt="" @click="integralPage()" class="serch-btn">
+        <el-date-picker v-model="queryForm.startTime" type="date" placeholder="选择日期"></el-date-picker><span class="div-line">-</span>
+        <el-date-picker v-model="queryForm.endTime" type="date" placeholder="选择日期"  ></el-date-picker>
+        <img src="../assets/img/u1221.png" alt="" @click="integralDate()" class="serch-btn">
       </div>
     </div>
     <div class="intergral-data-detail">
@@ -18,17 +18,19 @@
     </div>
     <el-pagination
       @current-change="integralPage"
-      :page-size="pageSize"
-      :current-page="currentPage"
-      :layout="layout"
-      :total="totals">
+      :page-size="pageInfo.pageSize"
+      :current-page="pageInfo.currentPage"
+      :layout="pageInfo.layout"
+      :total="pageInfo.totals">
     </el-pagination>
 	</div>
 </template>
 <script>
   import Http from '../lib/Http'
   import { Message } from 'element-ui';
+  import moment from 'moment';
 
+  moment.locale('zh-cn');
   export default {
     name: 'Intergral',
     data() {
@@ -40,10 +42,13 @@
         dateForm:{
           startTime:'0'
         },
-        layout:"total, pager",
-        currentPage:1,
-        pageSize:10,
-        totals:0,
+        pageInfo:{
+          layout:"total, pager",
+          currentPage:1,
+          pageSize:10,
+          totals:0,
+          pageNum:0
+        },
         diyStyle:false,
         menuList: [
           {
@@ -66,9 +71,8 @@
       }
     },
     beforeMount:function () {
-      this.integralPage();
+      this.togTable(0);
     },
-
     methods: {
       togTable(index) {
         // 点击菜单
@@ -104,14 +108,12 @@
         }
       },
       //根据自定义时间进行查询
-      integralDate(time){
-        this.dateForm.startTime = time ;
-        Http.zsyGetHttp(Http.API_URI.INTEGRAL+this.currentPage,this.dateForm,(res)=>{
-          this.tableData = res.data.list;
-          this.totals=res.data.total;
-          this.pageSize =res.data.pagesize;
-          this.pagingLayout(this.totals);
-        })
+      integralDate(){
+        this.queryForm.startTime = this.localeTimeString(this.queryForm.startTime);
+        if(this.queryForm.endTime!=null&&this.queryForm.endTime !=""){
+          this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime()+86399000);//结束时间加入23:59:59
+        }
+        this.integralPage()
       },
       //查询积分列表
       integralPage(currentPage){
@@ -120,9 +122,13 @@
         }
         Http.zsyGetHttp(Http.API_URI.INTEGRAL+currentPage,this.queryForm,(res)=>{
           this.tableData = res.data.list;
-          this.totals=res.data.total;
-          this.pageSize =res.data.pagesize;
-          this.pagingLayout(this.totals);
+          this.pageInfo.totals=res.data.total;
+          this.pageInfo.pageNum = res.data.pages;
+          this.pageInfo.pageSize =res.data.pagesize;
+          this.pagingLayout();
+          if(this.queryForm.endTime!=null&&this.queryForm.endTime !=""){
+            this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime()-86399000);//之前加入的结束时间减回
+          }
         })
       },
       display(index){
@@ -137,10 +143,10 @@
         }
       },
       pagingLayout() {
-        if (this.totals>0){
-          this.layout = 'total,prev,pager,next';
+        if (this.pageInfo.pageNum>1){
+          this.pageInfo.layout = 'total,prev,pager,next';
         }else{
-          this.layout = 'total,pager';
+          this.pageInfo.layout = 'total,pager';
         }
       },
       //获取本年,季度,月的开始结束日期
@@ -169,12 +175,14 @@
           this.queryForm.endTime = this.localeTimeString(new Date(now.getFullYear()+1,0,1));
         }
       },
-      //时间字符串格式化(避免时区格式影响数据库)"YY-mm-dd HH:mm-ss"
+      //时间字符串格式化
       localeTimeString(time){
-        let timeString = new Date(time);
-        timeString=timeString.getFullYear() + '-' + (timeString.getMonth() + 1) + '-' + timeString.getDate()
-          + ' ' + timeString.getHours() + ':' + timeString.getMinutes() + ':' + timeString.getSeconds();
-        return timeString;
+        if(time!=null&&time!=""){
+          time = moment(time).format('YYYY-MM-DD HH:mm:ss');
+          return time;
+        }else{
+          return "";
+        }
       }
 
     }
