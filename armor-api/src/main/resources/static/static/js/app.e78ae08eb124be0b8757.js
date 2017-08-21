@@ -5914,6 +5914,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             _this.button.loading = true;
             __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyPostHttp(__WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].API_URI.LOGIN, _this.loginForm, res => {
                 if (res.errCode != '00') {
+                    _this.button.loading = false;
                     __WEBPACK_IMPORTED_MODULE_0_element_ui__["Message"].error(res.errMsg);
                 } else {
                     _this.button.btnName = '登录成功,跳转中...';
@@ -8175,4 +8176,4 @@ webpackContext.id = 309;
 
 /***/ })
 ],[250]);
-//# sourceMappingURL=app.4496c3bec5b32d0075c9.js.map
+//# sourceMappingURL=app.e78ae08eb124be0b8757.js.map

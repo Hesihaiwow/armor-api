@@ -62,6 +62,7 @@
                 _this.button.loading = true;
                 Http.zsyPostHttp(Http.API_URI.LOGIN, _this.loginForm,(res)=>{
                     if (res.errCode!='00'){
+                        _this.button.loading = false;
                         Message.error(res.errMsg);
                     }else{
                         _this.button.btnName = '登录成功,跳转中...';
