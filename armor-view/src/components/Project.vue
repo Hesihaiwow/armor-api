@@ -44,6 +44,8 @@
       };
     },
     beforeMount:function () {
+      //选中项目tab
+      this.$root.eventBus.$emit("handleTabSelected", "project");
       Http.zsyGetHttp(Http.API_URI.PROJECT,null,(res)=>{
         this.TaskItem = res.data;
       })

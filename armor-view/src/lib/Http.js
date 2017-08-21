@@ -33,8 +33,8 @@ export default {
         PUT: "put",
         DELETE: "delete"
     },
-    //请求超时时间8s
-    TIME_OUT: 8000,
+    //请求超时时间15s
+    TIME_OUT: 15000,
     //返回数据类型JSON
     RESPONSE_TYPE: 'json',
 

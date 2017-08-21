@@ -269,7 +269,7 @@
                 let taskUser = {}
                 taskUser.stageId = this.step.stageId
                 taskUser.stageName = this.step.stageName
-                taskUser.userId = this.step.stageId
+                taskUser.userId = this.step.userId
                 taskUser.userName = this.step.userName
                 taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
                 taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
