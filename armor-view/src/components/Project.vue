@@ -1,6 +1,6 @@
 <template>
   <div class="project-con">
-    <p class="mic-title">我参与的项目</p>
+    <p class="mic-title">所有项目</p>
     <div class="task-item" v-for="list in TaskItem">
       <img src="../assets/img/u431.png" alt="" class="task-logo">
       <div class="task-info">
@@ -8,7 +8,7 @@
         <div class="task-sub-name">{{list.description}}</div>
       </div>
     </div>
-    <div class="add-task-item" @click="addTask">
+    <div class="add-task-item" v-show="hasPermission" @click="addTask">
       <div class="add-task-btn">＋</div>
       <div class="add-task-msg">创建新项目</div>
     </div>
@@ -30,7 +30,8 @@
   </div>
 </template>
 <script>
-  import Http from '../lib/Http.js'
+  import Http from '../lib/Http'
+  import Helper from '../lib/Helper'
   import { Message } from 'element-ui';
 
   export default {
@@ -44,9 +45,17 @@
       };
     },
     beforeMount:function () {
+      //选中项目tab
+      this.$root.eventBus.$emit("handleTabSelected", "project");
       Http.zsyGetHttp(Http.API_URI.PROJECT,null,(res)=>{
         this.TaskItem = res.data;
       })
+    },
+    computed: {
+        //是否有权限
+        hasPermission () {
+            return Helper.decodeToken().userRole<=1;
+        }
     },
     methods: {
       addTask () {

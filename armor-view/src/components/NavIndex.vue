@@ -31,6 +31,10 @@
                             </el-pagination>
                         </div>
                     </el-tab-pane>
+                    <el-tab-pane label="审核失败" name="applyFail">
+                        <task-item :taskItems="task.applyFail" :isPrivate="true"
+                                   taskStatus="ApplyFail" @reload="reload"></task-item>
+                    </el-tab-pane>
                 </el-tabs>
             </div>
             <p class="mic-title">待评价任务</p>
@@ -121,6 +125,7 @@
     import http from '../lib/Http'
     import helper from '../lib/Helper'
     import moment from 'moment';
+    import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
 
     moment.locale('zh-cn');
 
@@ -179,7 +184,8 @@
                     doing: [],
                     finished: [],
                     waitAssess: [],
-                    waitAudit: []
+                    waitAudit: [],
+                    applyFail:[]
                 },
                 projectList: [],
                 stageList: [],
@@ -241,6 +247,7 @@
                 this.fetchProjectList()
                 this.fetchStageList()
                 this.fetchTagList()
+                this.fetchApplyFailTask();
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -337,6 +344,13 @@
                     vm.task.finished = this.makeUpItems(resp.data.list)
                 })
             },
+            // 获取用户被打回任务
+            fetchApplyFailTask() {
+                let vm = this
+                http.zsyGetHttp('/task/apply/fail', {}, (resp) => {
+                    vm.task.applyFail = this.makeUpItems(resp.data)
+                })
+            },
             // 获取用户待评价的任务
             fetchTaskWaitAssess() {
                 let vm = this
@@ -371,6 +385,7 @@
             }
         },
         components: {
+            ElTabPane,
             TaskItem: TaskItem
         },
     }

@@ -1,7 +1,9 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.google.common.collect.Lists;
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
+import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.DeptBo;
@@ -12,6 +14,7 @@ import com.zhixinhuixue.armor.model.pojo.Department;
 import com.zhixinhuixue.armor.service.IZSYDeptService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,9 @@ public class ZSYDeptService implements IZSYDeptService {
 
     @Override
     public void addDept(DeptReqDTO deptReqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYAuthException("没有权限执行此操作");
+        }
         //校验部门名称是否唯一
         List<Department> departments = departmentMapper.selectByDeptName(deptReqDTO.getName());
         if (departments.size()>0){

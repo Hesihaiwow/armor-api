@@ -71,6 +71,8 @@
       }
     },
     beforeMount:function () {
+      //选中积分tab
+      this.$root.eventBus.$emit("handleTabSelected", "intergral");
       this.togTable(0);
     },
     methods: {

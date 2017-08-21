@@ -83,6 +83,13 @@ public class ZSYTaskController extends ZSYController {
                 ZSYReviewStatus.ACCEPT.getValue(), ZSYTaskUserStatus.DOING.getValue(), ZSYTokenRequestContext.get().getUserId()).build();
     }
 
+    @ApiOperation("获取用户被打回任务")
+    @GetMapping(value = "/apply/fail")
+    public String applyFail() {
+        return taskService.getTaskByStatus(ZSYTaskStatus.DOING.getValue(),
+                ZSYReviewStatus.REJECT.getValue(), ZSYTaskUserStatus.DOING.getValue(), ZSYTokenRequestContext.get().getUserId()).build();
+    }
+
     @ApiOperation("获取用户待评价的任务")
     @GetMapping(value = "/waitAssess")
     public String getWaitAssessTask() {

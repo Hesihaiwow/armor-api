@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.MD5Helper;
@@ -28,6 +29,7 @@ import com.zhixinhuixue.armor.service.IZSYUserService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,6 +152,10 @@ public class ZSYUserService implements IZSYUserService{
     @Override
     public void addUser(UserReqDTO userReqDTO) {
 
+        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYAuthException("没有权限执行此操作");
+        }
+
         //校验用户账户是否存在
         List<User> existUsers = userMapper.selectByAccount(userReqDTO.getAccount());
         if (existUsers.size()>0){
@@ -171,6 +177,10 @@ public class ZSYUserService implements IZSYUserService{
 
     @Override
     public void modifyUser(UserReqDTO userReqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYAuthException("没有权限执行此操作");
+        }
+
         User user = new User();
         BeanUtils.copyProperties(userReqDTO,user);
         user.setId(userReqDTO.getUserId());
@@ -193,6 +203,9 @@ public class ZSYUserService implements IZSYUserService{
 
     @Override
     public void deleteUserById(Long userId) {
+        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYAuthException("没有权限执行此操作");
+        }
         if (userMapper.deleteById(userId)==0){
             throw new ZSYServiceException("删除用户失败");
         }
@@ -227,6 +240,9 @@ public class ZSYUserService implements IZSYUserService{
 
     @Override
     public void resetUserPassword(Long userId) {
+        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYAuthException("没有权限执行此操作");
+        }
         User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
         Optional.ofNullable(user).orElseThrow(()->new ZSYServiceException("用户不存在"));
         //校验用户状态

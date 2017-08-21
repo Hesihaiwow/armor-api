@@ -134,6 +134,8 @@
             this.fetchStageList()
             this.fetchTagList()
             this.fetchTaskList()
+            //选中任务tab
+            this.$root.eventBus.$emit("handleTabSelected", "task");
         },
         computed: {
             permit() {
