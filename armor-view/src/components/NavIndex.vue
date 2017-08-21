@@ -24,10 +24,10 @@
                     </el-tab-pane>
                     <el-tab-pane label="已完成" name="completed">
                         <task-item :taskItems="task.finished" :isPrivate="true"></task-item>
-                        <div class="pagination">
+                        <div class="pagination" v-show="this.task.finished.length>0">
                             <el-pagination
-                                    layout="prev, pager, next"
-                                    :total="1000">
+                                    :layout="pageLayout"
+                                    :total="finishedPage.total">
                             </el-pagination>
                         </div>
                     </el-tab-pane>
@@ -137,6 +137,11 @@
             return {
                 activeName: 'doing',
                 createTaskVisible: false,
+                finishedPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
                 taskForm: {
                     taskName: '',
                     description: '',
@@ -210,6 +215,12 @@
             permit() {
                 let userRole = helper.decodeToken().userRole;
                 return userRole <= 1;
+            },
+            pageLayout() {
+                if (this.task.finished.length > this.finishedPage.pageSize) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
             }
         },
         methods: {
@@ -237,14 +248,15 @@
                     if (valid) {
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
+                        param.taskName = param.taskName.trim();
                         param.endTime = moment(param.beginTime).format('YYYY-MM-DD HH:mm:ss')
                         var taskUsers = [{
                             userId: userId,
                             stageId: param.stageId,
-                            taskHours: param.taskHours,
+                            taskHours: param.taskHours.trim(),
                             beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
                             endTime: param.endTime,
-                            description: param.description
+                            description: param.description.trim()
                         }];
                         param['taskUsers'] = taskUsers;
                         http.zsyPostHttp('/task/create', param, (resp) => {
@@ -319,8 +331,10 @@
             // 获取用户已完成的任务
             fetchTaskFinished() {
                 let vm = this
-                http.zsyGetHttp('/task/finished', {}, (resp) => {
-                    vm.task.finished = this.makeUpItems(resp.data)
+                http.zsyGetHttp(`/task/finished/${vm.finishedPage.pageNum}`, {}, (resp) => {
+                    vm.finishedPage.pageNum = resp.data.pageNum
+                    vm.finishedPage.total = resp.data.total
+                    vm.task.finished = this.makeUpItems(resp.data.list)
                 })
             },
             // 获取用户待评价的任务
@@ -366,6 +380,7 @@
         margin: 20px 0;
         text-align: right;
     }
+
     .nav-index-con {
         width: 1100px;
         margin: auto;

@@ -72,7 +72,7 @@ public interface IZSYTaskMapper {
      *
      * @return
      */
-    List<TaskBO> selectFinishedTask(Long userId);
+    Page<TaskBO> selectFinishedTask(Long userId);
 
     /**
      * 分页查询任务列表

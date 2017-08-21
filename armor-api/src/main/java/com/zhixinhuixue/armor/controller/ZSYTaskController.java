@@ -47,12 +47,6 @@ public class ZSYTaskController extends ZSYController {
         return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 
-//    @ApiOperation("单人任务我的任务完成")
-//    @PutMapping(value = "/complete/private")
-//    public String completePrivate(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
-//        return taskService.completePrivateTask(taskCompleteReqDTO).build();
-//    }
-
     @ApiOperation("完成我的任务完成")
     @PutMapping(value = "/complete")
     public String complete(@Valid @RequestBody TaskCompleteReqDTO taskCompleteReqDTO) {
@@ -96,9 +90,9 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("获取用户已完成的任务")
-    @GetMapping(value = "/finished")
-    public String getFinishedTask() {
-        return taskService.getFinishedTask().build();
+    @GetMapping(value = "/finished/{pageNum}")
+    public String getFinishedTask(@PathVariable("pageNum")Integer pageNum) {
+        return ZSYResult.success().data(taskService.getFinishedTask(pageNum)).build();
     }
 
 

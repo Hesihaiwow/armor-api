@@ -109,12 +109,12 @@
                                 <div class="add-member-basic-menu fl">开始日期：</div>
                                 <div class="add-member-basic-msg fl">
                                     <el-date-picker v-model="step.beginTime" type="datetime" placeholder="选择日期"
-                                                    :picker-options="pickerOptions0"></el-date-picker>
+                                                    :picker-options="stepBeginTimeOptions"></el-date-picker>
                                 </div>
                                 <div class="add-member-basic-menu add-member-basic-end fl">截止日期：</div>
                                 <div class="add-member-basic-msg fl">
                                     <el-date-picker v-model="step.endTime" type="datetime" placeholder="选择日期"
-                                                    :picker-options="pickerOptions0"></el-date-picker>
+                                                    :picker-options="{minTime: step.beginTime}"></el-date-picker>
                                 </div>
                             </div>
                         </div>
@@ -178,6 +178,11 @@
                         return time.getTime() < Date.now() - 8.64e7;
                     }
                 },
+                stepBeginTimeOptions:{
+                    disabledDate(time) {
+                        return false;
+                    }
+                },
                 showAddTag: false,
                 showAddDetail: false,
                 showAddBtn: true,
@@ -194,7 +199,7 @@
         computed: {
             insMsgShow() {
                 if (this.taskForm.description == '') {
-                    return '待添加'
+                    return '点击添加备注'
                 } else {
                     return this.taskForm.description
                 }
@@ -269,7 +274,7 @@
                 let taskUser = {}
                 taskUser.stageId = this.step.stageId
                 taskUser.stageName = this.step.stageName
-                taskUser.userId = this.step.stageId
+                taskUser.userId = this.step.userId
                 taskUser.userName = this.step.userName
                 taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
                 taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
@@ -367,8 +372,13 @@
                     return;
                 }
                 let param = this.taskForm;
+                param.taskName = param.taskName.trim()
+                param.description = param.description.trim()
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
                 param['taskUsers'] = this.taskUsers;
+                param.taskUsers.forEach((user)=>{
+                    user.description = user.description.trim()
+                })
                 let vm = this;
                 http.zsyPostHttp('/task/create', param, (resp) => {
                         vm.$message.success('任务创建成功');
@@ -379,7 +389,7 @@
                         vm.taskForm.priority = 1;
                         vm.taskForm.tags = [];
                         vm.taskUsers = [];
-                        vm.$emit('fetchTaskList')
+                        vm.$emit('handleFetchTaskList')
                     })
                 this.showCreateTask = false;
             }

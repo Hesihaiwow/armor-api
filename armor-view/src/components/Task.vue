@@ -326,10 +326,7 @@
         color: #fff;
         background: #36A8FF;
     }
-
     .task-lis-con {
         margin-top: 140px;
     }
-
-
 </style>

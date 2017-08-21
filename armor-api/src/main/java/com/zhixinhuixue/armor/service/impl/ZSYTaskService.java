@@ -467,9 +467,11 @@ public class ZSYTaskService implements IZSYTaskService {
      * @return
      */
     @Override
-    public ZSYResult<List<TaskResDTO>> getFinishedTask() {
-        List<TaskBO> taskBOS = taskMapper.selectFinishedTask(ZSYTokenRequestContext.get().getUserId());
-        List<TaskResDTO> taskList = new ArrayList<>();
+    public PageInfo<TaskResDTO> getFinishedTask(Integer pageNum) {
+        PageHelper.startPage(pageNum, 5);
+        Page<TaskBO> taskBOS = taskMapper.selectFinishedTask(ZSYTokenRequestContext.get().getUserId());
+        Page<TaskResDTO> page = new Page<>();
+        BeanUtils.copyProperties(taskBOS, page);
         if (taskBOS != null && taskBOS.size() >= 0) {
             taskBOS.stream().forEach(taskBO -> {
                 TaskResDTO taskResDTO = new TaskResDTO();
@@ -483,10 +485,11 @@ public class ZSYTaskService implements IZSYTaskService {
                         taskResDTO.setIntegralGrade("C");
                     }
                 }
-                taskList.add(taskResDTO);
+                page.add(taskResDTO);
             });
         }
-        return ZSYResult.success().data(taskList);
+        PageInfo<TaskResDTO> pageInfo = new PageInfo<>(page);
+        return pageInfo;
     }
 
     /**
@@ -676,7 +679,8 @@ public class ZSYTaskService implements IZSYTaskService {
             PageHelper.startPage(taskListReqDTO.getPageNum(), taskListReqDTO.getPageSize());
         }
         Page<TaskListBO> taskListBOS = taskMapper.selectPage(taskListReqDTO);
-        List<TaskListResDTO> list = new ArrayList();
+        Page<TaskListResDTO> list = new Page();
+        BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
             TaskListResDTO taskListResDTO = new TaskListResDTO();
             BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
@@ -766,12 +770,13 @@ public class ZSYTaskService implements IZSYTaskService {
     public PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum) {
         PageHelper.startPage(pageNum, 2);
         Page<TaskLog> taskLogs = taskLogMapper.selectPage(taskId);
-        List<TaskLogResDTO> list = Lists.newArrayList();
+        Page<TaskLogResDTO> page = new Page<>();
+        BeanUtils.copyProperties(taskLogs, page);
         taskLogs.stream().forEach(taskLog -> {
             TaskLogResDTO taskLogResDTO = new TaskLogResDTO();
             BeanUtils.copyProperties(taskLog, taskLogResDTO);
-            list.add(taskLogResDTO);
+            page.add(taskLogResDTO);
         });
-        return new PageInfo<TaskLogResDTO>(list);
+        return new PageInfo<TaskLogResDTO>(page);
     }
 }

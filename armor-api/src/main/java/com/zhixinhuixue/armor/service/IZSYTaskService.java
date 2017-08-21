@@ -10,6 +10,7 @@ import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -78,7 +79,7 @@ public interface IZSYTaskService {
      *
      * @return
      */
-    ZSYResult<List<TaskResDTO>> getFinishedTask();
+    PageInfo<TaskResDTO> getFinishedTask(Integer pageNum);
 
     /**
      * 完成主任务
