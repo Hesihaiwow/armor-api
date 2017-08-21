@@ -68,11 +68,11 @@
                 size="tiny"
                 :before-close="hideAuditPop">
             <el-form>
-                <el-form-item label="任务名称">{{taskDetail.name}}</el-form-item>
-                <el-form-item label="任务描述">{{taskDetail.description}}</el-form-item>
-                <el-form-item label="项目">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item label="截止时间">{{taskDetail.endTime | formatDate}}</el-form-item>
-                <el-form-item label="标签">
+                <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item label="标签：">
                     <el-tag type="gray" v-for="(item, key) in taskDetail.tags" :key="key">{{item.name}}</el-tag>
                 </el-form-item>
                 <div class="ctpc-member-con">
@@ -98,11 +98,11 @@
                 size="tiny"
                 :before-close="hideTaskDetail">
             <el-form>
-                <el-form-item label="任务名称">{{taskDetail.name}}</el-form-item>
-                <el-form-item label="任务描述">{{taskDetail.description}}</el-form-item>
-                <el-form-item label="项目">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item label="截止时间">{{taskDetail.endTime | formatDate}}</el-form-item>
-                <el-form-item label="标签">
+                <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item label="标签：">
                     <el-tag type="gray" v-for="(item, key) in taskDetail.tags" :key="key">{{item.name}}</el-tag>
                 </el-form-item>
                 <div class="ctpc-member-con">
@@ -119,7 +119,7 @@
 
             <div>
                 <b>动态</b>
-                <a href="#" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的2条动态</a>
+                <a href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的2条动态</a>
                 <div v-for="(item,index) in taskLog.list" :key="index">
                     {{item.title}}
                 </div>
@@ -181,10 +181,10 @@
                 size="tiny"
                 :before-close="hideTaskModify">
             <el-form label-width="80px">
-                <el-form-item label="任务名称">
+                <el-form-item label="任务名称：">
                     <el-input v-model="modifyTaskForm.taskName"></el-input>
                 </el-form-item>
-                <el-form-item label="项目">
+                <el-form-item label="项目：">
                     <el-select v-model="modifyTaskForm.projectId" placeholder="请选择">
                         <el-option
                                 v-for="item in projectList"
@@ -194,14 +194,14 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="截止日期">
+                <el-form-item label="截止日期：">
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
                             type="datetime"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="标签">
+                <el-form-item label="标签：">
                     <el-select
                             v-model="modifyTaskForm.tags"
                             multiple
@@ -216,7 +216,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="任务描述">
+                <el-form-item label="任务描述：">
                     <el-input type="textarea" v-model="modifyTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
             </el-form>
@@ -489,7 +489,8 @@
                 this.showTaskDetail = false
                 this.taskDetail = {}
                 this.taskLog.list = []
-                this.taskLog.hasNextPage = false
+                this.taskLog.hasNextPage = false;
+                this.taskLog.pageNum = 1;
             },
             taskItemClick(taskId) {
                 this.showTaskDetail = !this.isPrivate
@@ -509,7 +510,7 @@
                 this.taskLog.pageNum += 1
                 http.zsyGetHttp(`/task/log/${taskId}/${this.taskLog.pageNum}`, {}, (resp) => {
                     let logs = resp.data.list
-                    this.taskLog.list = logs.concat(resp.data.list)
+                    this.taskLog.list = this.taskLog.list.concat(logs);
                     this.taskLog.hasNextPage = resp.data.hasNextPage
                 });
             },
