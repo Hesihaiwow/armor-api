@@ -17,7 +17,7 @@ import java.util.List;
  * Created by Lang on 2017/8/7 0007.
  */
 @Api(value = "项目详情",description="项目列表与添加",tags = "/project")
-@RequestMapping("/project")
+@RequestMapping("/api/project")
 @RestController
 public class ZSYProjectController extends ZSYController{
 

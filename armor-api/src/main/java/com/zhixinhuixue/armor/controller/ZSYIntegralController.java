@@ -18,7 +18,7 @@ import javax.websocket.server.PathParam;
  * Created by Lang on 2017/8/7 0007.
  */
 @Api(value = "积分信息",description="积分列表与相关信息接口",tags = "/integral")
-@RequestMapping("/integral")
+@RequestMapping("/api/integral")
 @RestController
 public class ZSYIntegralController extends ZSYController{
 

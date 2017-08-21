@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Lang on 2017/8/9 0007.
  */
 @Api(value = "阶段接口", description = "阶段相关操作接口", tags = "/stage")
-@RequestMapping("/stage")
+@RequestMapping("/api/stage")
 @RestController
 public class ZSYStageController extends ZSYController {
 

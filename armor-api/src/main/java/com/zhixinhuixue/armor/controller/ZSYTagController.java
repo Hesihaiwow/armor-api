@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Lang on 2017/8/9 0007.
  */
 @Api(value = "标签接口",description="标签相关操作接口",tags = "/tag")
-@RequestMapping("/tag")
+@RequestMapping("/api/tag")
 @RestController
 public class ZSYTagController extends ZSYController{
 
