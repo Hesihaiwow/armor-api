@@ -75,7 +75,7 @@
         and t2.`status`=#{taskUserStatus}
         and t1.is_delete = 0
         and t2.user_id = #{userId}
-        order by t1.create_time
+        order by t1.create_time desc
     </select>
 
     <!-- 查询所有待审核的任务 -->
@@ -83,7 +83,7 @@
          select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
-        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0
+        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0  order by t1.create_time desc
     </select>
 
     <!-- 查询还未评价完的任务 -->
@@ -92,10 +92,10 @@
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
         where t1.`status` = 2 and t1.review_status = 3
-        and t2.`status`=2
+        and t2.`status` >=2
         and t1.is_delete = 0
-        and t1.id in (select DISTINCT task_id from task_user where `status`>1 and user_id =#{userId})
-        order by t1.create_time;
+        and user_id =#{userId}
+        order by t1.create_time desc
     </select>
 
     <!-- 查询已完成的任务，包含评价 -->
@@ -104,7 +104,7 @@
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
             where t1.review_status = 3 and t2.`status` &gt; 1
-            and t2.user_id = #{userId} and t1.is_delete = 0
+            and t2.user_id = #{userId} and t1.is_delete = 0  order by t1.create_time desc
     </select>
 
     <!-- 查询用户完成任务后的积分 -->

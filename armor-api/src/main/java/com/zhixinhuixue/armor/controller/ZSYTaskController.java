@@ -140,7 +140,7 @@ public class ZSYTaskController extends ZSYController {
 
     @ApiOperation("修改任务")
     @PutMapping("/modify/{taskId}")
-    public String modifyTask(@PathVariable("taskId") Long taskId, TaskReqDTO taskReqDTO) {
+    public String modifyTask(@PathVariable("taskId") Long taskId,@Valid @RequestBody  TaskReqDTO taskReqDTO) {
         if (taskId == null) {
             return ZSYResult.fail().msg("taskId不能为空").build();
         }
