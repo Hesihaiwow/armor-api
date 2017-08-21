@@ -12,7 +12,7 @@
                     <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
                     <i v-show="taskStatus=='WaitAuditing' && permit" class="el-icon-edit"
                        @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
-                     <i v-show="task.status<3 && isPrivate==false" class="el-icon-edit"
+                     <i v-show="task.status<2 && isPrivate==false" class="el-icon-edit"
                         v-on:click.stop="modifyTask(task.id)"></i>
                   </span>
                     <ul class="task-key-tag">
@@ -138,22 +138,14 @@
                 size="tiny"
                 :before-close="hideWaitAssess">
             <div class="assess-task">
-                <div class="assess-task-list">
-                    <div class="assess-man-detail">
-                        <span class="amd-job">{{myStage.stageName}}</span>
-                        <span class="amd-job-time">工作量：{{myStage.taskHours}}小时</span>
-                        <span class="amd-during-time">截止：{{myStage.completeTime | formatDate}}</span>
-                        <span class="amd-name">{{myStage.userName}}</span>
-                    </div>
-                </div>
-                <div class="assess-task-list" v-for="(stage,index) in commentStages" v-show="stage.status==2">
+                <div class="assess-task-list" v-for="(stage,index) in commentStages">
                     <div class="assess-man-detail">
                         <span class="amd-job">{{stage.stageName}}</span>
                         <span class="amd-job-time">工作量：{{stage.taskHours}}小时</span>
                         <span class="amd-during-time">截止：{{stage.completeTime | formatDate}}</span>
                         <span class="amd-name">{{stage.userName}}</span>
                     </div>
-                    <div v-if="stage.status==2">
+                    <div v-if="!stage.myComment">
                         <el-form>
                             <el-form-item label="请评价">
                                 <el-radio-group v-model="assessForm.comments[index].grade">
@@ -166,11 +158,18 @@
                             </el-form-item>
                         </el-form>
                     </div>
+                    <div v-else="stage.myComment">
+                        <p>我的评价</p>
+                        <div>
+                            <p>等级：{{stage.myComment.grade}}</p>
+                            <p>内容:{{stage.myComment.description}}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
                  <el-button @click="hideWaitAssess">取消</el-button>
-                <el-button type="primary" @click="taskAssess" v-show="commentStages.length>0">完成</el-button>
+                <el-button type="primary" @click="taskAssess" v-show="!allComment">完成</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -290,6 +289,7 @@
             <el-button @click="hideTaskModify">取 消</el-button>
             <el-button type="primary" @click="saveTaskInfo">保 存</el-button>
           </span>
+
         </el-dialog>
     </div>
 </template>
@@ -333,7 +333,7 @@
                     comments: []
                 },
                 commentStages: [],
-                myStage: {},
+                allComment: false,
                 taskDetail: {},
                 taskLog: {
                     list: [],
@@ -546,27 +546,51 @@
                 let vm = this
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     vm.assessForm.taskId = taskId
-                    let users = resp.data.users
-                    vm.commentStages = users.filter((user) => {
-                        return (user.userId != vm.loginUserId && user.status == 2)
+                    let users = []
+                    // 过滤我的任务
+                    resp.data.users.forEach((user) => {
+                        if (user.userId != vm.loginUserId) {
+                            users.push(user)
+                        }
                     })
-                    vm.myStage = users.filter((user) => {
-                        return user.userId == vm.loginUserId
-                    })[0]
-                    for (let i = 0; i < vm.commentStages.length; i++) {
-                        vm.assessForm.comments.push({
-                            'taskUserId': vm.commentStages[i].id,
-                            'description': '',
-                            'grade': ''
-                        })
+                    // 查询我的评价
+                    users.forEach((user) => {
+                        user.comments.forEach((comment) => {
+                            if (comment.createBy == vm.loginUserId) {
+                                user.myComment = comment
+                                return
+                            }
+                        });
+                    })
+                    for (let i = 0; i < users.length; i++) {
+                        if (!users[i].myComment) {
+                            vm.assessForm.comments.push({
+                                'taskUserId': users[i].id,
+                                'description': '',
+                                'grade': ''
+                            })
+                        }
                     }
+                    let myComments = 0
+                    console.log(users)
+                    users.forEach((stage) => {
+                        if (stage.myComment) {
+                            myComments++
+                        }
+                    })
+
+                    console.log(myComments)
+                    console.log(users.length)
+                    vm.allComment = (myComments == users.length)
+                    vm.commentStages = users
+                    console.log(!vm.allComment)
                 })
+
                 this.showTaskComment = true
             },
             hideWaitAssess() {
                 this.showTaskComment = false
                 this.commentStages = []
-                this.myStage = {}
                 this.assessForm = {
                     taskId: '',
                     comments: []
@@ -578,7 +602,6 @@
                     this.$message.success("评价成功");
                     this.showTaskComment = false
                     this.commentStages = []
-                    this.myStage = {}
                     this.assessForm = {
                         taskId: '',
                         comments: []
@@ -718,7 +741,7 @@
                 let param = this.modifyTaskForm;
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
-                param.taskUsers.forEach((user)=>{
+                param.taskUsers.forEach((user) => {
                     user.description = user.description.trim()
                 })
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
