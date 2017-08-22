@@ -22,7 +22,7 @@ import java.util.List;
  * Created by Akuma on 2017/8/7.
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @Api(value = "用户服务",description="任务管理系统用户相关接口",tags = "/user")
 public class ZSYUserController extends ZSYController {
 

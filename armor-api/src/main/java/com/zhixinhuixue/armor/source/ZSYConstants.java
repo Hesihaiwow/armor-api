@@ -23,7 +23,7 @@ public class ZSYConstants {
     /**
      * 登陆URI
      */
-    public static final String LOGIN_URI = "/user/login";
+    public static final String LOGIN_URI = "/api/user/login";
 
     /**
      * 初始登陆密码

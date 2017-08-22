@@ -17,7 +17,7 @@ import java.util.List;
  * Created by Akuma on 2017/8/9.
  */
 @RestController
-@RequestMapping("/dept")
+@RequestMapping("/api/dept")
 @Api(value = "部门服务",description="任务管理系统部门相关接口",tags = "/dept")
 public class ZSYDeptController extends ZSYController {
 

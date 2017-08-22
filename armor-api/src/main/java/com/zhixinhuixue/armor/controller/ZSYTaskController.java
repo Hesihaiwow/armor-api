@@ -20,7 +20,7 @@ import javax.validation.Valid;
  * Created by Tate on 2017/8/7.
  */
 @RestController
-@RequestMapping("/task")
+@RequestMapping("/api/task")
 @Api(value = "任务相关接口", description = "任务管理系统任务相关接口", tags = "/task")
 public class ZSYTaskController extends ZSYController {
 
