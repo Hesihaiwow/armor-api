@@ -2,7 +2,7 @@
     <div class="create-task-pop" v-show="showCreateTask">
         <div class="create-task-pop-con">
             <div class="ctpc-top clearfix">
-                <span class="fl">建任务</span><span class="ctpc-top-close fr" @click="hide">×</span>
+                <span class="fl">创建多人任务</span><span class="ctpc-top-close fr" @click="hide">×</span>
             </div>
             <div class="ctpc-con">
                 <div class="ctpc-instruction-msg" v-show="!showDesc" @click="showInsChange">
@@ -17,13 +17,13 @@
                 </div>
                 <div class="ctpc-main-con">
                     <div class="ctpc-list clearfix">
-                        <div class="ctpc-list-menu fl">任务名称</div>
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>任务名称</div>
                         <div class="ctpc-list-con fl">
                             <el-input type="text" v-model="taskForm.taskName" auto-complete="off"></el-input>
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
-                        <div class="ctpc-list-menu fl">项目</div>
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>项目</div>
                         <div class="ctpc-list-con fl">
                             <el-select v-model="taskForm.projectId" placeholder="请选择">
                                 <el-option v-for="item in projectList" :key="item.id" :label="item.name"
@@ -32,14 +32,14 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
-                        <div class="ctpc-list-menu fl">截止日期</div>
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>截止日期</div>
                         <div class="ctpc-list-con fl">
-                            <el-date-picker v-model="taskForm.endTime" type="datetime" placeholder="选择日期"
+                            <el-date-picker v-model="taskForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm" placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
-                        <div class="ctpc-list-menu fl">标签</div>
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>标签</div>
                         <div class="ctpc-list-con fl">
                             <ul class="ctpc-tags">
                                 <li class="tag-lis-add">
@@ -73,7 +73,7 @@
                         <!--<textarea class="add-member-remark" placeholder="备注"></textarea>-->
                         <div class="add-member-basic">
                             <div class="add-member-basic-list add-member-stage clearfix">
-                                <div class="add-member-basic-menu fl">阶段：</div>
+                                <div class="add-member-basic-menu fl"><span class="star">*</span>阶段：</div>
                                 <!-- <div class="add-member-basic-msg add-stage-opt fl" @click="addStage">添加阶段</div> -->
                                 <ul class="add-member-basic-msg add-stage-opt ctpc-tags fl">
                                     <!--<li class="ctpc-tag-lis" v-show="valueStage!==''">
@@ -93,28 +93,28 @@
                                 </ul>
                             </div>
                             <div class="add-member-basic-list clearfix">
-                                <div class="add-member-basic-menu fl">负责人：</div>
+                                <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                                 <div class="add-member-basic-msg fl">
                                     <el-select v-model="step.userId" placeholder="请选择" @change="stepUserChange">
                                         <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                                    :value="item.id"></el-option>
                                     </el-select>
                                 </div>
-                                <div class="add-member-basic-menu add-member-basic-time fl">工作量：</div>
+                                <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：</div>
                                 <div class="add-member-basic-msg fl">
                                     <input class="member-time-count" v-model="step.taskHours">工时
                                 </div>
                             </div>
                             <div class="add-member-basic-list clearfix">
-                                <div class="add-member-basic-menu fl">开始日期：</div>
+                                <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                                 <div class="add-member-basic-msg fl">
                                     <el-date-picker v-model="step.beginTime" type="datetime" placeholder="选择日期"
                                                     :picker-options="stepBeginTimeOptions"></el-date-picker>
                                 </div>
-                                <div class="add-member-basic-menu add-member-basic-end fl">截止日期：</div>
+                                <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：</div>
                                 <div class="add-member-basic-msg fl">
                                     <el-date-picker v-model="step.endTime" type="datetime" placeholder="选择日期"
-                                                    :picker-options="{minTime: step.beginTime}"></el-date-picker>
+                                                    :picker-options="stepEndTimeOptions"></el-date-picker>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
             </div>
             <div class="ctpc-btns">
                 <input type="button" class="ctpc-cancel" @click="hide" value="取消">
-                <input type="button" class="ctpc-save" @click="saveTask" value="保存">
+                <input type="button" class="ctpc-save" @click="saveTask" value="立即创建">
             </div>
         </div>
     </div>
@@ -178,11 +178,6 @@
                         return time.getTime() < Date.now() - 8.64e7;
                     }
                 },
-                stepBeginTimeOptions:{
-                    disabledDate(time) {
-                        return false;
-                    }
-                },
                 showAddTag: false,
                 showAddDetail: false,
                 showAddBtn: true,
@@ -199,10 +194,27 @@
         computed: {
             insMsgShow() {
                 if (this.taskForm.description == '') {
-                    return '点击添加备注'
+                    return '点击添加任务描述'
                 } else {
                     return this.taskForm.description
                 }
+            },
+            stepBeginTimeOptions() {
+                let endTime = this.taskForm.endTime
+                return {
+                    disabledDate(time) {
+                        return time > endTime;
+                    }
+                };
+            },
+            stepEndTimeOptions(){
+                let endTime = this.taskForm.endTime
+                let beginTime = this.step.beginTime
+                return {
+                    disabledDate(time) {
+                        return time < beginTime || time >endTime;
+                    }
+                };
             }
         },
         filters: {
@@ -363,12 +375,12 @@
                     this.$message.warning("请选择结束时间");
                     return;
                 }
-                if (this.taskForm.tags.length==0) {
+                if (this.taskForm.tags.length == 0) {
                     this.$message.warning("请选择至少一项标签");
                     return;
                 }
-                if (this.taskUsers.length<2) {
-                    this.$message.warning("请填写任务阶段信息，至少2步");
+                if (this.taskUsers.length < 2) {
+                    this.$message.warning("至少添加2个成员");
                     return;
                 }
                 let param = this.taskForm;
@@ -376,27 +388,31 @@
                 param.description = param.description.trim()
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
                 param['taskUsers'] = this.taskUsers;
-                param.taskUsers.forEach((user)=>{
+                param.taskUsers.forEach((user) => {
                     user.description = user.description.trim()
                 })
                 let vm = this;
                 http.zsyPostHttp('/task/create', param, (resp) => {
-                        vm.$message.success('任务创建成功');
-                        vm.taskForm.description = '';
-                        vm.taskForm.taskName = '';
-                        vm.taskForm.endTime = '';
-                        vm.taskForm.projectId = '';
-                        vm.taskForm.priority = 1;
-                        vm.taskForm.tags = [];
-                        vm.taskUsers = [];
-                        vm.$emit('handleFetchTaskList')
-                    })
+                    vm.$message.success('任务创建成功');
+                    vm.taskForm.description = '';
+                    vm.taskForm.taskName = '';
+                    vm.taskForm.endTime = '';
+                    vm.taskForm.projectId = '';
+                    vm.taskForm.priority = 1;
+                    vm.taskForm.tags = [];
+                    vm.taskUsers = [];
+                    vm.$emit('handleFetchTaskList')
+                })
                 this.showCreateTask = false;
             }
         }
     }
 </script>
 <style scoped>
+    .star{
+        color: red;
+        padding: 1px;
+    }
     .create-task-pop { /* display: none; */
         position: fixed;
         top: 0;
@@ -722,7 +738,7 @@
     }
 
     .add-member-basic-menu {
-        width: 78px;
+        width: 82px;
         text-align: right;
     }
 

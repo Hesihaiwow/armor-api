@@ -57,9 +57,9 @@ public class TaskUserResDTO{
     public String getCommentGrade() {
         if (comments!=null && comments.size()>0) {
             double average = comments.stream().mapToInt(TaskCommentResDTO::getIntegral).average().getAsDouble();
-            if (average>=90) {
+            if (average>90) {
                 return "A";
-            }else if(average>=80){
+            }else if(average>80){
                 return "B";
             }else{
                 return "C";

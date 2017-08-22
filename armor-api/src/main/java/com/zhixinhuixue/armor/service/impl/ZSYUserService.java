@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -168,7 +169,7 @@ public class ZSYUserService implements IZSYUserService{
         user.setCreateTime(new Date());
         user.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         user.setStatus(ZSYUserStatus.NORMAL.getValue());
-        user.setIntegral(ZSYConstants.DEFAULT_INTEGRAL);
+        user.setIntegral(new BigDecimal(ZSYConstants.DEFAULT_INTEGRAL));
         user.setPassword(MD5Helper.convert(
                 String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
                         ZSYConstants.HINT_PASSWORD_KEY), 32 , false));

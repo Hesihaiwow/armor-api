@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class User {
@@ -20,7 +21,7 @@ public class User {
 
     private String jobName;
 
-    private Integer integral;
+    private BigDecimal integral;
 
     private Integer status;
 
@@ -94,11 +95,11 @@ public class User {
         this.jobName = jobName == null ? null : jobName.trim();
     }
 
-    public Integer getIntegral() {
+    public BigDecimal getIntegral() {
         return integral;
     }
 
-    public void setIntegral(Integer integral) {
+    public void setIntegral(BigDecimal integral) {
         this.integral = integral;
     }
 

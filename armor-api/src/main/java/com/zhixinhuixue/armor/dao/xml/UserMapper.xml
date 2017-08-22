@@ -10,7 +10,7 @@
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="department_id" jdbcType="BIGINT" property="departmentId" />
     <result column="job_name" jdbcType="VARCHAR" property="jobName" />
-    <result column="integral" jdbcType="INTEGER" property="integral" />
+    <result column="integral" jdbcType="DECIMAL" property="integral" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
     <result column="user_role" jdbcType="INTEGER" property="userRole" />
@@ -32,7 +32,7 @@
     )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
     #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP},
-    #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{integral,jdbcType=INTEGER},
+    #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{integral,jdbcType=DECIMAL},
     #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER},
     #{userRole,jdbcType=INTEGER})
   </insert>
@@ -88,7 +88,7 @@
         job_name = #{jobName,jdbcType=VARCHAR},
       </if>
       <if test="integral != null">
-        integral = #{integral,jdbcType=INTEGER},
+        integral = #{integral,jdbcType=DECIMAL},
       </if>
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},

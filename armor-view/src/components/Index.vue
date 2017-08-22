@@ -2,7 +2,7 @@
 <div class="nav-con" @click="hidePerOpt"> 
   <div class="nav-top-bg">
     <div class="ntb-con">
-      <div class="logo" @click="showIndexEvent"><img src="../assets/img/site-icon.png" alt=""></div>
+      <div class="logo"><img src="../assets/img/site-icon.png" alt=""></div>
       <div class="personal-name" @click.prevent.stop="personalOpt">  {{getUserName}}
         <div class="personal-opt" v-show="showPerOpt">
           <div class="alter-pwd" @click.stop.prevent="alterPwd">修改密码</div>
@@ -19,7 +19,6 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    
   </div>
   <router-view></router-view>
   <!-- <nav-index v-show="showIndex"></nav-index> -->
@@ -42,8 +41,12 @@ export default {
         activeName: '',
         tabs: [
             {
-              label: '任务',
-              name: 'task'
+                label: '主页',
+                name: 'navIndex'
+            },
+            {
+                label: '任务',
+                name: 'task'
             },
             {
               label: '项目',
@@ -61,6 +64,10 @@ export default {
         sureNewPwd: '',
         showAlterPwd: false
       };
+    },
+    created(){
+        this.activeName = 'navIndex';
+        this.$router.push(`/index/navIndex`);
     },
     beforeMount(){
         //监听子组件传过来的tab选中事件

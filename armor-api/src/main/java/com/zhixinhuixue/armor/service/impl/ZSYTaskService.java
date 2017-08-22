@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -335,15 +336,15 @@ public class ZSYTaskService implements IZSYTaskService {
         userIntegral.setId(snowFlakeIDHelper.nextId());
         userIntegral.setTaskId(taskCompleteReqDTO.getTaskId());
         userIntegral.setUserId(ZSYTokenRequestContext.get().getUserId());
-        userIntegral.setIntegral(ZSYIntegral.A.getValue());
+        userIntegral.setIntegral(new BigDecimal(taskCompleteReqDTO.getCompleteHours()));
         userIntegral.setCreateTime(new Date());
         userIntegralMapper.insert(userIntegral);
 
         // 修改用户积分
-        int currentIntegral = userTemp.getIntegral();
+        BigDecimal currentIntegral = userTemp.getIntegral();
         User user = new User();
         user.setId(ZSYTokenRequestContext.get().getUserId());
-        user.setIntegral(currentIntegral + ZSYIntegral.A.getValue());
+        user.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
         userMapper.updateSelectiveById(user);
         return ZSYResult.success();
     }
@@ -645,12 +646,15 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                     return value;
                 }).average();
+                BigDecimal integral = BigDecimal.valueOf(taskUserBO.getTaskHours())
+                        .multiply(new BigDecimal(average.getAsDouble()))
+                        .divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
                 average.orElseThrow(() -> new ZSYServiceException("积分计算异常"));
                 UserIntegral userIntegral = new UserIntegral();
                 userIntegral.setId(snowFlakeIDHelper.nextId());
                 userIntegral.setTaskId(taskUserBO.getTaskId());
                 userIntegral.setUserId(taskUserBO.getUserId());
-                userIntegral.setIntegral((int) average.getAsDouble());
+                userIntegral.setIntegral(integral);
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
                 Task task = new Task();
@@ -768,7 +772,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum) {
-        PageHelper.startPage(pageNum, 2);
+        PageHelper.startPage(pageNum, 10);
         Page<TaskLog> taskLogs = taskLogMapper.selectPage(taskId);
         Page<TaskLogResDTO> page = new Page<>();
         BeanUtils.copyProperties(taskLogs, page);

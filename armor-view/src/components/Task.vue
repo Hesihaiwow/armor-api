@@ -48,7 +48,7 @@
             </div>
             <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
                 <span class="ttl-add-icon">+</span>
-                <span class="ttl-add-msg">建任务</span>
+                <span class="ttl-add-msg">创建多人任务</span>
             </div>
         </div>
         <div class="task-lis-con">

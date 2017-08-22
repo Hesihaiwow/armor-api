@@ -13,7 +13,7 @@
         <div class="my-task-con">
             <div class="add-task" @click="createTaskClick">
                 <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                <span>建任务</span>
+                <span>创建个人任务</span>
             </div>
             <p class="mic-title">我的任务</p>
             <div class="my-task-detail">
@@ -49,6 +49,7 @@
         <el-dialog
                 title="创建个人任务"
                 size="tiny"
+                custom-class="myDialog"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="createTaskVisible">
@@ -185,7 +186,7 @@
                     finished: [],
                     waitAssess: [],
                     waitAudit: [],
-                    applyFail:[]
+                    applyFail: []
                 },
                 projectList: [],
                 stageList: [],
@@ -390,7 +391,13 @@
         },
     }
 </script>
+<style>
+    .myDialog {
+        width: 600px;
+    }
+</style>
 <style scoped>
+
     .pagination {
         margin: 20px 0;
         text-align: right;

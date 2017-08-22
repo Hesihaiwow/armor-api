@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class UserIntegral {
@@ -10,7 +11,7 @@ public class UserIntegral {
 
     private Long userId;
 
-    private Integer integral;
+    private BigDecimal integral;
 
     private Date createTime;
 
@@ -38,11 +39,11 @@ public class UserIntegral {
         this.userId = userId;
     }
 
-    public Integer getIntegral() {
+    public BigDecimal getIntegral() {
         return integral;
     }
 
-    public void setIntegral(Integer integral) {
+    public void setIntegral(BigDecimal integral) {
         this.integral = integral;
     }
 

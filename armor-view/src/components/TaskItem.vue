@@ -12,8 +12,8 @@
                     <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
                     <i v-show="taskStatus=='WaitAuditing' && permit" class="el-icon-edit"
                        @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
-                     <i v-show="task.status<2 && isPrivate==false" class="el-icon-edit"
-                        v-on:click.stop="modifyTask(task.id)"></i>
+                 <!--    <i v-show="task.status<2 && isPrivate==false" class="el-icon-edit"
+                        v-on:click.stop="modifyTask(task.id)"></i>-->
                   </span>
                     <ul class="task-key-tag">
                         <li class="task-key-lis" v-for="tag in task.tags">
@@ -65,13 +65,14 @@
                 :visible.sync="showAuditTask"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
+                custom-class="myDialog"
                 size="tiny"
                 :before-close="hideAuditPop">
             <el-form>
                 <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
                     <el-tag type="gray" v-for="(item, key) in taskDetail.tags" :key="key">{{item.name}}</el-tag>
                 </el-form-item>
@@ -95,23 +96,25 @@
                 :visible.sync="showTaskDetail"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
+                custom-class="myDialog"
                 size="tiny"
                 :before-close="hideTaskDetail">
             <el-form>
                 <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
                     <el-tag type="gray" v-for="(item, key) in taskDetail.tags" :key="key">{{item.name}}</el-tag>
                 </el-form-item>
                 <div class="ctpc-member-con">
-                    <div class="ctpc-member-list clearfix" v-for="(item,index) in taskDetail.users">
+                    <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'" v-for="(item,index) in taskDetail.users">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
                         <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                         <span class="fl ctpc-member-assess" v-show="item.commentGrade">评价：{{item.commentGrade}}</span>
+                        <a href="javascript:;" v-show="taskDetail.status>1" @click="commentDetail(item.id)">查看评价</a>
                     </div>
                     <div class="bdl-line"></div>
                 </div>
@@ -119,13 +122,14 @@
 
             <div>
                 <b>动态</b>
-                <a href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的2条动态</a>
+                <a href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>
                 <div v-for="(item,index) in taskLog.list" :key="index">
                     {{item.title}}
                 </div>
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
-                 <el-button type="text" @click="deleteTask" v-show="taskDetail.status!=3">删除</el-button>
+                 <el-button type="text" @click="deleteTask" v-show="showDelete">删除</el-button>
+                 <el-button type="text" @click="modifyTask(taskDetail.id)">编辑</el-button>
                 <el-button type="primary" @click="completeTask" v-show="taskDetail.status!=3">完成</el-button>
                 <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
           </span>
@@ -135,6 +139,7 @@
                 :visible.sync="showTaskComment"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
+                custom-class="myDialog"
                 size="tiny"
                 :before-close="hideWaitAssess">
             <div class="assess-task">
@@ -173,17 +178,20 @@
           </span>
         </el-dialog>
         <el-dialog
-                title="编辑任务"
+                title="编辑多人任务"
                 :visible.sync="showTaskModify"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 size="tiny"
+                custom-class="myDialog"
                 :before-close="hideTaskModify">
             <el-form label-width="80px">
-                <el-form-item label="任务名称：">
-                    <el-input v-model="modifyTaskForm.taskName"></el-input>
+                <el-form-item label="">
+                    <span slot="label"><span class="star">*</span>任务名称</span>
+                    <el-input v-model="modifyTaskForm.taskName" style="width: 300px"></el-input>
                 </el-form-item>
-                <el-form-item label="项目：">
+                <el-form-item label="">
+                    <span slot="label"><span class="star">*</span>项目</span>
                     <el-select v-model="modifyTaskForm.projectId" placeholder="请选择">
                         <el-option
                                 v-for="item in projectList"
@@ -193,14 +201,16 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="截止日期：">
+                <el-form-item label="">
+                    <span slot="label"><span class="star">*</span>截止日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
                             type="datetime"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="标签：">
+                <el-form-item label="">
+                    <span slot="label"><span class="star">*</span>标签</span>
                     <el-select
                             v-model="modifyTaskForm.tags"
                             multiple
@@ -215,12 +225,13 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="任务描述：">
+                <el-form-item label="">
+                    <span slot="label"><span class="star">*</span>任务描述</span>
                     <el-input type="textarea" v-model="modifyTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
             </el-form>
             <div class="ctpc-member-con">
-                <div class="ctpc-member-list clearfix" v-for="(item,index) in modifyTaskForm.taskUsers">
+                <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'" v-for="(item,index) in modifyTaskForm.taskUsers">
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                     <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
@@ -235,7 +246,7 @@
                           :rows="3"></el-input>
                 <div class="add-member-basic">
                     <div class="add-member-basic-list add-member-stage clearfix">
-                        <div class="add-member-basic-menu fl">阶段：</div>
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>阶段：</div>
                         <ul class="add-member-basic-msg add-stage-opt ctpc-tags fl">
                             <li class="tag-lis-add">
                                 <!--<span class="tag-lis-add-msg" @click="addStage">阶段</span>-->
@@ -249,14 +260,14 @@
                         </ul>
                     </div>
                     <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu fl">负责人：</div>
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="step.userId" placeholder="请选择" @change="stepUserChange">
                                 <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl">工作量：</div>
+                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：</div>
                         <div class="add-member-basic-msg fl">
                             <!--<input class="member-time-count" v-model="step.taskHours">工时-->
                             <el-input v-model="step.taskHours" style="width: 70px"></el-input>
@@ -264,12 +275,13 @@
                         </div>
                     </div>
                     <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu fl">开始日期：</div>
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="step.beginTime" type="datetime" placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-end fl">截止日期：</div>
+                        <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
+                        </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="step.endTime" type="datetime" placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
@@ -290,6 +302,30 @@
             <el-button type="primary" @click="saveTaskInfo">保 存</el-button>
           </span>
 
+        </el-dialog>
+
+        <el-dialog
+        title="评价详情"
+        :visible.sync="showTaskCommentDetail"
+        size="tiny"
+        :before-close="hideTaskCommentDetail">
+            <h2 style="font-size: 20px;margin-bottom: 20px">总体评价：  <span>{{ taskCommentDetail.commentGrade }}</span></h2>
+       <div v-for="(item,index) in taskCommentDetail.comments">
+           <el-form label-position="left" inline class="demo-table-expand" >
+               <el-form-item label="姓名">
+                   <span>{{ item.commentUserName }}</span>
+               </el-form-item>
+               <el-form-item label="评价">
+                   <span>{{ item.grade }}</span>
+               </el-form-item>
+               <el-form-item label="描述">
+                   <span>{{ item.description }}</span>
+               </el-form-item>
+           </el-form>
+       </div>
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="hideTaskCommentDetail" type="primary">确 定</el-button>
+  </span>
         </el-dialog>
     </div>
 </template>
@@ -315,6 +351,8 @@
                 showTaskComment: false,
                 showTaskModify: false,
                 showAddDetail: false,
+                showTaskCommentDetail: false,
+                taskCommentDetail:{},
                 pickerOptions0: {
                     disabledDate(time) {
                         return time.getTime() < Date.now() - 8.64e7;
@@ -379,6 +417,15 @@
                 let userRole = helper.decodeToken().userRole;
                 return userRole <= 1;
             },
+            showDelete() {
+                // 不包含完成的阶段才显示删除
+                if (this.taskDetail.users) {
+                    let done = this.taskDetail.users.filter((user) => {
+                        user.status == 2
+                    })
+                    return done.length == 0 && this.taskDetail.status!=3;
+                }
+            }
         },
         filters: {
             formatDate: function (value) {
@@ -387,7 +434,7 @@
             },
             formatTime: function (value) {
                 if (!value) return ''
-                return moment(value).format('YYYY-MM-DD HH:mm:ss')
+                return moment(value).format('YYYY-MM-DD HH:mm')
             }
         },
         methods: {
@@ -611,6 +658,7 @@
             },
             // 修改任务
             modifyTask(taskId) {
+                this.hideTaskDetail();
                 this.showTaskModify = true
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.modifyTaskForm.id = resp.data.id;
@@ -736,7 +784,7 @@
                     return;
                 }
                 if (this.modifyTaskForm.taskUsers.length < 2) {
-                    this.$message.warning("请填写任务阶段信息，至少2步");
+                    this.$message.warning("至少添加2个成员");
                     return;
                 }
                 let param = this.modifyTaskForm;
@@ -753,11 +801,33 @@
                     vm.$emit('reload')
                 })
                 this.showCreateTask = false;
+            },
+            hideTaskCommentDetail(){
+                this.showTaskCommentDetail = false
+            },
+            commentDetail(taskUserId){
+                let vm = this;
+                this.taskDetail.users.forEach((user)=>{
+                    if (user.id == taskUserId) {
+                        vm.taskCommentDetail =  user
+                        return
+                    }
+                })
+                this.showTaskCommentDetail = true
             }
         }
     }
 </script>
+<style>
+    .myDialog{
+        width: 600px;
+    }
+</style>
 <style scoped>
+    .star {
+        color: red;
+        padding: 1px;
+    }
 
     .empty {
         text-align: center;
@@ -956,7 +1026,7 @@
         display: flex;
     }
 
-    .ctpc-member-list:before {
+    .ctpc-member-list.done:before {
         content: '';
         position: absolute;
         left: -17px;
@@ -965,6 +1035,17 @@
         height: 12px;
         border-radius: 50%;
         background: #008000;
+        z-index: 110;
+    }
+    .ctpc-member-list.in:before {
+        content: '';
+        position: absolute;
+        left: -17px;
+        top: 12px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e4e8f1;
         z-index: 110;
     }
 
@@ -1136,23 +1217,6 @@
         display: flex;
     }
 
-    .ctpc-member-list:before {
-        content: '';
-        position: absolute;
-        left: -17px;
-        top: 12px;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: #008000;
-        z-index: 110;
-    }
-
-    .ctpc-member-list > span {
-        display: inline-block;
-        vertical-align: middle;
-    }
-
     .ctpc-member-job {
         width: 110px;
         /*  -webkit-flex: 1;
@@ -1264,7 +1328,7 @@
     }
 
     .add-member-basic-menu {
-        width: 78px;
+        width: 82px;
         text-align: right;
     }
 
@@ -1315,5 +1379,19 @@
 
     .ctpc-ins-edit .ctpc-btns {
         margin-top: 0;
+    }
+</style>
+<style>
+    .demo-table-expand {
+        font-size: 0;
+    }
+    .demo-table-expand label {
+        width: 60px;
+        color: #99a9bf;
+    }
+    .demo-table-expand .el-form-item {
+        margin-right: 0;
+        margin-bottom: 0;
+        width: 50%;
     }
 </style>

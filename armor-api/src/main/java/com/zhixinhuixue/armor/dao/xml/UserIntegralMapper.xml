@@ -5,7 +5,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="integral" jdbcType="INTEGER" property="integral" />
+    <result column="integral" jdbcType="DECIMAL" property="integral" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
 
@@ -60,7 +60,7 @@
     insert into user_integral (id, task_id, user_id,
     integral, create_time)
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
-    #{integral,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+    #{integral,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
 
 </mapper>
