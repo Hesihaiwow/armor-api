@@ -51,6 +51,7 @@
                     <el-date-picker
                             v-model="finishForm.completeTime"
                             type="datetime"
+                            :picker-options="beforeNow"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -115,7 +116,7 @@
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                         <span class="fl ctpc-member-assess" v-show="item.commentGrade">评价：{{item.commentGrade}}</span>
-                        <a href="javascript:;" v-show="taskDetail.status>1" @click="commentDetail(item.id)">查看评价</a>
+                        <a href="javascript:;" v-show="taskDetail.status>1 &&permit" @click="commentDetail(item.id)">查看评价</a>
                     </div>
                     <div class="bdl-line"></div>
                 </div>
@@ -363,6 +364,11 @@
                 pickerOptions0: {
                     disabledDate(time) {
                         return time.getTime() < Date.now() - 8.64e7;
+                    }
+                },
+                beforeNow:{
+                    disabledDate(time) {
+                        return time.getTime() > Date.now() - 8.64e7;
                     }
                 },
                 finishForm: {
@@ -685,6 +691,7 @@
                         taskId: '',
                         comments: []
                     }
+                    this.$emit('reload');
                 })
             },
             // 修改任务

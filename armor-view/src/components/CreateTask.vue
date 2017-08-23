@@ -57,7 +57,7 @@
                         </div>
                     </div>
                     <div class="ctpc-member-con">
-                        <div class="ctpc-member-list clearfix" v-for="(item,index) in taskUsers"
+                        <div class="ctpc-member-list clearfix in" v-for="(item,index) in taskUsers"
                              @click="modifyStep(index,taskUsers)">
                             <span class="fl ctpc-member-head">{{item.userName}}</span>
                             <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
@@ -604,7 +604,7 @@
         display: flex;
     }
 
-    .ctpc-member-list:before {
+    .ctpc-member-list.done:before {
         content: '';
         position: absolute;
         left: -17px;
@@ -616,6 +616,17 @@
         z-index: 110;
     }
 
+    .ctpc-member-list.in:before {
+        content: '';
+        position: absolute;
+        left: -17px;
+        top: 12px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e4e8f1;
+        z-index: 110;
+    }
     .ctpc-member-list > span {
         display: inline-block;
         vertical-align: middle;

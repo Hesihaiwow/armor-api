@@ -19,7 +19,7 @@ public class UserIntegral {
 
     private Long createBy;
 
-    private  String description;
+    private String description;
 
     public Long getId() {
         return id;

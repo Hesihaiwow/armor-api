@@ -655,6 +655,8 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setTaskId(taskUserBO.getTaskId());
                 userIntegral.setUserId(taskUserBO.getUserId());
                 userIntegral.setIntegral(integral);
+                userIntegral.setOrigin(1);
+                userIntegral.setDescription("任务名称：" + taskDetailBO.getName() + "任务阶段：" + taskUserBO.getStageName());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
                 Task task = new Task();

@@ -136,7 +136,7 @@ export default {
 <style scoped>
 .nav-top-bg{position: fixed;left: 0;top: 0;right: 0;background: #fff;box-shadow: 0 0 10px #ccc;height: 61px;z-index: 100;}
 .nav-top{position: relative;width: 1100px;margin: auto;}
-.logo{position: absolute;z-index: 100;width: 40px;height: 40px;left: 0;top: 10px;cursor: pointer;}
+.logo{position: absolute;z-index: 100;width: 40px;height: 40px;left: 0;top: 10px;/*cursor: pointer;*/}
 .personal-name{position: absolute;right: 0;width: 40px;height: 40px;background: #69C8FA;border-radius: 50%;line-height: 40px;text-align: center;top: 10px;color: #fff;cursor: pointer;z-index: 100;}
 .personal-opt{position: absolute;color: #000;background: #fff;width: 120px;box-shadow: 0 0 10px #ccc;top: 56px;right: -36px;z-index: 30;padding: 16px 0;}
 .personal-opt > div{cursor: pointer;line-height: 30px;}
