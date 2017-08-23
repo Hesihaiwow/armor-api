@@ -5,8 +5,6 @@ import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
-
 public interface IZSYUserIntegralMapper {
 
     /**
@@ -43,4 +41,15 @@ public interface IZSYUserIntegralMapper {
      * @return
      */
     Integer getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id);
+
+
+    /**
+     * 用户积分历史
+     * @param id
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Page<UserIntegralInfoBO> getIntegralHistory(@Param("id") Long id,@Param("startTime") String startTime, @Param("endTime") String endTime);
+
 }

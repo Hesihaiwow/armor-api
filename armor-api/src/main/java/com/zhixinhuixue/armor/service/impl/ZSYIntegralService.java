@@ -6,15 +6,20 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
 import com.zhixinhuixue.armor.helper.DateHelper;
+import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
+import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
+import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
+import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 
 
 /**
@@ -25,6 +30,9 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     @Autowired
     private IZSYUserIntegralMapper userIntegralMapper;
+
+    @Autowired
+    private SnowFlakeIDHelper snowFlakeIDHelper;
 
     @Override
     public PageInfo<IntegralPageResDTO> getIntegralPage(int pageIndex, String startTime, String endTime){
@@ -55,6 +63,37 @@ public class ZSYIntegralService implements IZSYIntegralService{
         userIntegralResDTO.setYearRank(yearRank!=null?yearRank:0);
         return userIntegralResDTO;
     }
+
+    @Override
+    public PageInfo<IntegralHistoryPageResDTO> getIntegralHistory(Long id, int pageIndex, String startTime, String endTime){
+        PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
+        Page<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralHistory(id,startTime,endTime);
+        Page<IntegralHistoryPageResDTO> page = new Page<>();
+        BeanUtils.copyProperties(userIntegralInfoBOS, page);
+        userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
+            IntegralHistoryPageResDTO integralHistoryPageResDTO = new IntegralHistoryPageResDTO();
+            BeanUtils.copyProperties(userIntegralInfoBO, integralHistoryPageResDTO);
+            integralHistoryPageResDTO.setCreateTime(userIntegralInfoBO.getCreateTime());
+            page.add(integralHistoryPageResDTO);
+        });
+        PageInfo<IntegralHistoryPageResDTO> pageInfo = new PageInfo<>(page);
+        return pageInfo;
+    }
+
+    public void addIntegral(IntegralResDTO integralResDTO){
+
+        UserIntegral userIntegral = new UserIntegral();
+        userIntegral.setId(snowFlakeIDHelper.nextId());
+        userIntegral.setCreateTime(new Date());
+        userIntegral.setIntegral(integralResDTO.getIntegral());
+        userIntegral.setUserId(integralResDTO.getUserId());
+        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        userIntegral.setDescription(integralResDTO.getDescription());
+        userIntegral.setOrigin(2);//手动添加
+
+        userIntegralMapper.insert(userIntegral);
+    }
+
 
 
 }
