@@ -646,10 +646,10 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                     return value;
                 }).average();
+                average.orElseThrow(() -> new ZSYServiceException("积分计算异常"));
                 BigDecimal integral = BigDecimal.valueOf(taskUserBO.getTaskHours())
                         .multiply(new BigDecimal(average.getAsDouble()))
-                        .divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
-                average.orElseThrow(() -> new ZSYServiceException("积分计算异常"));
+                        .divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP).setScale(1);
                 UserIntegral userIntegral = new UserIntegral();
                 userIntegral.setId(snowFlakeIDHelper.nextId());
                 userIntegral.setTaskId(taskUserBO.getTaskId());
