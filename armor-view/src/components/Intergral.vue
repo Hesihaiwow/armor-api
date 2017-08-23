@@ -10,10 +10,16 @@
       </div>
     </div>
     <div class="intergral-data-detail">
-      <el-table :data="tableData" stripe style="width: 100%">
+      <el-table :data="tableData" stripe style="width: 100%" >
         <el-table-column prop="id" label="排名" align="center"></el-table-column>
         <el-table-column prop="name" label="成员" align="center"></el-table-column>
         <el-table-column prop="integral" label="积分" align="center"></el-table-column>
+        <el-table-column prop="userId" label="编辑" align="center">
+          <template scope="scope">
+            <el-button @click.native.prevent="clicklHistory(scope.$index, tableData)"type="text" size="small">查看记录</el-button>
+            <el-button @click="editIntegral(scope.$index, tableData)" type="text" size="small">积分变更</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <el-pagination
@@ -23,18 +29,63 @@
       :layout="pageInfo.layout"
       :total="pageInfo.totals">
     </el-pagination>
+    <el-dialog
+      title="修改个人积分"
+      size="tiny"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :visible.sync="editIntegralVisible">
+      <el-form :model="integralForm" :rules="rules" ref="integralForm" label-width="80px">
+        <el-form-item label="积分加减" prop="integral">
+          <el-input v-model="integralForm.integral"></el-input>
+        </el-form-item>
+        <el-form-item label="积分备注" prop="description">
+          <el-input type="textarea" v-model="integralForm.description" :rows="3"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveIntegralInfo('integralForm')">立即创建</el-button>
+            <el-button @click="cancelIntegral()">取 消</el-button>
+          </span>
+    </el-dialog>
+    <el-dialog
+      title="查看积分历史记录"
+      size="small"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :visible.sync="integralHistoryVisible">
+      <el-table :data="historyData" stripe style="width: 100%" >
+        <el-table-column prop="name" label="成员" align="center"></el-table-column>
+        <el-table-column prop="integral" label="积分" align="center"></el-table-column>
+        <el-table-column prop="origin" label="来源" align="center"></el-table-column>
+        <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
+        <el-table-column prop="description" label="备注" align="center"></el-table-column>
+      </el-table>
+      <el-pagination
+        @current-change="integralHistory"
+        :page-size="historyPage.pageSize"
+        :current-page="historyPage.currentPage"
+        :layout="historyPage.layout"
+        :total="historyPage.totals">
+      </el-pagination>
+    </el-dialog>
 	</div>
 </template>
 <script>
   import Http from '../lib/Http'
   import { Message } from 'element-ui';
   import moment from 'moment';
+  import Helper from '../lib/Helper'
+  import ElButton from "../../node_modules/element-ui/packages/button/src/button";
 
   moment.locale('zh-cn');
   export default {
+    components: {ElButton},
     name: 'Intergral',
     data() {
       return {
+        integralHistoryVisible:false,
+        editIntegralVisible:false,
         queryForm:{
           startTime:'',
           endTime:''
@@ -42,7 +93,19 @@
         dateForm:{
           startTime:'0'
         },
+        integralForm:{//添加积分记录
+          userId:'',
+          description:'',
+          integral:''
+        },
         pageInfo:{
+          layout:"total, pager",
+          currentPage:1,
+          pageSize:10,
+          totals:0,
+          pageNum:0
+        },
+        historyPage:{
           layout:"total, pager",
           currentPage:1,
           pageSize:10,
@@ -67,7 +130,12 @@
         activeIdx: 0,
         startValue: '',
         endValue: '',
-        tableData:[]
+        tableData:[],
+        historyData:[],
+        rules:{
+          integral: [{required: true, message: '积分不能为空', trigger: 'change'}],
+          description:[{ message: '备注不能超过100字', trigger: 'change', min: 0, max: 100}],
+        }
       }
     },
     beforeMount:function () {
@@ -76,6 +144,52 @@
       this.togTable(0);
     },
     methods: {
+      editIntegral(index, rows){
+        this.editIntegralVisible = true;
+        this.integralForm.userId = rows[index].userId;
+      },
+      clicklHistory(index, rows){//点击积分历史
+        this.integralHistoryVisible = true;
+        this.integralForm.userId = rows[index].userId;
+        this.integralHistory(1);
+      },
+      integralHistory(currentPage){//查询积分历史记录
+        Http.zsyGetHttp('/integral/history/'+this.integralForm.userId+'/'+currentPage,this.queryForm,(res)=>{
+          let list =  res.data.list;
+          for(var i=0;i<list.length;i++){
+            if(list[i].origin!=1){
+              list[i].origin="手动录入";
+              list[i].createTime = this.localeTimeString(list[i].createTime);
+            }else{
+              list[i].origin="任务系统";
+              list[i].createTime = this.localeTimeString(list[i].createTime);
+            }
+          }
+          this.historyPage.totals=res.data.total;
+          this.historyPage.pageNum = res.data.pages;
+          this.historyPage.pageSize =res.data.pagesize;
+          this.historyData=res.data.list;
+          this.pagingLayout();
+        });
+      },
+      saveIntegralInfo(integralForm){
+        this.$refs[integralForm].validate((valid) => {
+            if(valid){
+              Http.zsyPostHttp('/integral/add',this.integralForm,(res)=>{
+                Message.success("积分修改成功");
+                this.editIntegralVisible = false;
+                this.cancelIntegral();
+              });
+            }else{
+                return false;
+            }
+        });
+      },
+      cancelIntegral(){
+          this.editIntegralVisible = false
+          this.integralForm.description='';
+          this.integralForm.integral='';
+      },
       togTable(index) {
         // 点击菜单
         this.activeIdx = index;
@@ -149,6 +263,11 @@
           this.pageInfo.layout = 'total,prev,pager,next';
         }else{
           this.pageInfo.layout = 'total,pager';
+        }
+        if (this.historyPage.pageNum>1){
+          this.historyPage.layout = 'total,prev,pager,next';
+        }else{
+          this.historyPage.layout = 'total,pager';
         }
       },
       //获取本年,季度,月的开始结束日期

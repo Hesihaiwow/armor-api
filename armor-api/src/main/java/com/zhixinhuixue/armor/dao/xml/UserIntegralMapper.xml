@@ -59,7 +59,7 @@
         <![CDATA[AND i.create_time <#{endTime}]]>
       </if>
     </where>
-    ORDER BY integral DESC
+    ORDER BY i.create_time DESC
   </select>
   <!--查询排名-->
   <select id="getRank" resultType="java.lang.Integer">

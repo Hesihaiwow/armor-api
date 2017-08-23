@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Lang on 2017/8/10 0010.
  */
@@ -10,7 +12,9 @@ public class IntegralPageResDTO {
 
     private String name ;
 
-    private int integral;
+    private BigDecimal integral;
+
+    private long userId;
 
     public long getId() {
         return id;
@@ -28,11 +32,19 @@ public class IntegralPageResDTO {
         this.name = name;
     }
 
-    public int getIntegral() {
+    public BigDecimal getIntegral() {
         return integral;
     }
 
-    public void setIntegral(int integral) {
+    public void setIntegral(BigDecimal integral) {
         this.integral = integral;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }
