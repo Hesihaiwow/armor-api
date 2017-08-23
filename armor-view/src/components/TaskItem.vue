@@ -12,8 +12,8 @@
                     <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
                     <i v-show="taskStatus=='WaitAuditing' && permit" class="el-icon-edit"
                        @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
-                 <!--    <i v-show="task.status<2 && isPrivate==false" class="el-icon-edit"
-                        v-on:click.stop="modifyTask(task.id)"></i>-->
+                        <!--    <i v-show="task.status<2 && isPrivate==false" class="el-icon-edit"
+                               v-on:click.stop="modifyTask(task.id)"></i>-->
                   </span>
                     <ul class="task-key-tag">
                         <li class="task-key-lis" v-for="tag in task.tags">
@@ -108,7 +108,8 @@
                     <el-tag type="gray" v-for="(item, key) in taskDetail.tags" :key="key">{{item.name}}</el-tag>
                 </el-form-item>
                 <div class="ctpc-member-con">
-                    <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'" v-for="(item,index) in taskDetail.users">
+                    <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'"
+                         v-for="(item,index) in taskDetail.users">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
                         <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
@@ -206,6 +207,8 @@
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
                             type="datetime"
+                            format="yyyy-MM-dd HH:mm"
+                            :picker-options="pickerOptions0"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -214,8 +217,6 @@
                     <el-select
                             v-model="modifyTaskForm.tags"
                             multiple
-                            filterable
-                            default-first-option
                             placeholder="请选择标签">
                         <el-option
                                 v-for="item in tagList"
@@ -231,7 +232,9 @@
                 </el-form-item>
             </el-form>
             <div class="ctpc-member-con">
-                <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'" v-for="(item,index) in modifyTaskForm.taskUsers">
+                <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'"
+                     v-for="(item,index) in modifyTaskForm.taskUsers"
+                     @click="modifyStep(index,modifyTaskForm.taskUsers)">
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                     <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
@@ -267,7 +270,8 @@
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：</div>
+                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：
+                        </div>
                         <div class="add-member-basic-msg fl">
                             <!--<input class="member-time-count" v-model="step.taskHours">工时-->
                             <el-input v-model="step.taskHours" style="width: 70px"></el-input>
@@ -277,14 +281,16 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="step.beginTime" type="datetime" placeholder="选择日期"
-                                            :picker-options="pickerOptions0"></el-date-picker>
+                            <el-date-picker v-model="step.beginTime" format="yyyy-MM-dd HH:mm" type="datetime"
+                                            placeholder="选择日期"
+                                            :picker-options="stepBeginTimeOptions"></el-date-picker>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="step.endTime" type="datetime" placeholder="选择日期"
-                                            :picker-options="pickerOptions0"></el-date-picker>
+                            <el-date-picker v-model="step.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                                            placeholder="选择日期"
+                                            :picker-options="stepEndTimeOptions"></el-date-picker>
                         </div>
                     </div>
                 </div>
@@ -305,25 +311,26 @@
         </el-dialog>
 
         <el-dialog
-        title="评价详情"
-        :visible.sync="showTaskCommentDetail"
-        size="tiny"
-        :before-close="hideTaskCommentDetail">
-            <h2 style="font-size: 20px;margin-bottom: 20px">总体评价：  <span>{{ taskCommentDetail.commentGrade }}</span></h2>
-       <div v-for="(item,index) in taskCommentDetail.comments">
-           <el-form label-position="left" inline class="demo-table-expand" >
-               <el-form-item label="姓名">
-                   <span>{{ item.commentUserName }}</span>
-               </el-form-item>
-               <el-form-item label="评价">
-                   <span>{{ item.grade }}</span>
-               </el-form-item>
-               <el-form-item label="描述">
-                   <span>{{ item.description }}</span>
-               </el-form-item>
-           </el-form>
-       </div>
-        <span slot="footer" class="dialog-footer">
+                title="评价详情"
+                :visible.sync="showTaskCommentDetail"
+                size="tiny"
+                :before-close="hideTaskCommentDetail">
+            <h2 style="font-size: 20px;margin-bottom: 20px">总体评价：  <span>{{ taskCommentDetail.commentGrade }}</span>
+            </h2>
+            <div v-for="(item,index) in taskCommentDetail.comments">
+                <el-form label-position="left" inline class="demo-table-expand">
+                    <el-form-item label="姓名">
+                        <span>{{ item.commentUserName }}</span>
+                    </el-form-item>
+                    <el-form-item label="评价">
+                        <span>{{ item.grade }}</span>
+                    </el-form-item>
+                    <el-form-item label="描述">
+                        <span>{{ item.description }}</span>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
     <el-button @click="hideTaskCommentDetail" type="primary">确 定</el-button>
   </span>
         </el-dialog>
@@ -352,7 +359,7 @@
                 showTaskModify: false,
                 showAddDetail: false,
                 showTaskCommentDetail: false,
-                taskCommentDetail:{},
+                taskCommentDetail: {},
                 pickerOptions0: {
                     disabledDate(time) {
                         return time.getTime() < Date.now() - 8.64e7;
@@ -390,6 +397,7 @@
                     taskUsers: []
                 },
                 step: {
+                    index: '',
                     stageId: '',
                     stageName: '',
                     userId: '',
@@ -397,8 +405,12 @@
                     taskHours: '',
                     beginTime: '',
                     endTime: '',
-                    description: ''
+                    description: '',
+                    completeHours: '',
+                    completeTime: '',
+                    status: ''
                 },
+                stepTemp: {},
                 projectList: [],
                 stageList: [],
                 tagList: [],
@@ -415,7 +427,7 @@
         computed: {
             permit() {
                 let userRole = helper.decodeToken().userRole;
-                return userRole <= 1;
+                return userRole <2;
             },
             showDelete() {
                 // 不包含完成的阶段才显示删除
@@ -423,8 +435,27 @@
                     let done = this.taskDetail.users.filter((user) => {
                         user.status == 2
                     })
-                    return done.length == 0 && this.taskDetail.status!=3;
+                    return done.length == 0 && this.taskDetail.status != 3;
                 }
+            },
+            stepBeginTimeOptions() {
+                let endTime = this.modifyTaskForm.endTime
+                return {
+                    disabledDate(time) {
+                        const fTime = time.getTime()
+                        return fTime > endTime;
+                    }
+                };
+            },
+            stepEndTimeOptions() {
+                let endTime = this.modifyTaskForm.endTime
+                let beginTime = this.step.beginTime
+                return {
+                    disabledDate(time) {
+                        const fTime = time.getTime()
+                        return fTime < beginTime || fTime > endTime;
+                    }
+                };
             }
         },
         filters: {
@@ -673,6 +704,25 @@
                     this.modifyTaskForm.taskUsers = resp.data.users
                 });
             },
+            // 修改阶段
+            modifyStep(index, stages) {
+                this.stepTemp = {
+                    stageId: stages[index].stageId,
+                    stageName: stages[index].stageName,
+                    userId: stages[index].userId,
+                    userName: stages[index].userName,
+                    taskHours: stages[index].taskHours,
+                    beginTime: stages[index].beginTime,
+                    endTime: stages[index].endTime,
+                    description: stages[index].description,
+                    completeHours: stages[index].completeHours,
+                    completeTime: stages[index].completeTime,
+                    status: stages[index].status
+                }
+                this.step = stages[index];
+                this.step.index = index;
+                this.showAddDetail = true;
+            },
             hideTaskModify() {
                 this.modifyTaskForm.taskName = '';
                 this.modifyTaskForm.description = '';
@@ -684,6 +734,7 @@
                 this.modifyTaskForm.taskUsers = [];
                 this.showTaskModify = false;
                 this.step = {
+                    index: '',
                     stageId: '',
                     stageName: '',
                     userId: '',
@@ -691,7 +742,10 @@
                     taskHours: '',
                     beginTime: '',
                     endTime: '',
-                    description: ''
+                    description: '',
+                    completeHours: '',
+                    completeTime: '',
+                    status: ''
                 }
             },
             deleteMember(index) {
@@ -702,7 +756,12 @@
             },
             cancelAddMember() {
                 this.showAddDetail = !this.showAddDetail;
+                if (this.step.index !== '') {
+                    this.modifyTaskForm.taskUsers[this.step.index] = this.stepTemp;
+                }
+
                 this.step = {
+                    index: '',
                     stageId: '',
                     stageName: '',
                     userId: '',
@@ -710,7 +769,10 @@
                     taskHours: '',
                     beginTime: '',
                     endTime: '',
-                    description: ''
+                    description: '',
+                    completeHours: '',
+                    completeTime: '',
+                    status: ''
                 }
             },
             saveAddMember() {
@@ -724,18 +786,21 @@
                     this.$message.warning('请将阶段填写完整');
                     return
                 }
+                if (this.step.index === '') {
+                    let taskUser = {}
+                    taskUser.stageId = this.step.stageId
+                    taskUser.stageName = this.step.stageName
+                    taskUser.userId = this.step.userId
+                    taskUser.userName = this.step.userName
+                    taskUser.beginTime = this.step.beginTime
+                    taskUser.endTime = this.step.endTime
+                    taskUser.taskHours = this.step.taskHours
+                    taskUser.description = this.step.description
+                    this.modifyTaskForm.taskUsers.push(taskUser)
+                }
                 this.showAddDetail = !this.showAddDetail;
-                let taskUser = {}
-                taskUser.stageId = this.step.stageId
-                taskUser.stageName = this.step.stageName
-                taskUser.userId = this.step.userId
-                taskUser.userName = this.step.userName
-                taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
-                taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
-                taskUser.taskHours = this.step.taskHours
-                taskUser.description = this.step.description
-                this.modifyTaskForm.taskUsers.push(taskUser)
                 this.step = {
+                    index: '',
                     stageId: '',
                     stageName: '',
                     userId: '',
@@ -743,8 +808,12 @@
                     taskHours: '',
                     beginTime: '',
                     endTime: '',
-                    description: ''
+                    description: '',
+                    completeHours: '',
+                    completeTime: '',
+                    status: ''
                 }
+                this.stepTemp = {}
             },
             stepUserChange(val) {
                 let vm = this;
@@ -792,6 +861,8 @@
                 param.description = param.description.trim()
                 param.taskUsers.forEach((user) => {
                     user.description = user.description.trim()
+                    user.beginTime = moment(user.beginTime).format('YYYY-MM-DD HH:mm:ss')
+                    user.endTime = moment(user.endTime).format('YYYY-MM-DD HH:mm:ss')
                 })
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
                 let vm = this;
@@ -802,14 +873,14 @@
                 })
                 this.showCreateTask = false;
             },
-            hideTaskCommentDetail(){
+            hideTaskCommentDetail() {
                 this.showTaskCommentDetail = false
             },
-            commentDetail(taskUserId){
+            commentDetail(taskUserId) {
                 let vm = this;
-                this.taskDetail.users.forEach((user)=>{
+                this.taskDetail.users.forEach((user) => {
                     if (user.id == taskUserId) {
-                        vm.taskCommentDetail =  user
+                        vm.taskCommentDetail = user
                         return
                     }
                 })
@@ -819,7 +890,7 @@
     }
 </script>
 <style>
-    .myDialog{
+    .myDialog {
         width: 600px;
     }
 </style>
@@ -1037,6 +1108,7 @@
         background: #008000;
         z-index: 110;
     }
+
     .ctpc-member-list.in:before {
         content: '';
         position: absolute;
@@ -1385,10 +1457,12 @@
     .demo-table-expand {
         font-size: 0;
     }
+
     .demo-table-expand label {
         width: 60px;
         color: #99a9bf;
     }
+
     .demo-table-expand .el-form-item {
         margin-right: 0;
         margin-bottom: 0;

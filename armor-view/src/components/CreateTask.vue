@@ -34,7 +34,8 @@
                     <div class="ctpc-list clearfix">
                         <div class="ctpc-list-menu fl"><span class="star">*</span>截止日期</div>
                         <div class="ctpc-list-con fl">
-                            <el-date-picker v-model="taskForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm" placeholder="选择日期"
+                            <el-date-picker v-model="taskForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                                            placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
                     </div>
@@ -46,8 +47,7 @@
                                     <span class="tag-lis-add-msg" @click="addTag">添加标签</span>
                                     <div class="tag-add-sel" v-show="showAddTag">
                                         <!--<div class="add-tag-btn" @click="addSelTag">添加</div>-->
-                                        <el-select v-model="taskForm.tags" multiple filterable
-                                                   default-first-option placeholder="添加标签">
+                                        <el-select v-model="taskForm.tags" multiple placeholder="添加标签">
                                             <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                                        :value="item.id"></el-option>
                                         </el-select>
@@ -57,7 +57,8 @@
                         </div>
                     </div>
                     <div class="ctpc-member-con">
-                        <div class="ctpc-member-list clearfix" v-for="(item,index) in taskUsers">
+                        <div class="ctpc-member-list clearfix" v-for="(item,index) in taskUsers"
+                             @click="modifyStep(index,taskUsers)">
                             <span class="fl ctpc-member-head">{{item.userName}}</span>
                             <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                             <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
@@ -100,7 +101,8 @@
                                                    :value="item.id"></el-option>
                                     </el-select>
                                 </div>
-                                <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：</div>
+                                <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：
+                                </div>
                                 <div class="add-member-basic-msg fl">
                                     <input class="member-time-count" v-model="step.taskHours">工时
                                 </div>
@@ -108,12 +110,15 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                                 <div class="add-member-basic-msg fl">
-                                    <el-date-picker v-model="step.beginTime" type="datetime" placeholder="选择日期"
+                                    <el-date-picker v-model="step.beginTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                                                    placeholder="选择日期"
                                                     :picker-options="stepBeginTimeOptions"></el-date-picker>
                                 </div>
-                                <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：</div>
+                                <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
+                                </div>
                                 <div class="add-member-basic-msg fl">
-                                    <el-date-picker v-model="step.endTime" type="datetime" placeholder="选择日期"
+                                    <el-date-picker v-model="step.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                                                    placeholder="选择日期"
                                                     :picker-options="stepEndTimeOptions"></el-date-picker>
                                 </div>
                             </div>
@@ -161,6 +166,7 @@
                 },
                 taskUsers: [],
                 step: {
+                    index: '',
                     stageId: '',
                     stageName: '',
                     userId: '',
@@ -170,6 +176,7 @@
                     endTime: '',
                     description: ''
                 },
+                stepTemp: {},
                 showDesc: false,
                 showAssess: true,
                 stageTagShow: false,
@@ -207,12 +214,12 @@
                     }
                 };
             },
-            stepEndTimeOptions(){
+            stepEndTimeOptions() {
                 let endTime = this.taskForm.endTime
                 let beginTime = this.step.beginTime
                 return {
                     disabledDate(time) {
-                        return time < beginTime || time >endTime;
+                        return time < beginTime || time > endTime;
                     }
                 };
             }
@@ -255,12 +262,32 @@
                     // tagLis.tagName = '';
                 }
             },
+            // 修改阶段
+            modifyStep(index, stages) {
+                this.stepTemp = {
+                    stageId: stages[index].stageId,
+                    stageName: stages[index].stageName,
+                    userId: stages[index].userId,
+                    userName: stages[index].userName,
+                    taskHours: stages[index].taskHours,
+                    beginTime: stages[index].beginTime,
+                    endTime: stages[index].endTime,
+                    description: stages[index].description
+                }
+                this.step = stages[index]
+                this.step.index = index
+                this.showAddDetail = true;
+            },
             addMember() {
                 this.showAddDetail = !this.showAddDetail;
             },
             cancelAddMember() {
                 this.showAddDetail = !this.showAddDetail;
+                if (this.step.index!=='') {
+                    this.taskUsers[this.step.index] = this.stepTemp;
+                }
                 this.step = {
+                    index: '',
                     stageId: '',
                     stageName: '',
                     userId: '',
@@ -272,6 +299,7 @@
                 }
             },
             saveAddMember() {
+                console.log(this.step.index)
                 const valid = this.step.stageId == '' ||
                     this.step.userId == '' ||
                     this.step.taskHours == '' ||
@@ -283,17 +311,21 @@
                     return
                 }
                 this.showAddDetail = !this.showAddDetail;
-                let taskUser = {}
-                taskUser.stageId = this.step.stageId
-                taskUser.stageName = this.step.stageName
-                taskUser.userId = this.step.userId
-                taskUser.userName = this.step.userName
-                taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
-                taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
-                taskUser.taskHours = this.step.taskHours
-                taskUser.description = this.step.description
-                this.taskUsers.push(taskUser)
+                if (this.step.index==='') {
+                    let taskUser = {}
+                    taskUser.stageId = this.step.stageId
+                    taskUser.stageName = this.step.stageName
+                    taskUser.userId = this.step.userId
+                    taskUser.userName = this.step.userName
+                    taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
+                    taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
+                    taskUser.taskHours = this.step.taskHours
+                    taskUser.description = this.step.description
+                    taskUser.isEdit = true
+                    this.taskUsers.push(taskUser)
+                }
                 this.step = {
+                    index: '',
                     stageId: '',
                     stageName: '',
                     userId: '',
@@ -303,6 +335,7 @@
                     endTime: '',
                     description: ''
                 }
+                this.stepTemp = {}
             },
             stepUserChange(val) {
                 let vm = this;
@@ -409,10 +442,11 @@
     }
 </script>
 <style scoped>
-    .star{
+    .star {
         color: red;
         padding: 1px;
     }
+
     .create-task-pop { /* display: none; */
         position: fixed;
         top: 0;

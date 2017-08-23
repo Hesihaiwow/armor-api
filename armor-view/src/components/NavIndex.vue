@@ -68,6 +68,8 @@
                     <el-date-picker
                             v-model="taskForm.endTime"
                             type="datetime"
+                            :picker-options="pickerOptions0"
+                            format="yyyy-MM-dd HH:mm"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -100,8 +102,6 @@
                     <el-select
                             v-model="taskForm.tags"
                             multiple
-                            filterable
-                            default-first-option
                             placeholder="请选择标签">
                         <el-option
                                 v-for="item in tagList"
@@ -147,6 +147,11 @@
                     pageNum: 1,
                     pageSize: 5,
                     total: 0,
+                },
+                pickerOptions0: {
+                    disabledDate(time) {
+                        return time.getTime() < Date.now() - 8.64e7;
+                    }
                 },
                 taskForm: {
                     taskName: '',
