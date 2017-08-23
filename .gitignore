@@ -60,5 +60,6 @@ Desktop.ini
 #nodejs
 node_modules/
 
+dist/
 
 generatorConfig.xml
