@@ -5,6 +5,9 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="origin" jdbcType="INTEGER" property="origin" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="integral" jdbcType="DECIMAL" property="integral" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
@@ -17,8 +20,8 @@
   </sql>
   <!--查询查询积分列表 通过积分排列-->
   <select id="getIntegralPage" parameterType="Map"  resultMap="BaseMap">
-    SELECT (@rowid := @rowid+1) AS id,integral,name FROM(
-    SELECT sum(i.integral) as integral, u.name
+    SELECT (@rowid := @rowid+1) AS id,integral,name,user_id FROM(
+    SELECT sum(i.integral) as integral, u.name, i.user_id
     FROM user_integral i,`user` u
     <where>
       i.user_id = u.id
@@ -42,6 +45,22 @@
                   AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
     </where>
   </select>
+  <!--查询用户积分历史-->
+  <select id="getIntegralHistory" parameterType="Map"  resultMap="BaseMap">
+    SELECT i.integral, u.name, i.origin, i.create_time, i.description
+    FROM user_integral i,`user` u
+    <where>
+      i.user_id = #{id,jdbcType=BIGINT}
+      AND i.user_id = u.id
+      <if test="startTime!=null and startTime!=''">
+        <![CDATA[AND i.create_time >= #{startTime}]]>
+      </if>
+      <if test="endTime!=null and endTime!=''" >
+        <![CDATA[AND i.create_time <#{endTime}]]>
+      </if>
+    </where>
+    ORDER BY integral DESC
+  </select>
   <!--查询排名-->
   <select id="getRank" resultType="java.lang.Integer">
     SELECT b.rownum
@@ -58,9 +77,9 @@
   </select>
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserIntegral">
     insert into user_integral (id, task_id, user_id,
-    integral, create_time)
+    integral, create_time, origin, create_by, description)
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
-    #{integral,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP})
+    #{integral,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{origin,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR})
   </insert>
 
 </mapper>

@@ -15,6 +15,12 @@ public class UserIntegral {
 
     private Date createTime;
 
+    private Integer origin;
+
+    private Long createBy;
+
+    private  String description;
+
     public Long getId() {
         return id;
     }
@@ -53,5 +59,29 @@ public class UserIntegral {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(Integer origin) {
+        this.origin = origin;
+    }
+
+    public Long getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(Long createBy) {
+        this.createBy = createBy;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
