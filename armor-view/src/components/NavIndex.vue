@@ -4,7 +4,8 @@
             <p class="mic-title">我的积分</p>
             <div class="mic-main clearfix">
                 <div class="mic-item fl" v-for="item in integralItem">
-                    <div class="mic-item-title">{{item.label}}</div>
+                    <div class="mic-item-title" >{{item.label}}</div>
+                    <div class="mic-item-title" style="font-size: 15px">({{item.time}})</div>
                     <div class="mic-item-integral">{{item.score}}</div>
                 </div>
             </div>
@@ -122,6 +123,7 @@
 </template>
 <script>
     import TaskItem from './TaskItem'
+    import Integral from './Intergral.vue'
 
     import http from '../lib/Http'
     import helper from '../lib/Helper'
@@ -326,11 +328,11 @@
                 http.zsyGetHttp(http.API_URI.USERINTEGRAL, null, (res) => {
                     let data = res.data;
                     let items = [];
-                    items.push({label: '本周', score: '+' + data.week});
-                    items.push({label: '本月', score: '+' + data.month});
-                    items.push({label: '本年', score: '+' + data.year});
-                    items.push({label: '季度积分排名', score: '+' + data.quarterRank});
-                    items.push({label: '年度积分排名', score: '+' + data.yearRank});
+                    items.push({label: '本周 ', score: data.week,time:this.getDateString('week')});
+                    items.push({label: '本月', score: data.month,time:this.getDateString('month')});
+                    items.push({label: '本年', score: data.year,time:this.getDateString('year')});
+                    items.push({label: '季度积分排名', score: data.quarterRank,time:this.getDateString('quarter')});
+                    items.push({label: '年度积分排名', score: data.yearRank,time:this.getDateString('year')});
                     this.integralItem = items;
                 })
             },
@@ -388,7 +390,31 @@
                 http.zsyGetHttp('/tag/list', {}, (resp) => {
                     vm.tagList = resp.data
                 })
+            },
+          getDateString(date){//时间期限
+            let now = new Date();
+            let curMonth = now.getMonth();
+            let curYear =  now.getFullYear();;
+            let startMonth = 0 ;
+            if(date=="month"){//本月的开始结束时间
+              return  moment(new Date(curYear, curMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear,curMonth+1,1)-1).format('YYYY-MM-DD');
+            }else if(date=="week"){//本季度的开始结束时间
+              return  moment(new Date(curYear, curMonth, now.getDate() - now.getDay()+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - now.getDay())+1)-1).format('YYYY-MM-DD');
+            }else if(date=="year"){//本年的开始结束时间
+              return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
+            }else if(date=="quarter"){
+              if (curMonth >= 1 && curMonth <= 3){
+                startMonth = 0;
+              }else if (curMonth >= 4 && curMonth <= 6){
+                startMonth = 3;
+              }else if (curMonth >= 7 && curMonth <= 9){
+                startMonth = 6;
+              }else if (curMonth >= 10 && curMonth <= 12){
+                startMonth = 9;
+              }
+              return  moment(new Date(curYear, startMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, startMonth+3,1)-1).format('YYYY-MM-DD');
             }
+          }
         },
         components: {
             ElTabPane,

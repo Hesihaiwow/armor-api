@@ -5,6 +5,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
@@ -12,6 +14,7 @@ import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
+import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
@@ -19,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -30,6 +34,9 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     @Autowired
     private IZSYUserIntegralMapper userIntegralMapper;
+
+    @Autowired
+    private IZSYUserMapper userMapper;
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
@@ -81,17 +88,27 @@ public class ZSYIntegralService implements IZSYIntegralService{
     }
 
     public void addIntegral(IntegralResDTO integralResDTO){
+        User user = userMapper.selectById(integralResDTO.getUserId());
+        BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
+        if(integral.compareTo(new BigDecimal("0"))!=-1){//新旧积分相加大于0
+            user.setIntegral(integral);
+            userMapper.updateSelectiveById(user);
 
-        UserIntegral userIntegral = new UserIntegral();
-        userIntegral.setId(snowFlakeIDHelper.nextId());
-        userIntegral.setCreateTime(new Date());
-        userIntegral.setIntegral(integralResDTO.getIntegral());
-        userIntegral.setUserId(integralResDTO.getUserId());
-        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-        userIntegral.setDescription(integralResDTO.getDescription());
-        userIntegral.setOrigin(2);//手动添加
 
-        userIntegralMapper.insert(userIntegral);
+            UserIntegral userIntegral = new UserIntegral();
+            userIntegral.setId(snowFlakeIDHelper.nextId());
+            userIntegral.setCreateTime(new Date());
+            userIntegral.setIntegral(integralResDTO.getIntegral());
+            userIntegral.setUserId(integralResDTO.getUserId());
+            userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            userIntegral.setDescription(integralResDTO.getDescription());
+            userIntegral.setOrigin(2);//手动添加
+
+            userIntegralMapper.insert(userIntegral);
+        }else{
+            throw new ZSYServiceException("扣除积分大于实际分数,请重试");
+        }
+
     }
 
 
