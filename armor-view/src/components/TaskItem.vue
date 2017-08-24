@@ -3,7 +3,15 @@
         <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id)">
             <div class="head-img"><img src="../assets/img/project.png" alt="" class=""></div>
             <div class="main-task-detail">
-                <div class="task-name">{{task.name}}</div>
+                <div class="task-name">
+                    <span v-if="isPrivate">
+                      <span v-for="(item,index) in task.taskUsers">
+                          <span v-if="item.userId == loginUserId">  {{item.description}}</span>
+                      </span>
+                        （{{task.name}}）
+                    </span>
+                    <span v-else>{{task.name}}</span>
+                </div>
                 <div class="task-state">
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
@@ -31,38 +39,65 @@
                 <img src="../assets/img/u431.png" alt="">
                 <span class="mark-msg">{{task.projectName}}</span>
             </div>
+            <div class="" v-show="!isPrivate && task.status==1">
+                <span class="mark-stage">{{task.stageName}}</span>
+            </div>
         </div>
         <div v-show="taskItems.length==0" class="empty">
             <h2>暂无数据</h2>
         </div>
         <el-dialog
-                title="完成"
+                title="任务信息"
+                top="10%"
                 :visible.sync="showFinishedTask"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 size="tiny"
                 :before-close="hideFinishedPop">
             <el-form>
-                <el-form-item label="实际耗时">
-                    <el-input v-model="finishForm.completeHours" auto-complete="off" style="width:100px"></el-input>
-                    小时
+                <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
+                <el-form-item label="标签：">
+                    <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
+                        {{item.name}}
+                    </el-tag>
                 </el-form-item>
-                <el-form-item label="实际完成时间">
-                    <el-date-picker
-                            v-model="finishForm.completeTime"
-                            type="datetime"
-                            :picker-options="beforeNow"
-                            placeholder="选择日期时间">
-                    </el-date-picker>
-                </el-form-item>
+                <div v-if="taskDetail.type==2" v-for="(item,index) in taskDetail.users">
+                    <el-card class="box-card" v-if="item.userId==loginUserId">
+                        <div class="text item">
+                            工作量：{{item.taskHours}}
+                        </div>
+                        <div class="text item">
+                            阶段：{{item.stageName}}
+                        </div>
+                        <div class="text item">
+                            截止：{{item.endTime | formatDate}}
+                        </div>
+                        <div class="text item">
+                            描述：{{item.description}}
+                        </div>
+                    </el-card>
+                    <!--<div class="ctpc-member-list clearfix" v-if="item.userId==loginUserId">
+                        <span class="fl ctpc-member-head">{{item.userName}}</span>
+                        <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
+                        <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
+                        <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
+                        <span class="fl ctpc-member-assess"
+                              v-show="item.commentGrade">评价：{{item.commentGrade}}</span>
+                    </div>-->
+                </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="finishTask">确 定</el-button>
-            <el-button @click="hideFinishedPop">取 消</el-button>
+            <el-button type="success" @click="finishTask">已完成</el-button>
+                <!--<el-button @click="hideFinishedPop">取 消</el-button>-->
           </span>
         </el-dialog>
         <el-dialog
                 title="审核"
+                top="10%"
                 :visible.sync="showAuditTask"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -75,7 +110,9 @@
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
-                    <el-tag type="gray" v-for="(item, key) in taskDetail.tags" :key="key">{{item.name}}</el-tag>
+                    <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
+                        {{item.name}}
+                    </el-tag>
                 </el-form-item>
                 <div class="ctpc-member-con">
                     <div class="ctpc-member-list clearfix" v-for="(item,index) in taskDetail.users">
@@ -88,12 +125,13 @@
                 </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="text" @click="rejectTask">打回</el-button>
-            <el-button type="primary" @click="acceptTask">审核通过</el-button>
+            <el-button type="danger" @click="rejectTask">打回</el-button>
+            <el-button type="success" @click="acceptTask">审核通过</el-button>
           </span>
         </el-dialog>
         <el-dialog
                 title="任务详情"
+                top="10%"
                 :visible.sync="showTaskDetail"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -104,9 +142,12 @@
                 <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
-                    <el-tag type="gray" v-for="(item, key) in taskDetail.tags" :key="key">{{item.name}}</el-tag>
+                    <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
+                        {{item.name}}
+                    </el-tag>
                 </el-form-item>
                 <div class="ctpc-member-con">
                     <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'"
@@ -116,7 +157,8 @@
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                         <span class="fl ctpc-member-assess" v-show="item.commentGrade">评价：{{item.commentGrade}}</span>
-                        <a href="javascript:;" v-show="taskDetail.status>1 &&permit" @click="commentDetail(item.id)">查看评价</a>
+                        <a href="javascript:;" v-show="taskDetail.status>1 &&permit && item.status==3"
+                           @click="commentDetail(item.id)">查看评价</a>
                     </div>
                     <div class="bdl-line"></div>
                 </div>
@@ -125,19 +167,27 @@
             <div>
                 <b>动态</b>
                 <a href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>
-                <div v-for="(item,index) in taskLog.list" :key="index">
-                    {{item.title}}
+                <div style="height: 100px; overflow: auto">
+                    <div v-for="(item,index) in taskLog.list" :key="index">
+                        {{item.title}}
+                    </div>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
-                 <el-button type="text" @click="deleteTask" v-show="showDelete">删除</el-button>
-                 <el-button type="text" @click="modifyTask(taskDetail.id)">编辑</el-button>
-                <el-button type="primary" @click="completeTask" v-show="taskDetail.status!=3">完成</el-button>
+                <el-tooltip content="删除该任务" placement="top">
+                      <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
+                </el-tooltip>
+                 <el-tooltip content="编辑该任务" placement="top">
+                 <el-button type="primary" icon="edit" @click="modifyTask(taskDetail.id)"></el-button>
+               </el-tooltip>
+                <el-button type="primary" icon="check" @click="completeTask"
+                           v-show="taskDetail.status!=3">完成</el-button>
                 <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
           </span>
         </el-dialog>
         <el-dialog
                 title="评价"
+                top="10%"
                 :visible.sync="showTaskComment"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -181,12 +231,21 @@
         </el-dialog>
         <el-dialog
                 title="编辑多人任务"
+                top="10%"
                 :visible.sync="showTaskModify"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 size="tiny"
+                :show-close="false"
                 custom-class="myDialog"
                 :before-close="hideTaskModify">
+            <span slot="title">
+                <span class="my-dialog-title">编辑任务</span>
+               <span class="my-dialog-title-tool">
+                    <el-button type="text" icon="check" @click="saveTaskInfo">保存</el-button>
+                    <el-button type="text" icon="close" @click="hideTaskModify"></el-button>
+               </span>
+            </span>
             <el-form label-width="80px">
                 <el-form-item label="">
                     <span slot="label"><span class="star">*</span>任务名称</span>
@@ -214,6 +273,14 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="">
+                    <span slot="label"><span class="star">*</span>阶段</span>
+                    <el-select v-model="modifyTaskForm.stageId" filterable :multiple-limit="1"
+                               default-first-option placeholder="请选择">
+                        <el-option v-for="item in stageList" :key="item.id"
+                                   :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="">
                     <span slot="label"><span class="star">*</span>标签</span>
                     <el-select
                             v-model="modifyTaskForm.tags"
@@ -233,15 +300,18 @@
                 </el-form-item>
             </el-form>
             <div class="ctpc-member-con">
-                <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'"
-                     v-for="(item,index) in modifyTaskForm.taskUsers"
-                     @click="modifyStep(index,modifyTaskForm.taskUsers)">
+                <div class="ctpc-member-list clearfix" :class="[item.status>1?'done':'in',item.cssClass]"
+                     v-for="(item,index) in modifyTaskForm.taskUsers">
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                     <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                     <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                     <!--<span class="fl ctpc-member-assess" v-show="showAssess">评价：{{list.jobLevel}}</span>-->
-                    <span class="fl ctpc-member-delete" @click="deleteMember(index)">×</span>
+                    <!--<span class="fl ctpc-member-delete" @click="deleteMember(index)">×</span>-->
+                    <span style="position: absolute;right: 10px;">
+                        <el-button type="text" icon="edit" @click="modifyStep(index,modifyTaskForm.taskUsers)"></el-button>
+                    <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
+                    </span>
                 </div>
                 <div class="bdl-line"></div>
             </div>
@@ -304,15 +374,16 @@
                 <span class="add-member-icon">+</span>
                 <span class="add-member-msg">添加成员</span>
             </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button @click="hideTaskModify">取 消</el-button>
-            <el-button type="primary" @click="saveTaskInfo">保 存</el-button>
-          </span>
+            <!--   <span slot="footer" class="dialog-footer">
+               <el-button @click="hideTaskModify">取 消</el-button>
+               <el-button type="primary" @click="saveTaskInfo">保 存</el-button>
+             </span>-->
 
         </el-dialog>
 
         <el-dialog
                 title="评价详情"
+                top="10%"
                 :visible.sync="showTaskCommentDetail"
                 size="tiny"
                 :before-close="hideTaskCommentDetail">
@@ -366,7 +437,7 @@
                         return time.getTime() < Date.now() - 8.64e7;
                     }
                 },
-                beforeNow:{
+                beforeNow: {
                     disabledDate(time) {
                         return time.getTime() > Date.now() - 8.64e7;
                     }
@@ -395,6 +466,7 @@
                     taskName: '',
                     description: '',
                     projectId: '',
+                    stageId: '',
                     endTime: '',
                     priority: 1,
                     tags: [],
@@ -433,7 +505,7 @@
         computed: {
             permit() {
                 let userRole = helper.decodeToken().userRole;
-                return userRole <2;
+                return userRole < 2;
             },
             showDelete() {
                 // 不包含完成的阶段才显示删除
@@ -504,6 +576,9 @@
                 this.finishForm.taskUserId = userId
                 this.finishForm.taskType = taskType
                 this.showFinishedTask = true;
+                http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
+                    this.taskDetail = resp.data
+                })
             },
             hideFinishedPop() {
                 this.resetFinishForm()
@@ -521,6 +596,7 @@
                 this.auditForm.taskId = '';
                 this.auditForm.taskUserId = '';
                 this.showAuditTask = false;
+                this.taskDetail = {};
             },
             // 审核通过任务
             acceptTask() {
@@ -531,6 +607,7 @@
                     this.auditForm.taskUserId = '';
                 })
                 this.showAuditTask = false;
+                this.taskDetail = {};
             },
             // 打回任务
             rejectTask() {
@@ -541,26 +618,34 @@
                     this.auditForm.taskUserId = '';
                 })
                 this.showAuditTask = false;
+                this.taskDetail = {};
             },
             // 完成任务
             finishTask() {
-                if (this.finishForm.completeHours == '') {
+                /*if (this.finishForm.completeHours == '') {
                     this.$message.warning("请输入实际消耗");
                     return
                 }
                 if (this.finishForm.completeTime == '') {
                     this.$message.warning("请选择实际完成时间");
                     return
-                }
-                var param = this.finishForm
-                param.completeHours = param.completeHours.trim()
-                param.completeTime = moment(param.completeTime).format('YYYY-MM-DD HH:mm:ss')
-                http.zsyPutHttp('/task/complete', param, (resp) => {
-                    this.resetFinishForm()
-                    this.showFinishedTask = false;
-                    this.$message.success("操作成功");
-                    this.$emit('reload');
-                })
+                }*/
+                this.$confirm('此操作将完成该任务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var param = this.finishForm
+                    param.completeTime = moment().format('YYYY-MM-DD HH:mm:ss')
+                    http.zsyPutHttp('/task/complete', param, (resp) => {
+                        this.resetFinishForm()
+                        this.showFinishedTask = false;
+                        this.taskDetail = {};
+                        this.$message.success("操作成功");
+                        this.$emit('reload');
+                    })
+                }).catch(() => {
+                });
             },
             resetFinishForm() {
                 this.finishForm.taskId = '';
@@ -704,6 +789,7 @@
                     this.modifyTaskForm.description = resp.data.description;
                     this.modifyTaskForm.endTime = resp.data.endTime;
                     this.modifyTaskForm.projectId = resp.data.projectId;
+                    this.modifyTaskForm.stageId = resp.data.stageId;
                     this.modifyTaskForm.priority = 1;
                     for (let i = 0; i < resp.data.tags.length; i++) {
                         this.modifyTaskForm.tags.push(resp.data.tags[i].id)
@@ -728,6 +814,10 @@
                 }
                 this.step = stages[index];
                 this.step.index = index;
+                this.modifyTaskForm.taskUsers.forEach((item)=>{
+                    item.cssClass = ''
+                })
+                this.modifyTaskForm.taskUsers[index].cssClass='stepActive'
                 this.showAddDetail = true;
             },
             hideTaskModify() {
@@ -736,6 +826,7 @@
                 this.modifyTaskForm.taskName = '';
                 this.modifyTaskForm.endTime = '';
                 this.modifyTaskForm.projectId = '';
+                this.modifyTaskForm.stageId = '';
                 this.modifyTaskForm.priority = 1;
                 this.modifyTaskForm.tags = [];
                 this.modifyTaskForm.taskUsers = [];
@@ -757,6 +848,23 @@
             },
             deleteMember(index) {
                 this.modifyTaskForm.taskUsers.splice(index, 1);
+                if (this.modifyTaskForm.taskUsers.length == 0) {
+                    this.showAddDetail = false
+                    this.step = {
+                        index: '',
+                        stageId: '',
+                        stageName: '',
+                        userId: '',
+                        userName: '',
+                        taskHours: '',
+                        beginTime: '',
+                        endTime: '',
+                        description: '',
+                        completeHours: '',
+                        completeTime: '',
+                        status: ''
+                    }
+                }
             },
             addMember() {
                 this.showAddDetail = !this.showAddDetail;
@@ -765,8 +873,9 @@
                 this.showAddDetail = !this.showAddDetail;
                 if (this.step.index !== '') {
                     this.modifyTaskForm.taskUsers[this.step.index] = this.stepTemp;
+                    // 取消css
+                    this.modifyTaskForm.taskUsers[this.step.index].cssClass=''
                 }
-
                 this.step = {
                     index: '',
                     stageId: '',
@@ -805,6 +914,8 @@
                     taskUser.description = this.step.description
                     this.modifyTaskForm.taskUsers.push(taskUser)
                 }
+                // 取消css
+                this.modifyTaskForm.taskUsers[this.step.index].cssClass=''
                 this.showAddDetail = !this.showAddDetail;
                 this.step = {
                     index: '',
@@ -855,14 +966,18 @@
                     this.$message.warning("请选择结束时间");
                     return;
                 }
+                if (this.modifyTaskForm.stageId === '') {
+                    this.$message.warning("请选择项目阶段");
+                    return;
+                }
                 if (this.modifyTaskForm.tags.length == 0) {
                     this.$message.warning("请选择至少一项标签");
                     return;
                 }
-                if (this.modifyTaskForm.taskUsers.length < 2) {
+                /*if (this.modifyTaskForm.taskUsers.length < 2) {
                     this.$message.warning("至少添加2个成员");
                     return;
-                }
+                }*/
                 let param = this.modifyTaskForm;
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
@@ -900,8 +1015,28 @@
     .myDialog {
         width: 600px;
     }
+
+    .my-dialog-title {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .my-dialog-title-tool {
+        float: right;
+    }
+
 </style>
 <style scoped>
+    .stepActive{
+        box-shadow: 0 0 10px #20A0FF !important;
+    }
+
+    .mark-stage {
+        line-height: 90px;
+        margin-right: 20px;
+        font-size: 15px;
+    }
+
     .star {
         color: red;
         padding: 1px;
@@ -1450,6 +1585,8 @@
         font-size: 26px;
         cursor: pointer;
         margin-right: 4px;
+        position: absolute;
+        right: 1px;
     }
 
     .add-member-stage {

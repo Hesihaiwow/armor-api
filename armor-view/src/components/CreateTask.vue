@@ -2,14 +2,18 @@
     <div class="create-task-pop" v-show="showCreateTask">
         <div class="create-task-pop-con">
             <div class="ctpc-top clearfix">
-                <span class="fl">创建多人任务</span><span class="ctpc-top-close fr" @click="hide">×</span>
+                <span class="fl">创建多人任务</span>
+                <span class="my-dialog-title-tool">
+                    <el-button type="text" icon="check" @click="saveTask">保存</el-button>
+                    <el-button type="text" icon="close" @click="hide"></el-button>
+               </span>
             </div>
             <div class="ctpc-con">
                 <div class="ctpc-instruction-msg" v-show="!showDesc" @click="showInsChange">
                     {{insMsgShow}}
                 </div>
                 <div class="ctpc-ins-edit" v-show="showDesc">
-                    <textarea class="ctpc-instruction" placeholder="添加备注" v-model="taskForm.description"></textarea>
+                    <textarea class="ctpc-instruction" placeholder="任务描述" v-model="taskForm.description"></textarea>
                     <div class="ctpc-btns">
                         <input type="button" class="ctpc-cancel" @click="cancelEdit" value="取消">
                         <input type="button" class="ctpc-save" @click="saveEdit" value="确定">
@@ -40,6 +44,16 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>阶段</div>
+                        <div class="ctpc-list-con fl">
+                            <el-select v-model="taskForm.stageId" filterable :multiple-limit="1"
+                                       default-first-option placeholder="请选择">
+                                <el-option v-for="item in stageList" :key="item.id"
+                                           :label="item.name" :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="ctpc-list clearfix">
                         <div class="ctpc-list-menu fl"><span class="star">*</span>标签</div>
                         <div class="ctpc-list-con fl">
                             <ul class="ctpc-tags">
@@ -57,14 +71,16 @@
                         </div>
                     </div>
                     <div class="ctpc-member-con">
-                        <div class="ctpc-member-list clearfix in" v-for="(item,index) in taskUsers"
-                             @click="modifyStep(index,taskUsers)">
+                        <div class="ctpc-member-list clearfix in" v-for="(item,index) in taskUsers" :class="item.cssClass">
                             <span class="fl ctpc-member-head">{{item.userName}}</span>
                             <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                             <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                             <span class="fl ctpc-member-end-time">截止:{{item.endTime}}</span>
                             <!--<span class="fl ctpc-member-assess" v-show="showAssess">评价：{{list.jobLevel}}</span>-->
-                            <span class="fl ctpc-member-delete" @click="deleteMember(index)">×</span>
+                            <span style="position: absolute;right: 10px;">
+                                <el-button type="text" icon="edit" @click="modifyStep(index,taskUsers)"></el-button>
+                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
+                            </span>
                         </div>
                         <div class="bdl-line"></div>
                     </div>
@@ -134,10 +150,10 @@
                     </div>
                 </div>
             </div>
-            <div class="ctpc-btns">
+          <!--  <div class="ctpc-btns">
                 <input type="button" class="ctpc-cancel" @click="hide" value="取消">
                 <input type="button" class="ctpc-save" @click="saveTask" value="立即创建">
-            </div>
+            </div>-->
         </div>
     </div>
 </template>
@@ -161,6 +177,7 @@
                     taskName: '',
                     endTime: '',
                     projectId: '',
+                    stageId: '',
                     priority: 1,
                     tags: []
                 },
@@ -274,6 +291,10 @@
                     endTime: stages[index].endTime,
                     description: stages[index].description
                 }
+                this.taskUsers.forEach((item)=>{
+                    item.cssClass = ''
+                })
+                this.taskUsers[index].cssClass = 'stepActive'
                 this.step = stages[index]
                 this.step.index = index
                 this.showAddDetail = true;
@@ -285,6 +306,8 @@
                 this.showAddDetail = !this.showAddDetail;
                 if (this.step.index!=='') {
                     this.taskUsers[this.step.index] = this.stepTemp;
+                    // 取消css
+                    this.taskUsers[this.step.index].cssClass=''
                 }
                 this.step = {
                     index: '',
@@ -321,9 +344,10 @@
                     taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
                     taskUser.taskHours = this.step.taskHours
                     taskUser.description = this.step.description
-                    taskUser.isEdit = true
                     this.taskUsers.push(taskUser)
                 }
+                // 取消css
+                this.taskUsers[this.step.index].cssClass=''
                 this.step = {
                     index: '',
                     stageId: '',
@@ -361,6 +385,20 @@
             },
             deleteMember(index) {
                 this.taskUsers.splice(index, 1);
+                if (this.taskUsers.length == 0) {
+                    this.showAddDetail = false
+                    this.step = {
+                        index: '',
+                        stageId: '',
+                        stageName: '',
+                        userId: '',
+                        userName: '',
+                        taskHours: '',
+                        beginTime: '',
+                        endTime: '',
+                        description: ''
+                    }
+                }
             },
             addStage() {
                 this.showAddStageTag = true;
@@ -408,14 +446,18 @@
                     this.$message.warning("请选择结束时间");
                     return;
                 }
+                if (this.taskForm.stageId ==='') {
+                    this.$message.warning("请选择项目阶段");
+                    return;
+                }
                 if (this.taskForm.tags.length == 0) {
                     this.$message.warning("请选择至少一项标签");
                     return;
                 }
-                if (this.taskUsers.length < 2) {
+              /*  if (this.taskUsers.length < 2) {
                     this.$message.warning("至少添加2个成员");
                     return;
-                }
+                }*/
                 let param = this.taskForm;
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
@@ -431,6 +473,7 @@
                     vm.taskForm.taskName = '';
                     vm.taskForm.endTime = '';
                     vm.taskForm.projectId = '';
+                    vm.taskForm.sta = '';
                     vm.taskForm.priority = 1;
                     vm.taskForm.tags = [];
                     vm.taskUsers = [];
@@ -442,6 +485,9 @@
     }
 </script>
 <style scoped>
+    .stepActive{
+        box-shadow: 0 0 10px #20A0FF !important;
+    }
     .star {
         color: red;
         padding: 1px;
@@ -464,7 +510,7 @@
         top: 50%;
         transform: translate(-50%, -50%);
         width: 546px;
-        padding: 16px 26px 44px;
+        padding: 16px 26px 1px;
         height: 566px;
     }
 

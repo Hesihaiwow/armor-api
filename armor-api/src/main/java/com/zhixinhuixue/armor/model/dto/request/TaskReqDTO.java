@@ -38,6 +38,11 @@ public class TaskReqDTO {
     private Long projectId;
 
     /**
+     * 阶段ID
+     */
+    private Long stageId;
+
+    /**
      * 任务截止日期
      */
     @NotNull(message = "任务截止日期不能为空")
@@ -57,7 +62,7 @@ public class TaskReqDTO {
     /**
      * 任务负责人
      */
-    @Size(min = 1, message = "任务负责人不能为空")
+//    @Size(min = 1, message = "任务负责人不能为空")
     @Valid
     private List<TaskUserReqDTO> taskUsers;
 
@@ -123,5 +128,13 @@ public class TaskReqDTO {
 
     public void setTaskUsers(List<TaskUserReqDTO> taskUsers) {
         this.taskUsers = taskUsers;
+    }
+
+    public Long getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
     }
 }

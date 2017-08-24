@@ -16,6 +16,8 @@ public class TaskDetailResDTO {
 
     private Long projectId;
 
+    private Long stageId;
+
     private Date endTime;
 
     private Integer type;
@@ -37,6 +39,10 @@ public class TaskDetailResDTO {
      * 项目名称
      */
     private String projectName;
+    /**
+     * 阶段名称
+     */
+    private String stageName;
 
     /**
      * 任务标签
@@ -174,5 +180,21 @@ public class TaskDetailResDTO {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Long getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
+    }
+
+    public String getStageName() {
+        return stageName;
+    }
+
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
     }
 }

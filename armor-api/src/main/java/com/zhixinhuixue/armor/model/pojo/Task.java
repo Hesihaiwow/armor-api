@@ -12,6 +12,8 @@ public class Task {
 
     private Long projectId;
 
+    private Long stageId;
+
     private Date endTime;
 
     private Integer type;
@@ -142,5 +144,13 @@ public class Task {
 
     public void setIsDelete(Integer isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public Long getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
     }
 }

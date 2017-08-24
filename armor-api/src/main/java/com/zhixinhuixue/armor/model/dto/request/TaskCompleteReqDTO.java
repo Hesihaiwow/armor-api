@@ -21,9 +21,9 @@ public class TaskCompleteReqDTO {
     @NotNull(message = "任务用户阶段id不能为空")
     private Long taskUserId;
 
-    @NotNull(message = "任务阶段实际耗时不能为空")
+   /* @NotNull(message = "任务阶段实际耗时不能为空")
     @Min(value = 1, message = "任务阶段实际耗时不能小于{value}")
-    @Max(value = 99, message = "任务阶段实际耗时不能大于{value}")
+    @Max(value = 99, message = "任务阶段实际耗时不能大于{value}")*/
     private Integer completeHours;
 
     @NotNull(message = "任务阶段实际完成时间不能为空")
