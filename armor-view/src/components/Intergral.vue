@@ -36,7 +36,7 @@
       :visible.sync="editIntegralVisible">
       <el-form :model="integralForm" :rules="rules" ref="integralForm" label-width="80px">
         <el-form-item label="积分加减" prop="integral">
-          <el-input v-model="integralForm.integral"></el-input>
+          <el-input v-model="integralForm.integral" ></el-input>
         </el-form-item>
         <el-form-item label="积分备注" prop="description">
           <el-input type="textarea" v-model="integralForm.description" :rows="3"></el-input>
@@ -139,7 +139,7 @@
         tableData:[],
         historyData:[],
         rules:{
-          integral: [{required: true, message: '积分不能为空', trigger: 'change'}],
+          integral: [{required: true, message: '积分不能为空', trigger: 'change', decimal:10 }],
           description:[{ message: '备注不能超过100字', trigger: 'change', min: 0, max: 100}],
         }
       }
@@ -178,6 +178,10 @@
         });
       },
       saveIntegralInfo(integralForm){
+        if(!this.isDecimal(this.integralForm.integral)){
+          Message.error("积分格式错误");
+          return false;
+        }
         this.$refs[integralForm].validate((valid) => {
             if(valid){
               Http.zsyPostHttp('/integral/add',this.integralForm,(res)=>{
@@ -311,6 +315,20 @@
           return "";
         }
       },
+      isDecimal( str ){
+        var regu = /^[-]{0,1}[0-9]{1,}$/;
+        if(regu.test(str)) {
+            return true;
+        }
+        var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
+        if (re.test(str)) {
+          if(RegExp.$1==0&&RegExp.$2==0) return false;
+          return true;
+        } else {
+          return false;
+        }
+
+      }
     }
   }
 </script>

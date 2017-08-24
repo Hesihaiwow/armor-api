@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -15,7 +16,6 @@ public class IntegralResDTO {
     @Size(min = 0,max = 100,message = "项目描述长度在{min}~{max}之间")
     private String description;
 
-    @Size(min = 1,max = 10,message = "项目名称长度在{min}~{max}之间")
     @NotNull(message = "积分数不能为空")
     private BigDecimal integral;
 

@@ -80,7 +80,7 @@ public class ZSYIntegralController extends ZSYController{
      */
     @ApiOperation("添加积分")
     @PostMapping("/add")
-    public String addIntegral(@Valid @RequestBody IntegralResDTO integralResDTO){
+    public String addIntegral(@RequestBody IntegralResDTO integralResDTO){
         integralService.addIntegral(integralResDTO);
         return ZSYResult.success().build();
     }
