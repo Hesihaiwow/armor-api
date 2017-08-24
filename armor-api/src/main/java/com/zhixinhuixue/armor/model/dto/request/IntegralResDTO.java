@@ -16,6 +16,7 @@ public class IntegralResDTO {
     @Size(min = 0,max = 100,message = "项目描述长度在{min}~{max}之间")
     private String description;
 
+    @DecimalMax("10.0")
     @NotNull(message = "积分数不能为空")
     private BigDecimal integral;
 

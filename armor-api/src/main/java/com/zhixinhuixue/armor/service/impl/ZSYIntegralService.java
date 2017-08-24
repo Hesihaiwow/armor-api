@@ -106,7 +106,7 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
             userIntegralMapper.insert(userIntegral);
         }else{
-            throw new ZSYServiceException("积分大于实际分数,请重试");
+            throw new ZSYServiceException("扣除积分大于实际分数,请重试");
         }
 
     }
