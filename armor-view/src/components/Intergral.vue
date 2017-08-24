@@ -188,6 +188,7 @@
                 Message.success("积分添加成功");
                 this.editIntegralVisible = false;
                 this.integralHistory(1);
+                this.integralPage(1);
                 this.cancelIntegral();
               });
             }else{
