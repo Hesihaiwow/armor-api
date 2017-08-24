@@ -103,6 +103,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setName(taskReqDTO.getTaskName());
         task.setDescription(taskReqDTO.getDescription());
         task.setProjectId(taskReqDTO.getProjectId());
+        task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
         task.setPriority(taskReqDTO.getPriority());
         task.setStatus(ZSYTaskStatus.DOING.getValue());
@@ -182,6 +183,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setName(taskReqDTO.getTaskName());
         task.setDescription(taskReqDTO.getDescription());
         task.setProjectId(taskReqDTO.getProjectId());
+        task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
         task.setPriority(taskReqDTO.getPriority());
         task.setUpdateTime(new Date());
@@ -336,8 +338,10 @@ public class ZSYTaskService implements IZSYTaskService {
         userIntegral.setId(snowFlakeIDHelper.nextId());
         userIntegral.setTaskId(taskCompleteReqDTO.getTaskId());
         userIntegral.setUserId(ZSYTokenRequestContext.get().getUserId());
-        userIntegral.setIntegral(new BigDecimal(taskCompleteReqDTO.getCompleteHours()));
+        userIntegral.setIntegral(new BigDecimal(taskUserTemp.getTaskHours()));
         userIntegral.setCreateTime(new Date());
+        userIntegral.setOrigin(1);
+        userIntegral.setDescription("完成了单人任务:" + taskTemp.getName());
         userIntegralMapper.insert(userIntegral);
 
         // 修改用户积分
@@ -477,7 +481,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskBOS.stream().forEach(taskBO -> {
                 TaskResDTO taskResDTO = new TaskResDTO();
                 BeanUtils.copyProperties(taskBO, taskResDTO);
-                if (taskResDTO.getUserIntegral() != null) {
+                if (taskResDTO.getUserIntegral() != null && taskResDTO.getType()==ZSYTaskType.PUBLIC_TASK.getValue()) {
                     if (taskResDTO.getUserIntegral() >= 90) {
                         taskResDTO.setIntegralGrade("A");
                     } else if (taskResDTO.getUserIntegral() >= 80) {
@@ -485,6 +489,8 @@ public class ZSYTaskService implements IZSYTaskService {
                     } else {
                         taskResDTO.setIntegralGrade("C");
                     }
+                }else{
+                    taskResDTO.setIntegralGrade("A");
                 }
                 page.add(taskResDTO);
             });
@@ -510,7 +516,10 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("无法找到任务,id:" + taskId);
         }
         if (taskDetailBO.getTaskUsers() == null || taskDetailBO.getTaskUsers().size() == 0) {
-            throw new ZSYServiceException("任务阶段未完成");
+            throw new ZSYServiceException("当前任务无阶段信息");
+        }
+        if (taskDetailBO.getTaskUsers().size() < 2) {
+            throw new ZSYServiceException("多人任务至少需要添加2个成员");
         }
         // 验证子任务是否都已经完成了
         long count = taskDetailBO.getTaskUsers().stream().filter(taskUserBO -> taskUserBO.getStatus() == ZSYTaskUserStatus.COMPLETED.getValue()).count();
@@ -646,17 +655,17 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                     return value;
                 }).average();
+                average.orElseThrow(() -> new ZSYServiceException("积分计算异常"));
                 BigDecimal integral = BigDecimal.valueOf(taskUserBO.getTaskHours())
                         .multiply(new BigDecimal(average.getAsDouble()))
-                        .divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
-                average.orElseThrow(() -> new ZSYServiceException("积分计算异常"));
+                        .divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP).setScale(1);
                 UserIntegral userIntegral = new UserIntegral();
                 userIntegral.setId(snowFlakeIDHelper.nextId());
                 userIntegral.setTaskId(taskUserBO.getTaskId());
                 userIntegral.setUserId(taskUserBO.getUserId());
                 userIntegral.setIntegral(integral);
                 userIntegral.setOrigin(1);
-                userIntegral.setDescription("任务名称：" + taskDetailBO.getName() + "任务阶段：" + taskUserBO.getStageName());
+                userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
                 Task task = new Task();

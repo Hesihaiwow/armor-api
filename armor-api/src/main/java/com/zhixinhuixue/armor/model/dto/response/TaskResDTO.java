@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import com.zhixinhuixue.armor.model.pojo.TaskUser;
-
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +15,8 @@ public class TaskResDTO {
     private String description;
 
     private Long projectId;
+
+    private Long stageId;
 
     private String projectName;
 
@@ -181,5 +181,13 @@ public class TaskResDTO {
 
     public void setTaskUsers(List<TaskUserResDTO> taskUsers) {
         this.taskUsers = taskUsers;
+    }
+
+    public Long getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
     }
 }

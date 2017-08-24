@@ -17,6 +17,11 @@ public class TaskDetailBO extends Task {
      * 项目名称
      */
     private String projectName;
+
+    /**
+     * 阶段名称
+     */
+    private String stageName;
     /**
      * 任务用户（阶段）
      */
@@ -44,5 +49,13 @@ public class TaskDetailBO extends Task {
 
     public void setTaskUsers(List<TaskUserBO> taskUsers) {
         this.taskUsers = taskUsers;
+    }
+
+    public String getStageName() {
+        return stageName;
+    }
+
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
     }
 }

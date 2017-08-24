@@ -18,6 +18,8 @@ public class TaskListResDTO {
 
     private String projectName;
 
+    private String stageName;
+
     private Date endTime;
 
     private Integer type;
@@ -167,5 +169,13 @@ public class TaskListResDTO {
 
     public void setTimeLabel(String timeLabel) {
         this.timeLabel = timeLabel;
+    }
+
+    public String getStageName() {
+        return stageName;
+    }
+
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
     }
 }

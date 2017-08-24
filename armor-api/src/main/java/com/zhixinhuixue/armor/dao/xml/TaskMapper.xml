@@ -6,6 +6,7 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
         <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+        <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
@@ -25,6 +26,7 @@
     
     <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.TaskListBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
         <collection property="tags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
     </resultMap>
@@ -51,6 +53,7 @@
     <!-- 任务详情Map -->
     <resultMap id="TaskDetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskDetailBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
         <collection property="taskTags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
         <collection property="taskUsers" column="id"
@@ -61,8 +64,9 @@
 
     <!-- 查询任务详情 -->
     <select id="selectTaskDetailByTaskId" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
-    select t1.*,t2.`name` as projectName from task t1
+    select t1.*,t2.`name` as projectName,t3.`name` as stageName from task t1
     left join project t2 on t1.project_id = t2.id
+    left JOIN stage t3 on t1.stage_id = t3.id
     where t1.id = #{taskId} and t1.is_delete = 0
     </select>
 
@@ -114,10 +118,11 @@
 
     <!-- 分页查询 -->
     <select id="selectPage" parameterType="com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO" resultMap="PageResultMap">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName from task t1
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName,t5.`name` as stageName from task t1
         left join task_user t2 on t1.id =t2.task_id
         left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id
+        left JOIN stage t5 on t1.stage_id = t5.id
         <where>
             t1.review_status = 3 and t1.`type` = 2 and t1.is_delete = 0
             <if test="projectId!=null and projectId!=0">
@@ -127,7 +132,7 @@
                 and t2.user_id = #{userId}
             </if>
             <if test="stageId!=null and stageId!=0">
-                and t2.stage_id = #{stageId}
+                and t1.stage_id = #{stageId}
             </if>
             <if test="tagId!=null and tagId!=0">
                 and t3.tag_id = #{tagId}
@@ -164,12 +169,12 @@
 
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Task">
       insert into task (id, name, description,
-      project_id, end_time, `type`, status,
+      project_id,stage_id, end_time, `type`, status,
       review_status, priority, create_by,
       complete_time, create_time, update_time, is_delete
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
-      #{projectId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
+      #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
       #{status,jdbcType=INTEGER},
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
@@ -188,6 +193,9 @@
             </if>
             <if test="projectId != null">
                 project_id = #{projectId,jdbcType=BIGINT},
+            </if>
+            <if test="stageId != null">
+                stage_id = #{stageId,jdbcType=BIGINT},
             </if>
             <if test="endTime != null">
                 end_time = #{endTime,jdbcType=TIMESTAMP},
