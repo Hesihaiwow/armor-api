@@ -1410,6 +1410,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1424,6 +1436,7 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             stageList: [],
             tagList: [],
             userList: [],
+            priorityList: [{ label: '普通', value: 1 }, { label: '紧急', value: 2 }, { label: '非常紧急', value: 3 }],
             taskForm: {
                 taskType: 2,
                 description: '',
@@ -1431,7 +1444,7 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
                 endTime: '',
                 projectId: '',
                 stageId: '',
-                priority: 1,
+                priority: '',
                 tags: []
             },
             taskUsers: [],
@@ -1455,7 +1468,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
                     return time.getTime() < Date.now() - 8.64e7;
                 }
             },
-            showAddTag: false,
             showAddDetail: false,
             showAddBtn: true,
             valueStage: '',
@@ -1517,11 +1529,8 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
         deleteTag(index) {
             this.tagList.splice(index, 1);
         },
-        addTag() {
-            this.showAddTag = true;
-        },
+        addTag() {},
         addSelTag() {
-            this.showAddTag = false;
             this.showAddStageTag = false;
             for (var i = 0; i < this.value10.length; i++) {
                 // debugger;
@@ -1575,7 +1584,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             };
         },
         saveAddMember() {
-            console.log(this.step.index);
             const valid = this.step.stageId == '' || this.step.userId == '' || this.step.taskHours == '' || this.step.beginTime == '' || this.step.endTime == '' || this.step.description == '';
             if (valid) {
                 this.$message.error('请将阶段填写完整');
@@ -1593,9 +1601,11 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
                 taskUser.taskHours = this.step.taskHours;
                 taskUser.description = this.step.description;
                 this.taskUsers.push(taskUser);
+            } else {
+                // 取消css
+                this.taskUsers[this.step.index].cssClass = '';
             }
-            // 取消css
-            this.taskUsers[this.step.index].cssClass = '';
+
             this.step = {
                 index: '',
                 stageId: '',
@@ -1820,7 +1830,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     this.$root.eventBus.$on("handleTabSelected", val => {
       this.activeName = val;
     });
-    if (__WEBPACK_IMPORTED_MODULE_6__lib_Helper__["a" /* default */].decodeToken().userRole <= 1) {
+    if (__WEBPACK_IMPORTED_MODULE_6__lib_Helper__["a" /* default */].decodeToken().userRole < 1) {
       this.tabs.push({
         label: '组织',
         name: 'organization'
@@ -1972,6 +1982,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1981,250 +1999,257 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-cn');
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: { ElButton: __WEBPACK_IMPORTED_MODULE_4__node_modules_element_ui_packages_button_src_button___default.a },
-  name: 'Intergral',
-  data() {
-    return {
-      integralHistoryVisible: false,
-      editIntegralVisible: false,
-      queryForm: {
-        startTime: '',
-        endTime: ''
-      },
-      dateForm: {
-        startTime: '0'
-      },
-      integralForm: { //添加积分记录
-        userId: '',
-        description: '',
-        integral: ''
-      },
-      pageInfo: {
-        layout: "total, pager",
-        currentPage: 1,
-        pageSize: 10,
-        totals: 0,
-        pageNum: 0
-      },
-      historyPage: {
-        layout: "total, pager",
-        currentPage: 1,
-        pageSize: 10,
-        totals: 0,
-        pageNum: 0
-      },
-      diyStyle: false,
-      menuList: [{
-        name: '本月'
-      }, {
-        name: '本季度'
-      }, {
-        name: '本年'
-      }, {
-        name: '自定义'
-      }],
-      activeIdx: 0,
-      startValue: '',
-      endValue: '',
-      tableData: [],
-      historyData: [],
-      rules: {
-        integral: [{ required: true, message: '积分不能为空', trigger: 'change', decimal: 10 }],
-        description: [{ message: '备注不能超过100字', trigger: 'change', min: 0, max: 100 }]
-      }
-    };
-  },
-  beforeMount: function () {
-    //选中积分tab
-    this.$root.eventBus.$emit("handleTabSelected", "intergral");
-    this.togTable(0);
-  },
-  methods: {
-    editIntegral() {
-      this.editIntegralVisible = true;
-    },
-    clicklHistory(index, rows) {
-      //点击积分历史
-      this.integralHistoryVisible = true;
-      this.integralForm.userId = rows[index].userId;
-      this.integralHistory(1);
-    },
-    integralHistory(currentPage) {
-      //查询积分历史记录
-      __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyGetHttp('/integral/history/' + this.integralForm.userId + '/' + currentPage, this.queryForm, res => {
-        let list = res.data.list;
-        for (var i = 0; i < list.length; i++) {
-          if (list[i].origin != 1) {
-            list[i].origin = "手动录入";
-            list[i].createTime = this.localeTimeString(list[i].createTime);
-          } else {
-            list[i].origin = "任务系统";
-            list[i].createTime = this.localeTimeString(list[i].createTime);
-          }
-        }
-        this.historyPage.totals = res.data.total;
-        this.historyPage.pageNum = res.data.pages;
-        this.historyPage.pageSize = res.data.pagesize;
-        this.historyData = res.data.list;
-        this.pagingLayout();
-      });
-    },
-    saveIntegralInfo(integralForm) {
-      if (!this.isDecimal(this.integralForm.integral)) {
-        __WEBPACK_IMPORTED_MODULE_1_element_ui__["Message"].error("积分格式错误");
-        return false;
-      }
-      this.$refs[integralForm].validate(valid => {
-        if (valid) {
-          __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyPostHttp('/integral/add', this.integralForm, res => {
-            __WEBPACK_IMPORTED_MODULE_1_element_ui__["Message"].success("积分添加成功");
-            this.editIntegralVisible = false;
-            this.integralHistory(1);
-            this.integralPage(1);
-            this.cancelIntegral();
-          });
-        } else {
-          return false;
-        }
-      });
-    },
-    cancelIntegral() {
-      this.editIntegralVisible = false;
-      this.integralForm.description = '';
-      this.integralForm.integral = '';
-    },
-    togTable(index) {
-      // 点击菜单
-      this.activeIdx = index;
-
-      switch (index) {
-        case 0:
-          this.getDateString("month");
-          this.integralPage();
-          this.display(index);
-          break;
-        case 1:
-          this.getDateString("quarter");
-          this.integralPage();
-          this.display(index);
-          break;
-        case 2:
-          this.getDateString("year");
-          this.integralPage();
-          this.display(index);
-          break;
-        case 3:
-          this.display(index);
-          break;
-      }
-    },
-    tabActive(index) {
-      // 颜色变化
-      if (index == this.activeIdx) {
+    components: { ElButton: __WEBPACK_IMPORTED_MODULE_4__node_modules_element_ui_packages_button_src_button___default.a },
+    name: 'Intergral',
+    data() {
         return {
-          color: '#36A8FF'
+            integralHistoryVisible: false,
+            editIntegralVisible: false,
+            queryForm: {
+                startTime: '',
+                endTime: ''
+            },
+            dateForm: {
+                startTime: '0'
+            },
+            integralForm: { //添加积分记录
+                userId: '',
+                description: '',
+                integral: ''
+            },
+            pageInfo: {
+                layout: "total, pager",
+                currentPage: 1,
+                pageSize: 10,
+                totals: 0,
+                pageNum: 0
+            },
+            historyPage: {
+                layout: "total, pager",
+                currentPage: 1,
+                pageSize: 10,
+                totals: 0,
+                pageNum: 0
+            },
+            diyStyle: false,
+            menuList: [{
+                name: '本月'
+            }, {
+                name: '本季度'
+            }, {
+                name: '本年'
+            }, {
+                name: '自定义'
+            }],
+            activeIdx: 0,
+            startValue: '',
+            endValue: '',
+            tableData: [],
+            historyData: [],
+            rules: {
+                integral: [{ required: true, message: '积分不能为空', trigger: 'change', decimal: 10 }],
+                description: [{ message: '备注不能超过100字', trigger: 'change', min: 0, max: 100 }]
+            }
         };
-      }
     },
-    //根据自定义时间进行查询
-    integralDate() {
-      this.queryForm.startTime = this.localeTimeString(this.queryForm.startTime);
-      if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
-        this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime() + 86399000); //结束时间加入23:59:59
-      }
-      this.integralPage();
-    },
-    //查询积分列表
-    integralPage(currentPage) {
-      if (currentPage == null || currentPage.length == 0) {
-        currentPage = 1;
-      }
-      __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyGetHttp(__WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].API_URI.INTEGRAL + currentPage, this.queryForm, res => {
-        this.tableData = res.data.list;
-        this.pageInfo.totals = res.data.total;
-        this.pageInfo.pageNum = res.data.pages;
-        this.pageInfo.pageSize = res.data.pagesize;
-        this.pagingLayout();
-        if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
-          this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime() - 86399000); //之前加入的结束时间减回
+    computed: {
+        permit() {
+            let userRole = __WEBPACK_IMPORTED_MODULE_3__lib_Helper__["a" /* default */].decodeToken().userRole;
+            return userRole == 0;
         }
-      });
     },
-    display(index) {
-      if (index != 3) {
-        this.diyStyle = false;
-      } else {
-        if (this.diyStyle == false) {
-          this.diyStyle = true;
-        } else {
-          this.diyStyle = false;
+    beforeMount: function () {
+        //选中积分tab
+        this.$root.eventBus.$emit("handleTabSelected", "intergral");
+        this.togTable(0);
+    },
+    methods: {
+        editIntegral() {
+            this.editIntegralVisible = true;
+        },
+        clicklHistory(index, rows) {
+            //点击积分历史
+            this.integralHistoryVisible = true;
+            this.integralForm.userId = rows[index].userId;
+            this.integralHistory(1);
+        },
+        integralHistory(currentPage) {
+            //查询积分历史记录
+            __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyGetHttp('/integral/history/' + this.integralForm.userId + '/' + currentPage, this.queryForm, res => {
+                let list = res.data.list;
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i].origin != 1) {
+                        list[i].origin = "手动录入";
+                        list[i].createTime = this.localeTimeString(list[i].createTime);
+                    } else {
+                        list[i].origin = "任务系统";
+                        list[i].createTime = this.localeTimeString(list[i].createTime);
+                    }
+                }
+                this.historyPage.totals = res.data.total;
+                this.historyPage.pageNum = res.data.pages;
+                this.historyPage.pageSize = res.data.pagesize;
+                this.historyData = res.data.list;
+                this.pagingLayout();
+            });
+        },
+        saveIntegralInfo(integralForm) {
+            if (!this.isDecimal(this.integralForm.integral)) {
+                __WEBPACK_IMPORTED_MODULE_1_element_ui__["Message"].error("积分格式错误");
+                return false;
+            }
+            this.$refs[integralForm].validate(valid => {
+                if (valid) {
+                    __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyPostHttp('/integral/add', this.integralForm, res => {
+                        __WEBPACK_IMPORTED_MODULE_1_element_ui__["Message"].success("积分添加成功");
+                        this.editIntegralVisible = false;
+                        this.integralHistory(1);
+                        this.integralPage(1);
+                        this.cancelIntegral();
+                    });
+                } else {
+                    return false;
+                }
+            });
+        },
+        cancelIntegral() {
+            this.editIntegralVisible = false;
+            this.integralForm.description = '';
+            this.integralForm.integral = '';
+        },
+        togTable(index) {
+            // 点击菜单
+            this.activeIdx = index;
+
+            switch (index) {
+                case 0:
+                    this.getDateString("month");
+                    this.integralPage();
+                    this.display(index);
+                    break;
+                case 1:
+                    this.getDateString("quarter");
+                    this.integralPage();
+                    this.display(index);
+                    break;
+                case 2:
+                    this.getDateString("year");
+                    this.integralPage();
+                    this.display(index);
+                    break;
+                case 3:
+                    this.display(index);
+                    break;
+            }
+        },
+        tabActive(index) {
+            // 颜色变化
+            if (index == this.activeIdx) {
+                return {
+                    color: '#36A8FF'
+                };
+            }
+        },
+        //根据自定义时间进行查询
+        integralDate() {
+            this.queryForm.startTime = this.localeTimeString(this.queryForm.startTime);
+            if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
+                this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime() + 86399000); //结束时间加入23:59:59
+            }
+            this.integralPage();
+        },
+        //查询积分列表
+        integralPage(currentPage) {
+            if (currentPage == null || currentPage.length == 0) {
+                currentPage = 1;
+            }
+            __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyGetHttp(__WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].API_URI.INTEGRAL + currentPage, this.queryForm, res => {
+                this.tableData = res.data.list;
+                this.pageInfo.totals = res.data.total;
+                this.pageInfo.pageNum = res.data.pages;
+                this.pageInfo.pageSize = res.data.pagesize;
+                this.pagingLayout();
+                if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
+                    this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime() - 86399000); //之前加入的结束时间减回
+                }
+            });
+        },
+        display(index) {
+            if (index != 3) {
+                this.diyStyle = false;
+            } else {
+                if (this.diyStyle == false) {
+                    this.diyStyle = true;
+                } else {
+                    this.diyStyle = false;
+                }
+            }
+        },
+        pagingLayout() {
+            if (this.pageInfo.pageNum > 1) {
+                this.pageInfo.layout = 'total,prev,pager,next';
+            } else {
+                this.pageInfo.layout = 'total,pager';
+            }
+            if (this.historyPage.pageNum > 1) {
+                this.historyPage.layout = 'total,prev,pager,next';
+            } else {
+                this.historyPage.layout = 'total,pager';
+            }
+        },
+        //获取本年,季度,月的开始结束日期
+        getDateString(date) {
+            let now = new Date();
+            let curMonth = now.getMonth();
+            let curYear = now.getFullYear();
+            ;
+            let startMonth = 0;
+            if (date == "month") {
+                //本月的开始结束时间
+                this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
+                this.queryForm.endTime = this.localeTimeString(new Date(curYear, curMonth + 1, 1)); //下月第一天0点
+            } else if (date == "quarter") {
+                //本季度的开始结束时间
+                if (curMonth >= 1 && curMonth <= 3) {
+                    startMonth = 0;
+                } else if (curMonth >= 4 && curMonth <= 6) {
+                    startMonth = 3;
+                } else if (curMonth >= 7 && curMonth <= 9) {
+                    startMonth = 6;
+                } else if (curMonth >= 10 && curMonth <= 12) {
+                    startMonth = 9;
+                }
+                this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
+                this.queryForm.endTime = this.localeTimeString(new Date(curYear, startMonth + 3, 1)); //下季度第一天0点
+            } else if (date == "year") {
+                //本年的开始结束时间
+                this.queryForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
+                this.queryForm.endTime = this.localeTimeString(new Date(now.getFullYear() + 1, 0, 1));
+            }
+        },
+        //时间字符串格式化
+        localeTimeString(time) {
+            if (time != null && time != "") {
+                time = __WEBPACK_IMPORTED_MODULE_2_moment___default()(time).format('YYYY-MM-DD HH:mm:ss');
+                return time;
+            } else {
+                return "";
+            }
+        },
+        isDecimal(str) {
+            var regu = /^[-]{0,1}[0-9]{1,}$/;
+            if (regu.test(str)) {
+                return true;
+            }
+            var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
+            if (re.test(str)) {
+                if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
+                return true;
+            } else {
+                return false;
+            }
         }
-      }
-    },
-    pagingLayout() {
-      if (this.pageInfo.pageNum > 1) {
-        this.pageInfo.layout = 'total,prev,pager,next';
-      } else {
-        this.pageInfo.layout = 'total,pager';
-      }
-      if (this.historyPage.pageNum > 1) {
-        this.historyPage.layout = 'total,prev,pager,next';
-      } else {
-        this.historyPage.layout = 'total,pager';
-      }
-    },
-    //获取本年,季度,月的开始结束日期
-    getDateString(date) {
-      let now = new Date();
-      let curMonth = now.getMonth();
-      let curYear = now.getFullYear();;
-      let startMonth = 0;
-      if (date == "month") {
-        //本月的开始结束时间
-        this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
-        this.queryForm.endTime = this.localeTimeString(new Date(curYear, curMonth + 1, 1)); //下月第一天0点
-      } else if (date == "quarter") {
-        //本季度的开始结束时间
-        if (curMonth >= 1 && curMonth <= 3) {
-          startMonth = 0;
-        } else if (curMonth >= 4 && curMonth <= 6) {
-          startMonth = 3;
-        } else if (curMonth >= 7 && curMonth <= 9) {
-          startMonth = 6;
-        } else if (curMonth >= 10 && curMonth <= 12) {
-          startMonth = 9;
-        }
-        this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
-        this.queryForm.endTime = this.localeTimeString(new Date(curYear, startMonth + 3, 1)); //下季度第一天0点
-      } else if (date == "year") {
-        //本年的开始结束时间
-        this.queryForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
-        this.queryForm.endTime = this.localeTimeString(new Date(now.getFullYear() + 1, 0, 1));
-      }
-    },
-    //时间字符串格式化
-    localeTimeString(time) {
-      if (time != null && time != "") {
-        time = __WEBPACK_IMPORTED_MODULE_2_moment___default()(time).format('YYYY-MM-DD HH:mm:ss');
-        return time;
-      } else {
-        return "";
-      }
-    },
-    isDecimal(str) {
-      var regu = /^[-]{0,1}[0-9]{1,}$/;
-      if (regu.test(str)) {
-        return true;
-      }
-      var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
-      if (re.test(str)) {
-        if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
-        return true;
-      } else {
-        return false;
-      }
     }
-  }
 });
 
 /***/ }),
@@ -3304,6 +3329,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3322,6 +3358,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             userList: [],
             stageList: [],
             tagList: [],
+            priorityList: [{ label: '普通', value: 1 }, { label: '紧急', value: 2 }, { label: '非常紧急', value: 3 }],
             status: [{ value: 1, name: '进行中' }, { value: 2, name: '已完成' }],
             taskItems: [],
             page: {
@@ -3335,6 +3372,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 stageId: '',
                 tagId: '',
                 status: '',
+                priority: '',
                 beginTime: '',
                 endTime: ''
             }, pickerOptions: {
@@ -3907,6 +3945,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3967,12 +4017,13 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 projectId: '',
                 stageId: '',
                 endTime: '',
-                priority: 1,
+                priority: '',
                 tags: [],
                 taskType: 2,
                 stageId: '',
                 taskUsers: []
             },
+            priorityList: [{ label: '普通', value: 1 }, { label: '紧急', value: 2 }, { label: '非常紧急', value: 3 }],
             step: {
                 index: '',
                 stageId: '',
@@ -4285,7 +4336,7 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 this.modifyTaskForm.endTime = resp.data.endTime;
                 this.modifyTaskForm.projectId = resp.data.projectId;
                 this.modifyTaskForm.stageId = resp.data.stageId;
-                this.modifyTaskForm.priority = 1;
+                this.modifyTaskForm.priority = resp.data.priority;
                 for (let i = 0; i < resp.data.tags.length; i++) {
                     this.modifyTaskForm.tags.push(resp.data.tags[i].id);
                 }
@@ -4403,9 +4454,11 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 taskUser.taskHours = this.step.taskHours;
                 taskUser.description = this.step.description;
                 this.modifyTaskForm.taskUsers.push(taskUser);
+            } else {
+                // 取消css
+                this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
             }
-            // 取消css
-            this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
+
             this.showAddDetail = !this.showAddDetail;
             this.step = {
                 index: '',
@@ -4637,7 +4690,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.intergral-con[data-v-42ed7ea2]{width: 1100px;margin: auto;\n}\n.intergral-con-top[data-v-42ed7ea2]{font-size: 14px;background: #fff;padding: 16px 0;text-indent: 10px;box-shadow: 0 0 10px #ccc;margin: 0 10px;\n}\n.menu-list[data-v-42ed7ea2]{line-height: 36px;padding: 0 4px;margin-right: 10px;cursor: pointer;\n}\n.div-line[data-v-42ed7ea2]{margin: 0 10px 0 12px;color: #000;\n}\n.self-define[data-v-42ed7ea2]{margin-right: 14px;\n}\n.serch-btn[data-v-42ed7ea2]{vertical-align: middle;margin-left: 10px;cursor: pointer;\n}\n.intergral-data-detail[data-v-42ed7ea2]{margin: 20px 8px;\n}\r\n", ""]);
+exports.push([module.i, "\n.intergral-con[data-v-42ed7ea2] {\n    width: 1100px;\n    margin: auto;\n}\n.intergral-con-top[data-v-42ed7ea2] {\n    font-size: 14px;\n    background: #fff;\n    padding: 16px 0;\n    text-indent: 10px;\n    box-shadow: 0 0 10px #ccc;\n    margin: 0 10px;\n}\n.menu-list[data-v-42ed7ea2] {\n    line-height: 36px;\n    padding: 0 4px;\n    margin-right: 10px;\n    cursor: pointer;\n}\n.div-line[data-v-42ed7ea2] {\n    margin: 0 10px 0 12px;\n    color: #000;\n}\n.self-define[data-v-42ed7ea2] {\n    margin-right: 14px;\n}\n.serch-btn[data-v-42ed7ea2] {\n    vertical-align: middle;\n    margin-left: 10px;\n    cursor: pointer;\n}\n.intergral-data-detail[data-v-42ed7ea2] {\n    margin: 20px 8px;\n}\n", ""]);
 
 // exports
 
@@ -4651,7 +4704,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.stepActive[data-v-6573cde1]{\n    box-shadow: 0 0 10px #20A0FF !important;\n}\n.star[data-v-6573cde1] {\n    color: red;\n    padding: 1px;\n}\n.create-task-pop[data-v-6573cde1] { /* display: none; */\n    position: fixed;\n    top: 0;\n    left: 0;\n    bottom: 0;\n    right: 0;\n    z-index: 100;\n    background: rgba(0, 0, 0, 0.5);\n}\n.create-task-pop-con[data-v-6573cde1] {\n    position: absolute;\n    background: #fff;\n    left: 50%;\n    top: 50%;\n    transform: translate(-50%, -50%);\n    width: 546px;\n    padding: 16px 26px 1px;\n    height: 566px;\n}\n.ctpc-top[data-v-6573cde1] {\n    font-size: 16px;\n    line-height: 30px;\n    font-weight: 700;\n    color: #333;\n    margin-bottom: 6px;\n}\n.ctpc-top-close[data-v-6573cde1] {\n    font-size: 30px;\n    width: 30px;\n    height: 30px;\n    line-height: 27px;\n    cursor: pointer;\n    transition: 0.8s ease all;\n    text-align: center;\n}\n.ctpc-top-close[data-v-6573cde1]:hover {\n    color: #36A8FF;\n    transform: rotate(360deg);\n}\n.ctpc-instruction[data-v-6573cde1] {\n    background: #E4E4E4;\n    border-radius: 3px;\n    padding: 6px 10px;\n    margin: 6px 0;\n    line-height: 22px;\n    font-size: 14px;\n    color: #000;\n    width: 504px;\n}\n.ctpc-main-con[data-v-6573cde1] {\n    border-top: 1px solid #ccc;\n    padding: 10px 0;\n    margin-top: 10px;\n}\n.ctpc-list-con .el-select[data-v-6573cde1] {\n    width: 188px;\n}\n.ctpc-list-menu[data-v-6573cde1] {\n    line-height: 30px;\n    width: 80px;\n    font-size: 14px;\n}\n.ctpc-list-con[data-v-6573cde1] {\n    width: 410px;\n}\n.ctpc-list[data-v-6573cde1] {\n    background: #fff;\n    padding: 6px 10px; /* border: 1px solid #ccc; */\n    margin-bottom: 10px;\n}\n.ctpc-tags[data-v-6573cde1] {\n    position: relative;\n}\n.ctpc-tags > li[data-v-6573cde1] {\n    display: inline-block;\n    line-height: 30px;\n}\n.ctpc-tag-lis[data-v-6573cde1] {\n    background: #F2F2F2;\n    padding: 0 16px;\n    border-radius: 15px;\n    margin-right: 14px;\n    margin-bottom: 14px;\n    box-shadow: 0 0 10px #ccc;\n}\n.ctpc-tag-lis > span[data-v-6573cde1] {\n    display: inline-block;\n    vertical-align: middle;\n    font-size: 14px;\n}\n.ctpc-tag-lis .tag-lis-delete[data-v-6573cde1]:hover {\n    text-shadow: 0 0 8px #ccc;\n    font-size: 18px !important;\n}\n.tag-lis-circle[data-v-6573cde1] {\n    width: 8px;\n    height: 8px;\n    border-radius: 50%;\n    background: #FF9D6E;\n    margin-right: 4px;\n}\n.tag-lis-delete[data-v-6573cde1] {\n    font-size: 18px !important;\n    padding: 0 2px;\n    cursor: pointer;\n}\n.tag-lis-add[data-v-6573cde1] {\n    position: relative;\n    margin-left: 10px;\n    cursor: pointer;\n}\n.tag-lis-add-msg[data-v-6573cde1] {\n    color: #36A8FF;\n}\n.ctpc-member-con[data-v-6573cde1] {\n    padding-left: 10px; /* border-left: 1px solid #ccc; */\n    margin-left: 6px;\n    position: relative;\n}\n.ctpc-member-list[data-v-6573cde1] {\n    height: 42px;\n    background: #fff;\n    border: 1px solid #ccc;\n    line-height: 42px;\n    color: #000;\n    padding: 0 4px;\n    position: relative;\n    margin-bottom: 10px;\n    box-shadow: 0 0 10px #ccc;\n    display: -webkit-flex;\n    display: -moz-flex;\n    display: -ms-flex;\n    display: -o-flex;\n    display: flex;\n}\n.ctpc-member-list.done[data-v-6573cde1]:before {\n    content: '';\n    position: absolute;\n    left: -17px;\n    top: 12px;\n    width: 12px;\n    height: 12px;\n    border-radius: 50%;\n    background: #008000;\n    z-index: 110;\n}\n.ctpc-member-list.in[data-v-6573cde1]:before {\n    content: '';\n    position: absolute;\n    left: -17px;\n    top: 12px;\n    width: 12px;\n    height: 12px;\n    border-radius: 50%;\n    background: #e4e8f1;\n    z-index: 110;\n}\n.ctpc-member-list > span[data-v-6573cde1] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.ctpc-member-job[data-v-6573cde1] {\n    width: 110px;\n    /*  -webkit-flex: 1;\n      -moz-flex: 1;\n      -ms-flex: 1;\n      -o-flex: 1;\n      flex: 1;*/\n}\n.ctpc-member-job-time[data-v-6573cde1] {\n    width: 110px;\n}\n.ctpc-member-end-time[data-v-6573cde1] {\n    /*width: 110px;*/\n}\n.ctpc-member-assess[data-v-6573cde1] {\n    width: 70px;\n}\n.ctpc-member-head[data-v-6573cde1] {\n    width: 36px;\n    height: 36px;\n    border-radius: 50%;\n    background: #006699;\n    color: #fff;\n    font-size: 10px;\n    text-align: center;\n    line-height: 36px;\n    margin-top: 3px;\n    overflow: hidden;\n    margin-right: 10px;\n}\n.bdl-line[data-v-6573cde1] {\n    position: absolute;\n    left: 0;\n    bottom: 20px;\n    top: 14px;\n    border-left: 1px solid #ccc;\n}\n.add-member-opt[data-v-6573cde1] {\n    cursor: pointer;\n    margin: 20px 10px;\n    width: 80px;\n}\n.add-member-opt > span[data-v-6573cde1] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.add-member-icon[data-v-6573cde1] {\n    background: #36A8FF;\n    color: #fff;\n    width: 20px;\n    height: 20px;\n    text-align: center;\n    font-size: 20px;\n    line-height: 16px;\n    font-weight: bold;\n    border-radius: 50%;\n}\n.add-member-msg[data-v-6573cde1] {\n    color: #36A8FF;\n    margin-left: 6px;\n}\n.ctpc-btns[data-v-6573cde1] {\n    text-align: right;\n    margin-top: 20px;\n}\n.ctpc-btns > input[data-v-6573cde1] {\n    display: inline-block;\n    width: 80px;\n    height: 28px;\n    margin-left: 12px;\n    cursor: pointer;\n    border-radius: 4px;\n}\n.ctpc-cancel[data-v-6573cde1] {\n    background: #fff;\n    border: 1px solid #ccc;\n}\n.ctpc-cancel[data-v-6573cde1]:hover {\n    background: #fff;\n    border: 1px solid #36A8FF;\n    color: #36A8FF;\n    font-weight: 700;\n}\n.ctpc-save[data-v-6573cde1] {\n    background: #36A8FF;\n    color: #fff;\n}\n.ctpc-con[data-v-6573cde1] {\n    height: 500px;\n    overflow-y: scroll;\n    padding-right: 10px;\n}\n.ctpc-con[data-v-6573cde1]::-webkit-scrollbar {\n    width: 10px;\n    background-color: #fff;\n}\n.ctpc-con[data-v-6573cde1]::-webkit-scrollbar-thumb {\n    background-color: rgb(255, 255, 255);\n    background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(rgb(54, 168, 255)), color-stop(0.6, rgb(54, 229, 255)), to(rgb(54, 192, 255)));\n    border-radius: 10px;\n}\n.ctpc-con[data-v-6573cde1]::-webkit-scrollbar-track {\n    /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1); */\n    background-color: #fff;\n    border-radius: 10px;\n}\n.ctpc-instruction-msg[data-v-6573cde1] {\n    padding: 4px;\n    cursor: pointer;\n}\n.ctpc-instruction-msg[data-v-6573cde1]:hover {\n    color: #3DA8F5;\n    background: #F5F5F5;\n}\n.add-member-remark[data-v-6573cde1] {\n    border: 1px solid #ccc;\n    display: block;\n    padding: 6px;\n    width: 512px;\n}\n.add-member-basic[data-v-6573cde1] {\n    background: #fff;\n    border: 1px solid #ccc;\n    margin-top: 10px;\n    padding: 10px;\n    font-size: 14px;\n}\n.add-member-basic-menu[data-v-6573cde1] {\n    width: 82px;\n    text-align: right;\n}\n.add-member-basic-list[data-v-6573cde1] { /* border-bottom: 1px solid #ccc; */\n    padding: 5px 0;\n    line-height: 34px;\n}\n.add-member-basic-list[data-v-6573cde1]:last-child {\n    border: none;\n}\n.add-stage-opt[data-v-6573cde1] {\n    color: #36A8FF;\n    cursor: pointer;\n    width: 400px;\n}\n.add-member-basic-msg .el-select[data-v-6573cde1] {\n    width: 140px;\n}\n.member-time-count[data-v-6573cde1] {\n    width: 40px;\n    border: 1px solid #ccc;\n    height: 26px;\n    border-radius: 4px;\n    margin-right: 4px;\n    text-indent: 4px;\n}\n.add-member-basic-time[data-v-6573cde1] {\n    margin-left: 40px;\n}\n.add-member-basic-msg .el-date-editor.el-input[data-v-6573cde1] {\n    width: 140px;\n}\n.add-member-basic-end[data-v-6573cde1] {\n    margin-left: 40px;\n}\n.tag-add-sel .el-select[data-v-6573cde1] {\n    width: 188px;\n}\n.tag-add-sel[data-v-6573cde1] {\n    position: absolute;\n    left: -10px;\n    top: 0;\n    z-index: 100;\n}\n.add-tag-btn[data-v-6573cde1] {\n    background: #36A8FF;\n    color: #fff;\n    position: absolute;\n    right: 0;\n    top: 50%;\n    width: 40px;\n    height: 30px;\n    z-index: 200;\n    text-align: center;\n    transform: translateY(-50%);\n    border-radius: 4px;\n}\n.ctpc-member-delete[data-v-6573cde1] {\n    font-size: 26px;\n    cursor: pointer;\n    margin-right: 4px;\n}\n.add-member-stage[data-v-6573cde1] {\n    position: relative;\n}\n.ctpc-ins-edit[data-v-6573cde1] {\n    margin-right: 10px;\n}\n.ctpc-ins-edit .ctpc-btns[data-v-6573cde1] {\n    margin-top: 0;\n}\n", ""]);
+exports.push([module.i, "\n.stepActive[data-v-6573cde1] {\n    box-shadow: 0 0 10px #20A0FF !important;\n}\n.star[data-v-6573cde1] {\n    color: red;\n    padding: 1px;\n}\n.create-task-pop[data-v-6573cde1] { /* display: none; */\n    position: fixed;\n    top: 0;\n    left: 0;\n    bottom: 0;\n    right: 0;\n    z-index: 100;\n    background: rgba(0, 0, 0, 0.5);\n}\n.create-task-pop-con[data-v-6573cde1] {\n    position: absolute;\n    background: #fff;\n    left: 50%;\n    top: 50%;\n    transform: translate(-50%, -50%);\n    width: 546px;\n    padding: 16px 26px 1px;\n    height: 566px;\n}\n.ctpc-top[data-v-6573cde1] {\n    font-size: 16px;\n    line-height: 30px;\n    font-weight: 700;\n    color: #333;\n    margin-bottom: 6px;\n}\n.ctpc-top-close[data-v-6573cde1] {\n    font-size: 30px;\n    width: 30px;\n    height: 30px;\n    line-height: 27px;\n    cursor: pointer;\n    transition: 0.8s ease all;\n    text-align: center;\n}\n.ctpc-top-close[data-v-6573cde1]:hover {\n    color: #36A8FF;\n    transform: rotate(360deg);\n}\n.ctpc-instruction[data-v-6573cde1] {\n    background: #E4E4E4;\n    border-radius: 3px;\n    padding: 6px 10px;\n    margin: 6px 0;\n    line-height: 22px;\n    font-size: 14px;\n    color: #000;\n    width: 504px;\n}\n.ctpc-main-con[data-v-6573cde1] {\n    border-top: 1px solid #ccc;\n    padding: 10px 0;\n    margin-top: 10px;\n}\n.ctpc-list-con .el-select[data-v-6573cde1] {\n    width: 188px;\n}\n.ctpc-list-menu[data-v-6573cde1] {\n    line-height: 30px;\n    width: 80px;\n    font-size: 14px;\n}\n.ctpc-list-con[data-v-6573cde1] {\n    width: 410px;\n}\n.ctpc-list[data-v-6573cde1] {\n    background: #fff;\n    padding: 6px 10px; /* border: 1px solid #ccc; */\n    margin-bottom: 10px;\n}\n.ctpc-tags[data-v-6573cde1] {\n    position: relative;\n}\n.ctpc-tags > li[data-v-6573cde1] {\n    display: inline-block;\n    line-height: 30px;\n}\n.ctpc-tag-lis[data-v-6573cde1] {\n    background: #F2F2F2;\n    padding: 0 16px;\n    border-radius: 15px;\n    margin-right: 14px;\n    margin-bottom: 14px;\n    box-shadow: 0 0 10px #ccc;\n}\n.ctpc-tag-lis > span[data-v-6573cde1] {\n    display: inline-block;\n    vertical-align: middle;\n    font-size: 14px;\n}\n.ctpc-tag-lis .tag-lis-delete[data-v-6573cde1]:hover {\n    text-shadow: 0 0 8px #ccc;\n    font-size: 18px !important;\n}\n.tag-lis-circle[data-v-6573cde1] {\n    width: 8px;\n    height: 8px;\n    border-radius: 50%;\n    background: #FF9D6E;\n    margin-right: 4px;\n}\n.tag-lis-delete[data-v-6573cde1] {\n    font-size: 18px !important;\n    padding: 0 2px;\n    cursor: pointer;\n}\n.tag-lis-add[data-v-6573cde1] {\n    position: relative;\n    /*margin-left: 10px;*/\n    cursor: pointer;\n}\n.tag-lis-add-msg[data-v-6573cde1] {\n    color: #36A8FF;\n}\n.ctpc-member-con[data-v-6573cde1] {\n    padding-left: 10px; /* border-left: 1px solid #ccc; */\n    margin-left: 6px;\n    position: relative;\n}\n.ctpc-member-list[data-v-6573cde1] {\n    height: 42px;\n    background: #fff;\n    border: 1px solid #ccc;\n    line-height: 42px;\n    color: #000;\n    padding: 0 4px;\n    position: relative;\n    margin-bottom: 10px;\n    box-shadow: 0 0 10px #ccc;\n    display: -webkit-flex;\n    display: -moz-flex;\n    display: -ms-flex;\n    display: -o-flex;\n    display: flex;\n}\n.ctpc-member-list.done[data-v-6573cde1]:before {\n    content: '';\n    position: absolute;\n    left: -17px;\n    top: 12px;\n    width: 12px;\n    height: 12px;\n    border-radius: 50%;\n    background: #008000;\n    z-index: 110;\n}\n.ctpc-member-list.in[data-v-6573cde1]:before {\n    content: '';\n    position: absolute;\n    left: -17px;\n    top: 12px;\n    width: 12px;\n    height: 12px;\n    border-radius: 50%;\n    background: #e4e8f1;\n    z-index: 110;\n}\n.ctpc-member-list > span[data-v-6573cde1] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.ctpc-member-job[data-v-6573cde1] {\n    width: 110px;\n    /*  -webkit-flex: 1;\n      -moz-flex: 1;\n      -ms-flex: 1;\n      -o-flex: 1;\n      flex: 1;*/\n}\n.ctpc-member-job-time[data-v-6573cde1] {\n    width: 110px;\n}\n.ctpc-member-end-time[data-v-6573cde1] {\n    /*width: 110px;*/\n}\n.ctpc-member-assess[data-v-6573cde1] {\n    width: 70px;\n}\n.ctpc-member-head[data-v-6573cde1] {\n    width: 36px;\n    height: 36px;\n    border-radius: 50%;\n    background: #006699;\n    color: #fff;\n    font-size: 10px;\n    text-align: center;\n    line-height: 36px;\n    margin-top: 3px;\n    overflow: hidden;\n    margin-right: 10px;\n}\n.bdl-line[data-v-6573cde1] {\n    position: absolute;\n    left: 0;\n    bottom: 20px;\n    top: 14px;\n    border-left: 1px solid #ccc;\n}\n.add-member-opt[data-v-6573cde1] {\n    cursor: pointer;\n    margin: 20px 10px;\n    width: 80px;\n}\n.add-member-opt > span[data-v-6573cde1] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.add-member-icon[data-v-6573cde1] {\n    background: #36A8FF;\n    color: #fff;\n    width: 20px;\n    height: 20px;\n    text-align: center;\n    font-size: 20px;\n    line-height: 16px;\n    font-weight: bold;\n    border-radius: 50%;\n}\n.add-member-msg[data-v-6573cde1] {\n    color: #36A8FF;\n    margin-left: 6px;\n}\n.ctpc-btns[data-v-6573cde1] {\n    text-align: right;\n    margin-top: 20px;\n}\n.ctpc-btns > input[data-v-6573cde1] {\n    display: inline-block;\n    width: 80px;\n    height: 28px;\n    margin-left: 12px;\n    cursor: pointer;\n    border-radius: 4px;\n}\n.ctpc-cancel[data-v-6573cde1] {\n    background: #fff;\n    border: 1px solid #ccc;\n}\n.ctpc-cancel[data-v-6573cde1]:hover {\n    background: #fff;\n    border: 1px solid #36A8FF;\n    color: #36A8FF;\n    font-weight: 700;\n}\n.ctpc-save[data-v-6573cde1] {\n    background: #36A8FF;\n    color: #fff;\n}\n.ctpc-con[data-v-6573cde1] {\n    height: 500px;\n    overflow-y: scroll;\n    padding-right: 10px;\n}\n.ctpc-con[data-v-6573cde1]::-webkit-scrollbar {\n    width: 10px;\n    background-color: #fff;\n}\n.ctpc-con[data-v-6573cde1]::-webkit-scrollbar-thumb {\n    background-color: rgb(255, 255, 255);\n    background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(rgb(54, 168, 255)), color-stop(0.6, rgb(54, 229, 255)), to(rgb(54, 192, 255)));\n    border-radius: 10px;\n}\n.ctpc-con[data-v-6573cde1]::-webkit-scrollbar-track {\n    /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1); */\n    background-color: #fff;\n    border-radius: 10px;\n}\n.ctpc-instruction-msg[data-v-6573cde1] {\n    padding: 4px;\n    cursor: pointer;\n}\n.ctpc-instruction-msg[data-v-6573cde1]:hover {\n    color: #3DA8F5;\n    background: #F5F5F5;\n}\n.add-member-remark[data-v-6573cde1] {\n    border: 1px solid #ccc;\n    display: block;\n    padding: 6px;\n    width: 512px;\n}\n.add-member-basic[data-v-6573cde1] {\n    background: #fff;\n    border: 1px solid #ccc;\n    margin-top: 10px;\n    padding: 10px;\n    font-size: 14px;\n}\n.add-member-basic-menu[data-v-6573cde1] {\n    width: 82px;\n    text-align: right;\n}\n.add-member-basic-list[data-v-6573cde1] { /* border-bottom: 1px solid #ccc; */\n    padding: 5px 0;\n    line-height: 34px;\n}\n.add-member-basic-list[data-v-6573cde1]:last-child {\n    border: none;\n}\n.add-stage-opt[data-v-6573cde1] {\n    color: #36A8FF;\n    cursor: pointer;\n    width: 400px;\n}\n.add-member-basic-msg .el-select[data-v-6573cde1] {\n    width: 140px;\n}\n.member-time-count[data-v-6573cde1] {\n    width: 40px;\n    border: 1px solid #ccc;\n    height: 26px;\n    border-radius: 4px;\n    margin-right: 4px;\n    text-indent: 4px;\n}\n.add-member-basic-time[data-v-6573cde1] {\n    margin-left: 40px;\n}\n.add-member-basic-msg .el-date-editor.el-input[data-v-6573cde1] {\n    width: 140px;\n}\n.add-member-basic-end[data-v-6573cde1] {\n    margin-left: 40px;\n}\n.tag-add-sel .el-select[data-v-6573cde1] {\n    width: 188px;\n}\n.tag-add-sel[data-v-6573cde1] {\n    /*position: absolute;*/\n    left: -10px;\n    top: 0;\n    z-index: 100;\n}\n.add-tag-btn[data-v-6573cde1] {\n    background: #36A8FF;\n    color: #fff;\n    position: absolute;\n    right: 0;\n    top: 50%;\n    width: 40px;\n    height: 30px;\n    z-index: 200;\n    text-align: center;\n    transform: translateY(-50%);\n    border-radius: 4px;\n}\n.ctpc-member-delete[data-v-6573cde1] {\n    font-size: 26px;\n    cursor: pointer;\n    margin-right: 4px;\n}\n.add-member-stage[data-v-6573cde1] {\n    position: relative;\n}\n.ctpc-ins-edit[data-v-6573cde1] {\n    margin-right: 10px;\n}\n.ctpc-ins-edit .ctpc-btns[data-v-6573cde1] {\n    margin-top: 0;\n}\n", ""]);
 
 // exports
 
@@ -6421,7 +6474,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
           _vm.togTable(index)
         }
       }
-    }, [_vm._v(_vm._s(list.name))])
+    }, [_vm._v(_vm._s(list.name) + "\n        ")])
   }), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
@@ -6442,7 +6495,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       expression: "queryForm.startTime"
     }
-  }), _c('span', {
+  }), _vm._v(" "), _c('span', {
     staticClass: "div-line"
   }, [_vm._v("-")]), _vm._v(" "), _c('el-date-picker', {
     attrs: {
@@ -6515,7 +6568,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
               _vm.clicklHistory(scope.$index, _vm.tableData)
             }
           }
-        }, [_vm._v("查看记录")])]
+        }, [_vm._v("查看记录\n                    ")])]
       }
     }])
   })], 1)], 1), _vm._v(" "), _c('el-pagination', {
@@ -6610,6 +6663,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }
   }, [_c('el-button', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.permit),
+      expression: "permit"
+    }],
     staticStyle: {
       "float": "right",
       "position": "relative",
@@ -6624,7 +6683,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.editIntegral()
       }
     }
-  }, [_vm._v("添加积分记录")]), _vm._v(" "), _c('el-table', {
+  }, [_vm._v("添加积分记录\n        ")]), _vm._v(" "), _c('el-table', {
     staticStyle: {
       "width": "100%",
       "bottom": "20px"
@@ -6661,7 +6720,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
             "type": scope.row.origin === '手动录入' ? 'primary' : 'success',
             "close-transition": ""
           }
-        }, [_vm._v(_vm._s(scope.row.origin))])]
+        }, [_vm._v(_vm._s(scope.row.origin) + "\n                    ")])]
       }
     }])
   }), _vm._v(" "), _c('el-table-column', {
@@ -6899,9 +6958,31 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "ctpc-list-con fl"
   }, [_c('el-select', {
     attrs: {
-      "filterable": "",
+      "clearable": "",
+      "placeholder": "请选择"
+    },
+    model: {
+      value: (_vm.taskForm.priority),
+      callback: function($$v) {
+        _vm.taskForm.priority = $$v
+      },
+      expression: "taskForm.priority"
+    }
+  }, _vm._l((_vm.priorityList), function(item) {
+    return _c('el-option', {
+      key: item.value,
+      attrs: {
+        "label": item.label,
+        "value": item.value
+      }
+    })
+  }))], 1)]), _vm._v(" "), _c('div', {
+    staticClass: "ctpc-list clearfix"
+  }, [_vm._m(4), _vm._v(" "), _c('div', {
+    staticClass: "ctpc-list-con fl"
+  }, [_c('el-select', {
+    attrs: {
       "multiple-limit": 1,
-      "default-first-option": "",
       "placeholder": "请选择"
     },
     model: {
@@ -6921,24 +7002,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     })
   }))], 1)]), _vm._v(" "), _c('div', {
     staticClass: "ctpc-list clearfix"
-  }, [_vm._m(4), _vm._v(" "), _c('div', {
+  }, [_vm._m(5), _vm._v(" "), _c('div', {
     staticClass: "ctpc-list-con fl"
   }, [_c('ul', {
     staticClass: "ctpc-tags"
   }, [_c('li', {
     staticClass: "tag-lis-add"
-  }, [_c('span', {
-    staticClass: "tag-lis-add-msg",
-    on: {
-      "click": _vm.addTag
-    }
-  }, [_vm._v("添加标签")]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showAddTag),
-      expression: "showAddTag"
-    }],
+  }, [_c('div', {
     staticClass: "tag-add-sel"
   }, [_c('el-select', {
     attrs: {
@@ -7021,15 +7091,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "add-member-basic"
   }, [_c('div', {
     staticClass: "add-member-basic-list add-member-stage clearfix"
-  }, [_vm._m(5), _vm._v(" "), _c('ul', {
+  }, [_vm._m(6), _vm._v(" "), _c('ul', {
     staticClass: "add-member-basic-msg add-stage-opt ctpc-tags fl"
   }, [_c('li', {
     staticClass: "tag-lis-add"
   }, [_c('el-select', {
     attrs: {
-      "filterable": "",
       "multiple-limit": 1,
-      "default-first-option": "",
       "placeholder": "请选择"
     },
     on: {
@@ -7052,7 +7120,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     })
   }))], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-list clearfix"
-  }, [_vm._m(6), _vm._v(" "), _c('div', {
+  }, [_vm._m(7), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('el-select', {
     attrs: {
@@ -7076,7 +7144,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "value": item.id
       }
     })
-  }))], 1), _vm._v(" "), _vm._m(7), _vm._v(" "), _c('div', {
+  }))], 1), _vm._v(" "), _vm._m(8), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('input', {
     directives: [{
@@ -7097,7 +7165,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }), _vm._v("工时\n                            ")])]), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-list clearfix"
-  }, [_vm._m(8), _vm._v(" "), _c('div', {
+  }, [_vm._m(9), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('el-date-picker', {
     attrs: {
@@ -7113,7 +7181,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       expression: "step.beginTime"
     }
-  })], 1), _vm._v(" "), _vm._m(9), _vm._v(" "), _c('div', {
+  })], 1), _vm._v(" "), _vm._m(10), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('el-date-picker', {
     attrs: {
@@ -7183,6 +7251,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('span', {
     staticClass: "star"
   }, [_vm._v("*")]), _vm._v("截止日期")])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "ctpc-list-menu fl"
+  }, [_c('span', {
+    staticClass: "star"
+  }, [_vm._v("*")]), _vm._v("优先级")])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "ctpc-list-menu fl"
@@ -7360,6 +7434,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       key: item.value,
       attrs: {
         "label": item.name,
+        "value": item.value
+      }
+    })
+  }))], 1), _vm._v(" "), _c('div', {
+    staticClass: "task-top-list fl"
+  }, [_c('span', {
+    staticClass: "ttl-name"
+  }, [_vm._v("优先级")]), _vm._v(" "), _c('el-select', {
+    attrs: {
+      "clearable": "",
+      "placeholder": "请选择"
+    },
+    model: {
+      value: (_vm.form.priority),
+      callback: function($$v) {
+        _vm.form.priority = $$v
+      },
+      expression: "form.priority"
+    }
+  }, _vm._l((_vm.priorityList), function(item) {
+    return _c('el-option', {
+      key: item.value,
+      attrs: {
+        "label": item.label,
         "value": item.value
       }
     })
@@ -7948,6 +8046,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v(_vm._s(_vm.taskDetail.stageName))]), _vm._v(" "), _c('el-form-item', {
     attrs: {
+      "label": "优先级："
+    }
+  }, _vm._l((_vm.priorityList), function(item) {
+    return (item.value == _vm.taskDetail.priority) ? _c('span', [_vm._v(_vm._s(item.label))]) : _vm._e()
+  })), _vm._v(" "), _c('el-form-item', {
+    attrs: {
       "label": "截止时间："
     }
   }, [_vm._v(_vm._s(_vm._f("formatTime")(_vm.taskDetail.endTime)))]), _vm._v(" "), _c('el-form-item', {
@@ -8098,6 +8202,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "label": "阶段："
     }
   }, [_vm._v(_vm._s(_vm.taskDetail.stageName))]), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "优先级："
+    }
+  }, _vm._l((_vm.priorityList), function(item) {
+    return (item.value == _vm.taskDetail.priority) ? _c('span', [_vm._v(_vm._s(item.label))]) : _vm._e()
+  })), _vm._v(" "), _c('el-form-item', {
     attrs: {
       "label": "截止时间："
     }
@@ -8439,6 +8549,33 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     slot: "label"
   }, [_c('span', {
     staticClass: "star"
+  }, [_vm._v("*")]), _vm._v("优先级")]), _vm._v(" "), _c('el-select', {
+    attrs: {
+      "placeholder": "请选择"
+    },
+    model: {
+      value: (_vm.modifyTaskForm.priority),
+      callback: function($$v) {
+        _vm.modifyTaskForm.priority = $$v
+      },
+      expression: "modifyTaskForm.priority"
+    }
+  }, _vm._l((_vm.priorityList), function(item) {
+    return _c('el-option', {
+      key: item.value,
+      attrs: {
+        "label": item.label,
+        "value": item.value
+      }
+    })
+  }))], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": ""
+    }
+  }, [_c('span', {
+    slot: "label"
+  }, [_c('span', {
+    staticClass: "star"
   }, [_vm._v("*")]), _vm._v("截止日期")]), _vm._v(" "), _c('el-date-picker', {
     attrs: {
       "type": "datetime",
@@ -8463,9 +8600,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "star"
   }, [_vm._v("*")]), _vm._v("阶段")]), _vm._v(" "), _c('el-select', {
     attrs: {
-      "filterable": "",
       "multiple-limit": 1,
-      "default-first-option": "",
       "placeholder": "请选择"
     },
     model: {
@@ -9439,4 +9574,4 @@ if(false) {
 
 /***/ })
 ],[220]);
-//# sourceMappingURL=app.81cb2d0ef9c93463c0ae.js.map
+//# sourceMappingURL=app.305feec6b507501c7ca8.js.map
