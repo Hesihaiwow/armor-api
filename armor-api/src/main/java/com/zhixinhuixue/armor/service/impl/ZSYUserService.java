@@ -110,7 +110,7 @@ public class ZSYUserService implements IZSYUserService{
                 .withIssuer(jwtIssuer)
                 .withExpiresAt(DateHelper.afterDate(new Date(),jwtExp))
                 .withIssuedAt(new Date())
-                .withClaim("userId", user.getId())
+                .withClaim("userId", String.valueOf(user.getId()))
                 .withClaim("userName", user.getName())
                 .withClaim("userRole",user.getUserRole())
                 .sign(algorithm);

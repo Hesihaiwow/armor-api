@@ -93,7 +93,7 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                     JWTVerifier verifier = JWT.require(algorithm).withIssuer(jwtIssuer).build();
                     DecodedJWT jwt = verifier.verify(token);
 
-                    Long userId = jwt.getClaim("userId").asLong();
+                    String userId = jwt.getClaim("userId").asString();
                     String userName = jwt.getClaim("userName").asString();
                     Integer userRole = jwt.getClaim("userRole").asInt();
 //                    String[] permissions = jwt.getClaim("permissions").asArray(String.class);
