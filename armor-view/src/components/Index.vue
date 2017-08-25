@@ -74,7 +74,7 @@ export default {
         this.$root.eventBus.$on("handleTabSelected", (val) => {
             this.activeName = val;
         });
-        if (Helper.decodeToken().userRole<=1){
+        if (Helper.decodeToken().userRole<1){
             this.tabs.push({
                 label: '组织',
                 name: 'organization'

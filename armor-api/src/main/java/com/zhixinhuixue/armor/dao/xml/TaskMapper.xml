@@ -134,6 +134,9 @@
             <if test="stageId!=null and stageId!=0">
                 and t1.stage_id = #{stageId}
             </if>
+            <if test="priority!=null and priority!=0">
+                and t1.priority = #{priority}
+            </if>
             <if test="tagId!=null and tagId!=0">
                 and t3.tag_id = #{tagId}
             </if>

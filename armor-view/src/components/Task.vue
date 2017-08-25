@@ -36,6 +36,17 @@
                                :value="item.value"></el-option>
                 </el-select>
             </div>
+            <div class="task-top-list fl">
+                <span class="ttl-name">优先级</span>
+                <el-select clearable v-model="form.priority" placeholder="请选择">
+                    <el-option
+                            v-for="item in priorityList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
 
             <div class="task-top-list fl">
                 <span class="ttl-name">截止日期</span>
@@ -84,6 +95,11 @@
                 userList: [],
                 stageList: [],
                 tagList: [],
+                priorityList: [
+                    {label: '普通', value: 1},
+                    {label: '紧急', value: 2},
+                    {label: '非常紧急', value: 3},
+                ],
                 status: [{value: 1, name: '进行中'}, {value: 2, name: '已完成'}],
                 taskItems: [],
                 page: {
@@ -97,6 +113,7 @@
                     stageId: '',
                     tagId: '',
                     status: '',
+                    priority: '',
                     beginTime: '',
                     endTime: ''
                 }, pickerOptions: {
@@ -140,7 +157,7 @@
         computed: {
             permit() {
                 let userRole = helper.decodeToken().userRole;
-                return userRole <2;
+                return userRole < 2;
             },
             pageLayout() {
                 if (this.taskItems.length > this.page.pageSize) {
@@ -202,7 +219,7 @@
                     const list = resp.data.list
                     list.forEach((el) => {
                         let endTime = '';
-                        if (el.status ==1) {
+                        if (el.status == 1) {
                             endTime = el.endTime
                         } else {
                             endTime = el.completeTime
@@ -328,6 +345,7 @@
         color: #fff;
         background: #36A8FF;
     }
+
     .task-lis-con {
         margin-top: 140px;
     }

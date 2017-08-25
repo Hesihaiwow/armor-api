@@ -59,6 +59,7 @@
                 <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span></el-form-item>
                 <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -143,6 +144,7 @@
                 <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span></el-form-item>
                 <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -263,6 +265,17 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
+                    <span slot="label"><span class="star">*</span>优先级</span>
+                    <el-select v-model="modifyTaskForm.priority" placeholder="请选择">
+                        <el-option
+                                v-for="item in priorityList"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="">
                     <span slot="label"><span class="star">*</span>截止日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
@@ -274,8 +287,7 @@
                 </el-form-item>
                 <el-form-item label="">
                     <span slot="label"><span class="star">*</span>阶段</span>
-                    <el-select v-model="modifyTaskForm.stageId" filterable :multiple-limit="1"
-                               default-first-option placeholder="请选择">
+                    <el-select v-model="modifyTaskForm.stageId" :multiple-limit="1" placeholder="请选择">
                         <el-option v-for="item in stageList" :key="item.id"
                                    :label="item.name" :value="item.id"></el-option>
                     </el-select>
@@ -468,12 +480,17 @@
                     projectId: '',
                     stageId: '',
                     endTime: '',
-                    priority: 1,
+                    priority: '',
                     tags: [],
                     taskType: 2,
                     stageId: '',
                     taskUsers: []
                 },
+                priorityList: [
+                    {label: '普通', value: 1},
+                    {label: '紧急', value: 2},
+                    {label: '非常紧急', value: 3},
+                ],
                 step: {
                     index: '',
                     stageId: '',
@@ -790,7 +807,7 @@
                     this.modifyTaskForm.endTime = resp.data.endTime;
                     this.modifyTaskForm.projectId = resp.data.projectId;
                     this.modifyTaskForm.stageId = resp.data.stageId;
-                    this.modifyTaskForm.priority = 1;
+                    this.modifyTaskForm.priority = resp.data.priority;
                     for (let i = 0; i < resp.data.tags.length; i++) {
                         this.modifyTaskForm.tags.push(resp.data.tags[i].id)
                     }
@@ -913,9 +930,11 @@
                     taskUser.taskHours = this.step.taskHours
                     taskUser.description = this.step.description
                     this.modifyTaskForm.taskUsers.push(taskUser)
+                }else{
+                    // 取消css
+                    this.modifyTaskForm.taskUsers[this.step.index].cssClass=''
                 }
-                // 取消css
-                this.modifyTaskForm.taskUsers[this.step.index].cssClass=''
+
                 this.showAddDetail = !this.showAddDetail;
                 this.step = {
                     index: '',

@@ -12,6 +12,7 @@ public class TaskListReqDTO {
     private Long projectId;
     private Long userId;
     private Long stageId;
+    private Long priority;
     private Long tagId;
     private Integer status;
     private Date beginTime;
@@ -87,5 +88,13 @@ public class TaskListReqDTO {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public Long getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Long priority) {
+        this.priority = priority;
     }
 }
