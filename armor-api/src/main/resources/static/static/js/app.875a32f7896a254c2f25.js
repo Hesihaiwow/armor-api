@@ -2720,6 +2720,10 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             let userRole = __WEBPACK_IMPORTED_MODULE_3__lib_Helper__["a" /* default */].decodeToken().userRole;
             return userRole <= 1;
         },
+        userRole() {
+            let userRole = __WEBPACK_IMPORTED_MODULE_3__lib_Helper__["a" /* default */].decodeToken().userRole;
+            return userRole;
+        },
         pageLayout() {
             if (this.task.finished.length > this.finishedPage.pageSize) {
                 return 'total, prev, pager, next';
@@ -2768,7 +2772,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                         vm.$message.success('任务创建成功');
                         this.$refs[formName].resetFields();
                         this.createTaskVisible = false;
-                        vm.fetchTaskWaitAudit();
+                        vm.reload();
                     });
                 } else {
                     return false;
@@ -2832,6 +2836,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             let vm = this;
             __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyGetHttp('/task/doing', {}, resp => {
                 vm.task.doing = this.makeUpItems(resp.data);
+                vm.fetchMyTaskWaitAudit();
             });
         },
         // 获取用户已完成的任务
@@ -2857,11 +2862,21 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 vm.task.waitAssess = this.makeUpItems(resp.data);
             });
         },
-        // 获取用户待审核的任务
+        // 获取所有待审核的任务
         fetchTaskWaitAudit() {
             let vm = this;
-            __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyGetHttp('/task/pending', {}, resp => {
+            __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyGetHttp('/task/pending/all', {}, resp => {
                 vm.task.waitAudit = this.makeUpItems(resp.data);
+            });
+        },
+        // 获取我的待审核任务
+        fetchMyTaskWaitAudit() {
+            let vm = this;
+            __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyGetHttp('/task/pending', {}, resp => {
+                resp.data.forEach(task => {
+                    task.name += '(待审核)';
+                });
+                vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data));
             });
         },
         fetchProjectList() {
@@ -2893,7 +2908,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 return __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(curYear, curMonth, 1)).format('YYYY-MM-DD') + "--" + __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(curYear, curMonth + 1, 1) - 1).format('YYYY-MM-DD');
             } else if (date == "week") {
                 //本季度的开始结束时间
-                return __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(curYear, curMonth, now.getDate() - now.getDay() + 1)).format('YYYY-MM-DD') + "--" + __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(curYear, curMonth, now.getDate() + (6 - now.getDay()) + 1) - 1).format('YYYY-MM-DD');
+                return __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(curYear, curMonth, now.getDate() - now.getDay() + 1)).format('YYYY-MM-DD') + "--" + __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(curYear, curMonth, now.getDate() + (6 - now.getDay()) + 1)).format('YYYY-MM-DD');
             } else if (date == "year") {
                 //本年的开始结束时间
                 return __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(now.getFullYear(), 0, 1)).format('YYYY-MM-DD') + "--" + __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date(now.getFullYear() + 1, 0, 1) - 1).format('YYYY-MM-DD');
@@ -3340,6 +3355,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3359,6 +3381,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             stageList: [],
             tagList: [],
             priorityList: [{ label: '普通', value: 1 }, { label: '紧急', value: 2 }, { label: '非常紧急', value: 3 }],
+            typeList: [{ value: 1, name: '个人任务' }, { value: 2, name: '多人任务' }],
             status: [{ value: 1, name: '进行中' }, { value: 2, name: '已完成' }],
             taskItems: [],
             page: {
@@ -3371,6 +3394,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 userId: '',
                 stageId: '',
                 tagId: '',
+                type: 2,
                 status: '',
                 priority: '',
                 beginTime: '',
@@ -4057,6 +4081,10 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             let userRole = __WEBPACK_IMPORTED_MODULE_2__lib_Helper__["a" /* default */].decodeToken().userRole;
             return userRole < 2;
         },
+        userRole() {
+            let userRole = __WEBPACK_IMPORTED_MODULE_2__lib_Helper__["a" /* default */].decodeToken().userRole;
+            return userRole;
+        },
         showDelete() {
             // 不包含完成的阶段才显示删除
             if (this.taskDetail.users) {
@@ -4718,7 +4746,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.pagination[data-v-65c5fa76] {\n    margin: 20px 0;\n    text-align: right;\n}\n.task-con[data-v-65c5fa76] {\n    width: 1100px;\n    margin: auto;\n}\n.task-top[data-v-65c5fa76] {\n    position: fixed;\n    top: 80px;\n    width: 1080px;\n    left: 50%;\n    transform: translateX(-50%);\n    background: #fff;\n    padding-top: 20px;\n    border-radius: 4px;\n    box-shadow: 0 0 10px #ccc;\n    margin-bottom: 24px;\n}\n.task-top-list[data-v-65c5fa76] {\n    margin: 0 20px 20px 20px;\n}\n.task-top-list[data-v-65c5fa76]:last-child {\n    margin-top: 16px;\n}\n.task-top-list .el-select[data-v-65c5fa76] {\n    width: 148px;\n}\n.ttl-name[data-v-65c5fa76] {\n    margin-right: 10px;\n    font-size: 14px;\n}\n.div-line[data-v-65c5fa76] {\n    margin-left: 10px;\n    margin-right: 6px;\n}\n.serch-btn[data-v-65c5fa76] {\n    vertical-align: middle;\n    margin-left: 10px;\n}\n.creat-task[data-v-65c5fa76] {\n    cursor: pointer;\n    position: absolute;\n    right: 0;\n    bottom: 0;\n}\n.creat-task > span[data-v-65c5fa76] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.ttl-add-msg[data-v-65c5fa76] {\n    font-size: 16px;\n    color: #36A8FF;\n    margin-left: 10px;\n}\n.ttl-add-icon[data-v-65c5fa76] {\n    width: 24px;\n    height: 24px;\n    line-height: 22px;\n    text-align: center;\n    font-size: 24px;\n    border-radius: 50%;\n    color: #fff;\n    background: #36A8FF;\n}\n.task-lis-con[data-v-65c5fa76] {\n    margin-top: 140px;\n}\n", ""]);
+exports.push([module.i, "\n.pagination[data-v-65c5fa76] {\n    margin: 20px 0;\n    text-align: right;\n}\n.task-con[data-v-65c5fa76] {\n    width: 1100px;\n    margin: auto;\n}\n.task-top[data-v-65c5fa76] {\n    position: fixed;\n    top: 80px;\n    width: 1080px;\n    left: 50%;\n    transform: translateX(-50%);\n    background: #fff;\n    padding-top: 20px;\n    padding-bottom: 50px;\n    border-radius: 4px;\n    box-shadow: 0 0 10px #ccc;\n    margin-bottom: 24px;\n}\n.task-top-list[data-v-65c5fa76] {\n    margin: 0 20px 20px 20px;\n}\n.task-top-list[data-v-65c5fa76]:last-child {\n    margin-top: 16px;\n}\n.task-top-list .el-select[data-v-65c5fa76] {\n    width: 148px;\n}\n.ttl-name[data-v-65c5fa76] {\n    margin-right: 10px;\n    font-size: 14px;\n}\n.div-line[data-v-65c5fa76] {\n    margin-left: 10px;\n    margin-right: 6px;\n}\n.serch-btn[data-v-65c5fa76] {\n    vertical-align: middle;\n    margin-left: 10px;\n}\n.creat-task[data-v-65c5fa76] {\n    cursor: pointer;\n    position: absolute;\n    right: 0;\n    bottom: 0;\n}\n.search-button[data-v-65c5fa76]{\n    position: absolute;\n    right: 160px;\n    bottom: 0;\n}\n.creat-task > span[data-v-65c5fa76] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.ttl-add-msg[data-v-65c5fa76] {\n    font-size: 16px;\n    color: #36A8FF;\n    margin-left: 10px;\n}\n.ttl-add-icon[data-v-65c5fa76] {\n    width: 24px;\n    height: 24px;\n    line-height: 22px;\n    text-align: center;\n    font-size: 24px;\n    border-radius: 50%;\n    color: #fff;\n    background: #36A8FF;\n}\n.task-lis-con[data-v-65c5fa76] {\n    margin-top: 200px;\n}\n", ""]);
 
 // exports
 
@@ -6247,7 +6275,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "reload": _vm.reload
     }
-  }), _vm._v(" "), _c('div', [_c('p', {
+  }), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.userRole === 0),
+      expression: "userRole===0"
+    }]
+  }, [_c('p', {
     staticClass: "mic-title"
   }, [_vm._v("待审核")]), _vm._v(" "), _c('task-item', {
     attrs: {
@@ -6551,7 +6586,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }), _vm._v(" "), _c('el-table-column', {
     attrs: {
       "prop": "userId",
-      "label": "编辑",
+      "label": "操作",
       "align": "center"
     },
     scopedSlots: _vm._u([{
@@ -7172,7 +7207,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "type": "datetime",
       "format": "yyyy-MM-dd HH:mm",
       "placeholder": "选择日期",
-      "picker-options": _vm.stepBeginTimeOptions
+      "picker-options": _vm.pickerOptions0
     },
     model: {
       value: (_vm.step.beginTime),
@@ -7188,7 +7223,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "type": "datetime",
       "format": "yyyy-MM-dd HH:mm",
       "placeholder": "选择日期",
-      "picker-options": _vm.stepEndTimeOptions
+      "picker-options": _vm.pickerOptions0
     },
     model: {
       value: (_vm.step.endTime),
@@ -7441,6 +7476,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "task-top-list fl"
   }, [_c('span', {
     staticClass: "ttl-name"
+  }, [_vm._v("类型")]), _vm._v(" "), _c('el-select', {
+    attrs: {
+      "clearable": "",
+      "placeholder": "请选择"
+    },
+    model: {
+      value: (_vm.form.type),
+      callback: function($$v) {
+        _vm.form.type = $$v
+      },
+      expression: "form.type"
+    }
+  }, _vm._l((_vm.typeList), function(item) {
+    return _c('el-option', {
+      key: item.value,
+      attrs: {
+        "label": item.name,
+        "value": item.value
+      }
+    })
+  }))], 1), _vm._v(" "), _c('div', {
+    staticClass: "task-top-list fl"
+  }, [_c('span', {
+    staticClass: "ttl-name"
   }, [_vm._v("优先级")]), _vm._v(" "), _c('el-select', {
     attrs: {
       "clearable": "",
@@ -7482,7 +7541,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "timeRange"
     }
   })], 1), _vm._v(" "), _c('div', {
-    staticClass: "task-top-list fl"
+    staticClass: "task-top-list fl search-button"
   }, [_c('el-button', {
     attrs: {
       "type": "primary",
@@ -7907,9 +7966,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       staticClass: "main-task-detail"
     }, [_c('div', {
       staticClass: "task-name"
-    }, [(_vm.isPrivate) ? _c('span', [_vm._l((task.taskUsers), function(item, index) {
-      return _c('span', [(item.userId == _vm.loginUserId) ? _c('span', [_vm._v("  " + _vm._s(item.description))]) : _vm._e()])
-    }), _vm._v("\n                      （" + _vm._s(task.name) + "）\n                  ")], 2) : _c('span', [_vm._v(_vm._s(task.name))])]), _vm._v(" "), _c('div', {
+    }, [(_vm.isPrivate) ? _c('span', [_vm._v("\n                      " + _vm._s(task.name) + "\n                      "), _vm._l((task.taskUsers), function(item, index) {
+      return (task.type == 2) ? _c('span', [(item.userId == _vm.loginUserId) ? _c('span', [_vm._v("(" + _vm._s(item.description) + ")")]) : _vm._e()]) : _vm._e()
+    })], 2) : _c('span', [_vm._v(_vm._s(task.name))])]), _vm._v(" "), _c('div', {
       staticClass: "task-state"
     }, [_c('span', {
       staticClass: "task-end",
@@ -7920,8 +7979,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       directives: [{
         name: "show",
         rawName: "v-show",
-        value: (_vm.taskStatus == 'TaskDoing'),
-        expression: "taskStatus=='TaskDoing'"
+        value: (_vm.taskStatus == 'TaskDoing' && task.reviewStatus == 3),
+        expression: "taskStatus=='TaskDoing'  && task.reviewStatus ==3"
       }],
       staticClass: "el-icon-circle-check",
       on: {
@@ -7946,8 +8005,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       directives: [{
         name: "show",
         rawName: "v-show",
-        value: (_vm.taskStatus == 'WaitAuditing' && _vm.permit),
-        expression: "taskStatus=='WaitAuditing' && permit"
+        value: (_vm.taskStatus == 'WaitAuditing'),
+        expression: "taskStatus=='WaitAuditing'"
       }],
       staticClass: "el-icon-edit",
       on: {
@@ -8323,6 +8382,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "placement": "top"
     }
   }, [_c('el-button', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.taskDetail.createBy == _vm.loginUserId && _vm.taskDetail.type == 2),
+      expression: "taskDetail.createBy==loginUserId && taskDetail.type==2"
+    }],
     attrs: {
       "type": "primary",
       "icon": "edit"
@@ -8336,8 +8401,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: (_vm.taskDetail.status != 3),
-      expression: "taskDetail.status!=3"
+      value: (_vm.taskDetail.status != 3 && _vm.userRole == 0 && _vm.taskDetail.type == 2),
+      expression: "taskDetail.status!=3 && userRole==0 && taskDetail.type==2"
     }],
     attrs: {
       "type": "primary",
@@ -8820,7 +8885,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "format": "yyyy-MM-dd HH:mm",
       "type": "datetime",
       "placeholder": "选择日期",
-      "picker-options": _vm.stepBeginTimeOptions
+      "picker-options": _vm.pickerOptions0
     },
     model: {
       value: (_vm.step.beginTime),
@@ -8840,7 +8905,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "type": "datetime",
       "format": "yyyy-MM-dd HH:mm",
       "placeholder": "选择日期",
-      "picker-options": _vm.stepEndTimeOptions
+      "picker-options": _vm.pickerOptions0
     },
     model: {
       value: (_vm.step.endTime),
@@ -9574,4 +9639,4 @@ if(false) {
 
 /***/ })
 ],[220]);
-//# sourceMappingURL=app.305feec6b507501c7ca8.js.map
+//# sourceMappingURL=app.875a32f7896a254c2f25.js.map
