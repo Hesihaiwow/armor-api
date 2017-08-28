@@ -124,9 +124,12 @@
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         <where>
-            t1.review_status = 3 and t1.`type` = 2 and t1.is_delete = 0
+            t1.review_status = 3 and t1.is_delete = 0
             <if test="projectId!=null and projectId!=0">
                 and t1.project_id = #{projectId}
+            </if>
+            <if test="type!=null and type!=0">
+                and t1.type = #{type}
             </if>
             <if test="userId!=null and userId!=0">
                 and t2.user_id = #{userId}

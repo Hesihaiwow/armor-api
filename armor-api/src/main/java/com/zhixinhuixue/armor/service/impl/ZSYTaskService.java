@@ -415,7 +415,6 @@ public class ZSYTaskService implements IZSYTaskService {
         // copy 任务基本属性
         TaskDetailResDTO taskDetailResDTO = new TaskDetailResDTO();
         BeanUtils.copyProperties(taskDetailBO, taskDetailResDTO);
-
         // copy 任务标签
         List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
         taskDetailBO.getTaskTags().stream().forEach(tag -> {

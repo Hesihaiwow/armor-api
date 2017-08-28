@@ -41,7 +41,7 @@
             <p class="mic-title">待评价任务</p>
             <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
                        taskStatus="WaitAssess"></task-item>
-            <div>
+            <div v-show="userRole===0">
                 <p class="mic-title">待审核</p>
                 <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
                            taskStatus="WaitAuditing"></task-item>
@@ -230,6 +230,10 @@
                 let userRole = helper.decodeToken().userRole;
                 return userRole <= 1;
             },
+            userRole(){
+                let userRole = helper.decodeToken().userRole;
+                return userRole;
+            },
             pageLayout() {
                 if (this.task.finished.length > this.finishedPage.pageSize) {
                     return 'total, prev, pager, next'
@@ -278,7 +282,7 @@
                             vm.$message.success('任务创建成功');
                             this.$refs[formName].resetFields();
                             this.createTaskVisible = false
-                            vm.fetchTaskWaitAudit()
+                            vm.reload()
                         });
                     } else {
                         return false;
@@ -341,6 +345,7 @@
                 let vm = this
                 http.zsyGetHttp('/task/doing', {}, (resp) => {
                     vm.task.doing = this.makeUpItems(resp.data)
+                    vm.fetchMyTaskWaitAudit()
                 })
             },
             // 获取用户已完成的任务
@@ -366,11 +371,21 @@
                     vm.task.waitAssess = this.makeUpItems(resp.data)
                 })
             },
-            // 获取用户待审核的任务
+            // 获取所有待审核的任务
             fetchTaskWaitAudit() {
                 let vm = this
-                http.zsyGetHttp('/task/pending', {}, (resp) => {
+                http.zsyGetHttp('/task/pending/all', {}, (resp) => {
                     vm.task.waitAudit = this.makeUpItems(resp.data)
+                })
+            },
+            // 获取我的待审核任务
+            fetchMyTaskWaitAudit() {
+                let vm = this
+                http.zsyGetHttp('/task/pending', {}, (resp) => {
+                    resp.data.forEach((task)=>{
+                        task.name +='(待审核)'
+                    })
+                    vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data))
                 })
             },
             fetchProjectList() {

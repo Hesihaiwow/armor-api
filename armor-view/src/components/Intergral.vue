@@ -17,7 +17,7 @@
                 <el-table-column prop="id" label="排名" align="center"></el-table-column>
                 <el-table-column prop="name" label="成员" align="center"></el-table-column>
                 <el-table-column prop="integral" label="积分" align="center"></el-table-column>
-                <el-table-column prop="userId" label="编辑" align="center">
+                <el-table-column prop="userId" label="操作" align="center">
                     <template scope="scope">
                         <el-button @click.native.prevent="clicklHistory(scope.$index, tableData)" type="text"
                                    size="small">查看记录
