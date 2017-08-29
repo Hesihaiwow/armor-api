@@ -13,8 +13,10 @@ public class TaskUserReqDTO {
     /**
      * 阶段id
      */
+/*
     @NotNull(message = "阶段id不能为空")
     private Long stageId;
+*/
 
     /**
      * 负责人
@@ -77,14 +79,6 @@ public class TaskUserReqDTO {
 
     public void setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
-    }
-
-    public Long getStageId() {
-        return stageId;
-    }
-
-    public void setStageId(Long stageId) {
-        this.stageId = stageId;
     }
 
     public Long getUserId() {

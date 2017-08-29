@@ -39,6 +39,7 @@
 
     <resultMap id="WaitAuditResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
         <!-- 查询任务用户（阶段） -->
         <collection property="taskUsers" column="{taskId=id,userId=user_id}" select="selectTaskUser" ofType="com.zhixinhuixue.armor.model.pojo.TaskUser"></collection>
     </resultMap>
@@ -84,9 +85,10 @@
 
     <!-- 查询所有待审核的任务 -->
     <select id="selectAllWaitAudit" resultMap="WaitAuditResultMap" >
-         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
+         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t4.`name` as userName,t2.user_id from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
+        left join `user` t4 on t2.user_id = t4.id
         where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0  order by t1.create_time desc
     </select>
 
@@ -134,14 +136,20 @@
             <if test="userId!=null and userId!=0">
                 and t2.user_id = #{userId}
             </if>
-            <if test="stageId!=null and stageId!=0">
-                and t1.stage_id = #{stageId}
+            <if test="stageId!=null and stageId.size!=0">
+                and t1.stage_id in
+            <foreach collection="stageId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
             </if>
             <if test="priority!=null and priority!=0">
                 and t1.priority = #{priority}
             </if>
-            <if test="tagId!=null and tagId!=0">
-                and t3.tag_id = #{tagId}
+            <if test="tagId!=null and tagId.size!=0">
+                and t3.tag_id in
+                <foreach collection="tagId" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="status!=null and status!=0">
                 and t1.`status` = #{status}
@@ -159,6 +167,15 @@
     <!-- 查询已完成的任务用户（阶段） -->
     <select id="selectTaskUser" parameterType="java.util.Map" resultMap="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper.BaseResultMap">
         select * from task_user where  task_id = #{taskId} and user_id=#{userId}
+    </select>
+
+    <!-- 分页查询所有审核通过的任务 -->
+    <select id="selectAllAuditSuccess" resultMap="WaitAuditResultMap">
+      select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id,t4.`name` as userName from task t1
+            join task_user t2 on t1.id = t2.task_id
+            left join project t3 on t1.project_id = t3.id
+             left join `user` t4 on t2.user_id = t4.id
+            where t1.review_status =3 and t1.is_delete = 0 and t1.type=1 order by t1.update_time desc
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">

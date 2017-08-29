@@ -86,10 +86,8 @@
                         <div class="ctpc-member-list clearfix in" v-for="(item,index) in taskUsers"
                              :class="item.cssClass">
                             <span class="fl ctpc-member-head">{{item.userName}}</span>
-                            <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                             <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                             <span class="fl ctpc-member-end-time">截止:{{item.endTime}}</span>
-                            <!--<span class="fl ctpc-member-assess" v-show="showAssess">评价：{{list.jobLevel}}</span>-->
                             <span style="position: absolute;right: 10px;">
                                 <el-button type="text" icon="edit" @click="modifyStep(index,taskUsers)"></el-button>
                             <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
@@ -102,25 +100,6 @@
                                   :rows="3"></el-input>
                         <!--<textarea class="add-member-remark" placeholder="备注"></textarea>-->
                         <div class="add-member-basic">
-                            <div class="add-member-basic-list add-member-stage clearfix">
-                                <div class="add-member-basic-menu fl"><span class="star">*</span>阶段：</div>
-                                <!-- <div class="add-member-basic-msg add-stage-opt fl" @click="addStage">添加阶段</div> -->
-                                <ul class="add-member-basic-msg add-stage-opt ctpc-tags fl">
-                                    <!--<li class="ctpc-tag-lis" v-show="valueStage!==''">
-                                        <span class="tag-lis-circle"></span>
-                                        <span class="tag-lis-msg">{{valueStage}}</span>
-                                        <span class="tag-lis-delete" @click="deleteStageTag">×</span>
-                                    </li>-->
-                                    <li class="tag-lis-add">
-                                        <!--<span class="tag-lis-add-msg" @click="addStage">阶段</span>-->
-                                        <el-select v-model="step.stageId" :multiple-limit="1"
-                                                   @change="stepStageChange" placeholder="请选择">
-                                            <el-option v-for="item in stageList" :key="item.id"
-                                                       :label="item.name" :value="item.id"></el-option>
-                                        </el-select>
-                                    </li>
-                                </ul>
-                            </div>
                             <div class="add-member-basic-list clearfix">
                                 <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                                 <div class="add-member-basic-msg fl">
@@ -201,7 +180,6 @@
                 taskUsers: [],
                 step: {
                     index: '',
-                    stageId: '',
                     stageName: '',
                     userId: '',
                     userName: '',
@@ -296,8 +274,6 @@
             // 修改阶段
             modifyStep(index, stages) {
                 this.stepTemp = {
-                    stageId: stages[index].stageId,
-                    stageName: stages[index].stageName,
                     userId: stages[index].userId,
                     userName: stages[index].userName,
                     taskHours: stages[index].taskHours,
@@ -325,8 +301,6 @@
                 }
                 this.step = {
                     index: '',
-                    stageId: '',
-                    stageName: '',
                     userId: '',
                     userName: '',
                     taskHours: '',
@@ -336,7 +310,7 @@
                 }
             },
             saveAddMember() {
-                const valid = this.step.stageId == '' ||
+                const valid =
                     this.step.userId == '' ||
                     this.step.taskHours == '' ||
                     this.step.beginTime == '' ||
@@ -349,8 +323,6 @@
                 this.showAddDetail = !this.showAddDetail;
                 if (this.step.index === '') {
                     let taskUser = {}
-                    taskUser.stageId = this.step.stageId
-                    taskUser.stageName = this.step.stageName
                     taskUser.userId = this.step.userId
                     taskUser.userName = this.step.userName
                     taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
@@ -366,8 +338,6 @@
 
                 this.step = {
                     index: '',
-                    stageId: '',
-                    stageName: '',
                     userId: '',
                     userName: '',
                     taskHours: '',
@@ -405,8 +375,6 @@
                     this.showAddDetail = false
                     this.step = {
                         index: '',
-                        stageId: '',
-                        stageName: '',
                         userId: '',
                         userName: '',
                         taskHours: '',

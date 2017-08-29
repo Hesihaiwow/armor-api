@@ -1,6 +1,6 @@
 <template>
     <div class="nav-index-con">
-        <div class="my-integral-con">
+        <div class="my-integral-con" v-show="userRole>0">
             <p class="mic-title">我的积分</p>
             <div class="mic-main clearfix">
                 <div class="mic-item fl" v-for="item in integralItem">
@@ -12,39 +12,62 @@
         </div>
 
         <div class="my-task-con">
-            <div class="add-task" @click="createTaskClick">
-                <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                <span>创建个人任务</span>
+            <div v-show="userRole>0">
+                <div class="add-task" @click="createTaskClick">
+                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
+                    <span>创建个人任务</span>
+                </div>
+                <p class="mic-title">我的任务</p>
+                <div class="my-task-detail">
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tab-pane label="进行中" name="doing">
+                            <task-item :taskItems="task.doing" :isPrivate="true"
+                                       taskStatus="TaskDoing" @reload="reload"></task-item>
+                        </el-tab-pane>
+                        <el-tab-pane label="已完成" name="completed">
+                            <task-item :taskItems="task.finished" :isPrivate="true"></task-item>
+                            <div class="pagination" v-show="this.task.finished.length>0">
+                                <el-pagination
+                                        @current-change="handleFinishedPage"
+                                        :current-page.sync="finishedPage.pageNum"
+                                        :page-size="finishedPage.pageSize"
+                                        :layout="finishedPageLayout"
+                                        :total="finishedPage.total">
+                                </el-pagination>
+                            </div>
+                        </el-tab-pane>
+                        <!--<el-tab-pane label="审核失败" name="applyFail">
+                            <task-item :taskItems="task.applyFail" :isPrivate="true"
+                                       taskStatus="ApplyFail" @reload="reload"></task-item>
+                        </el-tab-pane>-->
+                    </el-tabs>
+                </div>
+               <div v-show="task.waitAssess.length>0">
+                   <p class="mic-title">待评价任务</p>
+                   <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
+                              taskStatus="WaitAssess"></task-item>
+               </div>
             </div>
-            <p class="mic-title">我的任务</p>
-            <div class="my-task-detail">
-                <el-tabs v-model="activeName" @tab-click="handleClick">
-                    <el-tab-pane label="进行中" name="doing">
-                        <task-item :taskItems="task.doing" :isPrivate="true"
-                                   taskStatus="TaskDoing" @reload="reload"></task-item>
+            <div v-show="userRole===0">
+                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
+                    <el-tab-pane label="待审核" name="wait">
+                        <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
+                                   taskStatus="WaitAuditing"></task-item>
                     </el-tab-pane>
-                    <el-tab-pane label="已完成" name="completed">
-                        <task-item :taskItems="task.finished" :isPrivate="true"></task-item>
-                        <div class="pagination" v-show="this.task.finished.length>0">
+                    <el-tab-pane label="审核通过" name="completed">
+                        <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"
+                                   taskStatus="auditSuccess"></task-item>
+                        <div class="pagination" v-show="this.task.auditSuccess.length>0">
                             <el-pagination
-                                    :layout="pageLayout"
-                                    :total="finishedPage.total">
+                                    @current-change="handleAuditSuccessPage"
+                                    :current-page.sync="auditSuccessPage.pageNum"
+                                    :page-size="auditSuccessPage.pageSize"
+                                    :layout="auditSuccessPageLayout"
+                                    :total="auditSuccessPage.total">
                             </el-pagination>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="审核失败" name="applyFail">
-                        <task-item :taskItems="task.applyFail" :isPrivate="true"
-                                   taskStatus="ApplyFail" @reload="reload"></task-item>
-                    </el-tab-pane>
                 </el-tabs>
-            </div>
-            <p class="mic-title">待评价任务</p>
-            <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
-                       taskStatus="WaitAssess"></task-item>
-            <div v-show="userRole===0">
-                <p class="mic-title">待审核</p>
-                <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
-                           taskStatus="WaitAuditing"></task-item>
             </div>
         </div>
         <el-dialog
@@ -144,10 +167,16 @@
             };
             return {
                 activeName: 'doing',
+                auditTabsActiveName: 'wait',
                 createTaskVisible: false,
                 finishedPage: {
                     pageNum: 1,
                     pageSize: 5,
+                    total: 0,
+                },
+                auditSuccessPage: {
+                    pageNum: 1,
+                    pageSize: 10,
                     total: 0,
                 },
                 pickerOptions0: {
@@ -193,6 +222,7 @@
                     finished: [],
                     waitAssess: [],
                     waitAudit: [],
+                    auditSuccess: [],
                     applyFail: []
                 },
                 projectList: [],
@@ -234,8 +264,14 @@
                 let userRole = helper.decodeToken().userRole;
                 return userRole;
             },
-            pageLayout() {
+            finishedPageLayout() {
                 if (this.task.finished.length > this.finishedPage.pageSize) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            auditSuccessPageLayout() {
+                if (this.task.auditSuccess.length > this.auditSuccessPage.pageSize) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -259,7 +295,11 @@
                 this.fetchProjectList()
                 this.fetchStageList()
                 this.fetchTagList()
-                this.fetchApplyFailTask();
+                //this.fetchApplyFailTask();
+                if (this.userRole === 0) {
+                    // 所有审核通过的数据
+                    this.fetchTaskAuditSuccess()
+                }
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -271,7 +311,6 @@
                         param.endTime = moment(param.beginTime).format('YYYY-MM-DD HH:mm:ss')
                         var taskUsers = [{
                             userId: userId,
-                            stageId: param.stageId,
                             taskHours: param.taskHours.trim(),
                             beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
                             endTime: param.endTime,
@@ -378,6 +417,15 @@
                     vm.task.waitAudit = this.makeUpItems(resp.data)
                 })
             },
+            // 获取所有审核通过的任务
+            fetchTaskAuditSuccess() {
+                let vm = this
+                http.zsyGetHttp(`/task/audit/success/all/${vm.auditSuccessPage.pageNum}`, {}, (resp) => {
+                    vm.auditSuccessPage.pageNum = resp.data.pageNum
+                    vm.auditSuccessPage.total = resp.data.total
+                    vm.task.auditSuccess = this.makeUpItems(resp.data.list)
+                })
+            },
             // 获取我的待审核任务
             fetchMyTaskWaitAudit() {
                 let vm = this
@@ -405,6 +453,14 @@
                 http.zsyGetHttp('/tag/list', {}, (resp) => {
                     vm.tagList = resp.data
                 })
+            },
+            handleFinishedPage(currentPage){
+                this.finishedPage.pageNum = currentPage
+                this.fetchTaskFinished()
+            },
+            handleAuditSuccessPage(currentPage){
+                this.auditSuccessPage.pageNum = currentPage
+                this.fetchTaskAuditSuccess()
             },
           getDateString(date){//时间期限
             let now = new Date();

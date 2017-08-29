@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id)">
+        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id)" :class="task.borderClass">
             <div class="head-img"><img src="../assets/img/project.png" alt="" class=""></div>
             <div class="main-task-detail">
                 <div class="task-name">
@@ -15,13 +15,13 @@
                 <div class="task-state">
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
-                    <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check"
-                       @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
+                    <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check" @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
+                    <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 " @click="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
                     <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
-                    <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit"
-                       @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
-                        <!--    <i v-show="task.status<2 && isPrivate==false" class="el-icon-edit"
-                               v-on:click.stop="modifyTask(task.id)"></i>-->
+                    <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit" @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
+                        <!-- 审核通过 -->
+                      <i v-show="taskStatus=='auditSuccess' && task.status<3 " @click="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
+
                   </span>
                     <ul class="task-key-tag">
                         <li class="task-key-lis" v-for="tag in task.tags">
@@ -42,6 +42,7 @@
             <div class="" v-show="!isPrivate && task.status==1">
                 <span class="mark-stage">{{task.stageName}}</span>
             </div>
+            <div class="task-username" v-show="isPrivate && task.type==1 && userRole ==0">{{task.userName}}</div>
         </div>
         <div v-show="taskItems.length==0" class="empty">
             <h2>暂无数据</h2>
@@ -59,7 +60,8 @@
                 <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span></el-form-item>
+                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                </el-form-item>
                 <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -72,23 +74,12 @@
                             工作量：{{item.taskHours}}
                         </div>
                         <div class="text item">
-                            阶段：{{item.stageName}}
-                        </div>
-                        <div class="text item">
                             截止：{{item.endTime | formatDate}}
                         </div>
                         <div class="text item">
                             描述：{{item.description}}
                         </div>
                     </el-card>
-                    <!--<div class="ctpc-member-list clearfix" v-if="item.userId==loginUserId">
-                        <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
-                        <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
-                        <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
-                        <span class="fl ctpc-member-assess"
-                              v-show="item.commentGrade">评价：{{item.commentGrade}}</span>
-                    </div>-->
                 </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -118,7 +109,6 @@
                 <div class="ctpc-member-con">
                     <div class="ctpc-member-list clearfix" v-for="(item,index) in taskDetail.users">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                     </div>
@@ -126,7 +116,12 @@
                 </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="danger" @click="rejectTask">打回</el-button>
+                 <el-tooltip content="删除该任务" placement="top">
+                      <el-button type="danger" icon="delete" @click="deleteTask"></el-button>
+                </el-tooltip>
+                 <el-tooltip content="编辑该任务" placement="top">
+                 <el-button type="primary" icon="edit" @click="modifyPrivateTask(taskDetail.id)"></el-button>
+               </el-tooltip>
             <el-button type="success" @click="acceptTask">审核通过</el-button>
           </span>
         </el-dialog>
@@ -144,7 +139,8 @@
                 <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span></el-form-item>
+                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                </el-form-item>
                 <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -155,11 +151,10 @@
                     <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'"
                          v-for="(item,index) in taskDetail.users">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                         <span class="fl ctpc-member-assess" v-show="item.commentGrade">评价：{{item.commentGrade}}</span>
-                        <a href="javascript:;" v-show="taskDetail.status>1 &&permit && item.status==3"
+                        <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
                            @click="commentDetail(item.id)">查看评价</a>
                     </div>
                     <div class="bdl-line"></div>
@@ -180,7 +175,8 @@
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
                 </el-tooltip>
                  <el-tooltip content="编辑该任务" placement="top">
-                 <el-button type="primary" icon="edit" @click="modifyTask(taskDetail.id)" v-show="taskDetail.createBy==loginUserId && taskDetail.type==2"></el-button>
+                 <el-button type="primary" icon="edit" @click="modifyTask(taskDetail.id)"
+                            v-show="taskDetail.createBy==loginUserId && taskDetail.type==2"></el-button>
                </el-tooltip>
                 <el-button type="primary" icon="check" @click="completeTask"
                            v-show="taskDetail.status!=3 && userRole==0 && taskDetail.type==2">完成</el-button>
@@ -315,13 +311,11 @@
                 <div class="ctpc-member-list clearfix" :class="[item.status>1?'done':'in',item.cssClass]"
                      v-for="(item,index) in modifyTaskForm.taskUsers">
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
-                    <span class="fl ctpc-member-job ellipsis">{{item.stageName}}</span>
                     <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                     <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
-                    <!--<span class="fl ctpc-member-assess" v-show="showAssess">评价：{{list.jobLevel}}</span>-->
-                    <!--<span class="fl ctpc-member-delete" @click="deleteMember(index)">×</span>-->
                     <span style="position: absolute;right: 10px;">
-                        <el-button type="text" icon="edit" @click="modifyStep(index,modifyTaskForm.taskUsers)"></el-button>
+                        <el-button type="text" icon="edit"
+                                   @click="modifyStep(index,modifyTaskForm.taskUsers)"></el-button>
                     <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
                     </span>
                 </div>
@@ -331,20 +325,6 @@
                 <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="step.description"
                           :rows="3"></el-input>
                 <div class="add-member-basic">
-                    <div class="add-member-basic-list add-member-stage clearfix">
-                        <div class="add-member-basic-menu fl"><span class="star">*</span>阶段：</div>
-                        <ul class="add-member-basic-msg add-stage-opt ctpc-tags fl">
-                            <li class="tag-lis-add">
-                                <!--<span class="tag-lis-add-msg" @click="addStage">阶段</span>-->
-                                <el-select v-model="step.stageId" filterable :multiple-limit="1"
-                                           @change="stepStageChange"
-                                           default-first-option placeholder="请选择">
-                                    <el-option v-for="item in stageList" :key="item.id"
-                                               :label="item.name" :value="item.id"></el-option>
-                                </el-select>
-                            </li>
-                        </ul>
-                    </div>
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                         <div class="add-member-basic-msg fl">
@@ -418,6 +398,79 @@
     <el-button @click="hideTaskCommentDetail" type="primary">确 定</el-button>
   </span>
         </el-dialog>
+
+        <el-dialog
+                title="编辑个人任务"
+                size="tiny"
+                custom-class="myDialog"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="showModifyPrivateTask">
+            <el-form :model="modifyPrivateTaskForm" label-width="80px">
+                <el-form-item label="项目">
+                    <el-select v-model="modifyPrivateTaskForm.projectId" placeholder="请选择">
+                        <el-option
+                                v-for="item in projectList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="截止日期">
+                    <el-date-picker
+                            v-model="modifyPrivateTaskForm.endTime"
+                            type="datetime"
+                            :picker-options="pickerOptions0"
+                            format="yyyy-MM-dd HH:mm"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="工作量">
+                    <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="2"></el-input>
+                    小时
+                </el-form-item>
+                <el-form-item label="任务名称">
+                    <el-input v-model="modifyPrivateTaskForm.taskName"></el-input>
+                </el-form-item>
+
+                <el-form-item label="任务描述">
+                    <el-input type="textarea" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="阶段">
+                    <el-select
+                            v-model="modifyPrivateTaskForm.stageId"
+                            filterable
+                            default-first-option
+                            placeholder="请选择阶段">
+                        <el-option
+                                v-for="item in stageList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="标签">
+                    <el-select
+                            v-model="modifyPrivateTaskForm.tags"
+                            multiple
+                            placeholder="请选择标签">
+                        <el-option
+                                v-for="item in tagList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveModifyPrivateTaskForm">保存</el-button>
+            <el-button @click="hideModifyPrivateTaskDialog">取 消</el-button>
+          </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -434,6 +487,13 @@
             isPrivate: Boolean
         },
         data() {
+            var validateEmpty = (rule, value, callback) => {
+                if (value.trim() == '') {
+                    callback(new Error());
+                } else {
+                    callback();
+                }
+            };
             return {
                 loginUserId: '',
                 showFinishedTask: false,
@@ -444,6 +504,20 @@
                 showAddDetail: false,
                 showTaskCommentDetail: false,
                 taskCommentDetail: {},
+                showModifyPrivateTask: false,
+                modifyPrivateTaskForm: {
+                    id: '',
+                    userId:'',
+                    taskType: 1,
+                    priority: 1,
+                    taskName: '',
+                    description: '',
+                    projectId: '',
+                    endTime: '',
+                    tags: [],
+                    taskHours: '',
+                    stageId: ''
+                },
                 pickerOptions0: {
                     disabledDate(time) {
                         return time.getTime() < Date.now() - 8.64e7;
@@ -478,7 +552,6 @@
                     taskName: '',
                     description: '',
                     projectId: '',
-                    stageId: '',
                     endTime: '',
                     priority: '',
                     tags: [],
@@ -509,7 +582,6 @@
                 projectList: [],
                 stageList: [],
                 tagList: [],
-//                userList: [],
             };
         },
         created() {
@@ -524,7 +596,7 @@
                 let userRole = helper.decodeToken().userRole;
                 return userRole < 2;
             },
-            userRole(){
+            userRole() {
                 let userRole = helper.decodeToken().userRole;
                 return userRole;
             },
@@ -532,7 +604,7 @@
                 // 不包含完成的阶段才显示删除
                 if (this.taskDetail.users) {
                     let done = this.taskDetail.users.filter((user) => {
-                        user.status == 2
+                        return user.status == 2
                     })
                     return done.length == 0 && this.taskDetail.status != 3;
                 }
@@ -559,58 +631,58 @@
         },
         filters: {
             formatDate: function (value) {
-                if (!value) return ''
-                return moment(value).format('YYYY-MM-DD')
+                if (!value) return '';
+                return moment(value).format('YYYY-MM-DD');
             },
             formatTime: function (value) {
-                if (!value) return ''
-                return moment(value).format('YYYY-MM-DD HH:mm')
+                if (!value) return '';
+                return moment(value).format('YYYY-MM-DD HH:mm');
             }
         },
         methods: {
             fetchProjectList() {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp('/project/list', {}, (resp) => {
-                    vm.projectList = resp.data
+                    vm.projectList = resp.data;
                 })
             },
             fetchStageList() {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp('/stage/list', {}, (resp) => {
-                    vm.stageList = resp.data
+                    vm.stageList = resp.data;
                 })
             },
             fetchUserList() {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp('/user/effective', {}, (resp) => {
-                    vm.userList = resp.data
+                    vm.userList = resp.data;
                 })
             },
             fetchTagList() {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp('/tag/list', {}, (resp) => {
-                    vm.tagList = resp.data
+                    vm.tagList = resp.data;
                 })
             },
             showFinishedPop(taskId, userId, taskType) {
                 this.finishForm.taskId = taskId;
-                this.finishForm.taskUserId = userId
-                this.finishForm.taskType = taskType
+                this.finishForm.taskUserId = userId;
+                this.finishForm.taskType = taskType;
                 this.showFinishedTask = true;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                    this.taskDetail = resp.data
+                    this.taskDetail = resp.data;
                 })
             },
             hideFinishedPop() {
-                this.resetFinishForm()
+                this.resetFinishForm();
                 this.showFinishedTask = false;
             },
             showAuditPop(taskId, userId) {
                 this.auditForm.taskId = taskId;
                 this.auditForm.taskUserId = userId;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                    this.taskDetail = resp.data
-                })
+                    this.taskDetail = resp.data;
+                });
                 this.showAuditTask = true;
             },
             hideAuditPop() {
@@ -643,14 +715,6 @@
             },
             // 完成任务
             finishTask() {
-                /*if (this.finishForm.completeHours == '') {
-                    this.$message.warning("请输入实际消耗");
-                    return
-                }
-                if (this.finishForm.completeTime == '') {
-                    this.$message.warning("请选择实际完成时间");
-                    return
-                }*/
                 this.$confirm('此操作将完成该任务, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -670,38 +734,36 @@
             },
             resetFinishForm() {
                 this.finishForm.taskId = '';
-                this.finishForm.taskUserId = ''
-                this.finishForm.taskType = ''
-                this.finishForm.completeTime = ''
-                this.finishForm.completeHours = ''
+                this.finishForm.taskUserId = '';
+                this.finishForm.taskType = '';
+                this.finishForm.completeTime = '';
+                this.finishForm.completeHours = '';
             },
             hideTaskDetail() {
-                this.showTaskDetail = false
-                this.taskDetail = {}
-                this.taskLog.list = []
+                this.showTaskDetail = false;
+                this.taskDetail = {};
+                this.taskLog.list = [];
                 this.taskLog.hasNextPage = false;
                 this.taskLog.pageNum = 1;
             },
             taskItemClick(taskId) {
-                this.showTaskDetail = !this.isPrivate
+                this.showTaskDetail = !this.isPrivate;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data
                 });
-                this.getTaskLog(taskId)
             },
             getTaskLog(taskId) {
-                console.log(taskId)
                 http.zsyGetHttp(`/task/log/${taskId}/${this.taskLog.pageNum}`, {}, (resp) => {
-                    this.taskLog.list = resp.data.list
-                    this.taskLog.hasNextPage = resp.data.hasNextPage
+                    this.taskLog.list = resp.data.list;
+                    this.taskLog.hasNextPage = resp.data.hasNextPage;
                 });
             },
             taskLogMore(taskId) {
-                this.taskLog.pageNum += 1
+                this.taskLog.pageNum += 1;
                 http.zsyGetHttp(`/task/log/${taskId}/${this.taskLog.pageNum}`, {}, (resp) => {
-                    let logs = resp.data.list
+                    let logs = resp.data.list;
                     this.taskLog.list = this.taskLog.list.concat(logs);
-                    this.taskLog.hasNextPage = resp.data.hasNextPage
+                    this.taskLog.hasNextPage = resp.data.hasNextPage;
                 });
             },
             completeTask() {
@@ -713,7 +775,7 @@
                     http.zsyPutHttp(`/task/complete/master/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
                         this.$message.success("操作成功");
-                        this.hideTaskDetail()
+                        this.hideTaskDetail();
                     })
                 }).catch(() => {
                 });
@@ -728,7 +790,9 @@
                     http.zsyDeleteHttp(`/task/delete/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
                         this.$message.success("删除成功");
-                        this.hideTaskDetail()
+                        this.hideTaskDetail();
+                        this.showAuditTask = false;
+                        this.taskDetail = {};
                     })
                 }).catch(() => {
                 });
@@ -736,20 +800,20 @@
             showWaitAssess(taskId) {
                 let vm = this
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                    vm.assessForm.taskId = taskId
-                    let users = []
+                    vm.assessForm.taskId = taskId;
+                    let users = [];
                     // 过滤我的任务
                     resp.data.users.forEach((user) => {
                         if (user.userId != vm.loginUserId) {
-                            users.push(user)
+                            users.push(user);
                         }
                     })
                     // 查询我的评价
                     users.forEach((user) => {
                         user.comments.forEach((comment) => {
                             if (comment.createBy == vm.loginUserId) {
-                                user.myComment = comment
-                                return
+                                user.myComment = comment;
+                                return;
                             }
                         });
                     })
@@ -762,30 +826,25 @@
                             })
                         }
                     }
-                    let myComments = 0
-                    console.log(users)
+                    let myComments = 0;
                     users.forEach((stage) => {
                         if (stage.myComment) {
                             myComments++
                         }
                     })
-
-                    console.log(myComments)
-                    console.log(users.length)
-                    vm.allComment = (myComments == users.length)
-                    vm.commentStages = users
-                    console.log(!vm.allComment)
+                    vm.allComment = (myComments == users.length);
+                    vm.commentStages = users;
                 })
 
-                this.showTaskComment = true
+                this.showTaskComment = true;
             },
             hideWaitAssess() {
-                this.showTaskComment = false
-                this.commentStages = []
+                this.showTaskComment = false;
+                this.commentStages = [];
                 this.assessForm = {
                     taskId: '',
                     comments: []
-                }
+                };
             },
             // 评价任务
             taskAssess() {
@@ -796,9 +855,96 @@
                     this.assessForm = {
                         taskId: '',
                         comments: []
-                    }
+                    };
                     this.$emit('reload');
                 })
+            },
+            // 修改单人任务
+            modifyPrivateTask(taskId) {
+                this.showModifyPrivateTaskDialog(taskId);
+            },
+            // 保存修改单人任务
+            saveModifyPrivateTaskForm() {
+                if (this.modifyPrivateTaskForm.projectId == '') {
+                    this.$message.warning("请选择项目");
+                    return;
+                }
+                if (this.modifyPrivateTaskForm.endTime == '') {
+                    this.$message.warning("请选择结束时间");
+                    return;
+                }
+                if (this.modifyPrivateTaskForm.taskHours== '') {
+                    this.$message.warning("请输入工作量");
+                    return;
+                }
+                if (this.modifyPrivateTaskForm.taskName.trim() == '') {
+                    this.$message.warning("请填写任务名称");
+                    return;
+                }
+                if (this.modifyPrivateTaskForm.description.trim() == '') {
+                    this.$message.warning("请填写任务备注");
+                    return;
+                }
+
+                if (this.modifyPrivateTaskForm.stageId === '') {
+                    this.$message.warning("请选择项目阶段");
+                    return;
+                }
+                if (this.modifyPrivateTaskForm.tags.length == 0) {
+                    this.$message.warning("请选择至少一项标签");
+                    return;
+                }
+                this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
+                this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD HH:mm:ss')
+                this.modifyPrivateTaskForm.taskUsers = [{
+                    userId: this.modifyPrivateTaskForm.userId,
+                    taskHours: this.modifyPrivateTaskForm.taskHours,
+                    beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    endTime: this.modifyPrivateTaskForm.endTime,
+                    description: this.modifyPrivateTaskForm.description.trim()
+                }]
+                let vm = this;
+                http.zsyPutHttp(`/task/modify/${this.modifyPrivateTaskForm.id}`, this.modifyPrivateTaskForm, (resp) => {
+                    vm.$message.success('任务修改成功');
+                    vm.hideModifyPrivateTaskDialog();
+                    vm.$emit('reload');
+                })
+            },
+            // 显示修改单人任务弹出层
+            showModifyPrivateTaskDialog(taskId) {
+                this.showAuditTask = false;
+                this.taskDetail = {};
+                http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
+                    this.modifyPrivateTaskForm.id = resp.data.id;
+                    this.modifyPrivateTaskForm.taskName = resp.data.name;
+                    this.modifyPrivateTaskForm.description = resp.data.description;
+                    this.modifyPrivateTaskForm.projectId = resp.data.projectId;
+                    this.modifyPrivateTaskForm.endTime = resp.data.endTime;
+                    this.modifyPrivateTaskForm.taskHours = resp.data.users[0].taskHours;
+                    this.modifyPrivateTaskForm.userId = resp.data.users[0].userId;
+                    this.modifyPrivateTaskForm.stageId = resp.data.stageId;
+                    for (let i = 0; i < resp.data.tags.length; i++) {
+                        this.modifyPrivateTaskForm.tags.push(resp.data.tags[i].id)
+                    }
+                });
+                this.showModifyPrivateTask = true;
+
+            },// 隐藏修改单人任务弹出层
+            hideModifyPrivateTaskDialog() {
+                this.showModifyPrivateTask = false;
+                this.modifyPrivateTaskForm = {
+                    id: '',
+                    userId:'',
+                    taskType: 1,
+                    priority: 1,
+                    taskName: '',
+                    description: '',
+                    projectId: '',
+                    endTime: '',
+                    tags: [],
+                    taskHours: '',
+                    stageId: ''
+                };
             },
             // 修改任务
             modifyTask(taskId) {
@@ -835,10 +981,10 @@
                 }
                 this.step = stages[index];
                 this.step.index = index;
-                this.modifyTaskForm.taskUsers.forEach((item)=>{
+                this.modifyTaskForm.taskUsers.forEach((item) => {
                     item.cssClass = ''
                 })
-                this.modifyTaskForm.taskUsers[index].cssClass='stepActive'
+                this.modifyTaskForm.taskUsers[index].cssClass = 'stepActive'
                 this.showAddDetail = true;
             },
             hideTaskModify() {
@@ -895,12 +1041,10 @@
                 if (this.step.index !== '') {
                     this.modifyTaskForm.taskUsers[this.step.index] = this.stepTemp;
                     // 取消css
-                    this.modifyTaskForm.taskUsers[this.step.index].cssClass=''
+                    this.modifyTaskForm.taskUsers[this.step.index].cssClass = ''
                 }
                 this.step = {
                     index: '',
-                    stageId: '',
-                    stageName: '',
                     userId: '',
                     userName: '',
                     taskHours: '',
@@ -913,7 +1057,7 @@
                 }
             },
             saveAddMember() {
-                const valid = this.step.stageId == '' ||
+                const valid =
                     this.step.userId == '' ||
                     this.step.taskHours == '' ||
                     this.step.beginTime == '' ||
@@ -924,26 +1068,22 @@
                     return
                 }
                 if (this.step.index === '') {
-                    let taskUser = {}
-                    taskUser.stageId = this.step.stageId
-                    taskUser.stageName = this.step.stageName
-                    taskUser.userId = this.step.userId
-                    taskUser.userName = this.step.userName
-                    taskUser.beginTime = this.step.beginTime
-                    taskUser.endTime = this.step.endTime
-                    taskUser.taskHours = this.step.taskHours
-                    taskUser.description = this.step.description
-                    this.modifyTaskForm.taskUsers.push(taskUser)
-                }else{
+                    let taskUser = {};
+                    taskUser.userId = this.step.userId;
+                    taskUser.userName = this.step.userName;
+                    taskUser.beginTime = this.step.beginTime;
+                    taskUser.endTime = this.step.endTime;
+                    taskUser.taskHours = this.step.taskHours;
+                    taskUser.description = this.step.description;
+                    this.modifyTaskForm.taskUsers.push(taskUser);
+                } else {
                     // 取消css
-                    this.modifyTaskForm.taskUsers[this.step.index].cssClass=''
+                    this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
                 }
 
                 this.showAddDetail = !this.showAddDetail;
                 this.step = {
                     index: '',
-                    stageId: '',
-                    stageName: '',
                     userId: '',
                     userName: '',
                     taskHours: '',
@@ -953,8 +1093,8 @@
                     completeHours: '',
                     completeTime: '',
                     status: ''
-                }
-                this.stepTemp = {}
+                };
+                this.stepTemp = {};
             },
             stepUserChange(val) {
                 let vm = this;
@@ -997,10 +1137,6 @@
                     this.$message.warning("请选择至少一项标签");
                     return;
                 }
-                /*if (this.modifyTaskForm.taskUsers.length < 2) {
-                    this.$message.warning("至少添加2个成员");
-                    return;
-                }*/
                 let param = this.modifyTaskForm;
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
@@ -1047,10 +1183,30 @@
     .my-dialog-title-tool {
         float: right;
     }
+    .red-border{
+        border-left: red 3px solid;
+    }
+    .orange-border{
+        border-left: orange 3px solid;
+    }
+    .task-username{
+        height: 40px;
+        background: #69C8FA;
+        border-radius: 50%;
+        line-height: 40px;
+        text-align: center;
+        color: #fff;
+        cursor: pointer;
+        z-index: 100;
+        margin-top: 24px;
+        margin-right: 20px;
+        width: 40px;
+    }
+
 
 </style>
 <style scoped>
-    .stepActive{
+    .stepActive {
         box-shadow: 0 0 10px #20A0FF !important;
     }
 

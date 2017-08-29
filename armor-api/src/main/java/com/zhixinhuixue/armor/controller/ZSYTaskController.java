@@ -7,7 +7,10 @@ import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import com.zhixinhuixue.armor.source.enums.*;
+import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskType;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskUserStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -72,6 +75,13 @@ public class ZSYTaskController extends ZSYController {
                 ZSYReviewStatus.PENDING.getValue(), ZSYTaskUserStatus.DOING.getValue(), ZSYTokenRequestContext.get().getUserId()).build();
     }
 
+    @ApiOperation("获取所有审核通过的任务")
+    @GetMapping(value = "/audit/success/all/{pageNum}")
+    public String getAuditSuccessAll(@PathVariable("pageNum") Integer pageNum) {
+        return ZSYResult.success().data(taskService.getAuditSuccessAll(pageNum)).build();
+    }
+
+
     @ApiOperation("获取所有待审核的任务")
     @GetMapping(value = "/pending/all")
     public String getPendingTaskAll() {
@@ -124,8 +134,9 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("查询任务列表")
-    @GetMapping(value = "/public/master/all")
-    public String getTaskList(TaskListReqDTO taskListReqDTO) {
+//    @GetMapping(value = "/public/master/all")
+    @PostMapping(value = "/public/master/all")
+    public String getTaskList(@RequestBody TaskListReqDTO taskListReqDTO) {
         return ZSYResult.success().data(taskService.getTaskListPage(taskListReqDTO)).build();
     }
 
@@ -150,5 +161,4 @@ public class ZSYTaskController extends ZSYController {
         }
         return taskService.modifyTask(taskId, taskReqDTO).build();
     }
-
 }

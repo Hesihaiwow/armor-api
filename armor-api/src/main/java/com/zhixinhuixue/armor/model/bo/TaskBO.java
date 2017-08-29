@@ -15,6 +15,11 @@ public class TaskBO extends Task{
     private String projectName;
 
     /**
+     * 用户名
+     */
+    private String userName;
+
+    /**
      * 用户积分
      */
     private Double userIntegral;
@@ -46,5 +51,13 @@ public class TaskBO extends Task{
 
     public void setTaskUsers(List<TaskUser> taskUsers) {
         this.taskUsers = taskUsers;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
