@@ -67,6 +67,7 @@ public interface IZSYTaskService {
      */
     ZSYResult<TaskDetailResDTO> getTaskDetail(Long taskId);
 
+
     /**
      * 按状态查询任务
      *

@@ -68,13 +68,16 @@ public class ZSYTaskController extends ZSYController {
     @ApiOperation("获取用户待审核的任务")
     @GetMapping(value = "/pending")
     public String getPendingTask() {
-        // 权限更高能看到所有审核任务
-        if (ZSYTokenRequestContext.get().getUserRole() < ZSYUserRole.EMPLOYEE.getValue()) {
-            return taskService.getAllWaitAudit().build();
-        }
         return taskService.getTaskByStatus(ZSYTaskStatus.DOING.getValue(),
                 ZSYReviewStatus.PENDING.getValue(), ZSYTaskUserStatus.DOING.getValue(), ZSYTokenRequestContext.get().getUserId()).build();
     }
+
+    @ApiOperation("获取所有待审核的任务")
+    @GetMapping(value = "/pending/all")
+    public String getPendingTaskAll() {
+        return taskService.getAllWaitAudit().build();
+    }
+
 
     @ApiOperation("获取用户进行中的任务")
     @GetMapping(value = "/doing")
@@ -98,7 +101,7 @@ public class ZSYTaskController extends ZSYController {
 
     @ApiOperation("获取用户已完成的任务")
     @GetMapping(value = "/finished/{pageNum}")
-    public String getFinishedTask(@PathVariable("pageNum")Integer pageNum) {
+    public String getFinishedTask(@PathVariable("pageNum") Integer pageNum) {
         return ZSYResult.success().data(taskService.getFinishedTask(pageNum)).build();
     }
 
@@ -141,7 +144,7 @@ public class ZSYTaskController extends ZSYController {
 
     @ApiOperation("修改任务")
     @PutMapping("/modify/{taskId}")
-    public String modifyTask(@PathVariable("taskId") Long taskId,@Valid @RequestBody  TaskReqDTO taskReqDTO) {
+    public String modifyTask(@PathVariable("taskId") Long taskId, @Valid @RequestBody TaskReqDTO taskReqDTO) {
         if (taskId == null) {
             return ZSYResult.fail().msg("taskId不能为空").build();
         }

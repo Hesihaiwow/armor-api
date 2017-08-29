@@ -9,6 +9,7 @@ public class TaskListReqDTO {
 
     private Integer pageNum;
     private Integer pageSize;
+    private Integer type;
     private Long projectId;
     private Long userId;
     private Long stageId;
@@ -96,5 +97,13 @@ public class TaskListReqDTO {
 
     public void setPriority(Long priority) {
         this.priority = priority;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

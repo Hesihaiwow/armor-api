@@ -37,6 +37,13 @@
                 </el-select>
             </div>
             <div class="task-top-list fl">
+                <span class="ttl-name">类型</span>
+                <el-select clearable v-model="form.type" placeholder="请选择">
+                    <el-option v-for="item in typeList" :key="item.value" :label="item.name"
+                               :value="item.value"></el-option>
+                </el-select>
+            </div>
+            <div class="task-top-list fl">
                 <span class="ttl-name">优先级</span>
                 <el-select clearable v-model="form.priority" placeholder="请选择">
                     <el-option
@@ -53,7 +60,7 @@
                 <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions" placeholder="选择日期"
                                 @change="timeChange"></el-date-picker>
             </div>
-            <div class="task-top-list fl">
+            <div class="task-top-list fl search-button">
                 <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
                 </el-button>
             </div>
@@ -100,6 +107,7 @@
                     {label: '紧急', value: 2},
                     {label: '非常紧急', value: 3},
                 ],
+                typeList: [{value: 1, name: '个人任务'}, {value: 2, name: '多人任务'}],
                 status: [{value: 1, name: '进行中'}, {value: 2, name: '已完成'}],
                 taskItems: [],
                 page: {
@@ -112,6 +120,7 @@
                     userId: '',
                     stageId: '',
                     tagId: '',
+                    type: 2,
                     status: '',
                     priority: '',
                     beginTime: '',
@@ -285,6 +294,7 @@
         transform: translateX(-50%);
         background: #fff;
         padding-top: 20px;
+        padding-bottom: 50px;
         border-radius: 4px;
         box-shadow: 0 0 10px #ccc;
         margin-bottom: 24px;
@@ -323,6 +333,11 @@
         right: 0;
         bottom: 0;
     }
+    .search-button{
+        position: absolute;
+        right: 160px;
+        bottom: 0;
+    }
 
     .creat-task > span {
         display: inline-block;
@@ -347,6 +362,6 @@
     }
 
     .task-lis-con {
-        margin-top: 140px;
+        margin-top: 200px;
     }
 </style>

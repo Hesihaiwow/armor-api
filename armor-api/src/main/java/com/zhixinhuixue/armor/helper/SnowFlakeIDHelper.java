@@ -8,7 +8,10 @@ public class SnowFlakeIDHelper {
 
     private long sequence = 0L;
 
-    private long twepoch = 1451606400000L;//2016-01-01 08:00:00
+//    private long twepoch = 1451606400000L;//2016-01-01 08:00:00
+    private long twepoch = 1483228800000L;//2017-01-01 08:00:00
+
+
 
     private long workerIdBits = 5L;
     private long dataCenterIdBits = 5L;

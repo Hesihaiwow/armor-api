@@ -5,20 +5,20 @@
             <div class="main-task-detail">
                 <div class="task-name">
                     <span v-if="isPrivate">
-                      <span v-for="(item,index) in task.taskUsers">
-                          <span v-if="item.userId == loginUserId">  {{item.description}}</span>
+                        {{task.name}}
+                        <span v-for="(item,index) in task.taskUsers" v-if="task.type==2">
+                          <span v-if="item.userId == loginUserId">({{item.description}})</span>
                       </span>
-                        （{{task.name}}）
                     </span>
                     <span v-else>{{task.name}}</span>
                 </div>
                 <div class="task-state">
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
-                    <i v-show="taskStatus=='TaskDoing'" class="el-icon-circle-check"
+                    <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check"
                        @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
                     <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
-                    <i v-show="taskStatus=='WaitAuditing' && permit" class="el-icon-edit"
+                    <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit"
                        @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
                         <!--    <i v-show="task.status<2 && isPrivate==false" class="el-icon-edit"
                                v-on:click.stop="modifyTask(task.id)"></i>-->
@@ -180,10 +180,10 @@
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
                 </el-tooltip>
                  <el-tooltip content="编辑该任务" placement="top">
-                 <el-button type="primary" icon="edit" @click="modifyTask(taskDetail.id)"></el-button>
+                 <el-button type="primary" icon="edit" @click="modifyTask(taskDetail.id)" v-show="taskDetail.createBy==loginUserId && taskDetail.type==2"></el-button>
                </el-tooltip>
                 <el-button type="primary" icon="check" @click="completeTask"
-                           v-show="taskDetail.status!=3">完成</el-button>
+                           v-show="taskDetail.status!=3 && userRole==0 && taskDetail.type==2">完成</el-button>
                 <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
           </span>
         </el-dialog>
@@ -366,14 +366,14 @@
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="step.beginTime" format="yyyy-MM-dd HH:mm" type="datetime"
                                             placeholder="选择日期"
-                                            :picker-options="stepBeginTimeOptions"></el-date-picker>
+                                            :picker-options="pickerOptions0"></el-date-picker>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="step.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
                                             placeholder="选择日期"
-                                            :picker-options="stepEndTimeOptions"></el-date-picker>
+                                            :picker-options="pickerOptions0"></el-date-picker>
                         </div>
                     </div>
                 </div>
@@ -523,6 +523,10 @@
             permit() {
                 let userRole = helper.decodeToken().userRole;
                 return userRole < 2;
+            },
+            userRole(){
+                let userRole = helper.decodeToken().userRole;
+                return userRole;
             },
             showDelete() {
                 // 不包含完成的阶段才显示删除
