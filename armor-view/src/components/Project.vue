@@ -70,12 +70,12 @@
           let addPro = {};
           addPro.name = this.name;
           addPro.description = this.description;
-          this.TaskItem.push(addPro);
           this.showAddTask = false;
           this.name = this.description = '';
 
           Http.zsyPostHttp(Http.API_URI.ADDPROJECT,addPro,(res)=>{
               Message.success("项目添加成功");
+              this.TaskItem.push(addPro);
           });
         }else{
             Message.error("项目名称不能为空");
