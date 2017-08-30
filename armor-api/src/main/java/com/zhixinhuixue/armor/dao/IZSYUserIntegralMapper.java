@@ -52,4 +52,13 @@ public interface IZSYUserIntegralMapper {
      */
     Page<UserIntegralInfoBO> getIntegralHistory(@Param("id") Long id,@Param("startTime") String startTime, @Param("endTime") String endTime);
 
+
+    /**
+     * 删除用户任务积分
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    int deleteUserIntegral(@Param("taskId") Long taskId, @Param("userId")Long userId);
+
 }

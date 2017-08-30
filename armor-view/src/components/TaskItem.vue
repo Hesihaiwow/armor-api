@@ -20,7 +20,7 @@
                     <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
                     <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit" @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
                         <!-- 审核通过 -->
-                      <i v-show="taskStatus=='auditSuccess' && task.status<3 " @click="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
+                      <i v-show="taskStatus=='auditSuccess' " @click.stop="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
 
                   </span>
                     <ul class="task-key-tag">
@@ -33,16 +33,17 @@
             </div>
             <div class="task-data-show" v-show="isPrivate && task.status==3">
                 <span class="task-score">+{{task.userIntegral}}</span>
-                <span class="task-level first">{{task.integralGrade}}</span>
-            </div>
-            <div class="task-mark" v-show="isPrivate">
-                <img src="../assets/img/u431.png" alt="">
-                <span class="mark-msg">{{task.projectName}}</span>
+                <span class="task-level first" v-show="task.type==2">{{task.integralGrade}}</span>
             </div>
             <div class="" v-show="!isPrivate && task.status==1">
                 <span class="mark-stage">{{task.stageName}}</span>
             </div>
-            <div class="task-username" v-show="isPrivate && task.type==1 && userRole ==0">{{task.userName}}</div>
+            <div class="task-mark">
+                <img src="../assets/img/u431.png" alt="">
+                <span class="mark-msg">{{task.projectName}}</span>
+            </div>
+
+            <div class="task-username" >{{task.userName}}</div>
         </div>
         <div v-show="taskItems.length==0" class="empty">
             <h2>暂无数据</h2>
@@ -68,15 +69,15 @@
                         {{item.name}}
                     </el-tag>
                 </el-form-item>
-                <div v-if="taskDetail.type==2" v-for="(item,index) in taskDetail.users">
+                <div  v-for="(item,index) in taskDetail.users">
                     <el-card class="box-card" v-if="item.userId==loginUserId">
                         <div class="text item">
-                            工作量：{{item.taskHours}}
+                            工作量：{{item.taskHours}} 工时
                         </div>
-                        <div class="text item">
+                        <div class="text item" v-show="taskDetail.type==2">
                             截止：{{item.endTime | formatDate}}
                         </div>
-                        <div class="text item">
+                        <div class="text item" v-show="taskDetail.type==2">
                             描述：{{item.description}}
                         </div>
                     </el-card>
@@ -88,7 +89,7 @@
           </span>
         </el-dialog>
         <el-dialog
-                title="审核"
+                title="任务信息"
                 top="10%"
                 :visible.sync="showAuditTask"
                 :close-on-click-modal="false"
@@ -106,13 +107,9 @@
                         {{item.name}}
                     </el-tag>
                 </el-form-item>
-                <div class="ctpc-member-con">
-                    <div class="ctpc-member-list clearfix" v-for="(item,index) in taskDetail.users">
-                        <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
-                        <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
-                    </div>
-                    <div class="bdl-line"></div>
+                <div v-for="(item,index) in taskDetail.users">
+                    <el-form-item label="工作量：">{{item.taskHours}} 工时</el-form-item>
+                    <el-form-item label="负责人：">{{item.userName}}</el-form-item>
                 </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -147,7 +144,7 @@
                         {{item.name}}
                     </el-tag>
                 </el-form-item>
-                <div class="ctpc-member-con">
+                <div class="ctpc-member-con" v-if="taskDetail.type==2">
                     <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'"
                          v-for="(item,index) in taskDetail.users">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
@@ -159,9 +156,13 @@
                     </div>
                     <div class="bdl-line"></div>
                 </div>
+                <div v-else="taskDetail.type==1" v-for="(item,index) in taskDetail.users">
+                    <el-form-item label="工作量：">{{item.taskHours}} 工时</el-form-item>
+                    <el-form-item label="负责人：">{{item.userName}}</el-form-item>
+                </div>
             </el-form>
 
-            <div>
+            <div v-show="taskLog.list.length>0">
                 <b>动态</b>
                 <a href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>
                 <div style="height: 100px; overflow: auto">
@@ -747,10 +748,13 @@
                 this.taskLog.pageNum = 1;
             },
             taskItemClick(taskId) {
-                this.showTaskDetail = !this.isPrivate;
-                http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                    this.taskDetail = resp.data
-                });
+              if(!this.isPrivate || this.taskStatus=='finished' || this.taskStatus=='auditSuccess'){
+                    this.showTaskDetail = true;
+                    http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
+                        this.taskDetail = resp.data
+                    });
+                    this.getTaskLog(taskId)
+                }
             },
             getTaskLog(taskId) {
                 http.zsyGetHttp(`/task/log/${taskId}/${this.taskLog.pageNum}`, {}, (resp) => {
@@ -1466,6 +1470,7 @@
 
     .ctpc-member-assess {
         width: 70px;
+        margin-left:30px;
     }
 
     .ctpc-member-head {

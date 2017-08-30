@@ -25,7 +25,7 @@
                                        taskStatus="TaskDoing" @reload="reload"></task-item>
                         </el-tab-pane>
                         <el-tab-pane label="已完成" name="completed">
-                            <task-item :taskItems="task.finished" :isPrivate="true"></task-item>
+                            <task-item :taskItems="task.finished" :isPrivate="true" taskStatus="finished"></task-item>
                             <div class="pagination" v-show="this.task.finished.length>0">
                                 <el-pagination
                                         @current-change="handleFinishedPage"
@@ -265,13 +265,13 @@
                 return userRole;
             },
             finishedPageLayout() {
-                if (this.task.finished.length > this.finishedPage.pageSize) {
+                if (this.finishedPage.total>0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
             },
             auditSuccessPageLayout() {
-                if (this.task.auditSuccess.length > this.auditSuccessPage.pageSize) {
+                if (this.auditSuccessPage.total>0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'

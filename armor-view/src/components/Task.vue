@@ -1,72 +1,78 @@
 <template>
     <div class="task-con">
         <div class="task-top clearfix">
-            <div class="task-top-list fl">
-                <span class="ttl-name">项目</span>
-                <el-select clearable v-model="form.projectId" placeholder="请选择">
-                    <el-option v-for="item in projectList" :key="item.id" :label="item.name"
-                               :value="item.id"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl">
-                <span class="ttl-name">成员</span>
-                <el-select clearable v-model="form.userId" placeholder="请选择">
-                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                               :value="item.id"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl">
-                <span class="ttl-name">状态</span>
-                <el-select clearable v-model="form.status" placeholder="请选择">
-                    <el-option v-for="item in status" :key="item.value" :label="item.name"
-                               :value="item.value"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl">
-                <span class="ttl-name">类型</span>
-                <el-select clearable v-model="form.type" placeholder="请选择">
-                    <el-option v-for="item in typeList" :key="item.value" :label="item.name"
-                               :value="item.value"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl">
-                <span class="ttl-name">优先级</span>
-                <el-select clearable v-model="form.priority" placeholder="请选择">
-                    <el-option
-                            v-for="item in priorityList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                    </el-option>
-                </el-select>
+            <div class="clearfix">
+                <div class="task-top-list fl">
+                    <span class="ttl-name">项目</span>
+                    <el-select clearable v-model="form.projectId" placeholder="请选择">
+                        <el-option v-for="item in projectList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="task-top-list fl">
+                    <span class="ttl-name">成员</span>
+                    <el-select clearable v-model="form.userId" placeholder="请选择">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="task-top-list fl">
+                    <span class="ttl-name">状态</span>
+                    <el-select clearable v-model="form.status" placeholder="请选择">
+                        <el-option v-for="item in status" :key="item.value" :label="item.name"
+                                   :value="item.value"></el-option>
+                    </el-select>
+                </div>
+                <div class="task-top-list fl">
+                    <span class="ttl-name">类型</span>
+                    <el-select clearable v-model="form.type" placeholder="请选择">
+                        <el-option v-for="item in typeList" :key="item.value" :label="item.name"
+                                   :value="item.value"></el-option>
+                    </el-select>
+                </div>
+                <div class="task-top-list fl">
+                    <span class="ttl-name">优先级</span>
+                    <el-select clearable v-model="form.priority" placeholder="请选择">
+                        <el-option
+                                v-for="item in priorityList"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+
+                <div class="task-top-list fl">
+                    <span class="ttl-name">截止日期</span>
+                    <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
+                                    placeholder="选择日期"
+                                    @change="timeChange"></el-date-picker>
+                </div>
+                 <div class="task-top-list fl">
+                     <span class="ttl-name">阶段</span>
+                     <el-select clearable multiple  v-model="form.stageId" placeholder="请选择">
+                         <el-option v-for="item in stageList" :key="item.id" :label="item.name"
+                                    :value="item.id"></el-option>
+                     </el-select>
+                 </div>
+                 <div class="task-top-list fl">
+                     <span class="ttl-name">标签</span>
+                     <el-select clearable multiple  v-model="form.tagId" placeholder="请选择">
+                         <el-option v-for="item in tagList" :key="item.id" :label="item.name"
+                                    :value="item.id"></el-option>
+                     </el-select>
+                 </div>
             </div>
 
-            <div class="task-top-list fl">
-                <span class="ttl-name">截止日期</span>
-                <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions" placeholder="选择日期"
-                                @change="timeChange"></el-date-picker>
-            </div>
-            <div class="task-top-list fl">
-                <span class="ttl-name">阶段</span>
-                <el-select clearable multiple  v-model="form.stageId" placeholder="请选择">
-                    <el-option v-for="item in stageList" :key="item.id" :label="item.name"
-                               :value="item.id"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl">
-                <span class="ttl-name">标签</span>
-                <el-select clearable multiple  v-model="form.tagId" placeholder="请选择">
-                    <el-option v-for="item in tagList" :key="item.id" :label="item.name"
-                               :value="item.id"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl search-button">
-                <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
-                </el-button>
-            </div>
-            <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
-                <span class="ttl-add-icon">+</span>
-                <span class="ttl-add-msg">创建多人任务</span>
+            <div class="clearfix">
+                <div class="task-top-list fl search-button">
+                    <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
+                    </el-button>
+                </div>
+                <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
+                    <span class="ttl-add-icon">+</span>
+                    <span class="ttl-add-msg">创建多人任务</span>
+                </div>
             </div>
         </div>
 
@@ -109,7 +115,7 @@
                     {label: '非常紧急', value: 3},
                 ],
                 typeList: [{value: 1, name: '个人任务'}, {value: 2, name: '多人任务'}],
-                status: [{value: 1, name: '进行中'}, {value: 2, name: '已完成'}],
+                status: [{value: 1, name: '进行中'}, {value: 3, name: '已完成'}],
                 taskItems: [],
                 page: {
                     pageNum: 0,
@@ -121,7 +127,7 @@
                     userId: '',
                     stageId: [],
                     tagId: [],
-                    type: 2,
+                    type: '',
                     status: '',
                     priority: '',
                     beginTime: '',
@@ -173,7 +179,7 @@
                 return userRole < 2;
             },
             pageLayout() {
-                if (this.taskItems.length > this.page.pageSize) {
+                if (this.page.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -246,12 +252,13 @@
                 if (this.form.endTime !== '') {
                     param['endTime'] = this.form.endTime
                 }
-                if (this.form.stageId.length>0) {
+                if (this.form.stageId.length > 0) {
                     param['stageId'] = this.form.stageId
                 }
-                if (this.form.tagId.length>0) {
+                if (this.form.tagId.length > 0) {
                     param['tagId'] = this.form.tagId
                 }
+                param['type'] = this.form.type
                 http.zsyPostHttp('/task/public/master/all', param, (resp) => {
                     const list = resp.data.list
                     list.forEach((el) => {
@@ -291,7 +298,7 @@
                         // 优先级样式
                         if (el.priority == 2) {
                             el.borderClass = 'orange-border'
-                        }else if(el.priority == 3){
+                        } else if (el.priority == 3) {
                             el.borderClass = 'red-border'
                         }
 
@@ -340,7 +347,7 @@
     }
 
     .task-top-list:last-child {
-        margin-top: 16px;
+        /*margin-top: 16px;*/
     }
 
     .task-top-list .el-select {
@@ -368,7 +375,8 @@
         right: 0;
         bottom: 0;
     }
-    .search-button{
+
+    .search-button {
         position: absolute;
         right: 160px;
         bottom: 0;

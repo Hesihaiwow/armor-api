@@ -171,7 +171,7 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.warn("无法找到任务,id:{}", taskId);
             throw new ZSYServiceException("无法找到任务,id:" + taskId);
         }
-        if (taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
+        if (taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue() && taskTemp.getType() == ZSYTaskType.PUBLIC_TASK.getValue()) {
             throw new ZSYServiceException("该任务已结束");
         }
         checkUser();
@@ -239,6 +239,24 @@ public class ZSYTaskService implements IZSYTaskService {
         }
         // 插入日志
         taskLogMapper.insert(buildLog("修改了任务", task.getName(), task.getId()));
+
+        // 个人任务修改工时，更新积分
+        if (taskReqDTO.getTaskType()== ZSYTaskType.PRIVATE_TASK.getValue()) {
+            taskReqDTO.getTaskUsers().forEach(user->{
+                userIntegralMapper.deleteUserIntegral(taskId, user.getUserId());
+                UserIntegral userIntegral = new UserIntegral();
+                userIntegral.setId(snowFlakeIDHelper.nextId());
+                userIntegral.setTaskId(taskId);
+                userIntegral.setUserId(user.getUserId());
+                userIntegral.setIntegral(new BigDecimal(user.getTaskHours()));
+                userIntegral.setOrigin(1);
+                userIntegral.setDescription("完成了多人任务：" + user.getDescription());
+                userIntegral.setCreateTime(new Date());
+                userIntegralMapper.insert(userIntegral);
+            });
+        }
+
+
         return ZSYResult.success();
     }
 

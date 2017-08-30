@@ -11,6 +11,7 @@ import java.util.List;
 public class TaskListBO extends Task {
 
     private String projectName;
+    private String userName;
     private String stageName;
     private List<Tag> tags;
 
@@ -36,5 +37,13 @@ public class TaskListBO extends Task {
 
     public void setStageName(String stageName) {
         this.stageName = stageName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

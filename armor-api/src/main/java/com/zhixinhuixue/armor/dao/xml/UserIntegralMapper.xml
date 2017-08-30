@@ -81,5 +81,9 @@
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
     #{integral,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{origin,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR})
   </insert>
+  <!-- 删除积分 -->
+  <delete id="deleteUserIntegral">
+    delete from user_integral where task_id=#{taskId} and user_id = #{userId}
+  </delete>
 
 </mapper>
