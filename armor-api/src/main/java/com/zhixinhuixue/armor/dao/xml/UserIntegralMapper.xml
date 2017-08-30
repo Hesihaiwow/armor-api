@@ -59,7 +59,7 @@
     LEFT OUTER  JOIN `user` u ON i.user_id = u.id
     LEFT JOIN task_comment c ON i.task_id = c.task_id
     LEFT JOIN task t ON i.task_id = t.id
-    LEFT JOIN task_user h ON i.task_id = h.task_id
+    LEFT JOIN task_user h ON i.task_id = h.task_id AND h.user_id = i.user_id
     <where>
       i.user_id = #{id,jdbcType=BIGINT}
       <if test="startTime!=null and startTime!=''">
