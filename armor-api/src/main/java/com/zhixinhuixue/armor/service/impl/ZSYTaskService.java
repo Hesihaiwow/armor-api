@@ -152,7 +152,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskTagMapper.insertList(taskTags);
         }
         // 插入日志
-        taskLogMapper.insert(buildLog("创建了任务", task.getName(), task.getId()));
+        taskLogMapper.insert(buildLog("创建任务", task.getName(), task.getId()));
         return ZSYResult.success();
     }
 
@@ -166,7 +166,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     @Transactional
     public ZSYResult modifyTask(Long taskId, TaskReqDTO taskReqDTO) {
-        Task taskTemp = taskMapper.selectByPrimaryKey(taskId);
+        TaskDetailBO taskTemp = taskMapper.selectTaskDetailByTaskId(taskId);
         if (taskTemp == null) {
             logger.warn("无法找到任务,id:{}", taskId);
             throw new ZSYServiceException("无法找到任务,id:" + taskId);
@@ -242,6 +242,15 @@ public class ZSYTaskService implements IZSYTaskService {
 
         // 个人任务修改工时，更新积分
         if (taskReqDTO.getTaskType()== ZSYTaskType.PRIVATE_TASK.getValue()) {
+            taskTemp.getTaskUsers().forEach(userOld->{
+                // 减去用户积分
+                User userTemp = userMapper.selectById(userOld.getUserId());
+                BigDecimal currentIntegral = userTemp.getIntegral();
+                User userBO = new User();
+                userBO.setId(userOld.getUserId());
+                userBO.setIntegral(currentIntegral.subtract(new BigDecimal(userOld.getTaskHours())));
+                userMapper.updateSelectiveById(userBO);
+            });
             taskReqDTO.getTaskUsers().forEach(user->{
                 userIntegralMapper.deleteUserIntegral(taskId, user.getUserId());
                 UserIntegral userIntegral = new UserIntegral();
@@ -253,6 +262,14 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setDescription("完成了多人任务：" + user.getDescription());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
+                // 修改用户积分
+                User userTemp = userMapper.selectById(user.getUserId());
+                BigDecimal currentIntegral = userTemp.getIntegral();
+                User userBO = new User();
+                userBO.setId(user.getUserId());
+                userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
+                userMapper.updateSelectiveById(userBO);
+
             });
         }
 
@@ -699,6 +716,13 @@ public class ZSYTaskService implements IZSYTaskService {
                 task.setStatus(ZSYTaskStatus.FINISHED.getValue());
                 task.setUpdateTime(new Date());
                 taskMapper.updateByPrimaryKeySelective(task);
+                // 修改用户积分
+                User userTemp = userMapper.selectById(taskUserBO.getUserId());
+                BigDecimal currentIntegral = userTemp.getIntegral();
+                User user = new User();
+                user.setId(ZSYTokenRequestContext.get().getUserId());
+                user.setIntegral(currentIntegral.add(integral));
+                userMapper.updateSelectiveById(user);
             });
         }
     }
@@ -766,7 +790,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public PageInfo<TaskResDTO> getAuditSuccessAll(Integer pageNum) {
         if (pageNum != null) {
-            PageHelper.startPage(pageNum, ZSYConstants.PAGE_SIZE);
+            PageHelper.startPage(pageNum, 5);
         }
         Page<TaskBO> taskBOS = taskMapper.selectAllAuditSuccess();
         Page<TaskResDTO> page = new Page<>();
