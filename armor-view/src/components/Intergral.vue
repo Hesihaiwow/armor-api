@@ -4,7 +4,14 @@
         <div class="intergral-data-detail">
             <el-table :data="quarter" stripe style="width: 50%;float:left">
               <el-table-column label="季度排名" align="center">
-                <el-table-column prop="id" label="排名" align="center"></el-table-column>
+                <el-table-column prop="id" label="排名" align="center">
+                  <template scope="scope">
+                    <div v-if="scope.row.id=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.id"></div>
+                    <div v-if="scope.row.id=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.id"></div>
+                    <div v-if="scope.row.id=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.id"></div>
+                    <div v-if="scope.row.id>'3'">{{scope.row.id}}</div>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="name" label="成员" align="center">
                   <template scope="scope">
                     <el-button @click.native.prevent="clicklHistory(scope.$index, quarter)" type="text" size="small">{{ scope.row.name }}</el-button>
@@ -17,7 +24,14 @@
       <div class="intergral-data-detail">
           <el-table :data="year" stripe style="width: 48%;float:right">
             <el-table-column label="年度排名" align="center">
-              <el-table-column prop="id" label="排名" align="center"></el-table-column>
+              <el-table-column prop="id" label="排名" align="center">
+                <template scope="scope">
+                  <div v-if="scope.row.id=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.id"></div>
+                  <div v-if="scope.row.id=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.id"></div>
+                  <div v-if="scope.row.id=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.id"></div>
+                  <div v-if="scope.row.id>'3'">{{scope.row.id}}</div>
+                </template>
+              </el-table-column>
               <el-table-column prop="name" label="成员" align="center">
                 <template scope="scope">
                   <el-button @click.native.prevent="clicklHistory(scope.$index, year)" type="text" size="small">{{ scope.row.name }}</el-button>
@@ -58,6 +72,10 @@
                 },
                 quarter: [],
                 year: [],
+                imgUrl:'',
+                imgGUrl: '../assets/img/jin.png',
+                imgYUrl: '../assets/img/yin.png',
+                imgTUrl: '../assets/img/tong.png'
             }
         },
         beforeMount: function () {
