@@ -1401,27 +1401,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -1450,7 +1429,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             taskUsers: [],
             step: {
                 index: '',
-                stageId: '',
                 stageName: '',
                 userId: '',
                 userName: '',
@@ -1544,8 +1522,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
         // 修改阶段
         modifyStep(index, stages) {
             this.stepTemp = {
-                stageId: stages[index].stageId,
-                stageName: stages[index].stageName,
                 userId: stages[index].userId,
                 userName: stages[index].userName,
                 taskHours: stages[index].taskHours,
@@ -1573,8 +1549,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             }
             this.step = {
                 index: '',
-                stageId: '',
-                stageName: '',
                 userId: '',
                 userName: '',
                 taskHours: '',
@@ -1584,7 +1558,7 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             };
         },
         saveAddMember() {
-            const valid = this.step.stageId == '' || this.step.userId == '' || this.step.taskHours == '' || this.step.beginTime == '' || this.step.endTime == '' || this.step.description == '';
+            const valid = this.step.userId == '' || this.step.taskHours == '' || this.step.beginTime == '' || this.step.endTime == '' || this.step.description == '';
             if (valid) {
                 this.$message.error('请将阶段填写完整');
                 return;
@@ -1592,8 +1566,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             this.showAddDetail = !this.showAddDetail;
             if (this.step.index === '') {
                 let taskUser = {};
-                taskUser.stageId = this.step.stageId;
-                taskUser.stageName = this.step.stageName;
                 taskUser.userId = this.step.userId;
                 taskUser.userName = this.step.userName;
                 taskUser.beginTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss');
@@ -1608,8 +1580,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
 
             this.step = {
                 index: '',
-                stageId: '',
-                stageName: '',
                 userId: '',
                 userName: '',
                 taskHours: '',
@@ -1647,8 +1617,6 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
                 this.showAddDetail = false;
                 this.step = {
                     index: '',
-                    stageId: '',
-                    stageName: '',
                     userId: '',
                     userName: '',
                     taskHours: '',
@@ -2631,6 +2599,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2654,10 +2645,16 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
         };
         return {
             activeName: 'doing',
+            auditTabsActiveName: 'wait',
             createTaskVisible: false,
             finishedPage: {
                 pageNum: 1,
                 pageSize: 5,
+                total: 0
+            },
+            auditSuccessPage: {
+                pageNum: 1,
+                pageSize: 10,
                 total: 0
             },
             pickerOptions0: {
@@ -2689,6 +2686,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 finished: [],
                 waitAssess: [],
                 waitAudit: [],
+                auditSuccess: [],
                 applyFail: []
             },
             projectList: [],
@@ -2724,8 +2722,14 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             let userRole = __WEBPACK_IMPORTED_MODULE_3__lib_Helper__["a" /* default */].decodeToken().userRole;
             return userRole;
         },
-        pageLayout() {
+        finishedPageLayout() {
             if (this.task.finished.length > this.finishedPage.pageSize) {
+                return 'total, prev, pager, next';
+            }
+            return 'total, pager';
+        },
+        auditSuccessPageLayout() {
+            if (this.task.auditSuccess.length > this.auditSuccessPage.pageSize) {
                 return 'total, prev, pager, next';
             }
             return 'total, pager';
@@ -2749,7 +2753,11 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             this.fetchProjectList();
             this.fetchStageList();
             this.fetchTagList();
-            this.fetchApplyFailTask();
+            //this.fetchApplyFailTask();
+            if (this.userRole === 0) {
+                // 所有审核通过的数据
+                this.fetchTaskAuditSuccess();
+            }
         },
         saveTaskInfo(formName) {
             let vm = this;
@@ -2761,7 +2769,6 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                     param.endTime = __WEBPACK_IMPORTED_MODULE_4_moment___default()(param.beginTime).format('YYYY-MM-DD HH:mm:ss');
                     var taskUsers = [{
                         userId: userId,
-                        stageId: param.stageId,
                         taskHours: param.taskHours.trim(),
                         beginTime: __WEBPACK_IMPORTED_MODULE_4_moment___default()().format('YYYY-MM-DD HH:mm:ss'),
                         endTime: param.endTime,
@@ -2869,6 +2876,15 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 vm.task.waitAudit = this.makeUpItems(resp.data);
             });
         },
+        // 获取所有审核通过的任务
+        fetchTaskAuditSuccess() {
+            let vm = this;
+            __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyGetHttp(`/task/audit/success/all/${vm.auditSuccessPage.pageNum}`, {}, resp => {
+                vm.auditSuccessPage.pageNum = resp.data.pageNum;
+                vm.auditSuccessPage.total = resp.data.total;
+                vm.task.auditSuccess = this.makeUpItems(resp.data.list);
+            });
+        },
         // 获取我的待审核任务
         fetchMyTaskWaitAudit() {
             let vm = this;
@@ -2896,6 +2912,14 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyGetHttp('/tag/list', {}, resp => {
                 vm.tagList = resp.data;
             });
+        },
+        handleFinishedPage(currentPage) {
+            this.finishedPage.pageNum = currentPage;
+            this.fetchTaskFinished();
+        },
+        handleAuditSuccessPage(currentPage) {
+            this.auditSuccessPage.pageNum = currentPage;
+            this.fetchTaskAuditSuccess();
         },
         getDateString(date) {
             //时间期限
@@ -3248,12 +3272,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         let addPro = {};
         addPro.name = this.name;
         addPro.description = this.description;
-        this.TaskItem.push(addPro);
         this.showAddTask = false;
         this.name = this.description = '';
 
         __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyPostHttp(__WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].API_URI.ADDPROJECT, addPro, res => {
           __WEBPACK_IMPORTED_MODULE_2_element_ui__["Message"].success("项目添加成功");
+          this.TaskItem.push(addPro);
         });
       } else {
         __WEBPACK_IMPORTED_MODULE_2_element_ui__["Message"].error("项目名称不能为空");
@@ -3276,6 +3300,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lib_Helper__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_moment__);
+//
 //
 //
 //
@@ -3386,14 +3411,14 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             taskItems: [],
             page: {
                 pageNum: 0,
-                pageSize: 10,
+                pageSize: 5,
                 total: 0
             },
             form: {
                 projectId: '',
                 userId: '',
-                stageId: '',
-                tagId: '',
+                stageId: [],
+                tagId: [],
                 type: 2,
                 status: '',
                 priority: '',
@@ -3401,27 +3426,30 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 endTime: ''
             }, pickerOptions: {
                 shortcuts: [{
-                    text: '最近一周',
+                    text: '本周',
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        start.setTime(__WEBPACK_IMPORTED_MODULE_4_moment___default()().startOf('week').valueOf());
+                        end.setTime(__WEBPACK_IMPORTED_MODULE_4_moment___default()().endOf('week').valueOf());
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '最近一个月',
+                    text: '本月',
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        start.setTime(__WEBPACK_IMPORTED_MODULE_4_moment___default()().startOf('month').valueOf());
+                        end.setTime(__WEBPACK_IMPORTED_MODULE_4_moment___default()().endOf('month').valueOf());
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '最近三个月',
+                    text: '本季度',
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        start.setTime(__WEBPACK_IMPORTED_MODULE_4_moment___default()().startOf('quarter').valueOf());
+                        end.setTime(__WEBPACK_IMPORTED_MODULE_4_moment___default()().endOf('quarter').valueOf());
                         picker.$emit('pick', [start, end]);
                     }
                 }]
@@ -3495,10 +3523,34 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
             this.loading = true;
             this.taskItems = [];
             let vm = this;
-            let param = this.form;
+            let param = {};
             param['pageNum'] = this.page.pageNum || 1;
             param['pageSize'] = this.page.pageSize;
-            __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyGetHttp('/task/public/master/all', param, resp => {
+            if (this.form.projectId !== '') {
+                param['projectId'] = this.form.projectId;
+            }
+            if (this.form.userId !== '') {
+                param['userId'] = this.form.userId;
+            }
+            if (this.form.status !== '') {
+                param['status'] = this.form.status;
+            }
+            if (this.form.priority !== '') {
+                param['priority'] = this.form.priority;
+            }
+            if (this.form.beginTime !== '') {
+                param['beginTime'] = this.form.beginTime;
+            }
+            if (this.form.endTime !== '') {
+                param['endTime'] = this.form.endTime;
+            }
+            if (this.form.stageId.length > 0) {
+                param['stageId'] = this.form.stageId;
+            }
+            if (this.form.tagId.length > 0) {
+                param['tagId'] = this.form.tagId;
+            }
+            __WEBPACK_IMPORTED_MODULE_2__lib_Http__["a" /* default */].zsyPostHttp('/task/public/master/all', param, resp => {
                 const list = resp.data.list;
                 list.forEach(el => {
                     let endTime = '';
@@ -3534,11 +3586,18 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                     }
                     el['endColor'] = endColor;
                     el['endText'] = endText;
+
+                    // 优先级样式
+                    if (el.priority == 2) {
+                        el.borderClass = 'orange-border';
+                    } else if (el.priority == 3) {
+                        el.borderClass = 'red-border';
+                    }
                 });
                 vm.loading = false;
                 vm.taskItems = resp.data.list;
                 vm.page.pageNum = resp.data.pageNum;
-                vm.page.pageSize = 10;
+                vm.page.pageSize = 5;
                 vm.page.total = resp.data.total;
             });
         }
@@ -3981,6 +4040,59 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3995,6 +4107,13 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
         isPrivate: Boolean
     },
     data() {
+        var validateEmpty = (rule, value, callback) => {
+            if (value.trim() == '') {
+                callback(new Error());
+            } else {
+                callback();
+            }
+        };
         return {
             loginUserId: '',
             showFinishedTask: false,
@@ -4005,6 +4124,20 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             showAddDetail: false,
             showTaskCommentDetail: false,
             taskCommentDetail: {},
+            showModifyPrivateTask: false,
+            modifyPrivateTaskForm: {
+                id: '',
+                userId: '',
+                taskType: 1,
+                priority: 1,
+                taskName: '',
+                description: '',
+                projectId: '',
+                endTime: '',
+                tags: [],
+                taskHours: '',
+                stageId: ''
+            },
             pickerOptions0: {
                 disabledDate(time) {
                     return time.getTime() < Date.now() - 8.64e7;
@@ -4039,7 +4172,6 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 taskName: '',
                 description: '',
                 projectId: '',
-                stageId: '',
                 endTime: '',
                 priority: '',
                 tags: [],
@@ -4066,7 +4198,6 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             projectList: [],
             stageList: [],
             tagList: []
-            //                userList: [],
         };
     },
     created() {
@@ -4089,7 +4220,7 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             // 不包含完成的阶段才显示删除
             if (this.taskDetail.users) {
                 let done = this.taskDetail.users.filter(user => {
-                    user.status == 2;
+                    return user.status == 2;
                 });
                 return done.length == 0 && this.taskDetail.status != 3;
             }
@@ -4200,14 +4331,6 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
         },
         // 完成任务
         finishTask() {
-            /*if (this.finishForm.completeHours == '') {
-                this.$message.warning("请输入实际消耗");
-                return
-            }
-            if (this.finishForm.completeTime == '') {
-                this.$message.warning("请选择实际完成时间");
-                return
-            }*/
             this.$confirm('此操作将完成该任务, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -4243,10 +4366,8 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyGetHttp(`/task/detail/${taskId}`, {}, resp => {
                 this.taskDetail = resp.data;
             });
-            this.getTaskLog(taskId);
         },
         getTaskLog(taskId) {
-            console.log(taskId);
             __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyGetHttp(`/task/log/${taskId}/${this.taskLog.pageNum}`, {}, resp => {
                 this.taskLog.list = resp.data.list;
                 this.taskLog.hasNextPage = resp.data.hasNextPage;
@@ -4283,6 +4404,8 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                     this.$emit('reload');
                     this.$message.success("删除成功");
                     this.hideTaskDetail();
+                    this.showAuditTask = false;
+                    this.taskDetail = {};
                 });
             }).catch(() => {});
         },
@@ -4316,18 +4439,13 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                     }
                 }
                 let myComments = 0;
-                console.log(users);
                 users.forEach(stage => {
                     if (stage.myComment) {
                         myComments++;
                     }
                 });
-
-                console.log(myComments);
-                console.log(users.length);
                 vm.allComment = myComments == users.length;
                 vm.commentStages = users;
-                console.log(!vm.allComment);
             });
 
             this.showTaskComment = true;
@@ -4352,6 +4470,92 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 };
                 this.$emit('reload');
             });
+        },
+        // 修改单人任务
+        modifyPrivateTask(taskId) {
+            this.showModifyPrivateTaskDialog(taskId);
+        },
+        // 保存修改单人任务
+        saveModifyPrivateTaskForm() {
+            if (this.modifyPrivateTaskForm.projectId == '') {
+                this.$message.warning("请选择项目");
+                return;
+            }
+            if (this.modifyPrivateTaskForm.endTime == '') {
+                this.$message.warning("请选择结束时间");
+                return;
+            }
+            if (this.modifyPrivateTaskForm.taskHours == '') {
+                this.$message.warning("请输入工作量");
+                return;
+            }
+            if (this.modifyPrivateTaskForm.taskName.trim() == '') {
+                this.$message.warning("请填写任务名称");
+                return;
+            }
+            if (this.modifyPrivateTaskForm.description.trim() == '') {
+                this.$message.warning("请填写任务备注");
+                return;
+            }
+
+            if (this.modifyPrivateTaskForm.stageId === '') {
+                this.$message.warning("请选择项目阶段");
+                return;
+            }
+            if (this.modifyPrivateTaskForm.tags.length == 0) {
+                this.$message.warning("请选择至少一项标签");
+                return;
+            }
+            this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
+            this.modifyPrivateTaskForm.endTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD HH:mm:ss');
+            this.modifyPrivateTaskForm.taskUsers = [{
+                userId: this.modifyPrivateTaskForm.userId,
+                taskHours: this.modifyPrivateTaskForm.taskHours,
+                beginTime: __WEBPACK_IMPORTED_MODULE_1_moment___default()().format('YYYY-MM-DD HH:mm:ss'),
+                endTime: this.modifyPrivateTaskForm.endTime,
+                description: this.modifyPrivateTaskForm.description.trim()
+            }];
+            let vm = this;
+            __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyPutHttp(`/task/modify/${this.modifyPrivateTaskForm.id}`, this.modifyPrivateTaskForm, resp => {
+                vm.$message.success('任务修改成功');
+                vm.hideModifyPrivateTaskDialog();
+                vm.$emit('reload');
+            });
+        },
+        // 显示修改单人任务弹出层
+        showModifyPrivateTaskDialog(taskId) {
+            this.showAuditTask = false;
+            this.taskDetail = {};
+            __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyGetHttp(`/task/detail/${taskId}`, {}, resp => {
+                this.modifyPrivateTaskForm.id = resp.data.id;
+                this.modifyPrivateTaskForm.taskName = resp.data.name;
+                this.modifyPrivateTaskForm.description = resp.data.description;
+                this.modifyPrivateTaskForm.projectId = resp.data.projectId;
+                this.modifyPrivateTaskForm.endTime = resp.data.endTime;
+                this.modifyPrivateTaskForm.taskHours = resp.data.users[0].taskHours;
+                this.modifyPrivateTaskForm.userId = resp.data.users[0].userId;
+                this.modifyPrivateTaskForm.stageId = resp.data.stageId;
+                for (let i = 0; i < resp.data.tags.length; i++) {
+                    this.modifyPrivateTaskForm.tags.push(resp.data.tags[i].id);
+                }
+            });
+            this.showModifyPrivateTask = true;
+        }, // 隐藏修改单人任务弹出层
+        hideModifyPrivateTaskDialog() {
+            this.showModifyPrivateTask = false;
+            this.modifyPrivateTaskForm = {
+                id: '',
+                userId: '',
+                taskType: 1,
+                priority: 1,
+                taskName: '',
+                description: '',
+                projectId: '',
+                endTime: '',
+                tags: [],
+                taskHours: '',
+                stageId: ''
+            };
         },
         // 修改任务
         modifyTask(taskId) {
@@ -4452,8 +4656,6 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             }
             this.step = {
                 index: '',
-                stageId: '',
-                stageName: '',
                 userId: '',
                 userName: '',
                 taskHours: '',
@@ -4466,15 +4668,13 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             };
         },
         saveAddMember() {
-            const valid = this.step.stageId == '' || this.step.userId == '' || this.step.taskHours == '' || this.step.beginTime == '' || this.step.endTime == '' || this.step.description == '';
+            const valid = this.step.userId == '' || this.step.taskHours == '' || this.step.beginTime == '' || this.step.endTime == '' || this.step.description == '';
             if (valid) {
                 this.$message.warning('请将阶段填写完整');
                 return;
             }
             if (this.step.index === '') {
                 let taskUser = {};
-                taskUser.stageId = this.step.stageId;
-                taskUser.stageName = this.step.stageName;
                 taskUser.userId = this.step.userId;
                 taskUser.userName = this.step.userName;
                 taskUser.beginTime = this.step.beginTime;
@@ -4490,8 +4690,6 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             this.showAddDetail = !this.showAddDetail;
             this.step = {
                 index: '',
-                stageId: '',
-                stageName: '',
                 userId: '',
                 userName: '',
                 taskHours: '',
@@ -4545,10 +4743,6 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 this.$message.warning("请选择至少一项标签");
                 return;
             }
-            /*if (this.modifyTaskForm.taskUsers.length < 2) {
-                this.$message.warning("至少添加2个成员");
-                return;
-            }*/
             let param = this.modifyTaskForm;
             param.taskName = param.taskName.trim();
             param.description = param.description.trim();
@@ -4816,7 +5010,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.myDialog {\n    width: 600px;\n}\n.my-dialog-title {\n    font-size: 16px;\n    font-weight: bold;\n}\n.my-dialog-title-tool {\n    float: right;\n}\n\n", ""]);
+exports.push([module.i, "\n.myDialog {\n    width: 600px;\n}\n.my-dialog-title {\n    font-size: 16px;\n    font-weight: bold;\n}\n.my-dialog-title-tool {\n    float: right;\n}\n.red-border{\n    border-left: red 3px solid;\n}\n.orange-border{\n    border-left: orange 3px solid;\n}\n.task-username{\n    height: 40px;\n    background: #69C8FA;\n    border-radius: 50%;\n    line-height: 40px;\n    text-align: center;\n    color: #fff;\n    cursor: pointer;\n    z-index: 100;\n    margin-top: 24px;\n    margin-right: 20px;\n    width: 40px;\n}\n\n\n", ""]);
 
 // exports
 
@@ -4844,7 +5038,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.stepActive[data-v-e45d7c10]{\n    box-shadow: 0 0 10px #20A0FF !important;\n}\n.mark-stage[data-v-e45d7c10] {\n    line-height: 90px;\n    margin-right: 20px;\n    font-size: 15px;\n}\n.star[data-v-e45d7c10] {\n    color: red;\n    padding: 1px;\n}\n.empty[data-v-e45d7c10] {\n    text-align: center;\n    font-size: 16px;\n    padding: 20px;\n}\n.task-lis[data-v-e45d7c10] {\n    background: #fff;\n    display: -webkit-flex;\n    display: -moz-flex;\n    display: -ms-flex;\n    display: -o-flex;\n    display: flex;\n    margin-bottom: 20px;\n    margin: 10px 10px 20px;\n    cursor: pointer;\n}\n.task-lis[data-v-e45d7c10]:hover {\n    box-shadow: 0 0 10px #ccc;\n}\n.head-img[data-v-e45d7c10] {\n    width: 60px;\n    height: 60px;\n    /*border-radius: 50%;*/\n    overflow: hidden;\n    margin: 16px;\n}\n.main-task-detail[data-v-e45d7c10] {\n    flex: 1;\n    -webkit-flex: 1;\n    -moz-flex: 1;\n    -ms-flex: 1;\n    -o-flex: 1;\n}\n.task-mark[data-v-e45d7c10] {\n    line-height: 90px;\n    font-size: 18px;\n}\n.task-mark > img[data-v-e45d7c10], .task-mark > span[data-v-e45d7c10] {\n    vertical-align: middle;\n}\n.task-mark > span[data-v-e45d7c10] {\n    margin-right: 20px;\n    margin-left: 10px;\n}\n.task-name[data-v-e45d7c10] {\n    margin-top: 18px;\n    font-size: 16px;\n}\n.task-state[data-v-e45d7c10] {\n    margin-top: 10px;\n}\n.task-state > span[data-v-e45d7c10], .task-data-show > span[data-v-e45d7c10] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.task-end[data-v-e45d7c10] {\n    padding: 2px 10px;\n    color: #fff;\n}\n.task-end.red[data-v-e45d7c10] {\n    background: #FF4515;\n}\n.task-end.orange[data-v-e45d7c10] {\n    background: #FF9900;\n}\n.task-end.blue[data-v-e45d7c10] {\n    background: #36A8FF;\n}\n.task-end.green[data-v-e45d7c10] {\n    background: #339933;\n}\n.task-time-opt[data-v-e45d7c10] {\n    color: #36A8FF;\n    font-size: 20px;\n    margin-left: 16px;\n    cursor: pointer;\n}\n.task-data-show[data-v-e45d7c10] {\n    margin: 0 40px 0 20px;\n}\n.task-score[data-v-e45d7c10] {\n    font-size: 18px;\n    line-height: 92px;\n}\n.task-level[data-v-e45d7c10] {\n    width: 44px;\n    height: 44px;\n    line-height: 44px;\n    text-align: center;\n    border-radius: 50%;\n    color: #fff;\n    font-size: 20px;\n    margin-left: 16px;\n}\n.task-level.first[data-v-e45d7c10] {\n    background: #FF9900;\n}\n.task-level.second[data-v-e45d7c10] {\n    background: #99CC66;\n}\n.task-level.third[data-v-e45d7c10] {\n    background: #999900;\n}\n.task-level.forth[data-v-e45d7c10] {\n    background: #9993F1;\n}\n.task-key-tag[data-v-e45d7c10] {\n    margin-left: 10px;\n    display: inline-block;\n    vertical-align: middle;\n}\n.task-key-tag li[data-v-e45d7c10] {\n    display: inline-block;\n    margin-right: 20px;\n}\n.task-key-lis > span[data-v-e45d7c10] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.task-key-lis .circle[data-v-e45d7c10] {\n    width: 8px;\n    height: 8px;\n    border-radius: 50%;\n    margin-right: 4px;\n}\n.task-key-lis .circle.pink[data-v-e45d7c10] {\n    background: #FF9966;\n}\n.task-key-lis .circle.purple[data-v-e45d7c10] {\n    background: #D863B0;\n}\n.task-key-lis .circle.red[data-v-e45d7c10] {\n    background: #CC0000;\n}\n.task-key-lis .circle.gray[data-v-e45d7c10] {\n    background: #999999;\n}\n.task-key-lis .circle.blue[data-v-e45d7c10] {\n    background: #0E0E9D;\n}\n", ""]);
+exports.push([module.i, "\n.stepActive[data-v-e45d7c10] {\n    box-shadow: 0 0 10px #20A0FF !important;\n}\n.mark-stage[data-v-e45d7c10] {\n    line-height: 90px;\n    margin-right: 20px;\n    font-size: 15px;\n}\n.star[data-v-e45d7c10] {\n    color: red;\n    padding: 1px;\n}\n.empty[data-v-e45d7c10] {\n    text-align: center;\n    font-size: 16px;\n    padding: 20px;\n}\n.task-lis[data-v-e45d7c10] {\n    background: #fff;\n    display: -webkit-flex;\n    display: -moz-flex;\n    display: -ms-flex;\n    display: -o-flex;\n    display: flex;\n    margin-bottom: 20px;\n    margin: 10px 10px 20px;\n    cursor: pointer;\n}\n.task-lis[data-v-e45d7c10]:hover {\n    box-shadow: 0 0 10px #ccc;\n}\n.head-img[data-v-e45d7c10] {\n    width: 60px;\n    height: 60px;\n    /*border-radius: 50%;*/\n    overflow: hidden;\n    margin: 16px;\n}\n.main-task-detail[data-v-e45d7c10] {\n    flex: 1;\n    -webkit-flex: 1;\n    -moz-flex: 1;\n    -ms-flex: 1;\n    -o-flex: 1;\n}\n.task-mark[data-v-e45d7c10] {\n    line-height: 90px;\n    font-size: 18px;\n}\n.task-mark > img[data-v-e45d7c10], .task-mark > span[data-v-e45d7c10] {\n    vertical-align: middle;\n}\n.task-mark > span[data-v-e45d7c10] {\n    margin-right: 20px;\n    margin-left: 10px;\n}\n.task-name[data-v-e45d7c10] {\n    margin-top: 18px;\n    font-size: 16px;\n}\n.task-state[data-v-e45d7c10] {\n    margin-top: 10px;\n}\n.task-state > span[data-v-e45d7c10], .task-data-show > span[data-v-e45d7c10] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.task-end[data-v-e45d7c10] {\n    padding: 2px 10px;\n    color: #fff;\n}\n.task-end.red[data-v-e45d7c10] {\n    background: #FF4515;\n}\n.task-end.orange[data-v-e45d7c10] {\n    background: #FF9900;\n}\n.task-end.blue[data-v-e45d7c10] {\n    background: #36A8FF;\n}\n.task-end.green[data-v-e45d7c10] {\n    background: #339933;\n}\n.task-time-opt[data-v-e45d7c10] {\n    color: #36A8FF;\n    font-size: 20px;\n    margin-left: 16px;\n    cursor: pointer;\n}\n.task-data-show[data-v-e45d7c10] {\n    margin: 0 40px 0 20px;\n}\n.task-score[data-v-e45d7c10] {\n    font-size: 18px;\n    line-height: 92px;\n}\n.task-level[data-v-e45d7c10] {\n    width: 44px;\n    height: 44px;\n    line-height: 44px;\n    text-align: center;\n    border-radius: 50%;\n    color: #fff;\n    font-size: 20px;\n    margin-left: 16px;\n}\n.task-level.first[data-v-e45d7c10] {\n    background: #FF9900;\n}\n.task-level.second[data-v-e45d7c10] {\n    background: #99CC66;\n}\n.task-level.third[data-v-e45d7c10] {\n    background: #999900;\n}\n.task-level.forth[data-v-e45d7c10] {\n    background: #9993F1;\n}\n.task-key-tag[data-v-e45d7c10] {\n    margin-left: 10px;\n    display: inline-block;\n    vertical-align: middle;\n}\n.task-key-tag li[data-v-e45d7c10] {\n    display: inline-block;\n    margin-right: 20px;\n}\n.task-key-lis > span[data-v-e45d7c10] {\n    display: inline-block;\n    vertical-align: middle;\n}\n.task-key-lis .circle[data-v-e45d7c10] {\n    width: 8px;\n    height: 8px;\n    border-radius: 50%;\n    margin-right: 4px;\n}\n.task-key-lis .circle.pink[data-v-e45d7c10] {\n    background: #FF9966;\n}\n.task-key-lis .circle.purple[data-v-e45d7c10] {\n    background: #D863B0;\n}\n.task-key-lis .circle.red[data-v-e45d7c10] {\n    background: #CC0000;\n}\n.task-key-lis .circle.gray[data-v-e45d7c10] {\n    background: #999999;\n}\n.task-key-lis .circle.blue[data-v-e45d7c10] {\n    background: #0E0E9D;\n}\n", ""]);
 
 // exports
 
@@ -6173,6 +6367,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "nav-index-con"
   }, [_c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.userRole > 0),
+      expression: "userRole>0"
+    }],
     staticClass: "my-integral-con"
   }, [_c('p', {
     staticClass: "mic-title"
@@ -6193,6 +6393,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_vm._v(_vm._s(item.score))])])
   }))]), _vm._v(" "), _c('div', {
     staticClass: "my-task-con"
+  }, [_c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.userRole > 0),
+      expression: "userRole>0"
+    }]
   }, [_c('div', {
     staticClass: "add-task",
     on: {
@@ -6247,24 +6454,25 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "pagination"
   }, [_c('el-pagination', {
     attrs: {
-      "layout": _vm.pageLayout,
+      "current-page": _vm.finishedPage.pageNum,
+      "page-size": _vm.finishedPage.pageSize,
+      "layout": _vm.finishedPageLayout,
       "total": _vm.finishedPage.total
-    }
-  })], 1)], 1), _vm._v(" "), _c('el-tab-pane', {
-    attrs: {
-      "label": "审核失败",
-      "name": "applyFail"
-    }
-  }, [_c('task-item', {
-    attrs: {
-      "taskItems": _vm.task.applyFail,
-      "isPrivate": true,
-      "taskStatus": "ApplyFail"
     },
     on: {
-      "reload": _vm.reload
+      "current-change": _vm.handleFinishedPage,
+      "update:currentPage": function($event) {
+        _vm.finishedPage.pageNum = $event
+      }
     }
-  })], 1)], 1)], 1), _vm._v(" "), _c('p', {
+  })], 1)], 1)], 1)], 1), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.task.waitAssess.length > 0),
+      expression: "task.waitAssess.length>0"
+    }]
+  }, [_c('p', {
     staticClass: "mic-title"
   }, [_vm._v("待评价任务")]), _vm._v(" "), _c('task-item', {
     attrs: {
@@ -6275,16 +6483,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "reload": _vm.reload
     }
-  }), _vm._v(" "), _c('div', {
+  })], 1)]), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
       value: (_vm.userRole === 0),
       expression: "userRole===0"
     }]
-  }, [_c('p', {
-    staticClass: "mic-title"
-  }, [_vm._v("待审核")]), _vm._v(" "), _c('task-item', {
+  }, [_c('el-tabs', {
+    on: {
+      "tab-click": _vm.handleClick
+    },
+    model: {
+      value: (_vm.auditTabsActiveName),
+      callback: function($$v) {
+        _vm.auditTabsActiveName = $$v
+      },
+      expression: "auditTabsActiveName"
+    }
+  }, [_c('el-tab-pane', {
+    attrs: {
+      "label": "待审核",
+      "name": "wait"
+    }
+  }, [_c('task-item', {
     attrs: {
       "taskItems": _vm.task.waitAudit,
       "isPrivate": true,
@@ -6293,7 +6515,42 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "reload": _vm.reload
     }
-  })], 1)], 1), _vm._v(" "), _c('el-dialog', {
+  })], 1), _vm._v(" "), _c('el-tab-pane', {
+    attrs: {
+      "label": "审核通过",
+      "name": "completed"
+    }
+  }, [_c('task-item', {
+    attrs: {
+      "taskItems": _vm.task.auditSuccess,
+      "isPrivate": true,
+      "taskStatus": "auditSuccess"
+    },
+    on: {
+      "reload": _vm.reload
+    }
+  }), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (this.task.auditSuccess.length > 0),
+      expression: "this.task.auditSuccess.length>0"
+    }],
+    staticClass: "pagination"
+  }, [_c('el-pagination', {
+    attrs: {
+      "current-page": _vm.auditSuccessPage.pageNum,
+      "page-size": _vm.auditSuccessPage.pageSize,
+      "layout": _vm.auditSuccessPageLayout,
+      "total": _vm.auditSuccessPage.total
+    },
+    on: {
+      "current-change": _vm.handleAuditSuccessPage,
+      "update:currentPage": function($event) {
+        _vm.auditSuccessPage.pageNum = $event
+      }
+    }
+  })], 1)], 1)], 1)], 1)]), _vm._v(" "), _c('el-dialog', {
     attrs: {
       "title": "创建个人任务",
       "size": "tiny",
@@ -7074,8 +7331,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_c('span', {
       staticClass: "fl ctpc-member-head"
     }, [_vm._v(_vm._s(item.userName))]), _vm._v(" "), _c('span', {
-      staticClass: "fl ctpc-member-job ellipsis"
-    }, [_vm._v(_vm._s(item.stageName))]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-job-time"
     }, [_vm._v("工作量:" + _vm._s(item.taskHours) + "工时")]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-end-time"
@@ -7125,37 +7380,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic"
   }, [_c('div', {
-    staticClass: "add-member-basic-list add-member-stage clearfix"
-  }, [_vm._m(6), _vm._v(" "), _c('ul', {
-    staticClass: "add-member-basic-msg add-stage-opt ctpc-tags fl"
-  }, [_c('li', {
-    staticClass: "tag-lis-add"
-  }, [_c('el-select', {
-    attrs: {
-      "multiple-limit": 1,
-      "placeholder": "请选择"
-    },
-    on: {
-      "change": _vm.stepStageChange
-    },
-    model: {
-      value: (_vm.step.stageId),
-      callback: function($$v) {
-        _vm.step.stageId = $$v
-      },
-      expression: "step.stageId"
-    }
-  }, _vm._l((_vm.stageList), function(item) {
-    return _c('el-option', {
-      key: item.id,
-      attrs: {
-        "label": item.name,
-        "value": item.id
-      }
-    })
-  }))], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-list clearfix"
-  }, [_vm._m(7), _vm._v(" "), _c('div', {
+  }, [_vm._m(6), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('el-select', {
     attrs: {
@@ -7179,7 +7405,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "value": item.id
       }
     })
-  }))], 1), _vm._v(" "), _vm._m(8), _vm._v(" "), _c('div', {
+  }))], 1), _vm._v(" "), _vm._m(7), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('input', {
     directives: [{
@@ -7200,7 +7426,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }), _vm._v("工时\n                            ")])]), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-list clearfix"
-  }, [_vm._m(9), _vm._v(" "), _c('div', {
+  }, [_vm._m(8), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('el-date-picker', {
     attrs: {
@@ -7216,7 +7442,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       expression: "step.beginTime"
     }
-  })], 1), _vm._v(" "), _vm._m(10), _vm._v(" "), _c('div', {
+  })], 1), _vm._v(" "), _vm._m(9), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-msg fl"
   }, [_c('el-date-picker', {
     attrs: {
@@ -7309,12 +7535,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "add-member-basic-menu fl"
   }, [_c('span', {
     staticClass: "star"
-  }, [_vm._v("*")]), _vm._v("阶段：")])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "add-member-basic-menu fl"
-  }, [_c('span', {
-    staticClass: "star"
   }, [_vm._v("*")]), _vm._v("姓名：")])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
@@ -7393,54 +7613,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "form.userId"
     }
   }, _vm._l((_vm.userList), function(item) {
-    return _c('el-option', {
-      key: item.id,
-      attrs: {
-        "label": item.name,
-        "value": item.id
-      }
-    })
-  }))], 1), _vm._v(" "), _c('div', {
-    staticClass: "task-top-list fl"
-  }, [_c('span', {
-    staticClass: "ttl-name"
-  }, [_vm._v("阶段")]), _vm._v(" "), _c('el-select', {
-    attrs: {
-      "clearable": "",
-      "placeholder": "请选择"
-    },
-    model: {
-      value: (_vm.form.stageId),
-      callback: function($$v) {
-        _vm.form.stageId = $$v
-      },
-      expression: "form.stageId"
-    }
-  }, _vm._l((_vm.stageList), function(item) {
-    return _c('el-option', {
-      key: item.id,
-      attrs: {
-        "label": item.name,
-        "value": item.id
-      }
-    })
-  }))], 1), _vm._v(" "), _c('div', {
-    staticClass: "task-top-list fl"
-  }, [_c('span', {
-    staticClass: "ttl-name"
-  }, [_vm._v("标签")]), _vm._v(" "), _c('el-select', {
-    attrs: {
-      "clearable": "",
-      "placeholder": "请选择"
-    },
-    model: {
-      value: (_vm.form.tagId),
-      callback: function($$v) {
-        _vm.form.tagId = $$v
-      },
-      expression: "form.tagId"
-    }
-  }, _vm._l((_vm.tagList), function(item) {
     return _c('el-option', {
       key: item.id,
       attrs: {
@@ -7541,6 +7713,56 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "timeRange"
     }
   })], 1), _vm._v(" "), _c('div', {
+    staticClass: "task-top-list fl"
+  }, [_c('span', {
+    staticClass: "ttl-name"
+  }, [_vm._v("阶段")]), _vm._v(" "), _c('el-select', {
+    attrs: {
+      "clearable": "",
+      "multiple": "",
+      "placeholder": "请选择"
+    },
+    model: {
+      value: (_vm.form.stageId),
+      callback: function($$v) {
+        _vm.form.stageId = $$v
+      },
+      expression: "form.stageId"
+    }
+  }, _vm._l((_vm.stageList), function(item) {
+    return _c('el-option', {
+      key: item.id,
+      attrs: {
+        "label": item.name,
+        "value": item.id
+      }
+    })
+  }))], 1), _vm._v(" "), _c('div', {
+    staticClass: "task-top-list fl"
+  }, [_c('span', {
+    staticClass: "ttl-name"
+  }, [_vm._v("标签")]), _vm._v(" "), _c('el-select', {
+    attrs: {
+      "clearable": "",
+      "multiple": "",
+      "placeholder": "请选择"
+    },
+    model: {
+      value: (_vm.form.tagId),
+      callback: function($$v) {
+        _vm.form.tagId = $$v
+      },
+      expression: "form.tagId"
+    }
+  }, _vm._l((_vm.tagList), function(item) {
+    return _c('el-option', {
+      key: item.id,
+      attrs: {
+        "label": item.name,
+        "value": item.id
+      }
+    })
+  }))], 1), _vm._v(" "), _c('div', {
     staticClass: "task-top-list fl search-button"
   }, [_c('el-button', {
     attrs: {
@@ -7957,6 +8179,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', [_vm._l((_vm.taskItems), function(task) {
     return _c('div', {
       staticClass: "task-lis",
+      class: task.borderClass,
       on: {
         "click": function($event) {
           _vm.taskItemClick(task.id)
@@ -7992,6 +8215,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       directives: [{
         name: "show",
         rawName: "v-show",
+        value: (_vm.taskStatus == 'TaskDoing' && task.type == 1 && task.reviewStatus == 1),
+        expression: "taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 "
+      }],
+      staticClass: "el-icon-edit",
+      on: {
+        "click": function($event) {
+          _vm.modifyPrivateTask(task.id)
+        }
+      }
+    }), _vm._v(" "), _c('i', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
         value: (_vm.taskStatus == 'WaitAssess'),
         expression: "taskStatus=='WaitAssess'"
       }],
@@ -8012,6 +8248,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       on: {
         "click": function($event) {
           _vm.showAuditPop(task.id, task.taskUsers[0].id)
+        }
+      }
+    }), _vm._v(" "), _c('i', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (_vm.taskStatus == 'auditSuccess' && task.status < 3),
+        expression: "taskStatus=='auditSuccess' && task.status<3 "
+      }],
+      staticClass: "el-icon-edit",
+      on: {
+        "click": function($event) {
+          _vm.modifyPrivateTask(task.id)
         }
       }
     })]), _vm._v(" "), _c('ul', {
@@ -8063,7 +8312,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }]
     }, [_c('span', {
       staticClass: "mark-stage"
-    }, [_vm._v(_vm._s(task.stageName))])])])
+    }, [_vm._v(_vm._s(task.stageName))])]), _vm._v(" "), _c('div', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (_vm.isPrivate && task.type == 1 && _vm.userRole == 0),
+        expression: "isPrivate && task.type==1 && userRole ==0"
+      }],
+      staticClass: "task-username"
+    }, [_vm._v(_vm._s(task.userName))])])
   }), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
@@ -8134,8 +8391,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       staticClass: "text item"
     }, [_vm._v("\n                          工作量：" + _vm._s(item.taskHours) + "\n                      ")]), _vm._v(" "), _c('div', {
       staticClass: "text item"
-    }, [_vm._v("\n                          阶段：" + _vm._s(item.stageName) + "\n                      ")]), _vm._v(" "), _c('div', {
-      staticClass: "text item"
     }, [_vm._v("\n                          截止：" + _vm._s(_vm._f("formatDate")(item.endTime)) + "\n                      ")]), _vm._v(" "), _c('div', {
       staticClass: "text item"
     }, [_vm._v("\n                          描述：" + _vm._s(item.description) + "\n                      ")])]) : _vm._e()], 1) : _vm._e()
@@ -8203,8 +8458,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_c('span', {
       staticClass: "fl ctpc-member-head"
     }, [_vm._v(_vm._s(item.userName))]), _vm._v(" "), _c('span', {
-      staticClass: "fl ctpc-member-job ellipsis"
-    }, [_vm._v(_vm._s(item.stageName))]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-job-time"
     }, [_vm._v("工作量:" + _vm._s(item.taskHours) + "工时")]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-end-time"
@@ -8214,14 +8467,35 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   })], 2)], 1), _vm._v(" "), _c('span', {
     staticClass: "dialog-footer",
     slot: "footer"
+  }, [_c('el-tooltip', {
+    attrs: {
+      "content": "删除该任务",
+      "placement": "top"
+    }
   }, [_c('el-button', {
     attrs: {
-      "type": "danger"
+      "type": "danger",
+      "icon": "delete"
     },
     on: {
-      "click": _vm.rejectTask
+      "click": _vm.deleteTask
     }
-  }, [_vm._v("打回")]), _vm._v(" "), _c('el-button', {
+  })], 1), _vm._v(" "), _c('el-tooltip', {
+    attrs: {
+      "content": "编辑该任务",
+      "placement": "top"
+    }
+  }, [_c('el-button', {
+    attrs: {
+      "type": "primary",
+      "icon": "edit"
+    },
+    on: {
+      "click": function($event) {
+        _vm.modifyPrivateTask(_vm.taskDetail.id)
+      }
+    }
+  })], 1), _vm._v(" "), _c('el-button', {
     attrs: {
       "type": "success"
     },
@@ -8293,8 +8567,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_c('span', {
       staticClass: "fl ctpc-member-head"
     }, [_vm._v(_vm._s(item.userName))]), _vm._v(" "), _c('span', {
-      staticClass: "fl ctpc-member-job ellipsis"
-    }, [_vm._v(_vm._s(item.stageName))]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-job-time"
     }, [_vm._v("工作量:" + _vm._s(item.taskHours) + "工时")]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-end-time"
@@ -8310,8 +8582,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       directives: [{
         name: "show",
         rawName: "v-show",
-        value: (_vm.taskDetail.status > 1 && _vm.permit && item.status == 3),
-        expression: "taskDetail.status>1 &&permit && item.status==3"
+        value: (_vm.taskDetail.status > 1 && _vm.userRole === 0 && item.status == 3),
+        expression: "taskDetail.status>1 && userRole===0 && item.status==3"
       }],
       attrs: {
         "href": "javascript:;"
@@ -8740,8 +9012,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_c('span', {
       staticClass: "fl ctpc-member-head"
     }, [_vm._v(_vm._s(item.userName))]), _vm._v(" "), _c('span', {
-      staticClass: "fl ctpc-member-job ellipsis"
-    }, [_vm._v(_vm._s(item.stageName))]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-job-time"
     }, [_vm._v("工作量:" + _vm._s(item.taskHours) + "工时")]), _vm._v(" "), _c('span', {
       staticClass: "fl ctpc-member-end-time"
@@ -8791,41 +9061,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic"
   }, [_c('div', {
-    staticClass: "add-member-basic-list add-member-stage clearfix"
-  }, [_c('div', {
-    staticClass: "add-member-basic-menu fl"
-  }, [_c('span', {
-    staticClass: "star"
-  }, [_vm._v("*")]), _vm._v("阶段：")]), _vm._v(" "), _c('ul', {
-    staticClass: "add-member-basic-msg add-stage-opt ctpc-tags fl"
-  }, [_c('li', {
-    staticClass: "tag-lis-add"
-  }, [_c('el-select', {
-    attrs: {
-      "filterable": "",
-      "multiple-limit": 1,
-      "default-first-option": "",
-      "placeholder": "请选择"
-    },
-    on: {
-      "change": _vm.stepStageChange
-    },
-    model: {
-      value: (_vm.step.stageId),
-      callback: function($$v) {
-        _vm.step.stageId = $$v
-      },
-      expression: "step.stageId"
-    }
-  }, _vm._l((_vm.stageList), function(item) {
-    return _c('el-option', {
-      key: item.id,
-      attrs: {
-        "label": item.name,
-        "value": item.id
-      }
-    })
-  }))], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "add-member-basic-list clearfix"
   }, [_c('div', {
     staticClass: "add-member-basic-menu fl"
@@ -8997,7 +9232,176 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.hideTaskCommentDetail
     }
-  }, [_vm._v("确 定")])], 1)], 2)], 2)
+  }, [_vm._v("确 定")])], 1)], 2), _vm._v(" "), _c('el-dialog', {
+    attrs: {
+      "title": "编辑个人任务",
+      "size": "tiny",
+      "custom-class": "myDialog",
+      "close-on-click-modal": false,
+      "close-on-press-escape": false,
+      "visible": _vm.showModifyPrivateTask
+    },
+    on: {
+      "update:visible": function($event) {
+        _vm.showModifyPrivateTask = $event
+      }
+    }
+  }, [_c('el-form', {
+    attrs: {
+      "model": _vm.modifyPrivateTaskForm,
+      "label-width": "80px"
+    }
+  }, [_c('el-form-item', {
+    attrs: {
+      "label": "项目"
+    }
+  }, [_c('el-select', {
+    attrs: {
+      "placeholder": "请选择"
+    },
+    model: {
+      value: (_vm.modifyPrivateTaskForm.projectId),
+      callback: function($$v) {
+        _vm.modifyPrivateTaskForm.projectId = $$v
+      },
+      expression: "modifyPrivateTaskForm.projectId"
+    }
+  }, _vm._l((_vm.projectList), function(item) {
+    return _c('el-option', {
+      key: item.id,
+      attrs: {
+        "label": item.name,
+        "value": item.id
+      }
+    })
+  }))], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "截止日期"
+    }
+  }, [_c('el-date-picker', {
+    attrs: {
+      "type": "datetime",
+      "picker-options": _vm.pickerOptions0,
+      "format": "yyyy-MM-dd HH:mm",
+      "placeholder": "选择日期时间"
+    },
+    model: {
+      value: (_vm.modifyPrivateTaskForm.endTime),
+      callback: function($$v) {
+        _vm.modifyPrivateTaskForm.endTime = $$v
+      },
+      expression: "modifyPrivateTaskForm.endTime"
+    }
+  })], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "工作量"
+    }
+  }, [_c('el-input', {
+    staticStyle: {
+      "width": "100px"
+    },
+    attrs: {
+      "maxlength": 2
+    },
+    model: {
+      value: (_vm.modifyPrivateTaskForm.taskHours),
+      callback: function($$v) {
+        _vm.modifyPrivateTaskForm.taskHours = $$v
+      },
+      expression: "modifyPrivateTaskForm.taskHours"
+    }
+  }), _vm._v("\n                  小时\n              ")], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "任务名称"
+    }
+  }, [_c('el-input', {
+    model: {
+      value: (_vm.modifyPrivateTaskForm.taskName),
+      callback: function($$v) {
+        _vm.modifyPrivateTaskForm.taskName = $$v
+      },
+      expression: "modifyPrivateTaskForm.taskName"
+    }
+  })], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "任务描述"
+    }
+  }, [_c('el-input', {
+    attrs: {
+      "type": "textarea",
+      "rows": 3
+    },
+    model: {
+      value: (_vm.modifyPrivateTaskForm.description),
+      callback: function($$v) {
+        _vm.modifyPrivateTaskForm.description = $$v
+      },
+      expression: "modifyPrivateTaskForm.description"
+    }
+  })], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "阶段"
+    }
+  }, [_c('el-select', {
+    attrs: {
+      "filterable": "",
+      "default-first-option": "",
+      "placeholder": "请选择阶段"
+    },
+    model: {
+      value: (_vm.modifyPrivateTaskForm.stageId),
+      callback: function($$v) {
+        _vm.modifyPrivateTaskForm.stageId = $$v
+      },
+      expression: "modifyPrivateTaskForm.stageId"
+    }
+  }, _vm._l((_vm.stageList), function(item) {
+    return _c('el-option', {
+      key: item.id,
+      attrs: {
+        "label": item.name,
+        "value": item.id
+      }
+    })
+  }))], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "标签"
+    }
+  }, [_c('el-select', {
+    attrs: {
+      "multiple": "",
+      "placeholder": "请选择标签"
+    },
+    model: {
+      value: (_vm.modifyPrivateTaskForm.tags),
+      callback: function($$v) {
+        _vm.modifyPrivateTaskForm.tags = $$v
+      },
+      expression: "modifyPrivateTaskForm.tags"
+    }
+  }, _vm._l((_vm.tagList), function(item) {
+    return _c('el-option', {
+      key: item.id,
+      attrs: {
+        "label": item.name,
+        "value": item.id
+      }
+    })
+  }))], 1)], 1), _vm._v(" "), _c('span', {
+    staticClass: "dialog-footer",
+    slot: "footer"
+  }, [_c('el-button', {
+    attrs: {
+      "type": "primary"
+    },
+    on: {
+      "click": _vm.saveModifyPrivateTaskForm
+    }
+  }, [_vm._v("保存")]), _vm._v(" "), _c('el-button', {
+    on: {
+      "click": _vm.hideModifyPrivateTaskDialog
+    }
+  }, [_vm._v("取 消")])], 1)], 1)], 2)
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "head-img"
@@ -9639,4 +10043,4 @@ if(false) {
 
 /***/ })
 ],[220]);
-//# sourceMappingURL=app.875a32f7896a254c2f25.js.map
+//# sourceMappingURL=app.f26c80c5c66c6df506e4.js.map

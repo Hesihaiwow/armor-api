@@ -16,20 +16,6 @@
                 </el-select>
             </div>
             <div class="task-top-list fl">
-                <span class="ttl-name">阶段</span>
-                <el-select clearable v-model="form.stageId" placeholder="请选择">
-                    <el-option v-for="item in stageList" :key="item.id" :label="item.name"
-                               :value="item.id"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl">
-                <span class="ttl-name">标签</span>
-                <el-select clearable v-model="form.tagId" placeholder="请选择">
-                    <el-option v-for="item in tagList" :key="item.id" :label="item.name"
-                               :value="item.id"></el-option>
-                </el-select>
-            </div>
-            <div class="task-top-list fl">
                 <span class="ttl-name">状态</span>
                 <el-select clearable v-model="form.status" placeholder="请选择">
                     <el-option v-for="item in status" :key="item.value" :label="item.name"
@@ -60,6 +46,20 @@
                 <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions" placeholder="选择日期"
                                 @change="timeChange"></el-date-picker>
             </div>
+            <div class="task-top-list fl">
+                <span class="ttl-name">阶段</span>
+                <el-select clearable multiple  v-model="form.stageId" placeholder="请选择">
+                    <el-option v-for="item in stageList" :key="item.id" :label="item.name"
+                               :value="item.id"></el-option>
+                </el-select>
+            </div>
+            <div class="task-top-list fl">
+                <span class="ttl-name">标签</span>
+                <el-select clearable multiple  v-model="form.tagId" placeholder="请选择">
+                    <el-option v-for="item in tagList" :key="item.id" :label="item.name"
+                               :value="item.id"></el-option>
+                </el-select>
+            </div>
             <div class="task-top-list fl search-button">
                 <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
                 </el-button>
@@ -69,6 +69,7 @@
                 <span class="ttl-add-msg">创建多人任务</span>
             </div>
         </div>
+
         <div class="task-lis-con">
             <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList"></task-item>
             <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"></create-task>
@@ -112,14 +113,14 @@
                 taskItems: [],
                 page: {
                     pageNum: 0,
-                    pageSize: 10,
+                    pageSize: 5,
                     total: 0,
                 },
                 form: {
                     projectId: '',
                     userId: '',
-                    stageId: '',
-                    tagId: '',
+                    stageId: [],
+                    tagId: [],
                     type: 2,
                     status: '',
                     priority: '',
@@ -127,27 +128,30 @@
                     endTime: ''
                 }, pickerOptions: {
                     shortcuts: [{
-                        text: '最近一周',
+                        text: '本周',
                         onClick(picker) {
                             const end = new Date();
                             const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            start.setTime(moment().startOf('week').valueOf());
+                            end.setTime(moment().endOf('week').valueOf());
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
-                        text: '最近一个月',
+                        text: '本月',
                         onClick(picker) {
                             const end = new Date();
                             const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            start.setTime(moment().startOf('month').valueOf());
+                            end.setTime(moment().endOf('month').valueOf());
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
-                        text: '最近三个月',
+                        text: '本季度',
                         onClick(picker) {
                             const end = new Date();
                             const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            start.setTime(moment().startOf('quarter').valueOf());
+                            end.setTime(moment().endOf('quarter').valueOf());
                             picker.$emit('pick', [start, end]);
                         }
                     }]
@@ -221,10 +225,34 @@
                 this.loading = true
                 this.taskItems = []
                 let vm = this
-                let param = this.form
-                param['pageNum'] = this.page.pageNum || 1
-                param['pageSize'] = this.page.pageSize
-                http.zsyGetHttp('/task/public/master/all', param, (resp) => {
+                let param = {}
+                param['pageNum'] = this.page.pageNum || 1;
+                param['pageSize'] = this.page.pageSize;
+                if (this.form.projectId !== '') {
+                    param['projectId'] = this.form.projectId
+                }
+                if (this.form.userId !== '') {
+                    param['userId'] = this.form.userId
+                }
+                if (this.form.status !== '') {
+                    param['status'] = this.form.status
+                }
+                if (this.form.priority !== '') {
+                    param['priority'] = this.form.priority
+                }
+                if (this.form.beginTime !== '') {
+                    param['beginTime'] = this.form.beginTime
+                }
+                if (this.form.endTime !== '') {
+                    param['endTime'] = this.form.endTime
+                }
+                if (this.form.stageId.length>0) {
+                    param['stageId'] = this.form.stageId
+                }
+                if (this.form.tagId.length>0) {
+                    param['tagId'] = this.form.tagId
+                }
+                http.zsyPostHttp('/task/public/master/all', param, (resp) => {
                     const list = resp.data.list
                     list.forEach((el) => {
                         let endTime = '';
@@ -260,11 +288,18 @@
                         el['endColor'] = endColor
                         el['endText'] = endText
 
+                        // 优先级样式
+                        if (el.priority == 2) {
+                            el.borderClass = 'orange-border'
+                        }else if(el.priority == 3){
+                            el.borderClass = 'red-border'
+                        }
+
                     })
                     vm.loading = false
                     vm.taskItems = resp.data.list
                     vm.page.pageNum = resp.data.pageNum
-                    vm.page.pageSize = 10
+                    vm.page.pageSize = 5
                     vm.page.total = resp.data.total
                 })
             }

@@ -89,6 +89,13 @@ public interface IZSYTaskMapper {
     List<TaskBO> selectAllWaitAudit();
 
     /**
+     * 分页查询所有审核通过的任务
+     * @param
+     * @return
+     */
+    Page<TaskBO> selectAllAuditSuccess();
+
+    /**
      * 查询所有未评价完的任务
      * @param userId
      * @return

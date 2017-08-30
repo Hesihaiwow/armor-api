@@ -20,6 +20,8 @@ public class TaskResDTO {
 
     private String projectName;
 
+    private String userName;
+
     private Date endTime;
 
     private Integer type;
@@ -189,5 +191,13 @@ public class TaskResDTO {
 
     public void setStageId(Long stageId) {
         this.stageId = stageId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

@@ -120,6 +120,12 @@ public interface IZSYTaskService {
     ZSYResult<List<TaskResDTO>> getAllWaitAudit();
 
     /**
+     * 获取所有审核通过的任务
+     * @return
+     */
+    PageInfo<TaskResDTO> getAuditSuccessAll(Integer pageNum);
+
+    /**
      * 获取所有待评价的任务
      *
      * @return

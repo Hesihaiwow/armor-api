@@ -15,6 +15,7 @@ import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
 import org.slf4j.Logger;
@@ -128,7 +129,6 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUser.setId(snowFlakeIDHelper.nextId());
                 taskUser.setTaskId(task.getId());
                 taskUser.setUserId(user.getUserId());
-                taskUser.setStageId(user.getStageId());
                 taskUser.setDescription(user.getDescription());
                 taskUser.setBeginTime(user.getBeginTime());
                 taskUser.setEndTime(user.getEndTime());
@@ -166,6 +166,14 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     @Transactional
     public ZSYResult modifyTask(Long taskId, TaskReqDTO taskReqDTO) {
+        Task taskTemp = taskMapper.selectByPrimaryKey(taskId);
+        if (taskTemp == null) {
+            logger.warn("无法找到任务,id:{}", taskId);
+            throw new ZSYServiceException("无法找到任务,id:" + taskId);
+        }
+        if (taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
+            throw new ZSYServiceException("该任务已结束");
+        }
         checkUser();
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
@@ -197,7 +205,6 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUser.setId(snowFlakeIDHelper.nextId());
                 taskUser.setTaskId(task.getId());
                 taskUser.setUserId(user.getUserId());
-                taskUser.setStageId(user.getStageId());
                 taskUser.setDescription(user.getDescription());
                 taskUser.setBeginTime(user.getBeginTime());
                 taskUser.setEndTime(user.getEndTime());
@@ -234,6 +241,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskLogMapper.insert(buildLog("修改了任务", task.getName(), task.getId()));
         return ZSYResult.success();
     }
+
 
     /**
      * 审核任务
@@ -341,7 +349,7 @@ public class ZSYTaskService implements IZSYTaskService {
         userIntegral.setIntegral(new BigDecimal(taskUserTemp.getTaskHours()));
         userIntegral.setCreateTime(new Date());
         userIntegral.setOrigin(1);
-        userIntegral.setDescription("完成了单人任务:" + taskTemp.getName());
+        userIntegral.setDescription("完成了单人任务:" + taskTemp.getDescription());
         userIntegralMapper.insert(userIntegral);
 
         // 修改用户积分
@@ -480,7 +488,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskBOS.stream().forEach(taskBO -> {
                 TaskResDTO taskResDTO = new TaskResDTO();
                 BeanUtils.copyProperties(taskBO, taskResDTO);
-                if (taskResDTO.getUserIntegral() != null && taskResDTO.getType()==ZSYTaskType.PUBLIC_TASK.getValue()) {
+                if (taskResDTO.getUserIntegral() != null && taskResDTO.getType() == ZSYTaskType.PUBLIC_TASK.getValue()) {
                     if (taskResDTO.getUserIntegral() >= 90) {
                         taskResDTO.setIntegralGrade("A");
                     } else if (taskResDTO.getUserIntegral() >= 80) {
@@ -488,7 +496,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     } else {
                         taskResDTO.setIntegralGrade("C");
                     }
-                }else{
+                } else {
                     taskResDTO.setIntegralGrade("A");
                 }
                 page.add(taskResDTO);
@@ -589,7 +597,8 @@ public class ZSYTaskService implements IZSYTaskService {
         commentReqDTO.getComments().stream().forEach(commentSalveDTO -> {
             Integer value = ZSYIntegral.getValue(commentSalveDTO.getGrade());
             if (value == null) {
-                throw new ZSYServiceException("无法找到评价等级:" + commentSalveDTO.getGrade());
+//                throw new ZSYServiceException("无法找到评价等级:" + commentSalveDTO.getGrade());
+                throw new ZSYServiceException("评价等级不能为空");
             }
             TaskComment taskComment = new TaskComment();
             taskComment.setId(snowFlakeIDHelper.nextId());
@@ -664,7 +673,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setUserId(taskUserBO.getUserId());
                 userIntegral.setIntegral(integral);
                 userIntegral.setOrigin(1);
-                userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
+                userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getDescription());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
                 Task task = new Task();
@@ -709,7 +718,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskListResDTO.setTags(taskTagResDTOS);
             list.add(taskListResDTO);
         });
-        return new PageInfo<TaskListResDTO>(list);
+        return new PageInfo<>(list);
     }
 
     /**
@@ -729,6 +738,38 @@ public class ZSYTaskService implements IZSYTaskService {
             });
         }
         return ZSYResult.success().data(taskList);
+    }
+
+    /**
+     * 获取所有审核通过的任务
+     *
+     * @return
+     */
+    @Override
+    public PageInfo<TaskResDTO> getAuditSuccessAll(Integer pageNum) {
+        if (pageNum != null) {
+            PageHelper.startPage(pageNum, ZSYConstants.PAGE_SIZE);
+        }
+        Page<TaskBO> taskBOS = taskMapper.selectAllAuditSuccess();
+        Page<TaskResDTO> page = new Page<>();
+        BeanUtils.copyProperties(taskBOS, page);
+        taskBOS.stream().forEach(taskBO -> {
+            TaskResDTO taskResDTO = new TaskResDTO();
+            BeanUtils.copyProperties(taskBO, taskResDTO);
+            if (taskResDTO.getUserIntegral() != null && taskResDTO.getType() == ZSYTaskType.PUBLIC_TASK.getValue()) {
+                if (taskResDTO.getUserIntegral() >= 90) {
+                    taskResDTO.setIntegralGrade("A");
+                } else if (taskResDTO.getUserIntegral() >= 80) {
+                    taskResDTO.setIntegralGrade("B");
+                } else {
+                    taskResDTO.setIntegralGrade("C");
+                }
+            } else {
+                taskResDTO.setIntegralGrade("A");
+            }
+            page.add(taskResDTO);
+        });
+        return new PageInfo<>(page);
     }
 
     /**

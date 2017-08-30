@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Tate on 2017/8/14.
@@ -10,44 +11,44 @@ public class TaskListReqDTO {
     private Integer pageNum;
     private Integer pageSize;
     private Integer type;
-    private Long projectId;
-    private Long userId;
-    private Long stageId;
+    private String projectId;
+    private String userId;
+    private List<String> stageId;
     private Long priority;
-    private Long tagId;
+    private List<String> tagId;
     private Integer status;
     private Date beginTime;
     private Date endTime;
 
-    public Long getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(Long projectId) {
+    public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public Long getStageId() {
+    public List<String> getStageId() {
         return stageId;
     }
 
-    public void setStageId(Long stageId) {
+    public void setStageId(List<String> stageId) {
         this.stageId = stageId;
     }
 
-    public Long getTagId() {
+    public List<String> getTagId() {
         return tagId;
     }
 
-    public void setTagId(Long tagId) {
+    public void setTagId(List<String> tagId) {
         this.tagId = tagId;
     }
 
