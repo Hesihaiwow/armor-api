@@ -456,7 +456,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADh
 /* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "static/img/u1284.cd2bb65.png";
+module.exports = __webpack_require__.p + "armor/static/img/u1284.cd2bb65.png";
 
 /***/ }),
 /* 158 */
