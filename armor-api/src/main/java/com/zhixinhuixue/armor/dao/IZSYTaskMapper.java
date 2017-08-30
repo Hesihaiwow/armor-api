@@ -2,10 +2,12 @@ package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.TaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskCommentBO;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
+import com.zhixinhuixue.armor.model.pojo.TaskComment;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -108,4 +110,13 @@ public interface IZSYTaskMapper {
      * @return
      */
     int findTaskByProjectId(Long projectId);
+
+    /**
+     *
+     * 查询任务成员评价
+     * @param taskId
+     * @param taskUserId
+     * @return
+     */
+    List<TaskComment> findTaskComment(@Param("taskId") Long taskId, @Param("taskUserId") Long taskUserId);
 }

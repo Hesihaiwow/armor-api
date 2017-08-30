@@ -185,6 +185,11 @@
             where t1.review_status =3 and t1.is_delete = 0 and t1.type=1 order by t1.update_time desc
     </select>
 
+    <!-- 查询任务用户评价 -->
+    <select id="findTaskComment" resultMap="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.BaseResultMap">
+       select * from task_comment where task_id = #{taskId} and task_user_id = #{taskUserId}
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
