@@ -97,4 +97,11 @@
     delete from user_integral where task_id=#{taskId} and user_id = #{userId}
   </delete>
 
+  <!--获得用户总积分-->
+  <select id="getTotalIntegral" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+    SELECT SUM(integral) FROM user_integral
+      <where>
+        user_id = #{userId, jdbcType=BIGINT}
+      </where>
+  </select>
 </mapper>
