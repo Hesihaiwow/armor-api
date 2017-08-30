@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 
 import com.zhixinhuixue.armor.model.pojo.Project;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -21,9 +22,22 @@ public interface IZSYProjectMapper {
     void insert(Project project);
 
     /**
-     * 验证项目名是否存在
+     * 验证项目名是否存在,更新项目中排除项目本身
      * @return
      */
-    int validateProject(String name);
+    int validateProject(@Param("name") String name, @Param("id") Long id);
+
+    /**
+     * 更新项目
+     * @param project
+     */
+    int updateProject(Project project);
+
+    /**
+     * 删除项目
+     * @param projectId
+     * @return
+     */
+    int deleteProjectById(Long projectId);
 
 }

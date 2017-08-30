@@ -22,6 +22,13 @@ public class IntegralHistoryPageResDTO {
 
     private int type;
 
+    private int taskHours;
+
+    private Long taskId;
+
+    //taskUserId
+    private Long id;
+
     public String getName() {
         return name;
     }
@@ -76,5 +83,29 @@ public class IntegralHistoryPageResDTO {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getTaskHours() {
+        return taskHours;
+    }
+
+    public void setTaskHours(int taskHours) {
+        this.taskHours = taskHours;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

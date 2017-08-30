@@ -6,6 +6,8 @@ import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface IZSYUserIntegralMapper {
 
     /**
@@ -15,7 +17,7 @@ public interface IZSYUserIntegralMapper {
      * @param endTime 结束时间
      * @return
      */
-    Page<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime);
+    List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime);
 
     /**
      * 查询用户积分

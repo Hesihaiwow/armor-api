@@ -45,5 +45,29 @@ public class ZSYProjectController extends ZSYController{
         return ZSYResult.success().build();
     }
 
+    /**
+     * 项目修改更新
+     * @param project
+     * @return
+     */
+    @ApiOperation("修改项目")
+    @PutMapping(value = "/update/{projectId}")
+    public String updateProject(@Valid @RequestBody ProjectReqDTO project, @PathVariable("projectId") Long projectId){
+        projectService.updateProject(projectId,project);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 删除项目
+     * @param projectId
+     * @return
+     */
+    @ApiOperation("删除项目")
+    @DeleteMapping(value = "/delete/{projectId}")
+    public String deleteProject( @PathVariable("projectId") Long projectId){
+        projectService.deleteProject(projectId);
+        return ZSYResult.success().build();
+    }
+
 
 }

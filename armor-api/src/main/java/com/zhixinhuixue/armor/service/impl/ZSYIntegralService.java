@@ -46,9 +46,7 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     @Override
     public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime){
-//        PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
-        Page<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
-//        Page<IntegralPageResDTO> page = new Page<>();
+        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
         List<IntegralPageResDTO> integralPageResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(userIntegralInfoBOS,integralPageResDTOS);
         userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
@@ -56,7 +54,6 @@ public class ZSYIntegralService implements IZSYIntegralService{
             BeanUtils.copyProperties(userIntegralInfoBO, integralPageResDTO);
             integralPageResDTOS.add(integralPageResDTO);
         });
-//        PageInfo<IntegralPageResDTO> pageInfo = new PageInfo<>(page);
         return integralPageResDTOS;
     }
 
@@ -111,7 +108,6 @@ public class ZSYIntegralService implements IZSYIntegralService{
         }else{
             throw new ZSYServiceException("扣除积分大于实际分数,请重试");
         }
-
     }
 
 

@@ -25,4 +25,16 @@ public interface IZSYProjectService {
      */
     void addProject(ProjectReqDTO project);
 
+    /**
+     * 项目更新修改
+     * @param project
+     */
+    void updateProject(Long projectId,ProjectReqDTO project);
+
+    /**
+     * 删除项目
+     * @param projectId
+     */
+    void deleteProject(Long projectId);
+
 }

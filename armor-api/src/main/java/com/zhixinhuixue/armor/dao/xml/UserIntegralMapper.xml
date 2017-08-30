@@ -19,6 +19,8 @@
   <resultMap id="IntegralHistory" type="com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO" extends="BaseResultMap">
     <result column="grade" jdbcType="VARCHAR" property="grade" />
     <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="task_hours" jdbcType="INTEGER" property="taskHours" />
+    <result column="id" jdbcType="BIGINT" property="id" />
   </resultMap>
   <sql id="Base_Column_List">
     id, task_id, user_id, integral, create_time
@@ -52,11 +54,12 @@
   </select>
   <!--查询用户积分历史-->
   <select id="getIntegralHistory" parameterType="Map"  resultMap="IntegralHistory">
-    SELECT i.integral, u.name, i.origin, i.create_time, i.description,c.grade,t.type
+    SELECT i.integral, u.name, i.origin, i.create_time, i.task_id, i.description, c.grade, t.type, h.task_hours, h.id
     FROM user_integral i
     LEFT OUTER  JOIN `user` u ON i.user_id = u.id
     LEFT JOIN task_comment c ON i.task_id = c.task_id
     LEFT JOIN task t ON i.task_id = t.id
+    LEFT JOIN task_user h ON i.task_id = h.task_id
     <where>
       i.user_id = #{id,jdbcType=BIGINT}
       <if test="startTime!=null and startTime!=''">
@@ -66,7 +69,7 @@
         <![CDATA[AND i.create_time <#{endTime}]]>
       </if>
     </where>
-    GROUP BY i.task_id
+    GROUP BY i.id
     ORDER BY i.create_time DESC
   </select>
   <!--查询排名-->
