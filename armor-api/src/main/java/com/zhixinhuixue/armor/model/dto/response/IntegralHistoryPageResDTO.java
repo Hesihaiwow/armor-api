@@ -18,6 +18,10 @@ public class IntegralHistoryPageResDTO {
 
     private String description;
 
+    private String grade;
+
+    private int type;
+
     public String getName() {
         return name;
     }
@@ -56,5 +60,21 @@ public class IntegralHistoryPageResDTO {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

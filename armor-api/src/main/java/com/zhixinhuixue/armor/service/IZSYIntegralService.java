@@ -2,10 +2,13 @@ package com.zhixinhuixue.armor.service;
 
 
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO;
 import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
+
+import java.util.List;
 
 
 /**
@@ -15,12 +18,11 @@ public interface IZSYIntegralService {
 
     /**
      * 查询积分列表
-     * @param pageIndex 开始时间
      * @param startTime 结束时间
      * @param endTime 页码
      * @return
      */
-    PageInfo<IntegralPageResDTO> getIntegralPage(int pageIndex, String startTime, String endTime);
+    List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime);
 
     /**
      * 用户积分排名信息

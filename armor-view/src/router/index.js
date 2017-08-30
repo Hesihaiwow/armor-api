@@ -7,6 +7,7 @@ import Project from '@/components/Project'
 import Intergral from '@/components/Intergral'
 import Organization from '@/components/Organization'
 import NavIndex from '@/components/NavIndex'
+import IntegralHistory from '@/components/IntegralHistory'
 
 
 Vue.use(Router)
@@ -42,6 +43,10 @@ export default new Router({
         {
           path: 'navIndex',
           component: NavIndex
+        },
+        {
+          path: 'integralHistory',
+          component: IntegralHistory
         }
       ]
     }

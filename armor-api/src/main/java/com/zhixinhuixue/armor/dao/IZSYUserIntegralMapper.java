@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import org.apache.ibatis.annotations.Param;
@@ -50,6 +51,6 @@ public interface IZSYUserIntegralMapper {
      * @param endTime
      * @return
      */
-    Page<UserIntegralInfoBO> getIntegralHistory(@Param("id") Long id,@Param("startTime") String startTime, @Param("endTime") String endTime);
+    Page<UserIntegralHistoryBO> getIntegralHistory(@Param("id") Long id, @Param("startTime") String startTime, @Param("endTime") String endTime);
 
 }

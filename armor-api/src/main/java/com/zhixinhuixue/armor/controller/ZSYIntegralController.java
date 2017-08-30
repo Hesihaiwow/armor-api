@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
+import java.util.List;
 
 /**
  * Created by Lang on 2017/8/7 0007.
@@ -36,13 +37,12 @@ public class ZSYIntegralController extends ZSYController{
     @ApiOperation("获取积分列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "startTime",value = "开始时间",required = false,paramType = "query",dataType = "string"),
-            @ApiImplicitParam(name = "endTime",value = "结束时间",required = false,paramType = "query",dataType = "string"),
-            @ApiImplicitParam(name = "pageIndex",value = "页码",required = true,paramType = "path",dataType = "int")
+            @ApiImplicitParam(name = "endTime",value = "结束时间",required = false,paramType = "query",dataType = "string")
     })
-    @GetMapping("/{pageIndex}")
-    public String getIntegralPage(@PathVariable Integer pageIndex,@PathParam("startTime")String startTime,@PathParam("endTime")String endTime){
-        PageInfo<IntegralPageResDTO> pageInfo = integralService.getIntegralPage(pageIndex,startTime,endTime);
-        return ZSYResult.success().data(pageInfo).build();
+    @GetMapping("")
+    public String getIntegralPage(@PathParam("startTime")String startTime,@PathParam("endTime")String endTime){
+        List<IntegralPageResDTO> integralPageResDTOList = integralService.getIntegralPage(startTime,endTime);
+        return ZSYResult.success().data(integralPageResDTOList).build();
     }
 
     /**

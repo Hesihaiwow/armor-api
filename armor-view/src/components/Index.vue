@@ -1,5 +1,5 @@
 <template>
-<div class="nav-con" @click="hidePerOpt"> 
+<div class="nav-con" @click="hidePerOpt">
   <div class="nav-top-bg">
     <div class="ntb-con">
       <div class="logo"><img src="../assets/img/site-icon.png" alt=""></div>
@@ -33,6 +33,7 @@ import Organization from './Organization'
 import NavIndex from './NavIndex'
 import AlterPassword from './AlterPassword'
 import Helper from "../lib/Helper";
+import IntegralHistory from './IntegralHistory'
 
 
 export default {
@@ -129,7 +130,8 @@ export default {
       Intergral: Intergral,
       Organization: Organization,
       NavIndex: NavIndex,
-      AlterPassword: AlterPassword
+      AlterPassword: AlterPassword,
+      IntegralHistory:IntegralHistory
     }
 }
 </script>
