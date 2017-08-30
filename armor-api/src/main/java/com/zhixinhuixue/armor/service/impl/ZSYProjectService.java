@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.service.impl;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYProjectMapper;
+import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
@@ -26,6 +27,9 @@ public class ZSYProjectService implements IZSYProjectService{
 
     @Autowired
     private IZSYProjectMapper projectMapper;
+
+    @Autowired
+    private IZSYTaskMapper taskMapper;
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
@@ -59,7 +63,7 @@ public class ZSYProjectService implements IZSYProjectService{
         }
 
         String name = projectReqDTO.getName();
-        if(projectMapper.validateProject(name.trim())>0) {
+        if(projectMapper.validateProject(name.trim(),null)>0) {
             throw new ZSYServiceException("项目名称已存在");
         }
             Project project = new Project();
@@ -69,6 +73,31 @@ public class ZSYProjectService implements IZSYProjectService{
             project.setDescription(projectReqDTO.getDescription());
             project.setName(projectReqDTO.getName());
             projectMapper.insert(project);
+
+    }
+
+    @Override
+    public void updateProject(Long projectId, ProjectReqDTO projectReqDTO){
+        String name = projectReqDTO.getName();
+        if(projectMapper.validateProject(name.trim(),projectId)>0) {
+            throw new ZSYServiceException("项目名称已存在");
+        }
+        Project project = new Project();
+        project.setId(projectId);
+        BeanUtils.copyProperties(projectReqDTO,project);
+        if (projectMapper.updateProject(project)==0){
+            throw new ZSYServiceException("项目更新失败");
+        }
+    }
+    @Override
+    public void deleteProject(Long projectId){
+        if(taskMapper.findTaskByProjectId(projectId)>0){
+            throw new ZSYServiceException("项目中存在任务,请删除后重试");
+        }else{
+            if (projectMapper.deleteProjectById(projectId)==0){
+                throw new ZSYServiceException("删除项目失败");
+            }
+        }
 
     }
 }

@@ -1,9 +1,12 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface IZSYUserIntegralMapper {
 
@@ -14,7 +17,7 @@ public interface IZSYUserIntegralMapper {
      * @param endTime 结束时间
      * @return
      */
-    Page<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime);
+    List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime);
 
     /**
      * 查询用户积分
@@ -50,7 +53,7 @@ public interface IZSYUserIntegralMapper {
      * @param endTime
      * @return
      */
-    Page<UserIntegralInfoBO> getIntegralHistory(@Param("id") Long id,@Param("startTime") String startTime, @Param("endTime") String endTime);
+    Page<UserIntegralHistoryBO> getIntegralHistory(@Param("id") Long id, @Param("startTime") String startTime, @Param("endTime") String endTime);
 
 
     /**

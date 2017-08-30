@@ -11,6 +11,7 @@
   <sql id="Base_Column_List">
     id, name, description, create_by, create_time
   </sql>
+
   <!--查询所有项目并按照时间倒序排列-->
   <select id="selectAll" resultMap="BaseResultMap">
     SELECT
@@ -18,6 +19,7 @@
     FROM project
     ORDER BY create_time DESC
   </select>
+
   <!--添加项目-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     insert into project (id, name, description, 
@@ -25,8 +27,31 @@
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
+
+  <!-- 更新项目 -->
+  <update id="updateProject" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
+    update project
+    <set>
+      <if test="name != null and name!=''">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null and description!=''">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 删除项目  -->
+  <delete id="deleteProjectById" parameterType="java.lang.Long">
+    DELETE FROM project where id = #{id,jdbcType=BIGINT}
+  </delete>
+
   <!--验证项目名是否存在-->
-  <select id="validateProject" parameterType="java.lang.String" resultType="java.lang.Integer">
-    SELECT count(*) FROM project  WHERE name= #{name,jdbcType=VARCHAR}
+  <select id="validateProject" parameterType="Map" resultType="java.lang.Integer">
+    SELECT count(*) FROM project  WHERE name= #{name}
+    <if test="id != null and id!=''">
+      AND id != #{id}
+    </if>
   </select>
 </mapper>

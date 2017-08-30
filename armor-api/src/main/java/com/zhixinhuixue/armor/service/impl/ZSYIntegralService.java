@@ -9,6 +9,7 @@ import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
@@ -23,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -42,18 +45,16 @@ public class ZSYIntegralService implements IZSYIntegralService{
     private SnowFlakeIDHelper snowFlakeIDHelper;
 
     @Override
-    public PageInfo<IntegralPageResDTO> getIntegralPage(int pageIndex, String startTime, String endTime){
-        PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
-        Page<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
-        Page<IntegralPageResDTO> page = new Page<>();
-        BeanUtils.copyProperties(userIntegralInfoBOS,page);
+    public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime){
+        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
+        List<IntegralPageResDTO> integralPageResDTOS = new ArrayList<>();
+        BeanUtils.copyProperties(userIntegralInfoBOS,integralPageResDTOS);
         userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
             IntegralPageResDTO integralPageResDTO = new IntegralPageResDTO();
             BeanUtils.copyProperties(userIntegralInfoBO, integralPageResDTO);
-            page.add(integralPageResDTO);
+            integralPageResDTOS.add(integralPageResDTO);
         });
-        PageInfo<IntegralPageResDTO> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+        return integralPageResDTOS;
     }
 
     @Override
@@ -74,13 +75,13 @@ public class ZSYIntegralService implements IZSYIntegralService{
     @Override
     public PageInfo<IntegralHistoryPageResDTO> getIntegralHistory(Long id, int pageIndex, String startTime, String endTime){
         PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
-        Page<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralHistory(id,startTime,endTime);
+        Page<UserIntegralHistoryBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralHistory(id,startTime,endTime);
         Page<IntegralHistoryPageResDTO> page = new Page<>();
-        BeanUtils.copyProperties(userIntegralInfoBOS, page);
-        userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
+        BeanUtils.copyProperties(userIntegralHistoryBOS, page);
+        userIntegralHistoryBOS.stream().forEach(userIntegralHistoryBO -> {
             IntegralHistoryPageResDTO integralHistoryPageResDTO = new IntegralHistoryPageResDTO();
-            BeanUtils.copyProperties(userIntegralInfoBO, integralHistoryPageResDTO);
-            integralHistoryPageResDTO.setCreateTime(userIntegralInfoBO.getCreateTime());
+            BeanUtils.copyProperties(userIntegralHistoryBO, integralHistoryPageResDTO);
+            integralHistoryPageResDTO.setCreateTime(userIntegralHistoryBO.getCreateTime());
             page.add(integralHistoryPageResDTO);
         });
         PageInfo<IntegralHistoryPageResDTO> pageInfo = new PageInfo<>(page);
@@ -93,7 +94,6 @@ public class ZSYIntegralService implements IZSYIntegralService{
         if(integral.compareTo(new BigDecimal("0"))!=-1){//新旧积分相加大于0
             user.setIntegral(integral);
             userMapper.updateSelectiveById(user);
-
 
             UserIntegral userIntegral = new UserIntegral();
             userIntegral.setId(snowFlakeIDHelper.nextId());
@@ -108,7 +108,6 @@ public class ZSYIntegralService implements IZSYIntegralService{
         }else{
             throw new ZSYServiceException("扣除积分大于实际分数,请重试");
         }
-
     }
 
 
