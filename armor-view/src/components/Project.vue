@@ -93,10 +93,6 @@
             this.projectList();
             })
           }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
           });
       },
       editProject(id,name,description){

@@ -228,8 +228,12 @@
                   list[i].origin = "任务系统-多人任务";
                 }else{
                   list[i].origin = "任务系统-单人任务";
+                  list[i].grade = "";
                 }
             }
+          }
+          if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
+            this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime() - 86399000);//之前加入的结束时间减回
           }
           this.historyPage.totals = res.data.total;
           this.historyPage.pageNum = res.data.pages;
