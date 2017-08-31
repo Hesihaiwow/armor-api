@@ -13,6 +13,8 @@
                     <span v-else>{{task.name}}</span>
                 </div>
                 <div class="task-state">
+                    <i class="iconfont icon-person"></i>
+                    <i class="iconfont icon-people"></i>
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
                     <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check" @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
@@ -248,11 +250,11 @@
                </span>
             </span>
             <el-form label-width="80px">
-                <el-form-item  class="task-form" label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>任务名称</span>
                     <el-input v-model="modifyTaskForm.taskName" style="width: 300px"></el-input>
                 </el-form-item>
-                <el-form-item  class="task-form" label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>项目</span>
                     <el-select v-model="modifyTaskForm.projectId" placeholder="请选择">
                         <el-option
@@ -263,7 +265,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form" label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>优先级</span>
                     <el-select v-model="modifyTaskForm.priority" placeholder="请选择">
                         <el-option
@@ -274,7 +276,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form" label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>截止日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
@@ -284,14 +286,14 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item  class="task-form" label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>阶段</span>
                     <el-select v-model="modifyTaskForm.stageId" :multiple-limit="1" placeholder="请选择">
                         <el-option v-for="item in stageList" :key="item.id"
                                    :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form" label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>标签</span>
                    <!--  <div class="fl tag-name clearfix">
                         <el-button class="fl" size="small" v-for="item in tagList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
@@ -308,7 +310,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form" label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>任务描述</span>
                     <el-input type="textarea" v-model="modifyTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
@@ -1290,6 +1292,9 @@
     .task-state {
         margin-top: 10px;
     }
+    .task-state .iconfont{
+        margin-right: 5px;
+    }
 
     .task-state > span, .task-data-show > span {
         display: inline-block;
@@ -1826,6 +1831,9 @@
     }
     .task-form{
         margin-bottom: 0;
+    }
+    .task-form-edit{
+        margin-bottom: 10px;
     }
     .el-dialog__body{
         padding:20px!important;
