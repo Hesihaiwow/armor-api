@@ -1,7 +1,18 @@
 <template>
     <div>
         <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id)" :class="task.borderClass">
-            <div class="head-img"><img src="../assets/img/project.png" alt="" class=""></div>
+            <div class="head-img">
+                <!-- 待审核 -->
+                <img v-if="task.reviewStatus ==1" src="../assets/img/waitAudit.png">
+                <!-- 审核通过 -->
+                <img v-else-if="taskStatus=='auditSuccess'" src="../assets/img/auditSuccess.png">
+                <!-- 进行中 -->
+                <img v-else-if="(taskStatus=='TaskDoing' && task.reviewStatus ==3)||(taskStatus=='taskList' && task.status<3)" src="../assets/img/doing.png">
+                <!-- 已完成 -->
+                <img v-else-if="(taskStatus=='finished')||task.status==3" src="../assets/img/finished.jpg">
+                <!-- 待评价 -->
+                <img v-else-if="taskStatus=='WaitAssess'" src="../assets/img/waitAssess.png">
+            </div>
             <div class="main-task-detail">
                 <div class="task-name">
                     <span v-if="isPrivate">
@@ -18,9 +29,11 @@
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
                     <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check" @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
-                    <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 " @click="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
-                    <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
-                    <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit" @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
+                        <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 " @click="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
+                        <!-- 待评价 -->
+                        <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
+                        <!-- 待审核 -->
+                        <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit" @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
                         <!-- 审核通过 -->
                       <i v-show="taskStatus=='auditSuccess' " @click.stop="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
 
@@ -171,7 +184,8 @@
                 </div>
                 <ul style="height: 100px; overflow: auto">
                     <li v-for="(item,index) in taskLog.list" :key="index">
-                        {{item.title}}
+                       <span class="ellipsis" style="float: left;width: 350px;" :title="item.title"> {{item.title}}</span>
+                       <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
                     </li>
                 </ul>
             </div>
@@ -648,7 +662,7 @@
             },
             formatTime: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY-MM-DD HH:mm');
+                return moment(value).format('YYYY-MM-DD HH:mm:ss');
             }
         },
         methods: {

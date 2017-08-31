@@ -12,7 +12,7 @@
                     </div>
                     <div class="task-top-list fl">
                         <span class="ttl-name">成员</span>
-                        <el-select clearable v-model="form.userId" placeholder="请选择">
+                        <el-select clearable filterable v-model="form.userId" placeholder="请选择">
                             <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                        :value="item.id"></el-option>
                         </el-select>
@@ -88,7 +88,7 @@
 
         <div class="task-lis-con">
 
-            <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList"
+            <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList" taskStatus="taskList"
                        :projectList="projectList"
                        :userList="userList"
                        :stageList="stageList"
@@ -122,7 +122,7 @@
         name: 'Task',
         data() {
             return {
-                open:true,
+                open:false,
                 loading: true,
                 timeRange: '',
                 projectList: [],
@@ -147,8 +147,8 @@
                     userId: '',
                     stageId: [],
                     tagId: [],
-                    type: '',
-                    status: '',
+                    type: 2,
+                    status: 3,
                     priority: '',
                     beginTime: '',
                     endTime: ''
