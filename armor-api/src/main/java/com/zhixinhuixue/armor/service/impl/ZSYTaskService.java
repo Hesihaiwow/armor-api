@@ -239,7 +239,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskLogMapper.insert(buildLog("修改了任务", task.getName(), task.getId()));
 
         // 个人任务修改工时，更新积分
-        if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
+        if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue() && taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
             taskTemp.getTaskUsers().forEach(userOld -> {
                 // 减去用户积分
                 User userTemp = userMapper.selectById(userOld.getUserId());

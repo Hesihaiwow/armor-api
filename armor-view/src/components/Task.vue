@@ -87,7 +87,12 @@
         </div>
 
         <div class="task-lis-con">
-            <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList"></task-item>
+
+            <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList"
+                       :projectList="projectList"
+                       :userList="userList"
+                       :stageList="stageList"
+                       :tagList="tagList"></task-item>
             <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"></create-task>
         </div>
         <div class="pagination">
@@ -332,10 +337,10 @@
                         let endColor = '', endText = ''
                         endText = moment(endTime).calendar(null, {
                             sameDay: '[今天]LT',
-                            nextDay: '[明天]',
-                            nextWeek: '[下]ddd',
-                            lastDay: '[昨天]',
-                            lastWeek: '[上]ddd',
+                            nextDay: '[明天]LT',
+                            nextWeek: 'L',
+                            lastDay: '[昨天]LT',
+                            lastWeek: 'L',
                             sameElse: 'L'
                         })
                         if (el.status == 1) {

@@ -13,42 +13,45 @@ import IntegralHistory from '@/components/IntegralHistory'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Login',
-      component: Login
-    },
-    {
-      path: '/index',
-      name: 'Index',
-      component: Index,
-      children: [
+    routes: [
         {
-          path: 'task',
-          component: Task
+            path: '/',
+            name: 'Login',
+            component: Login
         },
         {
-          path: 'project',
-          component: Project
+            path: '*', redirect: '/index/navIndex'
         },
         {
-          path: 'intergral',
-          component: Intergral
-        },
-        {
-          path: 'organization',
-          component: Organization
-        },
-        {
-          path: 'navIndex',
-          component: NavIndex
-        },
-        {
-          path: 'integralHistory',
-          component: IntegralHistory
+            path: '/index',
+            name: 'Index',
+            component: Index,
+            children: [
+                {
+                    path: 'task',
+                    component: Task
+                },
+                {
+                    path: 'project',
+                    component: Project
+                },
+                {
+                    path: 'intergral',
+                    component: Intergral
+                },
+                {
+                    path: 'organization',
+                    component: Organization
+                },
+                {
+                    path: 'navIndex',
+                    component: NavIndex
+                },
+                {
+                    path: 'integralHistory',
+                    component: IntegralHistory
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 })
