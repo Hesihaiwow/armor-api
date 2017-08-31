@@ -7,7 +7,7 @@
                     <span v-if="isPrivate">
                         {{task.name}}
                         <span v-for="(item,index) in task.taskUsers" v-if="task.type==2">
-                          <span v-if="item.userId == loginUserId">({{item.description}})</span>
+                          <span v-if="item.userId == loginUserId && item.description!=''">({{item.description}})</span>
                       </span>
                     </span>
                     <span v-else>{{task.name}}</span>
@@ -352,14 +352,14 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="step.beginTime" format="yyyy-MM-dd HH:mm" type="datetime"
+                            <el-date-picker v-model="step.beginTime" format="yyyy-MM-dd" type="date"
                                             placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="step.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                            <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
@@ -428,9 +428,9 @@
                 <el-form-item  class="task-form-edit" label="截止日期">
                     <el-date-picker
                             v-model="modifyPrivateTaskForm.endTime"
-                            type="datetime"
+                            type="date"
                             :picker-options="pickerOptions0"
-                            format="yyyy-MM-dd HH:mm"
+                            format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1076,8 +1076,7 @@
                     this.step.userId == '' ||
                     this.step.taskHours == '' ||
                     this.step.beginTime == '' ||
-                    this.step.endTime == '' ||
-                    this.step.description == '';
+                    this.step.endTime == '';
                 if (valid) {
                     this.$message.warning('请将阶段填写完整');
                     return
@@ -1128,10 +1127,10 @@
                 })
             },
             saveTaskInfo() {
-                if (this.modifyTaskForm.description == '') {
+               /* if (this.modifyTaskForm.description == '') {
                     this.$message.warning("请填写任务备注");
                     return;
-                }
+                }*/
                 if (this.modifyTaskForm.taskName == '') {
                     this.$message.warning("请填写任务名称");
                     return;

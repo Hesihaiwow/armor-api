@@ -111,7 +111,7 @@
                 <el-form-item label="截止日期" prop="endTime">
                     <el-date-picker
                             v-model="taskForm.endTime"
-                            type="datetime"
+                            type="date"
                             :picker-options="pickerOptions0"
                             format="yyyy-MM-dd"
                             placeholder="选择日期时间">
@@ -370,10 +370,10 @@
                     const diffDays = Math.round(moment().diff(moment(endTime), 'days', true))
                     let endColor = '', endText = ''
                     endText = moment(endTime).calendar(null, {
-                        sameDay: '[今天]LT',
-                        nextDay: '[明天]LT',
+                        sameDay: '[今天]',
+                        nextDay: '[明天]',
                         nextWeek: 'L',
-                        lastDay: '[昨天]LT',
+                        lastDay: '[昨天]',
                         lastWeek: 'L',
                         sameElse: 'L'
                     })
