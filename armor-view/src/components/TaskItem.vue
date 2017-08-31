@@ -7,12 +7,14 @@
                     <span v-if="isPrivate">
                         {{task.name}}
                         <span v-for="(item,index) in task.taskUsers" v-if="task.type==2">
-                          <span v-if="item.userId == loginUserId">({{item.description}})</span>
+                          <span v-if="item.userId == loginUserId && item.description!=''">({{item.description}})</span>
                       </span>
                     </span>
                     <span v-else>{{task.name}}</span>
                 </div>
                 <div class="task-state">
+                    <i class="iconfont icon-person" v-show="task.type==1"></i>
+                    <i class="iconfont icon-people" v-show="task.type==2"></i>
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
                     <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check" @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
@@ -57,14 +59,14 @@
                 size="tiny"
                 :before-close="hideFinishedPop">
             <el-form>
-                <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
-                <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                <el-form-item  class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item  class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item  class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item  class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item  class="task-form" label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
-                <el-form-item label="标签：">
+                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item  class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
@@ -98,18 +100,18 @@
                 size="tiny"
                 :before-close="hideAuditPop">
             <el-form>
-                <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
-                <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
-                <el-form-item label="标签：">
+                <el-form-item  class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item  class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item  class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item  class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
                 </el-form-item>
                 <div v-for="(item,index) in taskDetail.users">
-                    <el-form-item label="工作量：">{{item.taskHours}} 工时</el-form-item>
-                    <el-form-item label="负责人：">{{item.userName}}</el-form-item>
+                    <el-form-item  class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
+                    <el-form-item  class="task-form" label="负责人：">{{item.userName}}</el-form-item>
                 </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -132,14 +134,14 @@
                 size="tiny"
                 :before-close="hideTaskDetail">
             <el-form>
-                <el-form-item label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item label="任务描述：">{{taskDetail.description}}</el-form-item>
-                <el-form-item label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                <el-form-item  class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item  class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item  class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item  class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item  class="task-form" label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
-                <el-form-item label="标签：">
+                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item  class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
@@ -157,19 +159,21 @@
                     <div class="bdl-line"></div>
                 </div>
                 <div v-else="taskDetail.type==1" v-for="(item,index) in taskDetail.users">
-                    <el-form-item label="工作量：">{{item.taskHours}} 工时</el-form-item>
-                    <el-form-item label="负责人：">{{item.userName}}</el-form-item>
+                    <el-form-item  class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
+                    <el-form-item  class="task-form" label="负责人：">{{item.userName}}</el-form-item>
                 </div>
             </el-form>
 
-            <div v-show="taskLog.list.length>0">
-                <b>动态</b>
-                <a href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>
-                <div style="height: 100px; overflow: auto">
-                    <div v-for="(item,index) in taskLog.list" :key="index">
-                        {{item.title}}
-                    </div>
+            <div class="trends" v-show="taskLog.list.length>0">
+                <div class="trends-title clearfix">
+                    <b class="fl">动态</b>
+                    <a class="fr" href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>
                 </div>
+                <ul style="height: 100px; overflow: auto">
+                    <li v-for="(item,index) in taskLog.list" :key="index">
+                        {{item.title}}
+                    </li>
+                </ul>
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
                 <el-tooltip content="删除该任务" placement="top">
@@ -203,7 +207,7 @@
                     </div>
                     <div v-if="!stage.myComment">
                         <el-form>
-                            <el-form-item label="请评价">
+                            <el-form-item  class="task-form" label="请评价">
                                 <el-radio-group v-model="assessForm.comments[index].grade">
                                     <el-radio class="radio" label="A">A</el-radio>
                                     <el-radio class="radio" label="B">B</el-radio>
@@ -246,11 +250,11 @@
                </span>
             </span>
             <el-form label-width="80px">
-                <el-form-item label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>任务名称</span>
                     <el-input v-model="modifyTaskForm.taskName" style="width: 300px"></el-input>
                 </el-form-item>
-                <el-form-item label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>项目</span>
                     <el-select v-model="modifyTaskForm.projectId" placeholder="请选择">
                         <el-option
@@ -261,7 +265,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>优先级</span>
                     <el-select v-model="modifyTaskForm.priority" placeholder="请选择">
                         <el-option
@@ -272,25 +276,28 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>截止日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:mm"
+                            format="yyyy-MM-dd"
                             :picker-options="pickerOptions0"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>阶段</span>
                     <el-select v-model="modifyTaskForm.stageId" :multiple-limit="1" placeholder="请选择">
                         <el-option v-for="item in stageList" :key="item.id"
                                    :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>标签</span>
+                   <!--  <div class="fl tag-name clearfix">
+                        <el-button class="fl" size="small" v-for="item in tagList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
+                     </div> -->
                     <el-select
                             v-model="modifyTaskForm.tags"
                             multiple
@@ -303,7 +310,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="">
+                <el-form-item  class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>任务描述</span>
                     <el-input type="textarea" v-model="modifyTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
@@ -329,7 +336,7 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-select v-model="step.userId" placeholder="请选择" @change="stepUserChange">
+                            <el-select v-model="step.userId" filterable placeholder="请选择" @change="stepUserChange">
                                 <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
@@ -345,14 +352,14 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="step.beginTime" format="yyyy-MM-dd HH:mm" type="datetime"
+                            <el-date-picker v-model="step.beginTime" format="yyyy-MM-dd" type="date"
                                             placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="step.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                            <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
@@ -384,13 +391,13 @@
             </h2>
             <div v-for="(item,index) in taskCommentDetail.comments">
                 <el-form label-position="left" inline class="demo-table-expand">
-                    <el-form-item label="姓名">
+                    <el-form-item  class="task-form" label="姓名">
                         <span>{{ item.commentUserName }}</span>
                     </el-form-item>
-                    <el-form-item label="评价">
+                    <el-form-item  class="task-form" label="评价">
                         <span>{{ item.grade }}</span>
                     </el-form-item>
-                    <el-form-item label="描述">
+                    <el-form-item  class="task-form" label="描述">
                         <span>{{ item.description }}</span>
                     </el-form-item>
                 </el-form>
@@ -408,7 +415,7 @@
                 :close-on-press-escape="false"
                 :visible.sync="showModifyPrivateTask">
             <el-form :model="modifyPrivateTaskForm" label-width="80px">
-                <el-form-item label="项目">
+                <el-form-item  class="task-form-edit" label="项目">
                     <el-select v-model="modifyPrivateTaskForm.projectId" placeholder="请选择">
                         <el-option
                                 v-for="item in projectList"
@@ -418,30 +425,29 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="截止日期">
+                <el-form-item  class="task-form-edit" label="截止日期">
                     <el-date-picker
                             v-model="modifyPrivateTaskForm.endTime"
-                            type="datetime"
+                            type="date"
                             :picker-options="pickerOptions0"
-                            format="yyyy-MM-dd HH:mm"
+                            format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="工作量">
+                <el-form-item  class="task-form-edit" label="工作量">
                     <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="2"></el-input>
                     小时
                 </el-form-item>
-                <el-form-item label="任务名称">
+                <el-form-item  class="task-form-edit" label="任务名称">
                     <el-input v-model="modifyPrivateTaskForm.taskName"></el-input>
                 </el-form-item>
 
-                <el-form-item label="任务描述">
+                <el-form-item  class="task-form-edit" label="任务描述">
                     <el-input type="textarea" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item label="阶段">
+                <el-form-item  class="task-form-edit" label="阶段">
                     <el-select
                             v-model="modifyPrivateTaskForm.stageId"
-                            filterable
                             default-first-option
                             placeholder="请选择阶段">
                         <el-option
@@ -452,7 +458,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="标签">
+                <el-form-item  class="task-form-edit" label="标签">
                     <el-select
                             v-model="modifyPrivateTaskForm.tags"
                             multiple
@@ -485,7 +491,12 @@
         props: {
             taskItems: Array,
             taskStatus: String,
-            isPrivate: Boolean
+            isPrivate: Boolean,
+            projectList: Array,
+            stageList: Array,
+            tagList: Array,
+            userList: Array
+
         },
         data() {
             var validateEmpty = (rule, value, callback) => {
@@ -579,17 +590,17 @@
                     completeTime: '',
                     status: ''
                 },
-                stepTemp: {},
+                stepTemp: {},/*
                 projectList: [],
                 stageList: [],
-                tagList: [],
+                tagList: [],*/
             };
         },
         created() {
-            this.fetchProjectList()
-            this.fetchStageList()
-            this.fetchTagList()
-            this.fetchUserList()
+//            this.fetchProjectList()
+//            this.fetchStageList()
+//            this.fetchTagList()
+//            this.fetchUserList()
             this.loginUserId = helper.decodeToken().userId
         },
         computed: {
@@ -1065,8 +1076,7 @@
                     this.step.userId == '' ||
                     this.step.taskHours == '' ||
                     this.step.beginTime == '' ||
-                    this.step.endTime == '' ||
-                    this.step.description == '';
+                    this.step.endTime == '';
                 if (valid) {
                     this.$message.warning('请将阶段填写完整');
                     return
@@ -1117,10 +1127,10 @@
                 })
             },
             saveTaskInfo() {
-                if (this.modifyTaskForm.description == '') {
+               /* if (this.modifyTaskForm.description == '') {
                     this.$message.warning("请填写任务备注");
                     return;
-                }
+                }*/
                 if (this.modifyTaskForm.taskName == '') {
                     this.$message.warning("请填写任务名称");
                     return;
@@ -1201,7 +1211,7 @@
         text-align: center;
         color: #fff;
         cursor: pointer;
-        z-index: 100;
+        /*z-index: 100;*/
         margin-top: 24px;
         margin-right: 20px;
         width: 40px;
@@ -1239,7 +1249,7 @@
         display: -o-flex;
         display: flex;
         margin-bottom: 20px;
-        margin: 10px 10px 20px;
+        margin: 10px 0 20px;
         cursor: pointer;
     }
 
@@ -1284,6 +1294,9 @@
 
     .task-state {
         margin-top: 10px;
+    }
+    .task-state .iconfont{
+        margin-right: 5px;
     }
 
     .task-state > span, .task-data-show > span {
@@ -1400,11 +1413,34 @@
 </style>
 <style scoped>
     .ctpc-member-con {
+        margin:15px 0;
         padding-left: 10px; /* border-left: 1px solid #ccc; */
         margin-left: 6px;
         position: relative;
     }
+    .trends{
+        /*background-color: #f2f2f2; */
+       /*padding-left: 10px;*/
+       line-height: 30px;
+       border:1px solid #e4e8f1;
+        
+    }
+    .trends ul{
+        padding-left: 30px;
+        list-style: circle;
+    }
+    .trends li{
+        list-style: circle!important;
+    }
+    .trends-title{
+        padding:0 10px;
+        line-height: 30px;
+       background-color: #e4e8f1;
+    }
+   .trends-title a{
+       color: #20a0ff; 
 
+    }
     .ctpc-member-list {
         height: 42px;
         background: #fff;
@@ -1793,7 +1829,16 @@
 
     .demo-table-expand .el-form-item {
         margin-right: 0;
-        margin-bottom: 0;
+        margin-bottom: 0!important;
         width: 50%;
+    }
+    .task-form{
+        margin-bottom: 0;
+    }
+    .task-form-edit{
+        margin-bottom: 10px;
+    }
+    .el-dialog__body{
+        padding:20px!important;
     }
 </style>

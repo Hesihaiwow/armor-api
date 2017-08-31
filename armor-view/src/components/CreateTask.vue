@@ -38,7 +38,7 @@
                     <div class="ctpc-list clearfix">
                         <div class="ctpc-list-menu fl"><span class="star">*</span>截止日期</div>
                         <div class="ctpc-list-con fl">
-                            <el-date-picker v-model="taskForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                            <el-date-picker v-model="taskForm.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"
                                             :picker-options="pickerOptions0"></el-date-picker>
                         </div>
@@ -73,7 +73,7 @@
                                 <li class="tag-lis-add">
                                     <div class="tag-add-sel">
                                         <!--<div class="add-tag-btn" @click="addSelTag">添加</div>-->
-                                        <el-select v-model="taskForm.tags" multiple placeholder="添加标签">
+                                        <el-select v-model="taskForm.tags"  multiple placeholder="添加标签">
                                             <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                                        :value="item.id"></el-option>
                                         </el-select>
@@ -103,7 +103,7 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                                 <div class="add-member-basic-msg fl">
-                                    <el-select v-model="step.userId" placeholder="请选择" @change="stepUserChange">
+                                    <el-select v-model="step.userId" filterable  placeholder="请选择" @change="stepUserChange">
                                         <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                                    :value="item.id"></el-option>
                                     </el-select>
@@ -117,14 +117,14 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                                 <div class="add-member-basic-msg fl">
-                                    <el-date-picker v-model="step.beginTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                                    <el-date-picker v-model="step.beginTime" type="date" format="yyyy-MM-dd"
                                                     placeholder="选择日期"
                                                     :picker-options="pickerOptions0"></el-date-picker>
                                 </div>
                                 <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
                                 </div>
                                 <div class="add-member-basic-msg fl">
-                                    <el-date-picker v-model="step.endTime" type="datetime" format="yyyy-MM-dd HH:mm"
+                                    <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
                                                     placeholder="选择日期"
                                                     :picker-options="pickerOptions0"></el-date-picker>
                                 </div>
@@ -155,13 +155,16 @@
 
     moment.locale('zh-CN');
     export default {
+        props: {
+            projectList: Array,
+            stageList: Array,
+            tagList: Array,
+            userList: Array
+        },
         data() {
             return {
                 showCreateTask: false,
-                projectList: [],
-                stageList: [],
-                tagList: [],
-                userList: [],
+
                 priorityList: [
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
@@ -204,10 +207,10 @@
             };
         },
         created() {
-            this.fetchProjectList()
-            this.fetchStageList()
-            this.fetchTagList()
-            this.fetchUserList()
+//            this.fetchProjectList()
+//            this.fetchStageList()
+//            this.fetchTagList()
+//            this.fetchUserList()
         },
         computed: {
             insMsgShow() {
@@ -314,8 +317,7 @@
                     this.step.userId == '' ||
                     this.step.taskHours == '' ||
                     this.step.beginTime == '' ||
-                    this.step.endTime == '' ||
-                    this.step.description == '';
+                    this.step.endTime == ''
                 if (valid) {
                     this.$message.error('请将阶段填写完整');
                     return
@@ -414,10 +416,10 @@
                 })
             },
             saveTask() {
-                if (this.taskForm.description == '') {
+             /*   if (this.taskForm.description == '') {
                     this.$message.warning("请填写任务备注");
                     return;
-                }
+                }*/
                 if (this.taskForm.taskName == '') {
                     this.$message.warning("请填写任务名称");
                     return;
