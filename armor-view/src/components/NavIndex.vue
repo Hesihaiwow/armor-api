@@ -22,10 +22,18 @@
                     <el-tabs v-model="activeName" @tab-click="handleClick">
                         <el-tab-pane label="进行中" name="doing">
                             <task-item :taskItems="task.doing" :isPrivate="true"
-                                       taskStatus="TaskDoing" @reload="reload"></task-item>
+                                       taskStatus="TaskDoing" @reload="reload"
+                                       :projectList="projectList"
+                                       :userList="userList"
+                                       :stageList="stageList"
+                                       :tagList="tagList"></task-item>
                         </el-tab-pane>
                         <el-tab-pane label="已完成" name="completed">
-                            <task-item :taskItems="task.finished" :isPrivate="true" taskStatus="finished"></task-item>
+                            <task-item :taskItems="task.finished" :isPrivate="true" taskStatus="finished"
+                                       :projectList="projectList"
+                                       :userList="userList"
+                                       :stageList="stageList"
+                                       :tagList="tagList"></task-item>
                             <div class="pagination" v-show="this.task.finished.length>0">
                                 <el-pagination
                                         @current-change="handleFinishedPage"
@@ -45,18 +53,30 @@
                <div v-show="task.waitAssess.length>0">
                    <p class="mic-title">待评价任务</p>
                    <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
-                              taskStatus="WaitAssess"></task-item>
+                              taskStatus="WaitAssess"
+                              :projectList="projectList"
+                              :userList="userList"
+                              :stageList="stageList"
+                              :tagList="tagList"></task-item>
                </div>
             </div>
             <div v-show="userRole===0">
                 <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
                     <el-tab-pane label="待审核" name="wait">
                         <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
-                                   taskStatus="WaitAuditing"></task-item>
+                                   taskStatus="WaitAuditing"
+                                   :projectList="projectList"
+                                   :userList="userList"
+                                   :stageList="stageList"
+                                   :tagList="tagList"></task-item>
                     </el-tab-pane>
                     <el-tab-pane label="审核通过" name="completed">
                         <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"
-                                   taskStatus="auditSuccess"></task-item>
+                                   taskStatus="auditSuccess"
+                                   :projectList="projectList"
+                                   :userList="userList"
+                                   :stageList="stageList"
+                                   :tagList="tagList"></task-item>
                         <div class="pagination" v-show="this.task.auditSuccess.length>0">
                             <el-pagination
                                     @current-change="handleAuditSuccessPage"
@@ -228,6 +248,7 @@
                 projectList: [],
                 stageList: [],
                 tagList: [],
+                userList:[],
                 integralItem: [
                     {
                         label: '本周',
@@ -254,6 +275,12 @@
         },
         created() {
             this.reload();
+        },
+        //数据初始化
+        beforeMount(){
+            let _this = this;
+            //选中组织tab
+            _this.$root.eventBus.$emit("handleTabSelected", "navIndex");
         },
         computed: {
             permit() {
@@ -295,6 +322,7 @@
                 this.fetchProjectList()
                 this.fetchStageList()
                 this.fetchTagList()
+                this.fetchUserList()
                 //this.fetchApplyFailTask();
                 if (this.userRole === 0) {
                     // 所有审核通过的数据
@@ -446,6 +474,12 @@
                 let vm = this
                 http.zsyGetHttp('/stage/list', {}, (resp) => {
                     vm.stageList = resp.data
+                })
+            },
+            fetchUserList() {
+                let vm = this
+                http.zsyGetHttp('/user/effective', {}, (resp) => {
+                    vm.userList = resp.data
                 })
             },
             fetchTagList() {

@@ -485,7 +485,12 @@
         props: {
             taskItems: Array,
             taskStatus: String,
-            isPrivate: Boolean
+            isPrivate: Boolean,
+            projectList: Array,
+            stageList: Array,
+            tagList: Array,
+            userList: Array
+
         },
         data() {
             var validateEmpty = (rule, value, callback) => {
@@ -579,17 +584,17 @@
                     completeTime: '',
                     status: ''
                 },
-                stepTemp: {},
+                stepTemp: {},/*
                 projectList: [],
                 stageList: [],
-                tagList: [],
+                tagList: [],*/
             };
         },
         created() {
-            this.fetchProjectList()
-            this.fetchStageList()
-            this.fetchTagList()
-            this.fetchUserList()
+//            this.fetchProjectList()
+//            this.fetchStageList()
+//            this.fetchTagList()
+//            this.fetchUserList()
             this.loginUserId = helper.decodeToken().userId
         },
         computed: {

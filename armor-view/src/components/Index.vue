@@ -68,7 +68,7 @@ export default {
     },
     created(){
         this.activeName = 'navIndex';
-        this.$router.push(`/index/navIndex`);
+        //this.$router.push(`/index/navIndex`);
     },
     beforeMount(){
         //监听子组件传过来的tab选中事件
