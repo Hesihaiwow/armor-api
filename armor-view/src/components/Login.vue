@@ -18,6 +18,71 @@
         </el-form>
     </div>
 </template>
+<script>
+    import { Message } from 'element-ui';
+    import Helper from '../lib/Helper'
+    import Http from "../lib/Http";
+
+    export default {
+        data() {
+            return {
+                loginForm:{
+                    account:'',
+                    password:''
+                },
+                button:{
+                    loading:false
+                }
+            };
+        },
+        methods: {
+            login () {
+                let _this = this;
+                if (Helper.trim(_this.loginForm.account) == ''){
+                    Message.warning('请输入用户名');
+                    return;
+                }
+                if (Helper.trim(_this.loginForm.password) == ''){
+                    Message.warning('请输入密码');
+                    return;
+                }
+                _this.button.loading = true;
+                Http.zsyPostHttp(Http.API_URI.LOGIN, _this.loginForm,(res)=>{
+                    if (res.errCode!='00'){
+                        _this.button.loading = false;
+                        Message.error(res.errMsg);
+                    }else{
+                        _this.button.btnName = '登录成功,跳转中...';
+                        window.localStorage.setItem("token", res.data);
+                        _this.$router.push('/index/navIndex');
+                    }
+                },(res)=>{
+                    _this.button.loading = false;
+                    Message.error(res.errMsg);
+                },(e)=>{
+                    _this.button.loading = false;
+                });
+            },
+            bindEvent() {
+              if (window.addEventListener) { // Mozilla, Netscape, Firefox
+                document.addEventListener('keyup', this.handleKeyup, false);
+              } else if (window.attachEvent) { // IE
+                document.attachEvent('onkeyup', this.handleKeyup);
+              } else {
+                document.onkeyup = this.handleKeyup;
+              }
+            },
+            handleKeyup(e) {
+              if (e.keyCode === 13) {
+                this.login();
+              }
+            },
+        },
+        mounted() {
+            this.bindEvent();
+          },
+    }
+</script>
 <style  scoped>
     .login{
         height: 100%;
@@ -63,55 +128,6 @@
 
 
 </style>
-
-<script>
-    import { Message } from 'element-ui';
-    import Helper from '../lib/Helper'
-    import Http from "../lib/Http";
-
-    export default {
-        data() {
-            return {
-                loginForm:{
-                    account:'',
-                    password:''
-                },
-                button:{
-                    loading:false
-                }
-            };
-        },
-        methods: {
-            login () {
-                let _this = this;
-                if (Helper.trim(_this.loginForm.account) == ''){
-                    Message.warning('请输入用户名');
-                    return;
-                }
-                if (Helper.trim(_this.loginForm.password) == ''){
-                    Message.warning('请输入密码');
-                    return;
-                }
-                _this.button.loading = true;
-                Http.zsyPostHttp(Http.API_URI.LOGIN, _this.loginForm,(res)=>{
-                    if (res.errCode!='00'){
-                        _this.button.loading = false;
-                        Message.error(res.errMsg);
-                    }else{
-                        _this.button.btnName = '登录成功,跳转中...';
-                        window.localStorage.setItem("token", res.data);
-                        _this.$router.push('/index/navIndex');
-                    }
-                },(res)=>{
-                    _this.button.loading = false;
-                    Message.error(res.errMsg);
-                },(e)=>{
-                    _this.button.loading = false;
-                });
-            }
-        }
-    }
-</script>
 <style>
     .form-input .el-input__inner{height: 56px!important;}
     input:-webkit-autofill {  
