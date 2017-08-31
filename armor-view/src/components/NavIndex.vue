@@ -113,7 +113,7 @@
                             v-model="taskForm.endTime"
                             type="datetime"
                             :picker-options="pickerOptions0"
-                            format="yyyy-MM-dd HH:mm"
+                            format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>

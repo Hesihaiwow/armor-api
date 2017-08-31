@@ -73,7 +73,7 @@
                                 <li class="tag-lis-add">
                                     <div class="tag-add-sel">
                                         <!--<div class="add-tag-btn" @click="addSelTag">添加</div>-->
-                                        <el-select v-model="taskForm.tags" multiple placeholder="添加标签">
+                                        <el-select v-model="taskForm.tags"  multiple placeholder="添加标签">
                                             <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                                        :value="item.id"></el-option>
                                         </el-select>
@@ -103,7 +103,7 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                                 <div class="add-member-basic-msg fl">
-                                    <el-select v-model="step.userId" placeholder="请选择" @change="stepUserChange">
+                                    <el-select v-model="step.userId" filterable  placeholder="请选择" @change="stepUserChange">
                                         <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                                    :value="item.id"></el-option>
                                     </el-select>

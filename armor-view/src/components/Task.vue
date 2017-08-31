@@ -60,13 +60,13 @@
                     <div class="task-top-list clearfix">
                          <span class="ttl-name fl">标签&nbsp;</span>
                          <div class="fl tag-name clearfix">
-                             <el-button class="fl" type="" size="small" v-for="item in tagList" @click="addFormTagId(item.id,1,$event)">{{item.name}}</el-button>
+                             <el-button class="fl" type="" size="small" v-for="item in tagList" :key="item.id" @click="addFormTagId(item.id,1,$event)">{{item.name}}</el-button>
                          </div>
                     </div>
                      <div class="task-top-list  clearfix">
                         <span class="ttl-name fl">阶段&nbsp;</span>
                         <div class="fl tag-name clearfix">
-                            <el-button class="fl" size="small" v-for="item in stageList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
+                            <el-button class="fl" size="small" v-for="item in stageList" :key="item.id" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
                          </div>
                      </div>
                </div>

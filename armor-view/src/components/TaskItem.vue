@@ -13,8 +13,8 @@
                     <span v-else>{{task.name}}</span>
                 </div>
                 <div class="task-state">
-                    <i class="iconfont icon-person"></i>
-                    <i class="iconfont icon-people"></i>
+                    <i class="iconfont icon-person" v-show="task.type==1"></i>
+                    <i class="iconfont icon-people" v-show="task.type==2"></i>
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
                     <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check" @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
@@ -65,7 +65,7 @@
                 <el-form-item  class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item  class="task-form" label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
+                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item  class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
@@ -103,7 +103,7 @@
                 <el-form-item  class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item  class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item  class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
+                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item  class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
@@ -140,7 +140,7 @@
                 <el-form-item  class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item  class="task-form" label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatTime}}</el-form-item>
+                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item  class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
@@ -281,7 +281,7 @@
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:mm"
+                            format="yyyy-MM-dd"
                             :picker-options="pickerOptions0"
                             placeholder="选择日期时间">
                     </el-date-picker>
@@ -336,7 +336,7 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-select v-model="step.userId" placeholder="请选择" @change="stepUserChange">
+                            <el-select v-model="step.userId" filterable placeholder="请选择" @change="stepUserChange">
                                 <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
@@ -448,7 +448,6 @@
                 <el-form-item  class="task-form" label="阶段">
                     <el-select
                             v-model="modifyPrivateTaskForm.stageId"
-                            filterable
                             default-first-option
                             placeholder="请选择阶段">
                         <el-option
