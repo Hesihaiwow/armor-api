@@ -47,8 +47,8 @@ public class TaskUserReqDTO {
     /**
      * 阶段描述
      */
-    @NotNull(message = "阶段描述不能为空")
-    @Size(min = 1, max = 500, message = "阶段描述长度在{min}~{max}之间")
+//    @NotNull(message = "阶段描述不能为空")
+    @Size(max = 500, message = "阶段描述长度在{min}~{max}之间")
     private String description;
 
     private Integer status;

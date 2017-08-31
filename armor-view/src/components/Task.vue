@@ -60,13 +60,13 @@
                     <div class="task-top-list clearfix">
                          <span class="ttl-name fl">标签&nbsp;</span>
                          <div class="fl tag-name clearfix">
-                             <el-button class="fl" type="" size="small" v-for="item in tagList" @click="addFormTagId(item.id,1,$event)">{{item.name}}</el-button>
+                             <el-button class="fl" type="" size="small" v-for="item in tagList" :key="item.id" @click="addFormTagId(item.id,1,$event)">{{item.name}}</el-button>
                          </div>
                     </div>
                      <div class="task-top-list  clearfix">
                         <span class="ttl-name fl">阶段&nbsp;</span>
                         <div class="fl tag-name clearfix">
-                            <el-button class="fl" size="small" v-for="item in stageList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
+                            <el-button class="fl" size="small" v-for="item in stageList" :key="item.id" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
                          </div>
                      </div>
                </div>
@@ -93,7 +93,11 @@
                        :userList="userList"
                        :stageList="stageList"
                        :tagList="tagList"></task-item>
-            <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"></create-task>
+            <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"
+                         :projectList="projectList"
+                         :userList="userList"
+                         :stageList="stageList"
+                         :tagList="tagList"></create-task>
         </div>
         <div class="pagination">
             <el-pagination
@@ -336,10 +340,10 @@
                         const diffDays = moment().diff(moment(endTime), 'days')
                         let endColor = '', endText = ''
                         endText = moment(endTime).calendar(null, {
-                            sameDay: '[今天]LT',
-                            nextDay: '[明天]LT',
+                            sameDay: '[今天]',
+                            nextDay: '[明天]',
                             nextWeek: 'L',
-                            lastDay: '[昨天]LT',
+                            lastDay: '[昨天]',
                             lastWeek: 'L',
                             sameElse: 'L'
                         })

@@ -14,6 +14,8 @@ public class Project {
 
     private Date createTime;
 
+    private int isDelete;
+
     public Long getId() {
         return id;
     }
@@ -52,5 +54,13 @@ public class Project {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public int getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(int isDelete) {
+        this.isDelete = isDelete;
     }
 }
