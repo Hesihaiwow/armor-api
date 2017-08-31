@@ -17,6 +17,7 @@
     SELECT
     <include refid="Base_Column_List" />
     FROM project
+    WHERE is_delete = 0
     ORDER BY create_time DESC
   </select>
 
@@ -43,13 +44,13 @@
   </update>
 
   <!-- 删除项目  -->
-  <delete id="deleteProjectById" parameterType="java.lang.Long">
-    DELETE FROM project where id = #{id,jdbcType=BIGINT}
-  </delete>
+  <update id="deleteProjectById" parameterType="java.lang.Long">
+    UPDATE project SET is_delete = 1 where id = #{id,jdbcType=BIGINT}
+  </update>
 
   <!--验证项目名是否存在-->
   <select id="validateProject" parameterType="Map" resultType="java.lang.Integer">
-    SELECT count(*) FROM project  WHERE name= #{name}
+    SELECT count(*) FROM project  WHERE name= #{name} AND is_delete = 0
     <if test="id != null and id!=''">
       AND id != #{id}
     </if>
