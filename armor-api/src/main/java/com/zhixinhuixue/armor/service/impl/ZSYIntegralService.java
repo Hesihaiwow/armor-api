@@ -35,6 +35,7 @@ import java.util.List;
 @Service
 public class ZSYIntegralService implements IZSYIntegralService{
 
+
     @Autowired
     private IZSYUserIntegralMapper userIntegralMapper;
 
@@ -89,9 +90,10 @@ public class ZSYIntegralService implements IZSYIntegralService{
     }
 
     public void addIntegral(IntegralResDTO integralResDTO){
+        BigDecimal userTotalIntegral = userIntegralMapper.getTotalIntegral(integralResDTO.getUserId());
         User user = userMapper.selectById(integralResDTO.getUserId());
-        BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
-        if(integral.compareTo(new BigDecimal("0"))!=-1){//新旧积分相加大于0
+        BigDecimal integral = userTotalIntegral.add(integralResDTO.getIntegral());
+//        if(integral.compareTo(new BigDecimal("0"))!=-1){//新旧积分相加大于0
             user.setIntegral(integral);
             userMapper.updateSelectiveById(user);
 
@@ -105,9 +107,9 @@ public class ZSYIntegralService implements IZSYIntegralService{
             userIntegral.setOrigin(2);//手动添加
 
             userIntegralMapper.insert(userIntegral);
-        }else{
-            throw new ZSYServiceException("扣除积分大于实际分数,请重试");
-        }
+//        }else{
+//            throw new ZSYServiceException("扣除积分大于实际分数,请重试");
+//        }
     }
 
 
