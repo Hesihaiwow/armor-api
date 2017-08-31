@@ -263,7 +263,7 @@
 
     <!--查询项目下是否有任务存在-->
     <select id="findTaskByProjectId" parameterType="java.lang.Long" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM task where project_id = #{projectId, jdbcType=BIGINT}
+        SELECT COUNT(*) FROM task where project_id = #{projectId, jdbcType=BIGINT} AND is_delete = 0
     </select>
 
 </mapper>
