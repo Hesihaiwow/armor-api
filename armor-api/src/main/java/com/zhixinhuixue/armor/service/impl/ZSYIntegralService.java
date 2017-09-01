@@ -34,7 +34,7 @@ import java.util.List;
  * Created by Lang on 2017/8/7 0007.
  */
 @Service
-public class ZSYIntegralService implements IZSYIntegralService{
+public class ZSYIntegralService implements IZSYIntegralService {
 
 
     @Autowired
@@ -48,15 +48,16 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     /**
      * 用户积分排名表
+     *
      * @param startTime 结束时间
-     * @param endTime 页码
+     * @param endTime   页码
      * @return
      */
     @Override
-    public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime){
-        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
+    public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime) {
+        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime, endTime);
         List<IntegralPageResDTO> integralPageResDTOS = new ArrayList<>();
-        BeanUtils.copyProperties(userIntegralInfoBOS,integralPageResDTOS);
+        BeanUtils.copyProperties(userIntegralInfoBOS, integralPageResDTOS);
         userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
             IntegralPageResDTO integralPageResDTO = new IntegralPageResDTO();
             BeanUtils.copyProperties(userIntegralInfoBO, integralPageResDTO);
@@ -67,25 +68,27 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     /**
      * 计算不同时间个人积分排行
+     *
      * @return
      */
     @Override
-    public UserIntegralResDTO getUserIntegral(){
+    public UserIntegralResDTO getUserIntegral() {
         Long id = ZSYTokenRequestContext.get().getUserId();
         UserIntegralResDTO userIntegralResDTO = new UserIntegralResDTO();
         userIntegralResDTO.setId(id);
-        userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(),DateHelper.getThisWeekLastDay(),id));
-        userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(),DateHelper.getThisMonthLastDay(),id));
-        userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id));
-        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(),DateHelper.getThisQuarterLastDay(),id);//季度排名为空设为0
-        userIntegralResDTO.setQuarterRank(quarterRank!=null?quarterRank:0);
-        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(),DateHelper.DATETIME_FORMAT),DateHelper.dateFormatter(DateHelper.getCurrYearLast(),DateHelper.DATETIME_FORMAT),id);//年度排名为空设为0
-        userIntegralResDTO.setYearRank(yearRank!=null?yearRank:0);
+        userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(), DateHelper.getThisWeekLastDay(), id));
+        userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(), DateHelper.getThisMonthLastDay(), id));
+        userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id));
+        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id);//季度排名为空设为0
+        userIntegralResDTO.setQuarterRank(quarterRank != null ? quarterRank : 0);
+        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id);//年度排名为空设为0
+        userIntegralResDTO.setYearRank(yearRank != null ? yearRank : 0);
         return userIntegralResDTO;
     }
 
     /**
      * 个人积分记录
+     *
      * @param id
      * @param pageIndex
      * @param startTime
@@ -93,9 +96,9 @@ public class ZSYIntegralService implements IZSYIntegralService{
      * @return
      */
     @Override
-    public PageInfo<IntegralHistoryPageResDTO> getIntegralHistory(Long id, int pageIndex, String startTime, String endTime){
+    public PageInfo<IntegralHistoryPageResDTO> getIntegralHistory(Long id, int pageIndex, String startTime, String endTime) {
         PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
-        Page<UserIntegralHistoryBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralHistory(id,startTime,endTime);
+        Page<UserIntegralHistoryBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralHistory(id, startTime, endTime);
         Page<IntegralHistoryPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralHistoryBOS, page);
         userIntegralHistoryBOS.stream().forEach(userIntegralHistoryBO -> {
@@ -110,26 +113,26 @@ public class ZSYIntegralService implements IZSYIntegralService{
 
     /**
      * 手动添加积分记录
+     *
      * @param integralResDTO
      */
-    public void addIntegral(IntegralResDTO integralResDTO){
+    public void addIntegral(IntegralResDTO integralResDTO) {
         User user = userMapper.selectById(integralResDTO.getUserId());
         BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
-            user.setIntegral(integral);
-            if(userMapper.updateSelectiveById(user)==0){
-                throw new ZSYServiceException("用户积分更新失败");
-            };
-            UserIntegral userIntegral = new UserIntegral();
-            userIntegral.setId(snowFlakeIDHelper.nextId());
-            userIntegral.setCreateTime(new Date());
-            userIntegral.setIntegral(integralResDTO.getIntegral());
-            userIntegral.setUserId(integralResDTO.getUserId());
-            userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-            userIntegral.setDescription(integralResDTO.getDescription());
-            userIntegral.setOrigin(ZSYIntegralOrigin.ARTIFICIAL.getValue());//手动添加
-            userIntegralMapper.insert(userIntegral);
+        user.setIntegral(integral);
+        if (userMapper.updateSelectiveById(user) == 0) {
+            throw new ZSYServiceException("用户积分更新失败");
+        }
+        UserIntegral userIntegral = new UserIntegral();
+        userIntegral.setId(snowFlakeIDHelper.nextId());
+        userIntegral.setCreateTime(new Date());
+        userIntegral.setIntegral(integralResDTO.getIntegral());
+        userIntegral.setUserId(integralResDTO.getUserId());
+        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        userIntegral.setDescription(integralResDTO.getDescription());
+        userIntegral.setOrigin(ZSYIntegralOrigin.ARTIFICIAL.getValue());//手动添加
+        userIntegralMapper.insert(userIntegral);
     }
-
 
 
 }
