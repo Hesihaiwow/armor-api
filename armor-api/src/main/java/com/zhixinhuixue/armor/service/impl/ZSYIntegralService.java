@@ -19,7 +19,7 @@ import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
-import com.zhixinhuixue.armor.source.enums.ZSYIntegralType;
+import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,7 +126,7 @@ public class ZSYIntegralService implements IZSYIntegralService{
             userIntegral.setUserId(integralResDTO.getUserId());
             userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             userIntegral.setDescription(integralResDTO.getDescription());
-            userIntegral.setOrigin(ZSYIntegralType.MANUAL.getValue());//手动添加
+            userIntegral.setOrigin(ZSYIntegralOrigin.ARTIFICIAL.getValue());//手动添加
             userIntegralMapper.insert(userIntegral);
     }
 
