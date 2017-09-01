@@ -8,7 +8,9 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.bo.TaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
@@ -150,7 +152,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskTagMapper.insertList(taskTags);
         }
         // 插入日志
-        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName()+"创建了任务", task.getName(), task.getId()));
+        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "创建了任务", task.getName(), task.getId()));
         return ZSYResult.success();
     }
 
@@ -236,7 +238,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskTagMapper.insertList(taskTags);
         }
         // 插入日志
-        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName()+"修改了任务", task.getName(), task.getId()));
+        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "修改了任务", task.getName(), task.getId()));
 
         // 个人任务修改工时，更新积分
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue() && taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
@@ -256,7 +258,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setTaskId(taskId);
                 userIntegral.setUserId(user.getUserId());
                 userIntegral.setIntegral(new BigDecimal(user.getTaskHours()));
-                userIntegral.setOrigin(1);
+                userIntegral.setOrigin(ZSYIntegralOrigin.SYSTEM.getValue());
                 userIntegral.setDescription("完成了多人任务：" + user.getDescription());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
@@ -675,6 +677,7 @@ public class ZSYTaskService implements IZSYTaskService {
         TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
         if (taskDetailBO.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
             logger.warn("任务已结算,id{}", taskId);
+            return;
         }
         List<Long> userIds = taskDetailBO.getTaskUsers().stream().map(TaskUser::getUserId).distinct().collect(Collectors.toList());
         boolean commentCompleted = false;
@@ -809,14 +812,14 @@ public class ZSYTaskService implements IZSYTaskService {
             BeanUtils.copyProperties(taskBO, taskResDTO);
             if (taskResDTO.getUserIntegral() != null && taskResDTO.getType() == ZSYTaskType.PUBLIC_TASK.getValue()) {
                 if (taskResDTO.getUserIntegral() >= 90) {
-                    taskResDTO.setIntegralGrade("A");
+                    taskResDTO.setIntegralGrade(ZSYIntegral.A.getName());
                 } else if (taskResDTO.getUserIntegral() >= 80) {
-                    taskResDTO.setIntegralGrade("B");
+                    taskResDTO.setIntegralGrade(ZSYIntegral.B.getName());
                 } else {
-                    taskResDTO.setIntegralGrade("C");
+                    taskResDTO.setIntegralGrade(ZSYIntegral.C.getName());
                 }
             } else {
-                taskResDTO.setIntegralGrade("A");
+                taskResDTO.setIntegralGrade(ZSYIntegral.A.getName());
             }
             page.add(taskResDTO);
         });
@@ -874,7 +877,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum) {
-        PageHelper.startPage(pageNum, 10);
+        PageHelper.startPage(pageNum, ZSYConstants.PAGE_SIZE);
         Page<TaskLog> taskLogs = taskLogMapper.selectPage(taskId);
         Page<TaskLogResDTO> page = new Page<>();
         BeanUtils.copyProperties(taskLogs, page);
@@ -883,6 +886,6 @@ public class ZSYTaskService implements IZSYTaskService {
             BeanUtils.copyProperties(taskLog, taskLogResDTO);
             page.add(taskLogResDTO);
         });
-        return new PageInfo<TaskLogResDTO>(page);
+        return new PageInfo<>(page);
     }
 }

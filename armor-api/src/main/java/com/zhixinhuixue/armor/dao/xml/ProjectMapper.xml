@@ -18,7 +18,7 @@
     <include refid="Base_Column_List" />
     FROM project
     WHERE is_delete = 0
-    ORDER BY create_time DESC
+    ORDER BY create_time ASC
   </select>
 
   <!--添加项目-->

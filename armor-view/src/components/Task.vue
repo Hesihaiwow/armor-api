@@ -82,7 +82,7 @@
                 </div>
             </div>
             <div class="filter-btn">
-                <span @click="openFun($event)">收起筛选</span>
+                <span @click="openFun($event)">展开筛选</span>
             </div>
         </div>
 
@@ -148,7 +148,7 @@
                     stageId: [],
                     tagId: [],
                     type: 2,
-                    status: 3,
+                    status: 1,
                     priority: '',
                     beginTime: '',
                     endTime: ''
