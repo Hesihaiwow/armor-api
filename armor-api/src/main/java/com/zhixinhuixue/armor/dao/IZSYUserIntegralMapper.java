@@ -65,11 +65,4 @@ public interface IZSYUserIntegralMapper {
      */
     int deleteUserIntegral(@Param("taskId") Long taskId, @Param("userId")Long userId);
 
-    /**
-     * 获取用户总积分
-     * @param userId
-     * @return
-     */
-    BigDecimal getTotalIntegral(Long userId);
-
 }

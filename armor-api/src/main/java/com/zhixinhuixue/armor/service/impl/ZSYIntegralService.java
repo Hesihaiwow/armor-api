@@ -19,6 +19,7 @@ import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.enums.ZSYIntegralType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,12 @@ public class ZSYIntegralService implements IZSYIntegralService{
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
 
+    /**
+     * 用户积分排名表
+     * @param startTime 结束时间
+     * @param endTime 页码
+     * @return
+     */
     @Override
     public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime){
         List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime,endTime);
@@ -58,6 +65,10 @@ public class ZSYIntegralService implements IZSYIntegralService{
         return integralPageResDTOS;
     }
 
+    /**
+     * 计算不同时间个人积分排行
+     * @return
+     */
     @Override
     public UserIntegralResDTO getUserIntegral(){
         Long id = ZSYTokenRequestContext.get().getUserId();
@@ -73,6 +84,14 @@ public class ZSYIntegralService implements IZSYIntegralService{
         return userIntegralResDTO;
     }
 
+    /**
+     * 个人积分记录
+     * @param id
+     * @param pageIndex
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     @Override
     public PageInfo<IntegralHistoryPageResDTO> getIntegralHistory(Long id, int pageIndex, String startTime, String endTime){
         PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
@@ -89,21 +108,26 @@ public class ZSYIntegralService implements IZSYIntegralService{
         return pageInfo;
     }
 
+    /**
+     * 手动添加积分记录
+     * @param integralResDTO
+     */
     public void addIntegral(IntegralResDTO integralResDTO){
-        BigDecimal userTotalIntegral = userIntegralMapper.getTotalIntegral(integralResDTO.getUserId());
         User user = userMapper.selectById(integralResDTO.getUserId());
-        BigDecimal integral = userTotalIntegral.add(integralResDTO.getIntegral());
-        user.setIntegral(integral);
-        userMapper.updateSelectiveById(user);
-        UserIntegral userIntegral = new UserIntegral();
-        userIntegral.setId(snowFlakeIDHelper.nextId());
-        userIntegral.setCreateTime(new Date());
-        userIntegral.setIntegral(integralResDTO.getIntegral());
-        userIntegral.setUserId(integralResDTO.getUserId());
-        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-        userIntegral.setDescription(integralResDTO.getDescription());
-        userIntegral.setOrigin(2);//手动添加
-        userIntegralMapper.insert(userIntegral);
+        BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
+            user.setIntegral(integral);
+            if(userMapper.updateSelectiveById(user)==0){
+                throw new ZSYServiceException("用户积分更新失败");
+            };
+            UserIntegral userIntegral = new UserIntegral();
+            userIntegral.setId(snowFlakeIDHelper.nextId());
+            userIntegral.setCreateTime(new Date());
+            userIntegral.setIntegral(integralResDTO.getIntegral());
+            userIntegral.setUserId(integralResDTO.getUserId());
+            userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            userIntegral.setDescription(integralResDTO.getDescription());
+            userIntegral.setOrigin(ZSYIntegralType.MANUAL.getValue());//手动添加
+            userIntegralMapper.insert(userIntegral);
     }
 
 

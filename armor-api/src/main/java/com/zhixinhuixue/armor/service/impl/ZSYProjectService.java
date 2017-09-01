@@ -76,6 +76,11 @@ public class ZSYProjectService implements IZSYProjectService{
 
     }
 
+    /**
+     * 更新项目信息
+     * @param projectId
+     * @param projectReqDTO
+     */
     @Override
     public void updateProject(Long projectId, ProjectReqDTO projectReqDTO){
         String name = projectReqDTO.getName();
@@ -89,14 +94,19 @@ public class ZSYProjectService implements IZSYProjectService{
             throw new ZSYServiceException("项目更新失败");
         }
     }
+
+    /**
+     * 删除项目
+     * @param projectId
+     */
     @Override
     public void deleteProject(Long projectId){
         if(taskMapper.findTaskByProjectId(projectId)>0){
             throw new ZSYServiceException("项目中存在任务,请删除后重试");
-        }else{
-            if (projectMapper.deleteProjectById(projectId)==0){
-                throw new ZSYServiceException("删除项目失败");
-            }
+        }
+
+        if (projectMapper.deleteProjectById(projectId)==0){
+            throw new ZSYServiceException("删除项目失败");
         }
 
     }
