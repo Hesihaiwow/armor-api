@@ -3887,15 +3887,8 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
         }
     },
     methods: {
-        openFun($event) {
+        openFun() {
             this.open = !this.open;
-            if (this.open) {
-                $event.currentTarget.innerHTML = "收起筛选";
-                $event.currentTarget.className = "";
-            } else {
-                $event.currentTarget.innerHTML = "展开筛选";
-                $event.currentTarget.className = "open";
-            }
         },
         addFormTagId(tagId, num, $event) {
 
@@ -8526,12 +8519,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._v("创建多人任务")])])]), _vm._v(" "), _c('div', {
     staticClass: "filter-btn"
   }, [_c('span', {
+    class: _vm.open ? '' : 'open',
     on: {
-      "click": function($event) {
-        _vm.openFun($event)
-      }
+      "click": _vm.openFun
     }
-  }, [_vm._v("展开筛选")])])], 1), _vm._v(" "), _c('div', {
+  }, [_vm._v(_vm._s(_vm.open ? '收起筛选' : '展开筛选'))])])], 1), _vm._v(" "), _c('div', {
     staticClass: "task-lis-con"
   }, [_c('task-item', {
     attrs: {
@@ -11050,4 +11042,4 @@ if(false) {
 
 /***/ })
 ],[227]);
-//# sourceMappingURL=app.11be15076546f693c02b.js.map
+//# sourceMappingURL=app.c47ebf6218e443cbe2ca.js.map
