@@ -1610,6 +1610,10 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
                     return tag.name;
                 }
             });
+        },
+        formatDate: function (value) {
+            if (!value) return '';
+            return __WEBPACK_IMPORTED_MODULE_2_moment___default()(value).format('YYYY-MM-DD');
         }
     },
     methods: {
@@ -1687,8 +1691,8 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
                 let taskUser = {};
                 taskUser.userId = this.step.userId;
                 taskUser.userName = this.step.userName;
-                taskUser.beginTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss');
-                taskUser.endTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(this.step.endTime).format('YYYY-MM-DD HH:mm:ss');
+                taskUser.beginTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(this.step.beginTime).format('YYYY-MM-DD');
+                taskUser.endTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(this.step.endTime).format('YYYY-MM-DD');
                 taskUser.taskHours = this.step.taskHours;
                 taskUser.description = this.step.description;
                 this.taskUsers.push(taskUser);
@@ -1805,7 +1809,7 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             let param = this.taskForm;
             param.taskName = param.taskName.trim();
             param.description = param.description.trim();
-            param.endTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(param.endTime).format('YYYY-MM-DD HH:mm:ss');
+            param.endTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(param.endTime).format('YYYY-MM-DD');
             param['taskUsers'] = this.taskUsers;
             param.taskUsers.forEach(user => {
                 user.description = user.description.trim();
@@ -1994,6 +1998,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_moment__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__node_modules_element_ui_packages_button_src_button__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__node_modules_element_ui_packages_button_src_button___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__node_modules_element_ui_packages_button_src_button__);
+//
 //
 //
 //
@@ -3824,7 +3829,7 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                 stageId: [],
                 tagId: [],
                 type: 2,
-                status: 3,
+                status: 1,
                 priority: '',
                 beginTime: '',
                 endTime: ''
@@ -5907,7 +5912,7 @@ module.exports = __webpack_require__.p + "armor/static/img/finished.2d5caeb.jpg"
 /* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/static/img/login_bg.4f41e92.png";
+module.exports = __webpack_require__.p + "static/img/login_bg.4f41e92.png";
 
 /***/ }),
 /* 280 */
@@ -7630,6 +7635,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       key: "default",
       fn: function(scope) {
         return [_c('el-button', {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: (_vm.permit),
+            expression: "permit"
+          }],
           attrs: {
             "type": "text"
           },
@@ -7637,6 +7648,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
             "click": function($event) {
               scope.row.type == '2' ? _vm.commentDetail(scope.$index, _vm.historyData) : ''
             }
+          }
+        }, [_vm._v(_vm._s(scope.row.grade))]), _vm._v(" "), _c('div', {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: (!_vm.permit),
+            expression: "!permit"
+          }],
+          attrs: {
+            "type": "text"
           }
         }, [_vm._v(_vm._s(scope.row.grade))])]
       }
@@ -8510,7 +8531,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.openFun($event)
       }
     }
-  }, [_vm._v("收起筛选")])])], 1), _vm._v(" "), _c('div', {
+  }, [_vm._v("展开筛选")])])], 1), _vm._v(" "), _c('div', {
     staticClass: "task-lis-con"
   }, [_c('task-item', {
     attrs: {
@@ -11029,4 +11050,4 @@ if(false) {
 
 /***/ })
 ],[227]);
-//# sourceMappingURL=app.fd4811286ba2ede2a260.js.map
+//# sourceMappingURL=app.11be15076546f693c02b.js.map
