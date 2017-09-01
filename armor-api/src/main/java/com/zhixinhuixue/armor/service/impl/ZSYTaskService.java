@@ -15,6 +15,7 @@ import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
 import org.slf4j.Logger;
@@ -811,14 +812,14 @@ public class ZSYTaskService implements IZSYTaskService {
             BeanUtils.copyProperties(taskBO, taskResDTO);
             if (taskResDTO.getUserIntegral() != null && taskResDTO.getType() == ZSYTaskType.PUBLIC_TASK.getValue()) {
                 if (taskResDTO.getUserIntegral() >= 90) {
-                    taskResDTO.setIntegralGrade("A");
+                    taskResDTO.setIntegralGrade(ZSYIntegral.A.getName());
                 } else if (taskResDTO.getUserIntegral() >= 80) {
-                    taskResDTO.setIntegralGrade("B");
+                    taskResDTO.setIntegralGrade(ZSYIntegral.B.getName());
                 } else {
-                    taskResDTO.setIntegralGrade("C");
+                    taskResDTO.setIntegralGrade(ZSYIntegral.C.getName());
                 }
             } else {
-                taskResDTO.setIntegralGrade("A");
+                taskResDTO.setIntegralGrade(ZSYIntegral.A.getName());
             }
             page.add(taskResDTO);
         });
@@ -876,7 +877,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum) {
-        PageHelper.startPage(pageNum, 10);
+        PageHelper.startPage(pageNum, ZSYConstants.PAGE_SIZE);
         Page<TaskLog> taskLogs = taskLogMapper.selectPage(taskId);
         Page<TaskLogResDTO> page = new Page<>();
         BeanUtils.copyProperties(taskLogs, page);
@@ -885,6 +886,6 @@ public class ZSYTaskService implements IZSYTaskService {
             BeanUtils.copyProperties(taskLog, taskLogResDTO);
             page.add(taskLogResDTO);
         });
-        return new PageInfo<TaskLogResDTO>(page);
+        return new PageInfo<>(page);
     }
 }
