@@ -676,6 +676,7 @@ public class ZSYTaskService implements IZSYTaskService {
         TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
         if (taskDetailBO.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
             logger.warn("任务已结算,id{}", taskId);
+            return;
         }
         List<Long> userIds = taskDetailBO.getTaskUsers().stream().map(TaskUser::getUserId).distinct().collect(Collectors.toList());
         boolean commentCompleted = false;
