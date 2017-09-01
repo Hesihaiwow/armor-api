@@ -245,6 +245,10 @@
                         return tag.name
                     }
                 })
+            },
+            formatDate: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY-MM-DD');
             }
         },
         methods: {
@@ -327,8 +331,8 @@
                     let taskUser = {}
                     taskUser.userId = this.step.userId
                     taskUser.userName = this.step.userName
-                    taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD HH:mm:ss')
-                    taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD HH:mm:ss')
+                    taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD')
+                    taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD')
                     taskUser.taskHours = this.step.taskHours
                     taskUser.description = this.step.description
                     this.taskUsers.push(taskUser)
@@ -447,7 +451,7 @@
                 let param = this.taskForm;
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
-                param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
+                param.endTime = moment(param.endTime).format('YYYY-MM-DD');
                 param['taskUsers'] = this.taskUsers;
                 param.taskUsers.forEach((user) => {
                     user.description = user.description.trim()

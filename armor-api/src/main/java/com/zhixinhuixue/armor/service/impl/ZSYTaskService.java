@@ -8,12 +8,13 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.bo.TaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
-import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskTagMapper.insertList(taskTags);
         }
         // 插入日志
-        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName()+"创建了任务", task.getName(), task.getId()));
+        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "创建了任务", task.getName(), task.getId()));
         return ZSYResult.success();
     }
 
@@ -236,7 +237,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskTagMapper.insertList(taskTags);
         }
         // 插入日志
-        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName()+"修改了任务", task.getName(), task.getId()));
+        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "修改了任务", task.getName(), task.getId()));
 
         // 个人任务修改工时，更新积分
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue() && taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
@@ -256,7 +257,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setTaskId(taskId);
                 userIntegral.setUserId(user.getUserId());
                 userIntegral.setIntegral(new BigDecimal(user.getTaskHours()));
-                userIntegral.setOrigin(1);
+                userIntegral.setOrigin(ZSYIntegralOrigin.SYSTEM.getValue());
                 userIntegral.setDescription("完成了多人任务：" + user.getDescription());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
