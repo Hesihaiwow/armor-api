@@ -34,7 +34,8 @@
       </el-table-column>
       <el-table-column prop="grade" label="评价" align="center" >
         <template scope="scope">
-          <el-button type="text" @click="scope.row.type =='2'?commentDetail(scope.$index,historyData):''">{{scope.row.grade}}</el-button>
+          <el-button type="text" @click="scope.row.type =='2'?commentDetail(scope.$index,historyData):''" v-show="permit">{{scope.row.grade}}</el-button>
+          <div type="text" v-show="!permit">{{scope.row.grade}}</div>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="完成时间" align="center"></el-table-column>
