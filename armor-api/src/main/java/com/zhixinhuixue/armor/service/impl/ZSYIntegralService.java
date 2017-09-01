@@ -93,23 +93,17 @@ public class ZSYIntegralService implements IZSYIntegralService{
         BigDecimal userTotalIntegral = userIntegralMapper.getTotalIntegral(integralResDTO.getUserId());
         User user = userMapper.selectById(integralResDTO.getUserId());
         BigDecimal integral = userTotalIntegral.add(integralResDTO.getIntegral());
-//        if(integral.compareTo(new BigDecimal("0"))!=-1){//新旧积分相加大于0
-            user.setIntegral(integral);
-            userMapper.updateSelectiveById(user);
-
-            UserIntegral userIntegral = new UserIntegral();
-            userIntegral.setId(snowFlakeIDHelper.nextId());
-            userIntegral.setCreateTime(new Date());
-            userIntegral.setIntegral(integralResDTO.getIntegral());
-            userIntegral.setUserId(integralResDTO.getUserId());
-            userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-            userIntegral.setDescription(integralResDTO.getDescription());
-            userIntegral.setOrigin(2);//手动添加
-
-            userIntegralMapper.insert(userIntegral);
-//        }else{
-//            throw new ZSYServiceException("扣除积分大于实际分数,请重试");
-//        }
+        user.setIntegral(integral);
+        userMapper.updateSelectiveById(user);
+        UserIntegral userIntegral = new UserIntegral();
+        userIntegral.setId(snowFlakeIDHelper.nextId());
+        userIntegral.setCreateTime(new Date());
+        userIntegral.setIntegral(integralResDTO.getIntegral());
+        userIntegral.setUserId(integralResDTO.getUserId());
+        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        userIntegral.setDescription(integralResDTO.getDescription());
+        userIntegral.setOrigin(2);//手动添加
+        userIntegralMapper.insert(userIntegral);
     }
 
 
