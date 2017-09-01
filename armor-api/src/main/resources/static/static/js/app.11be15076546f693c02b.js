@@ -5912,7 +5912,7 @@ module.exports = __webpack_require__.p + "armor/static/img/finished.2d5caeb.jpg"
 /* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "static/img/login_bg.4f41e92.png";
+module.exports = __webpack_require__.p + "armor/static/img/login_bg.4f41e92.png";
 
 /***/ }),
 /* 280 */

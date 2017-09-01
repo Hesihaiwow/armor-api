@@ -82,7 +82,7 @@
                 </div>
             </div>
             <div class="filter-btn">
-                <span @click="openFun($event)">展开筛选</span>
+                <span @click="openFun" :class="open?'':'open'">{{open?'收起筛选':'展开筛选'}}</span>
             </div>
         </div>
 
@@ -206,15 +206,8 @@
             }
         },
         methods: {
-            openFun($event){
+            openFun(){
                 this.open = !this.open;  
-                if(this.open){
-                    $event.currentTarget.innerHTML = "收起筛选"
-                    $event.currentTarget.className = "";
-                }else{
-                    $event.currentTarget.innerHTML = "展开筛选";
-                    $event.currentTarget.className = "open";
-                }
             },
             addFormTagId(tagId,num,$event){
                 
