@@ -1,75 +1,80 @@
 <template>
     <div class="task-con">
-        <div class="task-top clearfix">
-            <div class="clearfix">
-                <div class="clearfix select-box">
-                    <div class="task-top-list fl">
-                        <span class="ttl-name">项目</span>
-                        <el-select clearable v-model="form.projectId" placeholder="请选择">
-                            <el-option v-for="item in projectList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
-                        </el-select>
-                    </div>
-                    <div class="task-top-list fl">
-                        <span class="ttl-name">成员</span>
-                        <el-select clearable filterable v-model="form.userId" placeholder="请选择">
-                            <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
-                        </el-select>
-                    </div>
-                    
-                    <div class="task-top-list fl">
-                        <span class="ttl-name">优先级</span>
-                        <el-select clearable v-model="form.priority" placeholder="请选择">
-                            <el-option
-                                    v-for="item in priorityList"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </div>
-                    <div class="task-top-list fl">
-                        <span class="ttl-name">类型</span>
-                        <el-select clearable v-model="form.type" placeholder="请选择">
-                            <el-option v-for="item in typeList" :key="item.value" :label="item.name"
-                                       :value="item.value"></el-option>
-                        </el-select>
-                    </div>
-                     
-                     
-                    <div class="task-top-list fl">
-                        <span class="ttl-name">状态</span>
-                        <el-select clearable v-model="form.status" placeholder="请选择">
-                            <el-option v-for="item in status" :key="item.value" :label="item.name"
-                                       :value="item.value"></el-option>
-                        </el-select>
-                    </div>
+        <div class="toggle-view"><input type="button" :value="btnVal" @click="btnValFun"></div>
+        <div v-show="btnValStatus == 1">
+            <div class="task-top clearfix">
+                <div class="clearfix">
+                    <div class="clearfix select-box">
+                        <div class="task-top-list fl">
+                            <span class="ttl-name">项目</span>
+                            <el-select clearable v-model="form.projectId" placeholder="请选择">
+                                <el-option v-for="item in projectList" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="task-top-list fl">
+                            <span class="ttl-name">成员</span>
+                            <el-select clearable filterable v-model="form.userId" placeholder="请选择">
+                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
 
-                    <div class="task-top-list fl">
-                        <span class="ttl-name">截止日期</span>
-                        <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
-                                        placeholder="选择日期"
-                                        @change="timeChange"></el-date-picker>
+                        <div class="task-top-list fl">
+                            <span class="ttl-name">优先级</span>
+                            <el-select clearable v-model="form.priority" placeholder="请选择">
+                                <el-option
+                                        v-for="item in priorityList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <div class="task-top-list fl">
+                            <span class="ttl-name">类型</span>
+                            <el-select clearable v-model="form.type" placeholder="请选择">
+                                <el-option v-for="item in typeList" :key="item.value" :label="item.name"
+                                           :value="item.value"></el-option>
+                            </el-select>
+                        </div>
+
+
+                        <div class="task-top-list fl">
+                            <span class="ttl-name">状态</span>
+                            <el-select clearable v-model="form.status" placeholder="请选择">
+                                <el-option v-for="item in status" :key="item.value" :label="item.name"
+                                           :value="item.value"></el-option>
+                            </el-select>
+                        </div>
+
+                        <div class="task-top-list fl">
+                            <span class="ttl-name">截止日期</span>
+                            <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
+                                            placeholder="选择日期"
+                                            @change="timeChange"></el-date-picker>
+                        </div>
                     </div>
-                </div>
-                
             </div>
             <transition name="filter">
-               <div v-show="open">
+                <div v-show="open">
                     <div class="task-top-list clearfix">
-                         <span class="ttl-name fl">标签&nbsp;</span>
-                         <div class="fl tag-name clearfix">
-                             <el-button class="fl" type="" size="small" v-for="item in tagList" :key="item.id" @click="addFormTagId(item.id,1,$event)">{{item.name}}</el-button>
-                         </div>
+                        <span class="ttl-name fl">标签&nbsp;</span>
+                        <div class="fl tag-name clearfix">
+                            <el-button class="fl" type="" size="small" v-for="item in tagList" :key="item.id"
+                                       @click="addFormTagId(item.id,1,$event)">{{item.name}}
+                            </el-button>
+                        </div>
                     </div>
-                     <div class="task-top-list  clearfix">
+                    <div class="task-top-list  clearfix">
                         <span class="ttl-name fl">阶段&nbsp;</span>
                         <div class="fl tag-name clearfix">
-                            <el-button class="fl" size="small" v-for="item in stageList" :key="item.id" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
-                         </div>
-                     </div>
-               </div>
+                            <el-button class="fl" size="small" v-for="item in stageList" :key="item.id"
+                                       @click="addFormTagId(item.id,2,$event)">{{item.name}}
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
             </transition>
             <div class="clearfix">
                 <div class="task-top-list fl search-button">
@@ -82,7 +87,7 @@
                 </div>
             </div>
             <div class="filter-btn">
-                <span @click="openFun" :class="open?'':'open'">{{open?'收起筛选':'展开筛选'}}</span>
+                <span @click="openFun" :class="open?'':'open'">{{open ? '收起筛选' : '展开筛选'}}</span>
             </div>
         </div>
 
@@ -108,11 +113,14 @@
                     :total="page.total">
             </el-pagination>
         </div>
+        </div>
+        <task-board v-show="btnValStatus == 2"></task-board>
     </div>
 </template>
 <script>
     import CreateTask from './CreateTask'
     import TaskItem from './TaskItem'
+    import TaskBoard from './board/TaskBoard';
     import http from '../lib/Http'
     import helper from '../lib/Helper'
     import moment from 'moment';
@@ -122,7 +130,9 @@
         name: 'Task',
         data() {
             return {
-                open:false,
+                open: false,
+                btnVal: "点击切换到看板模式",
+                btnValStatus: 1, /*1是列表模式，2是看板模式*/
                 loading: true,
                 timeRange: '',
                 projectList: [],
@@ -206,48 +216,57 @@
             }
         },
         methods: {
-            openFun(){
-                this.open = !this.open;  
+            btnValFun() {
+                if (this.btnValStatus == 1) {
+                    this.btnValStatus = 2;
+                    this.btnVal = "点击切换到列表模式"
+                } else {
+                    this.btnValStatus = 1;
+                    this.btnVal = "点击切换到看板模式"
+                }
             },
-            addFormTagId(tagId,num,$event){
-                
-                if(this.hasClass($event.currentTarget,'active')){  
-                    this.removeClass($event.currentTarget,'active');  
-                    if(num == 1){
-                        this.form.tagId.splice(this.findIndex(this.form.tagId,tagId),1);
-                    }else if(num ==2){
-                        this.form.stageId.splice(this.findIndex(this.form.stageId,tagId),1);
+            openFun() {
+                this.open = !this.open;
+            },
+            addFormTagId(tagId, num, $event) {
+
+                if (this.hasClass($event.currentTarget, 'active')) {
+                    this.removeClass($event.currentTarget, 'active');
+                    if (num == 1) {
+                        this.form.tagId.splice(this.findIndex(this.form.tagId, tagId), 1);
+                    } else if (num == 2) {
+                        this.form.stageId.splice(this.findIndex(this.form.stageId, tagId), 1);
                     }
-                }else{  
-                    this.addClass($event.currentTarget,'active'); 
-                    if(num == 1){
-                         this.form.tagId.push(tagId) ;
-                    }else if(num ==2){
-                         this.form.stageId.push(tagId) ;
+                } else {
+                    this.addClass($event.currentTarget, 'active');
+                    if (num == 1) {
+                        this.form.tagId.push(tagId);
+                    } else if (num == 2) {
+                        this.form.stageId.push(tagId);
                     }
-                }  
+                }
                 console.log(this.form.tagId);
                 console.log(this.form.stageId);
             },
-            hasClass(obj, cls) {  
-                return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));  
+            hasClass(obj, cls) {
+                return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
             },
-            addClass(obj, cls) {  
-                if (!this.hasClass(obj, cls)) obj.className += " " + cls;  
+            addClass(obj, cls) {
+                if (!this.hasClass(obj, cls)) obj.className += " " + cls;
             },
-            removeClass(obj, cls) {  
-                if (this.hasClass(obj, cls)) {  
-                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');  
-                    obj.className = obj.className.replace(reg, ' ');  
-                }  
+            removeClass(obj, cls) {
+                if (this.hasClass(obj, cls)) {
+                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                    obj.className = obj.className.replace(reg, ' ');
+                }
             },
-            findIndex(arr,val){
-                for(var i=0;i<arr.length;i++){
-                    if(arr[i] == val){
+            findIndex(arr, val) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] == val) {
                         return i;
                     }
                 }
-            },  
+            },
             handleCurrentChange(currentPage) {
                 this.page.pageNum = currentPage
                 this.fetchTaskList()
@@ -375,35 +394,55 @@
         },
         components: {
             TaskItem: TaskItem,
-            CreateTask: CreateTask
+            CreateTask: CreateTask,
+            TaskBoard
         }
     }
 </script>
 <style scoped>
-    .tag-name{
-        width:980px;
+    .toggle-view {
+        /*width:1080px;*/
+        margin: 0 auto 10px;
+    }
+
+    .toggle-view input {
+        display: block;
+        background-color: #20a0ff;
+        color: #fff;
+        line-height: 30px;
+        padding: 0 10px;
+        cursor: pointer;
+    }
+
+    .tag-name {
+        width: 980px;
 
     }
-    .tag-name button{
+
+    .tag-name button {
         margin: 0 10px 10px 0;
     }
-   
-    .tag-name button:focus{
-       color: #545454;
-       border-color: #c4c4c4;
+
+    .tag-name button:focus {
+        color: #545454;
+        border-color: #c4c4c4;
     }
-     .tag-name button.active{
-       color: #36A8FF;
-       border-color: #36A8FF;
+
+    .tag-name button.active {
+        color: #36A8FF;
+        border-color: #36A8FF;
     }
-    .select-box>div:nth-child(3n){
+
+    .select-box > div:nth-child(3n) {
         margin-right: 200px;
     }
-    .filter-btn{
+
+    .filter-btn {
         text-align: center;
         background-color: #f2f2f2;
     }
-    .filter-btn span{
+
+    .filter-btn span {
         /*position: relative;*/
         display: inline-block;
         font-size: 14px;
@@ -412,29 +451,33 @@
         cursor: pointer;
     }
 
-    .filter-btn span:after{
+    .filter-btn span:after {
         content: "";
         display: inline-block;
-        margin-left:10px;
+        margin-left: 10px;
         margin-bottom: -1px;
         width: 8px;
         height: 8px;
         border-left: 1px solid #36A8FF;
-        border-top:1px solid #36A8FF;
-        transform:rotate(45deg);
+        border-top: 1px solid #36A8FF;
+        transform: rotate(45deg);
         /*position: absolute;*/
     }
-    .filter-btn span.open:after{
-        margin-bottom:2px;
-        transform:rotate(-135deg);
+
+    .filter-btn span.open:after {
+        margin-bottom: 2px;
+        transform: rotate(-135deg);
     }
-    .filter-enter,.filter-leave-active{
+
+    .filter-enter, .filter-leave-active {
         opacity: 0;
         /*transform: translate3d(0,20%,0);*/
     }
-    .filter-enter-active,.filter-leave-active{
-        transition:all .2s ease;
+
+    .filter-enter-active, .filter-leave-active {
+        transition: all .2s ease;
     }
+
     .pagination {
         margin: 20px 0;
         text-align: right;
@@ -486,20 +529,20 @@
         margin-left: 10px;
     }
 
-    .creat-task,.search-button {
-        margin-left:63px;
+    .creat-task, .search-button {
+        margin-left: 63px;
         cursor: pointer;
         /* position: absolute;
         right: 0;
         bottom: 0; */
     }
 
-     .creat-task {
+    .creat-task {
         margin-left: 30px;
-      /*  position: absolute;
-      right: 160px;
-      bottom: 0; */
-   } 
+        /*  position: absolute;
+        right: 160px;
+        bottom: 0; */
+    }
 
     .creat-task > span {
         display: inline-block;
