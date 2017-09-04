@@ -1514,9 +1514,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
 
 
 
@@ -1809,10 +1806,12 @@ __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('zh-CN');
             let param = this.taskForm;
             param.taskName = param.taskName.trim();
             param.description = param.description.trim();
-            param.endTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(param.endTime).format('YYYY-MM-DD');
+            param.endTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(param.endTime).format('YYYY-MM-DD 23:59:59');
             param['taskUsers'] = this.taskUsers;
             param.taskUsers.forEach(user => {
                 user.description = user.description.trim();
+                user.beginTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(user.beginTime).format('YYYY-MM-DD HH:mm:ss');
+                user.endTime = __WEBPACK_IMPORTED_MODULE_2_moment___default()(user.endTime).format('YYYY-MM-DD 23:59:59');
             });
             let vm = this;
             __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyPostHttp('/task/create', param, resp => {
@@ -3074,12 +3073,12 @@ __WEBPACK_IMPORTED_MODULE_4_moment___default.a.locale('zh-cn');
                     let userId = __WEBPACK_IMPORTED_MODULE_3__lib_Helper__["a" /* default */].decodeToken().userId;
                     var param = this.taskForm;
                     param.taskName = param.taskName.trim();
-                    param.endTime = __WEBPACK_IMPORTED_MODULE_4_moment___default()(param.beginTime).format('YYYY-MM-DD HH:mm:ss');
+                    param.endTime = __WEBPACK_IMPORTED_MODULE_4_moment___default()(param.beginTime).format('YYYY-MM-DD 23:59:59');
                     var taskUsers = [{
                         userId: userId,
                         taskHours: param.taskHours.trim(),
                         beginTime: __WEBPACK_IMPORTED_MODULE_4_moment___default()().format('YYYY-MM-DD HH:mm:ss'),
-                        endTime: param.endTime,
+                        endTime: __WEBPACK_IMPORTED_MODULE_4_moment___default()(param.endTime).format('YYYY-MM-DD 23:59:59'),
                         description: param.description.trim()
                     }];
                     param['taskUsers'] = taskUsers;
@@ -4565,7 +4564,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
@@ -4988,12 +4986,12 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 return;
             }
             this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
-            this.modifyPrivateTaskForm.endTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD HH:mm:ss');
+            this.modifyPrivateTaskForm.endTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59');
             this.modifyPrivateTaskForm.taskUsers = [{
                 userId: this.modifyPrivateTaskForm.userId,
                 taskHours: this.modifyPrivateTaskForm.taskHours,
                 beginTime: __WEBPACK_IMPORTED_MODULE_1_moment___default()().format('YYYY-MM-DD HH:mm:ss'),
-                endTime: this.modifyPrivateTaskForm.endTime,
+                endTime: __WEBPACK_IMPORTED_MODULE_1_moment___default()(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59'),
                 description: this.modifyPrivateTaskForm.description.trim()
             }];
             let vm = this;
@@ -5230,9 +5228,9 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
             param.taskUsers.forEach(user => {
                 user.description = user.description.trim();
                 user.beginTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(user.beginTime).format('YYYY-MM-DD HH:mm:ss');
-                user.endTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(user.endTime).format('YYYY-MM-DD HH:mm:ss');
+                user.endTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(user.endTime).format('YYYY-MM-DD 23:59:59');
             });
-            param.endTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(param.endTime).format('YYYY-MM-DD HH:mm:ss');
+            param.endTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()(param.endTime).format('YYYY-MM-DD 23:59:59');
             let vm = this;
             __WEBPACK_IMPORTED_MODULE_0__lib_Http__["a" /* default */].zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, resp => {
                 vm.$message.success('任务修改成功');
@@ -7951,8 +7949,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "date",
       "format": "yyyy-MM-dd",
-      "placeholder": "选择日期",
-      "picker-options": _vm.pickerOptions0
+      "placeholder": "选择日期"
     },
     model: {
       value: (_vm.taskForm.endTime),
@@ -8150,8 +8147,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "date",
       "format": "yyyy-MM-dd",
-      "placeholder": "选择日期",
-      "picker-options": _vm.pickerOptions0
+      "placeholder": "选择日期"
     },
     model: {
       value: (_vm.step.beginTime),
@@ -8166,8 +8162,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "date",
       "format": "yyyy-MM-dd",
-      "placeholder": "选择日期",
-      "picker-options": _vm.pickerOptions0
+      "placeholder": "选择日期"
     },
     model: {
       value: (_vm.step.endTime),
@@ -10233,7 +10228,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('el-date-picker', {
     attrs: {
       "type": "date",
-      "picker-options": _vm.pickerOptions0,
       "format": "yyyy-MM-dd",
       "placeholder": "选择日期时间"
     },
@@ -11042,4 +11036,4 @@ if(false) {
 
 /***/ })
 ],[227]);
-//# sourceMappingURL=app.c47ebf6218e443cbe2ca.js.map
+//# sourceMappingURL=app.ffa4fd25e7ba14d8ed65.js.map
