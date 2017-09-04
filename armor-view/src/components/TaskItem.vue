@@ -296,7 +296,6 @@
                             v-model="modifyTaskForm.endTime"
                             type="datetime"
                             format="yyyy-MM-dd"
-                            :picker-options="pickerOptions0"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -367,15 +366,13 @@
                         <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="step.beginTime" format="yyyy-MM-dd" type="date"
-                                            placeholder="选择日期"
-                                            :picker-options="pickerOptions0"></el-date-picker>
+                                            placeholder="选择日期"></el-date-picker>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
-                                            placeholder="选择日期"
-                                            :picker-options="pickerOptions0"></el-date-picker>
+                                            placeholder="选择日期"></el-date-picker>
                         </div>
                     </div>
                 </div>
