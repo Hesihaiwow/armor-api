@@ -39,8 +39,7 @@
                         <div class="ctpc-list-menu fl"><span class="star">*</span>截止日期</div>
                         <div class="ctpc-list-con fl">
                             <el-date-picker v-model="taskForm.endTime" type="date" format="yyyy-MM-dd"
-                                            placeholder="选择日期"
-                                            :picker-options="pickerOptions0"></el-date-picker>
+                                            placeholder="选择日期"></el-date-picker>
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
@@ -118,15 +117,13 @@
                                 <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                                 <div class="add-member-basic-msg fl">
                                     <el-date-picker v-model="step.beginTime" type="date" format="yyyy-MM-dd"
-                                                    placeholder="选择日期"
-                                                    :picker-options="pickerOptions0"></el-date-picker>
+                                                    placeholder="选择日期"></el-date-picker>
                                 </div>
                                 <div class="add-member-basic-menu add-member-basic-end fl"><span class="star">*</span>截止日期：
                                 </div>
                                 <div class="add-member-basic-msg fl">
                                     <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
-                                                    placeholder="选择日期"
-                                                    :picker-options="pickerOptions0"></el-date-picker>
+                                                    placeholder="选择日期"></el-date-picker>
                                 </div>
                             </div>
                         </div>
@@ -451,10 +448,12 @@
                 let param = this.taskForm;
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
-                param.endTime = moment(param.endTime).format('YYYY-MM-DD');
+                param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                 param['taskUsers'] = this.taskUsers;
                 param.taskUsers.forEach((user) => {
-                    user.description = user.description.trim()
+                    user.description = user.description.trim();
+                    user.beginTime = moment(user.beginTime).format('YYYY-MM-DD HH:mm:ss');
+                    user.endTime = moment(user.endTime).format('YYYY-MM-DD 23:59:59');
                 })
                 let vm = this;
                 http.zsyPostHttp('/task/create', param, (resp) => {

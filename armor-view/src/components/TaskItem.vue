@@ -443,7 +443,6 @@
                     <el-date-picker
                             v-model="modifyPrivateTaskForm.endTime"
                             type="date"
-                            :picker-options="pickerOptions0"
                             format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
@@ -924,12 +923,12 @@
                     return;
                 }
                 this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
-                this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD HH:mm:ss')
+                this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59')
                 this.modifyPrivateTaskForm.taskUsers = [{
                     userId: this.modifyPrivateTaskForm.userId,
                     taskHours: this.modifyPrivateTaskForm.taskHours,
                     beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-                    endTime: this.modifyPrivateTaskForm.endTime,
+                    endTime: moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59'),
                     description: this.modifyPrivateTaskForm.description.trim()
                 }]
                 let vm = this;
@@ -1171,9 +1170,9 @@
                 param.taskUsers.forEach((user) => {
                     user.description = user.description.trim()
                     user.beginTime = moment(user.beginTime).format('YYYY-MM-DD HH:mm:ss')
-                    user.endTime = moment(user.endTime).format('YYYY-MM-DD HH:mm:ss')
+                    user.endTime = moment(user.endTime).format('YYYY-MM-DD 23:59:59')
                 })
-                param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:mm:ss');
+                param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
                     vm.$message.success('任务修改成功');

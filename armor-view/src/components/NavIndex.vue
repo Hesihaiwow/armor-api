@@ -336,12 +336,12 @@
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
-                        param.endTime = moment(param.beginTime).format('YYYY-MM-DD HH:mm:ss')
+                        param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
                         var taskUsers = [{
                             userId: userId,
                             taskHours: param.taskHours.trim(),
                             beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-                            endTime: param.endTime,
+                            endTime:  moment(param.endTime).format('YYYY-MM-DD 23:59:59'),
                             description: param.description.trim()
                         }];
                         param['taskUsers'] = taskUsers;
