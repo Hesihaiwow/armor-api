@@ -12,7 +12,7 @@
                 </el-form-item>
                 <!--<el-checkbox  checked class="remember">记住密码</el-checkbox>-->
                 <el-form-item style="width:100%;">
-                    <el-button type="primary" style="width:100%;" @click.native.prevent="login" :loading="button.loading" class="form-input">登录</el-button>
+                    <el-button type="primary" style="width:100%;" @click="login" :loading="button.loading" class="form-input">登录</el-button>
                 </el-form-item>
             </div>
         </el-form>
@@ -63,23 +63,9 @@
                     _this.button.loading = false;
                 });
             },
-            bindEvent() {
-              if (window.addEventListener) { // Mozilla, Netscape, Firefox
-                document.addEventListener('keyup', this.handleKeyup, false);
-              } else if (window.attachEvent) { // IE
-                document.attachEvent('onkeyup', this.handleKeyup);
-              } else {
-                document.onkeyup = this.handleKeyup;
-              }
-            },
-            handleKeyup(e) {
-              if (e.keyCode === 13) {
-                this.login();
-              }
-            },
         },
         mounted() {
-            this.bindEvent();
+
           },
     }
 </script>
