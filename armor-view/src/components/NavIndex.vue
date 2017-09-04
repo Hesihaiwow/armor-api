@@ -112,7 +112,6 @@
                     <el-date-picker
                             v-model="taskForm.endTime"
                             type="date"
-                            :picker-options="pickerOptions0"
                             format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
