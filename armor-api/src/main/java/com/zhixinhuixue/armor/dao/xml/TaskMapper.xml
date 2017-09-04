@@ -168,7 +168,7 @@
                 and t1.create_time &lt;= #{endTime}
             </if>
         </where>
-        order by t1.create_time desc
+        order by t1.end_time ASC
     </select>
 
     <!-- 查询已完成的任务用户（阶段） -->
