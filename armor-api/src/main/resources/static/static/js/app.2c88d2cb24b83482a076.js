@@ -2567,27 +2567,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }, e => {
                 _this.button.loading = false;
             });
-        },
-        bindEvent() {
-            if (window.addEventListener) {
-                // Mozilla, Netscape, Firefox
-                document.addEventListener('keyup', this.handleKeyup, false);
-            } else if (window.attachEvent) {
-                // IE
-                document.attachEvent('onkeyup', this.handleKeyup);
-            } else {
-                document.onkeyup = this.handleKeyup;
-            }
-        },
-        handleKeyup(e) {
-            if (e.keyCode === 13) {
-                this.login();
-            }
         }
     },
-    mounted() {
-        this.bindEvent();
-    }
+    mounted() {}
 });
 
 /***/ }),
@@ -8630,11 +8612,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "type": "primary",
       "loading": _vm.button.loading
     },
-    nativeOn: {
-      "click": function($event) {
-        $event.preventDefault();
-        _vm.login($event)
-      }
+    on: {
+      "click": _vm.login
     }
   }, [_vm._v("登录")])], 1)], 1)])], 1)
 },staticRenderFns: []}
@@ -11028,4 +11007,4 @@ if(false) {
 
 /***/ })
 ],[227]);
-//# sourceMappingURL=app.c42fb4e3e234965f97fc.js.map
+//# sourceMappingURL=app.2c88d2cb24b83482a076.js.map
