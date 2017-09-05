@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -674,6 +676,44 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     @Async
     public void finishTask(Long taskId) {
+        this.settlementTask(taskId);
+    }
+
+    /**
+     * 结算积分
+     *
+     * @return
+     */
+    @Override
+    public void syncSettlementTask() {
+        List<Task> taskList = taskMapper.findNotFinishedTask();
+        if (taskList != null && taskList.size() > 0) {
+            BlockingQueue<Task> queue = new ArrayBlockingQueue<>(taskList.size());
+            for (Task task : taskList) {
+                try {
+                    queue.put(task);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            while (!queue.isEmpty()) {
+                try {
+                    Task task = queue.take();
+                    this.settlementTask(task.getId());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 结算积分
+     *
+     * @param taskId
+     */
+    public void settlementTask(Long taskId) {
+        logger.info("正在结算任务积分, taskId:{}", taskId);
         TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
         if (taskDetailBO.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
             logger.warn("任务已结算,id{}", taskId);
@@ -720,7 +760,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setUserId(taskUserBO.getUserId());
                 userIntegral.setIntegral(integral);
                 userIntegral.setOrigin(1);
-                userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getDescription());
+                userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
                 userIntegral.setCreateTime(new Date());
                 userIntegralMapper.insert(userIntegral);
                 Task task = new Task();
@@ -732,7 +772,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 User userTemp = userMapper.selectById(taskUserBO.getUserId());
                 BigDecimal currentIntegral = userTemp.getIntegral();
                 User user = new User();
-                user.setId(ZSYTokenRequestContext.get().getUserId());
+                user.setId(taskUserBO.getUserId());
                 user.setIntegral(currentIntegral.add(integral));
                 userMapper.updateSelectiveById(user);
             });

@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
@@ -9,6 +10,7 @@ import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
+import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.models.auth.In;
 
@@ -147,4 +149,10 @@ public interface IZSYTaskService {
      * @return
      */
     PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum);
+
+    /**
+     * 结算任务（后台同步）
+     * @return
+     */
+    void syncSettlementTask();
 }

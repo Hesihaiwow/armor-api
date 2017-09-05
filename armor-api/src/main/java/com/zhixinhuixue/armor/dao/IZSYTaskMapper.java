@@ -119,4 +119,10 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<TaskComment> findTaskComment(@Param("taskId") Long taskId, @Param("taskUserId") Long taskUserId);
+
+    /**
+     * 查询所有未结束已完成的任务
+     * @return
+     */
+    List<Task> findNotFinishedTask();
 }
