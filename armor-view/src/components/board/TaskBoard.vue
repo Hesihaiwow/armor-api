@@ -43,12 +43,19 @@
                 if (event.target.tagName.toLowerCase() == "li") {
                     event.target.parentNode.insertBefore(dom, event.target);
                 } else if (event.target.tagName.toLowerCase() == "ul") {
-
                     event.target.appendChild(dom);
+                }else{
+                    this.findParent(event.target).parentNode.insertBefore(dom, this.findParent(event.target));
                 }
             },
             allowDrop: function (event) {
                 event.preventDefault();
+            },
+            findParent(obj){
+                while(obj.parentNode && obj.tagName.toLowerCase() != "li"){
+                    obj = obj.parentNode;
+                }
+                return obj;
             }
         },
         created() {
