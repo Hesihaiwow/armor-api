@@ -83,7 +83,7 @@
 
     <!-- 查询已完成未结束的任务 -->
     <select id="findNotFinishedTask" resultMap="BaseResultMap">
-         select * from task where is_delete = 0 and `status` = 2
+         select * from task where is_delete = 0 and `status` = 2 and `type` = 2
     </select>
 
     <!-- 根据状态查询任务 -->
