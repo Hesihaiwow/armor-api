@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYStatsMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="delay" jdbcType="INTEGER" property="delay" />
+    <result column="complete" jdbcType="INTEGER" property="complete" />
+    <result column="process" jdbcType="DECIMAL" property="inProcess" />
+    <result column="sum" jdbcType="DECIMAL" property="sum" />
+  </resultMap>
+  <select id="getStats" resultMap="BaseResultMap">
+        SELECT COUNT(*)as quantity,
+        COUNT(case when t.`status`=1 then 2 end)as process,
+        COUNT(case when (t.`status`=2 or t.`status`=3) then 1 end)as complete,
+        <![CDATA[ COUNT(case when t.complete_time>t.end_time then 1 end)as delay,]]>
+        u.`name`,t.user_id as id, u.integral as sum
+        from task_user t,`user` u
+        where t.user_id = u.id
+        GROUP BY user_id
+    </select>
+</mapper>

@@ -17,7 +17,7 @@
                                        :value="item.id"></el-option>
                         </el-select>
                     </div>
-                    
+
                     <div class="task-top-list fl">
                         <span class="ttl-name">优先级</span>
                         <el-select clearable v-model="form.priority" placeholder="请选择">
@@ -36,8 +36,8 @@
                                        :value="item.value"></el-option>
                         </el-select>
                     </div>
-                     
-                     
+
+
                     <div class="task-top-list fl">
                         <span class="ttl-name">状态</span>
                         <el-select clearable v-model="form.status" placeholder="请选择">
@@ -53,7 +53,7 @@
                                         @change="timeChange"></el-date-picker>
                     </div>
                 </div>
-                
+
             </div>
             <transition name="filter">
                <div v-show="open">
@@ -185,6 +185,7 @@
             };
         },
         created() {
+            this.form.userId = this.$route.query.userId;
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
@@ -207,39 +208,39 @@
         },
         methods: {
             openFun(){
-                this.open = !this.open;  
+                this.open = !this.open;
             },
             addFormTagId(tagId,num,$event){
-                
-                if(this.hasClass($event.currentTarget,'active')){  
-                    this.removeClass($event.currentTarget,'active');  
+
+                if(this.hasClass($event.currentTarget,'active')){
+                    this.removeClass($event.currentTarget,'active');
                     if(num == 1){
                         this.form.tagId.splice(this.findIndex(this.form.tagId,tagId),1);
                     }else if(num ==2){
                         this.form.stageId.splice(this.findIndex(this.form.stageId,tagId),1);
                     }
-                }else{  
-                    this.addClass($event.currentTarget,'active'); 
+                }else{
+                    this.addClass($event.currentTarget,'active');
                     if(num == 1){
                          this.form.tagId.push(tagId) ;
                     }else if(num ==2){
                          this.form.stageId.push(tagId) ;
                     }
-                }  
+                }
                 console.log(this.form.tagId);
                 console.log(this.form.stageId);
             },
-            hasClass(obj, cls) {  
-                return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));  
+            hasClass(obj, cls) {
+                return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
             },
-            addClass(obj, cls) {  
-                if (!this.hasClass(obj, cls)) obj.className += " " + cls;  
+            addClass(obj, cls) {
+                if (!this.hasClass(obj, cls)) obj.className += " " + cls;
             },
-            removeClass(obj, cls) {  
-                if (this.hasClass(obj, cls)) {  
-                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');  
-                    obj.className = obj.className.replace(reg, ' ');  
-                }  
+            removeClass(obj, cls) {
+                if (this.hasClass(obj, cls)) {
+                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                    obj.className = obj.className.replace(reg, ' ');
+                }
             },
             findIndex(arr,val){
                 for(var i=0;i<arr.length;i++){
@@ -247,7 +248,7 @@
                         return i;
                     }
                 }
-            },  
+            },
             handleCurrentChange(currentPage) {
                 this.page.pageNum = currentPage
                 this.fetchTaskList()
@@ -387,7 +388,7 @@
     .tag-name button{
         margin: 0 10px 10px 0;
     }
-   
+
     .tag-name button:focus{
        color: #545454;
        border-color: #c4c4c4;
@@ -499,7 +500,7 @@
       /*  position: absolute;
       right: 160px;
       bottom: 0; */
-   } 
+   }
 
     .creat-task > span {
         display: inline-block;
