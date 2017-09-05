@@ -34,6 +34,7 @@ import NavIndex from './NavIndex'
 import AlterPassword from './AlterPassword'
 import Helper from "../lib/Helper";
 import IntegralHistory from './IntegralHistory'
+import Stats from './Stats'
 
 
 export default {
@@ -56,6 +57,10 @@ export default {
             {
               label: '积分',
               name: 'intergral'
+            },
+            {
+              label: '统计',
+              name: 'stats'
             }
         ],
         showIndex: true,
@@ -131,7 +136,8 @@ export default {
       Organization: Organization,
       NavIndex: NavIndex,
       AlterPassword: AlterPassword,
-      IntegralHistory:IntegralHistory
+      IntegralHistory:IntegralHistory,
+      Stats:Stats
     }
 }
 </script>
