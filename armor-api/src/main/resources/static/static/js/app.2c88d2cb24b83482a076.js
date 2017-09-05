@@ -2567,27 +2567,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }, e => {
                 _this.button.loading = false;
             });
-        },
-        bindEvent() {
-            if (window.addEventListener) {
-                // Mozilla, Netscape, Firefox
-                document.addEventListener('keyup', this.handleKeyup, false);
-            } else if (window.attachEvent) {
-                // IE
-                document.attachEvent('onkeyup', this.handleKeyup);
-            } else {
-                document.onkeyup = this.handleKeyup;
-            }
-        },
-        handleKeyup(e) {
-            if (e.keyCode === 13) {
-                this.login();
-            }
         }
     },
-    mounted() {
-        this.bindEvent();
-    }
+    mounted() {}
 });
 
 /***/ }),
@@ -4068,9 +4050,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_Helper__ = __webpack_require__(6);
-//
-//
-//
 //
 //
 //
@@ -8633,11 +8612,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "type": "primary",
       "loading": _vm.button.loading
     },
-    nativeOn: {
-      "click": function($event) {
-        $event.preventDefault();
-        _vm.login($event)
-      }
+    on: {
+      "click": _vm.login
     }
   }, [_vm._v("登录")])], 1)], 1)])], 1)
 },staticRenderFns: []}
@@ -9853,7 +9829,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "datetime",
       "format": "yyyy-MM-dd",
-      "picker-options": _vm.pickerOptions0,
       "placeholder": "选择日期时间"
     },
     model: {
@@ -10059,8 +10034,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "format": "yyyy-MM-dd",
       "type": "date",
-      "placeholder": "选择日期",
-      "picker-options": _vm.pickerOptions0
+      "placeholder": "选择日期"
     },
     model: {
       value: (_vm.step.beginTime),
@@ -10079,8 +10053,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "date",
       "format": "yyyy-MM-dd",
-      "placeholder": "选择日期",
-      "picker-options": _vm.pickerOptions0
+      "placeholder": "选择日期"
     },
     model: {
       value: (_vm.step.endTime),
@@ -11034,4 +11007,4 @@ if(false) {
 
 /***/ })
 ],[227]);
-//# sourceMappingURL=app.44fa34c2d65ae2609f72.js.map
+//# sourceMappingURL=app.2c88d2cb24b83482a076.js.map
