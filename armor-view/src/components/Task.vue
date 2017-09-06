@@ -197,6 +197,7 @@
             };
         },
         created() {
+            this.form.userId = this.$route.query.userId;
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
