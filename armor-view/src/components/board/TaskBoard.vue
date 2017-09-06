@@ -8,14 +8,13 @@
                     <li class="clearfix" draggable='true' @dragstart='drag($event)'
                         v-for="(task,keyTask) in item.tasks">
                         <div class="fl complate" data-title="">
-                            <span></span>
                         </div>
                         <div class="fl task-name">
                             <div>{{task.name}}</div>
-                            <span class="tips">{{task.endTime}}</span>
+                            <span class="tips" :class="task.endColor">{{task.endText}}</span>
                         </div>
                         <div class="master-info fr">
-                            <!--<img src="../../assets/img/man.png" alt="">-->
+                            {{task.userName}}
                         </div>
                     </li>
                 </ul>
@@ -25,6 +24,9 @@
 </template>
 <script>
     var dom;
+    import moment from 'moment';
+
+    moment.locale('zh-cn');
     export default {
         name: "task-board",
         data() {
@@ -44,29 +46,72 @@
                     event.target.parentNode.insertBefore(dom, event.target);
                 } else if (event.target.tagName.toLowerCase() == "ul") {
                     event.target.appendChild(dom);
-                }else{
+                } else {
                     this.findParent(event.target).parentNode.insertBefore(dom, this.findParent(event.target));
                 }
             },
             allowDrop: function (event) {
                 event.preventDefault();
             },
-            findParent(obj){
-                while(obj.parentNode && obj.tagName.toLowerCase() != "li"){
+            findParent(obj) {
+                while (obj.parentNode && obj.tagName.toLowerCase() != "li") {
                     obj = obj.parentNode;
                 }
                 return obj;
             }
         },
         created() {
-            /* 获取阶段任务 */
+            // 获取阶段
             let that = this;
             that.http.zsyGetHttp('/stage/list', {}, (res) => {
                 that.stageList = res.data;
                 that.taskBoxWidth = that.stageList.length * 270 + "px";
                 that.stageList.forEach((stage) => {
+                    // 获取任务
                     that.http.zsyPostHttp('/task/public/master/all', {"stageId": [stage.id]}, (res) => {
-                        that.$set(stage, 'tasks', res.data.list)
+                        let list = res.data.list
+                        list.forEach((el) => {
+                            let endTime = '',today = moment().format('YYYY-MM-DD')
+                            if (el.status == 1) {
+                                endTime = el.endTime
+                            } else {
+                                endTime = el.completeTime
+                            }
+                            endTime = moment(endTime).format('YYYY-MM-DD')
+                            const diffDays = moment(today).diff(moment(endTime), 'days')
+                            let endColor = '', endText = ''
+                            endText = moment(endTime).calendar(null, {
+                                sameDay: '[今天]',
+                                nextDay: '[明天]',
+                                nextWeek: 'L',
+                                lastDay: '[昨天]',
+                                lastWeek: 'L',
+                                sameElse: 'L'
+                            })
+                            if (el.status == 1) {
+                                if (diffDays == 0) {
+                                    endColor = 'orange'
+                                } else if (diffDays > 0) {
+                                    endColor = 'red'
+                                } else if (diffDays < 0) {
+                                    endColor = 'blue'
+                                }
+                                endText += ' 截止'
+                            } else {
+                                endColor = 'green'
+                                endText += ' 完成'
+                            }
+                            el['endColor'] = endColor
+                            el['endText'] = endText
+
+                            // 优先级样式
+                            if (el.priority == 2) {
+                                el.borderClass = 'orange-border'
+                            } else if (el.priority == 3) {
+                                el.borderClass = 'red-border'
+                            }
+                        })
+                        that.$set(stage, 'tasks', list)
                     })
                 });
             });
@@ -126,18 +171,41 @@
                             word-break: break-all;
                             .tips {
                                 padding: 0 8px 2px;
-                                background-color: #FFAF38;
+                                /*   background-color: #FFAF38;*/
                                 color: #fff;
                                 border-radius: 3px;
                             }
+                            .tips.red {
+                                background: #FF4515;
+                            }
+                            .tips.orange {
+                                background: #FF9900;
+                            }
+                            .tips.blue {
+                                background: #36A8FF;
+                            }
+                            .tips.green {
+                                background: #339933;
+                            }
+
                         }
                         .master-info {
-                            width: 40px;
-                            img {
+                           /* img {
                                 width: 40px;
                                 height: 40px;
                                 border-radius: 50%;
-                            }
+                            }*/
+                            height: 40px;
+                            background: #69C8FA;
+                            border-radius: 50%;
+                            line-height: 40px;
+                            text-align: center;
+                            color: #fff;
+                            cursor: pointer;
+                            /* z-index: 100; */
+                            margin-top: 20px;
+                            margin-right: 20px;
+                            width: 40px;
                         }
                     }
                 }

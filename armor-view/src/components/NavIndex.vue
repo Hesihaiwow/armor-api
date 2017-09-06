@@ -358,7 +358,7 @@
             makeUpItems(items) {
                 const list = items;
                 list.forEach((el) => {
-                    let endTime = '';
+                    let endTime = '',today = moment().format('YYYY-MM-DD')
                     if (el.status >= 2) {
                         endTime = el.completeTime
                     } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
@@ -366,7 +366,9 @@
                     } else {
                         endTime = el.taskUsers[0].completeTime
                     }
-                    const diffDays = Math.round(moment().diff(moment(endTime), 'days', true))
+                    endTime = moment(endTime).format('YYYY-MM-DD')
+                    const diffDays = moment(today).diff(moment(endTime), 'days')
+                    //const diffDays = Math.round(moment().diff(moment(endTime), 'days', true))
                     let endColor = '', endText = ''
                     endText = moment(endTime).calendar(null, {
                         sameDay: '[今天]',
