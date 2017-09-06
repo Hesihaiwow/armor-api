@@ -6,7 +6,7 @@
                 <header :data-id="item.id">{{item.name}}</header>
                 <ul class="task-item">
                     <li class="clearfix" draggable='true' @dragstart='drag($event)'
-                        v-for="(task,keyTask) in item.tasks">
+                        v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)">
                         <div class="fl complate" data-title="">
                         </div>
                         <div class="fl task-name">
@@ -38,7 +38,7 @@
         methods: {
             drag: function (event) {
                 dom = event.currentTarget
-                console.log(dom)
+                console.log('drag')
             },
             drop: function (event) {
                 event.preventDefault();
@@ -49,6 +49,7 @@
                 } else {
                     this.findParent(event.target).parentNode.insertBefore(dom, this.findParent(event.target));
                 }
+                console.log('drop')
             },
             allowDrop: function (event) {
                 event.preventDefault();
@@ -58,6 +59,10 @@
                     obj = obj.parentNode;
                 }
                 return obj;
+            },
+            handleTaskItemClick(taskId){
+                console.log(taskId)
+                this.$root.eventBus.$emit("handleTaskItemClick", taskId);
             }
         },
         created() {
@@ -155,12 +160,12 @@
                     box-sizing: border-box;
                 }
                 .task-item {
-                    
+
                     padding:30px 10px 0;
                     height: 100%;
                     box-sizing: border-box;
                     overflow-y: auto;
-                    
+
                     li {
                         border-bottom: 10px solid #eee;
                         padding: 5px 10px;
