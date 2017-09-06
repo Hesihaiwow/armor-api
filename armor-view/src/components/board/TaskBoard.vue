@@ -123,6 +123,9 @@
 </script>
 <style lang="less" scoped>
     .task-board {
+        position: fixed;
+        top:120px;
+        right: 0;bottom:0;left:0;
         padding: 10px;
         /*width: 1080px;*/
         margin: 0 auto;
@@ -130,22 +133,34 @@
         overflow-x: auto;
         .task-board-list {
             width: 400%;
+            height: 100%;
             .task-list {
+                position: relative;
                 width: 260px;
                 margin-right: 10px;
-
+                height: 100%;
                 background-color: #eee;
+                padding-bottom:10px;
+                box-sizing: border-box;
                 header {
+                    position: absolute;
+                    width:100%;
+                    top:0;
+                    left: 0;
                     padding-left: 10px;
                     line-height: 30px;
                     font-size: 14px;
                     font-weight: bold;
+                    background-color: #eee;
+                    box-sizing: border-box;
                 }
                 .task-item {
-                    padding: 10px;
-                    padding-top: 0;
-                    height: 500px;
+                    
+                    padding:30px 10px 0;
+                    height: 100%;
+                    box-sizing: border-box;
                     overflow-y: auto;
+                    
                     li {
                         border-bottom: 10px solid #eee;
                         padding: 5px 10px;
@@ -205,10 +220,12 @@
                             width: 40px;
                         }
                     }
+                    li:last-child{border-bottom: 0;}
                 }
             }
             .task-list:last-child {
                 margin-right: 0;
+
             }
         }
 
