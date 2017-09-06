@@ -124,7 +124,7 @@
 <style lang="less" scoped>
     .task-board {
         padding: 10px;
-        width: 1080px;
+        /*width: 1080px;*/
         margin: 0 auto;
         background-color: #fff;
         overflow-x: auto;
@@ -202,9 +202,6 @@
                             text-align: center;
                             color: #fff;
                             cursor: pointer;
-                            /* z-index: 100; */
-                            margin-top: 20px;
-                            margin-right: 20px;
                             width: 40px;
                         }
                     }

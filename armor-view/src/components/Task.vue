@@ -1,121 +1,123 @@
 <template>
-    <div class="task-con">
-        <div class="toggle-view"><input type="button" :value="btnVal" @click="btnValFun"></div>
-        <div v-show="btnValStatus == 1">
-            <div class="task-top clearfix">
-                <div class="clearfix">
-                    <div class="clearfix select-box">
-                        <div class="task-top-list fl">
-                            <span class="ttl-name">项目</span>
-                            <el-select clearable v-model="form.projectId" placeholder="请选择">
-                                <el-option v-for="item in projectList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                        <div class="task-top-list fl">
-                            <span class="ttl-name">成员</span>
-                            <el-select clearable filterable v-model="form.userId" placeholder="请选择">
-                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-
-                        <div class="task-top-list fl">
-                            <span class="ttl-name">优先级</span>
-                            <el-select clearable v-model="form.priority" placeholder="请选择">
-                                <el-option
-                                        v-for="item in priorityList"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="task-top-list fl">
-                            <span class="ttl-name">类型</span>
-                            <el-select clearable v-model="form.type" placeholder="请选择">
-                                <el-option v-for="item in typeList" :key="item.value" :label="item.name"
-                                           :value="item.value"></el-option>
-                            </el-select>
-                        </div>
-
-
-                        <div class="task-top-list fl">
-                            <span class="ttl-name">状态</span>
-                            <el-select clearable v-model="form.status" placeholder="请选择">
-                                <el-option v-for="item in status" :key="item.value" :label="item.name"
-                                           :value="item.value"></el-option>
-                            </el-select>
-                        </div>
-
-                        <div class="task-top-list fl">
-                            <span class="ttl-name">截止日期</span>
-                            <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
-                                            placeholder="选择日期"
-                                            @change="timeChange"></el-date-picker>
-                        </div>
-                    </div>
-                </div>
-                <transition name="filter">
-                    <div v-show="open">
-                        <div class="task-top-list clearfix">
-                            <span class="ttl-name fl">标签&nbsp;</span>
-                            <div class="fl tag-name clearfix">
-                                <el-button class="fl" type="" size="small" v-for="item in tagList" :key="item.id"
-                                           @click="addFormTagId(item.id,1,$event)">{{item.name}}
-                                </el-button>
+    <div> <div class="toggle-view"><input type="button" :value="btnVal" @click="btnValFun"></div>
+        <div :class="btnValStatus == 1?'task-con':''">
+            <div v-show="btnValStatus == 1" >
+                <div class="task-top clearfix">
+                    <div class="clearfix">
+                        <div class="clearfix select-box">
+                            <div class="task-top-list fl">
+                                <span class="ttl-name">项目</span>
+                                <el-select clearable v-model="form.projectId" placeholder="请选择">
+                                    <el-option v-for="item in projectList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
                             </div>
-                        </div>
-                        <div class="task-top-list  clearfix">
-                            <span class="ttl-name fl">阶段&nbsp;</span>
-                            <div class="fl tag-name clearfix">
-                                <el-button class="fl" size="small" v-for="item in stageList" :key="item.id"
-                                           @click="addFormTagId(item.id,2,$event)">{{item.name}}
-                                </el-button>
+                            <div class="task-top-list fl">
+                                <span class="ttl-name">成员</span>
+                                <el-select clearable filterable v-model="form.userId" placeholder="请选择">
+                                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
+
+                            <div class="task-top-list fl">
+                                <span class="ttl-name">优先级</span>
+                                <el-select clearable v-model="form.priority" placeholder="请选择">
+                                    <el-option
+                                            v-for="item in priorityList"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                            <div class="task-top-list fl">
+                                <span class="ttl-name">类型</span>
+                                <el-select clearable v-model="form.type" placeholder="请选择">
+                                    <el-option v-for="item in typeList" :key="item.value" :label="item.name"
+                                               :value="item.value"></el-option>
+                                </el-select>
+                            </div>
+
+
+                            <div class="task-top-list fl">
+                                <span class="ttl-name">状态</span>
+                                <el-select clearable v-model="form.status" placeholder="请选择">
+                                    <el-option v-for="item in status" :key="item.value" :label="item.name"
+                                               :value="item.value"></el-option>
+                                </el-select>
+                            </div>
+
+                            <div class="task-top-list fl">
+                                <span class="ttl-name">截止日期</span>
+                                <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
+                                                placeholder="选择日期"
+                                                @change="timeChange"></el-date-picker>
                             </div>
                         </div>
                     </div>
-                </transition>
-                <div class="clearfix">
-                    <div class="task-top-list fl search-button">
-                        <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
-                        </el-button>
+                    <transition name="filter">
+                        <div v-show="open">
+                            <div class="task-top-list clearfix">
+                                <span class="ttl-name fl">标签&nbsp;</span>
+                                <div class="fl tag-name clearfix">
+                                    <el-button class="fl" type="" size="small" v-for="item in tagList" :key="item.id"
+                                               @click="addFormTagId(item.id,1,$event)">{{item.name}}
+                                    </el-button>
+                                </div>
+                            </div>
+                            <div class="task-top-list  clearfix">
+                                <span class="ttl-name fl">阶段&nbsp;</span>
+                                <div class="fl tag-name clearfix">
+                                    <el-button class="fl" size="small" v-for="item in stageList" :key="item.id"
+                                               @click="addFormTagId(item.id,2,$event)">{{item.name}}
+                                    </el-button>
+                                </div>
+                            </div>
+                        </div>
+                    </transition>
+                    <div class="clearfix">
+                        <div class="task-top-list fl search-button">
+                            <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
+                            </el-button>
+                        </div>
+                        <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
+                            <span class="ttl-add-icon">+</span>
+                            <span class="ttl-add-msg">创建多人任务</span>
+                        </div>
                     </div>
-                    <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
-                        <span class="ttl-add-icon">+</span>
-                        <span class="ttl-add-msg">创建多人任务</span>
+                    <div class="filter-btn">
+                        <span @click="openFun" :class="open?'':'open'">{{open ? '收起筛选' : '展开筛选'}}</span>
                     </div>
                 </div>
-                <div class="filter-btn">
-                    <span @click="openFun" :class="open?'':'open'">{{open ? '收起筛选' : '展开筛选'}}</span>
+
+                <div class="task-lis-con">
+
+                    <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList" taskStatus="taskList"
+                               :projectList="projectList"
+                               :userList="userList"
+                               :stageList="stageList"
+                               :tagList="tagList"></task-item>
+                    <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"
+                                 :projectList="projectList"
+                                 :userList="userList"
+                                 :stageList="stageList"
+                                 :tagList="tagList"></create-task>
+                </div>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="handleCurrentChange"
+                            :current-page.sync="page.pageNum"
+                            :page-size="page.pageSize"
+                            :layout="pageLayout"
+                            :total="page.total">
+                    </el-pagination>
                 </div>
             </div>
-
-            <div class="task-lis-con">
-
-                <task-item :taskItems="taskItems" :isPrivate="false" @reload="fetchTaskList" taskStatus="taskList"
-                           :projectList="projectList"
-                           :userList="userList"
-                           :stageList="stageList"
-                           :tagList="tagList"></task-item>
-                <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"
-                             :projectList="projectList"
-                             :userList="userList"
-                             :stageList="stageList"
-                             :tagList="tagList"></create-task>
-            </div>
-            <div class="pagination">
-                <el-pagination
-                        @current-change="handleCurrentChange"
-                        :current-page.sync="page.pageNum"
-                        :page-size="page.pageSize"
-                        :layout="pageLayout"
-                        :total="page.total">
-                </el-pagination>
-            </div>
+            <task-board v-show="btnValStatus == 2"></task-board>
         </div>
-        <task-board v-show="btnValStatus == 2"></task-board>
     </div>
+
 </template>
 <script>
     import CreateTask from './CreateTask'
@@ -402,7 +404,7 @@
 </script>
 <style scoped>
     .toggle-view {
-        /*width:1080px;*/
+        width:1080px;
         margin: 0 auto 10px;
     }
 
