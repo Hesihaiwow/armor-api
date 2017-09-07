@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * Created by Lang on 2017/9/4 0004.
  */
@@ -30,7 +32,7 @@ public class ZSYStatsController extends ZSYController{
     @ApiOperation("任务统计")
     @GetMapping(value = "/list/{pageIndex}")
     public String getStats(@PathVariable Integer pageIndex){
-        PageInfo<StatsPageResDTO> statsPageResDTOPageInfo = statsService.getStats(pageIndex);
-        return ZSYResult.success().data(statsPageResDTOPageInfo).build();
+        List<StatsPageResDTO> statsPageResDTOList = statsService.getStats(pageIndex);
+        return ZSYResult.success().data(statsPageResDTOList).build();
     }
 }
