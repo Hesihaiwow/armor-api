@@ -30,9 +30,9 @@ public class ZSYStatsController extends ZSYController{
      * @return
      */
     @ApiOperation("任务统计")
-    @GetMapping(value = "/list/{pageIndex}")
-    public String getStats(@PathVariable Integer pageIndex){
-        List<StatsPageResDTO> statsPageResDTOList = statsService.getStats(pageIndex);
+    @GetMapping(value = "/list")
+    public String getStats(){
+        List<StatsPageResDTO> statsPageResDTOList = statsService.getStats();
         return ZSYResult.success().data(statsPageResDTOList).build();
     }
 }

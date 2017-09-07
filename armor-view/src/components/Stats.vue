@@ -47,7 +47,7 @@
     },
     methods: {
         getStats(currentPage){
-          Http.zsyGetHttp(`/stats/list/`+currentPage, {}, (resp) => {
+          Http.zsyGetHttp(`/stats/list/`, {}, (resp) => {
               this.statsData =  resp.data;
           });
         },

@@ -18,7 +18,7 @@ public class ZSYStatsService implements IZSYStatsService {
     private IZSYStatsMapper statsMapper;
 
     @Override
-    public List<StatsPageResDTO> getStats(int pageIndex){
+    public List<StatsPageResDTO> getStats(){
         List<StatsPageResDTO> userIntegralHistoryBOS = statsMapper.getStats();
         return userIntegralHistoryBOS;
     }
