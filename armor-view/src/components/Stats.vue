@@ -10,8 +10,7 @@
         <el-table-column prop="hours" label="进行中任务耗时（小时）" align="center"></el-table-column>
         <el-table-column prop="delay" label="超时任务" align="center" >
               <template scope="scope">
-                  <el-tag type="danger">{{scope.row.delay}}</el-tag>
-                  <!--<el-button type="danger">{{scope.row.delay}}</el-button>-->
+                  <span type="text" style="color: red;">{{scope.row.delay}}</span>
               </template>
         </el-table-column>
         <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>

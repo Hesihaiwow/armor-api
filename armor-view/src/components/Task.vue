@@ -197,7 +197,11 @@
             };
         },
         created() {
-            this.form.userId = this.$route.query.userId;
+            if(typeof (this.$route.query.userId) !="undefined"){
+                console.log(this.$route.query.userId )
+                this.form.userId = this.$route.query.userId;
+                this.form.type = '';
+            }
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
