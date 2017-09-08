@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
@@ -161,4 +158,19 @@ public class ZSYTaskController extends ZSYController {
         }
         return taskService.modifyTask(taskId, taskReqDTO).build();
     }
+
+    @ApiOperation("获取阶段下的任务")
+    @GetMapping("/tasksByStage/{stageId}")
+    public String getTasksByStage(@PathVariable("stageId") Long stageId) {
+        return ZSYResult.success().data(taskService.getTaskByStageId(stageId)).build();
+    }
+
+    @ApiOperation("移动任务")
+    @PutMapping("/move")
+    public String move(@Valid @RequestBody TaskMoveReqDTO taskMoveReqDTO) {
+        taskService.moveTask(taskMoveReqDTO);
+        return ZSYResult.success().build();
+    }
 }
+
+

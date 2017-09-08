@@ -1,8 +1,8 @@
 <template>
     <div> <div class="toggle-view"><input type="button" :value="btnVal" @click="btnValFun"></div>
-        <div :class="btnValStatus == 1?'task-con':''">
-            <div v-show="btnValStatus == 1" >
-                <div class="task-top clearfix">
+        <div class="task-con">
+            <div>
+                <div class="task-top clearfix" v-show="btnValStatus == 1">
                     <div class="clearfix">
                         <div class="clearfix select-box">
                             <div class="task-top-list fl">
@@ -220,11 +220,18 @@
         methods: {
             btnValFun() {
                 if (this.btnValStatus == 1) {
+                    // 刷新看板
+                    this.$root.eventBus.$emit("reloadBoard");
                     this.btnValStatus = 2;
                     this.btnVal = "点击切换到列表模式"
+                    document.getElementById('app').style.overflowY = 'hidden';
                 } else {
+                    // 刷新列表
+                    this.fetchTaskList();
                     this.btnValStatus = 1;
                     this.btnVal = "点击切换到看板模式"
+                    document.getElementById('app').style.overflowY = 'auto'
+
                 }
             },
             openFun() {

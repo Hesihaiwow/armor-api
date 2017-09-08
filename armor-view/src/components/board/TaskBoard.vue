@@ -3,10 +3,10 @@
         <div class="task-board-list clearfix" :style="{'width':taskBoxWidth}">
             <div class="fl task-list" v-for="(item,key) in stageList" @drop='drop($event)'
                  @dragover='allowDrop($event)'>
-                <header :data-id="item.id">{{item.name}}</header>
-                <ul class="task-item">
+                <header :data-id="item.id">{{item.name}} · {{item.tasks ? item.tasks.length : 0}}</header>
+                <ul class="task-item" :stageId="item.id">
                     <li class="clearfix" draggable='true' @dragstart='drag($event)'
-                        v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)">
+                        v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id">
                         <div class="fl complate" data-title="">
                         </div>
                         <div class="fl task-name">
@@ -38,18 +38,37 @@
         methods: {
             drag: function (event) {
                 dom = event.currentTarget
-                console.log('drag')
             },
             drop: function (event) {
+                let stageId = '', originId = dom.getAttribute('taskid'), targetId = '', vm = this;
                 event.preventDefault();
                 if (event.target.tagName.toLowerCase() == "li") {
-                    event.target.parentNode.insertBefore(dom, event.target);
+                    targetId = event.target.getAttribute('taskid');
                 } else if (event.target.tagName.toLowerCase() == "ul") {
-                    event.target.appendChild(dom);
+                    stageId = event.target.getAttribute('stageid');
                 } else {
-                    this.findParent(event.target).parentNode.insertBefore(dom, this.findParent(event.target));
+                    let li = this.findParent(event.target);
+                    targetId = li.getAttribute('taskid');
                 }
-                console.log('drop')
+                console.log(`originId:${originId}  targetId:${targetId}  stageId:${stageId}`)
+                this.http.zsyPutHttp('/task/move', {
+                    originId: originId,
+                    targetId: targetId,
+                    targetStageId: stageId
+                }, (res) => {
+
+                    console.log(res)
+                    if (event.target.tagName.toLowerCase() == "li") {
+                        event.target.parentNode.insertBefore(dom, event.target);
+                    } else if (event.target.tagName.toLowerCase() == "ul") {
+                        event.target.appendChild(dom);
+                    } else {
+                        let li = vm.findParent(event.target);
+                        li.parentNode.insertBefore(dom, li);
+                    }
+                    vm.getData();
+                });
+
             },
             allowDrop: function (event) {
                 event.preventDefault();
@@ -60,65 +79,73 @@
                 }
                 return obj;
             },
-            handleTaskItemClick(taskId){
-                console.log(taskId)
+            handleTaskItemClick(taskId) {
                 this.$root.eventBus.$emit("handleTaskItemClick", taskId);
+            },
+            getData() {
+                // 获取阶段
+                let that = this;
+                that.http.zsyGetHttp('/stage/list', {}, (res) => {
+                    that.stageList = res.data;
+                    that.taskBoxWidth = that.stageList.length * 270 + "px";
+                    that.stageList.forEach((stage) => {
+                        // 获取任务
+                        that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
+                            let list = res.data;
+                            list.forEach((el) => {
+                                let endTime = '', today = moment().format('YYYY-MM-DD')
+                                if (el.status == 1) {
+                                    endTime = el.endTime
+                                } else {
+                                    endTime = el.completeTime
+                                }
+                                endTime = moment(endTime).format('YYYY-MM-DD')
+                                const diffDays = moment(today).diff(moment(endTime), 'days')
+                                let endColor = '', endText = ''
+                                endText = moment(endTime).calendar(null, {
+                                    sameDay: '[今天]',
+                                    nextDay: '[明天]',
+                                    nextWeek: 'L',
+                                    lastDay: '[昨天]',
+                                    lastWeek: 'L',
+                                    sameElse: 'L'
+                                })
+                                if (el.status == 1) {
+                                    if (diffDays == 0) {
+                                        endColor = 'orange'
+                                    } else if (diffDays > 0) {
+                                        endColor = 'red'
+                                    } else if (diffDays < 0) {
+                                        endColor = 'blue'
+                                    }
+                                    endText += ' 截止'
+                                } else {
+                                    endColor = 'green'
+                                    endText += ' 完成'
+                                }
+                                el['endColor'] = endColor
+                                el['endText'] = endText
+
+                                // 优先级样式
+                                if (el.priority == 2) {
+                                    el.borderClass = 'orange-border'
+                                } else if (el.priority == 3) {
+                                    el.borderClass = 'red-border'
+                                }
+                            })
+                            that.$set(stage, 'tasks', list)
+                        })
+                    });
+                });
             }
         },
         created() {
-            // 获取阶段
-            let that = this;
-            that.http.zsyGetHttp('/stage/list', {}, (res) => {
-                that.stageList = res.data;
-                that.taskBoxWidth = that.stageList.length * 270 + "px";
-                that.stageList.forEach((stage) => {
-                    // 获取任务
-                    that.http.zsyPostHttp('/task/public/master/all', {"stageId": [stage.id]}, (res) => {
-                        let list = res.data.list
-                        list.forEach((el) => {
-                            let endTime = '',today = moment().format('YYYY-MM-DD')
-                            if (el.status == 1) {
-                                endTime = el.endTime
-                            } else {
-                                endTime = el.completeTime
-                            }
-                            endTime = moment(endTime).format('YYYY-MM-DD')
-                            const diffDays = moment(today).diff(moment(endTime), 'days')
-                            let endColor = '', endText = ''
-                            endText = moment(endTime).calendar(null, {
-                                sameDay: '[今天]',
-                                nextDay: '[明天]',
-                                nextWeek: 'L',
-                                lastDay: '[昨天]',
-                                lastWeek: 'L',
-                                sameElse: 'L'
-                            })
-                            if (el.status == 1) {
-                                if (diffDays == 0) {
-                                    endColor = 'orange'
-                                } else if (diffDays > 0) {
-                                    endColor = 'red'
-                                } else if (diffDays < 0) {
-                                    endColor = 'blue'
-                                }
-                                endText += ' 截止'
-                            } else {
-                                endColor = 'green'
-                                endText += ' 完成'
-                            }
-                            el['endColor'] = endColor
-                            el['endText'] = endText
-
-                            // 优先级样式
-                            if (el.priority == 2) {
-                                el.borderClass = 'orange-border'
-                            } else if (el.priority == 3) {
-                                el.borderClass = 'red-border'
-                            }
-                        })
-                        that.$set(stage, 'tasks', list)
-                    })
-                });
+            this.getData();
+        },
+        beforeMount() {
+            let vm = this;
+            this.$root.eventBus.$on("reloadBoard", () => {
+                vm.getData();
             });
         },
         mounted() {
@@ -129,8 +156,10 @@
 <style lang="less" scoped>
     .task-board {
         position: fixed;
-        top:120px;
-        right: 0;bottom:0;left:0;
+        top: 120px;
+        right: 0;
+        bottom: 0;
+        left: 0;
         padding: 10px;
         /*width: 1080px;*/
         margin: 0 auto;
@@ -145,12 +174,12 @@
                 margin-right: 10px;
                 height: 100%;
                 background-color: #eee;
-                padding-bottom:10px;
+                padding-bottom: 10px;
                 box-sizing: border-box;
                 header {
                     position: absolute;
-                    width:100%;
-                    top:0;
+                    width: 100%;
+                    top: 0;
                     left: 0;
                     padding-left: 10px;
                     line-height: 30px;
@@ -161,7 +190,7 @@
                 }
                 .task-item {
 
-                    padding:30px 10px 0;
+                    padding: 30px 10px 0;
                     height: 100%;
                     box-sizing: border-box;
                     overflow-y: auto;
@@ -210,11 +239,11 @@
 
                         }
                         .master-info {
-                           /* img {
-                                width: 40px;
-                                height: 40px;
-                                border-radius: 50%;
-                            }*/
+                            /* img {
+                                 width: 40px;
+                                 height: 40px;
+                                 border-radius: 50%;
+                             }*/
                             height: 40px;
                             background: #69C8FA;
                             border-radius: 50%;
@@ -225,7 +254,9 @@
                             width: 40px;
                         }
                     }
-                    li:last-child{border-bottom: 0;}
+                    li:last-child {
+                        border-bottom: 0;
+                    }
                 }
             }
             .task-list:last-child {

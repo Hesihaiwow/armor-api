@@ -115,6 +115,13 @@ public class ZSYTaskService implements IZSYTaskService {
         } else {
             // 多人任务直接通过
             task.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
+            // 排序的index
+            Integer index = taskMapper.selectLastIndexByStageId(task.getStageId());
+            if (index == null) {
+                task.setSort(0);
+            } else {
+                task.setSort(index + 1);
+            }
         }
         task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         task.setCreateTime(new Date());
@@ -887,5 +894,98 @@ public class ZSYTaskService implements IZSYTaskService {
             page.add(taskLogResDTO);
         });
         return new PageInfo<>(page);
+    }
+
+    /**
+     * 获取阶段下的任务
+     *
+     * @param stageId
+     * @return
+     */
+    @Override
+    public List<TaskListResDTO> getTaskByStageId(Long stageId) {
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageId(stageId);
+        List<TaskListResDTO> list = new ArrayList<>();
+        BeanUtils.copyProperties(taskListBOS, list);
+        taskListBOS.stream().forEach(taskListBO -> {
+            TaskListResDTO taskListResDTO = new TaskListResDTO();
+            BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+            List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+            taskListBO.getTags().stream().forEach(tag -> {
+                TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+                taskTagResDTO.setColor(tag.getColor());
+                taskTagResDTO.setName(tag.getName());
+                taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
+                taskTagResDTOS.add(taskTagResDTO);
+            });
+            taskListResDTO.setTags(taskTagResDTOS);
+            list.add(taskListResDTO);
+        });
+        return list;
+    }
+
+    /**
+     * 移动任务
+     *
+     * @param taskMoveReqDTO
+     * @return
+     */
+    @Override
+    @Transactional
+    public void moveTask(TaskMoveReqDTO taskMoveReqDTO) {
+        if (taskMoveReqDTO.getOriginId() == null) {
+            throw new ZSYServiceException("移动失败，任务不存在");
+        }
+        if (taskMoveReqDTO.getTargetId() == null && taskMoveReqDTO.getTargetStageId() == null) {
+            throw new ZSYServiceException("移动失败，任务不存在");
+        }
+        // 原任务
+        Task originTask = taskMapper.selectByPrimaryKey(taskMoveReqDTO.getOriginId());
+        if (originTask == null) {
+            throw new ZSYServiceException("移动失败，任务不存在");
+        }
+        // 移动到阶段底部
+        if (taskMoveReqDTO.getTargetId() == null) {
+            Integer lastIndex = taskMapper.selectLastIndexByStageId(taskMoveReqDTO.getTargetStageId());
+            Task task = new Task();
+            task.setId(taskMoveReqDTO.getOriginId());
+            task.setStageId(taskMoveReqDTO.getTargetStageId());
+            task.setSort(lastIndex == null ? 0 : lastIndex + 1);
+            task.setUpdateTime(new Date());
+            taskMapper.updateByPrimaryKeySelective(task);
+        } else {
+            // 移动到阶段中间
+            Task targetTask = taskMapper.selectByPrimaryKey(taskMoveReqDTO.getTargetId());
+            if (targetTask == null) {
+                throw new ZSYServiceException("移动失败，任务不存在");
+            }
+            // 当前阶段内移动
+            if (targetTask.getStageId().equals(originTask.getStageId())) {
+                // 交换位置
+                // 原对象
+                Task origin = new Task();
+                origin.setId(taskMoveReqDTO.getOriginId());
+                origin.setSort(targetTask.getSort());
+                origin.setUpdateTime(new Date());
+                taskMapper.updateByPrimaryKeySelective(origin);
+                // 目标对象
+                Task target = new Task();
+                target.setId(targetTask.getId());
+                target.setSort(originTask.getSort());
+                target.setUpdateTime(new Date());
+                taskMapper.updateByPrimaryKeySelective(target);
+
+            }else{ // 插入到其他阶段中
+                // 更新目标对象之后的下标+1
+                taskMapper.updateIndexByStageId(targetTask.getStageId(), targetTask.getSort());
+                // 更新原对象下标
+                Task task = new Task();
+                task.setId(taskMoveReqDTO.getOriginId());
+                task.setStageId(targetTask.getStageId());
+                task.setSort(targetTask.getSort());
+                task.setUpdateTime(new Date());
+                taskMapper.updateByPrimaryKeySelective(task);
+            }
+        }
     }
 }

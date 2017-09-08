@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
@@ -147,4 +144,18 @@ public interface IZSYTaskService {
      * @return
      */
     PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum);
+
+    /**
+     * 获取阶段下的任务
+     * @param stageId
+     * @return
+     */
+    List<TaskListResDTO> getTaskByStageId(Long stageId);
+
+    /**
+     * 移动任务
+     * @param taskMoveReqDTO
+     * @return
+     */
+    void moveTask(TaskMoveReqDTO taskMoveReqDTO);
 }
