@@ -78,7 +78,7 @@
                     </transition>
                     <div class="clearfix">
                         <div class="task-top-list fl search-button">
-                            <el-button type="primary" icon="search" size="small" @click="fetchTaskList()" :loading="loading">查询
+                            <el-button type="primary" icon="search" size="small" @click="searchTask()" :loading="loading">查询
                             </el-button>
                         </div>
                         <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
@@ -317,6 +317,10 @@
                 http.zsyGetHttp('/tag/list', {}, (resp) => {
                     vm.tagList = resp.data
                 })
+            },
+            searchTask(){
+                this.page.pageNum = 1;
+                this.fetchTaskList();
             },
             fetchTaskList() {
                 this.loading = true
