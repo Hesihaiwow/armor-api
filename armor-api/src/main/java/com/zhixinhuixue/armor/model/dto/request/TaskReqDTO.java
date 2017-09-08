@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -65,6 +66,12 @@ public class TaskReqDTO {
 //    @Size(min = 1, message = "任务负责人不能为空")
     @Valid
     private List<TaskUserReqDTO> taskUsers;
+
+    /**
+     * 如果是修改操作，需要记录本次日志
+     */
+    @Size( max = 500, message = "任务操作描述长度在0~{max}之间")
+    private String modifyLog;
 
     public Integer getTaskType() {
         return taskType;
@@ -136,5 +143,13 @@ public class TaskReqDTO {
 
     public void setStageId(Long stageId) {
         this.stageId = stageId;
+    }
+
+    public String getModifyLog() {
+        return modifyLog;
+    }
+
+    public void setModifyLog(String modifyLog) {
+        this.modifyLog = modifyLog;
     }
 }

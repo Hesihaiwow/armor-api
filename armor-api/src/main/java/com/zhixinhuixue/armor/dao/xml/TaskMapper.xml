@@ -17,11 +17,12 @@
         <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, description, project_id, end_time, `type`, status, review_status, priority, create_by,
-        complete_time, create_time, update_time
+        id, name, description, project_id,stage_id, end_time, `type`, status, review_status, priority, create_by,
+        complete_time, create_time, update_time,sort
     </sql>
 
     <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.TaskListBO" extends="BaseResultMap">
@@ -110,9 +111,10 @@
 
     <!-- 查询还未评价完的任务 -->
     <select id="selectAllNotClosed" parameterType="java.lang.Long" resultMap="TaskResultMap">
-         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id from task t1
+         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t4.`name` as userName,t2.user_id from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
+        left join `user` t4 on t1.create_by = t4.id
         where t1.`status` = 2 and t1.review_status = 3
         and t2.`status` >=2
         and t1.is_delete = 0
@@ -204,6 +206,31 @@
        select * from task_comment where task_id = #{taskId} and task_user_id = #{taskUserId}
     </select>
 
+    <!-- 查询阶段下的任务 -->
+    <select id="selectTaskByStageId" resultMap="PageResultMap" parameterType="java.lang.Long">
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName,t5.`name` as stageName,t6.`name` as userName from task t1
+        left join task_user t2 on t1.id =t2.task_id
+        left join task_tag t3 on t1.id = t3.task_id
+        left join project t4 on t1.project_id = t4.id
+        left JOIN stage t5 on t1.stage_id = t5.id
+        left join `user` t6 on t1.create_by = t6.id
+         where t1.review_status = 3 and t1.is_delete = 0
+         and t1.`type` = 2 and t1.stage_id = #{stageId}
+         order by t1.sort ASC
+    </select>
+
+    <!-- 查询阶段内任务最后一个index -->
+    <select id="selectLastIndexByStageId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select sort from task where stage_id = #{stageId}
+        and is_delete = 0 and type = 2 order by sort desc LIMIT 1
+    </select>
+
+    <!-- 修改任务下标 -->
+    <update id="updateIndexByStageId">
+        update task set sort = sort +1, update_time = now()
+        where stage_id = #{stageId} and is_delete = 0 and `type` = 2  and sort >=#{sort}
+    </update>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -220,14 +247,14 @@
       insert into task (id, name, description,
       project_id,stage_id, end_time, `type`, status,
       review_status, priority, create_by,
-      complete_time, create_time, update_time, is_delete
+      complete_time, create_time, update_time, is_delete,sort
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
       #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
       #{status,jdbcType=INTEGER},
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
-       #{isDelete,jdbcType=INTEGER}
+       #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER}
       )
   </insert>
 
@@ -274,7 +301,10 @@
                 create_by = #{createBy,jdbcType=BIGINT},
             </if>
             <if test="isDelete != null or isDelete == 0">
-                is_delete = #{isDelete,jdbcType=BIGINT},
+                is_delete = #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="sort != null or sort == 0">
+                sort = #{sort,jdbcType=INTEGER},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

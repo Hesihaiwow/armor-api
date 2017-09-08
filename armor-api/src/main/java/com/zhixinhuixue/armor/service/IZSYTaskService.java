@@ -1,18 +1,12 @@
 package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
-import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
-import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -123,6 +117,7 @@ public interface IZSYTaskService {
 
     /**
      * 获取所有审核通过的任务
+     *
      * @return
      */
     PageInfo<TaskResDTO> getAuditSuccessAll(Integer pageNum);
@@ -152,7 +147,24 @@ public interface IZSYTaskService {
 
     /**
      * 结算任务（后台同步）
+     *
      * @return
      */
     void syncSettlementTask();
+
+    /**
+     * 获取阶段下的任务
+     *
+     * @param stageId
+     * @return
+     */
+    List<TaskListResDTO> getTaskByStageId(Long stageId);
+
+    /**
+     * 移动任务
+     *
+     * @param taskMoveReqDTO
+     * @return
+     */
+    void moveTask(TaskMoveReqDTO taskMoveReqDTO);
 }

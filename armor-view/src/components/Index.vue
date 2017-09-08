@@ -36,7 +36,6 @@ import Helper from "../lib/Helper";
 import IntegralHistory from './IntegralHistory'
 import Stats from './Stats'
 
-
 export default {
     data() {
       return {
@@ -58,10 +57,10 @@ export default {
               label: '积分',
               name: 'intergral'
             },
-          /*  {
+            {
               label: '统计',
               name: 'stats'
-            }*/
+            }
         ],
         showIndex: true,
         showPerOpt: false,

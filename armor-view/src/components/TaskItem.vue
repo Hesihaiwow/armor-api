@@ -1,13 +1,15 @@
 <template>
     <div>
-        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id)" :class="task.borderClass">
+        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id,task.type)"
+             :class="task.borderClass">
             <div class="head-img">
                 <!-- 待审核 -->
                 <img v-if="task.reviewStatus ==1" src="../assets/img/waitAudit.png">
                 <!-- 审核通过 -->
                 <img v-else-if="taskStatus=='auditSuccess'" src="../assets/img/auditSuccess.png">
                 <!-- 进行中 -->
-                <img v-else-if="(taskStatus=='TaskDoing' && task.reviewStatus ==3)||(taskStatus=='taskList' && task.status<3)" src="../assets/img/doing.png">
+                <img v-else-if="(taskStatus=='TaskDoing' && task.reviewStatus ==3)||(taskStatus=='taskList' && task.status<3)"
+                     src="../assets/img/doing.png">
                 <!-- 已完成 -->
                 <img v-else-if="(taskStatus=='finished')||task.status==3" src="../assets/img/finished.jpg">
                 <!-- 待评价 -->
@@ -28,14 +30,19 @@
                     <i class="iconfont icon-people" v-show="task.type==2"></i>
                     <span class="task-end" :class="task.endColor">{{task.endText}}</span>
                     <span class="task-time-opt">
-                    <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check" @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
-                        <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 " @click="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
+                    <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check"
+                       @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
+                        <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 "
+                           @click="modifyPrivateTask(task.id)" class="el-icon-edit"></i>
                         <!-- 待评价 -->
-                        <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off" @click="showWaitAssess(task.id)"></i>
+                        <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off"
+                           @click="showWaitAssess(task.id)"></i>
                         <!-- 待审核 -->
-                        <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit" @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
+                        <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit"
+                           @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
                         <!-- 审核通过 -->
-                      <i v-show="taskStatus=='auditSuccess' " @click.stop="modifyPrivateTask(task.id)" class="el-icon-edit" ></i>
+                      <i v-show="taskStatus=='auditSuccess' " @click.stop="modifyPrivateTask(task.id)"
+                         class="el-icon-edit"></i>
 
                   </span>
                     <ul class="task-key-tag">
@@ -58,7 +65,7 @@
                 <span class="mark-msg">{{task.projectName}}</span>
             </div>
 
-            <div class="task-username" >{{task.userName}}</div>
+            <div class="task-username">{{task.userName}}</div>
         </div>
         <div v-show="taskItems.length==0" class="empty">
             <h2>暂无数据</h2>
@@ -72,19 +79,20 @@
                 size="tiny"
                 :before-close="hideFinishedPop">
             <el-form>
-                <el-form-item  class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item  class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
-                <el-form-item  class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item  class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item  class="task-form" label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
+                                                                   v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
-                <el-form-item  class="task-form" label="标签：">
+                <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
                 </el-form-item>
-                <div  v-for="(item,index) in taskDetail.users">
+                <div v-for="(item,index) in taskDetail.users">
                     <el-card class="box-card" v-if="item.userId==loginUserId">
                         <div class="text item">
                             工作量：{{item.taskHours}} 工时
@@ -113,18 +121,18 @@
                 size="tiny"
                 :before-close="hideAuditPop">
             <el-form>
-                <el-form-item  class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item  class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
-                <el-form-item  class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
-                <el-form-item  class="task-form" label="标签：">
+                <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
                 </el-form-item>
                 <div v-for="(item,index) in taskDetail.users">
-                    <el-form-item  class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
-                    <el-form-item  class="task-form" label="负责人：">{{item.userName}}</el-form-item>
+                    <el-form-item class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
+                    <el-form-item class="task-form" label="负责人：">{{item.userName}}</el-form-item>
                 </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -147,14 +155,15 @@
                 size="tiny"
                 :before-close="hideTaskDetail">
             <el-form>
-                <el-form-item  class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item  class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
-                <el-form-item  class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item  class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item  class="task-form" label="优先级："><span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
+                                                                   v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item  class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
-                <el-form-item  class="task-form" label="标签：">
+                <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
@@ -172,8 +181,8 @@
                     <div class="bdl-line"></div>
                 </div>
                 <div v-else="taskDetail.type==1" v-for="(item,index) in taskDetail.users">
-                    <el-form-item  class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
-                    <el-form-item  class="task-form" label="负责人：">{{item.userName}}</el-form-item>
+                    <el-form-item class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
+                    <el-form-item class="task-form" label="负责人：">{{item.userName}}</el-form-item>
                 </div>
             </el-form>
 
@@ -183,8 +192,8 @@
                     <a class="fr" href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>
                 </div>
                 <ul style="height: 100px; overflow: auto">
-                    <li v-for="(item,index) in taskLog.list" :key="index">
-                       <span class="ellipsis" style="float: left;width: 350px;" :title="item.title"> {{item.title}}</span>
+                    <li v-for="(item,index) in taskLog.list" :key="index" class="clearfix">
+                       <div style="float: left;width: 350px;"> {{item.title}} <div class="task-title-detail" v-show="false"><em></em>{{item.content}}</div></div>
                        <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
                     </li>
                 </ul>
@@ -221,7 +230,7 @@
                     </div>
                     <div v-if="!stage.myComment">
                         <el-form>
-                            <el-form-item  class="task-form" label="请评价">
+                            <el-form-item class="task-form" label="请评价">
                                 <el-radio-group v-model="assessForm.comments[index].grade">
                                     <el-radio class="radio" label="A">A</el-radio>
                                     <el-radio class="radio" label="B">B</el-radio>
@@ -264,11 +273,11 @@
                </span>
             </span>
             <el-form label-width="80px">
-                <el-form-item  class="task-form-edit" label="">
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>任务名称</span>
                     <el-input v-model="modifyTaskForm.taskName" style="width: 300px"></el-input>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="">
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>项目</span>
                     <el-select v-model="modifyTaskForm.projectId" placeholder="请选择">
                         <el-option
@@ -279,7 +288,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="">
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>优先级</span>
                     <el-select v-model="modifyTaskForm.priority" placeholder="请选择">
                         <el-option
@@ -290,7 +299,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="">
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>截止日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
@@ -299,18 +308,18 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="">
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>阶段</span>
                     <el-select v-model="modifyTaskForm.stageId" :multiple-limit="1" placeholder="请选择">
                         <el-option v-for="item in stageList" :key="item.id"
                                    :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="">
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>标签</span>
-                   <!--  <div class="fl tag-name clearfix">
-                        <el-button class="fl" size="small" v-for="item in tagList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
-                     </div> -->
+                    <!--  <div class="fl tag-name clearfix">
+                         <el-button class="fl" size="small" v-for="item in tagList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
+                      </div> -->
                     <el-select
                             v-model="modifyTaskForm.tags"
                             multiple
@@ -323,7 +332,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="">
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>任务描述</span>
                     <el-input type="textarea" v-model="modifyTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
@@ -402,13 +411,13 @@
             </h2>
             <div v-for="(item,index) in taskCommentDetail.comments">
                 <el-form label-position="left" inline class="demo-table-expand">
-                    <el-form-item  class="task-form" label="姓名">
+                    <el-form-item class="task-form" label="姓名">
                         <span>{{ item.commentUserName }}</span>
                     </el-form-item>
-                    <el-form-item  class="task-form" label="评价">
+                    <el-form-item class="task-form" label="评价">
                         <span>{{ item.grade }}</span>
                     </el-form-item>
-                    <el-form-item  class="task-form" label="描述">
+                    <el-form-item class="task-form" label="描述">
                         <span>{{ item.description }}</span>
                     </el-form-item>
                 </el-form>
@@ -426,7 +435,7 @@
                 :close-on-press-escape="false"
                 :visible.sync="showModifyPrivateTask">
             <el-form :model="modifyPrivateTaskForm" label-width="80px">
-                <el-form-item  class="task-form-edit" label="项目">
+                <el-form-item class="task-form-edit" label="项目">
                     <el-select v-model="modifyPrivateTaskForm.projectId" placeholder="请选择">
                         <el-option
                                 v-for="item in projectList"
@@ -436,7 +445,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="截止日期">
+                <el-form-item class="task-form-edit" label="截止日期">
                     <el-date-picker
                             v-model="modifyPrivateTaskForm.endTime"
                             type="date"
@@ -444,18 +453,18 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="工作量">
+                <el-form-item class="task-form-edit" label="工作量">
                     <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="2"></el-input>
                     小时
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="任务名称">
+                <el-form-item class="task-form-edit" label="任务名称">
                     <el-input v-model="modifyPrivateTaskForm.taskName"></el-input>
                 </el-form-item>
 
-                <el-form-item  class="task-form-edit" label="任务描述">
+                <el-form-item class="task-form-edit" label="任务描述">
                     <el-input type="textarea" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="阶段">
+                <el-form-item class="task-form-edit" label="阶段">
                     <el-select
                             v-model="modifyPrivateTaskForm.stageId"
                             default-first-option
@@ -468,7 +477,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item  class="task-form-edit" label="标签">
+                <el-form-item class="task-form-edit" label="标签">
                     <el-select
                             v-model="modifyPrivateTaskForm.tags"
                             multiple
@@ -529,7 +538,7 @@
                 showModifyPrivateTask: false,
                 modifyPrivateTaskForm: {
                     id: '',
-                    userId:'',
+                    userId: '',
                     taskType: 1,
                     priority: 1,
                     taskName: '',
@@ -600,7 +609,7 @@
                     completeTime: '',
                     status: ''
                 },
-                stepTemp: {},/*
+                stepTemp: {}, /*
                 projectList: [],
                 stageList: [],
                 tagList: [],*/
@@ -768,13 +777,21 @@
                 this.taskLog.hasNextPage = false;
                 this.taskLog.pageNum = 1;
             },
-            taskItemClick(taskId) {
-              if(!this.isPrivate || this.taskStatus=='finished' || this.taskStatus=='auditSuccess'){
+            taskItemClick(taskId, taskType) {
+                if (!this.isPrivate || this.taskStatus == 'finished' || this.taskStatus == 'auditSuccess') {
                     this.showTaskDetail = true;
                     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                         this.taskDetail = resp.data
                     });
                     this.getTaskLog(taskId)
+                }
+                // 个人点击完成任务
+                if (this.taskStatus == 'TaskDoing' && this.isPrivate) {
+                    this.taskItems.forEach((task) => {
+                        if (task.id === taskId && task.reviewStatus==3) {
+                            this.showFinishedPop(taskId, task.taskUsers[0].id, taskType)
+                        }
+                    });
                 }
             },
             getTaskLog(taskId) {
@@ -898,7 +915,7 @@
                     this.$message.warning("请选择结束时间");
                     return;
                 }
-                if (this.modifyPrivateTaskForm.taskHours== '') {
+                if (this.modifyPrivateTaskForm.taskHours == '') {
                     this.$message.warning("请输入工作量");
                     return;
                 }
@@ -959,7 +976,7 @@
                 this.showModifyPrivateTask = false;
                 this.modifyPrivateTaskForm = {
                     id: '',
-                    userId:'',
+                    userId: '',
                     taskType: 1,
                     priority: 1,
                     taskName: '',
@@ -1137,10 +1154,10 @@
                 })
             },
             saveTaskInfo() {
-               /* if (this.modifyTaskForm.description == '') {
-                    this.$message.warning("请填写任务备注");
-                    return;
-                }*/
+                /* if (this.modifyTaskForm.description == '') {
+                     this.$message.warning("请填写任务备注");
+                     return;
+                 }*/
                 if (this.modifyTaskForm.taskName == '') {
                     this.$message.warning("请填写任务名称");
                     return;
@@ -1174,6 +1191,9 @@
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
                     vm.$message.success('任务修改成功');
                     this.hideTaskModify()
+                    // 刷新看板
+                    //this.$root.eventBus.$emit("reloadBoard");
+                    // 刷新列表
                     vm.$emit('reload')
                 })
                 this.showCreateTask = false;
@@ -1191,10 +1211,31 @@
                 })
                 this.showTaskCommentDetail = true
             }
+        },
+        beforeMount() {
+            // 监听看板任务点击事件
+            var vm = this;
+            this.$root.eventBus.$on("handleTaskItemClick", (taskId) => {
+                vm.showTaskDetail = true;
+                http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
+                    vm.taskDetail = resp.data
+                });
+                vm.getTaskLog(taskId)
+            });
         }
     }
 </script>
 <style>
+    .task-title-detail{
+        margin-top:-5px;
+        line-height: 20px;
+        font-size:12px;
+        color: #ccc;
+    }
+    .task-title-detail em{
+        margin-right: 5px;
+        border-left:3px solid #ccc;
+    }
     .myDialog {
         width: 600px;
     }
@@ -1207,13 +1248,16 @@
     .my-dialog-title-tool {
         float: right;
     }
-    .red-border{
+
+    .red-border {
         border-left: red 3px solid;
     }
-    .orange-border{
+
+    .orange-border {
         border-left: orange 3px solid;
     }
-    .task-username{
+
+    .task-username {
         height: 40px;
         background: #69C8FA;
         border-radius: 50%;
@@ -1305,7 +1349,8 @@
     .task-state {
         margin-top: 10px;
     }
-    .task-state .iconfont{
+
+    .task-state .iconfont {
         margin-right: 5px;
     }
 
@@ -1423,34 +1468,45 @@
 </style>
 <style scoped>
     .ctpc-member-con {
-        margin:15px 0;
+        margin: 15px 0;
         padding-left: 10px; /* border-left: 1px solid #ccc; */
         margin-left: 6px;
         position: relative;
     }
-    .trends{
+
+    .trends {
         /*background-color: #f2f2f2; */
-       /*padding-left: 10px;*/
-       line-height: 30px;
-       border:1px solid #e4e8f1;
-        
+        /*padding-left: 10px;*/
+        line-height: 30px;
+        border: 1px solid #e4e8f1;
+
     }
+
     .trends ul{
-        padding-left: 30px;
+        padding-left: 10px;
         list-style: circle;
     }
     .trends li{
-        list-style: circle!important;
+        /*list-style: circle!important;*/
     }
-    .trends-title{
-        padding:0 10px;
+    .trends li:before{
+        content:"*";
+        float: left;
+        margin-right: 5px;
+        color: #f40;
+    }
+
+    .trends-title {
+        padding: 0 10px;
         line-height: 30px;
-       background-color: #e4e8f1;
+        background-color: #e4e8f1;
     }
-   .trends-title a{
-       color: #20a0ff; 
+
+    .trends-title a {
+        color: #20a0ff;
 
     }
+
     .ctpc-member-list {
         height: 42px;
         background: #fff;
@@ -1516,7 +1572,7 @@
 
     .ctpc-member-assess {
         width: 70px;
-        margin-left:30px;
+        margin-left: 30px;
     }
 
     .ctpc-member-head {
@@ -1839,16 +1895,19 @@
 
     .demo-table-expand .el-form-item {
         margin-right: 0;
-        margin-bottom: 0!important;
+        margin-bottom: 0 !important;
         width: 50%;
     }
-    .task-form{
+
+    .task-form {
         margin-bottom: 0;
     }
-    .task-form-edit{
+
+    .task-form-edit {
         margin-bottom: 10px;
     }
-    .el-dialog__body{
-        padding:20px!important;
+
+    .el-dialog__body {
+        padding: 20px !important;
     }
 </style>

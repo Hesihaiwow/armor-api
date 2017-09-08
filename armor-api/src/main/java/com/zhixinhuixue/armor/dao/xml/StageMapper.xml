@@ -30,4 +30,11 @@
   <select id="validateStage" parameterType="java.lang.String" resultType="java.lang.Integer">
     SELECT count(*) FROM stage  WHERE name= #{name,jdbcType=VARCHAR}
   </select>
+
+  <!-- 根据ID查询阶段 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select
+    <include refid="Base_Column_List" />
+    from stage where id = #{id}
+  </select>
 </mapper>

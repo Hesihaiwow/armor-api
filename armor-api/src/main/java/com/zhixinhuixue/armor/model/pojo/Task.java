@@ -34,6 +34,8 @@ public class Task {
 
     private Integer isDelete;
 
+    private Integer sort;
+
     public Long getId() {
         return id;
     }
@@ -152,5 +154,13 @@ public class Task {
 
     public void setStageId(Long stageId) {
         this.stageId = stageId;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 }

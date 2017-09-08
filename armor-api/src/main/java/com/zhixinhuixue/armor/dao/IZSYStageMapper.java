@@ -33,5 +33,12 @@ public interface IZSYStageMapper {
      */
     int validateStage(String name);
 
+    /**
+     * 根据ID查询阶段
+     * @param id
+     * @return
+     */
+    Stage selectById(Long id);
+
 
 }

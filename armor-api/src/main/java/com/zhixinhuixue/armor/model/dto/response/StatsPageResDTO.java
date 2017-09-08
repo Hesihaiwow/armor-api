@@ -18,6 +18,7 @@ public class StatsPageResDTO {
     private int delay;//任务超时数
 
     private int sum;
+    private int hours;//正在进行任务时间
 
     public Long getId() {
         return id;
@@ -73,5 +74,13 @@ public class StatsPageResDTO {
 
     public void setSum(int sum) {
         this.sum = sum;
+    }
+
+    public void setHours(int hours) {
+        this.hours = hours;
+    }
+
+    public int getHours() {
+        return hours;
     }
 }
