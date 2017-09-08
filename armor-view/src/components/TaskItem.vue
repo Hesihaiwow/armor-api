@@ -192,10 +192,9 @@
                     <a class="fr" href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>
                 </div>
                 <ul style="height: 100px; overflow: auto">
-                    <li v-for="(item,index) in taskLog.list" :key="index">
-                        <span class="ellipsis" style="float: left;width: 350px;"
-                              :title="item.title"> {{item.title}}</span>
-                        <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
+                    <li v-for="(item,index) in taskLog.list" :key="index" class="clearfix">
+                       <div style="float: left;width: 350px;"> {{item.title}} <div class="task-title-detail" v-show="false"><em></em>{{item.content}}</div></div>
+                       <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
                     </li>
                 </ul>
             </div>
@@ -1227,6 +1226,16 @@
     }
 </script>
 <style>
+    .task-title-detail{
+        margin-top:-5px;
+        line-height: 20px;
+        font-size:12px;
+        color: #ccc;
+    }
+    .task-title-detail em{
+        margin-right: 5px;
+        border-left:3px solid #ccc;
+    }
     .myDialog {
         width: 600px;
     }
@@ -1473,13 +1482,18 @@
 
     }
 
-    .trends ul {
-        padding-left: 30px;
+    .trends ul{
+        padding-left: 10px;
         list-style: circle;
     }
-
-    .trends li {
-        list-style: circle !important;
+    .trends li{
+        /*list-style: circle!important;*/
+    }
+    .trends li:before{
+        content:"*";
+        float: left;
+        margin-right: 5px;
+        color: #f40;
     }
 
     .trends-title {

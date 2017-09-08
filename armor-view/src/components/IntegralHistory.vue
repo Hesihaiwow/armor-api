@@ -342,7 +342,14 @@
     padding: 30px 0;
     text-indent: 10px;
     box-shadow: 0 0 10px #ccc;
-    margin: 0 10px;
+    /*margin: 0 10px;*/
+    width: 1300px;
+    margin: auto;
+  }
+
+  .intergralHistory-con{
+    width: 1300px;
+    margin: auto;
   }
 
   .menu-list {

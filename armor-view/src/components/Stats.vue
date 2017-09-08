@@ -2,23 +2,20 @@
   <div class="stats-con">
       <el-table :data="statsData" >
         <el-table-column prop="name" label="成员" align="center" ></el-table-column>
-        <el-table-column prop="quantity" label="任务数量" align="center" >
-          <template scope ="scope">
-            <el-button type="text" @click="getTask(scope.$index)">{{scope.row.quantity}}</el-button>
+        <el-table-column prop="inProcess" label="进行中任务" align="center" >
+          <template scope="sco">
+              <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="inProcess" label="进行中任务" align="center" ></el-table-column>
+        <el-table-column prop="hours" label="进行中任务耗时（小时）" align="center"></el-table-column>
+        <el-table-column prop="delay" label="超时任务" align="center" >
+              <template scope="scope">
+                  <el-tag type="danger">{{scope.row.delay}}</el-tag>
+                  <!--<el-button type="danger">{{scope.row.delay}}</el-button>-->
+              </template>
+        </el-table-column>
         <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
-        <el-table-column prop="delay" label="超时任务" align="center" ></el-table-column>
-        <el-table-column prop="sum" label="总积分" align="center" ></el-table-column>
       </el-table>
-      <el-pagination
-        @current-change="getStats"
-        :page-size="statsPage.pageSize"
-        :current-page="statsPage.currentPage"
-        :layout="statsPage.layout"
-        :total="statsPage.totals">
-      </el-pagination>
   </div>
 </template>
 <script>
@@ -50,20 +47,9 @@
     },
     methods: {
         getStats(currentPage){
-          Http.zsyGetHttp(`/stats/list/`+currentPage, {}, (resp) => {
-              this.statsData =  resp.data.list;
-              this.statsPage.totals = resp.data.total;
-              this.statsPage.pageNum = resp.data.pages;
-              this.statsPage.pageSize = resp.data.pagesize;
-              this.pagingLayout();
+          Http.zsyGetHttp(`/stats/list/`, {}, (resp) => {
+              this.statsData =  resp.data;
           });
-        },
-        pagingLayout() {
-          if (this.statsPage.pageNum > 1) {
-            this.statsPage.layout = 'total,prev,pager,next';
-          } else {
-            this.statsPage.layout = 'total,pager';
-          }
         },
         getTask(index){
           this.$router.push({path:'/index/task', query:{ userId:this.statsData[index].id }})
@@ -85,11 +71,10 @@
     margin: auto;
   }
 
-  .el-pagination{
-    margin: 20px 0;
-    text-align: right;
-    margin-right: 10px;
+  .el-tag{
+      margin-left: 16px;
   }
+
 
 </style>
 

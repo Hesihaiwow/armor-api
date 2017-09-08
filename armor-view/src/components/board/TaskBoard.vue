@@ -6,7 +6,8 @@
                 <header :data-id="item.id">{{item.name}} · {{item.tasks ? item.tasks.length : 0}}</header>
                 <ul class="task-item" :stageId="item.id">
                     <li class="clearfix" draggable='true' @dragstart='drag($event)'
-                        v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id">
+                        v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id"
+                        :createBy="task.createBy">
                         <div class="fl complate" data-title="">
                         </div>
                         <div class="fl task-name">
@@ -25,6 +26,7 @@
 <script>
     var dom;
     import moment from 'moment';
+    import helper from '../../lib/Helper'
 
     moment.locale('zh-cn');
     export default {
@@ -35,11 +37,29 @@
                 taskBoxWidth: '1200px'
             }
         },
+        computed: {
+            loginUserRole() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole;
+            },
+            loginUserId() {
+                let userId = helper.decodeToken().userId;
+                return userId;
+            },
+        },
         methods: {
             drag: function (event) {
-                dom = event.currentTarget
+                // 自己创建的任务及超管才可以拖动任务
+                let taskCreateBy = event.currentTarget.getAttribute('createby');
+                if(this.loginUserId === taskCreateBy || this.loginUserRole===0 ){
+                    dom = event.currentTarget;
+                }else{
+                    event.preventDefault();
+                    return;
+                }
             },
             drop: function (event) {
+
                 let stageId = '', originId = dom.getAttribute('taskid'), targetId = '', vm = this;
                 event.preventDefault();
                 if (event.target.tagName.toLowerCase() == "li") {
