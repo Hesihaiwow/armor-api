@@ -3,9 +3,10 @@ server:
   context-path: /armor
   port: 10012
 
+
 spring:
   profiles:
-    active: dev #开发环境
+    active: test #测试环境
 
 #Mybatis配置
 mybatis:
