@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
@@ -127,7 +128,14 @@ public interface IZSYTaskService {
      *
      * @return
      */
-    ZSYResult<List<TaskResDTO>> getAllWaitComment(Long userId);
+    ZSYResult<List<TaskDetailBO>> getAllWaitComment(Long userId);
+
+    /**
+     * 获取用户评价记录
+     *
+     * @return
+     */
+    ZSYResult<List<TaskDetailBO>> getCommented(Long userId);
 
     /**
      * 删除任务

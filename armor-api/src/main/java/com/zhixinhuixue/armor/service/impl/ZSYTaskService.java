@@ -8,9 +8,7 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.bo.TaskBO;
-import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
-import com.zhixinhuixue.armor.model.bo.TaskListBO;
+import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
@@ -245,7 +243,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskTagMapper.insertList(taskTags);
         }
         // 插入日志
-        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "修改了任务", taskReqDTO.getModifyLog(), task.getId()));
+        taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "修改了任务", taskReqDTO.getModifyDescription(), task.getId()));
 
         // 个人任务修改工时，更新积分
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue() && taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
@@ -665,13 +663,13 @@ public class ZSYTaskService implements IZSYTaskService {
             commentList.add(taskComment);
         });
         taskCommentMapper.insertList(commentList);
-        // 修改子任务状态
-        commentReqDTO.getComments().stream().forEach(comment -> {
+         // 修改子任务状态
+       /* commentReqDTO.getComments().stream().forEach(comment -> {
             TaskUser taskUser = new TaskUser();
             taskUser.setId(comment.getTaskUserId());
             taskUser.setStatus(ZSYTaskUserStatus.COMMENTED.getValue());
             taskUserMapper.updateByPrimaryKeySelective(taskUser);
-        });
+        }); */
         return ZSYResult.success();
     }
 
@@ -735,6 +733,11 @@ public class ZSYTaskService implements IZSYTaskService {
                 task.setStatus(ZSYTaskStatus.FINISHED.getValue());
                 task.setUpdateTime(new Date());
                 taskMapper.updateByPrimaryKeySelective(task);
+                // 修改子任务状态
+                TaskUser taskUser = new TaskUser();
+                taskUser.setId(taskUserBO.getId());
+                taskUser.setStatus(ZSYTaskUserStatus.COMMENTED.getValue());
+                taskUserMapper.updateByPrimaryKeySelective(taskUser);
                 // 修改用户积分
                 User userTemp = userMapper.selectById(taskUserBO.getUserId());
                 BigDecimal currentIntegral = userTemp.getIntegral();
@@ -742,6 +745,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 user.setId(ZSYTokenRequestContext.get().getUserId());
                 user.setIntegral(currentIntegral.add(integral));
                 userMapper.updateSelectiveById(user);
+
             });
         }
     }
@@ -840,17 +844,74 @@ public class ZSYTaskService implements IZSYTaskService {
      * @return
      */
     @Override
-    public ZSYResult<List<TaskResDTO>> getAllWaitComment(Long userId) {
-        List<TaskBO> taskBOS = taskMapper.selectAllNotClosed(userId);
-        List<TaskResDTO> taskList = new ArrayList<>();
-        if (taskBOS != null && taskBOS.size() >= 0) {
-            taskBOS.stream().forEach(taskBO -> {
-                TaskResDTO taskResDTO = new TaskResDTO();
-                BeanUtils.copyProperties(taskBO, taskResDTO);
-                taskList.add(taskResDTO);
-            });
+    public ZSYResult<List<TaskDetailBO>> getAllWaitComment(Long userId) {
+        List<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
+
+        List<TaskDetailBO> waitCommentList = new ArrayList<>();
+        for (TaskDetailBO taskBO : taskBOS) {
+            // 只要有1个评价就说明该任务已经评价过了
+            boolean hasNext = true;
+            List<TaskUserBO> collect = taskBO.getTaskUsers().stream().filter(f ->
+                    !f.getUserId().equals(userId)
+            ).collect(Collectors.toList());
+
+            for (TaskUserBO taskUserBO :collect) {
+                if (hasNext) {
+                    if (taskUserBO.getTaskComments()==null ||taskUserBO.getTaskComments().size()==0) {
+                        waitCommentList.add(taskBO);
+                        hasNext = false;
+                        continue;
+                    }
+                    long count = taskUserBO.getTaskComments().stream().filter(user ->
+                            user.getCreateBy().equals(userId)
+                    ).count();
+                    if (count==0) {
+                        waitCommentList.add(taskBO);
+                        hasNext = false;
+                    }
+                }else {
+                    break;
+                }
+            }
         }
-        return ZSYResult.success().data(taskList);
+        return ZSYResult.success().data(waitCommentList);
+    }
+
+
+    /**
+     * 获取用户评价记录
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public ZSYResult<List<TaskDetailBO>> getCommented(Long userId) {
+        List<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
+
+        List<TaskDetailBO> commentEndList = new ArrayList<>();
+        for (TaskDetailBO taskBO : taskBOS) {
+            // 只要有1个评价就说明该任务已经评价过了
+            boolean hasNext = true;
+            List<TaskUserBO> collect = taskBO.getTaskUsers().stream().filter(f ->
+                    !f.getUserId().equals(userId)
+            ).collect(Collectors.toList());
+
+            for (TaskUserBO taskUserBO :collect) {
+                if (hasNext) {
+
+                    long count = taskUserBO.getTaskComments().stream().filter(user ->
+                            user.getCreateBy().equals(userId)
+                    ).count();
+                    if (count>0) {
+                        commentEndList.add(taskBO);
+                        hasNext = false;
+                    }
+                }else {
+                    break;
+                }
+            }
+        }
+        return ZSYResult.success().data(commentEndList);
     }
 
     /**

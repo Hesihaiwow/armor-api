@@ -50,14 +50,25 @@
                         </el-tab-pane>-->
                     </el-tabs>
                 </div>
-               <div v-show="task.waitAssess.length>0">
-                   <p class="mic-title">待评价任务</p>
-                   <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
-                              taskStatus="WaitAssess"
-                              :projectList="projectList"
-                              :userList="userList"
-                              :stageList="stageList"
-                              :tagList="tagList"></task-item>
+               <div>
+                   <p class="mic-title">评价任务</p>
+                   <el-tabs v-model="assessActiveName" @tab-click="handleClick">
+                       <el-tab-pane label="待评价" name="waitAssess">
+                           <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
+                                      taskStatus="WaitAssess"
+                                      :projectList="projectList"
+                                      :userList="userList"
+                                      :stageList="stageList"
+                                      :tagList="tagList"></task-item>
+                       </el-tab-pane>
+                       <el-tab-pane label="已评价" name="commented">
+                           <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
+                                      :projectList="projectList"
+                                      :userList="userList"
+                                      :stageList="stageList"
+                                      :tagList="tagList"></task-item>
+                       </el-tab-pane>
+                   </el-tabs>
                </div>
             </div>
             <div v-show="userRole===0">
@@ -186,8 +197,14 @@
             };
             return {
                 activeName: 'doing',
+                assessActiveName: 'waitAssess',
                 auditTabsActiveName: 'wait',
                 createTaskVisible: false,
+                commentedPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
                 finishedPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -240,6 +257,7 @@
                     doing: [],
                     finished: [],
                     waitAssess: [],
+                    commented:[],
                     waitAudit: [],
                     auditSuccess: [],
                     applyFail: []
@@ -296,6 +314,12 @@
                 }
                 return 'total, pager'
             },
+            commentedPageLayout() {
+                if (this.commentedPage.total>0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             auditSuccessPageLayout() {
                 if (this.auditSuccessPage.total>0) {
                     return 'total, prev, pager, next'
@@ -317,6 +341,7 @@
                 this.fetchTaskDoing()
                 this.fetchTaskFinished()
                 this.fetchTaskWaitAssess()
+                this.fetchTaskCommented()
                 this.fetchTaskWaitAudit()
                 this.fetchProjectList()
                 this.fetchStageList()
@@ -439,6 +464,13 @@
                     vm.task.waitAssess = this.makeUpItems(resp.data)
                 })
             },
+            // 获取用户已评价的任务
+            fetchTaskCommented() {
+                let vm = this;
+                http.zsyGetHttp(`/task/commented`, {}, (resp) => {
+                    vm.task.commented = this.makeUpItems(resp.data)
+                })
+            },
             // 获取所有待审核的任务
             fetchTaskWaitAudit() {
                 let vm = this
@@ -492,6 +524,10 @@
             handleFinishedPage(currentPage){
                 this.finishedPage.pageNum = currentPage
                 this.fetchTaskFinished()
+            },
+            handleCommentedPage(currentPage){
+                this.commentedPage.pageNum = currentPage
+                this.fetchTaskCommented()
             },
             handleAuditSuccessPage(currentPage){
                 this.auditSuccessPage.pageNum = currentPage

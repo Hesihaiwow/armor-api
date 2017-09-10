@@ -35,8 +35,7 @@
                         <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 "
                            @click="modifyPrivateTask(task.id)" class="el-icon-edit"></i>
                         <!-- 待评价 -->
-                        <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off"
-                           @click="showWaitAssess(task.id)"></i>
+                        <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off"></i>
                         <!-- 待审核 -->
                         <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit"
                            @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
@@ -53,11 +52,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="task-data-show" v-show="isPrivate && task.status==3">
+            <div class="task-data-show" v-show="isPrivate && task.status==3 && taskStatus!='WaitAssess'">
                 <span class="task-score">+{{task.userIntegral}}</span>
                 <span class="task-level first" v-show="task.type==2">{{task.integralGrade}}</span>
             </div>
-            <div class="" v-show="!isPrivate && task.status==1">
+            <div class="" v-show="!isPrivate && task.status==1&& taskStatus!='WaitAssess'">
                 <span class="mark-stage">{{task.stageName}}</span>
             </div>
             <div class="task-mark">
@@ -174,9 +173,12 @@
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
-                        <span class="fl ctpc-member-assess" v-show="item.commentGrade">评价：{{item.commentGrade}}</span>
+                        <span class="fl ctpc-member-assess" v-show="item.status==3">评价：{{item.commentGrade}}</span>
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
                            @click="commentDetail(item.id)">查看评价</a>
+                        <el-tooltip :content="item.description" placement="top">
+                            <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
+                        </el-tooltip>
                     </div>
                     <div class="bdl-line"></div>
                 </div>
@@ -184,6 +186,7 @@
                     <el-form-item class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
                     <el-form-item class="task-form" label="负责人：">{{item.userName}}</el-form-item>
                 </div>
+
             </el-form>
 
             <div class="trends" v-show="taskLog.list.length>0">
@@ -193,8 +196,8 @@
                 </div>
                 <ul style="height: 100px; overflow: auto">
                     <li v-for="(item,index) in taskLog.list" :key="index" class="clearfix">
-                       <div style="float: left;width: 350px;"> {{item.title}} <div class="task-title-detail" v-show="false"><em></em>{{item.content}}</div></div>
-                       <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
+                        <div style="float: left;width: 350px;"> {{item.title}} <div class="task-title-detail" v-show="item.content!==''" ><em></em>{{item.content}}</div></div>
+                        <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
                     </li>
                 </ul>
             </div>
@@ -203,13 +206,29 @@
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
                 </el-tooltip>
                  <el-tooltip content="编辑该任务" placement="top">
-                 <el-button type="primary" icon="edit" @click="modifyTask(taskDetail.id)"
+                 <el-button type="primary" icon="edit" @click="showModifyDescription"
                             v-show="(taskDetail.createBy==loginUserId  || userRole===0 )&& taskDetail.type==2"></el-button>
                </el-tooltip>
                 <el-button type="primary" icon="check" @click="completeTask"
                            v-show="taskDetail.status!=3 && userRole==0 && taskDetail.type==2">完成</el-button>
                 <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
           </span>
+        </el-dialog>
+
+        <el-dialog title="填写修改备注" top="10%"
+                   :visible.sync="modifyDescriptionVisible"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   custom-class="myDialog"
+                   size="tiny">
+            <el-form >
+                <el-form-item label="备注">
+                    <el-input type="textarea" placeholder="请填写本次修改备注" :maxlength="500" v-model="modifyTaskForm.modifyDescription" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="modifyTask(taskDetail.id)">确 定</el-button>
+            </div>
         </el-dialog>
         <el-dialog
                 title="评价"
@@ -527,6 +546,7 @@
             };
             return {
                 loginUserId: '',
+                modifyDescriptionVisible:false,
                 showFinishedTask: false,
                 showAuditTask: false,
                 showTaskDetail: false,
@@ -588,7 +608,8 @@
                     tags: [],
                     taskType: 2,
                     stageId: '',
-                    taskUsers: []
+                    taskUsers: [],
+                    modifyDescription:''
                 },
                 priorityList: [
                     {label: '普通', value: 1},
@@ -793,6 +814,10 @@
                         }
                     });
                 }
+                // 个人任务点击评价
+                if(this.taskStatus == 'WaitAssess' && this.isPrivate){
+                    this.showWaitAssess(taskId)
+                }
             },
             getTaskLog(taskId) {
                 http.zsyGetHttp(`/task/log/${taskId}/${this.taskLog.pageNum}`, {}, (resp) => {
@@ -849,7 +874,7 @@
                         if (user.userId != vm.loginUserId) {
                             users.push(user);
                         }
-                    })
+                    });
                     // 查询我的评价
                     users.forEach((user) => {
                         user.comments.forEach((comment) => {
@@ -858,7 +883,7 @@
                                 return;
                             }
                         });
-                    })
+                    });
                     for (let i = 0; i < users.length; i++) {
                         if (!users[i].myComment) {
                             vm.assessForm.comments.push({
@@ -876,7 +901,7 @@
                     })
                     vm.allComment = (myComments == users.length);
                     vm.commentStages = users;
-                })
+                });
 
                 this.showTaskComment = true;
             },
@@ -1039,6 +1064,7 @@
                 this.modifyTaskForm.priority = 1;
                 this.modifyTaskForm.tags = [];
                 this.modifyTaskForm.taskUsers = [];
+                this.modifyTaskForm.modifyDescription = '';
                 this.showTaskModify = false;
                 this.step = {
                     index: '',
@@ -1054,6 +1080,7 @@
                     completeTime: '',
                     status: ''
                 }
+                this.hideModifyDescription()
             },
             deleteMember(index) {
                 this.modifyTaskForm.taskUsers.splice(index, 1);
@@ -1181,6 +1208,7 @@
                 let param = this.modifyTaskForm;
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
+                param.modifyDescription = param.modifyDescription.trim()
                 param.taskUsers.forEach((user) => {
                     user.description = user.description.trim()
                     user.beginTime = moment(user.beginTime).format('YYYY-MM-DD HH:mm:ss')
@@ -1197,6 +1225,7 @@
                     vm.$emit('reload')
                 })
                 this.showCreateTask = false;
+
             },
             hideTaskCommentDetail() {
                 this.showTaskCommentDetail = false
@@ -1210,12 +1239,21 @@
                     }
                 })
                 this.showTaskCommentDetail = true
-            }
+            },
+            /** 编辑任务填写备注 **/
+            showModifyDescription(){
+                this.modifyDescriptionVisible = true;
+            },
+            hideModifyDescription(){
+                this.modifyDescriptionVisible = false;
+                this.hideTaskDetail()
+            },
+
         },
         beforeMount() {
             // 监听看板任务点击事件
             var vm = this;
-            this.$root.eventBus.$on("handleTaskItemClick", (taskId) => {
+            this.$root.eventBus.$on("handleBoardClick", (taskId) => {
                 vm.showTaskDetail = true;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     vm.taskDetail = resp.data

@@ -59,7 +59,6 @@
                 }
             },
             drop: function (event) {
-
                 let stageId = '', originId = dom.getAttribute('taskid'), targetId = '', vm = this;
                 event.preventDefault();
                 if (event.target.tagName.toLowerCase() == "li") {
@@ -70,7 +69,6 @@
                     let li = this.findParent(event.target);
                     targetId = li.getAttribute('taskid');
                 }
-                console.log(`originId:${originId}  targetId:${targetId}  stageId:${stageId}`)
                 this.http.zsyPutHttp('/task/move', {
                     originId: originId,
                     targetId: targetId,
@@ -100,7 +98,7 @@
                 return obj;
             },
             handleTaskItemClick(taskId) {
-                this.$root.eventBus.$emit("handleTaskItemClick", taskId);
+                 this.$root.eventBus.$emit("handleBoardClick", taskId);
             },
             getData() {
                 // 获取阶段

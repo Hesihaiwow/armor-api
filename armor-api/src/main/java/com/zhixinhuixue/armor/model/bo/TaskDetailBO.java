@@ -26,6 +26,10 @@ public class TaskDetailBO extends Task {
      * 任务用户（阶段）
      */
     private List<TaskUserBO> taskUsers;
+    /**
+     * 创建者
+     */
+    private String userName;
 
     public List<Tag> getTaskTags() {
         return taskTags;
@@ -57,5 +61,13 @@ public class TaskDetailBO extends Task {
 
     public void setStageName(String stageName) {
         this.stageName = stageName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

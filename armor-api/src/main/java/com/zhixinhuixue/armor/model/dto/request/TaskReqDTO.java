@@ -68,10 +68,10 @@ public class TaskReqDTO {
     private List<TaskUserReqDTO> taskUsers;
 
     /**
-     * 如果是修改操作，需要记录本次日志
+     * 如果是修改操作，需要记录本次描述
      */
     @Size( max = 500, message = "任务操作描述长度在0~{max}之间")
-    private String modifyLog;
+    private String modifyDescription;
 
     public Integer getTaskType() {
         return taskType;
@@ -145,11 +145,11 @@ public class TaskReqDTO {
         this.stageId = stageId;
     }
 
-    public String getModifyLog() {
-        return modifyLog;
+    public String getModifyDescription() {
+        return modifyDescription;
     }
 
-    public void setModifyLog(String modifyLog) {
-        this.modifyLog = modifyLog;
+    public void setModifyDescription(String modifyDescription) {
+        this.modifyDescription = modifyDescription;
     }
 }
