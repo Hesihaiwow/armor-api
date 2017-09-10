@@ -6,9 +6,9 @@ export default {
     //请求基础路径
     API_ROOT: function () {
         if (process.env.NODE_ENV === 'production'){
-            return 'http://zsy.zhixinhuixue.com/';
-        } else if (process.env.NODE_ENV === 'testing') {
             return 'http://zsy.dev.xueping.com/armor/api';
+        } else if (process.env.NODE_ENV === 'testing') {
+            return 'http://zsy.dev.xueping.com/armor2/api';
         } else {
             return 'http://localhost:10012/armor/api';
         }
