@@ -104,7 +104,8 @@ public interface IZSYTaskMapper {
      * @param userId
      * @return
      */
-    List<TaskBO> selectAllNotClosed(Long userId);
+    List<TaskDetailBO> selectAllNotClosed(Long userId);
+
 
     /**
      * 查询项目下是否存在任务
