@@ -1257,7 +1257,7 @@
                 console.log('on')
                 vm.showTaskDetail = true;
                   http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                       //vm.taskDetail = resp.data
+                       vm.taskDetail = resp.data
                     });
                  vm.getTaskLog(taskId)
 
