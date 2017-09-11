@@ -20,8 +20,6 @@ public class IntegralResDTO {
     @NotNull(message = "积分数不能为空")
     private BigDecimal integral;
 
-    private Date time;
-
     public Long getUserId() {
         return userId;
     }
@@ -44,13 +42,5 @@ public class IntegralResDTO {
 
     public void setIntegral(BigDecimal integral) {
         this.integral = integral;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
     }
 }

@@ -118,9 +118,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     public void addIntegral(IntegralResDTO integralResDTO) {
         User user = userMapper.selectById(integralResDTO.getUserId());
-        if(integralResDTO.getTime()!=null){//积分转移求助添加
-
-        }else{//积分记录添加
+        //积分记录添加
             BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
             user.setIntegral(integral);
             if (userMapper.updateSelectiveById(user) == 0) {
@@ -135,7 +133,6 @@ public class ZSYIntegralService implements IZSYIntegralService {
             userIntegral.setDescription(integralResDTO.getDescription());
             userIntegral.setOrigin(ZSYIntegralOrigin.ARTIFICIAL.getValue());//手动添加
             userIntegralMapper.insert(userIntegral);
-        }
     }
 
 

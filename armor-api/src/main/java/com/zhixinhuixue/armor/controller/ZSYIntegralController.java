@@ -85,16 +85,4 @@ public class ZSYIntegralController extends ZSYController{
         return ZSYResult.success().build();
     }
 
-    /**
-     * 添加积分记录
-     * @param integralResDTO
-     * @return
-     */
-    @ApiOperation("添加求助转移积分")
-    @PostMapping("/addHelp")
-    public String addHelpIntegral(@RequestBody IntegralResDTO integralResDTO){
-        integralService.addIntegral(integralResDTO);
-        return ZSYResult.success().build();
-    }
-
 }
