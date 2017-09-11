@@ -17,10 +17,6 @@
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>创建个人任务</span>
                 </div>
-                <div class="add-task help" @click="editHelpVisible=true">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建积分转移</span>
-                </div>
                 <p class="mic-title">我的任务</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -176,38 +172,6 @@
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog  title="积分求助"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible">
-            <el-form :model="helpForm" ref="helpForm" :rules="helpRules" label-width="80px">
-                <el-form-item label="任务详情" prop="description">
-                    <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
-                </el-form-item>
-                <el-form-item label="求助人" prop="user">
-                    <el-select v-model="helpForm.userId" placeholder="成员列表">
-                        <el-option
-                                v-for="item in userList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="任务积分" prop="integral">
-                    <el-input type="input" v-model="helpForm.integral" style="width:100px"></el-input>
-                </el-form-item>
-                <el-form-item label="转移日期" prop="time">
-                    <el-date-picker
-                            v-model="helpForm.time"
-                            type="datetime"
-                            format="yyyy-MM-dd"
-                            placeholder="选择日期时间">
-                    </el-date-picker>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="saveHelpInfo('helpForm')">立即创建</el-button>
-        <el-button @click="editHelpVisible = false">取 消</el-button>
-      </span>
-        </el-dialog>
     </div>
 </template>
 <script>
@@ -218,7 +182,6 @@
     import helper from '../lib/Helper'
     import moment from 'moment';
     import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
-    import { Message } from 'element-ui';
 
     moment.locale('zh-cn');
 
@@ -235,7 +198,6 @@
             return {
                 activeName: 'doing',
                 assessActiveName: 'waitAssess',
-                activeHelpName: 'doing',
                 auditTabsActiveName: 'wait',
                 createTaskVisible: false,
                 commentedPage: {
@@ -243,7 +205,6 @@
                     pageSize: 5,
                     total: 0,
                 },
-                editHelpVisible: false,
                 finishedPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -269,12 +230,6 @@
                     taskType: 1,
                     taskHours: '',
                     stageId: ''
-                },
-                helpForm: {
-                    description: '',
-                    time: '',
-                    userId: '',
-                    integral: ''
                 },
                 rules: {
                     projectId: [
