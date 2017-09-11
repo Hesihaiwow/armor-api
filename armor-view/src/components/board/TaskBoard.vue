@@ -97,8 +97,7 @@
                 return obj;
             },
             handleTaskItemClick(taskId) {
-                console.log('emit')
-                 this.$root.eventBus.$emit("handleBoardClick2", taskId);
+                this.$root.eventBus.$emit("handleBoardClick", taskId);
             },
             getData() {
                 // 获取阶段

@@ -1253,14 +1253,13 @@
         created() {
             // 监听看板任务点击事件
             var vm = this;
-            vm.$root.eventBus.$on("handleBoardClick2", (taskId) => {
-                console.log('on')
+            vm.$root.eventBus.$off('handleBoardClick')
+            vm.$root.eventBus.$on("handleBoardClick", (taskId) => {
                 vm.showTaskDetail = true;
                   http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                        vm.taskDetail = resp.data
                     });
                  vm.getTaskLog(taskId)
-
             });
         }
     }
