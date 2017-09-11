@@ -14,7 +14,7 @@
       <el-button @click="backButton()" size="large" style="float: right;position: relative;bottom: 12PX; right: 200PX;">返回上页</el-button>
     </div>
     <el-table :data="historyData" stripe style="width: 100%;bottom:20px">
-      <el-table-column prop="name" label="成员" align="center" ></el-table-column>
+      <el-table-column prop="name" label="成员" align="center" width="100px" ></el-table-column>
       <el-table-column prop="integral" label="积分" align="center" >
         <template scope="scope">
           <el-tag
@@ -23,8 +23,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="taskHours" label="工作量" align="center"></el-table-column>
-      <el-table-column prop="origin" label="来源" align="center">
+      <el-table-column prop="taskHours" label="工作量" align="center" width="100px" ></el-table-column>
+      <el-table-column prop="origin" label="来源" align="center" width="200px" >
         <template scope="scope">
           <el-tag
             :type="scope.row.origin === '任务系统-单人任务' ? 'warning' : 'success'&&scope.row.origin === '手动录入' ? 'primary' : 'success'"
@@ -32,14 +32,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="grade" label="评价" align="center" >
+      <el-table-column prop="grade" label="评价" align="center" width="100px" >
         <template scope="scope">
           <el-button type="text" @click="scope.row.type =='2'?commentDetail(scope.$index,historyData):''" v-show="permit">{{scope.row.grade}}</el-button>
           <div type="text" v-show="!permit">{{scope.row.grade}}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="完成时间" align="center"></el-table-column>
-      <el-table-column prop="description" label="备注" align="center" ></el-table-column>
+      <el-table-column prop="createTime" label="完成时间" align="center" width="200px"></el-table-column>
+      <el-table-column prop="description" label="备注" align="center" width="400px"></el-table-column>
     </el-table>
     <el-pagination
       @current-change="integralHistory"
