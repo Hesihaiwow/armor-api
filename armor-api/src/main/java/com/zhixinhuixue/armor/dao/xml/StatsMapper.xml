@@ -13,7 +13,7 @@
   <select id="getStats" resultMap="BaseResultMap">
       SELECT COUNT(case when ta.`status`=1  then 2 end)as process,
       COUNT(case when (ta.`status`=2 or ta.`status`=3) then 1 end)as complete,
-      <![CDATA[ COUNT(case when t.complete_time>t.end_time then 1 end)as delay,]]>
+      <![CDATA[ COUNT(case when (t.end_time<NOW() and t.status=1) then 1 end)as delay,]]>
       SUM(case when ta.`status`=1 then t.task_hours else 0 end) as hours,
       u.`name`,t.user_id as id
       from task_user t,`user` u, task ta
