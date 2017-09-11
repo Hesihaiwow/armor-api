@@ -12,6 +12,8 @@ public class Stage {
 
     private Long createBy;
 
+    private Integer sort;
+
     public Long getId() {
         return id;
     }
@@ -42,5 +44,13 @@ public class Stage {
 
     public void setCreateBy(Long createBy) {
         this.createBy = createBy;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 }

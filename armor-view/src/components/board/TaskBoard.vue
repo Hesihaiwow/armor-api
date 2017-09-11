@@ -75,7 +75,6 @@
                     targetStageId: stageId
                 }, (res) => {
 
-                    console.log(res)
                     if (event.target.tagName.toLowerCase() == "li") {
                         event.target.parentNode.insertBefore(dom, event.target);
                     } else if (event.target.tagName.toLowerCase() == "ul") {
@@ -98,7 +97,8 @@
                 return obj;
             },
             handleTaskItemClick(taskId) {
-                 this.$root.eventBus.$emit("handleBoardClick", taskId);
+                console.log('emit')
+                 this.$root.eventBus.$emit("handleBoardClick2", taskId);
             },
             getData() {
                 // 获取阶段
@@ -167,7 +167,6 @@
             });
         },
         mounted() {
-            console.log(this.stageList)
         }
     }
 </script>
