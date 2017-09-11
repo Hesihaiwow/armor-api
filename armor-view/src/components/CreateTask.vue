@@ -467,7 +467,7 @@
                     vm.taskForm.tags = [];
                     vm.taskUsers = [];
                     // 刷新看板
-                    //this.$root.eventBus.$emit("reloadBoard");
+                    this.$root.eventBus.$emit("reloadBoard");
                     // 刷新列表
                     vm.$emit('handleFetchTaskList')
                 })
