@@ -50,15 +50,26 @@
                         </el-tab-pane>-->
                     </el-tabs>
                 </div>
-               <div v-show="task.waitAssess.length>0">
-                   <p class="mic-title">待评价任务</p>
-                   <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
-                              taskStatus="WaitAssess"
-                              :projectList="projectList"
-                              :userList="userList"
-                              :stageList="stageList"
-                              :tagList="tagList"></task-item>
-               </div>
+                <div>
+                    <p class="mic-title">评价任务</p>
+                    <el-tabs v-model="assessActiveName" @tab-click="handleClick">
+                        <el-tab-pane label="待评价" name="waitAssess">
+                            <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
+                                       taskStatus="WaitAssess"
+                                       :projectList="projectList"
+                                       :userList="userList"
+                                       :stageList="stageList"
+                                       :tagList="tagList"></task-item>
+                        </el-tab-pane>
+                        <el-tab-pane label="已评价" name="commented">
+                            <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
+                                       :projectList="projectList"
+                                       :userList="userList"
+                                       :stageList="stageList"
+                                       :tagList="tagList"></task-item>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
             </div>
             <div v-show="userRole===0">
                 <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
@@ -171,7 +182,6 @@
     import helper from '../lib/Helper'
     import moment from 'moment';
     import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
-    import { Message } from 'element-ui';
 
     moment.locale('zh-cn');
 
@@ -187,9 +197,14 @@
             };
             return {
                 activeName: 'doing',
-                activeHelpName: 'doing',
+                assessActiveName: 'waitAssess',
                 auditTabsActiveName: 'wait',
                 createTaskVisible: false,
+                commentedPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
                 finishedPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -238,17 +253,11 @@
                     tags: [
                         {type: 'array', required: true, message: '请至少选择一个标签', trigger: 'change'},
                     ]
-                },
-                helpRules: {
-                    integral: [ {required: true, message: '积分不能为空', trigger: 'blur'}],
-                    description: [{required: true,validator: validateEmpty, message: '详情不能超过100字', trigger: 'change', min: 0, max: 100}],
-                    userId: [ {required: true, message: '求助人不能为空', trigger: 'change'}],
-                    time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
-                },
-                task: {
+                }, task: {
                     doing: [],
                     finished: [],
                     waitAssess: [],
+                    commented:[],
                     waitAudit: [],
                     auditSuccess: [],
                     applyFail: []
@@ -305,6 +314,12 @@
                 }
                 return 'total, pager'
             },
+            commentedPageLayout() {
+                if (this.commentedPage.total>0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             auditSuccessPageLayout() {
                 if (this.auditSuccessPage.total>0) {
                     return 'total, prev, pager, next'
@@ -326,6 +341,7 @@
                 this.fetchTaskDoing()
                 this.fetchTaskFinished()
                 this.fetchTaskWaitAssess()
+                this.fetchTaskCommented()
                 this.fetchTaskWaitAudit()
                 this.fetchProjectList()
                 this.fetchStageList()
@@ -448,6 +464,13 @@
                     vm.task.waitAssess = this.makeUpItems(resp.data)
                 })
             },
+            // 获取用户已评价的任务
+            fetchTaskCommented() {
+                let vm = this;
+                http.zsyGetHttp(`/task/commented`, {}, (resp) => {
+                    vm.task.commented = this.makeUpItems(resp.data)
+                })
+            },
             // 获取所有待审核的任务
             fetchTaskWaitAudit() {
                 let vm = this
@@ -502,48 +525,38 @@
                 this.finishedPage.pageNum = currentPage
                 this.fetchTaskFinished()
             },
+            handleCommentedPage(currentPage){
+                this.commentedPage.pageNum = currentPage
+                this.fetchTaskCommented()
+            },
             handleAuditSuccessPage(currentPage){
                 this.auditSuccessPage.pageNum = currentPage
                 this.fetchTaskAuditSuccess()
             },
-            isDecimal(str) {
-                var regu = /^[-]{0,1}[0-9]{1,}$/;
-                if (regu.test(str)) {
-                    return true;
+            getDateString(date){//时间期限
+                let now = new Date();
+                let curMonth = now.getMonth();
+                let curYear =  now.getFullYear();;
+                let startMonth = 0 ;
+                if(date=="month"){//本月的开始结束时间
+                    return  moment(new Date(curYear, curMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear,curMonth+1,1)-1).format('YYYY-MM-DD');
+                }else if(date=="week"){//本季度的开始结束时间
+                    return  moment(new Date(curYear, curMonth, now.getDate() - now.getDay()+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - now.getDay())+1)).format('YYYY-MM-DD');
+                }else if(date=="year"){//本年的开始结束时间
+                    return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
+                }else if(date=="quarter"){
+                    if (curMonth >= 1 && curMonth <= 3){
+                        startMonth = 0;
+                    }else if (curMonth >= 4 && curMonth <= 6){
+                        startMonth = 3;
+                    }else if (curMonth >= 7 && curMonth <= 9){
+                        startMonth = 6;
+                    }else if (curMonth >= 10 && curMonth <= 12){
+                        startMonth = 9;
+                    }
+                    return  moment(new Date(curYear, startMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, startMonth+3,1)-1).format('YYYY-MM-DD');
                 }
-                var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
-                if (re.test(str)) {
-                    if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
-                    return true;
-                } else {
-                    return false;
-                }
-
-            },
-          getDateString(date){//时间期限
-            let now = new Date();
-            let curMonth = now.getMonth();
-            let curYear =  now.getFullYear();;
-            let startMonth = 0 ;
-            if(date=="month"){//本月的开始结束时间
-              return  moment(new Date(curYear, curMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear,curMonth+1,1)-1).format('YYYY-MM-DD');
-            }else if(date=="week"){//本季度的开始结束时间
-              return  moment(new Date(curYear, curMonth, now.getDate() - now.getDay()+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - now.getDay())+1)).format('YYYY-MM-DD');
-            }else if(date=="year"){//本年的开始结束时间
-              return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
-            }else if(date=="quarter"){
-              if (curMonth >= 1 && curMonth <= 3){
-                startMonth = 0;
-              }else if (curMonth >= 4 && curMonth <= 6){
-                startMonth = 3;
-              }else if (curMonth >= 7 && curMonth <= 9){
-                startMonth = 6;
-              }else if (curMonth >= 10 && curMonth <= 12){
-                startMonth = 9;
-              }
-              return  moment(new Date(curYear, startMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, startMonth+3,1)-1).format('YYYY-MM-DD');
             }
-          }
         },
         components: {
             ElTabPane,
@@ -615,15 +628,11 @@
 
     .add-task {
         position: absolute;
-        right: 150px;
+        right: 20px;
         font-size: 16px;
         cursor: pointer;
         color: #36A8FF;
         z-index: 30;
-    }
-
-    .help{
-        right: 20px;
     }
 
     .add-task > span {
