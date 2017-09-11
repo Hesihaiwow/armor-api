@@ -17,6 +17,10 @@
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>创建个人任务</span>
                 </div>
+                <div class="add-task help" @click="editHelpVisible=true">
+                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
+                    <span>创建积分转移</span>
+                </div>
                 <p class="mic-title">我的任务</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -50,25 +54,37 @@
                         </el-tab-pane>-->
                     </el-tabs>
                 </div>
-               <div>
-                   <p class="mic-title">评价任务</p>
-                   <el-tabs v-model="assessActiveName" @tab-click="handleClick">
-                       <el-tab-pane label="待评价" name="waitAssess">
-                           <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
-                                      taskStatus="WaitAssess"
-                                      :projectList="projectList"
-                                      :userList="userList"
-                                      :stageList="stageList"
-                                      :tagList="tagList"></task-item>
-                       </el-tab-pane>
-                       <el-tab-pane label="已评价" name="commented">
-                           <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
-                                      :projectList="projectList"
-                                      :userList="userList"
-                                      :stageList="stageList"
-                                      :tagList="tagList"></task-item>
-                       </el-tab-pane>
-                   </el-tabs>
+               <div v-show="task.waitAssess.length>0">
+                   <p class="mic-title">待评价任务</p>
+                   <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
+                              taskStatus="WaitAssess"
+                              :projectList="projectList"
+                              :userList="userList"
+                              :stageList="stageList"
+                              :tagList="tagList"></task-item>
+               </div>
+               <div >
+                   <p class="mic-title">我的积分转移</p>
+                   <div class="my-task-detail">
+                       <el-tabs v-model="activeHelpName" @tab-click="handleClick">
+                           <el-tab-pane label="审核中" name="doing">
+                               <task-item :taskItems="task.doing" :isPrivate="true"
+                                          taskStatus="TaskDoing" @reload="reload"
+                                          :projectList="projectList"
+                                          :userList="userList"
+                                          :stageList="stageList"
+                                          :tagList="tagList"></task-item>
+                           </el-tab-pane>
+                           <el-tab-pane label="已完成" name="completed">
+                               <task-item :taskItems="task.finished" :isPrivate="true"
+                                          taskStatus="TaskDoing" @reload="reload"
+                                          :projectList="projectList"
+                                          :userList="userList"
+                                          :stageList="stageList"
+                                          :tagList="tagList"></task-item>
+                           </el-tab-pane>
+                       </el-tabs>
+                   </div>
                </div>
             </div>
             <div v-show="userRole===0">
@@ -172,6 +188,38 @@
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
+        <el-dialog  title="积分求助"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible">
+            <el-form :model="helpForm" ref="helpForm" :rules="helpRules" label-width="80px">
+                <el-form-item label="任务详情" prop="description">
+                    <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="求助人" prop="user">
+                    <el-select v-model="helpForm.userId" placeholder="成员列表">
+                        <el-option
+                                v-for="item in userList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="任务积分" prop="integral">
+                    <el-input type="input" v-model="helpForm.integral" style="width:100px"></el-input>
+                </el-form-item>
+                <el-form-item label="转移日期" prop="time">
+                    <el-date-picker
+                            v-model="helpForm.time"
+                            type="datetime"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="saveHelpInfo('helpForm')">立即创建</el-button>
+        <el-button @click="editHelpVisible = false">取 消</el-button>
+      </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -182,6 +230,7 @@
     import helper from '../lib/Helper'
     import moment from 'moment';
     import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
+    import { Message } from 'element-ui';
 
     moment.locale('zh-cn');
 
@@ -197,14 +246,10 @@
             };
             return {
                 activeName: 'doing',
-                assessActiveName: 'waitAssess',
+                activeHelpName: 'doing',
                 auditTabsActiveName: 'wait',
                 createTaskVisible: false,
-                commentedPage: {
-                    pageNum: 1,
-                    pageSize: 5,
-                    total: 0,
-                },
+                editHelpVisible: false,
                 finishedPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -231,6 +276,12 @@
                     taskHours: '',
                     stageId: ''
                 },
+                helpForm: {
+                    description: '',
+                    time: '',
+                    userId: '',
+                    integral: ''
+                },
                 rules: {
                     projectId: [
                         {required: true, message: '项目不能为空', trigger: 'change'},
@@ -253,11 +304,17 @@
                     tags: [
                         {type: 'array', required: true, message: '请至少选择一个标签', trigger: 'change'},
                     ]
-                }, task: {
+                },
+                helpRules: {
+                    integral: [ {required: true, message: '积分不能为空', trigger: 'blur'}],
+                    description: [{required: true,validator: validateEmpty, message: '详情不能超过100字', trigger: 'change', min: 0, max: 100}],
+                    userId: [ {required: true, message: '求助人不能为空', trigger: 'change'}],
+                    time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
+                },
+                task: {
                     doing: [],
                     finished: [],
                     waitAssess: [],
-                    commented:[],
                     waitAudit: [],
                     auditSuccess: [],
                     applyFail: []
@@ -314,12 +371,6 @@
                 }
                 return 'total, pager'
             },
-            commentedPageLayout() {
-                if (this.commentedPage.total>0) {
-                    return 'total, prev, pager, next'
-                }
-                return 'total, pager'
-            },
             auditSuccessPageLayout() {
                 if (this.auditSuccessPage.total>0) {
                     return 'total, prev, pager, next'
@@ -341,7 +392,6 @@
                 this.fetchTaskDoing()
                 this.fetchTaskFinished()
                 this.fetchTaskWaitAssess()
-                this.fetchTaskCommented()
                 this.fetchTaskWaitAudit()
                 this.fetchProjectList()
                 this.fetchStageList()
@@ -433,6 +483,26 @@
                     this.integralItem = items;
                 })
             },
+            //保存用户转移积分
+            saveHelpInfo(helpForm){
+                console.log(this.helpForm.time)
+                this.helpForm.time.loc
+                moment(param.endTime).format('YYYY-MM-DD 23:59:59');
+                this.$refs[helpForm].validate((valid) => {
+                    if (valid) {
+                        if (!this.isDecimal(this.helpForm.integral)) {
+                            Message.error("积分格式错误");
+                            return false;
+                        }
+                        http.zsyPostHttp('/integral/add', this.helpForm, (res) => {
+                            Message.success("转移积分添加成功，请等待审核");
+                            this.editHelpVisible = false;
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
             // 获取用户正在进行的任务
             fetchTaskDoing() {
                 let vm = this
@@ -462,13 +532,6 @@
                 let vm = this
                 http.zsyGetHttp('/task/waitAssess', {}, (resp) => {
                     vm.task.waitAssess = this.makeUpItems(resp.data)
-                })
-            },
-            // 获取用户已评价的任务
-            fetchTaskCommented() {
-                let vm = this;
-                http.zsyGetHttp(`/task/commented`, {}, (resp) => {
-                    vm.task.commented = this.makeUpItems(resp.data)
                 })
             },
             // 获取所有待审核的任务
@@ -525,13 +588,23 @@
                 this.finishedPage.pageNum = currentPage
                 this.fetchTaskFinished()
             },
-            handleCommentedPage(currentPage){
-                this.commentedPage.pageNum = currentPage
-                this.fetchTaskCommented()
-            },
             handleAuditSuccessPage(currentPage){
                 this.auditSuccessPage.pageNum = currentPage
                 this.fetchTaskAuditSuccess()
+            },
+            isDecimal(str) {
+                var regu = /^[-]{0,1}[0-9]{1,}$/;
+                if (regu.test(str)) {
+                    return true;
+                }
+                var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
+                if (re.test(str)) {
+                    if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
+                    return true;
+                } else {
+                    return false;
+                }
+
             },
           getDateString(date){//时间期限
             let now = new Date();
@@ -628,11 +701,15 @@
 
     .add-task {
         position: absolute;
-        right: 20px;
+        right: 150px;
         font-size: 16px;
         cursor: pointer;
         color: #36A8FF;
         z-index: 30;
+    }
+
+    .help{
+        right: 20px;
     }
 
     .add-task > span {

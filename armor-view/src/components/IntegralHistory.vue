@@ -244,12 +244,12 @@
         });
       },
       saveIntegralInfo(integralForm) {
-        if (!this.isDecimal(this.integralForm.integral)) {
-          Message.error("积分格式错误");
-          return false;
-        }
         this.$refs[integralForm].validate((valid) => {
           if (valid) {
+            if (!this.isDecimal(this.integralForm.integral)) {
+                Message.error("积分格式错误");
+                return false;
+            }
             Http.zsyPostHttp('/integral/add', this.integralForm, (res) => {
               Message.success("积分添加成功");
               this.editIntegralVisible = false;

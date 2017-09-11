@@ -4,6 +4,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created by Lang on 2017/8/22 0022.
@@ -18,6 +19,8 @@ public class IntegralResDTO {
 
     @NotNull(message = "积分数不能为空")
     private BigDecimal integral;
+
+    private Date time;
 
     public Long getUserId() {
         return userId;
@@ -41,5 +44,13 @@ public class IntegralResDTO {
 
     public void setIntegral(BigDecimal integral) {
         this.integral = integral;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }
