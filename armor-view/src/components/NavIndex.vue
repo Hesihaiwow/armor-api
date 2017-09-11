@@ -50,26 +50,26 @@
                         </el-tab-pane>-->
                     </el-tabs>
                 </div>
-               <div>
-                   <p class="mic-title">评价任务</p>
-                   <el-tabs v-model="assessActiveName" @tab-click="handleClick">
-                       <el-tab-pane label="待评价" name="waitAssess">
-                           <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
-                                      taskStatus="WaitAssess"
-                                      :projectList="projectList"
-                                      :userList="userList"
-                                      :stageList="stageList"
-                                      :tagList="tagList"></task-item>
-                       </el-tab-pane>
-                       <el-tab-pane label="已评价" name="commented">
-                           <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
-                                      :projectList="projectList"
-                                      :userList="userList"
-                                      :stageList="stageList"
-                                      :tagList="tagList"></task-item>
-                       </el-tab-pane>
-                   </el-tabs>
-               </div>
+                <div>
+                    <p class="mic-title">评价任务</p>
+                    <el-tabs v-model="assessActiveName" @tab-click="handleClick">
+                        <el-tab-pane label="待评价" name="waitAssess">
+                            <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
+                                       taskStatus="WaitAssess"
+                                       :projectList="projectList"
+                                       :userList="userList"
+                                       :stageList="stageList"
+                                       :tagList="tagList"></task-item>
+                        </el-tab-pane>
+                        <el-tab-pane label="已评价" name="commented">
+                            <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
+                                       :projectList="projectList"
+                                       :userList="userList"
+                                       :stageList="stageList"
+                                       :tagList="tagList"></task-item>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
             </div>
             <div v-show="userRole===0">
                 <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
@@ -533,30 +533,30 @@
                 this.auditSuccessPage.pageNum = currentPage
                 this.fetchTaskAuditSuccess()
             },
-          getDateString(date){//时间期限
-            let now = new Date();
-            let curMonth = now.getMonth();
-            let curYear =  now.getFullYear();;
-            let startMonth = 0 ;
-            if(date=="month"){//本月的开始结束时间
-              return  moment(new Date(curYear, curMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear,curMonth+1,1)-1).format('YYYY-MM-DD');
-            }else if(date=="week"){//本季度的开始结束时间
-              return  moment(new Date(curYear, curMonth, now.getDate() - now.getDay()+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - now.getDay())+1)).format('YYYY-MM-DD');
-            }else if(date=="year"){//本年的开始结束时间
-              return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
-            }else if(date=="quarter"){
-              if (curMonth >= 1 && curMonth <= 3){
-                startMonth = 0;
-              }else if (curMonth >= 4 && curMonth <= 6){
-                startMonth = 3;
-              }else if (curMonth >= 7 && curMonth <= 9){
-                startMonth = 6;
-              }else if (curMonth >= 10 && curMonth <= 12){
-                startMonth = 9;
-              }
-              return  moment(new Date(curYear, startMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, startMonth+3,1)-1).format('YYYY-MM-DD');
+            getDateString(date){//时间期限
+                let now = new Date();
+                let curMonth = now.getMonth();
+                let curYear =  now.getFullYear();;
+                let startMonth = 0 ;
+                if(date=="month"){//本月的开始结束时间
+                    return  moment(new Date(curYear, curMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear,curMonth+1,1)-1).format('YYYY-MM-DD');
+                }else if(date=="week"){//本季度的开始结束时间
+                    return  moment(new Date(curYear, curMonth, now.getDate() - now.getDay()+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - now.getDay())+1)).format('YYYY-MM-DD');
+                }else if(date=="year"){//本年的开始结束时间
+                    return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
+                }else if(date=="quarter"){
+                    if (curMonth >= 1 && curMonth <= 3){
+                        startMonth = 0;
+                    }else if (curMonth >= 4 && curMonth <= 6){
+                        startMonth = 3;
+                    }else if (curMonth >= 7 && curMonth <= 9){
+                        startMonth = 6;
+                    }else if (curMonth >= 10 && curMonth <= 12){
+                        startMonth = 9;
+                    }
+                    return  moment(new Date(curYear, startMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, startMonth+3,1)-1).format('YYYY-MM-DD');
+                }
             }
-          }
         },
         components: {
             ElTabPane,
