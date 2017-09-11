@@ -226,13 +226,13 @@
             btnValFun() {
                 if (this.btnValStatus == 1) {
                     // 刷新看板
-                    this.$root.eventBus.$emit("reloadBoard");
+                    //this.$root.eventBus.$emit("reloadBoard");
                     this.btnValStatus = 2;
                     this.btnVal = "点击切换到列表模式"
                     document.getElementById('app').style.overflowY = 'hidden';
                 } else {
                     // 刷新列表
-                    this.fetchTaskList();
+                    //this.fetchTaskList();
                     this.btnValStatus = 1;
                     this.btnVal = "点击切换到看板模式"
                     document.getElementById('app').style.overflowY = 'auto'
@@ -409,6 +409,8 @@
                     vm.page.pageSize = 5
                     vm.page.total = resp.data.total
                 })
+                // 刷新看板
+                //this.$root.eventBus.$emit("reloadBoard");
             }
         },
         components: {
