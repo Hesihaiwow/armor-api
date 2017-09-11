@@ -11,7 +11,7 @@
                         <div class="fl complate" data-title="">
                         </div>
                         <div class="fl task-name">
-                            <div>{{task.name}}</div>
+                            <div style="font-size: 16px;padding: 12px 0">{{task.name}}</div>
                             <span class="tips" :class="task.endColor">{{task.endText}}</span>
                         </div>
                         <div class="master-info fr">
@@ -75,7 +75,6 @@
                     targetStageId: stageId
                 }, (res) => {
 
-                    console.log(res)
                     if (event.target.tagName.toLowerCase() == "li") {
                         event.target.parentNode.insertBefore(dom, event.target);
                     } else if (event.target.tagName.toLowerCase() == "ul") {
@@ -98,7 +97,8 @@
                 return obj;
             },
             handleTaskItemClick(taskId) {
-                 this.$root.eventBus.$emit("handleBoardClick", taskId);
+                console.log('emit')
+                 this.$root.eventBus.$emit("handleBoardClick2", taskId);
             },
             getData() {
                 // 获取阶段
@@ -167,7 +167,6 @@
             });
         },
         mounted() {
-            console.log(this.stageList)
         }
     }
 </script>
@@ -200,22 +199,22 @@
                     top: 0;
                     left: 0;
                     padding-left: 10px;
-                    line-height: 30px;
-                    font-size: 14px;
+                    line-height: 50px;
+                    font-size: 16px;
                     font-weight: bold;
                     background-color: #eee;
                     box-sizing: border-box;
                 }
                 .task-item {
 
-                    padding: 30px 10px 0;
+                    padding: 50px 10px 0;
                     height: 100%;
                     box-sizing: border-box;
                     overflow-y: auto;
 
                     li {
                         border-bottom: 10px solid #eee;
-                        padding: 5px 10px;
+                        padding: 5px 10px 15px;
                         background-color: #fff;
                         border-radius: 3px;
                         cursor: pointer;
