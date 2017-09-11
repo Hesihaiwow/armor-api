@@ -1,21 +1,21 @@
 <template>
-    <div class="stats-con">
-        <el-table :data="statsData" >
-            <el-table-column prop="name" label="成员" align="center" ></el-table-column>
-            <el-table-column prop="inProcess" label="进行中任务" align="center" >
-                <template scope="sco">
-                    <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}}</el-button>
-                </template>
-            </el-table-column>
-            <el-table-column prop="hours" label="进行中任务耗时（小时）" align="center"></el-table-column>
-            <el-table-column prop="delay" label="超时任务" align="center" >
-                <template scope="scope">
-                    <span type="text" style="color: red;">{{scope.row.delay}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
-        </el-table>
-    </div>
+  <div class="stats-con">
+      <el-table :data="statsData" >
+        <el-table-column prop="name" label="成员" align="center" ></el-table-column>
+        <el-table-column prop="inProcess" label="我的任务/进行中多人任务" align="center" >
+          <template scope="sco">
+              <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}} / {{sco.row.multiTask}}</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column prop="hours" label="进行中任务耗时（小时）" align="center"></el-table-column>
+        <el-table-column prop="delay" label="超时任务" align="center" >
+              <template scope="scope">
+                  <span type="text" style="color: red;">{{scope.row.delay}}</span>
+              </template>
+        </el-table-column>
+        <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
+      </el-table>
+  </div>
 </template>
 <script>
     import Http from '../lib/Http'

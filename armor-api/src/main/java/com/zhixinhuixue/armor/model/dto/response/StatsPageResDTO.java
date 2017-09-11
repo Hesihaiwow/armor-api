@@ -20,6 +20,8 @@ public class StatsPageResDTO {
     private int sum;
     private int hours;//正在进行任务时间
 
+    private int multiTask;//正在进行中的多人任务
+
     public Long getId() {
         return id;
     }
@@ -82,5 +84,12 @@ public class StatsPageResDTO {
 
     public int getHours() {
         return hours;
+    }
+    public int getMultiTask() {
+        return multiTask;
+    }
+
+    public void setMultiTask(int multiTask) {
+        this.multiTask = multiTask;
     }
 }
