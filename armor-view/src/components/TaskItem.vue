@@ -201,6 +201,7 @@
                     </li>
                 </ul>
             </div>
+            {{taskDetail.createBy}} {{loginUserId}}
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
                 <el-tooltip content="删除该任务" placement="top">
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
@@ -636,12 +637,12 @@
                 tagList: [],*/
             };
         },
-        created() {
+        beforeMount() {
 //            this.fetchProjectList()
 //            this.fetchStageList()
 //            this.fetchTagList()
 //            this.fetchUserList()
-            this.loginUserId = helper.decodeToken().userId
+            this.loginUserId = helper.decodeToken().userId;
         },
         computed: {
             permit() {
