@@ -678,8 +678,8 @@
     }
 </script>
 <style>
-    .myDialog {
-        width: 600px;
+    .el-dialog__wrapper .myDialog {
+        width: 600px !important;
     }
 </style>
 <style scoped>
