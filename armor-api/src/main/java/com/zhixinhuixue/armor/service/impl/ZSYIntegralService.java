@@ -20,6 +20,7 @@ import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
+import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -118,7 +119,18 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     public void addIntegral(IntegralResDTO integralResDTO) {
         User user = userMapper.selectById(integralResDTO.getUserId());
-        //积分记录添加
+        if(integralResDTO.getTime()!=null){//积分转移求助添加
+            UserIntegral userIntegral = new UserIntegral();
+            userIntegral.setId(snowFlakeIDHelper.nextId());
+            userIntegral.setCreateTime(integralResDTO.getTime());
+            userIntegral.setIntegral(integralResDTO.getIntegral());
+            userIntegral.setUserId(integralResDTO.getUserId());
+            userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            userIntegral.setDescription(integralResDTO.getDescription());
+            userIntegral.setOrigin(ZSYIntegralOrigin.HELPCHANGE.getValue());//求助转移积分
+            userIntegral.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
+            userIntegralMapper.insert(userIntegral);
+        }else{//积分记录添加
             BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
             user.setIntegral(integral);
             if (userMapper.updateSelectiveById(user) == 0) {
@@ -133,6 +145,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
             userIntegral.setDescription(integralResDTO.getDescription());
             userIntegral.setOrigin(ZSYIntegralOrigin.ARTIFICIAL.getValue());//手动添加
             userIntegralMapper.insert(userIntegral);
+        }
     }
 
 
