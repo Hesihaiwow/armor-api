@@ -2,7 +2,7 @@
   <div class="stats-con">
       <el-table :data="statsData" >
         <el-table-column prop="name" label="成员" align="center" ></el-table-column>
-        <el-table-column prop="inProcess" label="我的任务/进行中多人任务" align="center" >
+        <el-table-column prop="inProcess" label="我的任务/进行中任务" align="center" >
           <template scope="sco">
               <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}} / {{sco.row.multiTask}}</el-button>
           </template>
