@@ -513,7 +513,7 @@
                 var param = this.helpForm;
                 var help = {
                     userId: param.userId,
-                    time: moment(param.time).format('YYYY-MM-DD HH:mm:ss'),
+                    time:  moment(param.time).format('YYYY-MM-DD HH:mm:ss'),
                     description: param.description.trim(),
                     integral: param.integral
                 };
