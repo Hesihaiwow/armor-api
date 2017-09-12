@@ -1288,8 +1288,8 @@
         margin-right: 5px;
         border-left:3px solid #ccc;
     }
-    .myDialog {
-        width: 600px;
+    .el-dialog__wrapper .myDialog {
+        width: 600px !important;
     }
 
     .my-dialog-title {
