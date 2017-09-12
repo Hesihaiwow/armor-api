@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYStatsMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="quantity" jdbcType="INTEGER" property="quantity" />
-    <result column="delay" jdbcType="INTEGER" property="delay" />
-    <result column="complete" jdbcType="INTEGER" property="complete" />
-    <result column="process" jdbcType="DECIMAL" property="inProcess" />
-    <result column="sum" jdbcType="DECIMAL" property="sum" />
-  </resultMap>
-  <select id="getStats" resultMap="BaseResultMap">
-        SELECT COUNT(*)as quantity,
-        COUNT(case when t.`status`=1 then 2 end)as process,
-        COUNT(case when (t.`status`=2 or t.`status`=3) then 1 end)as complete,
-        <![CDATA[ COUNT(case when t.complete_time>t.end_time then 1 end)as delay,]]>
-        u.`name`,t.user_id as id, u.integral as sum
-        from task_user t,`user` u
-        where t.user_id = u.id
-        GROUP BY user_id
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="quantity" jdbcType="INTEGER" property="quantity" />
+        <result column="delay" jdbcType="INTEGER" property="delay" />
+        <result column="complete" jdbcType="INTEGER" property="complete" />
+        <result column="process" jdbcType="DECIMAL" property="inProcess" />
+        <result column="multi" jdbcType="DECIMAL" property="multiTask" />
+        <result column="sum" jdbcType="DECIMAL" property="sum" />
+    </resultMap>
+    <select id="getStats" resultMap="BaseResultMap">
+        SELECT
+        COUNT(case when (t.`status`=1 and ta.is_delete=0)  then 2 end)as process,
+        COUNT(case when ((t.`status`=2 or t.`status`=3) and ta.is_delete=0) then 1 end)as complete,
+        COUNT(case when (ta.`status`=1 and ta.is_delete=0)  then 2 end)as multi,
+        SUM(case when (t.`status`=1 and ta.is_delete=0) then t.task_hours else 0 end) as hours,
+        <![CDATA[ COUNT(case when (t.end_time<NOW() and t.status=1 and ta.is_delete=0) then 1 end)as delay,]]>
+        u.`name`,u.id as id
+        from `user` u
+        LEFT JOIN task_user t on t.user_id = u.id
+        LEFT JOIN  task ta ON  ta.id=t.task_id
+        WHERE u.user_role>0
+        GROUP BY u.id
     </select>
 </mapper>

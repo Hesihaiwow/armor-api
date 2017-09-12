@@ -2,17 +2,12 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
-import com.zhixinhuixue.armor.model.dto.request.CommentReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskCompleteReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
-import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -132,7 +127,14 @@ public interface IZSYTaskService {
      *
      * @return
      */
-    ZSYResult<List<TaskResDTO>> getAllWaitComment(Long userId);
+    ZSYResult<List<TaskDetailBO>> getAllWaitComment(Long userId);
+
+    /**
+     * 获取用户评价记录
+     *
+     * @return
+     */
+    ZSYResult<List<TaskDetailBO>> getCommented(Long userId);
 
     /**
      * 删除任务
@@ -155,4 +157,18 @@ public interface IZSYTaskService {
      * @return
      */
     void syncSettlementTask();
+
+    /**
+     * 获取阶段下的任务
+     * @param stageId
+     * @return
+     */
+    List<TaskListResDTO> getTaskByStageId(Long stageId);
+
+    /**
+     * 移动任务
+     * @param taskMoveReqDTO
+     * @return
+     */
+    void moveTask(TaskMoveReqDTO taskMoveReqDTO);
 }

@@ -102,7 +102,8 @@ public interface IZSYTaskMapper {
      * @param userId
      * @return
      */
-    List<TaskBO> selectAllNotClosed(Long userId);
+    List<TaskDetailBO> selectAllNotClosed(Long userId);
+
 
     /**
      * 查询项目下是否存在任务
@@ -121,8 +122,31 @@ public interface IZSYTaskMapper {
     List<TaskComment> findTaskComment(@Param("taskId") Long taskId, @Param("taskUserId") Long taskUserId);
 
     /**
+
      * 查询所有未结束已完成的任务
      * @return
      */
     List<Task> findNotFinishedTask();
+
+    /**
+     * 查询阶段任务
+     * @param stageId
+     * @return
+     */
+    List<TaskListBO> selectTaskByStageId(Long stageId);
+
+    /**
+     * 查询阶段内任务最后一个index
+     * @param stageId
+     * @return
+     */
+    Integer selectLastIndexByStageId(Long stageId);
+
+    /**
+     * 修改任务下标
+     * @param stageId
+     * @param sort
+     */
+    int updateIndexByStageId(@Param("stageId") Long stageId, @Param("sort") Integer sort);
+
 }

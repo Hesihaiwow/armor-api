@@ -12,6 +12,9 @@ import './assets/css/base.css'
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 
+import request from './lib/Http'
+Vue.prototype.http = request;
+
 /* eslint-disable no-new */
 window.vue = new Vue({
   el: '#app',

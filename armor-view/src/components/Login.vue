@@ -64,6 +64,11 @@
                 });
             },
         },
+        created(){
+            if (window.localStorage.getItem("token")!=null &&  window.localStorage.getItem("token")!== '') {
+                 this.$router.push('/index/navIndex');
+            }
+        },
         mounted() {
 
           },

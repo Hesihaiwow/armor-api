@@ -23,8 +23,8 @@ module.exports = {
   },
   test: {
         env: require('./test.env'),
-        index: path.resolve(__dirname, '../../armor-api/src/main/resources/static/index.html'),
-        assetsRoot: path.resolve(__dirname, '../../armor-api/src/main/resources/static/'),
+        index: path.resolve(__dirname, '../dist/index.html'),
+        assetsRoot: path.resolve(__dirname, '../dist'),
         assetsSubDirectory: '',
         assetsPublicPath: '',
         productionSourceMap: true,
