@@ -1,5 +1,9 @@
 <template>
-    <div> <div class="toggle-view"><input type="button" :value="btnVal" @click="btnValFun"></div>
+    <div> <div class="toggle-view">
+        <input type="button" :value="btnVal" @click="btnValFun">
+        <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit && btnValStatus==2 ">
+    </div>
+
         <div class="task-con">
             <div>
                 <div class="task-top clearfix" v-show="btnValStatus == 1">
@@ -427,7 +431,7 @@
     }
 
     .toggle-view input {
-        display: block;
+        /*display: block;*/
         background-color: #20a0ff;
         color: #fff;
         line-height: 30px;
