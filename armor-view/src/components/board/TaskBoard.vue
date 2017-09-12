@@ -69,12 +69,12 @@
                     let li = this.findParent(event.target);
                     targetId = li.getAttribute('taskid');
                 }
+
                 this.http.zsyPutHttp('/task/move', {
                     originId: originId,
                     targetId: targetId,
                     targetStageId: stageId
                 }, (res) => {
-
                     if (event.target.tagName.toLowerCase() == "li") {
                         event.target.parentNode.insertBefore(dom, event.target);
                     } else if (event.target.tagName.toLowerCase() == "ul") {

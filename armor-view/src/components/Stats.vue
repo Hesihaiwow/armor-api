@@ -2,7 +2,7 @@
   <div class="stats-con">
       <el-table :data="statsData" >
         <el-table-column prop="name" label="成员" align="center" ></el-table-column>
-        <el-table-column prop="inProcess" label="我的任务/进行中多人任务" align="center" >
+        <el-table-column prop="inProcess" label="我的任务/进行中任务" align="center" >
           <template scope="sco">
               <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}} / {{sco.row.multiTask}}</el-button>
           </template>
@@ -18,61 +18,61 @@
   </div>
 </template>
 <script>
-    import Http from '../lib/Http'
-    import Helper from '../lib/Helper'
-    import { Message } from 'element-ui';
-    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
-    import Task from "./Task"
+  import Http from '../lib/Http'
+  import Helper from '../lib/Helper'
+  import { Message } from 'element-ui';
+  import ElButton from "../../node_modules/element-ui/packages/button/src/button";
+  import Task from "./Task"
 
-    export default {
-        components: {ElButton},
-        name: 'IntegralHistory',
-        data() {
-            return {
-                statsData:[],
-                statsPage: {
-                    layout: "total, pager",
-                    currentPage: 1,
-                    pageSize: 10,
-                    totals: 0,
-                    pageNum: 0
-                }
-            }
+  export default {
+    components: {ElButton},
+    name: 'IntegralHistory',
+    data() {
+      return {
+          statsData:[],
+          statsPage: {
+            layout: "total, pager",
+            currentPage: 1,
+            pageSize: 10,
+            totals: 0,
+            pageNum: 0
+          }
+      }
+    },
+    beforeMount:function () {
+        this.getStats(this.statsPage.currentPage);
+        //选中任务tab
+        this.$root.eventBus.$emit("handleTabSelected", "stats");
+    },
+    methods: {
+        getStats(currentPage){
+          Http.zsyGetHttp(`/stats/list/`, {}, (resp) => {
+              this.statsData =  resp.data;
+          });
         },
-        beforeMount:function () {
-            this.getStats(this.statsPage.currentPage);
-            //选中任务tab
-            this.$root.eventBus.$emit("handleTabSelected", "stats");
-        },
-        methods: {
-            getStats(currentPage){
-                Http.zsyGetHttp(`/stats/list/`, {}, (resp) => {
-                    this.statsData =  resp.data;
-                });
-            },
-            getTask(index){
-                this.$router.push({path:'/index/task', query:{ userId:this.statsData[index].id }})
-            }
+        getTask(index){
+          this.$router.push({path:'/index/task', query:{ userId:this.statsData[index].id }})
         }
     }
+  }
 
 
 </script>
 <style scoped>
 
-    .stats-con {
-        width: 1100px;
-        font-size: 14px;
-        background: #fff;
-        padding: 30px 0;
-        text-indent: 10px;
-        box-shadow: 0 0 10px #ccc;
-        margin: auto;
-    }
+  .stats-con {
+    width: 1100px;
+    font-size: 14px;
+    background: #fff;
+    padding: 30px 0;
+    text-indent: 10px;
+    box-shadow: 0 0 10px #ccc;
+    margin: auto;
+  }
 
-    .el-tag{
-        margin-left: 16px;
-    }
+  .el-tag{
+      margin-left: 16px;
+  }
 
 
 </style>
