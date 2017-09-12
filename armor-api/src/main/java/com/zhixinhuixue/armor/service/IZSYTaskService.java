@@ -8,7 +8,6 @@ import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -152,6 +151,12 @@ public interface IZSYTaskService {
      * @return
      */
     PageInfo<TaskLogResDTO> getTaskLog(Long taskId, int pageNum);
+
+    /**
+     * 结算任务（后台同步）
+     * @return
+     */
+    void syncSettlementTask();
 
     /**
      * 获取阶段下的任务

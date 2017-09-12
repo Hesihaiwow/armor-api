@@ -58,6 +58,7 @@ export default {
               label: '积分',
               name: 'intergral'
             },
+
             {
               label: '统计',
               name: 'stats'

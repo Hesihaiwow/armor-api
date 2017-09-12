@@ -74,12 +74,18 @@
         </collection>
     </resultMap>
 
+
     <!-- 查询任务详情 -->
     <select id="selectTaskDetailByTaskId" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
     select t1.*,t2.`name` as projectName,t3.`name` as stageName from task t1
     left join project t2 on t1.project_id = t2.id
     left JOIN stage t3 on t1.stage_id = t3.id
     where t1.id = #{taskId} and t1.is_delete = 0
+    </select>
+
+    <!-- 查询已完成未结束的任务 -->
+    <select id="findNotFinishedTask" resultMap="BaseResultMap">
+         select * from task where is_delete = 0 and `status` = 2 and `type` = 2
     </select>
 
     <!-- 根据状态查询任务 -->

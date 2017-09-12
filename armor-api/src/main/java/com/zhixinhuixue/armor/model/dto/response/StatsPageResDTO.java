@@ -17,6 +17,7 @@ public class StatsPageResDTO {
 
     private int delay;//任务超时数
 
+    private int sum;
     private int hours;//正在进行任务时间
 
     private int multiTask;//正在进行中的多人任务
@@ -69,14 +70,21 @@ public class StatsPageResDTO {
         this.delay = delay;
     }
 
-    public int getHours() {
-        return hours;
+    public int getSum() {
+        return sum;
+    }
+
+    public void setSum(int sum) {
+        this.sum = sum;
     }
 
     public void setHours(int hours) {
         this.hours = hours;
     }
 
+    public int getHours() {
+        return hours;
+    }
     public int getMultiTask() {
         return multiTask;
     }

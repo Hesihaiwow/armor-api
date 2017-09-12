@@ -122,6 +122,13 @@ public interface IZSYTaskMapper {
     List<TaskComment> findTaskComment(@Param("taskId") Long taskId, @Param("taskUserId") Long taskUserId);
 
     /**
+
+     * 查询所有未结束已完成的任务
+     * @return
+     */
+    List<Task> findNotFinishedTask();
+
+    /**
      * 查询阶段任务
      * @param stageId
      * @return
@@ -141,4 +148,5 @@ public interface IZSYTaskMapper {
      * @param sort
      */
     int updateIndexByStageId(@Param("stageId") Long stageId, @Param("sort") Integer sort);
+
 }

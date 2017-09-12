@@ -636,12 +636,12 @@
                 tagList: [],*/
             };
         },
-        created() {
+        beforeMount() {
 //            this.fetchProjectList()
 //            this.fetchStageList()
 //            this.fetchTagList()
 //            this.fetchUserList()
-            this.loginUserId = helper.decodeToken().userId
+            this.loginUserId = helper.decodeToken().userId;
         },
         computed: {
             permit() {
@@ -818,6 +818,15 @@
                 if(this.taskStatus == 'WaitAssess' && this.isPrivate){
                     this.showWaitAssess(taskId)
                 }
+                var vm = this;
+                // 待审核点击
+                if(vm.taskStatus == 'WaitAuditing'){
+                    vm.taskItems.forEach((task)=>{
+                        if (task.id === taskId) {
+                            vm.showAuditPop(task.id,task.taskUsers[0].id)
+                        }
+                    })
+                }
             },
             getTaskLog(taskId) {
                 http.zsyGetHttp(`/task/log/${taskId}/${this.taskLog.pageNum}`, {}, (resp) => {
@@ -841,6 +850,7 @@
                 }).then(() => {
                     http.zsyPutHttp(`/task/complete/master/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
+                        this.$root.eventBus.$emit('reloadBoard');
                         this.$message.success("操作成功");
                         this.hideTaskDetail();
                     })
@@ -856,6 +866,7 @@
                 }).then(() => {
                     http.zsyDeleteHttp(`/task/delete/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
+                        this.$root.eventBus.$emit('reloadBoard');
                         this.$message.success("删除成功");
                         this.hideTaskDetail();
                         this.showAuditTask = false;
@@ -1223,6 +1234,8 @@
                     //this.$root.eventBus.$emit("reloadBoard");
                     // 刷新列表
                     vm.$emit('reload')
+                    // 刷新看板
+                    this.$root.eventBus.$emit('reloadBoard');
                 })
                 this.showCreateTask = false;
 
@@ -1253,14 +1266,13 @@
         created() {
             // 监听看板任务点击事件
             var vm = this;
-            vm.$root.eventBus.$on("handleBoardClick2", (taskId) => {
-                console.log('on')
+            vm.$root.eventBus.$off('handleBoardClick')
+            vm.$root.eventBus.$on("handleBoardClick", (taskId) => {
                 vm.showTaskDetail = true;
                   http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                        vm.taskDetail = resp.data
                     });
                  vm.getTaskLog(taskId)
-
             });
         }
     }
@@ -1276,8 +1288,8 @@
         margin-right: 5px;
         border-left:3px solid #ccc;
     }
-    .myDialog {
-        width: 600px;
+    .el-dialog__wrapper .myDialog {
+        width: 600px !important;
     }
 
     .my-dialog-title {

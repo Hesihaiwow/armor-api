@@ -69,12 +69,12 @@
                     let li = this.findParent(event.target);
                     targetId = li.getAttribute('taskid');
                 }
+
                 this.http.zsyPutHttp('/task/move', {
                     originId: originId,
                     targetId: targetId,
                     targetStageId: stageId
                 }, (res) => {
-
                     if (event.target.tagName.toLowerCase() == "li") {
                         event.target.parentNode.insertBefore(dom, event.target);
                     } else if (event.target.tagName.toLowerCase() == "ul") {
@@ -97,8 +97,7 @@
                 return obj;
             },
             handleTaskItemClick(taskId) {
-                console.log('emit')
-                 this.$root.eventBus.$emit("handleBoardClick2", taskId);
+                this.$root.eventBus.$emit("handleBoardClick", taskId);
             },
             getData() {
                 // 获取阶段
@@ -167,6 +166,9 @@
             });
         },
         mounted() {
+        },
+        beforeDestroy(){
+            document.getElementById('app').style.overflowY = 'auto'
         }
     }
 </script>

@@ -1,5 +1,9 @@
 <template>
-    <div> <div class="toggle-view"><input type="button" :value="btnVal" @click="btnValFun"></div>
+    <div> <div class="toggle-view">
+        <input type="button" :value="btnVal" @click="btnValFun">
+        <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit && btnValStatus==2 ">
+    </div>
+
         <div class="task-con">
             <div>
                 <div class="task-top clearfix" v-show="btnValStatus == 1">
@@ -226,7 +230,7 @@
             btnValFun() {
                 if (this.btnValStatus == 1) {
                     // 刷新看板
-                    this.$root.eventBus.$emit("reloadBoard");
+                    //this.$root.eventBus.$emit("reloadBoard");
                     this.btnValStatus = 2;
                     this.btnVal = "点击切换到列表模式"
                     document.getElementById('app').style.overflowY = 'hidden';
@@ -409,6 +413,8 @@
                     vm.page.pageSize = 5
                     vm.page.total = resp.data.total
                 })
+                // 刷新看板
+                //this.$root.eventBus.$emit("reloadBoard");
             }
         },
         components: {
@@ -425,7 +431,7 @@
     }
 
     .toggle-view input {
-        display: block;
+        /*display: block;*/
         background-color: #20a0ff;
         color: #fff;
         line-height: 30px;
