@@ -29,6 +29,11 @@ export default new Router({
             component: Index,
             children: [
                 {
+                    name:'taskList',
+                    path: 'task/:userId',
+                    component: Task
+                },
+                {
                     path: 'task',
                     component: Task
                 },
