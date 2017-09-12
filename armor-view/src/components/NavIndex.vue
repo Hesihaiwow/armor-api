@@ -511,14 +511,19 @@
             //保存用户转移积分
             saveHelpInfo(helpForm){
                 var param = this.helpForm;
-                param.time = moment(param.time).format('YYYY-MM-DD HH:mm:ss')
+                var help = {
+                    userId: param.userId,
+                    time:  moment(param.time).format('YYYY-MM-DD HH:mm:ss'),
+                    description: param.description.trim(),
+                    integral: param.integral
+                };
                 this.$refs[helpForm].validate((valid) => {
                     if (valid) {
                         if (!this.isDecimal(param.integral)) {
                             Message.error("积分格式错误");
                             return false;
                         }
-                        http.zsyPostHttp('/integral/add', param, (res) => {
+                        http.zsyPostHttp('/integral/add', help, (res) => {
                             Message.success("转移积分添加成功，请等待审核");
                             this.editHelpVisible = false;
                         });

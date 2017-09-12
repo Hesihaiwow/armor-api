@@ -127,7 +127,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
             userIntegral.setUserId(integralResDTO.getUserId());
             userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             userIntegral.setDescription(integralResDTO.getDescription());
-            userIntegral.setOrigin(ZSYIntegralOrigin.HELPCHANGE.getValue());//求助转移积分
+            userIntegral.setOrigin(ZSYIntegralOrigin.TRANSFORM.getValue());//求助转移积分
             userIntegral.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
             userIntegralMapper.insert(userIntegral);
         }else{//积分记录添加
