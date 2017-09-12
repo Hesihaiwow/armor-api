@@ -166,6 +166,9 @@
             });
         },
         mounted() {
+        },
+        beforeDestroy(){
+            document.getElementById('app').style.overflowY = 'auto'
         }
     }
 </script>
