@@ -1,6 +1,6 @@
 <template>
     <div> <div class="toggle-view">
-        <input type="button" :value="btnVal" @click="btnValFun">
+        <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
         <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit && btnValStatus==2 ">
     </div>
 
@@ -137,7 +137,6 @@
         data() {
             return {
                 open: false,
-                btnVal: "点击切换到看板模式",
                 btnValStatus: 1, /*1是列表模式，2是看板模式*/
                 loading: true,
                 timeRange: '',
@@ -201,11 +200,18 @@
             };
         },
         created() {
-            if(typeof (this.$route.query.userId) !="undefined"){
-                console.log(this.$route.query.userId )
-                this.form.userId = this.$route.query.userId;
+            if(typeof (this.$route.params.userId) !="undefined"){
+                console.log(this.$route.params.userId )
+                this.form.userId = this.$route.params.userId;
                 this.form.type = '';
+                window.localStorage.removeItem("viewType")
             }
+            // 视图状态
+            const viewType = window.localStorage.getItem("viewType")
+            if (viewType!=null && viewType!== '') {
+                this.btnValStatus = viewType
+            }
+
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
@@ -214,6 +220,7 @@
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "task");
         },
+
         computed: {
             permit() {
                 let userRole = helper.decodeToken().userRole;
@@ -232,16 +239,16 @@
                     // 刷新看板
                     //this.$root.eventBus.$emit("reloadBoard");
                     this.btnValStatus = 2;
-                    this.btnVal = "点击切换到列表模式"
                     document.getElementById('app').style.overflowY = 'hidden';
                 } else {
                     // 刷新列表
                     this.fetchTaskList();
                     this.btnValStatus = 1;
-                    this.btnVal = "点击切换到看板模式"
                     document.getElementById('app').style.overflowY = 'auto'
 
                 }
+                // 记住状态
+                window.localStorage.setItem("viewType", this.btnValStatus);
             },
             openFun() {
                 this.open = !this.open;

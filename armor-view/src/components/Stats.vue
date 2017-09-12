@@ -51,7 +51,7 @@
                 });
             },
             getTask(index){
-                this.$router.push({path:'/index/task', query:{ userId:this.statsData[index].id }})
+                this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
             }
         }
     }
