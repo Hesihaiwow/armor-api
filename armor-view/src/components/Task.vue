@@ -232,7 +232,7 @@
                     document.getElementById('app').style.overflowY = 'hidden';
                 } else {
                     // 刷新列表
-                    //this.fetchTaskList();
+                    this.fetchTaskList();
                     this.btnValStatus = 1;
                     this.btnVal = "点击切换到看板模式"
                     document.getElementById('app').style.overflowY = 'auto'
