@@ -201,7 +201,6 @@
                     </li>
                 </ul>
             </div>
-            {{taskDetail.createBy}} {{loginUserId}}
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
                 <el-tooltip content="删除该任务" placement="top">
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
