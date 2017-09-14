@@ -28,6 +28,7 @@
     <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.TaskListBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
         <collection property="tags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
@@ -35,6 +36,7 @@
 
     <resultMap id="TaskResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
         <!-- 查询任务用户（阶段） -->
         <collection property="taskUsers" column="{taskId=id,userId=user_id}" select="selectTaskUser"
@@ -44,6 +46,7 @@
     <resultMap id="WaitAuditResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <association property="userIntegral" column="{taskId=id,userId=user_id}" select="selectUserIntegral"
                      javaType="java.lang.Double"/>
         <!-- 查询任务用户（阶段） -->
@@ -54,6 +57,7 @@
     <resultMap id="TaskFinishedResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <association property="userIntegral" column="{taskId=id,userId=user_id}" select="selectUserIntegral"
                      javaType="java.lang.Double"/>
         <!-- 查询任务用户（阶段） -->
@@ -65,6 +69,7 @@
     <resultMap id="TaskDetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskDetailBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
         <collection property="taskTags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
@@ -90,7 +95,7 @@
 
     <!-- 根据状态查询任务 -->
     <select id="selectTaskByStatus" resultMap="TaskResultMap">
-        select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id,t4.`name` as userName from task t1
+        select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id,t4.`name` as userName, t4.avatar_url from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
            left join `user` t4 on t1.create_by = t4.id
@@ -103,7 +108,7 @@
 
     <!-- 查询所有待审核的任务 -->
     <select id="selectAllWaitAudit" resultMap="WaitAuditResultMap">
-         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t4.`name` as userName,t2.user_id from task t1
+         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t4.`name` as userName,t2.user_id,t4.avatar_url from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
         left join `user` t4 on t1.create_by = t4.id
@@ -112,7 +117,7 @@
 
     <!-- 查询还未评价完的任务 -->
     <select id="selectAllNotClosed" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
-         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t4.`name` as userName,t2.user_id from task t1
+         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t4.`name` as userName,t2.user_id,t4.avatar_url from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
         left join `user` t4 on t1.create_by = t4.id
@@ -123,11 +128,9 @@
         order by t1.create_time desc
     </select>
 
-
-
     <!-- 查询已完成的任务，包含评价 -->
     <select id="selectFinishedTask" resultMap="TaskFinishedResultMap" parameterType="java.lang.Long">
-     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id,t4.`name` as userName from task t1
+     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id,t4.`name` as userName,t4.avatar_url from task t1
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
              left join `user` t4 on t1.create_by = t4.id
@@ -143,7 +146,7 @@
     <!-- 分页查询 -->
     <select id="selectPage" parameterType="com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO"
             resultMap="PageResultMap">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName,t5.`name` as stageName,t6.`name` as userName from
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName,t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from
         task t1
         left join task_user t2 on t1.id =t2.task_id
         left join task_tag t3 on t1.id = t3.task_id
@@ -203,7 +206,7 @@
 
     <!-- 分页查询所有审核通过的任务 -->
     <select id="selectAllAuditSuccess" resultMap="WaitAuditResultMap">
-      select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id,t4.`name` as userName from task t1
+      select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t2.user_id,t4.`name` as userName,t4.avatar_url from task t1
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
             left join `user` t4 on t1.create_by = t4.id
@@ -217,7 +220,7 @@
 
     <!-- 查询阶段下的任务 -->
     <select id="selectTaskByStageId" resultMap="PageResultMap" parameterType="java.lang.Long">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName,t5.`name` as stageName,t6.`name` as userName from task t1
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName,t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
         left join task_user t2 on t1.id =t2.task_id
         left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id

@@ -95,10 +95,7 @@ export default {
         this.showPerOpt = false;
         this.$refs.alterPwdPop.show();
       },
-      alterAvatar(){
-        // 修改头像
 
-      },
       logoutBtn () {
         // 退出登录
         this.showPerOpt = false;

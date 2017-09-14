@@ -17,10 +17,10 @@ import com.zhixinhuixue.armor.helper.SHA1Helper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.DeptBo;
 import com.zhixinhuixue.armor.model.bo.UserBo;
+import com.zhixinhuixue.armor.model.dto.request.UploadAvatarReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.DeptResDTO;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Akuma on 2017/8/8.
  */
 @Service
-public class ZSYUserService implements IZSYUserService{
+public class ZSYUserService implements IZSYUserService {
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYUserService.class);
 
@@ -87,8 +87,8 @@ public class ZSYUserService implements IZSYUserService{
         User user = userMapper.selectByAccountAndPassword(userLoginReqDTO.getAccount(),
                 MD5Helper.convert(
                         String.format("%s%s", SHA1Helper.Sha1(userLoginReqDTO.getPassword()),
-                                ZSYConstants.HINT_PASSWORD_KEY), 32 , false));
-        if (user == null){
+                                ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        if (user == null) {
             throw new ZSYServiceException("账号或密码错误");
         }
         //验证通过
@@ -96,7 +96,7 @@ public class ZSYUserService implements IZSYUserService{
         User modifyUser = new User();
         modifyUser.setId(user.getId());
         modifyUser.setLastLogin(new Date());
-        if (userMapper.updateSelectiveById(modifyUser)==0){
+        if (userMapper.updateSelectiveById(modifyUser) == 0) {
             throw new ZSYServiceException("更新登录时间失败,登录异常.");
         }
         //生成Token
@@ -108,23 +108,24 @@ public class ZSYUserService implements IZSYUserService{
         }
         String jwt = JWT.create()
                 .withIssuer(jwtIssuer)
-                .withExpiresAt(DateHelper.afterDate(new Date(),jwtExp))
+                .withExpiresAt(DateHelper.afterDate(new Date(), jwtExp))
                 .withIssuedAt(new Date())
                 .withClaim("userId", String.valueOf(user.getId()))
                 .withClaim("userName", user.getName())
-                .withClaim("userRole",user.getUserRole())
+                .withClaim("avatarUrl", user.getAvatarUrl())
+                .withClaim("userRole", user.getUserRole())
                 .sign(algorithm);
 
-        String loginKey = String.format(ZSYConstants.LOGIN_KEY,user.getId());
-        stringRedisTemplate.opsForValue().set(loginKey,ZSYConstants.REDIS_DEFAULT_VALUE);
-        stringRedisTemplate.expire(loginKey,ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
-        logger.info("{}({})登录成功,token:{}",user.getName(),user.getId(),jwt);
+        String loginKey = String.format(ZSYConstants.LOGIN_KEY, user.getId());
+        stringRedisTemplate.opsForValue().set(loginKey, ZSYConstants.REDIS_DEFAULT_VALUE);
+        stringRedisTemplate.expire(loginKey, ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
+        logger.info("{}({})登录成功,token:{}", user.getName(), user.getId(), jwt);
         return ZSYResult.success().data(jwt);
     }
 
     @Override
     public void userLogout() {
-        String loginKey = String.format(ZSYConstants.LOGIN_KEY,ZSYTokenRequestContext.get().getUserId());
+        String loginKey = String.format(ZSYConstants.LOGIN_KEY, ZSYTokenRequestContext.get().getUserId());
         stringRedisTemplate.delete(loginKey);
     }
 
@@ -135,13 +136,13 @@ public class ZSYUserService implements IZSYUserService{
         deptIds.add(deptBo.getId());
         deptIds.addAll(deepCopyDeptIds(deptBo.getChildren()));
 
-        PageHelper.startPage(pageIndex,ZSYConstants.PAGE_SIZE);
+        PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
         Page<UserBo> userBos = userMapper.selectPage(deptIds);
         Page<UserPageResDTO> page = new Page<>();
-        BeanUtils.copyProperties(userBos,page);
+        BeanUtils.copyProperties(userBos, page);
         userBos.stream().forEach(userBo -> {
             UserPageResDTO userPageResDTO = new UserPageResDTO();
-            BeanUtils.copyProperties(userBo,userPageResDTO);
+            BeanUtils.copyProperties(userBo, userPageResDTO);
             userPageResDTO.setDeptName(userBo.getDepartment().getName());
             page.add(userPageResDTO);
         });
@@ -153,14 +154,14 @@ public class ZSYUserService implements IZSYUserService{
     @Override
     public void addUser(UserReqDTO userReqDTO) {
 
-        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYAuthException("没有权限执行此操作");
         }
 
         //校验用户账户是否存在
         List<User> existUsers = userMapper.selectByAccount(userReqDTO.getAccount());
-        if (existUsers.size()>0){
-            throw new ZSYServiceException(String.format("用户账户[%s]已存在",userReqDTO.getAccount()));
+        if (existUsers.size() > 0) {
+            throw new ZSYServiceException(String.format("用户账户[%s]已存在", userReqDTO.getAccount()));
         }
 
         User user = new User();
@@ -172,22 +173,33 @@ public class ZSYUserService implements IZSYUserService{
         user.setIntegral(new BigDecimal(ZSYConstants.DEFAULT_INTEGRAL));
         user.setPassword(MD5Helper.convert(
                 String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
-                        ZSYConstants.HINT_PASSWORD_KEY), 32 , false));
+                        ZSYConstants.HINT_PASSWORD_KEY), 32, false));
         userMapper.insertUser(user);
     }
 
     @Override
     public void modifyUser(UserReqDTO userReqDTO) {
-        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYAuthException("没有权限执行此操作");
         }
 
         User user = new User();
-        BeanUtils.copyProperties(userReqDTO,user);
+        BeanUtils.copyProperties(userReqDTO, user);
         user.setId(userReqDTO.getUserId());
-        if (userMapper.updateSelectiveById(user)==0){
+        if (userMapper.updateSelectiveById(user) == 0) {
             throw new ZSYServiceException("更新用户失败");
         }
+    }
+
+    /**
+     * 修改用户头像
+     */
+    @Override
+    public void modifyUserAvatar(UploadAvatarReqDTO uploadAvatarReqDTO) {
+        User user = new User();
+        user.setId(uploadAvatarReqDTO.getUserId());
+        user.setAvatarUrl(uploadAvatarReqDTO.getUrl());
+        userMapper.updateSelectiveById(user);
     }
 
     @Override
@@ -196,7 +208,7 @@ public class ZSYUserService implements IZSYUserService{
         List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
         users.stream().forEach(user -> {
             EffectUserResDTO effectUserResDTO = new EffectUserResDTO();
-            BeanUtils.copyProperties(user,effectUserResDTO);
+            BeanUtils.copyProperties(user, effectUserResDTO);
             effectUserResDTOS.add(effectUserResDTO);
         });
         return effectUserResDTOS;
@@ -204,10 +216,10 @@ public class ZSYUserService implements IZSYUserService{
 
     @Override
     public void deleteUserById(Long userId) {
-        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYAuthException("没有权限执行此操作");
         }
-        if (userMapper.deleteById(userId)==0){
+        if (userMapper.deleteById(userId) == 0) {
             throw new ZSYServiceException("删除用户失败");
         }
     }
@@ -215,16 +227,16 @@ public class ZSYUserService implements IZSYUserService{
     @Override
     public void modifyUserPassword(UserPwdReqDTO userPwdReqDTO) {
         User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
-        Optional.ofNullable(user).orElseThrow(()->new ZSYServiceException("用户不存在"));
+        Optional.ofNullable(user).orElseThrow(() -> new ZSYServiceException("用户不存在"));
         //校验用户状态
-        if (user.getStatus()!=0||user.getIsDelete()!=0){
+        if (user.getStatus() != 0 || user.getIsDelete() != 0) {
             throw new ZSYServiceException("账户冻结或已删除,操作失败");
         }
         //校验原始密码
         String secretOriginalPwd = MD5Helper.convert(
                 String.format("%s%s", SHA1Helper.Sha1(userPwdReqDTO.getOriginalPassword()),
-                        ZSYConstants.HINT_PASSWORD_KEY), 32 , false);
-        if (!secretOriginalPwd.equals(user.getPassword())){
+                        ZSYConstants.HINT_PASSWORD_KEY), 32, false);
+        if (!secretOriginalPwd.equals(user.getPassword())) {
             throw new ZSYServiceException("旧密码不正确");
         }
         //校验通过,修改密码
@@ -232,30 +244,30 @@ public class ZSYUserService implements IZSYUserService{
         modifyUser.setId(ZSYTokenRequestContext.get().getUserId());
         String secretNewPwd = MD5Helper.convert(
                 String.format("%s%s", SHA1Helper.Sha1(userPwdReqDTO.getNewPassword()),
-                        ZSYConstants.HINT_PASSWORD_KEY), 32 , false);
+                        ZSYConstants.HINT_PASSWORD_KEY), 32, false);
         modifyUser.setPassword(secretNewPwd);
-        if (userMapper.updateSelectiveById(modifyUser)==0){
+        if (userMapper.updateSelectiveById(modifyUser) == 0) {
             throw new ZSYServiceException("更新密码失败");
         }
     }
 
     @Override
     public void resetUserPassword(Long userId) {
-        if (ZSYTokenRequestContext.get().getUserRole()> ZSYUserRole.PROJECT_MANAGER.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYAuthException("没有权限执行此操作");
         }
         User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
-        Optional.ofNullable(user).orElseThrow(()->new ZSYServiceException("用户不存在"));
+        Optional.ofNullable(user).orElseThrow(() -> new ZSYServiceException("用户不存在"));
         //校验用户状态
-        if (user.getIsDelete()!=0){
+        if (user.getIsDelete() != 0) {
             throw new ZSYServiceException("用户已删除,操作失败");
         }
         User modifyUser = new User();
         modifyUser.setId(userId);
         modifyUser.setPassword(MD5Helper.convert(
                 String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
-                        ZSYConstants.HINT_PASSWORD_KEY), 32 , false));
-        if (userMapper.updateSelectiveById(modifyUser)==0){
+                        ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        if (userMapper.updateSelectiveById(modifyUser) == 0) {
             throw new ZSYServiceException("重置密码失败");
         }
 
@@ -265,22 +277,23 @@ public class ZSYUserService implements IZSYUserService{
     public UserResDTO getUserById(Long userId) {
         User user = userMapper.selectById(userId);
         UserResDTO userResDTO = new UserResDTO();
-        if (user==null){
-            throw new ZSYServiceException(String.format("用户(%s)不存在",userId));
+        if (user == null) {
+            throw new ZSYServiceException(String.format("用户(%s)不存在", userId));
         }
-        BeanUtils.copyProperties(user,userResDTO);
+        BeanUtils.copyProperties(user, userResDTO);
         return userResDTO;
     }
 
 
     /**
      * 对象深度拷贝
+     *
      * @param children 对象中的集合
      * @return
      */
-    private List<Long> deepCopyDeptIds(List<DeptBo> children){
+    private List<Long> deepCopyDeptIds(List<DeptBo> children) {
         List<Long> ids = new ArrayList<>();
-        children.stream().forEach(child->{
+        children.stream().forEach(child -> {
             ids.add(child.getId());
             ids.addAll(deepCopyDeptIds(child.getChildren()));
         });

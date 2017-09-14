@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.dto.request.UploadAvatarReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
@@ -47,6 +48,11 @@ public interface IZSYUserService {
      * @param userReqDTO 用户信息
      */
     void modifyUser(UserReqDTO userReqDTO);
+
+    /**
+     * 修改用户头像
+     */
+    void modifyUserAvatar(UploadAvatarReqDTO uploadAvatarReqDTO);
 
 
     /**
