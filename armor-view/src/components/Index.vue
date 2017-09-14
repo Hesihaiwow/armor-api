@@ -86,6 +86,10 @@ export default {
                 label: '组织',
                 name: 'organization'
             });
+            this.tabs.push({
+                label: '评价',
+                name: 'comments'
+            })
         }
     },
     watch:{

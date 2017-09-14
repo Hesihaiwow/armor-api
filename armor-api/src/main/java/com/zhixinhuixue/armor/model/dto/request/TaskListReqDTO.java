@@ -20,6 +20,8 @@ public class TaskListReqDTO {
     private Date beginTime;
     private Date endTime;
 
+    private Long taskId;
+
     public String getProjectId() {
         return projectId;
     }
@@ -106,5 +108,13 @@ public class TaskListReqDTO {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 }

@@ -6,6 +6,7 @@
       <div class="personal-name" @click.prevent.stop="personalOpt">  小花
         <div class="personal-opt" v-show="showPerOpt">
           <div class="alter-pwd" @click.stop.prevent="alterPwd">修改密码</div>
+          <div class="alter-avatar" @click.stop.prevent="alterAvatar">修改头像</div>
           <div class="logout-btn" @click.stop.prevent="logoutBtn">退出登录</div>
         </div>
       </div>
@@ -93,6 +94,10 @@ export default {
         // 修改密码
         this.showPerOpt = false;
         this.$refs.alterPwdPop.show();
+      },
+      alterAvatar(){
+        // 修改头像
+
       },
       logoutBtn () {
         // 退出登录

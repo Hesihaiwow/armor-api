@@ -7,7 +7,7 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYIntegral {
 
-    A(100, "A"), B(90, "B"), C(80, "C");
+    A(100, "A"), B(80, "B"), C(60, "C");
 
     private int value;
     private String name;
