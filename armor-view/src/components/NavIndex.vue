@@ -486,7 +486,7 @@
                 },
                 helpRules: {
                     integral: [ {required: true, message: '积分不能为空', trigger: 'blur'}],
-                    description: [{required: true, message: '详情不能为空且不超过100字', trigger: 'change', min: 1, max: 100}],
+                    description: [{required: true, message: '详情不能为空且不超过100字', trigger: 'blur', min: 1, max: 100}],
                     userId: [ {required: true, message: '求助人不能为空', trigger: 'change'}],
                     time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
                 },
