@@ -15,6 +15,10 @@ Vue.config.productionTip = false;
 import request from './lib/Http'
 Vue.prototype.http = request;
 
+import * as filters from './lib/Filter'
+Object.keys(filters).forEach(k => Vue.filter(k, filters[k])) // 注册过滤器
+
+
 /* eslint-disable no-new */
 window.vue = new Vue({
   el: '#app',

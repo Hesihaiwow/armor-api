@@ -16,6 +16,7 @@
     <result column="user_role" jdbcType="INTEGER" property="userRole" />
     <result column="last_login" jdbcType="TIMESTAMP" property="lastLogin" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
   </resultMap>
 
   <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.UserBo" extends="BaseResultMap">
@@ -101,6 +102,9 @@
       </if>
       <if test="userRole != null">
         user_role = #{userRole,jdbcType=INTEGER},
+      </if>
+      <if test="avatarUrl != null and avatarUrl!=''">
+        avatar_url = #{avatarUrl,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

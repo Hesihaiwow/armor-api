@@ -22,6 +22,8 @@ public class TaskResDTO {
 
     private String userName;
 
+    private String avatarUrl;
+
     private Date endTime;
 
     private Integer type;
@@ -199,5 +201,13 @@ public class TaskResDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

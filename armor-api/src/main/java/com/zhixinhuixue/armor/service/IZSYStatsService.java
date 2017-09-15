@@ -1,7 +1,9 @@
 package com.zhixinhuixue.armor.service;
 
 
+import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 
 import java.util.List;
 
@@ -16,4 +18,13 @@ public interface IZSYStatsService {
      * @return
      */
     List<StatsPageResDTO> getStats();
+
+    /**
+     * 统计用户评论
+     * @param pageNum
+     * @param userId
+     * @param grade
+     * @return
+     */
+    PageInfo<UserCommentsPageResDTO> findByPage(Integer pageNum, Long userId, String grade);
 }

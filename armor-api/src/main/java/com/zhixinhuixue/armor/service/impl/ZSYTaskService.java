@@ -543,9 +543,9 @@ public class ZSYTaskService implements IZSYTaskService {
                             }
                             return value;
                         }).average();
-                        if (average.getAsDouble() > 90) {
+                        if (average.getAsDouble() >= 90) {
                             taskResDTO.setIntegralGrade("A");
-                        } else if (average.getAsDouble() > 80) {
+                        } else if (average.getAsDouble() >= 80) {
                             taskResDTO.setIntegralGrade("B");
                         } else {
                             taskResDTO.setIntegralGrade("C");

@@ -158,6 +158,7 @@
                     total: 0,
                 },
                 form: {
+                    taskId: '',
                     projectId: '',
                     userId: '',
                     stageId: [],
@@ -200,10 +201,16 @@
             };
         },
         created() {
+            console.log(this.$route.params)
             if(typeof (this.$route.params.userId) !="undefined"){
-                console.log(this.$route.params.userId )
                 this.form.userId = this.$route.params.userId;
                 this.form.type = '';
+                window.localStorage.removeItem("viewType")
+            }
+            if(typeof (this.$route.params.taskId) !="undefined"){
+                this.form.taskId = this.$route.params.taskId;
+                this.form.type = '';
+                this.form.status = '';
                 window.localStorage.removeItem("viewType")
             }
             // 视图状态
@@ -335,6 +342,7 @@
             },
             searchTask(){
                 this.page.pageNum = 1;
+                this.form.taskId = '';
                 this.fetchTaskList();
             },
             fetchTaskList() {
@@ -344,6 +352,9 @@
                 let param = {}
                 param['pageNum'] = this.page.pageNum || 1;
                 param['pageSize'] = this.page.pageSize;
+                if (this.form.taskId !== '') {
+                    param['taskId'] = this.form.taskId
+                }
                 if (this.form.projectId !== '') {
                     param['projectId'] = this.form.projectId
                 }

@@ -31,6 +31,8 @@ public class TaskDetailBO extends Task {
      */
     private String userName;
 
+    private String avatarUrl;
+
     public List<Tag> getTaskTags() {
         return taskTags;
     }
@@ -69,5 +71,13 @@ public class TaskDetailBO extends Task {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

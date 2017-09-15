@@ -25,4 +25,39 @@
         WHERE u.user_role>0
         GROUP BY u.id
     </select>
+
+    <!-- 分页查询用户评论 -->
+    <resultMap id="userComments" type="com.zhixinhuixue.armor.model.bo.UserCommentBo">
+        <result column="userId" jdbcType="BIGINT" property="userId" />
+        <result column="taskId" jdbcType="BIGINT" property="taskId" />
+        <result column="taskUserId" jdbcType="BIGINT" property="taskUserId" />
+        <result column="userName" jdbcType="VARCHAR" property="userName" />
+        <result column="taskName" jdbcType="VARCHAR" property="taskName" />
+        <result column="taskUserName" jdbcType="VARCHAR" property="taskUserName" />
+        <result column="taskUserDesc" jdbcType="VARCHAR" property="taskUserDesc" />
+        <result column="grade" jdbcType="VARCHAR" property="grade" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <select id="selectUserCommentsPage" resultMap="userComments">
+
+        select t4.id as userId,t4.`name` as userName,t2.id as taskId,t2.`name` as taskName,
+        t6.id as taskUserId,
+        t6.`name` as taskUserName,
+        t5.description as taskUserDesc,
+        t1.grade ,t1.description,t1.create_time
+        from task_comment t1
+        left join task t2 on t1.task_id = t2.id
+        left join `user` t4 on t1.create_by = t4.id
+        left join task_user t5 on t1.task_user_id = t5.id
+        left join `user` t6 on t5.user_id = t6.id
+        where t2.is_delete = 0 and t2.type = 2
+        <if test="userId!=null">
+            and t1.create_by = #{userId}
+        </if>
+        <if test="grade!=null and grade!=''">
+            and t1.grade = #{grade}
+        </if>
+        order by t2.id
+    </select>
 </mapper>

@@ -25,6 +25,8 @@ public class UserResDTO {
 
     private Integer userRole;
 
+    private String avatarUrl;
+
     public String getName() {
         return name;
     }
@@ -95,5 +97,13 @@ public class UserResDTO {
 
     public String getUserRoleName(){
         return ZSYUserRole.getName(userRole);
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

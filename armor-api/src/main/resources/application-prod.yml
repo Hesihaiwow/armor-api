@@ -28,3 +28,14 @@ jwt:
   issuer: zhixinhuixue.com
   secret: 593aa655d2014f5bba6a2e22d485eb12
   exp: 360
+
+#FASTDFS服务
+fastdfs:
+  connectTimeout: 60
+  networkTimeout : 120
+  charset : UTF-8
+  trackerHttpPort : 80
+  antiStealToken : false
+  trackerServer : 10.19.103.150:22122
+  domain: http://fs.zhixinhuixue.com
+

@@ -1,6 +1,9 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.UserCommentBo;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,4 +18,12 @@ public interface IZSYStatsMapper {
      * @return
      */
     List<StatsPageResDTO> getStats();
+
+    /**
+     * 统计用户评论记录
+     * @param userId
+     * @param grade
+     * @return
+     */
+    Page<UserCommentBo> selectUserCommentsPage(@Param("userId") Long userId, @Param("grade") String grade);
 }

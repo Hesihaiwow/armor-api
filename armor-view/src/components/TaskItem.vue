@@ -63,8 +63,14 @@
                 <img src="../assets/img/u431.png" alt="">
                 <span class="mark-msg">{{task.projectName}}</span>
             </div>
-
-            <div class="task-username">{{task.userName}}</div>
+        <!--    <div class="task-avatar" v-if="task.avatarUrl && task.avatarUrl!=''">
+                <img :src="task.avatarUrl" alt="">
+            </div>
+            <div class="task-username" v-else>{{task.userName}}</div>-->
+            <div class="task-username">
+                <img class="task-avatar" v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
+                <span v-else="">{{task.userName}}</span>
+            </div>
         </div>
         <div v-show="taskItems.length==0" class="empty">
             <h2>暂无数据</h2>
@@ -1278,6 +1284,11 @@
     }
 </script>
 <style>
+    .task-avatar{
+        height: 40px;
+        border-radius: 50%;
+        width: 40px;
+    }
     .task-title-detail{
         margin-top:-5px;
         line-height: 20px;
