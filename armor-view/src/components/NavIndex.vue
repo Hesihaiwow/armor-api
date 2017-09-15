@@ -350,9 +350,6 @@
                     </el-tooltip>
                     <el-button type="success" @click="acceptHelpChange(helpDetail.id)">审核通过</el-button>
                 </div>
-                <div v-show="auditHelpTabsActiveName!='wait'">
-                    <el-button type="success" @click="helpDetailVisible =false">已完成</el-button>
-                </div>
             </span>
         </el-dialog>
     </div>
@@ -474,7 +471,7 @@
                 },
                 helpRules: {
                     integral: [ {required: true, message: '积分不能为空', trigger: 'blur'}],
-                    description: [{required: true,validator: validateEmpty, message: '详情不能超过100字', trigger: 'change', min: 0, max: 100}],
+                    description: [{required: true, message: '详情不能为空且不超过100字', trigger: 'change', min: 1, max: 100}],
                     userId: [ {required: true, message: '求助人不能为空', trigger: 'change'}],
                     time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
                 },
@@ -764,6 +761,10 @@
                     if (valid) {
                         if (!this.isDecimal(param.integral)) {
                             Message.error("积分格式错误");
+                            return false;
+                        }
+                        if (helper.decodeToken().userId==this.helpForm.userId) {
+                            Message.error("求助目标不能是自己，请重试");
                             return false;
                         }
                         if(this.helpForm.id!=''){
@@ -1100,7 +1101,7 @@
     }
     .task-name {
         margin-top: 18px;
-        font-size: 16px;
+        font-size: 15px;
     }
 
     .task-end.blue {
