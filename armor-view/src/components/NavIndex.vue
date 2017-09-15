@@ -315,7 +315,7 @@
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog  title="积分求助转移"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible" close="clearHelpForm()">
+        <el-dialog  title="积分求助转移"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible"  :show-close="false">
             <el-form :model="helpForm" ref="helpForm" :rules="helpRules" label-width="80px">
                 <el-form-item label="任务详情" prop="description">
                     <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
@@ -775,22 +775,22 @@
                 this.$refs[helpForm].validate((valid) => {
                     if (valid) {
                         if (!this.isDecimal(param.integral)) {
-                            Message.error("积分格式错误");
+                            this.$message.error("积分格式错误");
                             return false;
                         }
                         if (helper.decodeToken().userId==this.helpForm.userId) {
-                            Message.error("求助目标不能是自己，请重试");
+                            this.$message.error("求助目标不能是自己，请重试");
                             return false;
                         }
                         if(this.helpForm.id!=''){
                             http.zsyPostHttp('/integral/editHelpDetail/'+this.helpForm.id, help, (res) => {
-                                Message.success("转移积分更新成功，请等待审核");
+                                this.$message.success("转移积分更新成功，请等待审核");
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });
                         }else{
                             http.zsyPostHttp('/integral/add', help, (res) => {
-                                Message.success("转移积分添加成功，请等待审核");
+                                this.$message.success("转移积分添加成功，请等待审核");
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });
@@ -836,7 +836,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyDeleteHttp(`/integral/delete/`+id, {}, (resp) => {
-                        Message.success("删除成功");
+                        this.$message.success("删除成功");
                         this.reload();
                         this.helpDetailVisible = false;
                     })
@@ -851,7 +851,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyGetHttp(`/integral/passReview/`+id, {}, (resp) => {
-                        Message.success("审核成功");
+                        this.$message.success("审核成功");
                         this.reload();
                         this.helpDetailVisible = false;
                     })
