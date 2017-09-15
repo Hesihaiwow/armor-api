@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYIntegralOrigin {
 
-    SYSTEM(1, "系统录入"), ARTIFICIAL(2, "手动录入");
+    SYSTEM(1, "系统录入"), ARTIFICIAL(2, "手动录入"),  TRANSFORM(3, "求助转移");
     private int value;
     private String name;
 

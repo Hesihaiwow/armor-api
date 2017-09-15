@@ -4,9 +4,11 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.IntegralReviewResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -85,4 +87,103 @@ public class ZSYIntegralController extends ZSYController{
         return ZSYResult.success().build();
     }
 
+    /**
+     * 添加积分记录
+     * @param integralResDTO
+     * @return
+     */
+    @ApiOperation("添加求助转移积分")
+    @PostMapping("/addHelp")
+    public String addHelpIntegral(@RequestBody IntegralResDTO integralResDTO){
+        integralService.addIntegral(integralResDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 编辑积分转移
+     * @return
+     */
+    @ApiOperation("编辑积分求助转移")
+    @PostMapping("/editHelpDetail/{id}")
+    public String editHelpDetail(@RequestBody IntegralResDTO integralResDTO, @PathVariable Long id){
+        integralService.updateHelpDetail(integralResDTO,id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 删除积分转移
+     * @return
+     */
+    @ApiOperation("删除积分转移")
+    @DeleteMapping("/delete/{id}")
+    public String deleteHelpDetail(@PathVariable Long id){
+        integralService.deleteHelpDetail(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 获取我的待审核积分转移
+     * @return
+     */
+    @ApiOperation("获取我的待审核积分转移")
+    @GetMapping("/getMyWaitList/{pageIndex}")
+    public String getMyWaitList(@PathVariable Integer pageIndex){
+        PageInfo<IntegralReviewResDTO>  integralReviewResDTOPageInfo = integralService.getIntegralByReviewStatus(ZSYReviewStatus.PENDING.getValue(),pageIndex);
+        return ZSYResult.success().data(integralReviewResDTOPageInfo).build();
+    }
+
+    /**
+     * 获取所有待审核积分转移
+     * @return
+     */
+    @ApiOperation("获取待审核积分转移")
+    @GetMapping("/getHelpWaitList/{pageIndex}")
+    public String getHelpWaitList(@PathVariable Integer pageIndex){
+        PageInfo<IntegralReviewResDTO>  integralReviewResDTOPageInfo = integralService.getAllIntegralByReviewStatus(ZSYReviewStatus.PENDING.getValue(),pageIndex);
+        return ZSYResult.success().data(integralReviewResDTOPageInfo).build();
+    }
+
+    /**
+     * 获取审核打回积分转移
+     * @return
+     */
+    @ApiOperation("获取审核打回积分转移")
+    @GetMapping("/getRejectList/{pageIndex}")
+    public String getRejectList(@PathVariable Integer pageIndex){
+        PageInfo<IntegralReviewResDTO>  integralReviewResDTOPageInfo = integralService.getIntegralByReviewStatus(ZSYReviewStatus.REJECT.getValue(),pageIndex);
+        return ZSYResult.success().data(integralReviewResDTOPageInfo).build();
+    }
+
+    /**
+     * 获取我的审核完成积分转移
+     * @return
+     */
+    @ApiOperation("获取我的审核完成积分转移")
+    @GetMapping("/getMyReviewList/{pageIndex}")
+    public String getMyReviewList(@PathVariable Integer pageIndex){
+        PageInfo<IntegralReviewResDTO>  integralReviewResDTOPageInfo = integralService.getIntegralByReviewStatus(ZSYReviewStatus.ACCEPT.getValue(),pageIndex);
+        return ZSYResult.success().data(integralReviewResDTOPageInfo).build();
+    }
+
+    /**
+     * 获取所有审核完成积分转移
+     * @return
+     */
+    @ApiOperation("获取审核完成积分转移")
+    @GetMapping("/getReviewList/{pageIndex}")
+    public String getReviewList(@PathVariable Integer pageIndex){
+        PageInfo<IntegralReviewResDTO>  integralReviewResDTOPageInfo = integralService.getAllIntegralByReviewStatus(ZSYReviewStatus.ACCEPT.getValue(),pageIndex);
+        return ZSYResult.success().data(integralReviewResDTOPageInfo).build();
+    }
+
+    /**
+     * 审核通过积分转移
+     * @return
+     */
+    @ApiOperation("审核通过积分转移")
+    @GetMapping("/passReview/{id}")
+    public String passReview(@PathVariable Long id){
+        integralService.passReview(id);
+        return ZSYResult.success().build();
+    }
 }

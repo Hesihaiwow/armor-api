@@ -1,23 +1,21 @@
-package com.zhixinhuixue.armor.model.dto.request;
+package com.zhixinhuixue.armor.model.dto.response;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Created by Lang on 2017/8/22 0022.
+ * Created by Lang on 2017/9/12 0012.
  */
-public class IntegralResDTO {
+public class IntegralReviewResDTO {
+
+    private Long id;
 
     private Long userId;
 
-    //积分修改备注
-    @Size(min = 0,max = 100,message = "项目描述长度在{min}~{max}之间")
+    private String name;
+
     private String description;
 
-    @NotNull(message = "积分数不能为空")
     private BigDecimal integral;
 
     private Date time;
@@ -28,6 +26,14 @@ public class IntegralResDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -52,5 +58,13 @@ public class IntegralResDTO {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
