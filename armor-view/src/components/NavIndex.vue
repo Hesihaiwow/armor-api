@@ -78,21 +78,61 @@
                     <p class="mic-title">我的积分转移</p>
                     <div class="my-task-detail">
                         <el-tabs v-model="activeHelpName" @tab-click="handleClick">
-                            <el-tab-pane label="审核中" name="doing">
-                                <task-item :taskItems="task.doing" :isPrivate="true"
-                                           taskStatus="TaskDoing" @reload="reload"
-                                           :projectList="projectList"
-                                           :userList="userList"
-                                           :stageList="stageList"
-                                           :tagList="tagList"></task-item>
+                            <el-tab-pane label="审核中" name="wait">
+                                <!--@click="reviewDetail(help)"-->
+                                <div class="task-lis" v-for="help in review.wait" >
+                                    <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                                    <div class="main-task-detail">
+                                        <div class="task-name"><span>{{help.description}}</span></div>
+                                        <div class="task-state">
+                                            <i class="iconfont icon-person" ></i>
+                                            <span class="task-end blue">{{help.time| formatDate }}</span>
+                                            <span class="task-time-opt"><i class="el-icon-edit" @click="editHelpDetail(help)"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="task-username">{{help.name.split(",")[0]}}</div>
+                                </div>
+                                <div class="pagination" v-show="this.review.wait.length>0">
+                                    <el-pagination
+                                            @current-change="handleWaitPage"
+                                            :current-page.sync="waitPage.pageNum"
+                                            :page-size="waitPage.pageSize"
+                                            :layout="waitPageLayout"
+                                            :total="waitPage.total">
+                                    </el-pagination>
+                                </div>
+                                <div v-show="review.wait.length==0" class="empty">
+                                    <h2>暂无数据</h2>
+                                </div>
                             </el-tab-pane>
-                            <el-tab-pane label="已完成" name="completed">
-                                <task-item :taskItems="task.finished" :isPrivate="true"
-                                           taskStatus="TaskDoing" @reload="reload"
-                                           :projectList="projectList"
-                                           :userList="userList"
-                                           :stageList="stageList"
-                                           :tagList="tagList"></task-item>
+                            <el-tab-pane label="完成审核" name="review">
+                                <div class="task-lis" v-for="help in review.review" @click="reviewDetail(help)">
+                                    <div class="head-img" ><img src="../assets/img/auditSuccess.png" ></div>
+                                    <div class="main-task-detail">
+                                        <div class="task-name"><span>{{help.description}}</span></div>
+                                        <div class="task-state">
+                                            <i class="iconfont icon-person" ></i>
+                                            <span class="task-end blue">{{help.time| formatDate }}</span>
+                                            <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="task-data-show">
+                                        <span class="task-score">-{{help.integral}}</span>
+                                    </div>
+                                    <div class="task-username">{{help.name.split(",")[0]}}</div>
+                                </div>
+                                <div class="pagination" v-show="this.review.review.length>0">
+                                    <el-pagination
+                                            @current-change="handleReviewPage"
+                                            :current-page.sync="reviewPage.pageNum"
+                                            :page-size="reviewPage.pageSize"
+                                            :layout="reviewPageLayout"
+                                            :total="reviewPage.total">
+                                    </el-pagination>
+                                </div>
+                                <div v-show="review.review.length==0" class="empty">
+                                    <h2>暂无数据</h2>
+                                </div>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
@@ -123,6 +163,64 @@
                                     :layout="auditSuccessPageLayout"
                                     :total="auditSuccessPage.total">
                             </el-pagination>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
+                <p class="mic-title">积分求助转移</p>
+                <el-tabs v-model="auditHelpTabsActiveName" @tab-click="handleClick">
+                    <el-tab-pane label="待审核" name="wait">
+                        <div class="task-lis" v-for="help in review.wait" @click="reviewDetail(help)">
+                            <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                            <div class="main-task-detail">
+                                <div class="task-name"><span>{{help.description}}</span></div>
+                                <div class="task-state">
+                                    <i class="iconfont icon-person" ></i>
+                                    <span class="task-end blue">{{help.time| formatDate }}</span>
+                                    <span class="task-time-opt"><i class="el-icon-edit" ></i></span>
+                                </div>
+                            </div>
+                            <div class="task-username">{{help.name.split(",")[1]}}</div>
+                        </div>
+                        <div class="pagination" v-show="this.review.wait.length>0">
+                            <el-pagination
+                                    @current-change="handleWaitPage"
+                                    :current-page.sync="waitPage.pageNum"
+                                    :page-size="waitPage.pageSize"
+                                    :layout="waitPageLayout"
+                                    :total="waitPage.total">
+                            </el-pagination>
+                        </div>
+                        <div v-show="review.wait.length==0" class="empty">
+                            <h2>暂无数据</h2>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="审核通过" name="completed">
+                        <div class="task-lis" v-for="help in review.review" @click="reviewDetail(help)">
+                            <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                            <div class="main-task-detail">
+                                <div class="task-name"><span>{{help.description}}</span></div>
+                                <div class="task-state">
+                                    <i class="iconfont icon-person" ></i>
+                                    <span class="task-end blue">{{help.time| formatDate }}</span>
+                                    <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
+                                </div>
+                            </div>
+                            <div class="task-data-show">
+                                <span class="task-score">{{help.integral}}</span>
+                            </div>
+                            <div class="task-username">{{help.name.split(",")[1]}}</div>
+                        </div>
+                        <div class="pagination" v-show="this.review.review.length>0">
+                            <el-pagination
+                                    @current-change="handleWaitPage"
+                                    :current-page.sync="reviewPage.pageNum"
+                                    :page-size="reviewPage.pageSize"
+                                    :layout="waitPageLayout"
+                                    :total="reviewPage.total">
+                            </el-pagination>
+                        </div>
+                        <div v-show="review.review.length==0" class="empty">
+                            <h2>暂无数据</h2>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -204,8 +302,8 @@
                 <el-form-item label="任务详情" prop="description">
                     <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item label="求助人" prop="user">
-                    <el-select v-model="helpForm.userId" placeholder="成员列表">
+                <el-form-item label="求助目标" prop="user">
+                    <el-select v-model="helpForm.userId" placeholder="成员列表" style="!important">
                         <el-option
                                 v-for="item in userList"
                                 :key="item.id"
@@ -214,10 +312,12 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="发起者" prop="name" v-show="userRole==0">{{helpForm.name}}</el-form-item>
+                <el-form-item label="原求助目标" prop="username" v-show="userRole==0">{{helpForm.username}}</el-form-item>
                 <el-form-item label="任务积分" prop="integral">
                     <el-input type="input" v-model="helpForm.integral" style="width:100px"></el-input>
                 </el-form-item>
-                <el-form-item label="转移日期" prop="time">
+                <el-form-item label="转移日期" prop="time" style="!important">
                     <el-date-picker
                             v-model="helpForm.time"
                             type="datetime"
@@ -227,9 +327,33 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="saveHelpInfo('helpForm')">立即创建</el-button>
-        <el-button @click="editHelpVisible = false">取 消</el-button>
-      </span>
+                <el-button type="primary" @click="saveHelpInfo('helpForm')" v-show="!editHelpDetailVisible">立即创建</el-button>
+                <el-button type="primary" @click="saveHelpInfo('helpForm')" v-show="editHelpDetailVisible">立即更新</el-button>
+                <el-button @click="editHelpVisible = false,clearHelpForm()">取 消</el-button>
+              </span>
+        </el-dialog>
+        <el-dialog title="积分求助转移详情" :visible.sync="helpDetailVisible" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+            <el-form>
+                <el-form-item class="task-form" label="任务描述：">{{helpDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="发起者：">{{helpDetail.name}}</el-form-item>
+                <el-form-item class="task-form" label="求助目标：">{{helpDetail.username}}</el-form-item>
+                <el-form-item class="task-form" label="时间：">{{helpDetail.time | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="积分：">{{helpDetail.integral}}分</el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer" >
+                <div v-show="userRole==0&&auditHelpTabsActiveName=='wait'">
+                    <el-tooltip content="删除该任务" placement="top">
+                          <el-button type="danger" icon="delete" @click="deleteHelp(helpDetail.id)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="编辑该任务" placement="top">
+                     <el-button type="primary" icon="edit" @click="editHelpDetail(helpDetail)"></el-button>
+                    </el-tooltip>
+                    <el-button type="success" @click="acceptHelpChange(helpDetail.id)">审核通过</el-button>
+                </div>
+                <div v-show="auditHelpTabsActiveName!='wait'">
+                    <el-button type="success" @click="helpDetailVisible =false">已完成</el-button>
+                </div>
+            </span>
         </el-dialog>
     </div>
 </template>
@@ -242,6 +366,7 @@
     import moment from 'moment';
     import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
     import { Message } from 'element-ui';
+    import ElDialog from "../../node_modules/element-ui/packages/dialog/src/component";
 
     moment.locale('zh-cn');
 
@@ -258,9 +383,12 @@
             return {
                 activeName: 'doing',
                 assessActiveName: 'waitAssess',
-                activeHelpName: 'doing',
+                activeHelpName: 'wait',
                 auditTabsActiveName: 'wait',
+                auditHelpTabsActiveName:'wait',
+                editHelpDetailVisible:false,
                 editHelpVisible: false,
+                helpDetailVisible:false,
                 createTaskVisible: false,
                 commentedPage: {
                     pageNum: 1,
@@ -273,6 +401,16 @@
                     total: 0,
                 },
                 auditSuccessPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
+                waitPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
+                reviewPage: {
                     pageNum: 1,
                     pageSize: 5,
                     total: 0,
@@ -294,10 +432,22 @@
                     stageId: ''
                 },
                 helpForm: {
+                    id :'',
                     description: '',
                     time: '',
                     userId: '',
-                    integral: ''
+                    integral: '',
+                    name: '',
+                    username: ''
+                },
+                helpDetail: {
+                    id:'',
+                    description: '',
+                    time: '',
+                    userId: '',
+                    integral: '',
+                    name: '',
+                    username: ''
                 },
                 rules: {
                     projectId: [
@@ -336,6 +486,11 @@
                     waitAudit: [],
                     auditSuccess: [],
                     applyFail: []
+                },
+                review:{
+                    wait: [],
+                    reject: [],
+                    review: []
                 },
                 projectList: [],
                 stageList: [],
@@ -400,7 +555,25 @@
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
+            },
+            waitPageLayout() {
+                if (this.waitPage.total>5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            reviewPageLayout() {
+                if (this.reviewPage.total>5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
             }
+        },
+        filters: {
+            formatDate: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY年MM月DD日');
+            },
         },
         methods: {
             handleClick(tab, event) {
@@ -426,6 +599,12 @@
                 if (this.userRole === 0) {
                     // 所有审核通过的数据
                     this.fetchTaskAuditSuccess()
+                    //待审核的积分转移，审核通过的积分转移
+                    this.fetchHelpWaitAdmin()
+                    this.fetchHelpReviewAdmin()
+                }else{
+                    this.fetchMyHelpWaitList();
+                    this.fetchMyReviewSuccess();
                 }
             },
             saveTaskInfo(formName) {
@@ -508,30 +687,6 @@
                     this.integralItem = items;
                 })
             },
-            //保存用户转移积分
-            saveHelpInfo(helpForm){
-                var param = this.helpForm;
-                var help = {
-                    userId: param.userId,
-                    time:  moment(param.time).format('YYYY-MM-DD HH:mm:ss'),
-                    description: param.description.trim(),
-                    integral: param.integral
-                };
-                this.$refs[helpForm].validate((valid) => {
-                    if (valid) {
-                        if (!this.isDecimal(param.integral)) {
-                            Message.error("积分格式错误");
-                            return false;
-                        }
-                        http.zsyPostHttp('/integral/add', help, (res) => {
-                            Message.success("转移积分添加成功，请等待审核");
-                            this.editHelpVisible = false;
-                        });
-                    } else {
-                        return false;
-                    }
-                });
-            },
             // 获取用户正在进行的任务
             fetchTaskDoing() {
                 let vm = this
@@ -595,6 +750,147 @@
                     })
                     vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data))
                 })
+            },
+            //保存用户转移积分
+            saveHelpInfo(helpForm){
+                var param = this.helpForm;
+                var help = {
+                    userId: param.userId,
+                    time:  moment(param.time).format('YYYY-MM-DD HH:mm:ss'),
+                    description: param.description.trim(),
+                    integral: param.integral
+                };
+                this.$refs[helpForm].validate((valid) => {
+                    if (valid) {
+                        if (!this.isDecimal(param.integral)) {
+                            Message.error("积分格式错误");
+                            return false;
+                        }
+                        if(this.helpForm.id!=''){
+                            http.zsyPostHttp('/integral/editHelpDetail/'+this.helpForm.id, help, (res) => {
+                                Message.success("转移积分更新成功，请等待审核");
+                                this.editHelpVisible = false;
+                                this.clearHelpForm();
+                            });
+                        }else{
+                            http.zsyPostHttp('/integral/add', help, (res) => {
+                                Message.success("转移积分添加成功，请等待审核");
+                                this.editHelpVisible = false;
+                                this.clearHelpForm();
+                            });
+                        }
+                        this.reload();
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            //获取我的待审核的积分转移
+            fetchMyHelpWaitList(){
+                http.zsyGetHttp('/integral/getMyWaitList/'+this.waitPage.pageNum, {}, (resp) => {
+                    this.review.wait = resp.data.list;
+                    this.waitPage.total = resp.data.total;
+                })
+            },
+            //所有待审核的积分转移
+            fetchHelpWaitAdmin(){
+                http.zsyGetHttp('/integral/getHelpWaitList/'+this.waitPage.pageNum, {}, (resp) => {
+                    this.review.wait = resp.data.list;
+                    this.waitPage.total = resp.data.total;
+                })
+            },
+            fetchHelpReviewAdmin(){
+                http.zsyGetHttp('/integral/getReviewList/'+this.reviewPage.pageNum, {}, (resp) => {
+                    this.review.review = resp.data.list;
+                    this.reviewPage.total = resp.data.total;
+                })
+            },
+            // 获取所有我的审核通过的任务
+            fetchMyReviewSuccess() {
+                http.zsyGetHttp(`/integral/getMyReviewList/`+this.reviewPage.pageNum, {}, (resp) => {
+                    this.review.review = resp.data.list;
+                    this.reviewPage.total = resp.data.total;
+                })
+            },
+            //删除积分求助
+            deleteHelp(id){
+                this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyDeleteHttp(`/integral/delete/`+id, {}, (resp) => {
+                        Message.success("删除成功");
+                        this.reload();
+                        this.helpDetailVisible = false;
+                    })
+                }).catch(() => {
+                });
+            },
+            //审核通过积分求助
+            acceptHelpChange(id){
+                this.$confirm('确认通过?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyGetHttp(`/integral/passReview/`+id, {}, (resp) => {
+                        Message.success("审核成功");
+                        this.reload();
+                        this.helpDetailVisible = false;
+                    })
+                }).catch(() => {
+                });
+            },
+            //积分转移详情
+            reviewDetail(help){
+                this.helpDetailVisible=true ;
+                this.helpDetail.time = moment(help.time).toDate();
+                this.helpDetail.integral = help.integral;
+                this.helpDetail.description = help.description;
+                this.helpDetail.name = help.name.split(",")[1];
+                this.helpDetail.username = help.name.split(",")[0];
+                this.helpDetail.id = help.id;
+                this.helpDetail.userId = help.userId;
+            },
+            editHelpDetail(help){
+                this.editHelpDetailVisible = true;
+                this.helpForm.description = help.description;
+                this.helpForm.integral = help.integral.toString();
+                this.helpForm.time = moment(help.time).toDate();
+                this.helpForm.id = help.id;
+                this.helpForm.name = help.name;
+                this.helpForm.userId = help.userId
+                this.helpForm.username = help.username;
+                this.editHelpVisible = true;
+                this.helpDetailVisible = false;
+            },
+            clearHelpForm(){
+                this.helpForm.integral = '';
+                this.helpForm.time = '';
+                this.helpForm.description='';
+                this.helpForm.userId='';
+                this.helpForm.id='';
+                this.helpForm.username='';
+                this.helpForm.name='';
+                this.editHelpDetailVisible = false;
+            },
+            //待审核积分转移页
+            handleWaitPage(currentPage){
+                this.waitPage.pageNum = currentPage;
+                if(this.userRole>0){
+                    this.fetchMyHelpWaitList();
+                }else{
+                    this.fetchHelpWaitAdmin();
+                }
+            },
+            handleReviewPage(currentPage){
+                this.reviewPage.pageNum = currentPage;
+                if(this.userRole>0){
+                    this.fetchMyReviewSuccess();
+                }else{
+                    this.fetchHelpReviewAdmin();
+                }
             },
             fetchProjectList() {
                 let vm = this
@@ -672,6 +968,7 @@
             }
         },
         components: {
+            ElDialog,
             ElTabPane,
             TaskItem: TaskItem
         },
@@ -767,5 +1064,97 @@
         text-align: center;
         font-size: 14px;
         cursor: pointer;
+    }
+
+    /*积分转移审核样式*/
+    .main-task-detail {
+        flex: 1;
+        -webkit-flex: 1;
+        -moz-flex: 1;
+        -ms-flex: 1;
+        -o-flex: 1;
+    }
+
+    .task-lis {
+        background: #fff;
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        margin-bottom: 20px;
+        margin: 10px 0 20px;
+        cursor: pointer;
+    }
+
+    .task-lis:hover {
+        box-shadow: 0 0 10px #ccc;
+    }
+
+    .head-img {
+        width: 60px;
+        height: 60px;
+        /*border-radius: 50%;*/
+        overflow: hidden;
+        margin: 16px;
+    }
+    .task-name {
+        margin-top: 18px;
+        font-size: 16px;
+    }
+
+    .task-end.blue {
+        background: #36A8FF;
+        padding: 2px 10px;
+        color: #fff;
+    }
+
+    .task-state {
+        margin-top: 10px;
+    }
+
+    .task-state .iconfont {
+        margin-right: 5px;
+    }
+
+    .task-username {
+        height: 40px;
+        background: #69C8FA;
+        border-radius: 50%;
+        line-height: 40px;
+        text-align: center;
+        color: #fff;
+        cursor: pointer;
+        /*z-index: 100;*/
+        margin-top: 24px;
+        margin-right: 20px;
+        width: 40px;
+    }
+
+    .task-time-opt {
+        color: #36A8FF;
+        font-size: 20px;
+        margin-left: 16px;
+        cursor: pointer;
+    }
+
+    .task-data-show > span {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .task-data-show {
+        margin: 0 40px 0 20px;
+    }
+
+    .task-score {
+        font-size: 18px;
+        line-height: 92px;
+    }
+
+    .empty {
+        text-align: center;
+        font-size: 16px;
+        padding: 20px;
     }
 </style>

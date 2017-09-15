@@ -65,4 +65,47 @@ public interface IZSYUserIntegralMapper {
      */
     int deleteUserIntegral(@Param("taskId") Long taskId, @Param("userId")Long userId);
 
+    /**
+     * 根据审核状态查询我的转移积分
+     * @param userId
+     * @param status
+     * @return
+     */
+    Page<UserIntegralInfoBO> getIntegralByReviewStatus(@Param("userId") Long userId, @Param("status")int status);
+
+    /**
+     * 根据审核状态查询所有转移积分
+     * @param status
+     * @return
+     */
+    Page<UserIntegralInfoBO> getAllIntegralByReviewStatus(int status);
+
+    /**
+     *  获取积分求助转移详情
+     * @param id
+     * @return
+     */
+    UserIntegral getHelpDetail(Long id);
+
+    /**
+     * 删除积分求助转移
+     * @param id
+     * @return
+     */
+    int deleteIntegralById(Long id);
+
+    /**
+     * 编辑积分求助转移
+     * @param userIntegral
+     * @return
+     */
+    int updateIntegralById(UserIntegral userIntegral);
+
+    /**
+     * 审核积分通过
+     * @param id
+     * @return
+     */
+    int updateReview(Long id);
+
 }
