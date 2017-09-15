@@ -20,6 +20,8 @@ public class IntegralReviewResDTO {
 
     private Date time;
 
+    private String avatarUrl;
+
     public Long getUserId() {
         return userId;
     }
@@ -66,5 +68,13 @@ public class IntegralReviewResDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

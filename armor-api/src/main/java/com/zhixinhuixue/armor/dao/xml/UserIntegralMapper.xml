@@ -15,6 +15,7 @@
 
   <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO" extends="BaseResultMap">
       <result column="name" jdbcType="VARCHAR" property="name" />
+      <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
   </resultMap>
 
   <resultMap id="IntegralHistory" type="com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO" extends="BaseResultMap">
@@ -89,7 +90,7 @@
   </select>
   <!-- 根据审核状态查询转移积分-->
   <select id="getIntegralByReviewStatus" parameterType="Map" resultMap="BaseMap">
-    SELECT a.id, a.user_id, a.create_time, a.description, a.integral, CONCAT(a.name, ",", u.name)
+    SELECT a.id, a.user_id, a.create_time, a.description, a.integral, u.avatar_url, CONCAT(a.name, ",", u.name)
     AS name FROM (
     SELECT i.id, i.user_id, i.create_time, i.description, i.integral, u.name ,i.create_by
     FROM user_integral i, `user` u

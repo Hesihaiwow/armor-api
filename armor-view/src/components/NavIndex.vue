@@ -85,7 +85,7 @@
                                     <div class="main-task-detail">
                                         <div class="task-name"><span>{{help.description}}</span></div>
                                         <div class="task-state">
-                                            <i class="iconfont icon-person" ></i>
+                                            <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
                                             <span class="task-end blue">{{help.time| formatDate }}</span>
                                             <span class="task-time-opt"><i class="el-icon-edit" @click="editHelpDetail(help)"></i></span>
                                         </div>
@@ -93,7 +93,10 @@
                                     <div class="task-data-show">
                                         <span class="task-score">求助转移：{{help.integral}} 分</span>
                                     </div>
-                                    <div class="task-username">{{help.name.split(",")[0]}}</div>
+                                    <div class="task-username">
+                                        <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''" :src="help.avatarUrl" >
+                                        <span v-else="">{{help.name.split(",")[1]}}</span>
+                                    </div>
                                 </div>
                                 <div class="pagination" v-show="this.review.wait.length>0">
                                     <el-pagination
@@ -114,7 +117,7 @@
                                     <div class="main-task-detail">
                                         <div class="task-name"><span>{{help.description}}</span></div>
                                         <div class="task-state">
-                                            <i class="iconfont icon-person" ></i>
+                                            <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
                                             <span class="task-end blue">{{help.time| formatDate }}</span>
                                             <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
                                         </div>
@@ -122,7 +125,10 @@
                                     <div class="task-data-show">
                                         <span class="task-score">转移完成：-{{help.integral}} 分</span>
                                     </div>
-                                    <div class="task-username">{{help.name.split(",")[0]}}</div>
+                                    <div class="task-username">
+                                        <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''" :src="help.avatarUrl" >
+                                        <span v-else="">{{help.name.split(",")[1]}}</span>
+                                    </div>
                                 </div>
                                 <div class="pagination" v-show="this.review.review.length>0">
                                     <el-pagination
@@ -177,7 +183,7 @@
                             <div class="main-task-detail">
                                 <div class="task-name"><span>{{help.description}}</span></div>
                                 <div class="task-state">
-                                    <i class="iconfont icon-person" ></i>
+                                    <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
                                     <span class="task-end blue">{{help.time| formatDate }}</span>
                                     <span class="task-time-opt"><i class="el-icon-edit" ></i></span>
                                 </div>
@@ -185,7 +191,10 @@
                             <div class="task-data-show">
                                 <span class="task-score">求助转移：{{help.integral}} 分</span>
                             </div>
-                            <div class="task-username">{{help.name.split(",")[1]}}</div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''" :src="help.avatarUrl" >
+                                <span v-else="">{{help.name.split(",")[1]}}</span>
+                            </div>
                         </div>
                         <div class="pagination" v-show="this.review.wait.length>0">
                             <el-pagination
@@ -206,7 +215,7 @@
                             <div class="main-task-detail">
                                 <div class="task-name"><span>{{help.description}}</span></div>
                                 <div class="task-state">
-                                    <i class="iconfont icon-person" ></i>
+                                    <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
                                     <span class="task-end blue">{{help.time| formatDate }}</span>
                                     <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
                                 </div>
@@ -214,7 +223,10 @@
                             <div class="task-data-show">
                                 <span class="task-score">转移完成：-{{help.integral}} 分</span>
                             </div>
-                            <div class="task-username">{{help.name.split(",")[1]}}</div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''" :src="help.avatarUrl" >
+                                <span v-else="">{{help.name.split(",")[1]}}</span>
+                            </div>
                         </div>
                         <div class="pagination" v-show="this.review.review.length>0">
                             <el-pagination
@@ -309,7 +321,7 @@
                     <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
                 </el-form-item>
                 <el-form-item label="求助目标" prop="user">
-                    <el-select v-model="helpForm.userId" placeholder="成员列表" style="!important">
+                    <el-select v-model="helpForm.userId" placeholder="成员列表" >
                         <el-option
                                 v-for="item in userList"
                                 :key="item.id"
