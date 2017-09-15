@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.UploadAvatarReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
@@ -129,5 +130,13 @@ public class ZSYUserController extends ZSYController {
     public String modifyAvatar(@Valid @RequestBody UploadAvatarReqDTO uploadAvatarReqDTO) {
         userService.modifyUserAvatar(uploadAvatarReqDTO);
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("获取我的资料")
+    @ApiImplicitParam(name = "userId", value = "用户ID", required = true, paramType = "path", dataType = "long")
+    @GetMapping("/myProfile")
+    public String getUser() {
+        UserResDTO userResDTO = userService.getUserById(ZSYTokenRequestContext.get().getUserId());
+        return ZSYResult.success().data(userResDTO).build();
     }
 }

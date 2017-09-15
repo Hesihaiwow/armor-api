@@ -3,7 +3,9 @@
         <div class="nav-top-bg">
             <div class="ntb-con">
                 <div class="logo"><img src="../assets/img/site-icon.png" alt=""></div>
-                <div class="personal-name" @click.prevent.stop="personalOpt"> {{getUserName}}
+                <div class="personal-name" @click.prevent.stop="personalOpt">
+                    <img v-if="avatarUrl!=''" :src="avatarUrl" alt="" class="personal-headimg">
+                    <span v-else>{{getUserName}}</span>
                     <div class="personal-opt" v-show="showPerOpt">
                         <div class="alter-pwd" @click.stop.prevent="alterPwd">修改密码</div>
                         <div class="alter-avatar" @click.stop.prevent="alterAvatar">修改头像</div>
@@ -36,6 +38,7 @@
     import NavIndex from './NavIndex'
     import AlterPassword from './AlterPassword'
     import Helper from "../lib/Helper";
+    import Http from "../lib/Http";
     import IntegralHistory from './IntegralHistory'
     import Stats from './Stats'
     import UploadAvatar from './UploadAvatar.vue'
@@ -73,10 +76,12 @@
                 oldPwd: '',
                 newPwd: '',
                 sureNewPwd: '',
-                showAlterPwd: false
+                showAlterPwd: false,
+                avatarUrl:''
             };
         },
         created() {
+            this.fetchMyProfile();
             this.activeName = 'navIndex';
             //this.$router.push(`/index/navIndex`);
         },
@@ -141,8 +146,15 @@
                 // 修改头像
                 this.showPerOpt = false;
                 this.$refs.uploadAvatar.show();
-
             },
+            fetchMyProfile(){
+                // 获取我的个人信息
+                Http.zsyGetHttp('/user/myProfile',{},(res)=>{
+                    if (res.data.avatarUrl && res.data.avatarUrl!='') {
+                        this.avatarUrl = res.data.avatarUrl
+                    }
+                })
+            }
         },
         components: {
             Task: Task,
@@ -197,6 +209,12 @@
         color: #fff;
         cursor: pointer;
         z-index: 100;
+    }
+
+    .personal-headimg{
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
     }
 
     .personal-opt {

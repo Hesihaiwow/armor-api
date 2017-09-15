@@ -73,6 +73,7 @@
                 let userId = Helper.decodeToken().userId;
                 Http.zsyPutHttp(`/user/modifyAvatar`, {userId: userId, url: this.imageUrl}, (res) => {
                     this.$message.success('更换头像成功');
+                    this.$router.go(0);
                 })
             }
         }
