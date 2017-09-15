@@ -148,7 +148,9 @@
       }
     },
     beforeMount: function (){
-        this.integralHistory(1)
+        this.integralHistory(1);
+        //选中任务tab
+        this.$root.eventBus.$emit("handleTabSelected", "intergral");
     },
     methods:{
       commentDetail(index,rows){
