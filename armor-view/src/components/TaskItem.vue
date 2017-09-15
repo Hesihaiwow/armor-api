@@ -63,10 +63,6 @@
                 <img src="../assets/img/u431.png" alt="">
                 <span class="mark-msg">{{task.projectName}}</span>
             </div>
-        <!--    <div class="task-avatar" v-if="task.avatarUrl && task.avatarUrl!=''">
-                <img :src="task.avatarUrl" alt="">
-            </div>
-            <div class="task-username" v-else>{{task.userName}}</div>-->
             <div class="task-username">
                 <img class="task-avatar" v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
                 <span v-else="">{{task.userName}}</span>

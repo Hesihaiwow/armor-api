@@ -195,7 +195,24 @@
                 and t1.create_time &lt;= #{endTime}
             </if>
         </where>
-        order by t1.end_time ASC
+       <choose>
+           <when test="sort!=null and sort !='' and sort==1">
+               order by t1.priority DESC
+           </when>
+           <when test="sort!=null and sort !='' and sort==2">
+               order by t1.end_time ASC
+           </when>
+           <when test="sort!=null and sort !='' and sort==3">
+               order by t1.complete_time ASC
+           </when>
+           <when test="sort!=null and sort !='' and sort==4">
+               order by t1.create_time DESC
+           </when>
+           <otherwise>
+               order by t1.end_time ASC
+           </otherwise>
+       </choose>
+
     </select>
 
     <!-- 查询已完成的任务用户（阶段） -->

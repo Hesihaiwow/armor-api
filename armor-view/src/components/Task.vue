@@ -60,6 +60,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="task-top-list  clearfix">
+                        <span class="ttl-name fl">排序&nbsp;</span>
+                        <div class="fl tag-name clearfix">
+                            <el-tooltip :content="item.name+item.tips" :enterable="false" placement="top" v-for="item in sortList" :key="item.id">
+                                <el-button class="fl" size="small" @click="choiceSort(item.id,$event)" :class="form.sort==item.id?'active':''">{{item.name}}
+                                </el-button>
+                            </el-tooltip>
+
+                        </div>
+                    </div>
                     <transition name="filter">
                         <div v-show="open">
                             <div class="task-top-list clearfix">
@@ -139,6 +149,7 @@
                 open: false,
                 btnValStatus: 1, /*1是列表模式，2是看板模式*/
                 loading: true,
+                sortList:[{id:1,name:'优先级',tips:'排序'},{id:2,name:'截止时间',tips:'升序'},{id:3,name:'完成时间',tips:'升序'},{id:4,name:'创建时间',tips:'降序'}],
                 timeRange: '',
                 projectList: [],
                 userList: [],
@@ -167,7 +178,8 @@
                     status: 1,
                     priority: '',
                     beginTime: '',
-                    endTime: ''
+                    endTime: '',
+                    sort:'2'
                 }, pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -261,7 +273,6 @@
                 this.open = !this.open;
             },
             addFormTagId(tagId, num, $event) {
-
                 if (this.hasClass($event.currentTarget, 'active')) {
                     this.removeClass($event.currentTarget, 'active');
                     if (num == 1) {
@@ -277,8 +288,14 @@
                         this.form.stageId.push(tagId);
                     }
                 }
-                console.log(this.form.tagId);
-                console.log(this.form.stageId);
+            },
+            /** 排序方式**/
+            choiceSort(id, $event){
+                if (id == this.form.sort) {
+                    this.form.sort= '';
+                } else {
+                    this.form.sort= id;
+                }
             },
             hasClass(obj, cls) {
                 return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
@@ -379,7 +396,8 @@
                 if (this.form.tagId.length > 0) {
                     param['tagId'] = this.form.tagId
                 }
-                param['type'] = this.form.type
+                param['type'] = this.form.type;
+                param['sort'] = this.form.sort;
                 http.zsyPostHttp('/task/public/master/all', param, (resp) => {
                     const list = resp.data.list
                     list.forEach((el) => {

@@ -14,8 +14,9 @@
                             <div style="font-size: 16px;padding: 12px 0">{{task.name}}</div>
                             <span class="tips" :class="task.endColor">{{task.endText}}</span>
                         </div>
-                        <div class="master-info fr">
-                            {{task.userName}}
+                        <div class="master-info fr ellipsis">
+                            <img v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
+                            <span v-else="">{{task.userName}}</span>
                         </div>
                     </li>
                 </ul>
@@ -258,11 +259,11 @@
 
                         }
                         .master-info {
-                            /* img {
+                             img {
                                  width: 40px;
                                  height: 40px;
                                  border-radius: 50%;
-                             }*/
+                             }
                             height: 40px;
                             background: #69C8FA;
                             border-radius: 50%;

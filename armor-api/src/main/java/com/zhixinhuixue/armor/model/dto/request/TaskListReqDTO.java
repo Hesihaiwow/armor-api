@@ -19,8 +19,8 @@ public class TaskListReqDTO {
     private Integer status;
     private Date beginTime;
     private Date endTime;
-
     private Long taskId;
+    private Integer sort; // 排序
 
     public String getProjectId() {
         return projectId;
@@ -116,5 +116,13 @@ public class TaskListReqDTO {
 
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 }
