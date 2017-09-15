@@ -24,6 +24,10 @@
     delete from task_comment where task_id = #{taskId}
   </delete>
 
+  <select id="selectByCreateBy" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(*) from task_comment where create_by = #{userId} and task_id = #{taskId}
+  </select>
+
   <!-- 根据task_user_id查询 -->
   <select id="selectByTaskUserId" parameterType="java.lang.Long" resultMap="TaskUserCommentResultMap">
     select t1.*,t2.`name` as commentUserName from task_comment t1
