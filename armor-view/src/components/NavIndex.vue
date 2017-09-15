@@ -379,9 +379,6 @@
     import http from '../lib/Http'
     import helper from '../lib/Helper'
     import moment from 'moment';
-    import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
-    import { Message } from 'element-ui';
-    import ElDialog from "../../node_modules/element-ui/packages/dialog/src/component";
 
     moment.locale('zh-cn');
 
@@ -987,8 +984,6 @@
             }
         },
         components: {
-            ElDialog,
-            ElTabPane,
             TaskItem: TaskItem
         },
     }

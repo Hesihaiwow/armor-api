@@ -50,15 +50,12 @@
 </template>
 <script>
     import Http from '../lib/Http'
-    import {Message} from 'element-ui';
     import moment from 'moment';
     import Helper from '../lib/Helper'
-    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
     import IntegralHistory from "./IntegralHistory";
 
     moment.locale('zh-cn');
     export default {
-        components: {ElButton},
         name: 'Intergral',
         data() {
             return {

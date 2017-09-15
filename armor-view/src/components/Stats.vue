@@ -20,12 +20,9 @@
 <script>
     import Http from '../lib/Http'
     import Helper from '../lib/Helper'
-    import { Message } from 'element-ui';
-    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
     import Task from "./Task"
 
     export default {
-        components: {ElButton},
         name: 'IntegralHistory',
         data() {
             return {
