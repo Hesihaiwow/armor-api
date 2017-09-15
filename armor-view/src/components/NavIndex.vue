@@ -315,7 +315,7 @@
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog  title="积分求助"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible" close="clearHelpForm()">
+        <el-dialog  title="积分求助转移"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible" close="clearHelpForm()">
             <el-form :model="helpForm" ref="helpForm" :rules="helpRules" label-width="80px">
                 <el-form-item label="任务详情" prop="description">
                     <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
