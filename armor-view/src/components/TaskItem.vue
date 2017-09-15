@@ -170,7 +170,7 @@
                     </el-tag>
                 </el-form-item>
                 <div class="ctpc-member-con" v-if="taskDetail.type==2">
-                    <div class="ctpc-member-list clearfix" :class="item.status>1?'done':'in'"
+                    <div class="ctpc-member-list clearfix" :class="taskStepStatus(item, taskDetail.users.length)"
                          v-for="(item,index) in taskDetail.users">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
@@ -1263,7 +1263,22 @@
                 this.modifyDescriptionVisible = false;
                 this.hideTaskDetail()
             },
-
+            taskStepStatus(item, taskUserNum){
+                console.log(item, taskUserNum)
+                const commented = item.commentNum > 0 && item.commentNum == taskUserNum - 1;
+                let className = 'in';
+                if (item.status == 1) {
+                    // 进行中
+                    className = "in"
+                }else if(item.status>1 && !commented){
+                    // 已完成未评级
+                    className = "done"
+                }else {
+                    // 已评价
+                    className = "finished"
+                }
+                return className;
+            }
         },
         created() {
             // 监听看板任务点击事件
@@ -1592,6 +1607,18 @@
         height: 12px;
         border-radius: 50%;
         background: #008000;
+        z-index: 110;
+    }
+
+    .ctpc-member-list.finished:before {
+        content: '';
+        position: absolute;
+        left: -17px;
+        top: 12px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #006699;
         z-index: 110;
     }
 
