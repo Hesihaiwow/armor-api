@@ -90,6 +90,9 @@
                                             <span class="task-time-opt"><i class="el-icon-edit" @click="editHelpDetail(help)"></i></span>
                                         </div>
                                     </div>
+                                    <div class="task-data-show">
+                                        <span class="task-score">求助转移：{{help.integral}} 分</span>
+                                    </div>
                                     <div class="task-username">{{help.name.split(",")[0]}}</div>
                                 </div>
                                 <div class="pagination" v-show="this.review.wait.length>0">
@@ -117,7 +120,7 @@
                                         </div>
                                     </div>
                                     <div class="task-data-show">
-                                        <span class="task-score">-{{help.integral}}</span>
+                                        <span class="task-score">转移完成：-{{help.integral}} 分</span>
                                     </div>
                                     <div class="task-username">{{help.name.split(",")[0]}}</div>
                                 </div>
@@ -179,6 +182,9 @@
                                     <span class="task-time-opt"><i class="el-icon-edit" ></i></span>
                                 </div>
                             </div>
+                            <div class="task-data-show">
+                                <span class="task-score">求助转移：{{help.integral}} 分</span>
+                            </div>
                             <div class="task-username">{{help.name.split(",")[1]}}</div>
                         </div>
                         <div class="pagination" v-show="this.review.wait.length>0">
@@ -206,7 +212,7 @@
                                 </div>
                             </div>
                             <div class="task-data-show">
-                                <span class="task-score">{{help.integral}}</span>
+                                <span class="task-score">转移完成：-{{help.integral}} 分</span>
                             </div>
                             <div class="task-username">{{help.name.split(",")[1]}}</div>
                         </div>
@@ -297,7 +303,7 @@
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog  title="积分求助"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible">
+        <el-dialog  title="积分求助"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible" close="clearHelpForm()">
             <el-form :model="helpForm" ref="helpForm" :rules="helpRules" label-width="80px">
                 <el-form-item label="任务详情" prop="description">
                     <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
