@@ -629,11 +629,11 @@
                         param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
                         var reg=/\d+(\.\d+)?/;
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
-                            vm.$message.error('任务时间只能为数字或者小数');
+                            vm.$message.error('工作量只能为数字或者小数');
                             return false;
                         }
                         if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
-                            vm.$message.error('任务时间请保持在1至1000范围');
+                            vm.$message.error('工作量请保持在1至1000范围');
                             return false;
                         }
                         var taskUsers = [{

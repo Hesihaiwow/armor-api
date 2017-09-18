@@ -974,6 +974,15 @@
                     this.$message.warning("请选择至少一项标签");
                     return;
                 }
+                var taskHoursVal = this.modifyPrivateTaskForm.taskHours.toString();
+                if(taskHoursVal.length!=parseFloat(taskHoursVal).toString().length||parseFloat(taskHoursVal)=="NaN"){
+                    this.$message.error('工作量只能为数字或者小数');
+                    return false;
+                }
+                if(taskHoursVal>1000||taskHoursVal<1){
+                    this.$message.error('工作量请保持在1至1000范围');
+                    return false;
+                }
                 this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
                 this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59')
                 this.modifyPrivateTaskForm.taskUsers = [{

@@ -323,6 +323,15 @@
                     this.$message.error('请将阶段填写完整');
                     return
                 }
+                var taskHoursVal = this.step.taskHours.toString();
+                if(taskHoursVal.length!=parseFloat(taskHoursVal).toString().length||parseFloat(taskHoursVal)=="NaN"){
+                    this.$message.error('工作量只能为数字或者小数');
+                    return false;
+                }
+                if(taskHoursVal>1000||taskHoursVal<1){
+                    this.$message.error('工作量请保持在1至1000范围');
+                    return false;
+                }
                 this.showAddDetail = !this.showAddDetail;
                 if (this.step.index === '') {
                     let taskUser = {}
