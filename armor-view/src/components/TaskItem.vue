@@ -475,7 +475,7 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="工作量">
-                    <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="2"></el-input>
+                    <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="任务名称">

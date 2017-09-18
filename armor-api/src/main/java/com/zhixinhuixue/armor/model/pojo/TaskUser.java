@@ -12,7 +12,7 @@ public class TaskUser {
 
     private Long userId;
 
-    private Integer taskHours;
+    private Double taskHours;
 
     private Date beginTime;
 
@@ -60,11 +60,11 @@ public class TaskUser {
         this.userId = userId;
     }
 
-    public Integer getTaskHours() {
+    public Double getTaskHours() {
         return taskHours;
     }
 
-    public void setTaskHours(Integer taskHours) {
+    public void setTaskHours(Double taskHours) {
         this.taskHours = taskHours;
     }
 

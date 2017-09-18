@@ -14,7 +14,7 @@ public class TaskUserResDTO{
 
     private Long userId;
 
-    private Integer taskHours;
+    private Double taskHours;
 
     private Date beginTime;
 
@@ -22,7 +22,7 @@ public class TaskUserResDTO{
 
     private String description;
 
-    private Integer completeHours;
+    private Double completeHours;
 
     private Date completeTime;
 
@@ -121,11 +121,11 @@ public class TaskUserResDTO{
         this.userId = userId;
     }
 
-    public Integer getTaskHours() {
+    public Double getTaskHours() {
         return taskHours;
     }
 
-    public void setTaskHours(Integer taskHours) {
+    public void setTaskHours(Double taskHours) {
         this.taskHours = taskHours;
     }
 
@@ -153,11 +153,11 @@ public class TaskUserResDTO{
         this.description = description;
     }
 
-    public Integer getCompleteHours() {
+    public Double getCompleteHours() {
         return completeHours;
     }
 
-    public void setCompleteHours(Integer completeHours) {
+    public void setCompleteHours(Double completeHours) {
         this.completeHours = completeHours;
     }
 

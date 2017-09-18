@@ -110,7 +110,7 @@
                                 <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：
                                 </div>
                                 <div class="add-member-basic-msg fl">
-                                    <input class="member-time-count" v-model="step.taskHours">工时
+                                    <input class="member-time-count" v-model="step.taskHours" :maxlength="6" style="width:80px">工时
                                 </div>
                             </div>
                             <div class="add-member-basic-list clearfix">
