@@ -15,7 +15,7 @@ public class UserIntegralHistoryBO extends UserIntegral{
 
     private String name;
 
-    private int taskHours;
+    private Double taskHours;
 
     public String getGrade() {
         return grade;
@@ -41,11 +41,11 @@ public class UserIntegralHistoryBO extends UserIntegral{
         this.name = name;
     }
 
-    public int getTaskHours() {
+    public Double getTaskHours() {
         return taskHours;
     }
 
-    public void setTaskHours(int taskHours) {
+    public void setTaskHours(Double taskHours) {
         this.taskHours = taskHours;
     }
 }

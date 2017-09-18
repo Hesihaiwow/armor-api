@@ -475,7 +475,7 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="工作量">
-                    <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="2"></el-input>
+                    <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="任务名称">
@@ -973,6 +973,15 @@
                 if (this.modifyPrivateTaskForm.tags.length == 0) {
                     this.$message.warning("请选择至少一项标签");
                     return;
+                }
+                var taskHoursVal = this.modifyPrivateTaskForm.taskHours.toString();
+                if(taskHoursVal.length!=parseFloat(taskHoursVal).toString().length||parseFloat(taskHoursVal)=="NaN"){
+                    this.$message.error('工作量只能为数字或者小数');
+                    return false;
+                }
+                if(taskHoursVal>1000||taskHoursVal<1){
+                    this.$message.error('工作量请保持在1至1000范围');
+                    return false;
                 }
                 this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
                 this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59')

@@ -50,6 +50,7 @@
     SELECT  IFNULL(sum(integral),0) FROM user_integral
     <where>
       user_id = #{id,jdbcType=BIGINT}
+        AND (review_status!=1 OR review_status is null)
         <![CDATA[AND create_time > #{startTime,jdbcType=TIMESTAMP}
                   AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
     </where>

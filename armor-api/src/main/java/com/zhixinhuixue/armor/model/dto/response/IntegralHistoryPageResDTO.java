@@ -22,7 +22,7 @@ public class IntegralHistoryPageResDTO {
 
     private int type;
 
-    private int taskHours;
+    private Double taskHours;
 
     private Long taskId;
 
@@ -85,11 +85,11 @@ public class IntegralHistoryPageResDTO {
         this.type = type;
     }
 
-    public int getTaskHours() {
+    public Double getTaskHours() {
         return taskHours;
     }
 
-    public void setTaskHours(int taskHours) {
+    public void setTaskHours(Double taskHours) {
         this.taskHours = taskHours;
     }
 

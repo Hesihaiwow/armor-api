@@ -271,7 +271,7 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="工作量" prop="taskHours">
-                    <el-input style="width:100px" v-model="taskForm.taskHours" :maxlength="2"></el-input>
+                    <el-input style="width:100px" v-model="taskForm.taskHours" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item label="任务名称" prop="taskName">
@@ -627,6 +627,15 @@
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
                         param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
+                        var reg=/\d+(\.\d+)?/;
+                        if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
+                            vm.$message.error('工作量只能为数字或者小数');
+                            return false;
+                        }
+                        if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
+                            vm.$message.error('工作量请保持在1至1000范围');
+                            return false;
+                        }
                         var taskUsers = [{
                             userId: userId,
                             taskHours: param.taskHours.trim(),

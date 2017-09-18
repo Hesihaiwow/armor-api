@@ -110,7 +110,7 @@
                                 <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：
                                 </div>
                                 <div class="add-member-basic-msg fl">
-                                    <input class="member-time-count" v-model="step.taskHours">工时
+                                    <input class="member-time-count" v-model="step.taskHours" :maxlength="6" style="width:80px">工时
                                 </div>
                             </div>
                             <div class="add-member-basic-list clearfix">
@@ -322,6 +322,15 @@
                 if (valid) {
                     this.$message.error('请将阶段填写完整');
                     return
+                }
+                var taskHoursVal = this.step.taskHours.toString();
+                if(taskHoursVal.length!=parseFloat(taskHoursVal).toString().length||parseFloat(taskHoursVal)=="NaN"){
+                    this.$message.error('工作量只能为数字或者小数');
+                    return false;
+                }
+                if(taskHoursVal>1000||taskHoursVal<1){
+                    this.$message.error('工作量请保持在1至1000范围');
+                    return false;
                 }
                 this.showAddDetail = !this.showAddDetail;
                 if (this.step.index === '') {
