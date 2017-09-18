@@ -27,7 +27,7 @@
       <el-table-column prop="origin" label="来源" align="center" width="200px" >
         <template scope="scope">
           <el-tag
-            :type="scope.row.origin === '任务系统-单人任务' ? 'warning' : 'success'&&scope.row.origin === '手动录入' ? 'primary' : 'success'"
+            :type="scope.row.origin === '任务系统-单人任务' ? 'warning' : 'success'&&scope.row.origin === '手动录入' ? 'primary' : 'success'&&scope.row.origin === '转移求助' ? 'danger' : 'success'"
             close-transition>{{scope.row.origin}}
           </el-tag>
         </template>
@@ -91,12 +91,9 @@
 <script>
   import Http from '../lib/Http'
   import Helper from '../lib/Helper'
-  import { Message } from 'element-ui';
   import moment from 'moment';
-  import ElButton from "../../node_modules/element-ui/packages/button/src/button";
 
   export default {
-    components: {ElButton},
     name: 'IntegralHistory',
     data() {
       return {
@@ -151,7 +148,9 @@
       }
     },
     beforeMount: function (){
-        this.integralHistory(1)
+        this.integralHistory(1);
+        //选中任务tab
+        this.$root.eventBus.$emit("handleTabSelected", "intergral");
     },
     methods:{
       commentDetail(index,rows){
@@ -220,17 +219,20 @@
         Http.zsyGetHttp('/integral/history/' + this.integralForm.userId + '/' + currentPage, this.queryForm, (res) => {
           let list = res.data.list;
           for (var i = 0; i < list.length; i++) {
-            if (list[i].origin != 1) {
+            if (list[i].origin == 2) {
               list[i].origin = "手动录入";
               list[i].createTime = this.localeTimeString(list[i].createTime);
-            } else {
+            } else if(list[i].origin == 3) {
+                list[i].origin = "转移求助";
                 list[i].createTime = this.localeTimeString(list[i].createTime);
-                if(list[i].type!=1){
-                  list[i].origin = "任务系统-多人任务";
-                }else{
-                  list[i].origin = "任务系统-单人任务";
-                  list[i].grade = "";
-                }
+            }else{
+                    list[i].createTime = this.localeTimeString(list[i].createTime);
+                    if(list[i].type!=1){
+                        list[i].origin = "任务系统-多人任务";
+                    }else{
+                        list[i].origin = "任务系统-单人任务";
+                        list[i].grade = "";
+                    }
             }
           }
           if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
@@ -247,11 +249,11 @@
         this.$refs[integralForm].validate((valid) => {
           if (valid) {
             if (!this.isDecimal(this.integralForm.integral)) {
-                Message.error("积分格式错误");
+                this.$message.error("积分格式错误");
                 return false;
             }
             Http.zsyPostHttp('/integral/add', this.integralForm, (res) => {
-              Message.success("积分添加成功");
+                this.$message.success("积分添加成功");
               this.editIntegralVisible = false;
               this.integralHistory(1);
               this.cancelIntegral();

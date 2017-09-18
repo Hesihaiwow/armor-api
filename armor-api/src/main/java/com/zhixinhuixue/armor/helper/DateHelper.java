@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Akuma on 16/7/25.
@@ -18,6 +15,12 @@ public class DateHelper {
      * 年-月-日 时:分:秒
      */
     public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * UTC时间格式 年-月-日 时:分:秒
+     */
+    public static final String DATETIME_UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
     /**
      * 年-月-日
      */

@@ -46,6 +46,11 @@ public class ZSYConstants {
     public static final int PAGE_SIZE = 10;
 
     /**
+     * 默认20条一页
+     */
+    public static final int PAGE_SIZE_20 = 20;
+
+    /**
      * 默认0积分
      */
     public static final int DEFAULT_INTEGRAL = 0;

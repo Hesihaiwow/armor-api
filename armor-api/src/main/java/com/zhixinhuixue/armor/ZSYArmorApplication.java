@@ -3,14 +3,17 @@ package com.zhixinhuixue.armor;
 import com.zhixinhuixue.armor.context.ZSYTokenAop;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.helper.SpringHelper;
+import com.zhixinhuixue.armor.source.FastdfsProperty;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @MapperScan("com.zhixinhuixue.armor.dao")
+@EnableConfigurationProperties({FastdfsProperty.class})
 @SpringBootApplication
 public class ZSYArmorApplication {
 

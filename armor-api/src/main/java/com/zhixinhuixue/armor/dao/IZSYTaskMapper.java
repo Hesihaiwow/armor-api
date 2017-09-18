@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.TaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskCommentBO;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
@@ -85,14 +86,12 @@ public interface IZSYTaskMapper {
 
     /**
      * 查询所有待审核任务
-     *
      * @return
      */
     List<TaskBO> selectAllWaitAudit();
 
     /**
      * 分页查询所有审核通过的任务
-     *
      * @param
      * @return
      */
@@ -100,7 +99,6 @@ public interface IZSYTaskMapper {
 
     /**
      * 查询所有未评价完的任务
-     *
      * @param userId
      * @return
      */
@@ -109,15 +107,14 @@ public interface IZSYTaskMapper {
 
     /**
      * 查询项目下是否存在任务
-     *
      * @param projectId
      * @return
      */
     int findTaskByProjectId(Long projectId);
 
     /**
-     * 查询任务成员评价
      *
+     * 查询任务成员评价
      * @param taskId
      * @param taskUserId
      * @return
@@ -125,15 +122,14 @@ public interface IZSYTaskMapper {
     List<TaskComment> findTaskComment(@Param("taskId") Long taskId, @Param("taskUserId") Long taskUserId);
 
     /**
+
      * 查询所有未结束已完成的任务
-     *
      * @return
      */
     List<Task> findNotFinishedTask();
 
     /**
      * 查询阶段任务
-     *
      * @param stageId
      * @return
      */
@@ -141,7 +137,6 @@ public interface IZSYTaskMapper {
 
     /**
      * 查询阶段内任务最后一个index
-     *
      * @param stageId
      * @return
      */
@@ -149,9 +144,9 @@ public interface IZSYTaskMapper {
 
     /**
      * 修改任务下标
-     *
      * @param stageId
      * @param sort
      */
     int updateIndexByStageId(@Param("stageId") Long stageId, @Param("sort") Integer sort);
+
 }

@@ -10,10 +10,12 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="integral" jdbcType="DECIMAL" property="integral" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="review_status" jdbcType="INTEGER" property="reviewStatus" />
   </resultMap>
 
   <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO" extends="BaseResultMap">
       <result column="name" jdbcType="VARCHAR" property="name" />
+      <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
   </resultMap>
 
   <resultMap id="IntegralHistory" type="com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO" extends="BaseResultMap">
@@ -28,7 +30,7 @@
   <!--查询查询积分列表 通过积分排列-->
   <select id="getIntegralPage" parameterType="Map"  resultMap="BaseMap">
     SELECT (@rowid := @rowid+1) AS id,integral,name,user_id FROM(
-    SELECT sum(i.integral) as integral, u.name, i.user_id
+    SELECT sum(case when (i.review_status!=1  or i.review_status is null) then i.integral else 0 end) as integral, u.name, i.user_id
     FROM user_integral i,`user` u
     <where>
       i.user_id = u.id
@@ -62,6 +64,7 @@
     LEFT JOIN task_user h ON i.task_id = h.task_id AND h.user_id = i.user_id
     <where>
       i.user_id = #{id,jdbcType=BIGINT}
+      AND (i.review_status != 1  or i.review_status is null)
       <if test="startTime!=null and startTime!=''">
         <![CDATA[AND i.create_time >= #{startTime}]]>
       </if>
@@ -78,22 +81,62 @@
     SELECT (@rowid := @rowid+1) AS id,integral,name,user_id FROM(
         SELECT sum(i.integral) as integral, u.name, i.user_id
         FROM user_integral i,`user` u
-        WHERE   i.user_id = u.id
+        WHERE   i.user_id = u.id AND (i.review_status != 1  or i.review_status is null)
         <![CDATA[ AND i.create_time > #{startTime,jdbcType=TIMESTAMP} AND i.create_time < #{endTime,jdbcType=TIMESTAMP}]]>
           GROUP BY i.user_id
           ORDER BY integral DESC)as a,
         (SELECT (@rowid:=0))as b )as c
     where user_id = #{userId,jdbcType=BIGINT}
   </select>
+  <!-- 根据审核状态查询转移积分-->
+  <select id="getIntegralByReviewStatus" parameterType="Map" resultMap="BaseMap">
+    SELECT a.id, a.user_id, a.create_time, a.description, a.integral, u.avatar_url, CONCAT(a.name, ",", u.name)
+    AS name FROM (
+    SELECT i.id, i.user_id, i.create_time, i.description, i.integral, u.name ,i.create_by
+    FROM user_integral i, `user` u
+    WHERE i.review_status = #{status,jdbcType=INTEGER}
+    AND u.id = i.user_id
+    <if test="userId!=null">
+     AND i.create_by =#{userId,jdbcType=BIGINT}
+    </if>
+    ) a JOIN user u
+    on u.id = a.create_by
+  </select>
+
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserIntegral">
     insert into user_integral (id, task_id, user_id,
-    integral, create_time, origin, create_by, description)
+    integral, create_time, origin,
+    create_by, description, review_status)
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
-    #{integral,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{origin,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR})
+    #{integral,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{origin,jdbcType=INTEGER},
+    #{createBy,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, #{reviewStatus,jdbcType=INTEGER})
   </insert>
   <!-- 删除积分 -->
   <delete id="deleteUserIntegral">
     delete from user_integral where task_id=#{taskId} and user_id = #{userId}
   </delete>
+
+  <!--获取积分求助转移详情 -->
+  <select id="getHelpDetail" resultMap="BaseResultMap">
+    SELECT * FROM user_integral i WHERE i.id = #{id}
+  </select>
+  <!--删除积分求助转移 -->
+  <delete id="deleteIntegralById">
+    DELETE  FROM user_integral WHERE id = #{id}
+  </delete>
+  <!--编辑积分求助转移 -->
+  <update id="updateIntegralById">
+    UPDATE user_integral
+    SET  task_id= #{taskId,jdbcType=BIGINT}, user_id= #{userId,jdbcType=BIGINT},
+      integral= #{integral,jdbcType=DECIMAL},description= #{description,jdbcType=VARCHAR}, create_time= #{createTime,jdbcType=TIMESTAMP}
+    WHERE id=#{id,jdbcType=BIGINT};
+  </update>
+
+  <!--审核积分通过 -->
+  <update id="updateReview">
+    UPDATE user_integral
+    SET  review_status= 3
+    WHERE id=#{id,jdbcType=BIGINT};
+  </update>
 
 </mapper>

@@ -30,3 +30,13 @@ jwt:
   issuer: xueping.com
   secret: 86a1e6b06a8e4ee29285158943931e9d
   exp: 360
+
+#FASTDFS服务
+fastdfs:
+  connectTimeout: 60
+  networkTimeout : 120
+  charset : UTF-8
+  trackerHttpPort : 80
+  antiStealToken : false
+  trackerServer : 192.168.1.252:22122
+  domain: http://fdfs.dev.xueping.com

@@ -31,6 +31,8 @@ public class User {
 
     private Integer userRole;
 
+    private String avatarUrl;
+
     public Long getId() {
         return id;
     }
@@ -133,5 +135,13 @@ public class User {
 
     public void setUserRole(Integer userRole) {
         this.userRole = userRole;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

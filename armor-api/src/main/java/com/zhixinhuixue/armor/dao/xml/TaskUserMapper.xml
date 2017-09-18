@@ -22,6 +22,7 @@
 
     <resultMap id="DetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskUserBO" extends="BaseResultMap">
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <association property="commentNum" column="{userId=user_id,taskId=task_id}" select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByCreateBy"></association>
         <collection property="taskComments" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByTaskUserId"
                     ofType="com.zhixinhuixue.armor.model.bo.TaskCommentBO"/>

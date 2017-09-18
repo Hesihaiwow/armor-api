@@ -1,21 +1,20 @@
 package com.zhixinhuixue.armor.controller;
 
+import com.zhixinhuixue.armor.model.dto.request.UserCommentsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
  * Created by Lang on 2017/9/4 0004.
  */
-@Api(value = "统计接口", description = "任务积分统计相关操作接口", tags = "/stats")
+@Api(value = "统计接口", description = "统计相关操作接口", tags = "/stats")
 @RequestMapping("/api/stats")
 @RestController
 public class ZSYStatsController extends ZSYController{
@@ -32,5 +31,18 @@ public class ZSYStatsController extends ZSYController{
     public String getStats(){
         List<StatsPageResDTO> statsPageResDTOList = statsService.getStats();
         return ZSYResult.success().data(statsPageResDTOList).build();
+    }
+
+    /**
+     * 分页用户评论记录
+     * @return
+     */
+    @ApiOperation("分页用户评论记录")
+    @GetMapping(value = "/userComments")
+    public String getUserComments(@ModelAttribute UserCommentsReqDTO userCommentsReqDTO){
+        return ZSYResult.success().data(statsService.findByPage(
+                userCommentsReqDTO.getPageNum(),
+                userCommentsReqDTO.getUserId(),
+                userCommentsReqDTO.getGrade())).build();
     }
 }

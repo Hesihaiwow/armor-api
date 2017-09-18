@@ -41,6 +41,11 @@ public class TaskUserResDTO{
     private String userName;
 
     /**
+     * 给他人的评价数
+     */
+    private Integer commentNum;
+
+    /**
      * 评论
      */
     private List<TaskCommentResDTO> comments;
@@ -180,5 +185,11 @@ public class TaskUserResDTO{
         this.createTime = createTime;
     }
 
+    public Integer getCommentNum() {
+        return commentNum;
+    }
 
+    public void setCommentNum(Integer commentNum) {
+        this.commentNum = commentNum;
+    }
 }

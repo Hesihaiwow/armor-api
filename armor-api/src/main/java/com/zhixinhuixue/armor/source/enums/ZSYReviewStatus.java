@@ -5,7 +5,7 @@ package com.zhixinhuixue.armor.source.enums;
  * Created by Tate on 2017/8/7.
  */
 public enum ZSYReviewStatus {
-    PENDING(1, "待审核"), REJECT(2, "审核打回"), ACCEPT(3, "审核通过");
+    PASS(0, "不需要审核"), PENDING(1, "待审核"), REJECT(2, "审核打回"), ACCEPT(3, "审核通过");
     private int value;
     private String name;
 

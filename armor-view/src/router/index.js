@@ -9,6 +9,7 @@ import Organization from '@/components/Organization'
 import NavIndex from '@/components/NavIndex'
 import IntegralHistory from '@/components/IntegralHistory'
 import Stats from '@/components/Stats'
+import UserComments from '@/components/UserComments'
 
 
 Vue.use(Router)
@@ -28,6 +29,16 @@ export default new Router({
             name: 'Index',
             component: Index,
             children: [
+                {
+                    name:'taskList',
+                    path: 'task/:userId',
+                    component: Task
+                },
+                {
+                    name:'taskListFormComments',
+                    path: 'task/id/:taskId',
+                    component: Task
+                },
                 {
                     path: 'task',
                     component: Task
@@ -55,6 +66,10 @@ export default new Router({
                 {
                   path: 'stats',
                   component: Stats
+                },
+                {
+                    path: 'comments',
+                    component: UserComments
                 }
             ]
         }

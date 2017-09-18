@@ -21,6 +21,8 @@ public class UserIntegral {
 
     private String description;
 
+    private int reviewStatus;
+
     public Long getId() {
         return id;
     }
@@ -83,5 +85,13 @@ public class UserIntegral {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getReviewStatus() {
+        return reviewStatus;
+    }
+
+    public void setReviewStatus(int reviewStatus) {
+        this.reviewStatus = reviewStatus;
     }
 }

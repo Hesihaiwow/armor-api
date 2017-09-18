@@ -1,6 +1,6 @@
 <template>
     <div> <div class="toggle-view">
-        <input type="button" :value="btnVal" @click="btnValFun">
+        <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
         <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit && btnValStatus==2 ">
     </div>
 
@@ -58,6 +58,16 @@
                                                 placeholder="选择日期"
                                                 @change="timeChange"></el-date-picker>
                             </div>
+                        </div>
+                    </div>
+                    <div class="task-top-list  clearfix">
+                        <span class="ttl-name fl">排序&nbsp;</span>
+                        <div class="fl tag-name clearfix">
+                            <el-tooltip :content="item.name+item.tips" :enterable="false" placement="top" v-for="item in sortList" :key="item.id">
+                                <el-button class="fl" size="small" @click="choiceSort(item.id,$event)" :class="form.sort==item.id?'active':''">{{item.name}}
+                                </el-button>
+                            </el-tooltip>
+
                         </div>
                     </div>
                     <transition name="filter">
@@ -137,9 +147,9 @@
         data() {
             return {
                 open: false,
-                btnVal: "点击切换到看板模式",
                 btnValStatus: 1, /*1是列表模式，2是看板模式*/
                 loading: true,
+                sortList:[{id:1,name:'优先级',tips:'排序'},{id:2,name:'截止时间',tips:'升序'},{id:3,name:'完成时间',tips:'升序'},{id:4,name:'创建时间',tips:'降序'}],
                 timeRange: '',
                 projectList: [],
                 userList: [],
@@ -159,6 +169,7 @@
                     total: 0,
                 },
                 form: {
+                    taskId: '',
                     projectId: '',
                     userId: '',
                     stageId: [],
@@ -167,7 +178,8 @@
                     status: 1,
                     priority: '',
                     beginTime: '',
-                    endTime: ''
+                    endTime: '',
+                    sort:'2'
                 }, pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -201,11 +213,24 @@
             };
         },
         created() {
-            if(typeof (this.$route.query.userId) !="undefined"){
-                console.log(this.$route.query.userId )
-                this.form.userId = this.$route.query.userId;
+            console.log(this.$route.params)
+            if(typeof (this.$route.params.userId) !="undefined"){
+                this.form.userId = this.$route.params.userId;
                 this.form.type = '';
+                window.localStorage.removeItem("viewType")
             }
+            if(typeof (this.$route.params.taskId) !="undefined"){
+                this.form.taskId = this.$route.params.taskId;
+                this.form.type = '';
+                this.form.status = '';
+                window.localStorage.removeItem("viewType")
+            }
+            // 视图状态
+            const viewType = window.localStorage.getItem("viewType")
+            if (viewType!=null && viewType!== '') {
+                this.btnValStatus = viewType
+            }
+
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
@@ -214,6 +239,7 @@
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "task");
         },
+
         computed: {
             permit() {
                 let userRole = helper.decodeToken().userRole;
@@ -232,22 +258,21 @@
                     // 刷新看板
                     //this.$root.eventBus.$emit("reloadBoard");
                     this.btnValStatus = 2;
-                    this.btnVal = "点击切换到列表模式"
                     document.getElementById('app').style.overflowY = 'hidden';
                 } else {
                     // 刷新列表
                     this.fetchTaskList();
                     this.btnValStatus = 1;
-                    this.btnVal = "点击切换到看板模式"
                     document.getElementById('app').style.overflowY = 'auto'
 
                 }
+                // 记住状态
+                window.localStorage.setItem("viewType", this.btnValStatus);
             },
             openFun() {
                 this.open = !this.open;
             },
             addFormTagId(tagId, num, $event) {
-
                 if (this.hasClass($event.currentTarget, 'active')) {
                     this.removeClass($event.currentTarget, 'active');
                     if (num == 1) {
@@ -263,8 +288,14 @@
                         this.form.stageId.push(tagId);
                     }
                 }
-                console.log(this.form.tagId);
-                console.log(this.form.stageId);
+            },
+            /** 排序方式**/
+            choiceSort(id, $event){
+                if (id == this.form.sort) {
+                    this.form.sort= '';
+                } else {
+                    this.form.sort= id;
+                }
             },
             hasClass(obj, cls) {
                 return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
@@ -328,6 +359,7 @@
             },
             searchTask(){
                 this.page.pageNum = 1;
+                this.form.taskId = '';
                 this.fetchTaskList();
             },
             fetchTaskList() {
@@ -337,6 +369,9 @@
                 let param = {}
                 param['pageNum'] = this.page.pageNum || 1;
                 param['pageSize'] = this.page.pageSize;
+                if (this.form.taskId !== '') {
+                    param['taskId'] = this.form.taskId
+                }
                 if (this.form.projectId !== '') {
                     param['projectId'] = this.form.projectId
                 }
@@ -361,7 +396,8 @@
                 if (this.form.tagId.length > 0) {
                     param['tagId'] = this.form.tagId
                 }
-                param['type'] = this.form.type
+                param['type'] = this.form.type;
+                param['sort'] = this.form.sort;
                 http.zsyPostHttp('/task/public/master/all', param, (resp) => {
                     const list = resp.data.list
                     list.forEach((el) => {
