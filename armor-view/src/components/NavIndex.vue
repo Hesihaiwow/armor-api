@@ -626,16 +626,16 @@
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
-                        param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
-                        var reg=/\d+(\.\d+)?/;
-                        if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
-                            vm.$message.error('工作量只能为数字或者小数');
+                        var isNum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(param.taskHours);
+                        if(!isNum){
+                            vm.$message.error('工作量填写错误');
                             return false;
                         }
-                        if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
-                            vm.$message.error('工作量请保持在1至1000范围');
+                        if(param.taskHours>99999.9||param.taskHours<0.1){
+                            vm.$message.error('工作量正确值应为0.1~99999.9');
                             return false;
                         }
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
                         var taskUsers = [{
                             userId: userId,
                             taskHours: param.taskHours.trim(),

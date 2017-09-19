@@ -974,15 +974,17 @@
                     this.$message.warning("请选择至少一项标签");
                     return;
                 }
-                var taskHoursVal = this.modifyPrivateTaskForm.taskHours.toString();
-                if(taskHoursVal.length!=parseFloat(taskHoursVal).toString().length||parseFloat(taskHoursVal)=="NaN"){
-                    this.$message.error('工作量只能为数字或者小数');
+
+                var isNum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.modifyPrivateTaskForm.taskHours);
+                if(!isNum){
+                    vm.$message.error('工作量填写错误');
                     return false;
                 }
-                if(taskHoursVal>1000||taskHoursVal<1){
-                    this.$message.error('工作量请保持在1至1000范围');
+                if(this.modifyPrivateTaskForm.taskHours>99999.9||this.modifyPrivateTaskForm.taskHours<0.1){
+                    vm.$message.error('工作量正确值应为0.1~99999.9');
                     return false;
                 }
+
                 this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
                 this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59')
                 this.modifyPrivateTaskForm.taskUsers = [{
@@ -1273,7 +1275,6 @@
                 this.hideTaskDetail()
             },
             taskStepStatus(item, taskUserNum){
-                console.log(item, taskUserNum)
                 const commented = item.commentNum > 0 && item.commentNum == taskUserNum - 1;
                 let className = 'in';
                 if (item.status == 1) {

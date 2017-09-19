@@ -271,7 +271,6 @@
                     var tagLis = {};
                     tagLis.tagName = this.value10[i];
                     this.tagList.push(tagLis);
-                    console.log(this.tagList);
                     // tagLis.tagName = '';
                 }
             },
@@ -323,15 +322,16 @@
                     this.$message.error('请将阶段填写完整');
                     return
                 }
-                var taskHoursVal = this.step.taskHours.toString();
-                if(taskHoursVal.length!=parseFloat(taskHoursVal).toString().length||parseFloat(taskHoursVal)=="NaN"){
-                    this.$message.error('工作量只能为数字或者小数');
+                var isnum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.step.taskHours);
+                if(!isnum){
+                    this.$message.error('工作量填写错误');
                     return false;
                 }
-                if(taskHoursVal>1000||taskHoursVal<1){
-                    this.$message.error('工作量请保持在1至1000范围');
+                if(this.step.taskHours>99999.9||this.step.taskHours<0.1){
+                    this.$message.error('工作量正确值应为0.1~99999.9');
                     return false;
                 }
+
                 this.showAddDetail = !this.showAddDetail;
                 if (this.step.index === '') {
                     let taskUser = {}
