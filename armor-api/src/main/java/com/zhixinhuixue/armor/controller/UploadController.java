@@ -5,8 +5,8 @@ import com.zhixinhuixue.armor.service.impl.ZSYTaskService;
 import com.zhixinhuixue.armor.source.FastdfsProperty;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
-import org.csource.common.MyException;
-import org.csource.fastdfs.*;
+//import org.csource.common.MyException;
+//import org.csource.fastdfs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class UploadController {
      *
      * @param uploadFile
      * @return
-     * @throws MyException
+//     * @throws MyException
      * @throws IOException
      */
     @RequestMapping(value = "image", produces = "application/json; charset=utf-8")
@@ -55,9 +55,10 @@ public class UploadController {
             return ZSYResult.success().data(result).build();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (MyException e) {
-            e.printStackTrace();
-        }
+       }
+//       catch (MyException e) {
+//            e.printStackTrace();
+//        }
         return ZSYResult.fail().msg("上传失败").build();
     }
 
@@ -97,38 +98,41 @@ public class UploadController {
      * @param uploadFile
      * @return
      * @throws IOException
-     * @throws MyException
+//     * @throws MyException
      */
-    private String upload(MultipartFile uploadFile) throws IOException, MyException {
+    private String upload(MultipartFile uploadFile) throws IOException
+//            MyException
+    {
 //            ClientGlobal.setG_connect_timeout(fastdfs.getConnectTimeout());
 //            ClientGlobal.setG_network_timeout(fastdfs.getNetworkTimeout());
-        ClientGlobal.setG_charset(fastdfs.getCharset());
-        ClientGlobal.setG_tracker_http_port(fastdfs.getTrackerHttpPort());
+//        ClientGlobal.setG_charset(fastdfs.getCharset());
+//        ClientGlobal.setG_tracker_http_port(fastdfs.getTrackerHttpPort());
         InetSocketAddress[] tracker_servers = new InetSocketAddress[fastdfs.getTrackerServer().length];
 
         for (int i = 0; i < fastdfs.getTrackerServer().length; ++i) {
             String[] parts = fastdfs.getTrackerServer()[i].split("\\:", 2);
             if (parts.length != 2) {
-                throw new MyException("the value of item \"tracker_server\" is invalid, the correct format is host:port");
+//                throw new MyException("the value of item \"tracker_server\" is invalid, the correct format is host:port");
             }
 
             tracker_servers[i] = new InetSocketAddress(parts[0].trim(), Integer.parseInt(parts[1].trim()));
         }
-        ClientGlobal.setG_tracker_group(new TrackerGroup(tracker_servers));
-        ClientGlobal.setG_anti_steal_token(fastdfs.isAntiStealToken());
-
-        TrackerClient tracker = new TrackerClient();
-        TrackerServer trackerServer = tracker.getConnection();
-        StorageServer storageServer = null;
-
-        StorageClient storageClient = new StorageClient(trackerServer, storageServer);
-
-
-        String fileIds[] = storageClient.upload_file(uploadFile.getBytes(), getUploadSuffix(uploadFile.getOriginalFilename()), null);
-        logger.info("组名：" + fileIds[0]);
-        logger.info("路径: " + fileIds[1]);
-
-        return getUploadPath("/" + fileIds[0] + "/" + fileIds[1]);
+//        ClientGlobal.setG_tracker_group(new TrackerGroup(tracker_servers));
+//        ClientGlobal.setG_anti_steal_token(fastdfs.isAntiStealToken());
+//
+//        TrackerClient tracker = new TrackerClient();
+//        TrackerServer trackerServer = tracker.getConnection();
+//        StorageServer storageServer = null;
+//
+//        StorageClient storageClient = new StorageClient(trackerServer, storageServer);
+//
+//
+//        String fileIds[] = storageClient.upload_file(uploadFile.getBytes(), getUploadSuffix(uploadFile.getOriginalFilename()), null);
+//        logger.info("组名：" + fileIds[0]);
+//        logger.info("路径: " + fileIds[1]);
+//
+//        return getUploadPath("/" + fileIds[0] + "/" + fileIds[1]);
+        return "";
     }
 
 }
