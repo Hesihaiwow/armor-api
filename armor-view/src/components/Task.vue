@@ -230,7 +230,6 @@
             if (viewType!=null && viewType!== '') {
                 this.btnValStatus = viewType
             }
-
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
