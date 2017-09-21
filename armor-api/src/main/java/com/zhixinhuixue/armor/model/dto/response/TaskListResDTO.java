@@ -46,6 +46,8 @@ public class TaskListResDTO {
 
     private String timeLabel;
 
+    private String projectImage;
+
 
     public Long getId() {
         return id;
@@ -197,5 +199,13 @@ public class TaskListResDTO {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getProjectImage() {
+        return projectImage;
+    }
+
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
     }
 }

@@ -661,7 +661,7 @@
                     if (el.status >= 2) {
                         endTime = el.completeTime
                     } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
-                        endTime = el.endTime
+                        endTime = el.taskUsers[0].endTime
                     } else {
                         endTime = el.taskUsers[0].completeTime
                     }

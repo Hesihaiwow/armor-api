@@ -59,9 +59,11 @@
             <div class="" v-show="!isPrivate && task.status==1&& taskStatus!='WaitAssess'">
                 <span class="mark-stage">{{task.stageName}}</span>
             </div>
-            <div class="task-mark">
-                <img src="../assets/img/u431.png" alt="">
-                <span class="mark-msg">{{task.projectName}}</span>
+            <div class="task-mark" style="position:relative; left:-10px">
+                <img v-if="task.projectImage" :src="task.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                <img v-else="" src="../assets/img/u431.png" alt="" >
+                <!--<img src="../assets/img/u431.png" alt="">-->
+                <span  class="mark-msg">{{task.projectName}}</span>
             </div>
             <div class="task-username">
                 <img class="task-avatar" v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">

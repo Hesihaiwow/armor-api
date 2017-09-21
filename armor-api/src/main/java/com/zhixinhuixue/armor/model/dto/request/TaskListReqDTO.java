@@ -20,6 +20,7 @@ public class TaskListReqDTO {
     private Date beginTime;
     private Date endTime;
     private Long taskId;
+    private String projectImage;
     private Integer sort; // 排序
 
     public String getProjectId() {
@@ -124,5 +125,13 @@ public class TaskListReqDTO {
 
     public void setSort(Integer sort) {
         this.sort = sort;
+    }
+
+    public String getProjectImage() {
+        return projectImage;
+    }
+
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
     }
 }
