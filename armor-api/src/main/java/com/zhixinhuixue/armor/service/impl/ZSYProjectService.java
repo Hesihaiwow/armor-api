@@ -74,6 +74,7 @@ public class ZSYProjectService implements IZSYProjectService {
         project.setId(snowFlakeIDHelper.nextId());
         project.setDescription(projectReqDTO.getDescription());
         project.setName(projectReqDTO.getName());
+        project.setImageUrl(projectReqDTO.getImageUrl());
         projectMapper.insert(project);
 
     }

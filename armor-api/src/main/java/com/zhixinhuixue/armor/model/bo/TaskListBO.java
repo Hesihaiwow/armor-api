@@ -13,6 +13,7 @@ public class TaskListBO extends Task {
     private String projectName;
     private String userName;
     private String avatarUrl;
+    private String projectImage;
     private String stageName;
     private List<Tag> tags;
 
@@ -54,5 +55,13 @@ public class TaskListBO extends Task {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getProjectImage() {
+        return projectImage;
+    }
+
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
     }
 }

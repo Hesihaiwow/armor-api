@@ -24,7 +24,7 @@ public class TaskCompleteReqDTO {
    /* @NotNull(message = "任务阶段实际耗时不能为空")
     @Min(value = 1, message = "任务阶段实际耗时不能小于{value}")
     @Max(value = 99, message = "任务阶段实际耗时不能大于{value}")*/
-    private Integer completeHours;
+    private Double completeHours;
 
     @NotNull(message = "任务阶段实际完成时间不能为空")
     private Date completeTime;
@@ -45,11 +45,11 @@ public class TaskCompleteReqDTO {
         this.taskUserId = taskUserId;
     }
 
-    public Integer getCompleteHours() {
+    public Double getCompleteHours() {
         return completeHours;
     }
 
-    public void setCompleteHours(Integer completeHours) {
+    public void setCompleteHours(Double completeHours) {
         this.completeHours = completeHours;
     }
 

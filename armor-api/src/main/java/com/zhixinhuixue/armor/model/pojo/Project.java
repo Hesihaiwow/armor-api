@@ -16,6 +16,8 @@ public class Project {
 
     private int isDelete;
 
+    private String imageUrl;
+
     public Long getId() {
         return id;
     }
@@ -62,5 +64,13 @@ public class Project {
 
     public void setIsDelete(int isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

@@ -53,7 +53,7 @@ public class TaskUserReqDTO {
 
     private Integer status;
 
-    private Integer completeHours;
+    private Double completeHours;
 
     private Date completeTime;
 
@@ -65,11 +65,11 @@ public class TaskUserReqDTO {
         this.status = status;
     }
 
-    public Integer getCompleteHours() {
+    public Double getCompleteHours() {
         return completeHours;
     }
 
-    public void setCompleteHours(Integer completeHours) {
+    public void setCompleteHours(Double completeHours) {
         this.completeHours = completeHours;
     }
 

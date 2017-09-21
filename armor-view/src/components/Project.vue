@@ -2,8 +2,9 @@
   <div class="project-con">
     <p class="mic-title">所有项目</p>
     <div class="task-item" v-for="list in TaskItem">
-      <img src="../assets/img/u431.png" alt="" class="task-logo">
-      <div class="task-info"  @click="editProject(list.id,list.name,list.description)">
+      <img v-if="list.imageUrl" :src="list.imageUrl" class="task-logo" style="width: 40px;height: 40px;border-radius: 50%;">
+      <img v-else="" src="../assets/img/u431.png" class="task-logo">
+      <div class="task-info"  @click="editProject(list.id,list.name,list.description,list.imageUrl)">
         <div class="task-name">{{list.name}}</div>
         <div class="task-sub-name">{{list.description}}</div>
       </div>
@@ -17,8 +18,17 @@
         <div class="add-task-top">
           创建项目<span class="close" @click="hidePop">×</span>
         </div>
-        <img src="../assets/img/u1284.png" alt="" class="att-img">
-        <p class="att-msg">为不同的事物建立各自的项目</p>
+        <el-upload
+                class="avatar-uploader"
+                action=""
+                :show-file-list="false"
+                :http-request="upload"
+                :before-upload="beforeAvatarUpload">
+          <img v-if="project.imageUrl" :src="project.imageUrl" class="avatar" >
+          <img v-else="" src="../assets/img/u1285.png" class="avatar" >
+          <!--<i v-else><img src="../assets/img/u1284.png" alt="" class="att-img"></i>-->
+          <p class="att-msg">点击图片为你的项目上传项目图</p>
+        </el-upload>
         <input type="text" class="project-name" placeholder="项目名称" v-model="project.name">
         <textarea class="project-intro" placeholder="项目简介（选填）" v-model="project.description"></textarea>
         <div class="att-bents">
@@ -32,7 +42,16 @@
         <div class="add-task-top">
           编辑项目<span class="close" @click="hideEdit">×</span>
         </div>
-      <img src="../assets/img/u1284.png" alt="" class="att-img">
+        <el-upload
+              class="avatar-uploader"
+              action=""
+              :show-file-list="false"
+              :http-request="upload"
+              :before-upload="beforeAvatarUpload">
+          <img v-if="project.imageUrl" :src="project.imageUrl" style="height: 180px;width: 200px">
+          <img v-else="" src="../assets/img/u1285.png" style="height: 180px;width: 200px">
+        </el-upload>
+        <p class="att-msg">点击图片为你的项目上传项目图</p>
       <input type="text" class="project-name" :placeholder="project.name" v-model="project.name">
       <textarea class="project-intro" placeholder="项目简介（选填）" v-model="project.description"></textarea>
       <div class="att-bents">
@@ -59,6 +78,7 @@
         TaskItem:'',
         showAddTask: false,
         project:{
+          imageUrl:'',
           name: '',
           description: ''
         },//待编辑项目ID
@@ -88,18 +108,20 @@
                 type: 'success',
                 message: '删除成功!'
               });
-            this.project.name = this.project.description = this.editProjectId= '';
+            this.project.name = this.project.description = this.project.imageUrl = this.editProjectId= '';
             this.editProjectVisible = false;
             this.projectList();
             })
           }).catch(() => {
           });
       },
-      editProject(id,name,description){
+      editProject(id,name,description,url){
         if(this.hasPermission){
           this.editProjectId=id;
           this.project.name =name;
           this.project.description = description;
+          this.project.imageUrl =url ;
+          console.log(url)
           this.editProjectVisible = true;
         }
       },
@@ -147,7 +169,26 @@
               this.showAddTask = false;
             });
           }
-      }
+      },
+        beforeAvatarUpload(file) {
+            const isImage = file.type.indexOf('image') === 0;
+            const isLt2M = file.size / 1024 / 1024 < 2;
+
+            if (!isImage) {
+                this.$message.error('请选择正确的图片文件');
+            }
+            if (!isLt2M) {
+                this.$message.error('上传头像图片大小不能超过 2MB');
+            }
+            return isImage && isLt2M;
+        },
+        upload(file) {
+            var data = new FormData();
+            data.append('uploadFile', file.file);
+            Http.zsyPostHttp('/upload/image', data, (res) => {
+                this.project.imageUrl = res.data.url;
+            })
+        },
     }
   }
 </script>
@@ -163,7 +204,7 @@
 .add-task-btn{width: 40px;height: 40px;background: #F2F2F2;color: #CCCCCC;line-height: 34px;text-align: center;font-size: 36px;}
 .add-task-msg{line-height: 40px;margin-left: 26px;font-size: 14px;color: #999999;}
 .add-task-pop{position: fixed;top: 0;left: 0;bottom: 0;right: 0;background: rgba(0,0,0,0.5);z-index: 110;}
-.add-task-pop-con{position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 350px;height: 400px;background: #fff;}
+.add-task-pop-con{position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);width: 350px;height: 450px;background: #fff;}
 .add-task-top{text-align: center;font-size: 16px;font-weight: bold;margin: 10px;border-bottom: 1px solid #ccc;line-height: 30px;padding-bottom: 10px;position: relative;}
 .add-task-top .close{position: absolute;right: 0;font-size: 28px;font-weight: normal;color: #999;cursor: pointer;transition:0.8s ease all;width: 30px;height: 30px;text-align: center;line-height: 24px;}
 .add-task-top .close:hover{color:#36A8FF;transform:rotate(360deg);}
@@ -176,8 +217,6 @@
 .cancel:hover{background: #fff;border: 1px solid #36A8FF;color: #36A8FF;font-weight: 700;}
 .save{background: #36A8FF;color: #fff;}
 .delete{background: #FF4949;color: #fff;float:left;}
-
-
 
 
 

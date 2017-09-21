@@ -626,16 +626,15 @@
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
-                        var isNum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(param.taskHours);
-                        if(!isNum){
-                            vm.$message.error('工作量填写错误');
+                        param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
+                        if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
+                            vm.$message.error('工作量只能为数字或者小数');
                             return false;
                         }
-                        if(param.taskHours>99999.9||param.taskHours<0.1){
-                            vm.$message.error('工作量正确值应为0.1~99999.9');
+                        if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
+                            vm.$message.error('工作量请保持在1至1000范围');
                             return false;
                         }
-                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
                         var taskUsers = [{
                             userId: userId,
                             taskHours: param.taskHours.trim(),
@@ -644,7 +643,7 @@
                             description: param.description.trim()
                         }];
                         param['taskUsers'] = taskUsers;
-                        http.zsyPostHttp('/task/create', param, (resp) => {
+                        http.zsyPostHttp('/task/create', taskUsers, (resp) => {
                             vm.$message.success('任务创建成功');
                             this.$refs[formName].resetFields();
                             this.createTaskVisible = false
@@ -662,7 +661,7 @@
                     if (el.status >= 2) {
                         endTime = el.completeTime
                     } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
-                        endTime = el.endTime
+                        endTime = el.taskUsers[0].endTime
                     } else {
                         endTime = el.taskUsers[0].completeTime
                     }

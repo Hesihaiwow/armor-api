@@ -20,7 +20,7 @@ public class TaskUser {
 
     private String description;
 
-    private Integer completeHours;
+    private Double completeHours;
 
     private Date completeTime;
 
@@ -100,11 +100,11 @@ public class TaskUser {
         this.createTime = createTime;
     }
 
-    public Integer getCompleteHours() {
+    public Double getCompleteHours() {
         return completeHours;
     }
 
-    public void setCompleteHours(Integer completeHours) {
+    public void setCompleteHours(Double completeHours) {
         this.completeHours = completeHours;
     }
 

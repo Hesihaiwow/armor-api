@@ -5,11 +5,12 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
     <result column="create_by" jdbcType="BIGINT" property="createBy" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, description, create_by, create_time
+    id, name, description, create_by, create_time, image_url
   </sql>
 
   <!--查询所有项目并按照时间倒序排列-->
@@ -24,9 +25,9 @@
   <!--添加项目-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     insert into project (id, name, description, 
-      create_by, create_time)
+      create_by, create_time, image_url)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP})
+      #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR})
   </insert>
 
   <!-- 更新项目 -->
@@ -38,6 +39,9 @@
       </if>
       <if test="description != null and description!=''">
         description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null and imageUrl!=''">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
