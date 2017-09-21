@@ -25,7 +25,7 @@
                 :http-request="upload"
                 :before-upload="beforeAvatarUpload">
           <img v-if="project.imageUrl" :src="project.imageUrl" class="avatar" >
-          <img v-else="" src="../assets/img/u1284.png" class="avatar" >
+          <img v-else="" src="../assets/img/u1285.png" class="avatar" >
           <!--<i v-else><img src="../assets/img/u1284.png" alt="" class="att-img"></i>-->
           <p class="att-msg">点击图片为你的项目上传项目图</p>
         </el-upload>
@@ -108,7 +108,7 @@
                 type: 'success',
                 message: '删除成功!'
               });
-            this.project.name = this.project.description = this.editProjectId= '';
+            this.project.name = this.project.description = this.project.imageUrl = this.editProjectId= '';
             this.editProjectVisible = false;
             this.projectList();
             })
