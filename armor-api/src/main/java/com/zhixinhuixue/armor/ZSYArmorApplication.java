@@ -26,7 +26,7 @@ public class ZSYArmorApplication implements CommandLineRunner {
     //程序首次启动调用
     @Override
     public void run(String... strings) throws Exception {
-        LogbackRedisHelper.write("hello");
+//        LogbackRedisHelper.write("hello");
     }
         /**
          * 全局唯一ID
