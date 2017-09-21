@@ -44,5 +44,15 @@ fastdfs:
   domain: http://fdfs.dev.xueping.com
 
 
+#错误日志通知
+logRedis:
+  host: 192.168.1.240
+  port: 6379
+  database: 10
+  key: zsy-system-err
+  module: zsy-armor
+
+
+
 
 
