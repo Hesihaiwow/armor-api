@@ -168,11 +168,9 @@
             });
         },
         mounted() {
-            document.getElementById('app').style.overflowY = 'hidden'
         },
 
         beforeDestroy(){
-            document.getElementById('app').style.overflowY = 'auto'
         }
     }
 </script>
