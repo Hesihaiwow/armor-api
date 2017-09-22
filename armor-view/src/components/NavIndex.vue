@@ -643,7 +643,7 @@
                             description: param.description.trim()
                         }];
                         param['taskUsers'] = taskUsers;
-                        http.zsyPostHttp('/task/create', taskUsers, (resp) => {
+                        http.zsyPostHttp('/task/create', param, (resp) => {
                             vm.$message.success('任务创建成功');
                             this.$refs[formName].resetFields();
                             this.createTaskVisible = false
