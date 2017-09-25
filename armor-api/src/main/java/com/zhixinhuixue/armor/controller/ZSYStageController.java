@@ -41,8 +41,8 @@ public class ZSYStageController extends ZSYController {
      */
     @ApiOperation("添加阶段")
     @PostMapping(value = "/add")
-    public String addStage(@RequestParam String name) {
-        Long id = stageService.addStage(name);
+    public String addStage(@RequestBody StageResDTO stageResDTO) {
+        Long id = stageService.addStage(stageResDTO);
         return ZSYResult.success().data(id).build();
     }
 

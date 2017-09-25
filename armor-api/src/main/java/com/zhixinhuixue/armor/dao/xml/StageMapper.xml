@@ -23,9 +23,9 @@
   </delete>
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Stage">
     insert into stage (id, name, create_time, 
-      create_by)
+      create_by, sort)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{createBy,jdbcType=BIGINT})
+      #{createBy,jdbcType=BIGINT}, #{sort,jdbcType=INTEGER} )
   </insert>
   <!--验证阶段名是否存在-->
   <select id="validateStage" parameterType="java.lang.String" resultType="java.lang.Integer">
