@@ -17,6 +17,8 @@ public class ProjectReqDTO {
     @Size(min = 0,max = 500,message = "项目描述长度在{min}~{max}之间")
     private String description;
 
+    private String imageUrl;
+
     public String getName() {
         return name;
     }
@@ -31,5 +33,13 @@ public class ProjectReqDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

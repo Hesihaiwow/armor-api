@@ -627,7 +627,6 @@
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
                         param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
-                        var reg=/\d+(\.\d+)?/;
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
                             vm.$message.error('工作量只能为数字或者小数');
                             return false;
@@ -662,7 +661,7 @@
                     if (el.status >= 2) {
                         endTime = el.completeTime
                     } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
-                        endTime = el.endTime
+                        endTime = el.taskUsers[0].endTime
                     } else {
                         endTime = el.taskUsers[0].completeTime
                     }

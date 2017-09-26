@@ -11,6 +11,8 @@ public class ProjectResDTO {
 
     private String description;
 
+    private String imageUrl;
+
     public long getId() {
         return id;
     }
@@ -33,5 +35,13 @@ public class ProjectResDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

@@ -46,6 +46,8 @@ public class TaskResDTO {
 
     private String integralGrade;
 
+    private String  projectImage;
+
     /**
      * 任务用户
      */
@@ -209,5 +211,13 @@ public class TaskResDTO {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getProjectImage() {
+        return projectImage;
+    }
+
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
     }
 }

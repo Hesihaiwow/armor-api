@@ -158,6 +158,7 @@
             }
         },
         created() {
+
             this.getData();
         },
         beforeMount() {
@@ -168,8 +169,8 @@
         },
         mounted() {
         },
+
         beforeDestroy(){
-            document.getElementById('app').style.overflowY = 'auto'
         }
     }
 </script>

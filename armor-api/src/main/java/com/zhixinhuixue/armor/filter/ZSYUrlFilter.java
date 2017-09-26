@@ -12,6 +12,8 @@ import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.servlet.*;
@@ -99,11 +101,11 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
 //                    String[] permissions = jwt.getClaim("permissions").asArray(String.class);
 
 
-                    StringRedisTemplate redisTemplate = SpringHelper.getBean("stringRedisTemplate",StringRedisTemplate.class);
+                    StringRedisTemplate primaryStringRedisTemplate = SpringHelper.getBean("primaryStringRedisTemplate",StringRedisTemplate.class);
                     String loginKey = String.format(ZSYConstants.LOGIN_KEY,userId);
-                    String loginValue = redisTemplate.opsForValue().get(loginKey);
+                    String loginValue = primaryStringRedisTemplate.opsForValue().get(loginKey);
                     if (loginValue!=null&&loginValue.equals("1")){
-                        redisTemplate.expire(loginKey,ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
+                        primaryStringRedisTemplate.expire(loginKey,ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
                         //验证通过
                         logger.info("{}({})请求{}接口",
                                 userName,userId,

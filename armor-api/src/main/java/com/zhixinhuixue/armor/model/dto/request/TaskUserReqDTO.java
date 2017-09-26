@@ -28,8 +28,8 @@ public class TaskUserReqDTO {
      * 工时
      */
     @NotNull(message = "工时不能为空")
-    @Min(value = 1,message = "工时不能小于{value}")
-    @Max(value = 1000,message = "工时不能大于{value}")
+    @Min(value = 0,message = "工时不能小于0.1")
+    @Max(value = 99999,message = "工时不能大于{value}")
     private Double taskHours;
 
     /**
@@ -53,7 +53,7 @@ public class TaskUserReqDTO {
 
     private Integer status;
 
-    private Integer completeHours;
+    private Double completeHours;
 
     private Date completeTime;
 
@@ -65,11 +65,11 @@ public class TaskUserReqDTO {
         this.status = status;
     }
 
-    public Integer getCompleteHours() {
+    public Double getCompleteHours() {
         return completeHours;
     }
 
-    public void setCompleteHours(Integer completeHours) {
+    public void setCompleteHours(Double completeHours) {
         this.completeHours = completeHours;
     }
 

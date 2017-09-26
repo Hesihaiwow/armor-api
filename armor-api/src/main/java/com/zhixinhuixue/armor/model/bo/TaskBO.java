@@ -21,6 +21,8 @@ public class TaskBO extends Task{
 
     private String avatarUrl;
 
+    private String projectImage;
+
     /**
      * 用户积分
      */
@@ -69,5 +71,13 @@ public class TaskBO extends Task{
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getProjectImage() {
+        return projectImage;
+    }
+
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
     }
 }

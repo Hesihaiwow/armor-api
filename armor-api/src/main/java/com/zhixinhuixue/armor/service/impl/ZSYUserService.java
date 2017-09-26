@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,7 @@ public class ZSYUserService implements IZSYUserService {
     private IZSYUserMapper userMapper;
 
     @Autowired
+    @Qualifier("primaryStringRedisTemplate")
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired

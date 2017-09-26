@@ -213,7 +213,6 @@
             };
         },
         created() {
-            console.log(this.$route.params)
             if(typeof (this.$route.params.userId) !="undefined"){
                 this.form.userId = this.$route.params.userId;
                 this.form.type = '';
@@ -227,10 +226,10 @@
             }
             // 视图状态
             const viewType = window.localStorage.getItem("viewType")
+            console.log(viewType)
             if (viewType!=null && viewType!== '') {
                 this.btnValStatus = viewType
             }
-
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
@@ -252,18 +251,26 @@
                 return 'total, pager'
             }
         },
+        watch: {
+            btnValStatus: function (val) {
+                console.log(val)
+                if (val == 1) {
+                    document.getElementById('app').style.overflowY = 'auto'
+                } else {
+                    document.getElementById('app').style.overflowY = 'hidden';
+                }
+            }
+        },
         methods: {
             btnValFun() {
                 if (this.btnValStatus == 1) {
                     // 刷新看板
                     //this.$root.eventBus.$emit("reloadBoard");
                     this.btnValStatus = 2;
-                    document.getElementById('app').style.overflowY = 'hidden';
                 } else {
                     // 刷新列表
                     this.fetchTaskList();
                     this.btnValStatus = 1;
-                    document.getElementById('app').style.overflowY = 'auto'
 
                 }
                 // 记住状态

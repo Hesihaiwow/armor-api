@@ -3,10 +3,6 @@ server:
 
 #数据源
 spring:
-  redis:
-    database: 10
-    host: 192.168.1.240
-    port: 6379
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
@@ -25,6 +21,11 @@ spring:
         login-username: zxhx
         login-password: zxhx
 
+redis:
+  primary:
+    database: 10
+    host: 192.168.1.240
+    port: 6379
 
 jwt:
   issuer: xueping.com
@@ -40,3 +41,11 @@ fastdfs:
   antiStealToken : false
   trackerServer : 192.168.1.252:22122
   domain: http://fdfs.dev.xueping.com
+
+#错误日志通知
+logRedis:
+  host: 192.168.1.240
+  port: 6379
+  database: 10
+  key: zsy-system-err
+  module: zsy-armor

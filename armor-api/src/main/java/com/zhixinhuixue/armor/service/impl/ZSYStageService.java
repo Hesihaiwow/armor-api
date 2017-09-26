@@ -38,6 +38,7 @@ public class ZSYStageService implements IZSYStageService {
         stags.stream().forEach(stage -> {
             StageResDTO stageResDTO = new StageResDTO();
             BeanUtils.copyProperties(stage, stageResDTO);
+            stageResDTO.setSort(stage.getSort());
             stageResDTOS.add(stageResDTO);
         });
         return stageResDTOS;
@@ -45,18 +46,19 @@ public class ZSYStageService implements IZSYStageService {
 
     /**
      * 添加阶段
-     * @param name
+     * @param stageResDTO
      */
     @Override
-    public Long addStage(String name){
-        if(stageMapper.validateStage(name.replace(" ", ""))>0){
+    public Long addStage(StageResDTO stageResDTO){
+        if(stageMapper.validateStage(stageResDTO.getName().replace(" ", ""))>0){
             throw new ZSYServiceException("阶段名称已存在");
         }
             Stage stage = new Stage();
             stage.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             stage.setCreateTime(new Date());
             stage.setId(snowFlakeIDHelper.nextId());
-            stage.setName(name);
+            stage.setName(stageResDTO.getName());
+            stage.setSort(stageResDTO.getSort());
             stageMapper.insert(stage);
             return stage.getId();
     }

@@ -22,7 +22,7 @@ public interface IZSYStageService {
      * @param name
      * @return
      */
-    Long addStage(String name);
+    Long addStage(StageResDTO stageResDTO);
 
     /**
      * 删除阶段
