@@ -28,7 +28,7 @@
                     </el-collapse-item>
                 </el-collapse>
             </el-tab-pane>
-            <el-tab-pane label="阶段管理" name="stage" v-hide="false">
+            <el-tab-pane label="阶段管理" name="stage" >
                 <el-table :data="stageList" style="width: 40%" >
                     <el-table-column
                             label="阶段优先级"
@@ -314,11 +314,11 @@
             })
         },
         saveStage(){
-            if(isNaN(this.stage.sort)){
-                this.$message.error('阶段优先级必须为数字');
+            console.log(this.stage.sort)
+            if(isNaN(this.stage.sort)||this.stage.sort.trim()<1||this.stage.sort==''){
+                this.$message.error('阶段优先级必须为大于1的数字');
                 return false;
-            }
-            if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.length<10) {
+            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.length<10) {
                 Http.zsyPostHttp('/stage/add', this.stage, (res) => {
                     this.$message.success('阶段添加成功');
                     this.stage.name= this.stage.sort = '';
