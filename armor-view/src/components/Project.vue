@@ -3,41 +3,43 @@
     <el-tabs v-model="activeName" @tab-click="">
         <div v-if="isAdmin">
             <el-tab-pane label="标签管理" name="tag"  style="line-height:50px">
-                <el-button  :key="tag.id" hit="true" close-transition="true" :type="color[tag.color]" size="large"
-                            v-for="tag in tagList"
-                            :closable="true"
-                            :close-transition="false" >
-                    {{tag.name}}
-                </el-button>
-                <el-collapse v-model="activeNames" style="position: relative;margin-top:50px;width: 550px" accordion>
-                    <el-collapse-item title="添加标签" name="1">
-                        <el-input style="width: 200px" placeholder="请输入标签内容" v-model="addName" ></el-input>
-                        <el-button @click="saveTag">确认</el-button>
-                    </el-collapse-item>
-                    <el-collapse-item title="删除标签" name="2">
-                        <el-select v-model="TagName"  filterable placeholder="请选择">
-                            <el-option
-                                    filterable
-                                    v-for="tag in tagList"
-                                    :key="tag.id"
-                                    :label="tag.name"
-                                    :value="tag.name">
-                            </el-option>
-                        </el-select>
-                        <el-button @click="deleteTag()">删除</el-button>
-                    </el-collapse-item>
-                </el-collapse>
+                <el-tag
+                        v-for="tag in tagList"
+                        :key="tag.name"
+                        :closable="true"
+                        :close-transition="false"
+                        @close="deleteTagButton(tag)"
+                        :type="color[tag.color]" style="width: 100px;height:40px;line-height:40px;text-align: center;font-size: 15px;margin-left:10px"
+                        :style="'width:'+(tag.name.length)*35+'px'">{{tag.name}}</el-tag>
+                <el-input
+                        style="width: 100px;height:40px;line-height:40px;font-size: 15px;"
+                        class="input-new-tag"
+                        v-if="inputVisible"
+                        v-model="TagName"
+                        ref="saveTagInput"
+                        size="large"
+                        @blur="handleInputTagConfirm">
+                </el-input>
+                <el-button v-else class="button-new-tag" size="large" @click="showTag">+ New Tag</el-button>
             </el-tab-pane>
             <el-tab-pane label="阶段管理" name="stage" >
-                <el-table :data="stageList" style="width: 40%" >
+                <el-button type="primary" size="middle" style="margin-bottom: 10px;margin-left: 800px" @click="addStageVisible=true">添加阶段</el-button>
+                <el-table :data="stageList" style="width: 60%;margin: auto" >
                     <el-table-column
-                            label="阶段优先级"
-                            prop="sort" align="center"></el-table-column>
+                            label="序号"
+                            prop="num" style="text-align: center"></el-table-column>
                     <el-table-column
                             label="阶段名称"
                             prop="name"></el-table-column>
+                    <el-table-column
+                            label="阶段优先级"
+                            prop="sort" align="center"></el-table-column>
                     <el-table-column  label="编辑">
                         <template scope="scope">
+                            <el-button
+                                    size="small"
+                                    type="primary"
+                                    @click="editStageDialog(scope.$index, stageList)">编辑</el-button>
                             <el-button
                                     size="small"
                                     type="danger"
@@ -45,19 +47,6 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div class="stage">
-                    <div class="stage-box">
-                        <!--<span style="display:block;font-size: 15px"></span>-->
-                        <el-tag  style="display: block;width:70px;font-size: 15px;margin-top: 5px">添加阶段</el-tag>
-                        <el-input style="width: 250px;margin-bottom:20px;margin-top:20px;margin-left: 15px;" placeholder="请输入阶段优先级" v-model="stage.sort">
-                            <template slot="prepend">阶段优先级:</template>
-                        </el-input>
-                        <el-input style="width: 200px;margin-bottom:20px;margin-left: 15px;" placeholder="请输入阶段名称" v-model="stage.name" >
-                            <template slot="prepend">阶段名称:</template>
-                        </el-input>
-                        <div><el-button @click="saveStage" type="primary" style="position: relative;left: 285px">确认</el-button></div>
-                    </div>
-                </div>
             </el-tab-pane>
         </div>
         <div v-else=""></div>
@@ -125,6 +114,28 @@
       </div>
       </div>
     </div>
+    <el-dialog  title="添加阶段"
+                :visible.sync="addStageVisible"
+                size="tiny">
+            <el-input style="width: 250px;margin-bottom: 10px" placeholder="请输入阶段优先级" v-model="stage.sort">
+            <template slot="prepend">阶段优先级:</template>
+            </el-input>
+            <el-input style="width: 400px;" placeholder="请输入阶段名称" v-model="stage.name" >
+            <template slot="prepend">阶段名称:</template>
+            </el-input>
+            <div><el-button @click="saveStage" type="primary" style="margin-top: 15px;margin-left: 300px">确认</el-button></div>
+    </el-dialog>
+      <el-dialog  title="编辑阶段"
+                  :visible.sync="editStageVisible"
+                  size="tiny">
+              <el-input style="width: 250px;margin-bottom: 10px" :placeholder="stage.sort+''" v-model="stage.sort">
+                  <template slot="prepend">阶段优先级:</template>
+              </el-input>
+              <el-input style="width: 400px;" :placeholder="stage.name" v-model="stage.name" >
+                  <template slot="prepend">阶段名称:</template>
+              </el-input>
+              <el-button @click="editStage" type="primary" >确认</el-button>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -149,14 +160,17 @@
         activeNames: 1,
         editProjectVisible:false,
         inputVisible:true,
+        addStageVisible:false,
+        editStageVisible:false,
         TaskItem:'',
         showAddTask: false,
         tagList:[],
         stageList:[],
-        addName:'',
         TagName:'',
         TagId:'',
+        inputVisible:false,
         stage:{
+            id:'',
             name: '',
             sort: '',
         },
@@ -282,31 +296,18 @@
                 this.tagList = resp.data;
             })
         },
-        saveTag(){
-            if (this.addName!=''&&this.addName.trim().length>0&&this.addName.length<10) {
-                Http.zsyPostHttp('/tag/add?name='+this.addName, null, (res) => {
-                    this.$message.success('标签添加成功');
-                    this.fetchTagList;
-                    this.tagList.push({color: "7", id: res.data, name:this.addName});
-                    this.addName='';
+        deleteTagButton(tag){
+            this.$confirm('确认删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                Http.zsyDeleteHttp('/tag/'+tag.id, null, (res) => {
+                    this.$message.success('标签删除成功');
+                    this.tagList.splice(this.tagList.indexOf(tag), 1);
                 })
-            }else{
-                this.$message.error('标签名不为空且不超过10个字');
-            }
-        },
-        deleteTag(){
-            var num = 0;
-            this.tagList.forEach((tag)=>{
-                if (this.TagName == tag.name) {
-                    this.TagId = tag.id;
-                }
-            })
-            Http.zsyDeleteHttp('/tag/'+this.TagId, null, (res) => {
-                this.$message.success('标签删除成功');
-                this.$router.go(0)
-                this.fetchTagList;
-                this.TagName='';
-            })
+            }).catch(() => {
+            });
         },
         fetchStageList(){
             Http.zsyGetHttp('/stage/list', {}, (resp) => {
@@ -314,26 +315,77 @@
             })
         },
         saveStage(){
-            console.log(this.stage.sort)
-            if(isNaN(this.stage.sort)||this.stage.sort.trim()<1||this.stage.sort==''){
-                this.$message.error('阶段优先级必须为大于1的数字');
+            var reg = /^\+?[1-9][0-9]*$/;
+            if(!reg.test(this.stage.sort)||this.stage.sort.trim()<1||this.stage.sort==''){
+                this.$message.error('阶段优先级必须为大于1的整数');
                 return false;
-            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.length<10) {
+            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.length<=10) {
                 Http.zsyPostHttp('/stage/add', this.stage, (res) => {
                     this.$message.success('阶段添加成功');
                     this.stage.name= this.stage.sort = '';
                     this.fetchStageList();
+                    this.addStageVisible = false;
                 })
             }else{
                 this.$message.error('阶段名称不为空且不超过10个字');
             }
         },
         deleteStage(index,rows){
-            Http.zsyDeleteHttp(`/stage/`+rows[index].id, {}, (resp) => {
-                this.$message.success('阶段删除成功');
-                rows.splice(index, 1);
-            })
+            this.$confirm('确认删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                Http.zsyDeleteHttp(`/stage/`+rows[index].id, {}, (resp) => {
+                    this.$message.success('阶段删除成功');
+                    rows.splice(index, 1);
+                })
+            }).catch(() => {
+            });
         },
+        editStageDialog(index,rows){
+            this.editStageVisible = true;
+            this.stage.id= rows[index].id;
+            this.stage.sort = rows[index].sort;
+            this.stage.name = rows[index].name;
+        },
+        editStage(){
+            var reg = /^\+?[1-9][0-9]*$/;
+            if(!reg.test(this.stage.sort)||this.stage.sort.trim()<1||this.stage.sort==''){
+                this.$message.error('阶段优先级必须为大于1的整数');
+                return false;
+            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.length<=10) {
+                Http.zsyPostHttp(`/stage/edit`, this.stage, (resp) => {
+                    this.$message.success('阶段更新成功');
+                    this.fetchStageList()
+                    this.editStageVisible = false;
+                })
+            }else{
+                this.$message.error('阶段名称不为空且不超过10个字');
+            }
+        },
+        showTag() {
+            this.inputVisible = true;
+            this.$nextTick(_ => {
+                this.$refs.saveTagInput.$refs.input.focus();
+            });
+        },
+        handleInputTagConfirm() {
+            if (this.TagName!=''&&this.TagName.trim().length>0&&this.TagName.length<=10) {
+                Http.zsyPostHttp('/tag/add?name='+this.TagName, null, (res) => {
+                    this.$message.success('标签添加成功');
+                    this.fetchTagList;
+                    this.tagList.push({color: "7", id: res.data, name:this.TagName});
+                    this.inputVisible = false;
+                    this.TagName = '';
+                })
+            }else{
+                console.log("x")
+                this.inputVisible = false;
+                this.TagName = '';
+                this.$message.error('标签名不为空且不超过10个字');
+            }
+        }
     }
   }
 </script>

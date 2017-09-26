@@ -33,14 +33,7 @@ public class ZSYStageService implements IZSYStageService {
      */
     @Override
     public List<StageResDTO> getStage(){
-        List<Stage> stags = stageMapper.selectStage();
-        List<StageResDTO> stageResDTOS = new ArrayList<>();
-        stags.stream().forEach(stage -> {
-            StageResDTO stageResDTO = new StageResDTO();
-            BeanUtils.copyProperties(stage, stageResDTO);
-            stageResDTO.setSort(stage.getSort());
-            stageResDTOS.add(stageResDTO);
-        });
+        List<StageResDTO> stageResDTOS = stageMapper.selectStage();
         return stageResDTOS;
     }
 
@@ -63,12 +56,29 @@ public class ZSYStageService implements IZSYStageService {
             return stage.getId();
     }
 
+    public void editStage(StageResDTO stageResDTO){
+        Stage stage = stageMapper.selectById(stageResDTO.getId());
+        if(stage.getName()==stageResDTO.getName()&&stageMapper.validateStage(stageResDTO.getName().replace(" ", ""))>0){
+            throw new ZSYServiceException("阶段名称已存在");
+        }
+        stage.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        stage.setId(stageResDTO.getId());
+        stage.setName(stageResDTO.getName());
+        stage.setSort(stageResDTO.getSort());
+        if( stageMapper.update(stage)==0){
+            throw new ZSYServiceException("更新阶段信息失败");
+        }
+    }
+
     /**
      * 删除阶段
      * @param id
      */
     @Override
     public void deleteStage(Long id){
+        if(stageMapper.countStage(id)==0){
+            throw new ZSYServiceException("阶段正在使用中，请修改或停止使用后删除");
+        }
         if(stageMapper.deleteStage(id)==0){
             throw new ZSYServiceException("删除失败");
         }

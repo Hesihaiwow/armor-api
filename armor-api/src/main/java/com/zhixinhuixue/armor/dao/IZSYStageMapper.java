@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
 import com.zhixinhuixue.armor.model.pojo.Stage;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface IZSYStageMapper {
      * 阶段列表
      * @return
      */
-    List<Stage> selectStage();
+    List<StageResDTO> selectStage();
 
     /**
      * 添加阶段
@@ -39,6 +40,18 @@ public interface IZSYStageMapper {
      * @return
      */
     Stage selectById(Long id);
+
+    /**
+     * 查询阶段ID是否被使用
+     */
+    int countStage(Long id);
+
+    /**
+     * 编辑阶段
+     * @param stage
+     * @return
+     */
+    int update(Stage stage);
 
 
 }

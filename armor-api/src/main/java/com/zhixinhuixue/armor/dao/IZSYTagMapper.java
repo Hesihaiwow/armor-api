@@ -39,4 +39,10 @@ public interface IZSYTagMapper {
      */
     int validateTag(String name);
 
+    /**
+     * 查询阶段ID是否被使用
+     */
+    int countTag(Long id);
+
+
 }

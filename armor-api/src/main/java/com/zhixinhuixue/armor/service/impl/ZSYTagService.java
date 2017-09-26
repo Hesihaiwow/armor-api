@@ -76,6 +76,9 @@ public class ZSYTagService implements IZSYTagService {
      */
     @Override
     public void deleteTag(Long id){
+        if(tagMapper.countTag(id)==0){
+            throw new ZSYServiceException("标签正在使用中，请修改或停止使用后删除");
+        }
         if(tagMapper.deleteTag(id)==0){
             throw new ZSYServiceException("删除失败");
         }
