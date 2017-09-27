@@ -861,7 +861,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyGetHttp(`/integral/passReview/`+id, {}, (resp) => {
-                        vm.$message({ showClose: true,message: '审核成功',type: 'success'});
+                        this.$message({ showClose: true,message: '审核成功',type: 'success'});
                         this.reload();
                         this.helpDetailVisible = false;
                     })
