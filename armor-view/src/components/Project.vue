@@ -23,7 +23,7 @@
                 <el-button v-else class="button-new-tag" size="large" @click="showTag">+ New Tag</el-button>
             </el-tab-pane>
             <el-tab-pane label="阶段管理" name="stage" >
-                <el-button type="primary" size="middle" style="margin-bottom: 10px;margin-left: 800px" @click="addStageVisible=true">添加阶段</el-button>
+                <el-button type="primary" size="middle" style="margin-bottom: 10px;margin-left: 800px" @click="addStageVisible=true;clearStage()">添加阶段</el-button>
                 <el-table :data="stageList" style="width: 60%;margin: auto" >
                     <el-table-column
                             label="序号"
@@ -314,8 +314,8 @@
             var reg = /^\+?[1-9][0-9]*$/;
             this.stage.sort = this.stage.sort.trim();
             this.stage.name = this.stage.name.trim();
-            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''){
-                this.warnMsg("阶段优先级必须为大于0的整数");
+            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''||this.stage.sort>100){
+                this.warnMsg("阶段优先级须为大于0并小于100的整数");
                 return false;
             }else if (this.stage.name!=''&&this.stage.name.length>0&&this.stage.name.length<=10) {
                 Http.zsyPostHttp('/stage/add', this.stage, (res) => {
@@ -327,6 +327,10 @@
             }else{
                 this.warnMsg("阶段名称不为空且不超过10个字");
             }
+        },
+        clearStage(){
+            this.stage.sort = '';
+            this.stage.name = '';
         },
         deleteStage(index,rows){
             this.$confirm('确认删除?', '提示', {
