@@ -622,12 +622,13 @@
             },
             saveTaskInfo(formName) {
                 let vm = this;
+                this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
-                        param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
                             vm.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
                             return false;
@@ -784,22 +785,22 @@
                 this.$refs[helpForm].validate((valid) => {
                     if (valid) {
                         if (!this.isDecimal(param.integral)) {
-                            vm.$message({ showClose: true,message: '积分格式错误',type: 'error'});
+                            this.$message({ showClose: true,message: '积分格式错误',type: 'error'});
                             return false;
                         }
                         if (helper.decodeToken().userId==this.helpForm.userId) {
-                            vm.$message({ showClose: true,message: '求助目标不能是自己，请重试',type: 'error'});
+                            this.$message({ showClose: true,message: '求助目标不能是自己，请重试',type: 'error'});
                             return false;
                         }
                         if(this.helpForm.id!=''){
                             http.zsyPostHttp('/integral/editHelpDetail/'+this.helpForm.id, help, (res) => {
-                                vm.$message({ showClose: true,message: '转移积分更新成功，请等待审核',type: 'success'});
+                                this.$message({ showClose: true,message: '转移积分更新成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });
                         }else{
                             http.zsyPostHttp('/integral/add', help, (res) => {
-                                vm.$message({ showClose: true,message: '转移积分添加成功，请等待审核',type: 'success'});
+                                this.$message({ showClose: true,message: '转移积分添加成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });

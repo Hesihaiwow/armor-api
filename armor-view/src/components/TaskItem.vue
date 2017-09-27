@@ -998,7 +998,7 @@
                 }]
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyPrivateTaskForm.id}`, this.modifyPrivateTaskForm, (resp) => {
-                    vm.successMsg('任务修改成功');
+                    this.$message({showClose: true, message: '任务修改成功',type: 'success'});
                     vm.hideModifyPrivateTaskDialog();
                     vm.$emit('reload');
                 })
@@ -1243,7 +1243,7 @@
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
-                    vm.successMsg('任务修改成功');
+                    this.$message({ showClose: true,message: '任务修改成功',type: 'success'});
                     this.hideTaskModify()
                     // 刷新看板
                     //this.$root.eventBus.$emit("reloadBoard");
@@ -1311,7 +1311,6 @@
                 type: 'success'
             });
         },
-
         warnMsg(msg) {
             this.$message({
                 showClose: true,

@@ -18,7 +18,7 @@
     ORDER BY create_time DESC
   </select>
   <select id="countTag" resultType="java.lang.Integer">
-    select   COUNT(*)   from tag
+    select   COUNT(*)   from task_tag
   </select>
   <delete id="deleteTag" parameterType="java.lang.Long">
     delete from tag

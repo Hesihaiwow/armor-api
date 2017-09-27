@@ -76,7 +76,7 @@ public class ZSYStageService implements IZSYStageService {
      */
     @Override
     public void deleteStage(Long id){
-        if(stageMapper.countStage(id)==0){
+        if(stageMapper.countStage(id)!=0){
             throw new ZSYServiceException("阶段正在使用中，请修改或停止使用后删除");
         }
         if(stageMapper.deleteStage(id)==0){

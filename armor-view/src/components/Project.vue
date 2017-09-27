@@ -315,7 +315,7 @@
             this.stage.sort = this.stage.sort.trim();
             this.stage.name = this.stage.name.trim();
             if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''){
-                this.warnMsg("阶段优先级必须为大于1的整数");
+                this.warnMsg("阶段优先级必须为大于0的整数");
                 return false;
             }else if (this.stage.name!=''&&this.stage.name.length>0&&this.stage.name.length<=10) {
                 Http.zsyPostHttp('/stage/add', this.stage, (res) => {
@@ -350,7 +350,7 @@
         editStage(){
             var reg = /^\+?[1-9][0-9]*$/;
             if(!reg.test(this.stage.sort)){
-                this.warnMsg("阶段优先级必须为大于1的整数");
+                this.warnMsg("阶段优先级必须为大于0的整数");
                 return false;
             }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.trim().length<=10) {
                 Http.zsyPostHttp(`/stage/edit`, this.stage, (resp) => {
