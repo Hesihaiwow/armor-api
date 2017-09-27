@@ -340,7 +340,7 @@
             }).then(() => {
                 Http.zsyDeleteHttp(`/stage/`+rows[index].id, {}, (resp) => {
                     this.successMsg("阶段删除成功");
-                    rows.splice(index, 1);
+                    this.fetchStageList();
                 })
             }).catch(() => {
             });
