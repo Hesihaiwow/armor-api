@@ -473,6 +473,7 @@
                     ],
                     taskName: [
                         {required: true, validator: validateEmpty, message: '任务名称不能为空', trigger: 'blur'},
+                        { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
                     ],
                     description: [
                         {required: true, validator: validateEmpty, message: '描述不能为空', trigger: 'blur'},
