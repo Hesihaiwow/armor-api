@@ -69,30 +69,38 @@
           let newPwd = Helper.trim(this.modifyForm.newPassword);
           let sureNewPwd = Helper.trim(this.modifyForm.sureNewPwd);
           if (oldPwd==''){
-              this.$message.warning("请输入旧密码");
+              this.warnMsg("请输入旧密码");
               return;
           }
           if (newPwd==''){
-              this.$message.warning("请输入新密码");
+              this.warnMsg("请输入新密码");
               return;
           }
           if (sureNewPwd==''){
-              this.$message.warning("请再次输入新密码");
+              this.warnMsg("请再次输入新密码");
               return;
           }
           if (newPwd!=sureNewPwd){
-              this.$message.warning("两次输入的新密码不一致");
+              this.warnMsg("两次输入的新密码不一致");
               return;
           }
           this.button.loading = true;
           this.button.btnName = '保存中';
           Http.zsyPutHttp('/user/password',this.modifyForm,(res)=> {
-              this.$message.success("修改成功");
+              this.$message({
+                  showClose: true,
+                  message: '修改成功',
+                  type: 'success'
+              });
               setTimeout(function () {
                   _this.$router.push("/");
               },1000)
           },(fail)=>{
-              this.$message.error(fail.errMsg);
+              this.$message({
+                  showClose: true,
+                  message: fail.errMsg,
+                  type: 'error'
+              });
               this.button.loading = false;
               this.button.btnName = '保存';
           },(err)=>{
@@ -111,7 +119,14 @@
         this.$emit("addNewDept", newDept);
         this.showAlterPwd = false;
         this.amWarn = '';
-      }
+      },
+        warnMsg(msg) {
+            this.$message({
+                showClose: true,
+                message: msg,
+                type: 'warning'
+            });
+        },
     }
   }
 </script>

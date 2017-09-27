@@ -161,7 +161,7 @@
             // 重置用户密码
             resetUserPwd (userId){
                 Http.zsyPutHttp(`/user/repwd/${userId}`,null,(res)=>{
-                    this.$message.success('重置密码成功');
+                    this.$message({showClose: true,'重置密码成功': msg,type: 'success'});
                 });
             },
             //删除用户确认框
@@ -179,7 +179,7 @@
             //删除用户
             deleteUser (userId){
                 Http.zsyDeleteHttp(`/user/${userId}`,null,(res)=>{
-                    this.$message.success('删除用户成功');
+                    this.$message({showClose: true,'删除用户成功': msg,type: 'success'});
                     this.userPaging(this.queryForm.deptId,this.queryForm.pageIndex);
                 });
             },

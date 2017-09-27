@@ -10,7 +10,7 @@
                         :close-transition="false"
                         @close="deleteTagButton(tag)"
                         :type="color[tag.color]" style="width: 100px;height:40px;line-height:40px;text-align: center;font-size: 15px;margin-left:10px"
-                        :style="'width:'+(tag.name.length)*35+'px'">{{tag.name}}</el-tag>
+                        :style="'width:'+(tag.name.length)*40+'px'">{{tag.name}}</el-tag>
                 <el-input
                         style="width: 100px;height:40px;line-height:40px;font-size: 15px;"
                         class="input-new-tag"
@@ -141,7 +141,6 @@
 <script>
   import Http from '../lib/Http'
   import Helper from '../lib/Helper'
-  import { Message } from 'element-ui';
   import ElButton from "../../node_modules/element-ui/packages/button/src/button";
   import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane";
   import ElInput from "../../node_modules/element-ui/packages/input/src/input";
@@ -207,10 +206,7 @@
             type: 'warning'
           }).then(() => {
             Http.zsyDeleteHttp("/project/delete/"+this.editProjectId,null,(res)=>{
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              });
+            this.successMsg('删除成功')
             this.project.name = this.project.description = this.project.imageUrl = this.editProjectId= '';
             this.editProjectVisible = false;
             this.projectList();
@@ -239,7 +235,7 @@
       updateProject(){
           if(this.saveAdd()){
             Http.zsyPutHttp("/project/update/"+this.editProjectId,this.project,(res)=>{
-              Message.success("项目更新成功");
+              this.successMsg('项目更新成功');
               this.project.name = this.project.description = this.editProjectId= '';
               this.editProjectVisible = false;
               this.projectList();
@@ -258,14 +254,14 @@
         if (this.project.name!= ''&&this.project.name.trim().length!=0&&this.project.name.trim().length<15){
           return true;
         }else{
-            Message.error("项目名称不能为空且不超过15字");
+            this.warnMsg("项目名称不能为空且不超过15字");
             return false;
         }
       },
       saveProject(){
           if(this.saveAdd()){
             Http.zsyPostHttp(Http.API_URI.ADDPROJECT,this.project,(res)=>{
-              Message.success("项目添加成功");
+              this.successMsg("项目添加成功");
               this.projectList();
               this.project.name = this.project.description = this.editProjectId= '';
               this.showAddTask = false;
@@ -277,10 +273,10 @@
             const isLt2M = file.size / 1024 / 1024 < 2;
 
             if (!isImage) {
-                this.$message.error('请选择正确的图片文件');
+                this.errorMsg("请选择正确的图片文件");
             }
             if (!isLt2M) {
-                this.$message.error('上传头像图片大小不能超过 2MB');
+                this.errorMsg("上传头像图片大小不能超过 2MB");
             }
             return isImage && isLt2M;
         },
@@ -303,7 +299,7 @@
                 type: 'warning'
             }).then(() => {
                 Http.zsyDeleteHttp('/tag/'+tag.id, null, (res) => {
-                    this.$message.success('标签删除成功');
+                    this.successMsg("标签删除成功");
                     this.tagList.splice(this.tagList.indexOf(tag), 1);
                 })
             }).catch(() => {
@@ -316,18 +312,20 @@
         },
         saveStage(){
             var reg = /^\+?[1-9][0-9]*$/;
-            if(!reg.test(this.stage.sort)||this.stage.sort.trim()<1||this.stage.sort==''){
-                this.$message.error('阶段优先级必须为大于1的整数');
+            this.stage.sort = this.stage.sort.trim();
+            this.stage.name = this.stage.name.trim();
+            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''){
+                this.warnMsg("阶段优先级必须为大于1的整数");
                 return false;
-            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.length<=10) {
+            }else if (this.stage.name!=''&&this.stage.name.length>0&&this.stage.name.length<=10) {
                 Http.zsyPostHttp('/stage/add', this.stage, (res) => {
-                    this.$message.success('阶段添加成功');
+                    this.successMsg("阶段添加成功");
                     this.stage.name= this.stage.sort = '';
                     this.fetchStageList();
                     this.addStageVisible = false;
                 })
             }else{
-                this.$message.error('阶段名称不为空且不超过10个字');
+                this.warnMsg("阶段名称不为空且不超过10个字");
             }
         },
         deleteStage(index,rows){
@@ -337,7 +335,7 @@
                 type: 'warning'
             }).then(() => {
                 Http.zsyDeleteHttp(`/stage/`+rows[index].id, {}, (resp) => {
-                    this.$message.success('阶段删除成功');
+                    this.successMsg("阶段删除成功");
                     rows.splice(index, 1);
                 })
             }).catch(() => {
@@ -351,17 +349,17 @@
         },
         editStage(){
             var reg = /^\+?[1-9][0-9]*$/;
-            if(!reg.test(this.stage.sort)||this.stage.sort.trim()<1||this.stage.sort==''){
-                this.$message.error('阶段优先级必须为大于1的整数');
+            if(!reg.test(this.stage.sort)){
+                this.warnMsg("阶段优先级必须为大于1的整数");
                 return false;
-            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.length<=10) {
+            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.trim().length<=10) {
                 Http.zsyPostHttp(`/stage/edit`, this.stage, (resp) => {
-                    this.$message.success('阶段更新成功');
+                    this.successMsg("阶段更新成功");
                     this.fetchStageList()
                     this.editStageVisible = false;
                 })
             }else{
-                this.$message.error('阶段名称不为空且不超过10个字');
+                this.warnMsg("阶段名称不为空且不超过10个字");
             }
         },
         showTag() {
@@ -373,18 +371,45 @@
         handleInputTagConfirm() {
             if (this.TagName!=''&&this.TagName.trim().length>0&&this.TagName.length<=10) {
                 Http.zsyPostHttp('/tag/add?name='+this.TagName, null, (res) => {
-                    this.$message.success('标签添加成功');
+                    this.successMsg("标签添加成功");
                     this.fetchTagList;
                     this.tagList.push({color: "7", id: res.data, name:this.TagName});
                     this.inputVisible = false;
                     this.TagName = '';
                 })
             }else{
-                console.log("x")
                 this.inputVisible = false;
                 this.TagName = '';
-                this.$message.error('标签名不为空且不超过10个字');
+                this.warnMsg("标签名不为空且不超过10个字");
             }
+        },
+        msg(msg) {
+            this.$message({
+                showClose: true,
+                message: msg
+            });
+        },
+        successMsg(msg) {
+            this.$message({
+                showClose: true,
+                message: msg,
+                type: 'success'
+            });
+        },
+
+        warnMsg(msg) {
+            this.$message({
+                showClose: true,
+                message: msg,
+                type: 'warning'
+            });
+        },
+        errorMsg(msg) {
+            this.$message({
+                showClose: true,
+                message: msg,
+                type: 'error'
+            });
         }
     }
   }
@@ -414,8 +439,6 @@
 .cancel:hover{background: #fff;border: 1px solid #36A8FF;color: #36A8FF;font-weight: 700;}
 .save{background: #36A8FF;color: #fff;}
 .delete{background: #FF4949;color: #fff;float:left;}
-.stage{float:right; display:inline; margin-bottom: auto;position: absolute; right: 200px; top: 45px;}
-.stage-box{padding:10px; width:350px; height:200px; border: 2px solid #999999; -moz-border-radius: 15px;-webkit-border-radius: 15px;border-radius:10px;}
 
 
 </style>

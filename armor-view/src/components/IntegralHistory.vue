@@ -249,11 +249,19 @@
         this.$refs[integralForm].validate((valid) => {
           if (valid) {
             if (!this.isDecimal(this.integralForm.integral)) {
-                this.$message.error("积分格式错误");
+                this.$message({
+                    showClose: true,
+                    message: '积分格式错误',
+                    type: 'error'
+                });
                 return false;
             }
             Http.zsyPostHttp('/integral/add', this.integralForm, (res) => {
-                this.$message.success("积分添加成功");
+              this.$message({
+                  showClose: true,
+                  message: '积分添加成功',
+                  type: 'success'
+              });
               this.editIntegralVisible = false;
               this.integralHistory(1);
               this.cancelIntegral();

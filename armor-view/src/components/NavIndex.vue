@@ -628,11 +628,11 @@
                         param.taskName = param.taskName.trim();
                         param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
-                            vm.$message.error('工作量只能为数字或者小数');
+                            vm.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
                             return false;
                         }
                         if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
-                            vm.$message.error('工作量请保持在1至1000范围');
+                            vm.$message({ showClose: true,message: '工作量请保持在1至1000范围',type: 'error'});
                             return false;
                         }
                         var taskUsers = [{
@@ -644,7 +644,7 @@
                         }];
                         param['taskUsers'] = taskUsers;
                         http.zsyPostHttp('/task/create', param, (resp) => {
-                            vm.$message.success('任务创建成功');
+                            vm.$message({ showClose: true,message: '任务创建成功',type: 'success'});
                             this.$refs[formName].resetFields();
                             this.createTaskVisible = false
                             vm.reload()
@@ -783,22 +783,22 @@
                 this.$refs[helpForm].validate((valid) => {
                     if (valid) {
                         if (!this.isDecimal(param.integral)) {
-                            this.$message.error("积分格式错误");
+                            vm.$message({ showClose: true,message: '积分格式错误',type: 'error'});
                             return false;
                         }
                         if (helper.decodeToken().userId==this.helpForm.userId) {
-                            this.$message.error("求助目标不能是自己，请重试");
+                            vm.$message({ showClose: true,message: '求助目标不能是自己，请重试',type: 'error'});
                             return false;
                         }
                         if(this.helpForm.id!=''){
                             http.zsyPostHttp('/integral/editHelpDetail/'+this.helpForm.id, help, (res) => {
-                                this.$message.success("转移积分更新成功，请等待审核");
+                                vm.$message({ showClose: true,message: '转移积分更新成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });
                         }else{
                             http.zsyPostHttp('/integral/add', help, (res) => {
-                                this.$message.success("转移积分添加成功，请等待审核");
+                                vm.$message({ showClose: true,message: '转移积分添加成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });
@@ -844,7 +844,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyDeleteHttp(`/integral/delete/`+id, {}, (resp) => {
-                        this.$message.success("删除成功");
+                        vm.$message({ showClose: true,message: '删除成功',type: 'success'});
                         this.reload();
                         this.helpDetailVisible = false;
                     })
@@ -859,7 +859,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyGetHttp(`/integral/passReview/`+id, {}, (resp) => {
-                        this.$message.success("审核成功");
+                        vm.$message({ showClose: true,message: '审核成功',type: 'success'});
                         this.reload();
                         this.helpDetailVisible = false;
                     })

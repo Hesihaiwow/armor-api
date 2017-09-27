@@ -48,10 +48,10 @@
                 const isLt2M = file.size / 1024 / 1024 < 2;
 
                 if (!isImage) {
-                    this.$message.error('请选择正确的图片文件');
+                    this.$message({ showClose: true,message: '请选择正确的图片文件',type: 'error'});
                 }
                 if (!isLt2M) {
-                    this.$message.error('上传头像图片大小不能超过 2MB');
+                    this.$message({ showClose: true,message: '上传头像图片大小不能超过 2MB',type: 'error'});
                 }
                 return isImage && isLt2M;
             },
@@ -67,12 +67,12 @@
             },
             saveAvatar() {
                 if (this.imageUrl == '') {
-                    this.$message.error('请选择图片文件');
+                    this.$message({ showClose: true,message: '请选择图片文件',type: 'error'});
                     return false
                 }
                 let userId = Helper.decodeToken().userId;
                 Http.zsyPutHttp(`/user/modifyAvatar`, {userId: userId, url: this.imageUrl}, (res) => {
-                    this.$message.success('更换头像成功');
+                    this.$message({ showClose: true,message: '更换头像成功',type: 'success'});
                     this.$router.go(0);
                 })
             }

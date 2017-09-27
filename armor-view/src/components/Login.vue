@@ -19,7 +19,6 @@
     </div>
 </template>
 <script>
-    import { Message } from 'element-ui';
     import Helper from '../lib/Helper'
     import Http from "../lib/Http";
 
@@ -39,18 +38,31 @@
             login () {
                 let _this = this;
                 if (Helper.trim(_this.loginForm.account) == ''){
-                    Message.warning('请输入用户名');
+                    this.$message({
+                        showClose: true,
+                        message: '请输入用户名',
+                        type: 'warning'
+                    });
                     return;
                 }
                 if (Helper.trim(_this.loginForm.password) == ''){
-                    Message.warning('请输入密码');
+                    this.$message({
+                        showClose: true,
+                        message: '请输入密码',
+                        type: 'warning'
+                    });
                     return;
                 }
                 _this.button.loading = true;
                 Http.zsyPostHttp(Http.API_URI.LOGIN, _this.loginForm,(res)=>{
                     if (res.errCode!='00'){
                         _this.button.loading = false;
-                        Message.error(res.errMsg);
+                        this.$message({
+                            showClose: true,
+                            message: res.errMsg,
+                            type: 'error'
+                        });
+
                     }else{
                         _this.button.btnName = '登录成功,跳转中...';
                         window.localStorage.setItem("token", res.data);
@@ -58,7 +70,11 @@
                     }
                 },(res)=>{
                     _this.button.loading = false;
-                    Message.error(res.errMsg);
+                    this.$message({
+                        showClose: true,
+                        message: res.errMsg,
+                        type: 'error'
+                    });
                 },(e)=>{
                     _this.button.loading = false;
                 });

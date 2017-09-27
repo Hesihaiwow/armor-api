@@ -84,7 +84,11 @@
             this.hide();
             this.initDeptLevelData();
             this.$emit("handleDeptDataRefresh");
-            this.$message.success("添加部门成功");
+            this.$message({
+                showClose: true,
+                message: '添加部门成功',
+                type: 'success'
+            });
         })
       }
     }

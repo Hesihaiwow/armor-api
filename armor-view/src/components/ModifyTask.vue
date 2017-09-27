@@ -255,7 +255,7 @@
                     this.step.endTime == '' ||
                     this.step.description == '';
                 if (valid) {
-                    this.$message.warning('请将阶段填写完整');
+                    this.warnMsg('请将阶段填写完整');
                     return
                 }
                 this.showAddDetail = !this.showAddDetail;
@@ -356,31 +356,30 @@
                     vm.taskUsers = resp.data.users;
                 })
                 console.log(vm.taskForm)
-
             },
             saveTask() {
                 if (this.taskForm.description == '') {
-                    this.$message.warning("请填写任务备注");
+                    this.warnMsg("请填写任务备注");
                     return;
                 }
                 if (this.taskForm.taskName == '') {
-                    this.$message.warning("请填写任务名称");
+                    this.warnMsg("请填写任务名称");
                     return;
                 }
                 if (this.taskForm.projectId == '') {
-                    this.$message.warning("请选择项目");
+                    this.warnMsg("请选择项目");
                     return;
                 }
                 if (this.taskForm.endTime == '') {
-                    this.$message.warning("请选择结束时间");
+                    this.warnMsg("请选择结束时间");
                     return;
                 }
                 if (this.taskForm.tags.length == 0) {
-                    this.$message.warning("请选择至少一项标签");
+                    this.warnMsg("请选择至少一项标签");
                     return;
                 }
                 if (this.taskUsers.length <2) {
-                    this.$message.warning("任务阶段至少为2步");
+                    this.warnMsg("任务阶段至少为2步");
                     return;
                 }
                 let param = this.taskForm;
@@ -388,7 +387,11 @@
                 param['taskUsers'] = this.taskUsers;
                 let vm = this;
                 http.zsyPostHttp('/task/modify', param, (resp) => {
-                    vm.$message.success('任务创建成功');
+                    this.$message({
+                        showClose: true,
+                        message: '任务创建成功',
+                        type: 'success'
+                    });
                     vm.taskForm.description = '';
                     vm.taskForm.taskName = '';
                     vm.taskForm.endTime = '';
@@ -399,7 +402,14 @@
                     vm.$emit('handleFetchTaskList')
                 })
                 this.showModifyTask = false;
-            }
+            },
+            warnMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'warning'
+                });
+            },
         }
     }
 </script>
