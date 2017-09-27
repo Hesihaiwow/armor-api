@@ -37,4 +37,9 @@
         </foreach>
     </insert>
 
+    <!-- 查询标签是否被使用 -->
+    <select id="countTag" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        SELECT count(*) from task_tag where tag_id = #{id,jdbcType=BIGINT}
+    </select>
+
 </mapper>

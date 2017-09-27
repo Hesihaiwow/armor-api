@@ -23,7 +23,7 @@ public class ZSYStageController extends ZSYController {
     private IZSYStageService stageService;
 
     /**
-     * 获取标签列表
+     * 获取阶段列表
      *
      * @return
      */
@@ -35,7 +35,7 @@ public class ZSYStageController extends ZSYController {
     }
 
     /**
-     * 添加标签
+     * 添加阶段
      *
      * @return
      */
@@ -47,7 +47,19 @@ public class ZSYStageController extends ZSYController {
     }
 
     /**
-     * 添加标签
+     * 编辑阶段
+     *
+     * @return
+     */
+    @ApiOperation("编辑阶段")
+    @PostMapping(value = "/edit")
+    public String editStage(@RequestBody StageResDTO stageResDTO) {
+        stageService.editStage(stageResDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 删除阶段
      *
      * @return
      */

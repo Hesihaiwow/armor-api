@@ -100,31 +100,42 @@
       //添加用户
       handleAddUserClick () {
         if (Helper.trim(this.addForm.name)==''){
-            this.$message.warning("请填写用户名称");
+            this.warnMsg("请填写用户名称");
             return;
         }
         if (Helper.trim(this.addForm.account)==''){
-              this.$message.warning("请填写用户账号");
+              this.warnMsg("请填写用户账号");
               return;
         }
         if (Helper.trim(this.addForm.jobName)==''){
-              this.$message.warning("请填写用户职位");
+              this.warnMsg("请填写用户职位");
               return;
         }
         if (Helper.trim(this.addForm.phone)==''){
-              this.$message.warning("请填写用户手机号");
+              this.warnMsg("请填写用户手机号");
               return;
         }
         if (Helper.trim(this.addForm.userRole)==''){
-              this.$message.warning("请选择用户权限");
+              this.warnMsg("请选择用户权限");
             return;
         }
         Http.zsyPostHttp('/user/add',this.addForm,(res)=>{
             this.hide();
-            this.$message.success("用户添加成功");
+            this.$message({
+                showClose: true,
+                message: '用户添加成功',
+                type: 'success'
+            });
             this.$emit("handleUserDataRefresh");
         });
-      }
+      },
+      warnMsg(msg) {
+          this.$message({
+              showClose: true,
+              message: msg,
+              type: 'warning'
+          });
+      },
     }
   }
 </script>

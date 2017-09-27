@@ -750,7 +750,7 @@
             // 审核通过任务
             acceptTask() {
                 http.zsyPutHttp(`task/auditing/accept/${this.auditForm.taskId}`, {}, (resp) => {
-                    this.$message.success("任务审核成功");
+                    this.successMsg("任务审核成功");
                     this.$emit('reload');
                     this.auditForm.taskId = '';
                     this.auditForm.taskUserId = '';
@@ -761,7 +761,7 @@
             // 打回任务
             rejectTask() {
                 http.zsyPutHttp(`task/auditing/reject/${this.auditForm.taskId}`, {}, (resp) => {
-                    this.$message.success("任务打回成功");
+                    this.successMsg("任务打回成功");
                     this.$emit('reload');
                     this.auditForm.taskId = '';
                     this.auditForm.taskUserId = '';
@@ -782,7 +782,7 @@
                         this.resetFinishForm()
                         this.showFinishedTask = false;
                         this.taskDetail = {};
-                        this.$message.success("操作成功");
+                        this.successMsg("操作成功");
                         this.$emit('reload');
                     })
                 }).catch(() => {
@@ -855,7 +855,7 @@
                     http.zsyPutHttp(`/task/complete/master/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
                         this.$root.eventBus.$emit('reloadBoard');
-                        this.$message.success("操作成功");
+                        this.successMsg("操作成功");
                         this.hideTaskDetail();
                     })
                 }).catch(() => {
@@ -871,7 +871,7 @@
                     http.zsyDeleteHttp(`/task/delete/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
                         this.$root.eventBus.$emit('reloadBoard');
-                        this.$message.success("删除成功");
+                        this.successMsg("删除成功");
                         this.hideTaskDetail();
                         this.showAuditTask = false;
                         this.taskDetail = {};
@@ -931,7 +931,7 @@
             // 评价任务
             taskAssess() {
                 http.zsyPostHttp('/task/comment', this.assessForm, (resp) => {
-                    this.$message.success("评价成功");
+                    this.successMsg("评价成功");
                     this.showTaskComment = false
                     this.commentStages = []
                     this.assessForm = {
@@ -948,42 +948,42 @@
             // 保存修改单人任务
             saveModifyPrivateTaskForm() {
                 if (this.modifyPrivateTaskForm.projectId == '') {
-                    this.$message.warning("请选择项目");
+                    this.warnMsg("请选择项目");
                     return;
                 }
                 if (this.modifyPrivateTaskForm.endTime == '') {
-                    this.$message.warning("请选择结束时间");
+                    this.warnMsg("请选择结束时间");
                     return;
                 }
                 if (this.modifyPrivateTaskForm.taskHours == '') {
-                    this.$message.warning("请输入工作量");
+                    this.warnMsg("请输入工作量");
                     return;
                 }
                 if (this.modifyPrivateTaskForm.taskName.trim() == '') {
-                    this.$message.warning("请填写任务名称");
+                    this.warnMsg("请填写任务名称");
                     return;
                 }
                 if (this.modifyPrivateTaskForm.description.trim() == '') {
-                    this.$message.warning("请填写任务备注");
+                    this.warnMsg("请填写任务备注");
                     return;
                 }
 
                 if (this.modifyPrivateTaskForm.stageId === '') {
-                    this.$message.warning("请选择项目阶段");
+                    this.warnMsg("请选择项目阶段");
                     return;
                 }
                 if (this.modifyPrivateTaskForm.tags.length == 0) {
-                    this.$message.warning("请选择至少一项标签");
+                    this.warnMsg("请选择至少一项标签");
                     return;
                 }
 
                 var isNum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.modifyPrivateTaskForm.taskHours);
                 if(!isNum){
-                    vm.$message.error('工作量填写错误');
+                    vm.$message({ showClose: true,message: '工作量填写错误',type: 'error'});
                     return false;
                 }
                 if(this.modifyPrivateTaskForm.taskHours>99999.9||this.modifyPrivateTaskForm.taskHours<0.1){
-                    vm.$message.error('工作量正确值应为0.1~99999.9');
+                    vm.$message({ showClose: true,message: '工作量正确值应为0.1~99999.9',type: 'error'});
                     return false;
                 }
 
@@ -998,7 +998,7 @@
                 }]
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyPrivateTaskForm.id}`, this.modifyPrivateTaskForm, (resp) => {
-                    vm.$message.success('任务修改成功');
+                    vm.successMsg('任务修改成功');
                     vm.hideModifyPrivateTaskDialog();
                     vm.$emit('reload');
                 })
@@ -1158,7 +1158,7 @@
                     this.step.beginTime == '' ||
                     this.step.endTime == '';
                 if (valid) {
-                    this.$message.warning('请将阶段填写完整');
+                    this.warnMsg('请将阶段填写完整');
                     return
                 }
                 if (this.step.index === '') {
@@ -1212,23 +1212,23 @@
                      return;
                  }*/
                 if (this.modifyTaskForm.taskName == '') {
-                    this.$message.warning("请填写任务名称");
+                    this.warnMsg("请填写任务名称");
                     return;
                 }
                 if (this.modifyTaskForm.projectId == '') {
-                    this.$message.warning("请选择项目");
+                    this.warnMsg("请选择项目");
                     return;
                 }
                 if (this.modifyTaskForm.endTime == '') {
-                    this.$message.warning("请选择结束时间");
+                    this.warnMsg("请选择结束时间");
                     return;
                 }
                 if (this.modifyTaskForm.stageId === '') {
-                    this.$message.warning("请选择项目阶段");
+                    this.warnMsg("请选择项目阶段");
                     return;
                 }
                 if (this.modifyTaskForm.tags.length == 0) {
-                    this.$message.warning("请选择至少一项标签");
+                    this.warnMsg("请选择至少一项标签");
                     return;
                 }
                 let param = this.modifyTaskForm;
@@ -1243,7 +1243,7 @@
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
-                    vm.$message.success('任务修改成功');
+                    vm.successMsg('任务修改成功');
                     this.hideTaskModify()
                     // 刷新看板
                     //this.$root.eventBus.$emit("reloadBoard");
@@ -1303,7 +1303,22 @@
                     });
                  vm.getTaskLog(taskId)
             });
-        }
+        },
+        successMsg(msg) {
+            this.$message({
+                showClose: true,
+                message: msg,
+                type: 'success'
+            });
+        },
+
+        warnMsg(msg) {
+            this.$message({
+                showClose: true,
+                message: msg,
+                type: 'warning'
+            });
+        },
     }
 </script>
 <style>

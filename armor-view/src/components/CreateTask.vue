@@ -319,16 +319,16 @@
                     this.step.beginTime == '' ||
                     this.step.endTime == ''
                 if (valid) {
-                    this.$message.error('请将阶段填写完整');
+                    this.errorMsg('请将阶段填写完整');
                     return
                 }
                 var isnum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.step.taskHours);
                 if(!isnum){
-                    this.$message.error('工作量填写错误');
+                    this.errorMsg('工作量填写错误');
                     return false;
                 }
                 if(this.step.taskHours>99999.9||this.step.taskHours<0.1){
-                    this.$message.error('工作量正确值应为0.1~99999.9');
+                    this.errorMsg('工作量正确值应为0.1~99999.9');
                     return false;
                 }
 
@@ -431,23 +431,23 @@
                     return;
                 }*/
                 if (this.taskForm.taskName == '') {
-                    this.$message.warning("请填写任务名称");
+                    this.warnMsg("请填写任务名称");
                     return;
                 }
                 if (this.taskForm.projectId == '') {
-                    this.$message.warning("请选择项目");
+                    this.warnMsg("请选择项目");
                     return;
                 }
                 if (this.taskForm.endTime == '') {
-                    this.$message.warning("请选择结束时间");
+                    this.warnMsg("请选择结束时间");
                     return;
                 }
                 if (this.taskForm.stageId === '') {
-                    this.$message.warning("请选择项目阶段");
+                    this.warnMsg("请选择项目阶段");
                     return;
                 }
                 if (this.taskForm.tags.length == 0) {
-                    this.$message.warning("请选择至少一项标签");
+                    this.warnMsg("请选择至少一项标签");
                     return;
                 }
                 /*  if (this.taskUsers.length < 2) {
@@ -466,7 +466,11 @@
                 })
                 let vm = this;
                 http.zsyPostHttp('/task/create', param, (resp) => {
-                    vm.$message.success('任务创建成功');
+                    this.$message({
+                        showClose: true,
+                        message: '任务创建成功',
+                        type: 'success'
+                    });
                     vm.taskForm.description = '';
                     vm.taskForm.taskName = '';
                     vm.taskForm.endTime = '';
@@ -481,6 +485,20 @@
                     vm.$emit('handleFetchTaskList')
                 })
                 this.showCreateTask = false;
+            },
+            warnMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'warning'
+                });
+            },
+            errorMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'error'
+                });
             }
         }
     }

@@ -16,6 +16,9 @@ public class StageResDTO {
 
     private Integer sort;
 
+    //序号
+    private Integer num;
+
     public long getId() {
         return id;
     }
@@ -38,5 +41,17 @@ public class StageResDTO {
 
     public void setSort(int sort) {
         this.sort = sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
     }
 }

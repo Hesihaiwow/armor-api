@@ -8,14 +8,17 @@
     <result column="create_by" jdbcType="BIGINT" property="createBy" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
   </resultMap>
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.dto.response.StageResDTO" extends="BaseResultMap">
+        <result column="num" jdbcType="INTEGER" property="num" />
+    </resultMap>
   <sql id="Base_Column_List">
     id, name, create_time, create_by,sort
   </sql>
-  <select id="selectStage" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from stage
-    ORDER BY sort ASC
+  <select id="selectStage" resultMap="BaseMap">
+    SELECT (@rowid := @rowid+1) AS num, a.id, a.name, a.sort  FROM(
+        SELECT *  FROM stage
+      ORDER BY sort ASC)as a,
+    (SELECT (@rowid:=0))as b
   </select>
   <delete id="deleteStage" parameterType="java.lang.Long">
     delete from stage
@@ -27,6 +30,13 @@
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{createBy,jdbcType=BIGINT}, #{sort,jdbcType=INTEGER} )
   </insert>
+
+    <update id="update">
+        UPDATE stage
+          SET  name= #{name,jdbcType=BIGINT}, sort= #{sort,jdbcType=BIGINT}
+        WHERE id=#{id,jdbcType=BIGINT};
+    </update>
+
   <!--验证阶段名是否存在-->
   <select id="validateStage" parameterType="java.lang.String" resultType="java.lang.Integer">
     SELECT count(*) FROM stage  WHERE name= #{name,jdbcType=VARCHAR}
@@ -38,4 +48,10 @@
     <include refid="Base_Column_List" />
     from stage where id = #{id}
   </select>
+
+    <!-- 查询阶段ID是否被使用 -->
+    <select id="countStage" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        SELECT count(*) from task_user,task where
+        task_user.stage_id = #{id,jdbcType=BIGINT} or task.stage_id =#{id,jdbcType=BIGINT}
+    </select>
 </mapper>

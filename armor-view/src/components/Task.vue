@@ -253,13 +253,15 @@
         },
         watch: {
             btnValStatus: function (val) {
-                console.log(val)
                 if (val == 1) {
                     document.getElementById('app').style.overflowY = 'auto'
                 } else {
                     document.getElementById('app').style.overflowY = 'hidden';
                 }
-            }
+            },
+        },
+        beforeDestroy(){
+            document.getElementById('app').style.overflowY = 'auto'
         },
         methods: {
             btnValFun() {

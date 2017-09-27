@@ -19,10 +19,16 @@ public interface IZSYStageService {
 
     /**
      * 添加阶段
-     * @param name
+     * @param stageResDTO
      * @return
      */
     Long addStage(StageResDTO stageResDTO);
+
+    /**
+     *编辑阶段
+     * @param stageResDTO
+     */
+    void editStage(StageResDTO stageResDTO);
 
     /**
      * 删除阶段
