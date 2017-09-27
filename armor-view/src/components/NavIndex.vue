@@ -622,12 +622,13 @@
             },
             saveTaskInfo(formName) {
                 let vm = this;
+                this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
-                        param.endTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59')
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
                             vm.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
                             return false;
