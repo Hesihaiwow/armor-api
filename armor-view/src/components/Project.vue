@@ -353,8 +353,8 @@
         },
         editStage(){
             var reg = /^\+?[1-9][0-9]*$/;
-            if(!reg.test(this.stage.sort)){
-                this.warnMsg("阶段优先级必须为大于0的整数");
+            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''||this.stage.sort>100){
+                this.warnMsg("阶段优先级须为大于0并小于100的整数");
                 return false;
             }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.trim().length<=10) {
                 Http.zsyPostHttp(`/stage/edit`, this.stage, (resp) => {
