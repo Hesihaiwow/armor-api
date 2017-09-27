@@ -18,7 +18,9 @@
     ORDER BY create_time DESC
   </select>
   <select id="countTag" resultType="java.lang.Integer">
-    select   COUNT(*)   from task_tag where  tag_id = #{id,jdbcType=BIGINT}
+    SELECT  COUNT(*)   from task_tag
+      LEFT JOIN task on task_tag.task_id = task.id
+      where task_tag.tag_id= #{id,jdbcType=BIGINT} and task.is_delete =0
   </select>
   <delete id="deleteTag" parameterType="java.lang.Long">
     delete from tag
