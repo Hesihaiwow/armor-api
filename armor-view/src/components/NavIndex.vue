@@ -784,22 +784,22 @@
                 this.$refs[helpForm].validate((valid) => {
                     if (valid) {
                         if (!this.isDecimal(param.integral)) {
-                            vm.$message({ showClose: true,message: '积分格式错误',type: 'error'});
+                            this.$message({ showClose: true,message: '积分格式错误',type: 'error'});
                             return false;
                         }
                         if (helper.decodeToken().userId==this.helpForm.userId) {
-                            vm.$message({ showClose: true,message: '求助目标不能是自己，请重试',type: 'error'});
+                            this.$message({ showClose: true,message: '求助目标不能是自己，请重试',type: 'error'});
                             return false;
                         }
                         if(this.helpForm.id!=''){
                             http.zsyPostHttp('/integral/editHelpDetail/'+this.helpForm.id, help, (res) => {
-                                vm.$message({ showClose: true,message: '转移积分更新成功，请等待审核',type: 'success'});
+                                this.$message({ showClose: true,message: '转移积分更新成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });
                         }else{
                             http.zsyPostHttp('/integral/add', help, (res) => {
-                                vm.$message({ showClose: true,message: '转移积分添加成功，请等待审核',type: 'success'});
+                                this.$message({ showClose: true,message: '转移积分添加成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
                             });
