@@ -750,7 +750,7 @@
             // 审核通过任务
             acceptTask() {
                 http.zsyPutHttp(`task/auditing/accept/${this.auditForm.taskId}`, {}, (resp) => {
-                    this.successMsg("任务审核成功");
+                    this.$message({ showClose: true,message: '任务审核成功',type: 'success'});
                     this.$emit('reload');
                     this.auditForm.taskId = '';
                     this.auditForm.taskUserId = '';
@@ -761,7 +761,7 @@
             // 打回任务
             rejectTask() {
                 http.zsyPutHttp(`task/auditing/reject/${this.auditForm.taskId}`, {}, (resp) => {
-                    this.successMsg("任务打回成功");
+                    this.$message({ showClose: true,message: '任务打回成功',type: 'success'});
                     this.$emit('reload');
                     this.auditForm.taskId = '';
                     this.auditForm.taskUserId = '';
@@ -782,7 +782,7 @@
                         this.resetFinishForm()
                         this.showFinishedTask = false;
                         this.taskDetail = {};
-                        this.successMsg("操作成功");
+                        this.$message({ showClose: true,message: '操作成功',type: 'success'});
                         this.$emit('reload');
                     })
                 }).catch(() => {
@@ -855,7 +855,7 @@
                     http.zsyPutHttp(`/task/complete/master/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
                         this.$root.eventBus.$emit('reloadBoard');
-                        this.successMsg("操作成功");
+                        this.$message({ showClose: true,message: '操作成功',type: 'success'});
                         this.hideTaskDetail();
                     })
                 }).catch(() => {
@@ -871,7 +871,7 @@
                     http.zsyDeleteHttp(`/task/delete/${this.taskDetail.id}`, {}, (resp) => {
                         this.$emit('reload');
                         this.$root.eventBus.$emit('reloadBoard');
-                        this.successMsg("删除成功");
+                        this.$message({ showClose: true,message: '删除成功',type: 'success'});
                         this.hideTaskDetail();
                         this.showAuditTask = false;
                         this.taskDetail = {};
@@ -931,7 +931,7 @@
             // 评价任务
             taskAssess() {
                 http.zsyPostHttp('/task/comment', this.assessForm, (resp) => {
-                    this.successMsg("评价成功");
+                    this.$message({ showClose: true,message: '评价成功',type: 'success'});
                     this.showTaskComment = false
                     this.commentStages = []
                     this.assessForm = {
@@ -979,11 +979,11 @@
 
                 var isNum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.modifyPrivateTaskForm.taskHours);
                 if(!isNum){
-                    vm.$message({ showClose: true,message: '工作量填写错误',type: 'error'});
+                    this.$message({ showClose: true,message: '工作量填写错误',type: 'error'});
                     return false;
                 }
                 if(this.modifyPrivateTaskForm.taskHours>99999.9||this.modifyPrivateTaskForm.taskHours<0.1){
-                    vm.$message({ showClose: true,message: '工作量正确值应为0.1~99999.9',type: 'error'});
+                    this.$message({ showClose: true,message: '工作量正确值应为0.1~99999.9',type: 'error'});
                     return false;
                 }
 
@@ -1302,13 +1302,6 @@
                        vm.taskDetail = resp.data
                     });
                  vm.getTaskLog(taskId)
-            });
-        },
-        successMsg(msg) {
-            this.$message({
-                showClose: true,
-                message: msg,
-                type: 'success'
             });
         },
         warnMsg(msg) {

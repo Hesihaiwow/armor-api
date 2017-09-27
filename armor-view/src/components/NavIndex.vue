@@ -630,11 +630,11 @@
                         param.taskName = param.taskName.trim();
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
-                            vm.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
+                            this.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
                             return false;
                         }
                         if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
-                            vm.$message({ showClose: true,message: '工作量请保持在1至1000范围',type: 'error'});
+                            this.$message({ showClose: true,message: '工作量请保持在1至1000范围',type: 'error'});
                             return false;
                         }
                         var taskUsers = [{
@@ -646,7 +646,7 @@
                         }];
                         param['taskUsers'] = taskUsers;
                         http.zsyPostHttp('/task/create', param, (resp) => {
-                            vm.$message({ showClose: true,message: '任务创建成功',type: 'success'});
+                            this.$message({ showClose: true,message: '任务创建成功',type: 'success'});
                             this.$refs[formName].resetFields();
                             this.createTaskVisible = false
                             vm.reload()
@@ -846,7 +846,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyDeleteHttp(`/integral/delete/`+id, {}, (resp) => {
-                        vm.$message({ showClose: true,message: '删除成功',type: 'success'});
+                        this.$message({ showClose: true,message: '删除成功',type: 'success'});
                         this.reload();
                         this.helpDetailVisible = false;
                     })
@@ -861,7 +861,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyGetHttp(`/integral/passReview/`+id, {}, (resp) => {
-                        vm.$message({ showClose: true,message: '审核成功',type: 'success'});
+                        this.$message({ showClose: true,message: '审核成功',type: 'success'});
                         this.reload();
                         this.helpDetailVisible = false;
                     })
