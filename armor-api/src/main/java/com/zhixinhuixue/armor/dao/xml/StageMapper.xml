@@ -51,7 +51,7 @@
 
     <!-- 查询阶段ID是否被使用 -->
     <select id="countStage" resultType="java.lang.Integer" parameterType="java.lang.Long">
-        SELECT count(*) from task_user,task where
-        task_user.stage_id = #{id,jdbcType=BIGINT} or task.stage_id =#{id,jdbcType=BIGINT}
+        SELECT count(*) from task_user,task where  task.is_delete=0 and
+        (task_user.stage_id = #{id,jdbcType=BIGINT} or task.stage_id =#{id,jdbcType=BIGINT})
     </select>
 </mapper>
