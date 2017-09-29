@@ -622,9 +622,9 @@
             },
             saveTaskInfo(formName) {
                 let vm = this;
-                this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();

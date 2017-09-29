@@ -1290,7 +1290,14 @@
                     className = "finished"
                 }
                 return className;
-            }
+            },
+            warnMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'warning'
+                });
+            },
         },
         created() {
             // 监听看板任务点击事件
@@ -1304,13 +1311,7 @@
                  vm.getTaskLog(taskId)
             });
         },
-        warnMsg(msg) {
-            this.$message({
-                showClose: true,
-                message: msg,
-                type: 'warning'
-            });
-        },
+
     }
 </script>
 <style>
