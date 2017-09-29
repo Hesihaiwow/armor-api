@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
 import com.zhixinhuixue.armor.model.pojo.Stage;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public interface IZSYStageMapper {
      * @param name
      * @return
      */
-    int validateStage(String name);
+    int validateStage(@Param("name") String name,@Param("sort") int sort);
 
     /**
      * 根据ID查询阶段
@@ -52,6 +53,20 @@ public interface IZSYStageMapper {
      * @return
      */
     int update(Stage stage);
+
+    /**
+     * 修改优先级
+     * @param sort
+     * @return
+     */
+    int updateSortById(@Param("sort") int sort, @Param("id")long id);
+
+    /**
+     *查询排序目标上一个阶段的优先级
+     * @param sort
+     * @return
+     */
+    int selectBySort(int sort);
 
 
 }

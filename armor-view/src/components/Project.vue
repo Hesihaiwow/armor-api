@@ -116,14 +116,14 @@
     </div>
     <el-dialog  title="添加阶段"
                 :visible.sync="addStageVisible"
-                size="tiny">
-            <el-input style="width: 250px;margin-bottom: 10px" placeholder="请输入阶段优先级" v-model="stage.sort">
+                size="tiny" >
+            <el-input style="text-align:center;width: 400px;margin-bottom: 10px" placeholder="请输入阶段优先级（请勿重复）" v-model="stage.sort">
             <template slot="prepend">阶段优先级:</template>
             </el-input>
-            <el-input style="width: 400px;" placeholder="请输入阶段名称" v-model="stage.name" >
+            <el-input style="text-align:center;width: 400px;" placeholder="请输入阶段名称" v-model="stage.name" >
             <template slot="prepend">阶段名称:</template>
             </el-input>
-            <div><el-button @click="saveStage" type="primary" style="margin-top: 15px;margin-left: 300px">确认</el-button></div>
+            <div style="display: block"><el-button @click="saveStage" type="primary" style="margin-top: 15px;margin-left: 300px">确认</el-button></div>
     </el-dialog>
       <el-dialog  title="编辑阶段"
                   :visible.sync="editStageVisible"

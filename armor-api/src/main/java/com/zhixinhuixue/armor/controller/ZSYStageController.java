@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.controller;
 
 
 import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
+import com.zhixinhuixue.armor.model.dto.request.TaskMoveReqDTO;
 import com.zhixinhuixue.armor.service.IZSYStageService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -67,6 +69,18 @@ public class ZSYStageController extends ZSYController {
     @DeleteMapping(value = "/{stageId}")
     public String deleteStage(@PathVariable Long stageId) {
         stageService.deleteStage(stageId);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 移动阶段
+     * @param stageResDTO
+     * @return
+     */
+    @ApiOperation("移动阶段")
+    @PutMapping(value = "/move")
+    public String moveStage(@Valid @RequestBody StageResDTO stageResDTO){
+        stageService.moveStage(stageResDTO);
         return ZSYResult.success().build();
     }
 

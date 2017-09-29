@@ -15,7 +15,7 @@
     select 
     <include refid="Base_Column_List" />
     from tag
-    ORDER BY create_time DESC
+    ORDER BY create_time
   </select>
   <select id="countTag" resultType="java.lang.Integer">
     SELECT  COUNT(*)   from task_tag
