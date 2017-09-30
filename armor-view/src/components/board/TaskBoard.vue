@@ -195,6 +195,9 @@
 
 
                 function drag(obj,objBox){
+                    if(vm.loginUserRole>0){
+                        return
+                    }
                     obj.onmousedown=function(ev){
                         var oEvt=ev||event;
                         var disX=oEvt.clientX-objBox.offsetLeft;
@@ -234,7 +237,6 @@
                             document.onmousemove=document.onmouseup=null;
 
                             //抓着的对象回自个位置
-
                             move.move(objBox,aPos[objBox.index]);
                             vm.dragStage(objBox.getElementsByTagName('header')[0].getAttribute("data-id"),objBox.index);
                         };
@@ -364,7 +366,6 @@
                     -moz-user-select: none;
                     -ms-user-select: none;
                     user-select: none;
-                    cursor: move;
                 }
                 .task-item {
 
