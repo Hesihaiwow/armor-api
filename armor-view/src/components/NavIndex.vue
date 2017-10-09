@@ -980,13 +980,13 @@
                 }else if(date=="year"){//本年的开始结束时间
                     return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
                 }else if(date=="quarter"){
-                    if (curMonth >= 1 && curMonth <= 3){
+                    if (curMonth >= 0 && curMonth <= 2){
                         startMonth = 0;
-                    }else if (curMonth >= 4 && curMonth <= 6){
+                    }else if (curMonth >= 3 && curMonth <= 5){
                         startMonth = 3;
-                    }else if (curMonth >= 7 && curMonth <= 9){
+                    }else if (curMonth >= 6 && curMonth <= 8){
                         startMonth = 6;
-                    }else if (curMonth >= 10 && curMonth <= 12){
+                    }else if (curMonth >= 9 && curMonth <= 11){
                         startMonth = 9;
                     }
                     return  moment(new Date(curYear, startMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, startMonth+3,1)-1).format('YYYY-MM-DD');
