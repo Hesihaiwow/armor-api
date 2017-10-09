@@ -415,7 +415,9 @@
                             .tips.green {
                                 background: #339933;
                             }
-
+                            .tips.purple {
+                                background: #da70d6;
+                            }
                         }
                         .master-info {
                              img {
