@@ -28,7 +28,8 @@
                 <div class="task-state">
                     <i class="iconfont icon-person" v-show="task.type==1"></i>
                     <i class="iconfont icon-people" v-show="task.type==2"></i>
-                    <span class="task-end" :class="task.endColor">{{task.endText}}</span>
+                    <span class="task-end purple" v-if="task.status==3&&task.stageName=='已发布'">{{task.endText}}</span>
+                    <span class="task-end" :class="task.endColor" v-else="">{{task.endText}}</span>
                     <span class="task-time-opt">
                     <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check"
                        @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
@@ -1471,6 +1472,10 @@
 
     .task-end.green {
         background: #339933;
+    }
+
+    .task-end.purple {
+        background: #da70d6;
     }
 
     .task-time-opt {
