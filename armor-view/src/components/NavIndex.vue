@@ -3,9 +3,9 @@
         <div class="my-integral-con" v-show="userRole>0">
             <p class="mic-title">我的积分</p>
             <div class="mic-main clearfix">
-                <div class="mic-item fl" v-for="item in integralItem">
-                    <div class="mic-item-title" >{{item.label}}</div>
-                    <div class="mic-item-title" style="font-size: 15px">({{item.time}})</div>
+                <div class="mic-item fl" v-for="(item,key) in integralItem">
+                    <div class="mic-item-title" ><img :src="`${require(`../assets/img/icon_${key+1}.png`)}`" class="icon-score">{{item.label}}</div>
+                    <div class="mic-item-title" style="font-size: 12px">({{item.time}})</div>
                     <div class="mic-item-integral">{{item.score}}</div>
                 </div>
             </div>
@@ -701,11 +701,11 @@
                 http.zsyGetHttp(http.API_URI.USERINTEGRAL, null, (res) => {
                     let data = res.data;
                     let items = [];
-                    items.push({label: '本周 ', score: data.week,time:this.getDateString('week')});
-                    items.push({label: '本月', score: data.month,time:this.getDateString('month')});
-                    items.push({label: '本年', score: data.year,time:this.getDateString('year')});
-                    items.push({label: '季度积分排名', score: data.quarterRank,time:this.getDateString('quarter')});
-                    items.push({label: '年度积分排名', score: data.yearRank,time:this.getDateString('year')});
+                    items.push({label: ' ', score: data.week,time:this.getDateString('week')});
+                    items.push({label: '', score: data.month,time:this.getDateString('month')});
+                    items.push({label: '', score: data.year,time:this.getDateString('year')});
+                    items.push({label: '', score: data.quarterRank,time:this.getDateString('quarter')});
+                    items.push({label: '', score: data.yearRank,time:this.getDateString('year')});
                     this.integralItem = items;
                 })
             },
@@ -1026,22 +1026,43 @@
         width: 200px;
         text-align: center;
         box-shadow: 0 0 20px #ccc;
+        background-color: #fff;
     }
 
     .mic-item-title {
         line-height: 40px;
-        background: #D7D7D7;
+        background: #fff;
         font-size: 20px;
     }
-
+    .mic-item-title:first-child{
+         margin-top: 10px;
+    }
+    .icon-score{
+        margin-right: 10px;
+        height:  60px;
+        vertical-align: middle;
+    }
     .mic-item-integral {
         font-size: 26px;
-        color: #000;
-        background: #fff;
-        line-height: 30px;
-        padding: 14px 0;
+        color: #fff;
+        background: #3dc999;
+        line-height: 40px;
+        /*padding: 14px 0;*/
         word-wrap: break-word;
     }
+    .mic-item:nth-child(2) .mic-item-integral{
+        background-color: #f4b548;
+    }
+    .mic-item:nth-child(3) .mic-item-integral{
+        background-color: #ab93ed;
+    }
+    .mic-item:nth-child(4) .mic-item-integral{
+        background-color: #609beb;
+    }
+    .mic-item:nth-child(5) .mic-item-integral{
+        background-color: #f68350;
+    }
+ 
 
     .mic-item:first-child {
         margin-left: 0;

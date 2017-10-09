@@ -128,7 +128,7 @@
                     </el-pagination>
                 </div>
             </div>
-            <task-board v-show="btnValStatus == 2"></task-board>
+            <task-board v-show="btnValStatus == 2" ref="taskBoard"></task-board>
         </div>
     </div>
 
@@ -269,12 +269,15 @@
                     // 刷新看板
                     //this.$root.eventBus.$emit("reloadBoard");
                     this.btnValStatus = 2;
+                    setTimeout(()=>{
+                        this.$refs.taskBoard.drugList()
+                    },0)
                 } else {
                     // 刷新列表
                     this.fetchTaskList();
                     this.btnValStatus = 1;
-
                 }
+
                 // 记住状态
                 window.localStorage.setItem("viewType", this.btnValStatus);
             },

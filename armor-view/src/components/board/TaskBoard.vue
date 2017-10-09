@@ -1,9 +1,9 @@
 <template>
     <div class="task-board">
-        <div class="task-board-list clearfix" :style="{'width':taskBoxWidth}">
+        <div class="task-board-list clearfix" id="task-board-list" :style="{'width':taskBoxWidth}">
             <div class="fl task-list" v-for="(item,key) in stageList" @drop='drop($event)'
-                 @dragover='allowDrop($event)'>
-                <header :data-id="item.id">{{item.name}} · {{item.tasks ? item.tasks.length : 0}}</header>
+                 @dragover='allowDrop($event)'  >
+                <header :data-id="item.id" :style="'cursor: '+cursor" >{{item.name}} · {{item.tasks ? item.tasks.length : 0}}</header>
                 <ul class="task-item" :stageId="item.id">
                     <li class="clearfix" draggable='true' @dragstart='drag($event)'
                         v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id"
@@ -12,7 +12,12 @@
                         </div>
                         <div class="fl task-name">
                             <div style="font-size: 16px;padding: 12px 0">{{task.name}}</div>
-                            <span class="tips" :class="task.endColor">{{task.endText}}</span>
+                            <div v-if="item.name=='已发布'&&task.status==3">
+                                <span class="tips purple" >{{task.endText}}</span>
+                            </div>
+                            <div v-else="">
+                                <span class="tips" :class="task.endColor">{{task.endText}}</span>
+                            </div>
                         </div>
                         <div class="master-info fr ellipsis">
                             <img v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
@@ -28,6 +33,7 @@
     var dom;
     import moment from 'moment';
     import helper from '../../lib/Helper'
+    import move from '../../lib/move'
 
     moment.locale('zh-cn');
     export default {
@@ -35,7 +41,8 @@
         data() {
             return {
                 stageList: [],
-                taskBoxWidth: '1200px'
+                taskBoxWidth: '1200px',
+                cursor:''
             }
         },
         computed: {
@@ -155,21 +162,165 @@
                         })
                     });
                 });
+            },
+            drugList(){
+                let vm = this;
+                if(this.$parent.btnValStatus == 2){
+                    var oUl=document.getElementById('task-board-list');
+                    /*var oUl = document.queryselector(".task-board-list");
+                     var aLi = document.queryselectorAll(".task-list");*/
+                    var aLi=oUl.children;
+                    var zIndex=2;
+                    //0.布局转换
+                    var aPos=[];
+
+                    for(var i=0;i<aLi.length;i++){
+                        aPos.push({left:aLi[i].offsetLeft,top:aLi[i].offsetTop});
+                        aLi[i].style.left=aPos[i].left+'px';
+                        aLi[i].style.top=aPos[i].top+'px';
+                    }
+                    for(var i=0;i<aLi.length;i++){
+                        aLi[i].style.position='absolute';
+                        aLi[i].style.margin=0;
+                        aLi[i].index=i;
+                    }
+
+                    //1.拖拽
+                    for(var i=0;i<aLi.length;i++){
+                        drag(aLi[i].children[0],aLi[i]);//拖拽每一个图标
+                    }
+                }else{
+                    console.log("列表模式")
+                }
+
+
+                function drag(obj,objBox){
+                    if(vm.loginUserRole>0){
+                        return
+                    }
+                    obj.onmousedown=function(ev){
+                        var oEvt=ev||event;
+                        var disX=oEvt.clientX-objBox.offsetLeft;
+                        var disY=oEvt.clientY-objBox.offsetTop;
+                        objBox.style.zIndex=zIndex++;
+                        clearInterval(objBox.timer);
+                        document.onmousemove=function(ev){
+                            var oEvt=ev||event;
+                            objBox.style.left=oEvt.clientX-disX+'px';
+                            objBox.style.top=oEvt.clientY-disY+'px';
+
+                            //2.move时碰撞
+                            var nearObj=findNearest(objBox);
+                            if(nearObj && nearObj!=objBox){//撞到了
+                                //动所有的房客
+                                //交换索引，所有房客
+                                //'所有'有条件的
+                                var n=objBox.index;
+                                var m=nearObj.index;
+                                for(var i=0;i<aLi.length;i++){
+                                    //n<aLi[i].index<=m
+                                    //m<=aLi[i].index<n
+                                    if(aLi[i].index>n && aLi[i].index<=m){
+                                        //←
+                                        aLi[i].index--;
+                                        move.move(aLi[i],aPos[aLi[i].index]);
+                                    }else if(aLi[i].index>=m && aLi[i].index<n){
+                                        //→
+                                        aLi[i].index++;
+                                        move.move(aLi[i],aPos[aLi[i].index]);
+                                    }
+                                }
+                                objBox.index=m;
+                            }
+                        };
+                        document.onmouseup=function(){
+                            document.onmousemove=document.onmouseup=null;
+
+                            //抓着的对象回自个位置
+                            move.move(objBox,aPos[objBox.index]);
+                            vm.dragStage(objBox.getElementsByTagName('header')[0].getAttribute("data-id"),objBox.index);
+                        };
+                        return false;
+                    };
+                }
+                function findNearest(obj){
+                    var minDis=99999999;
+                    var minIndex=-1;
+                    for(var i=0;i<aLi.length;i++){
+                        //if(obj==aLi[i]) continue;
+                        if(collTest(obj,aLi[i])){   //撞到的房子
+                            //还要找最近
+
+                            var dis=getDis(obj,aLi[i]);//取出来的也是obj1到房子的距离
+                            if(dis<minDis){
+                                minDis=dis;
+                                minIndex=i;
+                            }
+                        }
+                    }
+                    if(minIndex==-1){
+                        return null;
+                    }else{
+                        return aLi[minIndex];   //就返房客出去
+                    }
+                }
+                function getDis(obj1,obj2){
+                    var a=aPos[obj2.index].left-obj1.offsetLeft
+                    var b=aPos[obj2.index].top-obj1.offsetTop;
+                    return Math.sqrt(a*a+b*b);
+                }
+                function collTest(obj1,obj2){//obj1对象和obj2的位置（房子)撞
+                    var l1=obj1.offsetLeft;
+                    var t1=obj1.offsetTop;
+                    var r1=obj1.offsetLeft+obj1.offsetWidth;
+                    var b1=obj1.offsetTop+obj1.offsetHeight;
+
+                    var l2=aPos[obj2.index].left;
+                    var t2=aPos[obj2.index].top;
+                    var r2=aPos[obj2.index].left+obj2.offsetWidth;
+                    var b2=aPos[obj2.index].top+obj2.offsetHeight;
+
+                    if(l1>r2||t1>b2||r1<l2||b1<t2){
+                        return  false;
+                    }else{
+                        return true;
+                    }
+                }
+            },
+            dragStage(stage,index) {
+                var num = 0;
+                if(index ==this.stageList.length){//移到最后
+                    num = 1;
+                }
+                if(index == 0){//移到第一个
+                    num = 2;
+                }
+                this.http.zsyPutHttp('/stage/move', {
+                    id: stage,
+                    name: '移动专用'+Math.floor(Math.random()*1000),
+                    sort: index,
+                    num: num,
+                }, (res) => {
+                });
             }
         },
         created() {
-
             this.getData();
         },
         beforeMount() {
             let vm = this;
+            if(this.loginUserRole==0 ){
+                this.cursor = 'move';
+            }
             this.$root.eventBus.$on("reloadBoard", () => {
                 vm.getData();
             });
         },
-        mounted() {
+        mounted(){
+            setTimeout(()=>{
+                this.drugList()
+            },400)
         },
-
         beforeDestroy(){
         }
     }
@@ -187,6 +338,7 @@
         background-color: #fff;
         overflow-x: auto;
         .task-board-list {
+            position: relative;
             width: 400%;
             height: 100%;
             .task-list {
@@ -208,6 +360,12 @@
                     font-weight: bold;
                     background-color: #eee;
                     box-sizing: border-box;
+                    -webkit-touch-callout: none;
+                    -webkit-user-select: none;
+                    -khtml-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
                 }
                 .task-item {
 
@@ -257,7 +415,9 @@
                             .tips.green {
                                 background: #339933;
                             }
-
+                            .tips.purple {
+                                background: #da70d6;
+                            }
                         }
                         .master-info {
                              img {

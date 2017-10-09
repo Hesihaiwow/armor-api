@@ -36,4 +36,10 @@ public interface IZSYStageService {
      */
     void deleteStage(Long id);
 
+    /**
+     * 移动阶段
+     * @param stageResDTO
+     */
+    void moveStage(StageResDTO stageResDTO);
+
 }
