@@ -70,6 +70,16 @@ public class IntegralHistoryPageResDTO {
     }
 
     public String getGrade() {
+        if (grade!=null&&grade!="") {
+            double average = Double.valueOf(grade);
+            if (average>80) {
+                return "A";
+            }else if(average>60){
+                return "B";
+            }else{
+                return "C";
+            }
+        }
         return grade;
     }
 

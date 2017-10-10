@@ -57,24 +57,26 @@
   </select>
   <!--查询用户积分历史-->
   <select id="getIntegralHistory" parameterType="Map"  resultMap="IntegralHistory">
-    SELECT i.integral, u.name, i.origin, i.create_time, i.task_id, i.description, c.grade, t.type, h.task_hours, h.id
+    SELECT t1.* ,t2.grade   from
+    (SELECT i.integral, u.name, i.origin, i.create_time, i.task_id, i.description, t.type, h.task_hours, h.id
     FROM user_integral i
-    LEFT OUTER  JOIN `user` u ON i.user_id = u.id
-    LEFT JOIN task_comment c ON i.task_id = c.task_id
+    LEFT JOIN `user` u ON i.user_id = u.id
     LEFT JOIN task t ON i.task_id = t.id
     LEFT JOIN task_user h ON i.task_id = h.task_id AND h.user_id = i.user_id
     <where>
-      i.user_id = #{id,jdbcType=BIGINT}
-      AND (i.review_status != 1  or i.review_status is null)
-      <if test="startTime!=null and startTime!=''">
-        <![CDATA[AND i.create_time >= #{startTime}]]>
-      </if>
-      <if test="endTime!=null and endTime!=''" >
-        <![CDATA[AND i.create_time <#{endTime}]]>
-      </if>
+          i.user_id = #{id,jdbcType=BIGINT}  AND (i.review_status != 1  or i.review_status is null)
+        <if test="startTime!=null and startTime!=''">
+          <![CDATA[AND i.create_time >= #{startTime}]]>
+        </if>
+        <if test="endTime!=null and endTime!=''" >
+          <![CDATA[AND i.create_time <#{endTime}]]>
+        </if>
     </where>
     GROUP BY i.id
-    ORDER BY i.create_time DESC
+    ORDER BY i.create_time DESC) t1
+    LEFT JOIN
+    (SELECT task_user_id,AVG(integral)as grade FROM task_comment GROUP BY task_user_id) t2
+    on t1.id = t2.task_user_id
   </select>
   <!--查询排名-->
   <select id="getRank" resultType="java.lang.Integer">
