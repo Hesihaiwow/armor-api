@@ -27,9 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -66,6 +64,23 @@ public class ZSYIntegralService implements IZSYIntegralService {
             integralPageResDTOS.add(integralPageResDTO);
         });
         return integralPageResDTOS;
+    }
+
+    /**
+     * 获取积分列数
+     * 大于结束时间计数，小于开始时间计数
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @Override
+    public Map getIntegralCount(String startTime, String endTime){
+        int prev = userIntegralMapper.getIntegralCount(null, startTime);
+        int next = userIntegralMapper.getIntegralCount(endTime, null);
+        Map map = new HashMap();
+        map.put("prev",prev);
+        map.put("next",next);
+        return map;
     }
 
     /**

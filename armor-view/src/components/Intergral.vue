@@ -3,7 +3,7 @@
 
         <div class="intergral-data-detail">
             <el-table :data="quarter" stripe style="width: 50%;float:left">
-              <el-table-column label="季度排名" align="center">
+              <el-table-column label="季度排名" align="center" :render-header="createQuarterHistory">
                 <el-table-column prop="id" label="排名" align="center">
                   <template scope="scope">
                     <div v-if="scope.row.id=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.id"></div>
@@ -23,7 +23,7 @@
         </div>
       <div class="intergral-data-detail">
           <el-table :data="year" stripe style="width: 48%;float:right">
-            <el-table-column label="年度排名" align="center">
+            <el-table-column label="年度排名" align="center" :render-header="createYearHistory">
               <el-table-column prop="id" label="排名" align="center">
                 <template scope="scope">
                   <div v-if="scope.row.id=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.id"></div>
@@ -67,6 +67,21 @@
                   startTime: '',
                   endTime: ''
                 },
+                yearList:{
+                    curYear:'',
+                    prevYear:'',
+                    nextYear:''
+                },
+                quarterShow:{
+                    prev:'',
+                    next:''
+                },
+                yearShow:{
+                    prev:'',
+                    next:''
+                },
+                quarterTime:'',
+                yearTime:'',
                 quarter: [],
                 year: [],
                 imgUrl:'',
@@ -87,15 +102,20 @@
             },
             //查询积分列表
             integralPage(date) {
-              this.getDateString("quarter");
-              this.getDateString("year");
-              if(date!="year"){
+              if(date=="quarter"){//本季度
+                this.getDateString("quarter");
                 Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
                   this.quarter= res.data;
+                  this.countQuarterHistory(this.queryForm);
+                  if(this.quarter.length<1){
+                    console.log(11)
+                  }
                 })
-              }else{
+              }else if(date=="year"){//今年
+                this.getDateString("year");
                 Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.yearForm, (res) => {
                   this.year= res.data;
+                  this.countYearHistory(this.yearForm);
                 })
               }
             },
@@ -104,7 +124,6 @@
                 let now = new Date();
                 let curMonth = now.getMonth();
                 let curYear = now.getFullYear();
-                ;
                 let startMonth = 0;
                 if (date == "month") {//本月的开始结束时间
                     this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
@@ -121,9 +140,11 @@
                     }
                     this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
                     this.queryForm.endTime = this.localeTimeString(new Date(curYear, startMonth + 3, 1));//下季度第一天0点
+                    this.quarterTime = this.localeDayString(new Date(curYear, startMonth, 1))+'—'+ this.localeDayString(new Date(curYear, startMonth + 3, 1)-1);
                 } else if (date == "year") {//本年的开始结束时间
                     this.yearForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
                     this.yearForm.endTime = this.localeTimeString(new Date(now.getFullYear() + 1, 0, 1));
+                    this.yearTime = this.localeDayString(new Date(curYear, 0, 1))+'—'+ this.localeDayString(new Date(curYear+1,0,1)-1);
                 }
             },
             //时间字符串格式化
@@ -135,6 +156,175 @@
                     return "";
                 }
             },
+            //时间字符串格式化
+            localeDayString(time) {
+                if (time != null && time != "") {
+                    time = moment(time).format('YYYY-MM-DD');
+                    return time;
+                } else {
+                    return "";
+                }
+            },
+            countYearHistory(time){
+                Http.zsyGetHttp('/integral/count',time, (res) => {
+                    if(res.data.prev==0){
+                        this.yearShow.prev = 'none'
+                    }else{
+                        this.yearShow.prev = ''
+                    }
+                    if(res.data.next==0){
+                        this.yearShow.next = 'none'
+                    }else{
+                        this.yearShow.next = ''
+                    }
+                })
+            },
+            countQuarterHistory(time){
+                Http.zsyGetHttp('/integral/count',time, (res) => {
+                    if(res.data.prev==0){
+                        this.quarterShow.prev = 'none'
+                    }else{
+                        this.quarterShow.prev = ''
+                    }
+                    if(res.data.next==0){
+                        this.quarterShow.next = 'none'
+                    }else{
+                        this.quarterShow.next = ''
+                    }
+                })
+            },
+            prevQuarterHistory(){
+                var currQuarter = new Date(this.quarterTime.split('—')[0])
+                this.queryForm.endTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth(),1);
+                this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()-3,1);
+                this.quarterTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                    this.quarter= res.data;
+                    this.countQuarterHistory(this.queryForm);
+                })
+            },
+            nextQuarterHistory(){
+                var currQuarter = new Date(this.quarterTime.split('—')[1])
+                this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()+1,1);
+                this.queryForm.endTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()+4,1);
+                this.quarterTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                    this.quarter= res.data;
+                    this.countQuarterHistory(this.queryForm);
+                })
+            },
+            prevYearHistory(){
+                var currQuarter = new Date(this.yearTime.split('—')[0])
+                this.queryForm.endTime = new Date(currQuarter.getFullYear(),0,1);
+                this.queryForm.startTime = new Date(currQuarter.getFullYear()-1,0,1);
+                this.yearTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                    this.year= res.data;
+                    this.countYearHistory(this.queryForm);
+                })
+            },
+            nextYearHistory(){
+                var currQuarter = new Date(this.yearTime.split('—')[1])
+                this.queryForm.startTime = new Date(currQuarter.getFullYear()+1,0,1);
+                this.queryForm.endTime = new Date(currQuarter.getFullYear()+2,0,1);
+                this.yearTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+
+                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                    this.year= res.data;
+                    this.countYearHistory(this.queryForm);
+                })
+            },
+            createQuarterHistory(createElement){
+                return createElement(
+                    'div', {
+                        'class': 'renderTableHead'
+                    }, [
+                        createElement(
+                            'el-button', {
+                                attrs: {
+                                    type: 'text',
+                                    style:'color:#ffffff;float: left;font-size:10px;display:'+this.quarterShow.prev,
+                                },
+                                on: {
+                                    click: this.prevQuarterHistory,
+                                }
+                            }, [
+                                '上一季度'
+                            ]
+                        ),
+                        createElement(
+                            'el-button' , {
+                                attrs: {
+                                    type: 'text',
+                                    style:'color:#ffffff;cursor:default',
+                                }
+                            }, [
+                                '季度排名('+this.quarterTime+')'
+                            ]
+                        ),
+                        createElement(
+                            'el-button', {
+                                attrs: {
+                                    type: 'text',
+                                    style:'color:#ffffff;float: right;font-size:10px;display:'+this.quarterShow.next,
+                                },
+                                on: {
+                                    click: this.nextQuarterHistory,
+                                }
+                            }, [
+                                '下一季度'
+                            ]
+                        ),
+                    ]
+                );
+
+            },
+            createYearHistory(createElement){
+                return createElement(
+                    'div', {
+                        'class': 'renderTableHead'
+                    }, [
+                        createElement(
+                            'el-button', {
+                                attrs: {
+                                    type: 'text',
+                                    style:'color:#ffffff;float: left;font-size:10px;display:'+this.yearShow.prev,
+                                },
+                                on: {
+                                    click: this.prevYearHistory,
+                                }
+                            }, [
+                                '上一年度'
+                            ]
+                        ),
+                        createElement(
+                            'el-button' , {
+                                attrs: {
+                                    type: 'text',
+                                    style:'color:#ffffff;cursor:default',
+                                }
+                            }, [
+                                '年度排名('+this.yearTime+')'
+                            ]
+                        ),
+                        createElement(
+                            'el-button', {
+                                attrs: {
+                                    type: 'text',
+                                    style:'color:#ffffff;float: right;font-size:10px;display:'+this.yearShow.next,
+                                },
+                                on: {
+                                    click: this.nextYearHistory,
+                                }
+                            }, [
+                                '下一年度'
+                            ]
+                        ),
+                    ]
+                );
+
+            },
+
         }
     }
 </script>

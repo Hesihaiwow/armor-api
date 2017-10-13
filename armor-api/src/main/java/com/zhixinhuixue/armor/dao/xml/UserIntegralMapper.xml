@@ -78,6 +78,15 @@
     (SELECT task_user_id,AVG(integral)as grade FROM task_comment GROUP BY task_user_id) t2
     on t1.id = t2.task_user_id
   </select>
+  <select id="getIntegralCount" resultType="java.lang.Integer">
+    SELECT COUNT(*) From user_integral WHERE
+    <if test="startTime!=null and startTime!=''">
+      <![CDATA[ create_time >= #{startTime}]]>
+    </if>
+    <if test="endTime!=null and endTime!=''" >
+      <![CDATA[  create_time <=#{endTime}]]>
+    </if>
+  </select>
   <!--查询排名-->
   <select id="getRank" resultType="java.lang.Integer">
     SELECT  id from(

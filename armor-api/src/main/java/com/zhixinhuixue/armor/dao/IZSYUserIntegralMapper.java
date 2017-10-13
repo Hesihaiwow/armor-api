@@ -21,6 +21,14 @@ public interface IZSYUserIntegralMapper {
     List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime);
 
     /**
+     * 积分列数
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    int getIntegralCount(@Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    /**
      * 查询用户积分
      * @param startTime
      * @param endTime
