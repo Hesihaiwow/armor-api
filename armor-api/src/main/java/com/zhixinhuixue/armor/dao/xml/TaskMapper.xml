@@ -33,6 +33,8 @@
         <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
         <collection property="tags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
+        <collection property="delayNo" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskMapper.countDelayUser"
+                    ofType="java.lang.Integer"></collection>
     </resultMap>
 
     <resultMap id="TaskResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
@@ -346,6 +348,13 @@
     <!--查询项目下是否有任务存在-->
     <select id="findTaskByProjectId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM task where project_id = #{projectId, jdbcType=BIGINT} AND is_delete = 0
+    </select>
+
+    <!--查询项目下超时的任务数-->
+    <select id="countDelayUser" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(*) from task_user  where status =1
+        <![CDATA[  and end_time<now() ]]>
+        and task_id = #{id}
     </select>
 
 </mapper>

@@ -29,11 +29,37 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">所属部门</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="modifyForm.departmentId" placeholder="请选择部门">
+            <el-option
+                    v-for="item in deptOptions"
+                    :key="item.id"
+                    :label="item.label"
+                    :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">用户权限</div>
         <div class="ftp-msg fl">
           <el-select class="w280" v-model="modifyForm.userRole" placeholder="请选择权限">
             <el-option
                     v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">用户状态</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="modifyForm.status" placeholder="请选择状态">
+            <el-option
+                    v-for="item in statusOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -64,7 +90,8 @@
           jobName:'',
           phone:'',
           userRole:'',
-          departmentId:''
+          departmentId:'',
+          status:''
         },
         //用户权限手
         options: [{
@@ -77,7 +104,18 @@
               value: 2,
               label: '普通成员'
         }],
-        showAddPop: false
+        statusOptions:[{
+              value:0,
+              label:'正常使用'
+        },{
+              value:1,
+              label:'冻结使用'
+        },{
+              value:2,
+              label:'离职'
+        }],
+          deptOptions:[],
+          showAddPop: false
       };
     },
     methods: {
@@ -90,9 +128,14 @@
             this.modifyForm.jobName=res.data.jobName;
             this.modifyForm.phone=res.data.phone;
             this.modifyForm.userRole=res.data.userRole;
+            this.modifyForm.status=res.data.status;
             this.modifyForm.departmentId=res.data.departmentId;
             this.showAddPop = true;
         });
+          Http.zsyGetHttp(`/dept/tree`,null,(res)=>{
+              this.deptOptions=res.data.children;
+              this.deptOptions.unshift({id:res.data.id,label:res.data.label});
+          });
       },
       //隐藏弹框
       hide () {
@@ -130,11 +173,15 @@
               this.warnMsg("请选择用户权限");
             return;
         }
+          if (Helper.trim(this.modifyForm.status)==''){
+              this.warnMsg("请选择用户状态");
+              return;
+          }
         Http.zsyPutHttp(`/user/${this.modifyForm.userId}`,this.modifyForm,(res)=>{
             this.hide();
             this.$message({
                 showClose: true,
-                message: '用户添加成功',
+                message: '用户修改成功',
                 type: 'success'
             });
             this.$emit("handleUserDataRefresh");

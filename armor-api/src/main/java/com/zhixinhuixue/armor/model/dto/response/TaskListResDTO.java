@@ -48,6 +48,9 @@ public class TaskListResDTO {
 
     private String projectImage;
 
+    //任务超时人数
+    private Integer delayNo;
+
 
     public Long getId() {
         return id;
@@ -207,5 +210,13 @@ public class TaskListResDTO {
 
     public void setProjectImage(String projectImage) {
         this.projectImage = projectImage;
+    }
+
+    public Integer getDelayNo() {
+        return delayNo;
+    }
+
+    public void setDelayNo(Integer delayNo) {
+        this.delayNo = delayNo;
     }
 }

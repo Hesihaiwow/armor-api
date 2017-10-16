@@ -33,6 +33,8 @@ public class UserReqDTO {
     @NotNull(message = "用户角色不能为空")
     private Integer userRole;
 
+    private Integer status;
+
     public Long getUserId() {
         return userId;
     }
@@ -87,5 +89,13 @@ public class UserReqDTO {
 
     public void setUserRole(Integer userRole) {
         this.userRole = userRole;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

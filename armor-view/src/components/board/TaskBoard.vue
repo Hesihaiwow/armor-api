@@ -18,6 +18,7 @@
                             <div v-else="">
                                 <span class="tips" :class="task.endColor">{{task.endText}}</span>
                             </div>
+                            <div style="padding: 2px;"><span v-if="task.status==1&&task.delayNo!=0" class="tips orange">超时人数:{{task.delayNo}}</span></div>
                         </div>
                         <div class="master-info fr ellipsis">
                             <img v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
@@ -151,6 +152,7 @@
                                 el['endColor'] = endColor
                                 el['endText'] = endText
 
+                                console.log(el)
                                 // 优先级样式
                                 if (el.priority == 2) {
                                     el.borderClass = 'orange-border'
