@@ -5,10 +5,10 @@
                  @dragover='allowDrop($event)'  >
                 <header :data-id="item.id" :style="'cursor: '+cursor" >{{item.name}} · {{item.tasks ? item.tasks.length : 0}}</header>
                 <ul class="task-item" :stageId="item.id">
-                    <li class="clearfix" draggable='true' @dragstart='drag($event)'
+                    <li class="clearfix" :class="task.borderClass" draggable='true' @dragstart='drag($event)'
                         v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id"
-                        :createBy="task.createBy">
-                        <div class="fl complate" data-title="">
+                        :createBy="task.createBy"  >
+                        <div class="fl complate" data-title="" >
                         </div>
                         <div class="fl task-name">
                             <div style="font-size: 16px;padding: 12px 0">{{task.name}}</div>
@@ -18,7 +18,7 @@
                             <div v-else="">
                                 <span class="tips" :class="task.endColor">{{task.endText}}</span>
                             </div>
-                            <div style="padding: 2px;"><span v-if="task.status==1&&task.delayNo!=0" class="tips orange">超时人数:{{task.delayNo}}</span></div>
+                            <div style="position:relative;border-top: 5px;padding: 2px"><span v-if="task.status==1&&task.delayNo!=0" class="tips orange">超时人数:{{task.delayNo}}</span></div>
                         </div>
                         <div class="master-info fr ellipsis">
                             <img v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
@@ -152,7 +152,6 @@
                                 el['endColor'] = endColor
                                 el['endText'] = endText
 
-                                console.log(el)
                                 // 优先级样式
                                 if (el.priority == 2) {
                                     el.borderClass = 'orange-border'
