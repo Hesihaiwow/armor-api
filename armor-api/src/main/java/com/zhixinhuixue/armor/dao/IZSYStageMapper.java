@@ -12,7 +12,7 @@ public interface IZSYStageMapper {
      * 阶段列表
      * @return
      */
-    List<StageResDTO> selectStage();
+    List<StageResDTO> selectStage(Long id);
 
     /**
      * 添加阶段
@@ -33,7 +33,7 @@ public interface IZSYStageMapper {
      * @param name
      * @return
      */
-    int validateStage(@Param("name") String name,@Param("sort") int sort);
+    int validateStage(@Param("name") String name,@Param("sort") int sort,@Param("departmentId")Long departmentId);
 
     /**
      * 根据ID查询阶段

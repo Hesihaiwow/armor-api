@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYStatsMapper;
 import com.zhixinhuixue.armor.model.bo.UserCommentBo;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
@@ -27,7 +28,7 @@ public class ZSYStatsService implements IZSYStatsService {
     @Override
 
     public List<StatsPageResDTO> getStats() {
-        List<StatsPageResDTO> userIntegralHistoryBOS = statsMapper.getStats();
+        List<StatsPageResDTO> userIntegralHistoryBOS = statsMapper.getStats(ZSYTokenRequestContext.get().getDepartmentId());
         return userIntegralHistoryBOS;
     }
 
@@ -45,7 +46,7 @@ public class ZSYStatsService implements IZSYStatsService {
             pageNum = 0;
         }
         PageHelper.startPage(pageNum, ZSYConstants.PAGE_SIZE_20);
-        Page<UserCommentBo> userCommentBos = statsMapper.selectUserCommentsPage(userId, grade);
+        Page<UserCommentBo> userCommentBos = statsMapper.selectUserCommentsPage(userId, grade, ZSYTokenRequestContext.get().getDepartmentId());
         Page<UserCommentsPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userCommentBos, page);
         userCommentBos.stream().forEach(bo-> {

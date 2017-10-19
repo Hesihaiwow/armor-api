@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.pojo.Tag;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface IZSYTagMapper {
      * 标签列表
      * @return
      */
-    List<Tag> selectTag();
+    List<Tag> selectTag(Long id);
 
     /**
      *添加标签
@@ -37,7 +38,7 @@ public interface IZSYTagMapper {
      * @param name
      * @return
      */
-    int validateTag(String name);
+    int validateTag(@Param("name") String name, @Param("departmentId") Long departmentId);
 
     /**
      * 查询阶段ID是否被使用

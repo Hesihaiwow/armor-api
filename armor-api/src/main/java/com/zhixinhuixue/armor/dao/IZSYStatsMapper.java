@@ -17,7 +17,7 @@ public interface IZSYStatsMapper {
      *
      * @return
      */
-    List<StatsPageResDTO> getStats();
+    List<StatsPageResDTO> getStats(Long id);
 
     /**
      * 统计用户评论记录
@@ -25,5 +25,5 @@ public interface IZSYStatsMapper {
      * @param grade
      * @return
      */
-    Page<UserCommentBo> selectUserCommentsPage(@Param("userId") Long userId, @Param("grade") String grade);
+    Page<UserCommentBo> selectUserCommentsPage(@Param("userId") Long userId, @Param("grade") String grade, @Param("departmentId") Long departmentId);
 }

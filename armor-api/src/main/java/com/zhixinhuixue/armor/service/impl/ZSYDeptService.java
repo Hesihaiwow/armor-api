@@ -41,7 +41,7 @@ public class ZSYDeptService implements IZSYDeptService {
             throw new ZSYAuthException("没有权限执行此操作");
         }
         //校验部门名称是否唯一
-        List<Department> departments = departmentMapper.selectByDeptName(deptReqDTO.getName());
+        List<Department> departments = departmentMapper.selectByDeptName(deptReqDTO.getName(),ZSYTokenRequestContext.get().getDepartmentId());
         if (departments.size()>0){
             throw new ZSYServiceException(String.format("部门(%s)已存在",deptReqDTO.getName()));
         }
@@ -54,8 +54,24 @@ public class ZSYDeptService implements IZSYDeptService {
     }
 
     @Override
+    public void addOrganization(String name){
+        //校验部门名称是否唯一
+        List<Department> departments = departmentMapper.selectByDeptName(name,null);
+        if (departments.size()>0){
+            throw new ZSYServiceException(String.format("组织(%s)已存在",name));
+        }
+        Department department = new Department();
+        department.setName(name);
+        department.setId(snowFlakeIDHelper.nextId());
+        department.setParentId(department.getId());
+        department.setCreateTime(new Date());
+        department.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        departmentMapper.insertDept(department);
+    }
+
+    @Override
     public DeptResDTO getDeptTree() {
-        DeptBo deptBo = departmentMapper.selectRootDept(ZSYConstants.DEFAULT_DEPT_ROOT_ID);
+        DeptBo deptBo = departmentMapper.selectRootDept(ZSYTokenRequestContext.get().getDepartmentId());
         DeptResDTO deptResDTO = new DeptResDTO();
         BeanUtils.copyProperties(deptBo,deptResDTO,"children");
         deptResDTO.setLabel(deptBo.getName());
@@ -64,9 +80,24 @@ public class ZSYDeptService implements IZSYDeptService {
     }
 
     @Override
+    public List<DeptResDTO> getAllDept() {
+        List<DeptBo> deptBos = departmentMapper.getAllDept();
+        List<DeptResDTO> deptResDTOS =  Lists.newArrayList();
+        deptBos.stream().forEach(deptBo->{
+                DeptResDTO deptResDTO = new DeptResDTO();
+                BeanUtils.copyProperties(deptBo,deptResDTO);
+                deptResDTO.setLabel(deptBo.getName());
+                deptResDTO.setChildren(deepCopy(deptBo.getChildren()));
+                deptResDTOS.add(deptResDTO);
+            }
+        );
+        return deptResDTOS;
+    }
+
+    @Override
     public List<DeptLevelResDTO> getDeptLevel() {
         List<DeptLevelResDTO> deptLevelResDTOS = Lists.newArrayList();
-        DeptBo deptBo = departmentMapper.selectRootDept(ZSYConstants.DEFAULT_DEPT_ROOT_ID);
+        DeptBo deptBo = departmentMapper.selectRootDept(ZSYTokenRequestContext.get().getDepartmentId());
         DeptLevelResDTO deptLevelResDTO = new DeptLevelResDTO();
         BeanUtils.copyProperties(deptBo,deptLevelResDTO,"children");
         deptLevelResDTO.setLabel(deptBo.getName());

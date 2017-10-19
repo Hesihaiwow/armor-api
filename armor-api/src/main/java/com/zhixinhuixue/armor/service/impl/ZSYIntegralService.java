@@ -55,7 +55,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime) {
-        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime, endTime);
+        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime, endTime,ZSYTokenRequestContext.get().getDepartmentId());
         List<IntegralPageResDTO> integralPageResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(userIntegralInfoBOS, integralPageResDTOS);
         userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
@@ -75,8 +75,8 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public Map getIntegralCount(String startTime, String endTime){
-        int prev = userIntegralMapper.getIntegralCount(null, startTime);
-        int next = userIntegralMapper.getIntegralCount(endTime, null);
+        int prev = userIntegralMapper.getIntegralCount(null, startTime,ZSYTokenRequestContext.get().getDepartmentId());
+        int next = userIntegralMapper.getIntegralCount(endTime, null,ZSYTokenRequestContext.get().getDepartmentId());
         Map map = new HashMap();
         map.put("prev",prev);
         map.put("next",next);
@@ -96,9 +96,9 @@ public class ZSYIntegralService implements IZSYIntegralService {
         userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(), DateHelper.getThisWeekLastDay(), id));
         userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(), DateHelper.getThisMonthLastDay(), id));
         userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id));
-        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id);//季度排名为空设为0
+        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id,ZSYTokenRequestContext.get().getDepartmentId());//季度排名为空设为0
         userIntegralResDTO.setQuarterRank(quarterRank != null ? quarterRank : 0);
-        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id);//年度排名为空设为0
+        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId());//年度排名为空设为0
         userIntegralResDTO.setYearRank(yearRank != null ? yearRank : 0);
         return userIntegralResDTO;
     }
@@ -173,7 +173,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
     @Override
     public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status,int pageIndex){
         Long userId = ZSYTokenRequestContext.get().getUserId();
-        return this.getIntegralByReviewStatus(status,pageIndex,userId);
+        return this.getIntegralByReviewStatus(status,pageIndex,userId,null);
     }
 
     /**
@@ -182,12 +182,12 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public PageInfo<IntegralReviewResDTO> getAllIntegralByReviewStatus(int status,int pageIndex){
-        return this.getIntegralByReviewStatus(status,pageIndex,null);
+        return this.getIntegralByReviewStatus(status,pageIndex,null,ZSYTokenRequestContext.get().getDepartmentId());
     }
 
-    public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status,int pageIndex,Long userId){
+    public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status,int pageIndex,Long userId,Long departmentId){
         PageHelper.startPage(pageIndex, 5);
-        Page<UserIntegralInfoBO> userIntegralHistoryBOS= userIntegralMapper.getIntegralByReviewStatus(userId, status);
+        Page<UserIntegralInfoBO> userIntegralHistoryBOS= userIntegralMapper.getIntegralByReviewStatus(userId, status, departmentId);
         Page<IntegralReviewResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralHistoryBOS, page);
         userIntegralHistoryBOS.stream().forEach(userIntegralHistoryBO -> {

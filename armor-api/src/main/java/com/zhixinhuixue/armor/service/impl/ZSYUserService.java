@@ -116,6 +116,7 @@ public class ZSYUserService implements IZSYUserService {
                 .withClaim("userName", user.getName())
                 .withClaim("avatarUrl", user.getAvatarUrl())
                 .withClaim("userRole", user.getUserRole())
+                .withClaim("departmentId", departmentMapper.selectById(user.getDepartmentId()).getParentId())
                 .sign(algorithm);
 
         String loginKey = String.format(ZSYConstants.LOGIN_KEY, user.getId());
@@ -123,6 +124,39 @@ public class ZSYUserService implements IZSYUserService {
         stringRedisTemplate.expire(loginKey, ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
         logger.info("{}({})登录成功,token:{}", user.getName(), user.getId(), jwt);
         return ZSYResult.success().data(jwt);
+    }
+
+    @Override
+    public void registerUser(UserReqDTO userReqDTO){
+        //校验用户账户是否存在
+        List<User> existUsers = userMapper.selectByAccount(userReqDTO.getAccount());
+        if (existUsers.size() > 0) {
+            throw new ZSYServiceException(String.format("用户账户[%s]已存在", userReqDTO.getAccount()));
+        }
+
+        User user = new User();
+        BeanUtils.copyProperties(userReqDTO, user);
+        user.setId(snowFlakeIDHelper.nextId());
+        user.setCreateTime(new Date());
+        user.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        if(userMapper.countByDepartmentId(departmentMapper.selectById(userReqDTO.getDepartmentId()).getParentId())==0){//如果是组织第一名用户，自动升为超级管理员
+            user.setUserRole(ZSYUserRole.ADMINISTRATOR.getValue());
+        }else{
+            user.setUserRole(ZSYUserRole.EMPLOYEE.getValue());
+        }
+        user.setStatus(ZSYUserStatus.NORMAL.getValue());
+        user.setIntegral(new BigDecimal(ZSYConstants.DEFAULT_INTEGRAL));
+        if(userReqDTO.getPassword()!=null&&userReqDTO.getPassword()!=""){
+            user.setPassword(MD5Helper.convert(
+                    String.format("%s%s", SHA1Helper.Sha1(userReqDTO.getPassword()),
+                            ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        }else{
+            user.setPassword(MD5Helper.convert(
+                    String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
+                            ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        }
+
+        userMapper.insertUser(user);
     }
 
     @Override
@@ -206,7 +240,7 @@ public class ZSYUserService implements IZSYUserService {
 
     @Override
     public List<EffectUserResDTO> getEffectiveUsers() {
-        List<User> users = userMapper.selectEffectiveUsers();
+        List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
         List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
         users.stream().forEach(user -> {
             EffectUserResDTO effectUserResDTO = new EffectUserResDTO();

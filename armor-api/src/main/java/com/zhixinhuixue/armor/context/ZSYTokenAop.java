@@ -37,7 +37,7 @@ public class ZSYTokenAop {
     @Around("token()")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        if (!request.getRequestURL().toString().contains(ZSYConstants.LOGIN_URI)){
+        if (!request.getRequestURL().toString().contains(ZSYConstants.LOGIN_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.REGISTER_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.DEPT_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.ORGANIZATION_URI)){
             LoginInfoReqDTO loginInfo = new LoginInfoReqDTO();
             loginInfo.setUserId(Optional.ofNullable(request.getAttribute("userId"))
                     .map(userId->Long.parseLong(userId.toString()))
@@ -48,6 +48,9 @@ public class ZSYTokenAop {
             loginInfo.setUserRole(Optional.ofNullable(request.getAttribute("userRole"))
                     .map(userRole->Integer.parseInt(userRole.toString()))
                     .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
+            loginInfo.setDepartmentId(Optional.ofNullable(request.getAttribute("departmentId"))
+                    .map(departmentId->Long.parseLong(departmentId.toString()))
+                    .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));;
             ZSYTokenRequestContext.set(loginInfo);
         }
         Object object = pjp.proceed();

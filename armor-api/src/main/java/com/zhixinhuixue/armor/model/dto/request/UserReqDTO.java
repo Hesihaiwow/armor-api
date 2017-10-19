@@ -33,6 +33,9 @@ public class UserReqDTO {
     @NotNull(message = "用户角色不能为空")
     private Integer userRole;
 
+    @Size(min = 6,max = 16,message = "用户职位字符长度在{min}~{max}之间")
+    private String password;
+
     private Integer status;
 
     public Long getUserId() {
@@ -97,5 +100,13 @@ public class UserReqDTO {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

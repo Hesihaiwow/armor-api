@@ -41,7 +41,7 @@ public class ZSYProjectService implements IZSYProjectService {
      */
     @Override
     public List<ProjectResDTO> getProject() {
-        List<Project> projects = projectMapper.selectAll();
+        List<Project> projects = projectMapper.selectAll(ZSYTokenRequestContext.get().getDepartmentId());
         List<ProjectResDTO> projectDTOS = new ArrayList<>();
 
         projects.stream().forEach(project -> {
@@ -75,6 +75,7 @@ public class ZSYProjectService implements IZSYProjectService {
         project.setDescription(projectReqDTO.getDescription());
         project.setName(projectReqDTO.getName());
         project.setImageUrl(projectReqDTO.getImageUrl());
+        project.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         projectMapper.insert(project);
 
     }

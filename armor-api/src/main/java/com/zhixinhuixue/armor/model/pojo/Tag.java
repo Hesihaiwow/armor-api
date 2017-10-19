@@ -14,6 +14,8 @@ public class Tag {
 
     private Long createBy;
 
+    private Long departmentId;
+
     public Long getId() {
         return id;
     }
@@ -52,5 +54,13 @@ public class Tag {
 
     public void setCreateBy(Long createBy) {
         this.createBy = createBy;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

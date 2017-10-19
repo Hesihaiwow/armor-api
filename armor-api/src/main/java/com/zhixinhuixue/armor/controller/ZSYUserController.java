@@ -44,6 +44,13 @@ public class ZSYUserController extends ZSYController {
         return userService.userLogin(userLoginReqDTO).build();
     }
 
+    @ApiOperation("用户注册")
+    @PostMapping(value = "/register")
+    public String register(@Valid @RequestBody UserReqDTO userReqDTO) {
+        userService.registerUser(userReqDTO);
+        return ZSYResult.success().build();
+    }
+
 
     @ApiOperation("用户注销")
     @PostMapping(value = "/logout")

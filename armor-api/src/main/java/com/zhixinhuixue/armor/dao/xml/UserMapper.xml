@@ -55,7 +55,9 @@
 
   <!-- 查询有效用户 -->
   <select id="selectEffectiveUsers" parameterType="java.util.Map" resultMap="BaseResultMap">
-    select * from `user` where is_delete=0 and `status`=0 order by create_time asc
+    select * from `user` u
+	LEFT JOIN department d on u.department_id = d.id
+	where u.is_delete=0 and u.`status`=0  and d.parent_id = #{id} order by u.create_time asc
   </select>
 
   <!-- 删除用户 -->
@@ -122,4 +124,10 @@
      </if>
     ORDER BY user_role ASC ,create_time ASC
   </select>
+
+  <!-- 根据组织查询用户数-->
+  <select id="countByDepartmentId" resultType="java.lang.Integer">
+      SELECT COUNT(*) FROM `user` WHERE department_id=#{id}
+  </select>
+
 </mapper>

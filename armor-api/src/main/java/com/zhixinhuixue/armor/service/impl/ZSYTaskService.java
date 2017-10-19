@@ -806,6 +806,7 @@ public class ZSYTaskService implements IZSYTaskService {
         if (taskListReqDTO.getPageSize() != null && taskListReqDTO.getPageNum() != null) {
             PageHelper.startPage(taskListReqDTO.getPageNum(), taskListReqDTO.getPageSize());
         }
+        taskListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<TaskListBO> taskListBOS = taskMapper.selectPage(taskListReqDTO);
         Page<TaskListResDTO> list = new Page();
         BeanUtils.copyProperties(taskListBOS, list);
@@ -833,7 +834,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public ZSYResult<List<TaskResDTO>> getAllWaitAudit() {
-        List<TaskBO> taskBOS = taskMapper.selectAllWaitAudit();
+        List<TaskBO> taskBOS = taskMapper.selectAllWaitAudit(ZSYTokenRequestContext.get().getDepartmentId());
         List<TaskResDTO> taskList = new ArrayList<>();
         if (taskBOS != null && taskBOS.size() >= 0) {
             taskBOS.stream().forEach(taskBO -> {
@@ -855,7 +856,7 @@ public class ZSYTaskService implements IZSYTaskService {
         if (pageNum != null) {
             PageHelper.startPage(pageNum, 5);
         }
-        Page<TaskBO> taskBOS = taskMapper.selectAllAuditSuccess();
+        Page<TaskBO> taskBOS = taskMapper.selectAllAuditSuccess(ZSYTokenRequestContext.get().getDepartmentId());
         Page<TaskResDTO> page = new Page<>();
         BeanUtils.copyProperties(taskBOS, page);
         taskBOS.stream().forEach(taskBO -> {
@@ -1005,7 +1006,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskListResDTO> getTaskByStageId(Long stageId) {
-        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageId(stageId);
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {

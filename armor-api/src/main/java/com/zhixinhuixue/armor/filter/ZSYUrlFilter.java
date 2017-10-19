@@ -95,9 +95,11 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                     JWTVerifier verifier = JWT.require(algorithm).withIssuer(jwtIssuer).build();
                     DecodedJWT jwt = verifier.verify(token);
 
+                    Long departmentId = jwt.getClaim("departmentId").asLong();
                     String userId = jwt.getClaim("userId").asString();
                     String userName = jwt.getClaim("userName").asString();
                     Integer userRole = jwt.getClaim("userRole").asInt();
+
 //                    String[] permissions = jwt.getClaim("permissions").asArray(String.class);
 
 
@@ -113,6 +115,7 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                         request.setAttribute("userId",userId);
                         request.setAttribute("userName",userName);
                         request.setAttribute("userRole",userRole);
+                        request.setAttribute("departmentId",departmentId);
                         filterChain.doFilter(servletRequest, servletResponse);
                     }else{
                         logger.warn("Session已过期,token:{}",token);

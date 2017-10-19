@@ -36,7 +36,7 @@ public class ZSYStageService implements IZSYStageService {
      */
     @Override
     public List<StageResDTO> getStage(){
-        List<StageResDTO> stageResDTOS = stageMapper.selectStage();
+        List<StageResDTO> stageResDTOS = stageMapper.selectStage(ZSYTokenRequestContext.get().getDepartmentId());
         return stageResDTOS;
     }
 
@@ -46,7 +46,7 @@ public class ZSYStageService implements IZSYStageService {
      */
     @Override
     public Long addStage(StageResDTO stageResDTO){
-        if(stageMapper.validateStage(stageResDTO.getName(),stageResDTO.getSort())>0){
+        if(stageMapper.validateStage(stageResDTO.getName(),stageResDTO.getSort(),ZSYTokenRequestContext.get().getDepartmentId())>0){
             throw new ZSYServiceException("阶段名称或优先级已存在，请修改后重试");
         }
             Stage stage = new Stage();
@@ -55,6 +55,7 @@ public class ZSYStageService implements IZSYStageService {
             stage.setId(snowFlakeIDHelper.nextId());
             stage.setName(stageResDTO.getName());
             stage.setSort(stageResDTO.getSort());
+            stage.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
             stageMapper.insert(stage);
             return stage.getId();
     }
@@ -66,7 +67,7 @@ public class ZSYStageService implements IZSYStageService {
     @Override
     public void editStage(StageResDTO stageResDTO){
         Stage stage = stageMapper.selectById(stageResDTO.getId());
-        if(stage.getName()==stageResDTO.getName()&&stageMapper.validateStage(stageResDTO.getName().replace(" ", ""),stageResDTO.getSort())>0){
+        if(stage.getName()==stageResDTO.getName()&&stageMapper.validateStage(stageResDTO.getName().replace(" ", ""),stageResDTO.getSort(),ZSYTokenRequestContext.get().getDepartmentId())>0){
             throw new ZSYServiceException("阶段名称或优先级已存在");
         }
         stage.setCreateBy(ZSYTokenRequestContext.get().getUserId());

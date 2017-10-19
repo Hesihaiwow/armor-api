@@ -26,6 +26,21 @@ public class ZSYConstants {
     public static final String LOGIN_URI = "/api/user/login";
 
     /**
+     * 登陆URI
+     */
+    public static final String REGISTER_URI = "/api/user/register";
+
+    /**
+     * 部门URI
+     */
+    public static final String DEPT_URI = "/api/dept/all";
+
+    /**
+     * 添加组织URI
+     */
+    public static final String ORGANIZATION_URI = "/api/dept/addOrganization";
+
+    /**
      * 初始登陆密码
      */
     public static final String DEFAULT_PASSWORD = "000000";
@@ -54,5 +69,10 @@ public class ZSYConstants {
      * 默认0积分
      */
     public static final int DEFAULT_INTEGRAL = 0;
+
+    /**
+     * 父组织id
+     */
+    public static final long PARENT_ID = 0;
 
 }

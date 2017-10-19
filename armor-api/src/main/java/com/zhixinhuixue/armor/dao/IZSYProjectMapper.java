@@ -12,7 +12,7 @@ public interface IZSYProjectMapper {
      * 查询项目列表
      * @return
      */
-    List<Project> selectAll();
+    List<Project> selectAll(Long id);
 
     /**
      * 添加项目
