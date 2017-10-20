@@ -139,6 +139,13 @@ public class ZSYUserController extends ZSYController {
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("修改组织")
+    @PutMapping("/modifyDept/{id}")
+    public String modifyAvatar(@Valid @PathVariable("id") Long id) {
+        userService.modifyDept(id);
+        return ZSYResult.success().build();
+    }
+
     @ApiOperation("获取我的资料")
     @ApiImplicitParam(name = "userId", value = "用户ID", required = true, paramType = "path", dataType = "long")
     @GetMapping("/myProfile")

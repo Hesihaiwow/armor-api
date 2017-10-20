@@ -71,8 +71,8 @@ public class ZSYConstants {
     public static final int DEFAULT_INTEGRAL = 0;
 
     /**
-     * 父组织id
+     * 无组织
      */
-    public static final long PARENT_ID = 0;
+    public static final long NO_DEPT_ID = 0;
 
 }

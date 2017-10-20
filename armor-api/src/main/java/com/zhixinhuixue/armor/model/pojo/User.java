@@ -33,6 +33,8 @@ public class User {
 
     private String avatarUrl;
 
+    private String email;
+
     public Long getId() {
         return id;
     }
@@ -143,5 +145,13 @@ public class User {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

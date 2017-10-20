@@ -60,6 +60,12 @@ public interface IZSYUserService {
      */
     void modifyUserAvatar(UploadAvatarReqDTO uploadAvatarReqDTO);
 
+    /**
+     * 修改组织
+     * @param id
+     */
+    void modifyDept(Long id);
+
 
     /**
      * 查询有效用户
