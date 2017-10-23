@@ -75,6 +75,13 @@ public interface IZSYUserService {
 
 
     /**
+     * 查询项目管理员以上用户
+     * @return
+     */
+    List<EffectUserResDTO> manageUsers();
+
+
+    /**
      * 删除用户
      * @param userId 用户ID
      */
@@ -100,6 +107,12 @@ public interface IZSYUserService {
      * @return
      */
     UserResDTO getUserById(Long userId);
+
+    /**
+     * 验证邮件
+     * @param token
+     */
+    void activeEmail(String token);
 
 
 

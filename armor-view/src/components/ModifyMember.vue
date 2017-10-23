@@ -29,6 +29,12 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">邮箱地址</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="modifyForm.email" placeholder="请输入邮箱地址"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">所属部门</div>
         <div class="ftp-msg fl">
           <el-select class="w280" v-model="modifyForm.departmentId" placeholder="请选择部门">
@@ -91,7 +97,8 @@
           phone:'',
           userRole:'',
           departmentId:'',
-          status:''
+          status:'',
+          email:''
         },
         //用户权限手
         options: [{
@@ -129,6 +136,7 @@
             this.modifyForm.phone=res.data.phone;
             this.modifyForm.userRole=res.data.userRole;
             this.modifyForm.status=res.data.status;
+            this.modifyForm.email=res.data.email;
             this.modifyForm.departmentId=res.data.departmentId;
             this.showAddPop = true;
         });
@@ -146,6 +154,7 @@
         this.modifyForm.jobName='';
         this.modifyForm.phone='';
         this.modifyForm.userRole='';
+        this.modifyForm.email='';
       },
       //部门ID
       setUserId(userId){

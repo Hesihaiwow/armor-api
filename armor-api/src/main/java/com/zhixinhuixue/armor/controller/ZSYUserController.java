@@ -96,6 +96,13 @@ public class ZSYUserController extends ZSYController {
         return ZSYResult.success().data(users).build();
     }
 
+    @ApiOperation("管理员列表")
+    @GetMapping("/manage")
+    public String manageUsers() {
+        List<EffectUserResDTO> users = userService.manageUsers();
+        return ZSYResult.success().data(users).build();
+    }
+
 
     @ApiOperation("删除用户")
     @ApiImplicitParam(name = "userId", value = "用户ID", required = true, paramType = "path", dataType = "long")
@@ -152,5 +159,12 @@ public class ZSYUserController extends ZSYController {
     public String getUser() {
         UserResDTO userResDTO = userService.getUserById(ZSYTokenRequestContext.get().getUserId());
         return ZSYResult.success().data(userResDTO).build();
+    }
+
+    @ApiOperation("验证邮件")
+    @PutMapping("/activeEmail/{token}")
+    public String activeEmail(String token) {
+        userService.activeEmail(token);
+        return ZSYResult.success().build();
     }
 }

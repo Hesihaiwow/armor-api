@@ -202,6 +202,9 @@
             <if test="endTime!=null">
                 and t1.create_time &lt;= #{endTime}
             </if>
+            <if test="createBy!=null and createBy!=0">
+                and t1.create_by = #{createBy}
+            </if>
         </where>
        <choose>
            <when test="sort!=null and sort !='' and sort==1">

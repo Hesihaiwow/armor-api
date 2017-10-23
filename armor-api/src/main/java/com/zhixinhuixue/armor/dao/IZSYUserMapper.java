@@ -38,6 +38,12 @@ public interface IZSYUserMapper {
     List<User> selectEffectiveUsers(Long id);
 
     /**
+     * 查询项目管理员以上用户
+     * @return
+     */
+    List<User> manageUsers(Long id);
+
+    /**
      * 删除用户(逻辑删除)
      * @param userId 用户ID
      * @return

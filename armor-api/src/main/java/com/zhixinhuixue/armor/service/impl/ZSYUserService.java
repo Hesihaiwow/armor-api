@@ -135,7 +135,27 @@ public class ZSYUserService implements IZSYUserService {
                 String.format("%s%s", SHA1Helper.Sha1(userReqDTO.getPassword()),
                         ZSYConstants.HINT_PASSWORD_KEY), 32, false));
         userReqDTO.setStatus(ZSYUserStatus.ACTIVE.getValue());
-//        MailHelper.send(userReqDTO.getEmail(),);
+
+//        //生成激活token
+//        Algorithm algorithm = null;
+//        try {
+//            algorithm = Algorithm.HMAC256(jwtSecret);
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        String jwt = JWT.create()
+//                .withIssuer(jwtIssuer)
+//                .withExpiresAt(DateHelper.afterDate(new Date(), 1))//1天过期
+//                .withIssuedAt(new Date())
+//                .withClaim("userId", userReqDTO.getUserId())
+//                .withClaim("email", userReqDTO.getEmail())
+//                .withClaim("departmentId", userReqDTO.getDepartmentId())
+//                .sign(algorithm);
+//        String content = "<p>您好 <br><br>欢迎加入知心慧学!<br><br>"
+//                +"帐户需要激活才能使用，赶紧激活成为知心慧学正式的一员吧:)<br><br>请在24小时内点击下面的链接立即激活帐户："
+//                +"<br><a href='"+"http://localhost:8080/#/user/activeEmail/?token="+jwt+"'>"
+//                +"http://localhost:8080/#/user/activeEmail/?token="+jwt+"点击进入验证</a></p>";
+//        MailHelper.send(userReqDTO.getEmail(),content);
         this.addUser(userReqDTO);
     }
 
@@ -176,7 +196,7 @@ public class ZSYUserService implements IZSYUserService {
                 throw new ZSYAuthException("没有权限执行此操作");
             }
         }
-        if(userReqDTO.getStatus()!=null){
+        if(userReqDTO.getStatus()==null){
             userReqDTO.setStatus(ZSYUserStatus.NORMAL.getValue());
         }
         //校验用户账户是否存在
@@ -246,6 +266,18 @@ public class ZSYUserService implements IZSYUserService {
     @Override
     public List<EffectUserResDTO> getEffectiveUsers() {
         List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
+        List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
+        users.stream().forEach(user -> {
+            EffectUserResDTO effectUserResDTO = new EffectUserResDTO();
+            BeanUtils.copyProperties(user, effectUserResDTO);
+            effectUserResDTOS.add(effectUserResDTO);
+        });
+        return effectUserResDTOS;
+    }
+
+    @Override
+    public List<EffectUserResDTO> manageUsers() {
+        List<User> users = userMapper.manageUsers(ZSYTokenRequestContext.get().getDepartmentId());
         List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
         users.stream().forEach(user -> {
             EffectUserResDTO effectUserResDTO = new EffectUserResDTO();
@@ -339,5 +371,12 @@ public class ZSYUserService implements IZSYUserService {
             ids.addAll(deepCopyDeptIds(child.getChildren()));
         });
         return ids;
+    }
+
+    /**
+     * 验证邮件
+     */
+    public void activeEmail(String token){
+
     }
 }

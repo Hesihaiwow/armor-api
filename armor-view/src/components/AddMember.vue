@@ -99,6 +99,7 @@
         this.addForm.jobName='';
         this.addForm.phone='';
         this.addForm.userRole='';
+        this.addForm.email='';
       },
       //部门ID
       setDeptId(deptId){

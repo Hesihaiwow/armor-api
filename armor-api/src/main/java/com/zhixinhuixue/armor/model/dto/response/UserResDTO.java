@@ -27,6 +27,8 @@ public class UserResDTO {
 
     private String avatarUrl;
 
+    private String email;
+
     public String getName() {
         return name;
     }
@@ -105,5 +107,13 @@ public class UserResDTO {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
