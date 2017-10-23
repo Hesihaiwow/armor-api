@@ -18,7 +18,15 @@ public interface IZSYUserIntegralMapper {
      * @param endTime 结束时间
      * @return
      */
-    List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime);
+    List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("departmentId")Long departmentId);
+
+    /**
+     * 积分列数
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    int getIntegralCount(@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("departmentId") Long departmentId);
 
     /**
      * 查询用户积分
@@ -44,7 +52,7 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    Integer getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id);
+    Integer getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id, @Param("departmentId")Long departmentId);
 
 
     /**
@@ -71,7 +79,7 @@ public interface IZSYUserIntegralMapper {
      * @param status
      * @return
      */
-    Page<UserIntegralInfoBO> getIntegralByReviewStatus(@Param("userId") Long userId, @Param("status")int status);
+    Page<UserIntegralInfoBO> getIntegralByReviewStatus(@Param("userId") Long userId, @Param("status")int status, @Param("departmentId")Long departmentId);
 
     /**
      * 根据审核状态查询所有转移积分

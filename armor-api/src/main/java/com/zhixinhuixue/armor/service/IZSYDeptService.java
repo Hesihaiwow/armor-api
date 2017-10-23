@@ -18,6 +18,12 @@ public interface IZSYDeptService {
     void addDept(DeptReqDTO deptReqDTO);
 
     /**
+     * 添加组织
+     * @param name
+     */
+    void addOrganization(String name);
+
+    /**
      * 部门树结构
      * @return
      */
@@ -28,5 +34,11 @@ public interface IZSYDeptService {
      * @return
      */
     List<DeptLevelResDTO> getDeptLevel();
+
+    /**
+     * 所有部门
+     * @return
+     */
+    List<DeptResDTO> getAllDept();
 
 }

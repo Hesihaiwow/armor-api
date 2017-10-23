@@ -88,14 +88,14 @@ public interface IZSYTaskMapper {
      * 查询所有待审核任务
      * @return
      */
-    List<TaskBO> selectAllWaitAudit();
+    List<TaskBO> selectAllWaitAudit(Long id);
 
     /**
      * 分页查询所有审核通过的任务
      * @param
      * @return
      */
-    Page<TaskBO> selectAllAuditSuccess();
+    Page<TaskBO> selectAllAuditSuccess(Long id);
 
     /**
      * 查询所有未评价完的任务
@@ -133,7 +133,7 @@ public interface IZSYTaskMapper {
      * @param stageId
      * @return
      */
-    List<TaskListBO> selectTaskByStageId(Long stageId);
+    List<TaskListBO> selectTaskByStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId);
 
     /**
      * 查询阶段内任务最后一个index

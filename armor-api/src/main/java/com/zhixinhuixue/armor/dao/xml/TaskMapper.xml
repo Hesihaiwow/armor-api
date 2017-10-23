@@ -33,6 +33,8 @@
         <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
         <collection property="tags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
+        <collection property="delayNo" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskMapper.countDelayUser"
+                    ofType="java.lang.Integer"></collection>
     </resultMap>
 
     <resultMap id="TaskResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
@@ -86,10 +88,10 @@
 
     <!-- 查询任务详情 -->
     <select id="selectTaskDetailByTaskId" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
-    select t1.*,t2.`name` as projectName,t3.`name` as stageName from task t1
-    left join project t2 on t1.project_id = t2.id
-    left JOIN stage t3 on t1.stage_id = t3.id
-    where t1.id = #{taskId} and t1.is_delete = 0
+        select t1.*,t2.`name` as projectName,t3.`name` as stageName from task t1
+        left join project t2 on t1.project_id = t2.id
+        left JOIN stage t3 on t1.stage_id = t3.id
+        where t1.id = #{taskId} and t1.is_delete = 0
     </select>
 
     <!-- 查询已完成未结束的任务 -->
@@ -111,12 +113,13 @@
     </select>
 
     <!-- 查询所有待审核的任务 -->
-    <select id="selectAllWaitAudit" resultMap="WaitAuditResultMap">
+    <select id="selectAllWaitAudit" resultMap="WaitAuditResultMap" parameterType="java.lang.Long">
          select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t3.image_url as projectImage, t4.`name` as userName,t2.user_id,t4.avatar_url from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
         left join `user` t4 on t1.create_by = t4.id
-        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0  order by t1.create_time desc
+        left join department t5 on t4.department_id = t5.id
+        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0  and t5.parent_id = #{id}  order by t1.create_time desc
     </select>
 
     <!-- 查询还未评价完的任务 -->
@@ -157,8 +160,9 @@
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
+        left join  department t7 on t6.department_id = t7.id
         <where>
-            t1.review_status = 3 and t1.is_delete = 0
+            t1.review_status = 3 and t1.is_delete = 0 and t7.parent_id = #{departmentId}
             <if test="taskId!=null and taskId!=0">
                 and t1.id = #{taskId}
             </if>
@@ -231,7 +235,8 @@
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
             left join `user` t4 on t1.create_by = t4.id
-            where t1.review_status =3 and t1.is_delete = 0 and t1.type=1 order by t1.update_time desc
+            left join department t5 on t4.department_id = t5.id
+            where t1.review_status =3 and t1.is_delete = 0 and t1.type=1 and t5.parent_id =#{id} order by t1.update_time desc
     </select>
 
     <!-- 查询任务用户评价 -->
@@ -240,15 +245,17 @@
     </select>
 
     <!-- 查询阶段下的任务 -->
-    <select id="selectTaskByStageId" resultMap="PageResultMap" parameterType="java.lang.Long">
+    <select id="selectTaskByStageId" resultMap="PageResultMap" parameterType="java.util.Map">
         select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
         left join task_user t2 on t1.id =t2.task_id
         left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
+        left join department t7 on t6.department_id = t7.id
          where t1.review_status = 3 and t1.is_delete = 0
          and t1.`type` = 2 and t1.stage_id = #{stageId}
+         and t7.parent_id =#{departmentId}
          order by t1.sort ASC
     </select>
 
@@ -346,6 +353,13 @@
     <!--查询项目下是否有任务存在-->
     <select id="findTaskByProjectId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM task where project_id = #{projectId, jdbcType=BIGINT} AND is_delete = 0
+    </select>
+
+    <!--查询项目下超时的任务数-->
+    <select id="countDelayUser" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(*) from task_user  where status =1
+        <![CDATA[  and end_time<now() ]]>
+        and task_id = #{id}
     </select>
 
 </mapper>

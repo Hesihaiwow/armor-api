@@ -11,10 +11,7 @@ import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
-import com.zhixinhuixue.armor.helper.DateHelper;
-import com.zhixinhuixue.armor.helper.MD5Helper;
-import com.zhixinhuixue.armor.helper.SHA1Helper;
-import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.helper.*;
 import com.zhixinhuixue.armor.model.bo.DeptBo;
 import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.dto.request.UploadAvatarReqDTO;
@@ -108,6 +105,10 @@ public class ZSYUserService implements IZSYUserService {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        Long departmentId = user.getDepartmentId();
+        if(user.getDepartmentId()!=0){
+            departmentId = departmentMapper.selectById(user.getDepartmentId()).getParentId();
+        }
         String jwt = JWT.create()
                 .withIssuer(jwtIssuer)
                 .withExpiresAt(DateHelper.afterDate(new Date(), jwtExp))
@@ -116,6 +117,7 @@ public class ZSYUserService implements IZSYUserService {
                 .withClaim("userName", user.getName())
                 .withClaim("avatarUrl", user.getAvatarUrl())
                 .withClaim("userRole", user.getUserRole())
+                .withClaim("departmentId", departmentId)
                 .sign(algorithm);
 
         String loginKey = String.format(ZSYConstants.LOGIN_KEY, user.getId());
@@ -123,6 +125,18 @@ public class ZSYUserService implements IZSYUserService {
         stringRedisTemplate.expire(loginKey, ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
         logger.info("{}({})登录成功,token:{}", user.getName(), user.getId(), jwt);
         return ZSYResult.success().data(jwt);
+    }
+
+    @Override
+    public void registerUser(UserReqDTO userReqDTO){
+        userReqDTO.setDepartmentId(ZSYConstants.NO_DEPT_ID);
+        userReqDTO.setUserRole(ZSYUserRole.EMPLOYEE.getValue());
+        userReqDTO.setPassword(MD5Helper.convert(
+                String.format("%s%s", SHA1Helper.Sha1(userReqDTO.getPassword()),
+                        ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        userReqDTO.setStatus(ZSYUserStatus.ACTIVE.getValue());
+//        MailHelper.send(userReqDTO.getEmail(),);
+        this.addUser(userReqDTO);
     }
 
     @Override
@@ -155,27 +169,34 @@ public class ZSYUserService implements IZSYUserService {
 
     @Override
     public void addUser(UserReqDTO userReqDTO) {
-
-        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
-            throw new ZSYAuthException("没有权限执行此操作");
+        if(userReqDTO.getDepartmentId()==0){
+            userReqDTO.setUserRole(ZSYUserRole.EMPLOYEE.getValue());
+        }else{
+            if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
+                throw new ZSYAuthException("没有权限执行此操作");
+            }
         }
-
+        if(userReqDTO.getStatus()!=null){
+            userReqDTO.setStatus(ZSYUserStatus.NORMAL.getValue());
+        }
         //校验用户账户是否存在
         List<User> existUsers = userMapper.selectByAccount(userReqDTO.getAccount());
         if (existUsers.size() > 0) {
             throw new ZSYServiceException(String.format("用户账户[%s]已存在", userReqDTO.getAccount()));
         }
+        //校验邮箱是否存在
 
         User user = new User();
         BeanUtils.copyProperties(userReqDTO, user);
         user.setId(snowFlakeIDHelper.nextId());
         user.setCreateTime(new Date());
         user.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
-        user.setStatus(ZSYUserStatus.NORMAL.getValue());
         user.setIntegral(new BigDecimal(ZSYConstants.DEFAULT_INTEGRAL));
-        user.setPassword(MD5Helper.convert(
-                String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
-                        ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        if(userReqDTO.getPassword()==null||userReqDTO.getPassword()==""){
+            user.setPassword(MD5Helper.convert(
+                    String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
+                            ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        }
         userMapper.insertUser(user);
     }
 
@@ -204,9 +225,27 @@ public class ZSYUserService implements IZSYUserService {
         userMapper.updateSelectiveById(user);
     }
 
+    /**
+     * 修改组织
+     * @param id
+     */
+    public void modifyDept(Long id){
+        User user = new User();
+        user.setId(ZSYTokenRequestContext.get().getUserId());
+        user.setDepartmentId(id);
+        if(userMapper.countByDepartmentId(departmentMapper.selectById(id).getId())==0){//如果是组织第一名用户，自动升为超级管理员
+            user.setUserRole(ZSYUserRole.ADMINISTRATOR.getValue());
+        }else{
+            user.setUserRole(ZSYUserRole.EMPLOYEE.getValue());
+        }
+        if (userMapper.updateSelectiveById(user) == 0) {
+            throw new ZSYServiceException("更新组织失败，请重试");
+        }
+    }
+
     @Override
     public List<EffectUserResDTO> getEffectiveUsers() {
-        List<User> users = userMapper.selectEffectiveUsers();
+        List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
         List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
         users.stream().forEach(user -> {
             EffectUserResDTO effectUserResDTO = new EffectUserResDTO();

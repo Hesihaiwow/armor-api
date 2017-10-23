@@ -23,7 +23,6 @@ public class UserReqDTO {
     @Pattern(regexp = "^1[3|4|5|7|8][0-9]\\d{8}$",message = "用户手机号格式错误")
     private String phone;
 
-    @NotNull(message = "用户部门不能为空")
     private Long departmentId;
 
     @Size(min = 1,max = 15,message = "用户职位字符长度在{min}~{max}之间")
@@ -32,6 +31,15 @@ public class UserReqDTO {
 
     @NotNull(message = "用户角色不能为空")
     private Integer userRole;
+
+    @Size(min = 6,max = 16,message = "用户职位字符长度在{min}~{max}之间")
+    private String password;
+
+    private Integer status;
+
+    @Pattern(regexp = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}",message = "邮箱格式错误")
+    @NotNull(message = "邮箱不能为空")
+    private String email;
 
     public Long getUserId() {
         return userId;
@@ -87,5 +95,29 @@ public class UserReqDTO {
 
     public void setUserRole(Integer userRole) {
         this.userRole = userRole;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

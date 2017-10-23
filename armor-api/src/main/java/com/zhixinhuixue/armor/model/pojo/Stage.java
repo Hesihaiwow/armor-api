@@ -14,6 +14,8 @@ public class Stage {
 
     private Integer sort;
 
+    private Long departmentId;
+
     public Long getId() {
         return id;
     }
@@ -52,5 +54,13 @@ public class Stage {
 
     public void setSort(Integer sort) {
         this.sort = sort;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

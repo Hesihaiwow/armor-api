@@ -15,6 +15,8 @@ public class LoginInfoReqDTO {
 //    private String[] permissions;
     private Integer userRole;
 
+    private Long departmentId;
+
     public Long getUserId() {
         return userId;
     }
@@ -37,5 +39,13 @@ public class LoginInfoReqDTO {
 
     public void setUserRole(Integer userRole) {
         this.userRole = userRole;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

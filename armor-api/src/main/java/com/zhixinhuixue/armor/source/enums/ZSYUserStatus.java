@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYUserStatus {
 
-    NORMAL(0, "正常"), frozen(1, "冻结"),QUIT(2, "离职");
+    NORMAL(0, "正常"), frozen(1, "冻结"),QUIT(2, "离职"),ACTIVE(3, "未激活");
 
     private int value;
     private String name;

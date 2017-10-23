@@ -407,6 +407,12 @@
                             <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
+                        <div class="add-member-basic-msg fl"><span class="star">*</span>阶段修改：
+                            <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
+                                <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
                     </div>
                 </div>
                 <div class="ctpc-btns">
@@ -620,6 +626,10 @@
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
                     {label: '非常紧急', value: 3},
+                ],
+                statusOptions:[
+                    {name: '进行中', id: 1},
+                    {name: '已完成', id: 2},
                 ],
                 step: {
                     index: '',

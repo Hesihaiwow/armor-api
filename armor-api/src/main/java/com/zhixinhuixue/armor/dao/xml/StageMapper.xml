@@ -7,6 +7,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="create_by" jdbcType="BIGINT" property="createBy" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="department_id" jdbcType="BIGINT" property="departmentId" />
   </resultMap>
     <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.dto.response.StageResDTO" extends="BaseResultMap">
         <result column="num" jdbcType="INTEGER" property="num" />
@@ -16,7 +17,7 @@
   </sql>
   <select id="selectStage" resultMap="BaseMap">
     SELECT (@rowid := @rowid+1) AS num, a.id, a.name, a.sort  FROM(
-        SELECT *  FROM stage
+        SELECT *  FROM stage WHERE department_id = #{id}
       ORDER BY sort ASC)as a,
     (SELECT (@rowid:=0))as b
   </select>
@@ -26,9 +27,9 @@
   </delete>
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Stage">
     insert into stage (id, name, create_time, 
-      create_by, sort)
+      create_by, sort,department_id)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{createBy,jdbcType=BIGINT}, #{sort,jdbcType=INTEGER} )
+      #{createBy,jdbcType=BIGINT}, #{sort,jdbcType=INTEGER}, #{departmentId,jdbcType=BIGINT})
   </insert>
 
     <update id="update">
@@ -39,7 +40,7 @@
 
   <!--验证阶段名,优先级是否存在-->
   <select id="validateStage" parameterType="com.zhixinhuixue.armor.model.pojo.Stage" resultType="java.lang.Integer">
-    SELECT count(*) FROM stage  WHERE name = #{name,jdbcType=VARCHAR} or sort = #{sort,jdbcType=INTEGER}
+    SELECT count(*) FROM stage  WHERE department_id = #{departmentId} and (name = #{name,jdbcType=VARCHAR} or sort = #{sort,jdbcType=INTEGER})
   </select>
 
   <!-- 根据ID查询阶段 -->

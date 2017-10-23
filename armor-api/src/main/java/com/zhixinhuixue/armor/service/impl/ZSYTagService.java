@@ -33,7 +33,7 @@ public class ZSYTagService implements IZSYTagService {
      */
     @Override
     public List<TagResDTO> getTag(){
-        List<Tag> tags = tagMapper.selectTag();
+        List<Tag> tags = tagMapper.selectTag(ZSYTokenRequestContext.get().getDepartmentId());
 
         List<TagResDTO> tagResDTOS = new ArrayList<>();
 
@@ -52,13 +52,14 @@ public class ZSYTagService implements IZSYTagService {
      */
     @Override
     public Long addTag(String name){
-        if(tagMapper.validateTag(name.replace(" ", ""))>0){
+        if(tagMapper.validateTag(name.replace(" ", ""),ZSYTokenRequestContext.get().getDepartmentId())>0){
             throw new ZSYServiceException("标签名称已存在");
         }
             Tag tag = new Tag();
             tag.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             tag.setCreateTime(new Date());
             tag.setId(snowFlakeIDHelper.nextId());
+            tag.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
             int count = tagMapper.countTag();
             if(count<8){
                 tag.setColor(""+(count+1));

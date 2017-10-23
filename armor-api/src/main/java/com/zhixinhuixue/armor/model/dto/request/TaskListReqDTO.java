@@ -22,6 +22,7 @@ public class TaskListReqDTO {
     private Long taskId;
     private String projectImage;
     private Integer sort; // 排序
+    private Long departmentId;
 
     public String getProjectId() {
         return projectId;
@@ -133,5 +134,13 @@ public class TaskListReqDTO {
 
     public void setProjectImage(String projectImage) {
         this.projectImage = projectImage;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

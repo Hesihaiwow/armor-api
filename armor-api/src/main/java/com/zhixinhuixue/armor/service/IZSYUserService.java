@@ -25,6 +25,12 @@ public interface IZSYUserService {
     ZSYResult<String> userLogin(UserLoginReqDTO userLoginReqDTO);
 
     /**
+     * 用户注册
+     * @param userReqDTO
+     */
+    void registerUser(UserReqDTO userReqDTO);
+
+    /**
      * 用户注销
      */
     void userLogout();
@@ -53,6 +59,12 @@ public interface IZSYUserService {
      * 修改用户头像
      */
     void modifyUserAvatar(UploadAvatarReqDTO uploadAvatarReqDTO);
+
+    /**
+     * 修改组织
+     * @param id
+     */
+    void modifyDept(Long id);
 
 
     /**

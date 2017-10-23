@@ -28,6 +28,23 @@
         <alter-password ref="alterPwdPop"></alter-password>
         <!-- 上传头像 -->
         <upload-avatar ref="uploadAvatar"></upload-avatar>
+        <el-dialog title="选择部门"
+                   :visible.sync="deptVisible" :show-close=false :close-on-press-escape=false :close-on-click-modal=false
+                   size="tiny">
+            <el-tree :data="deptOptions" :props="dept" ref="tree"  @node-click="deptChoose"></el-tree>
+            <div style="margin-bottom: 10px;margin-top: 20px">
+                <el-button type="warning" style="margin-left: 25px;" @click="addDeptVisible=true,deptName=''">新建组织</el-button>
+                <el-button type="primary" style="margin-left: 330px;" @click="deptChange">确定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="新增组织"
+                   :visible.sync="addDeptVisible"
+                   size="tiny">
+            <el-input style="width: 80%" placeholder="请输入组织名称" v-model="organization"></el-input>
+            <div style="margin-bottom: 10px;margin-top: 20px">
+                <el-button type="primary" style="margin-left: 330px;" @click="addDept">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -77,7 +94,17 @@
                 newPwd: '',
                 sureNewPwd: '',
                 showAlterPwd: false,
-                avatarUrl:''
+                avatarUrl:'',
+                deptVisible:false,
+                deptOptions:[],
+                dept:{
+                    children: 'children',
+                    label: 'label',
+                    id:'id'
+                },
+                departmentId:'',
+                organization:'',
+                addDeptVisible:false
             };
         },
         created() {
@@ -99,6 +126,12 @@
                     label: '评价',
                     name: 'comments'
                 })
+            }
+            if (Helper.decodeToken().departmentId == 0) {
+                Http.zsyGetHttp(`/dept/all`,null,(res)=>{
+                    this.deptOptions=res.data;
+                });
+                this.deptVisible=true
             }
         },
         watch: {
@@ -154,6 +187,52 @@
                         this.avatarUrl = res.data.avatarUrl
                     }
                 })
+            },
+            deptChoose(data){
+                this.departmentId=data.id;
+            },
+            addDept(){
+                if(this.organization.trim()!=''&&this.organization!=null&&this.organization.length<20){
+                    Http.zsyPostHttp('/dept/addOrganization?name='+this.organization,null,(res)=>{
+                        this.$message({
+                            showClose: true,
+                            message: '创建组织成功',
+                            type: 'success'
+                        });
+                        Http.zsyGetHttp(`/dept/all`,null,(res)=>{
+                            this.deptOptions=res.data;
+                        });
+                        this.addDeptVisible = false
+                    });
+
+                }else{
+                    this.$message({
+                        showClose: true,
+                        message: '组织名称不能为空且长度小于20',
+                        type: 'warning'
+                    });
+                    return
+                }
+            },
+            deptChange(){
+                if(this.departmentId==''){
+                    this.$message({
+                        showClose: true,
+                        message: '请选择组织',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                Http.zsyPutHttp('/user/modifyDept/'+this.departmentId,null,(res)=>{
+                    this.$message({
+                        showClose: true,
+                        message: '组织修改成功，请重新登录',
+                        type: 'success'
+                    });
+                    this.handleLogout()
+                })
+
+                this.deptVisible = false
             }
         },
         components: {

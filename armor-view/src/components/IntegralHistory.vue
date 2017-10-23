@@ -302,13 +302,13 @@
           this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
           this.queryForm.endTime = this.localeTimeString(new Date(curYear, curMonth + 1, 1));//下月第一天0点
         } else if (date == "quarter") {//本季度的开始结束时间
-          if (curMonth >= 1 && curMonth <= 3) {
+          if (curMonth >= 0 && curMonth <= 2) {
             startMonth = 0;
-          } else if (curMonth >= 4 && curMonth <= 6) {
+          } else if (curMonth >= 3 && curMonth <= 5) {
             startMonth = 3;
-          } else if (curMonth >= 7 && curMonth <= 9) {
+          } else if (curMonth >= 6 && curMonth <= 8) {
             startMonth = 6;
-          } else if (curMonth >= 10 && curMonth <= 12) {
+          } else if (curMonth >= 9 && curMonth <= 11) {
             startMonth = 9;
           }
           this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));

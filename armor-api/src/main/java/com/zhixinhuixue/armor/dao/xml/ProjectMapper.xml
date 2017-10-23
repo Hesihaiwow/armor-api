@@ -8,6 +8,7 @@
     <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
     <result column="create_by" jdbcType="BIGINT" property="createBy" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="department_id" jdbcType="BIGINT" property="departmentId" />
   </resultMap>
   <sql id="Base_Column_List">
     id, name, description, create_by, create_time, image_url
@@ -18,16 +19,16 @@
     SELECT
     <include refid="Base_Column_List" />
     FROM project
-    WHERE is_delete = 0
+    WHERE is_delete = 0 AND  department_id =#{id}
     ORDER BY create_time ASC
   </select>
 
   <!--添加项目-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     insert into project (id, name, description, 
-      create_by, create_time, image_url)
+      create_by, create_time, image_url, department_id)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR})
+      #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT})
   </insert>
 
   <!-- 更新项目 -->

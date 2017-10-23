@@ -35,7 +35,7 @@ public interface IZSYUserMapper {
      * 查询有效用户
      * @return
      */
-    List<User> selectEffectiveUsers();
+    List<User> selectEffectiveUsers(Long id);
 
     /**
      * 删除用户(逻辑删除)
@@ -64,4 +64,11 @@ public interface IZSYUserMapper {
      * @return
      */
     Page<UserBo> selectPage(List<Long> deptIds);
+
+
+    /**
+     * 查询组织id下是否存在用户
+     * @return
+     */
+    int countByDepartmentId(long id);
 }

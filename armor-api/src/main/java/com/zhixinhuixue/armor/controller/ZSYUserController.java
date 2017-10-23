@@ -44,6 +44,13 @@ public class ZSYUserController extends ZSYController {
         return userService.userLogin(userLoginReqDTO).build();
     }
 
+    @ApiOperation("用户注册")
+    @PostMapping(value = "/register")
+    public String register(@Valid @RequestBody UserReqDTO userReqDTO) {
+        userService.registerUser(userReqDTO);
+        return ZSYResult.success().build();
+    }
+
 
     @ApiOperation("用户注销")
     @PostMapping(value = "/logout")
@@ -129,6 +136,13 @@ public class ZSYUserController extends ZSYController {
     @PutMapping("/modifyAvatar")
     public String modifyAvatar(@Valid @RequestBody UploadAvatarReqDTO uploadAvatarReqDTO) {
         userService.modifyUserAvatar(uploadAvatarReqDTO);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("修改组织")
+    @PutMapping("/modifyDept/{id}")
+    public String modifyAvatar(@Valid @PathVariable("id") Long id) {
+        userService.modifyDept(id);
         return ZSYResult.success().build();
     }
 

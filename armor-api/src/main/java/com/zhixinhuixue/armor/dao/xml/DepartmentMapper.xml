@@ -29,8 +29,11 @@
 
 
   <!-- 校验部门名称 -->
-  <select id="selectByDeptName" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByDeptName" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT * FROM department WHERE `name` = #{deptName}
+    <if test="id!=null">
+      AND parent_id = #{id}
+    </if>
   </select>
 
   <!-- 查询root菜单 -->
@@ -40,15 +43,18 @@
 
   <!-- 查询父级菜单的子菜单 -->
   <select id="selectByParentId" parameterType="java.lang.Long" resultMap="TreeResultMap">
-    SELECT * FROM department WHERE is_delete = 0 AND parent_id = #{pDeptId} ORDER BY create_time ASC
+    SELECT * FROM department WHERE is_delete = 0 AND parent_id = #{pDeptId} AND id!=#{pDeptId} ORDER BY create_time ASC
   </select>
 
   <!-- 查询父级菜单的子菜单 -->
   <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
     SELECT * FROM department WHERE `id`=#{id}
   </select>
-  
 
+  <!-- 查询所有部门 -->
+  <select id="getAllDept"  resultMap="TreeResultMap">
+    SELECT * FROM department WHERE is_delete = 0 AND `id` = parent_id
+  </select>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
     update department

@@ -12,6 +12,7 @@ export default {
             tmp.userName = null;
             tmp.userId = null;
             tmp.userRole = null;
+            tmp.departmentId = null;
             return tmp;
         }
         let tokens = token.split(".");

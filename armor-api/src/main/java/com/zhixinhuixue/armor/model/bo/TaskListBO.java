@@ -16,6 +16,7 @@ public class TaskListBO extends Task {
     private String projectImage;
     private String stageName;
     private List<Tag> tags;
+    private int delayNo;//任务超时人数
 
     public String getProjectName() {
         return projectName;
@@ -63,5 +64,13 @@ public class TaskListBO extends Task {
 
     public void setProjectImage(String projectImage) {
         this.projectImage = projectImage;
+    }
+
+    public int getDelayNo() {
+        return delayNo;
+    }
+
+    public void setDelayNo(int delayNo) {
+        this.delayNo = delayNo;
     }
 }

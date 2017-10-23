@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -33,11 +34,24 @@ public class ZSYDeptController extends ZSYController {
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("添加父组织")
+    @PostMapping("/addOrganization")
+    public String addOrganization(@NotNull @RequestParam String name){
+        deptService.addOrganization(name);
+        return ZSYResult.success().build();
+    }
+
     @ApiOperation("部门树结构")
     @GetMapping("/tree")
     public String tree(){
         DeptResDTO deptResDTO = deptService.getDeptTree();
         return ZSYResult.success().data(deptResDTO).build();
+    }
+
+    @ApiOperation("所有部门")
+    @GetMapping("/all")
+    public String allDept(){
+        return ZSYResult.success().data(deptService.getAllDept()).build();
     }
 
     @ApiOperation("部门级别结构")

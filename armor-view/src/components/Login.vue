@@ -1,7 +1,7 @@
 <template>
     <div class="login">
         <!-- <div class="login-title">用户积分管理系统</div> -->
-        <el-form  label-position="left" label-width="0px" class="demo-ruleForm login-container">
+        <el-form  label-position="left" label-width="0px" class="demo-ruleForm login-container" v-show="loginShow">
             <h1 class="title">系统登录 <em> SYSTEM LOGIN</em></h1>
             <div class="form-items">
                 <el-form-item prop="account">
@@ -14,6 +14,38 @@
                 <el-form-item style="width:100%;">
                     <el-button type="primary" style="width:100%;" @click="login" :loading="button.loading" class="form-input">登录</el-button>
                 </el-form-item>
+                <el-form-item style="width:100%;height: 50%">
+                    <el-button type="text" style="width:100%;height: 50%" @click="registerShow=true,loginShow=false" class="form-input">没有账号？请注册</el-button>
+                </el-form-item>
+            </div>
+        </el-form>
+        <el-form  label-position="left" label-width="0px" class="demo-ruleForm login-container" :rules="rules" ref="userForm" :model="userForm" v-show="registerShow">
+            <h1 class="title">用户注册 <em> USER REGISTER</em></h1>
+            <div class="form-items">
+                <el-form-item prop="account">
+                    <el-input type="text" v-model="userForm.account" auto-complete="off" placeholder="账号" class="form-input"></el-input>
+                </el-form-item>
+                <el-form-item prop="name">
+                    <el-input type="text" v-model="userForm.name" auto-complete="off" placeholder="真实姓名" class="form-input"></el-input>
+                </el-form-item>
+                <el-form-item prop="password">
+                    <el-input type="password" v-model="userForm.password" auto-complete="off" placeholder="密码" class="form-input"></el-input>
+                </el-form-item>
+                <el-form-item prop="jobName">
+                    <el-input type="text" v-model="userForm.jobName" auto-complete="off" placeholder="职位" class="form-input"></el-input>
+                </el-form-item>
+                <el-form-item prop="phone">
+                    <el-input type="text" v-model="userForm.phone" auto-complete="off" placeholder="手机" class="form-input"></el-input>
+                </el-form-item>
+                <el-form-item prop="email">
+                    <el-input type="text" v-model="userForm.email" auto-complete="off" placeholder="邮箱" class="form-input"></el-input>
+                </el-form-item>
+                <el-form-item style="width:100%;">
+                    <el-button type="primary" style="width:100%;" @click="register('userForm')" :loading="button.loading" class="form-input">注册</el-button>
+                </el-form-item>
+                <el-form-item style="width:100%;height: 50%">
+                    <el-button type="text" style="width:100%;height: 50%" @click="registerShow=false,loginShow = true" class="form-input">返回登录</el-button>
+                </el-form-item>
             </div>
         </el-form>
     </div>
@@ -21,16 +53,54 @@
 <script>
     import Helper from '../lib/Helper'
     import Http from "../lib/Http";
+    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
+    import ElInput from "../../node_modules/element-ui/packages/input/src/input";
 
     export default {
+        components: {
+            ElInput,
+            ElButton},
         data() {
+            var validateEmpty = (rule, value, callback) => {
+                if (value.trim() == '') {
+                    callback(new Error());
+                } else {
+                    callback();
+                }
+            };
             return {
+                registerShow:false,
+                loginShow:true,
                 loginForm:{
                     account:'',
                     password:''
                 },
                 button:{
                     loading:false
+                },
+                userForm:{
+                    account:'',
+                    name:'',
+                    password:'',
+                    jobName:'',
+                    phone:'',
+                    email:'',
+                    userRole:Math.floor(Math.random()*10)
+                },
+                loginForm:{
+                    account:'',
+                    password:''
+                },
+                button:{
+                    loading:false
+                },
+                rules: {
+                    account: [{required: true, message: '账号不能为空且长度在5~16之间(不支持中文)', trigger: 'change',min: 5, max: 16, validator: validateEmpty}],
+                    name: [{required: true, message: '真实姓名不能为空且长度小于20', trigger: 'change',min: 1, max: 20,validator: validateEmpty}],
+                    password: [{ required: true, message: '密码长度在6~16之间', trigger: 'change', min: 6, max: 16,validator: validateEmpty}],
+                    jobName: [{ required: true,message: '职位不能超过10字', trigger: 'change', min: 1, max: 10,validator: validateEmpty}],
+                    phone: [{ required: true,message: '手机格式错误', trigger: 'change', pattern:/0?(13|14|15|18)[0-9]{9}/ }],
+                    email: [{ required: true,message: '邮箱格式错误', trigger: 'change', pattern:/\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/ }],
                 }
             };
         },
@@ -78,6 +148,45 @@
                 },(e)=>{
                     _this.button.loading = false;
                 });
+            },
+            register (userForm) {
+                let _this = this;
+                _this.button.loading = true;
+                this.$refs[userForm].validate((valid) => {
+                    if (valid) {
+                        Http.zsyPostHttp('/user/register', _this.userForm,(res)=>{
+                            _this.loginForm.account =_this.userForm.account ;
+                            _this.loginForm.password =_this.userForm.password ;
+                            Http.zsyPostHttp(Http.API_URI.LOGIN, _this.loginForm,(res)=>{
+                                if (res.errCode!='00'){
+                                    _this.button.loading = false;
+                                    this.$message({
+                                        showClose: true,
+                                        message: res.errMsg,
+                                        type: 'error'
+                                    });
+                                }else{
+                                    _this.button.btnName = '登录成功,跳转中...';
+                                    window.localStorage.setItem("token", res.data);
+                                    _this.$router.push('/index/navIndex');
+                                }
+                            });
+                        },(res)=>{
+                            _this.button.loading = false;
+                            this.$message({
+                                showClose: true,
+                                message: res.errMsg,
+                                type: 'error'
+                            });
+                        },(e)=>{
+                            _this.button.loading = false;
+                        });
+                    }else{
+                        _this.button.loading = false;
+                        return
+                    }
+                });
+
             },
         },
         created(){

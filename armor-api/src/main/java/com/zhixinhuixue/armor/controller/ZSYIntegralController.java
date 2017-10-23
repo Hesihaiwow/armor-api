@@ -48,6 +48,20 @@ public class ZSYIntegralController extends ZSYController{
     }
 
     /**
+     * 根据时间查看积分列数量
+     * @return
+     */
+    @ApiOperation("获取积分列数")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "startTime",value = "开始时间",required = false,paramType = "query",dataType = "string"),
+            @ApiImplicitParam(name = "endTime",value = "结束时间",required = false,paramType = "query",dataType = "string")
+    })
+    @GetMapping("/count")
+    public String getIntegralCount(@PathParam("startTime")String startTime,@PathParam("endTime")String endTime){
+        return ZSYResult.success().data(integralService.getIntegralCount(startTime,endTime)).build();
+    }
+
+    /**
      * 用户积分排名信息
      * @return
      */

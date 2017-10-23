@@ -29,6 +29,12 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">邮箱地址</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addForm.email" placeholder="请输入邮箱地址"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">用户权限</div>
         <div class="ftp-msg fl">
           <el-select class="w280" v-model="addForm.userRole" placeholder="请选择权限">
@@ -63,7 +69,8 @@
           jobName:'',
           phone:'',
           userRole:'',
-          departmentId:''
+          departmentId:'',
+          email:''
         },
         //用户权限手
         options: [{

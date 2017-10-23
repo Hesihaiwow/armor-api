@@ -32,8 +32,9 @@
     SELECT (@rowid := @rowid+1) AS id,integral,name,user_id FROM(
     SELECT sum(case when (i.review_status!=1  or i.review_status is null) then i.integral else 0 end) as integral, u.name, i.user_id
     FROM user_integral i,`user` u
+    LEFT JOIN department d on u.department_id = d.id
     <where>
-      i.user_id = u.id
+      i.user_id = u.id AND d.parent_id =#{departmentId}
       <if test="startTime!=null and startTime!=''">
       <![CDATA[AND i.create_time >= #{startTime}]]>
       </if>
@@ -78,13 +79,26 @@
     (SELECT task_user_id,AVG(integral)as grade FROM task_comment GROUP BY task_user_id) t2
     on t1.id = t2.task_user_id
   </select>
+  <select id="getIntegralCount" resultType="java.lang.Integer">
+    SELECT COUNT(*) From user_integral i
+    LEFT JOIN `user` u on u.id = i.user_id
+    LEFT JOIN department d on u.department_id = d.id
+    WHERE d.parent_id =#{departmentId} AND
+    <if test="startTime!=null and startTime!=''">
+      <![CDATA[ i.create_time >= #{startTime}]]>
+    </if>
+    <if test="endTime!=null and endTime!=''" >
+      <![CDATA[  i.create_time <=#{endTime}]]>
+    </if>
+  </select>
   <!--查询排名-->
   <select id="getRank" resultType="java.lang.Integer">
     SELECT  id from(
     SELECT (@rowid := @rowid+1) AS id,integral,name,user_id FROM(
         SELECT sum(i.integral) as integral, u.name, i.user_id
         FROM user_integral i,`user` u
-        WHERE   i.user_id = u.id AND (i.review_status != 1  or i.review_status is null)
+        LEFT JOIN department d on d.id = u.department_id
+        WHERE   i.user_id = u.id AND d.parent_id= #{departmentId} AND (i.review_status != 1  or i.review_status is null)
         <![CDATA[ AND i.create_time > #{startTime,jdbcType=TIMESTAMP} AND i.create_time < #{endTime,jdbcType=TIMESTAMP}]]>
           GROUP BY i.user_id
           ORDER BY integral DESC)as a,
@@ -104,6 +118,8 @@
     </if>
     ) a JOIN user u
     on u.id = a.create_by
+    LEFT JOIN department d on u.department_id = d.id
+    where d.parent_id = #{departmentId,jdbcType=BIGINT}
   </select>
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserIntegral">

@@ -17,6 +17,7 @@
     <result column="last_login" jdbcType="TIMESTAMP" property="lastLogin" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
   </resultMap>
 
   <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.UserBo" extends="BaseResultMap">
@@ -29,13 +30,13 @@
     insert into `user` (id, `name`, account,
     password, phone, last_login,
     department_id, job_name, integral,
-    status, create_time, is_delete,user_role
+    status, create_time, is_delete,user_role,email
     )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
     #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP},
     #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{integral,jdbcType=DECIMAL},
     #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER},
-    #{userRole,jdbcType=INTEGER})
+    #{userRole,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR})
   </insert>
 
   <!-- 根据账号查询用户 -->
@@ -55,7 +56,9 @@
 
   <!-- 查询有效用户 -->
   <select id="selectEffectiveUsers" parameterType="java.util.Map" resultMap="BaseResultMap">
-    select * from `user` where is_delete=0 and `status`=0 order by create_time asc
+    select * from `user` u
+	LEFT JOIN department d on u.department_id = d.id
+	where u.is_delete=0 and u.`status`=0  and d.parent_id = #{id} order by u.create_time asc
   </select>
 
   <!-- 删除用户 -->
@@ -106,6 +109,9 @@
       <if test="avatarUrl != null and avatarUrl!=''">
         avatar_url = #{avatarUrl,jdbcType=VARCHAR},
       </if>
+      <if test="email != null and email!=''">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -122,4 +128,10 @@
      </if>
     ORDER BY user_role ASC ,create_time ASC
   </select>
+
+  <!-- 根据组织查询用户数-->
+  <select id="countByDepartmentId" resultType="java.lang.Integer">
+      SELECT COUNT(*) FROM `user` WHERE department_id=#{id}
+  </select>
+
 </mapper>

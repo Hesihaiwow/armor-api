@@ -18,6 +18,8 @@ public class Project {
 
     private String imageUrl;
 
+    private Long departmentId;
+
     public Long getId() {
         return id;
     }
@@ -72,5 +74,13 @@ public class Project {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

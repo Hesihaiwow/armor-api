@@ -9,6 +9,7 @@ import com.zhixinhuixue.armor.model.dto.response.IntegralReviewResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -23,6 +24,15 @@ public interface IZSYIntegralService {
      * @return
      */
     List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime);
+
+
+    /**
+     * 获取积分列数
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Map getIntegralCount(String startTime, String endTime);
 
     /**
      * 用户积分排名信息

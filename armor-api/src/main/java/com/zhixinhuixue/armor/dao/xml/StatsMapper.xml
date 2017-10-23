@@ -11,19 +11,20 @@
         <result column="multi" jdbcType="DECIMAL" property="multiTask" />
         <result column="sum" jdbcType="DECIMAL" property="sum" />
     </resultMap>
-    <select id="getStats" resultMap="BaseResultMap">
-        SELECT
-        COUNT(case when (t.`status`=1 and ta.is_delete=0)  then 2 end)as process,
-        COUNT(case when ((t.`status`=2 or t.`status`=3) and ta.is_delete=0) then 1 end)as complete,
-        COUNT(case when (ta.`status`=1 and ta.is_delete=0)  then 2 end)as multi,
-        SUM(case when (t.`status`=1 and ta.is_delete=0) then t.task_hours else 0 end) as hours,
-        <![CDATA[ COUNT(case when (t.end_time<NOW() and t.status=1 and ta.is_delete=0) then 1 end)as delay,]]>
-        u.`name`,u.id as id
-        from `user` u
+    <select id="getStats" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      SELECT
+      COUNT(case when (t.`status`=1 and ta.is_delete=0)  then 2 end)as process,
+      COUNT(case when ((t.`status`=2 or t.`status`=3) and ta.is_delete=0) then 1 end)as complete,
+	  COUNT(case when (ta.`status`=1 and ta.is_delete=0)  then 2 end)as multi,
+      SUM(case when (t.`status`=1 and ta.is_delete=0) then t.task_hours else 0 end) as hours,
+      <![CDATA[ COUNT(case when (t.end_time<NOW() and t.status=1 and ta.is_delete=0) then 1 end)as delay,]]>
+      u.`name`,u.id as id
+      from `user` u
         LEFT JOIN task_user t on t.user_id = u.id
         LEFT JOIN  task ta ON  ta.id=t.task_id
-        WHERE u.user_role>0
-        GROUP BY u.id
+		LEFT JOIN department d ON d.id = u.department_id
+        WHERE u.user_role>0 AND d.parent_id= #{id}
+      GROUP BY u.id
     </select>
 
     <!-- 分页查询用户评论 -->
@@ -51,7 +52,8 @@
         left join `user` t4 on t1.create_by = t4.id
         left join task_user t5 on t1.task_user_id = t5.id
         left join `user` t6 on t5.user_id = t6.id
-        where t2.is_delete = 0 and t2.type = 2
+        left join department t7 on t6.department_id = t7.id
+        where t2.is_delete = 0 and t2.type = 2 and t7.parent_id =#{departmentId}
         <if test="userId!=null">
             and t1.create_by = #{userId}
         </if>
