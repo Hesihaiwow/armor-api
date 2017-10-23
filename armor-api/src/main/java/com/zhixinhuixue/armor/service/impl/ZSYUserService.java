@@ -276,6 +276,18 @@ public class ZSYUserService implements IZSYUserService {
     }
 
     @Override
+    public List<EffectUserResDTO> manageUsers() {
+        List<User> users = userMapper.manageUsers(ZSYTokenRequestContext.get().getDepartmentId());
+        List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
+        users.stream().forEach(user -> {
+            EffectUserResDTO effectUserResDTO = new EffectUserResDTO();
+            BeanUtils.copyProperties(user, effectUserResDTO);
+            effectUserResDTOS.add(effectUserResDTO);
+        });
+        return effectUserResDTOS;
+    }
+
+    @Override
     public void deleteUserById(Long userId) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYAuthException("没有权限执行此操作");

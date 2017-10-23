@@ -23,6 +23,7 @@ public class TaskListReqDTO {
     private String projectImage;
     private Integer sort; // 排序
     private Long departmentId;
+    private Long createBy;
 
     public String getProjectId() {
         return projectId;
@@ -142,5 +143,13 @@ public class TaskListReqDTO {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public Long getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(Long createBy) {
+        this.createBy = createBy;
     }
 }
