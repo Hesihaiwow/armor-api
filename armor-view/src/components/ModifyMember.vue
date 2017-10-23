@@ -117,9 +117,6 @@
         },{
               value:1,
               label:'冻结使用'
-        },{
-              value:2,
-              label:'离职'
         }],
           deptOptions:[],
           showAddPop: false
