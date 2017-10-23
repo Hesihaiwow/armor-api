@@ -61,14 +61,6 @@
 	where u.is_delete=0 and u.`status`=0  and d.parent_id = #{id} order by u.create_time asc
   </select>
 
-  <!-- 查询项目管理者以上用户 -->
-  <select id="manageUsers" parameterType="java.util.Map" resultMap="BaseResultMap">
-    select * from `user` u
-    LEFT JOIN department d on u.department_id = d.id
-    where u.is_delete=0 and u.`status`=0  and d.parent_id = #{id}
-    <![CDATA[ and u.user_role<2 ]]>
-    order by u.create_time asc
-  </select>
 
   <!-- 删除用户 -->
   <delete id="deleteById" parameterType="java.lang.Long">

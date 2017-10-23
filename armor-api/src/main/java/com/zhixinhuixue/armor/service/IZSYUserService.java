@@ -73,14 +73,6 @@ public interface IZSYUserService {
      */
     List<EffectUserResDTO> getEffectiveUsers();
 
-
-    /**
-     * 查询项目管理员以上用户
-     * @return
-     */
-    List<EffectUserResDTO> manageUsers();
-
-
     /**
      * 删除用户
      * @param userId 用户ID

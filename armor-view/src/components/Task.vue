@@ -38,7 +38,7 @@
                             <div class="task-top-list fl">
                                 <span class="ttl-name">创建人</span>
                                 <el-select clearable v-model="form.createBy" placeholder="请选择">
-                                    <el-option v-for="item in manageUserList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -160,7 +160,6 @@
                 timeRange: '',
                 projectList: [],
                 userList: [],
-                manageUserList:[],
                 stageList: [],
                 tagList: [],
                 priorityList: [
@@ -241,7 +240,6 @@
             }
             this.fetchProjectList()
             this.fetchUserList()
-            this.fetchManageUserList()
             this.fetchStageList()
             this.fetchTagList()
             this.fetchTaskList()
@@ -365,12 +363,6 @@
                 let vm = this
                 http.zsyGetHttp('/user/effective', {}, (resp) => {
                     vm.userList = resp.data
-                })
-            },
-            fetchManageUserList(){
-                let vm = this
-                http.zsyGetHttp('/user/manage', {}, (resp) => {
-                    vm.manageUserList = resp.data
                 })
             },
             fetchStageList() {

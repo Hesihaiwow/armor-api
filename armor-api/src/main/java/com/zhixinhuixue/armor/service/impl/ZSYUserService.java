@@ -90,6 +90,9 @@ public class ZSYUserService implements IZSYUserService {
         if (user == null) {
             throw new ZSYServiceException("账号或密码错误");
         }
+        if(user.getStatus()!=0){
+            throw new ZSYServiceException("用户已冻结使用.");
+        }
         //验证通过
         //修改登录时间
         User modifyUser = new User();
@@ -266,18 +269,6 @@ public class ZSYUserService implements IZSYUserService {
     @Override
     public List<EffectUserResDTO> getEffectiveUsers() {
         List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
-        List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
-        users.stream().forEach(user -> {
-            EffectUserResDTO effectUserResDTO = new EffectUserResDTO();
-            BeanUtils.copyProperties(user, effectUserResDTO);
-            effectUserResDTOS.add(effectUserResDTO);
-        });
-        return effectUserResDTOS;
-    }
-
-    @Override
-    public List<EffectUserResDTO> manageUsers() {
-        List<User> users = userMapper.manageUsers(ZSYTokenRequestContext.get().getDepartmentId());
         List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
         users.stream().forEach(user -> {
             EffectUserResDTO effectUserResDTO = new EffectUserResDTO();
