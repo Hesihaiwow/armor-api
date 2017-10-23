@@ -153,4 +153,11 @@ public class ZSYUserController extends ZSYController {
         UserResDTO userResDTO = userService.getUserById(ZSYTokenRequestContext.get().getUserId());
         return ZSYResult.success().data(userResDTO).build();
     }
+
+    @ApiOperation("验证邮件")
+    @PutMapping("/activeEmail/{token}")
+    public String activeEmail(String token) {
+        userService.activeEmail(token);
+        return ZSYResult.success().build();
+    }
 }

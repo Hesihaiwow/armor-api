@@ -101,6 +101,12 @@ public interface IZSYUserService {
      */
     UserResDTO getUserById(Long userId);
 
+    /**
+     * 验证邮件
+     * @param token
+     */
+    void activeEmail(String token);
+
 
 
 }
