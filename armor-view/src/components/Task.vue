@@ -1,8 +1,9 @@
 <template>
-    <div> <div class="toggle-view">
-        <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
-        <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit && btnValStatus==2 ">
-    </div>
+    <div>
+        <div class="toggle-view">
+            <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
+            <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit && btnValStatus==2 ">
+        </div>
 
         <div class="task-con">
             <div>
@@ -118,6 +119,7 @@
                                :projectList="projectList"
                                :userList="userList"
                                :stageList="stageList"
+                               :viewType="btnValStatus"
                                :tagList="tagList"></task-item>
                     <create-task ref="createTaskPop" @handleFetchTaskList="fetchTaskList"
                                  :projectList="projectList"
@@ -125,7 +127,7 @@
                                  :stageList="stageList"
                                  :tagList="tagList"></create-task>
                 </div>
-                <div class="pagination">
+                <div class="pagination"  v-show="btnValStatus == 1">
                     <el-pagination
                             @current-change="handleCurrentChange"
                             :current-page.sync="page.pageNum"

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id,task.type)"
+        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id,task.type)" v-show="viewType==1"
              :class="task.borderClass">
             <div class="head-img">
                 <!-- 待审核 -->
@@ -30,7 +30,6 @@
                     <i class="iconfont icon-people" v-show="task.type==2"></i>
                     <span class="task-end purple" v-if="task.status==3&&task.stageName=='已发布'">{{task.endText}}</span>
                     <span class="task-end" :class="task.endColor" v-else="">{{task.endText}}</span>
-                    <span v-if="task.status==1&&task.delayNo!=0" class="task-end orange">超时人数:{{task.delayNo}}</span>
                     <span class="task-time-opt">
                     <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check"
                        @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
@@ -545,8 +544,8 @@
             projectList: Array,
             stageList: Array,
             tagList: Array,
-            userList: Array
-
+            userList: Array,
+            viewType:String,
         },
         data() {
             var validateEmpty = (rule, value, callback) => {
@@ -646,7 +645,7 @@
                     completeTime: '',
                     status: ''
                 },
-                stepTemp: {}, /*
+                stepTemp: {},/*
                 projectList: [],
                 stageList: [],
                 tagList: [],*/

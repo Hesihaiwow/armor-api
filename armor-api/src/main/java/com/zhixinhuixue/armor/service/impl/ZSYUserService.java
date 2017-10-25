@@ -90,7 +90,7 @@ public class ZSYUserService implements IZSYUserService {
         if (user == null) {
             throw new ZSYServiceException("账号或密码错误");
         }
-        if(user.getStatus()!=0){
+        if(user.getStatus()==1){
             throw new ZSYServiceException("用户已冻结使用.");
         }
         //验证通过

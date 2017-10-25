@@ -14,9 +14,9 @@
                 <el-form-item style="width:100%;">
                     <el-button type="primary" style="width:100%;" @click="login" :loading="button.loading" class="form-input">登录</el-button>
                 </el-form-item>
-                <el-form-item style="width:100%;height: 50%">
-                    <el-button type="text" style="width:100%;height: 50%" @click="registerShow=true,loginShow=false" class="form-input">没有账号？请注册</el-button>
-                </el-form-item>
+                <!--<el-form-item style="width:100%;height: 50%">-->
+                    <!--<el-button type="text" style="width:100%;height: 50%" @click="registerShow=true,loginShow=false" class="form-input">没有账号？请注册</el-button>-->
+                <!--</el-form-item>-->
             </div>
         </el-form>
         <el-form  label-position="left" label-width="0px" class="demo-ruleForm login-container" :rules="rules" ref="userForm" :model="userForm" v-show="registerShow">
