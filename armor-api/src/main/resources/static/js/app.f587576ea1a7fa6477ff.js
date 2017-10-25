@@ -177,7 +177,7 @@ webpackJsonp([1],[
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/waitAudit.df47cf0.png";
+module.exports = __webpack_require__.p + "img/waitAudit.df47cf0.png";
 
 /***/ }),
 /* 13 */,
@@ -395,7 +395,7 @@ module.exports = Component.exports
 /* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/auditSuccess.5989144.png";
+module.exports = __webpack_require__.p + "img/auditSuccess.5989144.png";
 
 /***/ }),
 /* 160 */
@@ -413,7 +413,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADh
 /* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/u1285.26e9fbc.png";
+module.exports = __webpack_require__.p + "img/u1285.26e9fbc.png";
 
 /***/ }),
 /* 163 */
@@ -8161,43 +8161,43 @@ webpackContext.id = 295;
 /* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/doing.ffc2844.png";
+module.exports = __webpack_require__.p + "img/doing.ffc2844.png";
 
 /***/ }),
 /* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/finished.2d5caeb.jpg";
+module.exports = __webpack_require__.p + "img/finished.2d5caeb.jpg";
 
 /***/ }),
 /* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/icon_1.a62f59b.png";
+module.exports = __webpack_require__.p + "img/icon_1.a62f59b.png";
 
 /***/ }),
 /* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/icon_2.df92254.png";
+module.exports = __webpack_require__.p + "img/icon_2.df92254.png";
 
 /***/ }),
 /* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/icon_3.3612886.png";
+module.exports = __webpack_require__.p + "img/icon_3.3612886.png";
 
 /***/ }),
 /* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/icon_4.1697209.png";
+module.exports = __webpack_require__.p + "img/icon_4.1697209.png";
 
 /***/ }),
 /* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/icon_5.9d627a4.png";
+module.exports = __webpack_require__.p + "img/icon_5.9d627a4.png";
 
 /***/ }),
 /* 305 */
@@ -8215,7 +8215,7 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABW
 /* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "armor/img/waitAssess.9cdd270.png";
+module.exports = __webpack_require__.p + "img/waitAssess.9cdd270.png";
 
 /***/ }),
 /* 308 */
