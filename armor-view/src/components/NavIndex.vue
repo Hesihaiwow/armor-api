@@ -30,6 +30,7 @@
                                        :projectList="projectList"
                                        :userList="userList"
                                        :stageList="stageList"
+                                       :viewType="1"
                                        :tagList="tagList"></task-item>
                         </el-tab-pane>
                         <el-tab-pane label="已完成" name="completed">
@@ -37,6 +38,7 @@
                                        :projectList="projectList"
                                        :userList="userList"
                                        :stageList="stageList"
+                                       :viewType="1"
                                        :tagList="tagList"></task-item>
                             <div class="pagination" v-show="this.task.finished.length>0">
                                 <el-pagination
