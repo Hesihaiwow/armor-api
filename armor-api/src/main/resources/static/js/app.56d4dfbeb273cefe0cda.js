@@ -2194,6 +2194,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2243,7 +2251,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             },
             departmentId: '',
             organization: '',
-            addDeptVisible: false
+            addDeptVisible: false,
+            emailVisible: false,
+            emailCode: ''
         };
     },
     created() {
@@ -2270,7 +2280,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             __WEBPACK_IMPORTED_MODULE_7__lib_Http__["a" /* default */].zsyGetHttp(`/dept/all`, null, res => {
                 this.deptOptions = res.data;
             });
-            this.deptVisible = true;
+            this.emailVisible = true;
         }
     },
     watch: {
@@ -2371,6 +2381,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
 
             this.deptVisible = false;
+        },
+        vaidateEmail() {
+            if (this.emailCode != null && this.emailCode != '') {
+                __WEBPACK_IMPORTED_MODULE_7__lib_Http__["a" /* default */].zsyGetHttp('/user/validateEmail/' + this.emailCode, {}, res => {
+                    if (res.errCode != '00') {
+                        this.$message({
+                            showClose: true,
+                            message: "邮箱验证失败，请检查后重试",
+                            type: 'error'
+                        });
+                    } else {
+                        this.$message({
+                            showClose: true,
+                            message: "邮箱验证成功",
+                            type: 'success'
+                        });
+                        this.emailVisible = false;
+                        this.deptVisible = true;
+                    }
+                });
+            }
         }
     },
     components: {
@@ -3485,6 +3516,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lib_Helper__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_moment__);
+//
+//
+//
+//
 //
 //
 //
@@ -9436,6 +9471,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "projectList": _vm.projectList,
       "userList": _vm.userList,
       "stageList": _vm.stageList,
+      "viewType": 1,
       "tagList": _vm.tagList
     },
     on: {
@@ -9454,6 +9490,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "projectList": _vm.projectList,
       "userList": _vm.userList,
       "stageList": _vm.stageList,
+      "viewType": 1,
       "tagList": _vm.tagList
     }
   })], 1)], 1)], 1), _vm._v(" "), _c('div', [_c('p', {
@@ -9650,6 +9687,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "projectList": _vm.projectList,
       "userList": _vm.userList,
       "stageList": _vm.stageList,
+      "viewType": 1,
       "tagList": _vm.tagList
     },
     on: {
@@ -9668,6 +9706,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "projectList": _vm.projectList,
       "userList": _vm.userList,
       "stageList": _vm.stageList,
+      "viewType": 1,
       "tagList": _vm.tagList
     },
     on: {
@@ -12894,6 +12933,49 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     ref: "uploadAvatar"
   }), _vm._v(" "), _c('el-dialog', {
     attrs: {
+      "title": "邮箱验证",
+      "visible": _vm.emailVisible,
+      "show-close": false,
+      "close-on-press-escape": false,
+      "close-on-click-modal": false,
+      "size": "tiny"
+    },
+    on: {
+      "update:visible": function($event) {
+        _vm.emailVisible = $event
+      }
+    }
+  }, [_c('el-input', {
+    staticStyle: {
+      "width": "80%"
+    },
+    attrs: {
+      "placeholder": "请输入邮箱获取的验证码"
+    },
+    model: {
+      value: (_vm.emailCode),
+      callback: function($$v) {
+        _vm.emailCode = $$v
+      },
+      expression: "emailCode"
+    }
+  }), _vm._v(" "), _c('div', {
+    staticStyle: {
+      "margin-bottom": "10px",
+      "margin-top": "20px"
+    }
+  }, [_c('el-button', {
+    staticStyle: {
+      "margin-left": "330px"
+    },
+    attrs: {
+      "type": "primary"
+    },
+    on: {
+      "click": _vm.vaidateEmail
+    }
+  }, [_vm._v("确定")])], 1)], 1), _vm._v(" "), _c('el-dialog', {
+    attrs: {
       "title": "选择部门",
       "visible": _vm.deptVisible,
       "show-close": false,
@@ -14207,7 +14289,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "add-member-basic-msg fl"
   }, [_c('span', {
     staticClass: "star"
-  }, [_vm._v("*")]), _vm._v("阶段修改：\n                          "), _c('el-select', {
+  }, [_vm._v("*")]), _vm._v("状态：\n                          "), _c('el-select', {
     attrs: {
       "filterable": "",
       "placeholder": "请选择"
@@ -14624,4 +14706,4 @@ webpackContext.id = 346;
 
 /***/ })
 ],[241]);
-//# sourceMappingURL=app.f587576ea1a7fa6477ff.js.map
+//# sourceMappingURL=app.56d4dfbeb273cefe0cda.js.map
