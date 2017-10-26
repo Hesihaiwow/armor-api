@@ -30,15 +30,6 @@ public class ZSYConstants {
      */
     public static final String REGISTER_URI = "/api/user/register";
 
-    /**
-     * 部门URI
-     */
-    public static final String DEPT_URI = "/api/dept/all";
-
-    /**
-     * 添加组织URI
-     */
-    public static final String ORGANIZATION_URI = "/api/dept/addOrganization";
 
     /**
      * 初始登陆密码
@@ -49,6 +40,11 @@ public class ZSYConstants {
      * 加密随机字符串
      */
     public static final String HINT_PASSWORD_KEY = "fuck";
+
+    /**
+     * 加密随机字符串
+     */
+    public static final String HINT_EMAIL_KEY = "email";
 
     /**
      * 部门根节点默认ID

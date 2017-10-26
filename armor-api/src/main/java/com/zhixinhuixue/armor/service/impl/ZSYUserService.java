@@ -1,10 +1,14 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
@@ -132,6 +136,10 @@ public class ZSYUserService implements IZSYUserService {
 
     @Override
     public void registerUser(UserReqDTO userReqDTO){
+        //校验邮箱是否存在
+        if (userMapper.selectByEmail(userReqDTO.getEmail()) > 0) {
+            throw new ZSYServiceException(String.format("用户邮箱[%s]已存在", userReqDTO.getEmail()));
+        }
         userReqDTO.setDepartmentId(ZSYConstants.NO_DEPT_ID);
         userReqDTO.setUserRole(ZSYUserRole.EMPLOYEE.getValue());
         userReqDTO.setPassword(MD5Helper.convert(
@@ -139,26 +147,7 @@ public class ZSYUserService implements IZSYUserService {
                         ZSYConstants.HINT_PASSWORD_KEY), 32, false));
         userReqDTO.setStatus(ZSYUserStatus.ACTIVE.getValue());
 
-//        //生成激活token
-//        Algorithm algorithm = null;
-//        try {
-//            algorithm = Algorithm.HMAC256(jwtSecret);
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        String jwt = JWT.create()
-//                .withIssuer(jwtIssuer)
-//                .withExpiresAt(DateHelper.afterDate(new Date(), 1))//1天过期
-//                .withIssuedAt(new Date())
-//                .withClaim("userId", userReqDTO.getUserId())
-//                .withClaim("email", userReqDTO.getEmail())
-//                .withClaim("departmentId", userReqDTO.getDepartmentId())
-//                .sign(algorithm);
-//        String content = "<p>您好 <br><br>欢迎加入知心慧学!<br><br>"
-//                +"帐户需要激活才能使用，赶紧激活成为知心慧学正式的一员吧:)<br><br>请在24小时内点击下面的链接立即激活帐户："
-//                +"<br><a href='"+"http://localhost:8080/#/user/activeEmail/?token="+jwt+"'>"
-//                +"http://localhost:8080/#/user/activeEmail/?token="+jwt+"点击进入验证</a></p>";
-//        MailHelper.send(userReqDTO.getEmail(),content);
+        MailHelper.send(userReqDTO.getEmail());
         this.addUser(userReqDTO);
     }
 
@@ -199,6 +188,10 @@ public class ZSYUserService implements IZSYUserService {
                 throw new ZSYAuthException("没有权限执行此操作");
             }
         }
+        //校验邮箱是否存在
+        if (userMapper.selectByEmail(userReqDTO.getEmail()) > 0) {
+            throw new ZSYServiceException(String.format("用户邮箱[%s]已存在", userReqDTO.getAccount()));
+        }
         if(userReqDTO.getStatus()==null){
             userReqDTO.setStatus(ZSYUserStatus.NORMAL.getValue());
         }
@@ -207,7 +200,6 @@ public class ZSYUserService implements IZSYUserService {
         if (existUsers.size() > 0) {
             throw new ZSYServiceException(String.format("用户账户[%s]已存在", userReqDTO.getAccount()));
         }
-        //校验邮箱是否存在
 
         User user = new User();
         BeanUtils.copyProperties(userReqDTO, user);
@@ -367,7 +359,16 @@ public class ZSYUserService implements IZSYUserService {
     /**
      * 验证邮件
      */
-    public void activeEmail(String token){
+    public void validateEmail(String validateEmail){
+        User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
+            String email =MD5Helper.convert(
+                    String.format("%s%s", SHA1Helper.Sha1(user.getEmail()),
+                            ZSYConstants.HINT_EMAIL_KEY), 32, false);
+            if(!validateEmail.equals(email)){
+                throw new ZSYServiceException("邮箱验证失败，请检查后重试");
+            }
 
+        user.setStatus(ZSYUserStatus.NORMAL.getValue());
+        userMapper.updateSelectiveById(user);
     }
 }

@@ -28,6 +28,14 @@
         <alter-password ref="alterPwdPop"></alter-password>
         <!-- 上传头像 -->
         <upload-avatar ref="uploadAvatar"></upload-avatar>
+        <el-dialog title="邮箱验证"
+                   :visible.sync="emailVisible" :show-close=false :close-on-press-escape=false :close-on-click-modal=false
+                   size="tiny">
+            <el-input style="width: 80%" placeholder="请输入邮箱获取的验证码" v-model="emailCode"></el-input>
+            <div style="margin-bottom: 10px;margin-top: 20px">
+                <el-button type="primary" style="margin-left: 330px;" @click="vaidateEmail">确定</el-button>
+            </div>
+        </el-dialog>
         <el-dialog title="选择部门"
                    :visible.sync="deptVisible" :show-close=false :close-on-press-escape=false :close-on-click-modal=false
                    size="tiny">
@@ -104,7 +112,9 @@
                 },
                 departmentId:'',
                 organization:'',
-                addDeptVisible:false
+                addDeptVisible:false,
+                emailVisible:false,
+                emailCode:''
             };
         },
         created() {
@@ -131,7 +141,7 @@
                 Http.zsyGetHttp(`/dept/all`,null,(res)=>{
                     this.deptOptions=res.data;
                 });
-                this.deptVisible=true
+                this.emailVisible=true
             }
         },
         watch: {
@@ -233,6 +243,27 @@
                 })
 
                 this.deptVisible = false
+            },
+            vaidateEmail(){
+                if(this.emailCode!=null&&this.emailCode!=''){
+                    Http.zsyGetHttp('/user/validateEmail/'+this.emailCode,{},(res)=>{
+                        if (res.errCode!='00'){
+                            this.$message({
+                                showClose: true,
+                                message: "邮箱验证失败，请检查后重试",
+                                type: 'error'
+                            });
+                        }else{
+                            this.$message({
+                                showClose: true,
+                                message: "邮箱验证成功",
+                                type: 'success'
+                            });
+                            this.emailVisible = false;
+                            this.deptVisible = true;
+                        }
+                    })
+                }
             }
         },
         components: {

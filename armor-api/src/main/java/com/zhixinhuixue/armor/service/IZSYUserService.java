@@ -102,9 +102,9 @@ public interface IZSYUserService {
 
     /**
      * 验证邮件
-     * @param token
+     * @param validateEmail
      */
-    void activeEmail(String token);
+    void validateEmail(String validateEmail);
 
 
 

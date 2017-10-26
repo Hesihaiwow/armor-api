@@ -65,6 +65,7 @@
                                        :projectList="projectList"
                                        :userList="userList"
                                        :stageList="stageList"
+                                       :viewType="1"
                                        :tagList="tagList"></task-item>
                         </el-tab-pane>
                         <el-tab-pane label="已评价" name="commented">
@@ -72,6 +73,7 @@
                                        :projectList="projectList"
                                        :userList="userList"
                                        :stageList="stageList"
+                                       :viewType="1"
                                        :tagList="tagList"></task-item>
                         </el-tab-pane>
                     </el-tabs>
@@ -157,6 +159,7 @@
                                    :projectList="projectList"
                                    :userList="userList"
                                    :stageList="stageList"
+                                   :viewType="1"
                                    :tagList="tagList"></task-item>
                     </el-tab-pane>
                     <el-tab-pane label="审核通过" name="completed">
@@ -165,6 +168,7 @@
                                    :projectList="projectList"
                                    :userList="userList"
                                    :stageList="stageList"
+                                   :viewType="1"
                                    :tagList="tagList"></task-item>
                         <div class="pagination" v-show="this.task.auditSuccess.length>0">
                             <el-pagination

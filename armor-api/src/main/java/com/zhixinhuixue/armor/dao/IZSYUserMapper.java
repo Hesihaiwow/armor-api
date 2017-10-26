@@ -24,6 +24,13 @@ public interface IZSYUserMapper {
     List<User> selectByAccount(String account);
 
     /**
+     * 查询邮箱
+     * @param email
+     * @return
+     */
+    int selectByEmail(String email);
+
+    /**
      * 查询用户
      * @param account 账号
      * @param password 密码

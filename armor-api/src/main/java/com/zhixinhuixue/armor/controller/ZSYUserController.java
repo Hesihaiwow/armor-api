@@ -154,9 +154,9 @@ public class ZSYUserController extends ZSYController {
     }
 
     @ApiOperation("验证邮件")
-    @PutMapping("/activeEmail/{token}")
-    public String activeEmail(String token) {
-        userService.activeEmail(token);
-        return ZSYResult.success().build();
+    @GetMapping("/validateEmail/{validateEmail}")
+    public String activeEmail(@PathVariable("validateEmail") String validateEmail) {
+        userService.validateEmail(validateEmail);
+        return ZSYResult.success().data("邮箱验证成功成功").build();
     }
 }
