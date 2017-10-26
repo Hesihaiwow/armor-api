@@ -40,7 +40,7 @@ public class ZSYFilterConfig {
         frb.addInitParameter("jwtSecret",jwtSecret);
         frb.addInitParameter("jwtIssuer",jwtIssuer);
         frb.addInitParameter("jwtExp",String.valueOf(jwtExp));
-        frb.addInitParameter("exclusions",String.format("*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,/swagger-resources,/swagger-resources/*,/druid/*,*.html,/v2/api-docs,%s", ZSYConstants.LOGIN_URI+","+ ZSYConstants.REGISTER_URI+","+ZSYConstants.DEPT_URI+","+ZSYConstants.ORGANIZATION_URI));
+        frb.addInitParameter("exclusions",String.format("*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.eot,*.svg,*.ttf,*.woff,*.woff2,/swagger-resources,/swagger-resources/*,/druid/*,*.html,/v2/api-docs,%s", ZSYConstants.LOGIN_URI+","+ ZSYConstants.REGISTER_URI));
         return frb;
     }
 

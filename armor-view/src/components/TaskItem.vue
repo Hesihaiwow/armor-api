@@ -408,7 +408,7 @@
                             <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
-                        <div class="add-member-basic-msg fl"><span class="star">*</span>阶段修改：
+                        <div class="add-member-basic-msg fl"><span class="star">*</span>状态：
                             <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
                                 <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
@@ -1302,7 +1302,14 @@
                     className = "finished"
                 }
                 return className;
-            }
+            },
+            warnMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'warning'
+                });
+            },
         },
         created() {
             // 监听看板任务点击事件
@@ -1316,13 +1323,7 @@
                  vm.getTaskLog(taskId)
             });
         },
-        warnMsg(msg) {
-            this.$message({
-                showClose: true,
-                message: msg,
-                type: 'warning'
-            });
-        },
+
     }
 </script>
 <style>

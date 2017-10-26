@@ -37,7 +37,7 @@ public class ZSYTokenAop {
     @Around("token()")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        if (!request.getRequestURL().toString().contains(ZSYConstants.LOGIN_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.REGISTER_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.DEPT_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.ORGANIZATION_URI)){
+        if (!request.getRequestURL().toString().contains(ZSYConstants.LOGIN_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.REGISTER_URI)){
             LoginInfoReqDTO loginInfo = new LoginInfoReqDTO();
             loginInfo.setUserId(Optional.ofNullable(request.getAttribute("userId"))
                     .map(userId->Long.parseLong(userId.toString()))
