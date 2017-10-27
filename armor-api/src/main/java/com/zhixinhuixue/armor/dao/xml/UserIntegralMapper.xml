@@ -158,4 +158,31 @@
     WHERE id=#{id,jdbcType=BIGINT};
   </update>
 
+
+  <!--计算积分奖金-->
+  <select id="getCalculate" parameterType="Map"  resultMap="BaseMap">
+    SELECT (@rowid := @rowid+1) AS id,integral,name,user_id  FROM(
+    SELECT sum(case when (i.review_status!=1  or i.review_status is null) then i.integral else 0 end) as integral, u.name, i.user_id
+    FROM user_integral i,`user` u
+    LEFT JOIN department d on u.department_id = d.id
+    <where>
+      i.user_id = u.id AND d.parent_id =#{departmentId} AND u.status = 0
+      <if test="startTime!=null and startTime!=''">
+        <![CDATA[AND i.create_time >= #{startTime}]]>
+      </if>
+      <if test="endTime!=null and endTime!=''" >
+        <![CDATA[AND i.create_time <#{endTime}]]>
+      </if>
+    </where>
+    GROUP BY i.user_id
+    ORDER BY integral DESC)as a,
+    (SELECT (@rowid:=0))as b
+    <where>
+      <if test="integral!=null and integral!=''" >
+        <![CDATA[ integral >= #{integral}]]>
+      </if>
+    </where>
+  </select>
+
+
 </mapper>

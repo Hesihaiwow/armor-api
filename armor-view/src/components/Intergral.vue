@@ -140,11 +140,11 @@
                     }
                     this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
                     this.queryForm.endTime = this.localeTimeString(new Date(curYear, startMonth + 3, 1));//下季度第一天0点
-                    this.quarterTime = this.localeDayString(new Date(curYear, startMonth, 1))+'—'+ this.localeDayString(new Date(curYear, startMonth + 3, 1)-1);
+                    this.quarterTime = this.localeStringTime(new Date(curYear, startMonth, 1))+'—'+ this.localeStringTime(new Date(curYear, startMonth + 3, 1)-1);
                 } else if (date == "year") {//本年的开始结束时间
                     this.yearForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
                     this.yearForm.endTime = this.localeTimeString(new Date(now.getFullYear() + 1, 0, 1));
-                    this.yearTime = this.localeDayString(new Date(curYear, 0, 1))+'—'+ this.localeDayString(new Date(curYear+1,0,1)-1);
+                    this.yearTime = this.localeStringTime(new Date(curYear, 0, 1))+'—'+ this.localeStringTime(new Date(curYear+1,0,1)-1);
                 }
             },
             //时间字符串格式化
@@ -160,6 +160,15 @@
             localeDayString(time) {
                 if (time != null && time != "") {
                     time = moment(time).format('YYYY-MM-DD');
+                    return time;
+                } else {
+                    return "";
+                }
+            },
+            //时间字符串格式化
+            localeStringTime(time) {
+                if (time != null && time != "") {
+                    time = moment(time).format('YYYY.MM.DD');
                     return time;
                 } else {
                     return "";
@@ -197,7 +206,7 @@
                 var currQuarter = new Date(this.quarterTime.split('—')[0])
                 this.queryForm.endTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth(),1);
                 this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()-3,1);
-                this.quarterTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+                this.quarterTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
                 Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
                     this.quarter= res.data;
                     this.countQuarterHistory(this.queryForm);
@@ -207,7 +216,7 @@
                 var currQuarter = new Date(this.quarterTime.split('—')[1])
                 this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()+1,1);
                 this.queryForm.endTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()+4,1);
-                this.quarterTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+                this.quarterTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
                 Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
                     this.quarter= res.data;
                     this.countQuarterHistory(this.queryForm);
@@ -217,7 +226,7 @@
                 var currQuarter = new Date(this.yearTime.split('—')[0])
                 this.queryForm.endTime = new Date(currQuarter.getFullYear(),0,1);
                 this.queryForm.startTime = new Date(currQuarter.getFullYear()-1,0,1);
-                this.yearTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+                this.yearTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
                 Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
                     this.year= res.data;
                     this.countYearHistory(this.queryForm);
@@ -227,7 +236,7 @@
                 var currQuarter = new Date(this.yearTime.split('—')[1])
                 this.queryForm.startTime = new Date(currQuarter.getFullYear()+1,0,1);
                 this.queryForm.endTime = new Date(currQuarter.getFullYear()+2,0,1);
-                this.yearTime = this.localeDayString(this.queryForm.startTime)+'—'+ this.localeDayString(new Date(this.queryForm.endTime)-1);
+                this.yearTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
 
                 Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
                     this.year= res.data;

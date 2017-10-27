@@ -67,7 +67,7 @@
     import IntegralHistory from './IntegralHistory'
     import Stats from './Stats'
     import UploadAvatar from './UploadAvatar.vue'
-
+    import Calculate from  './Calculate.vue'
 
     export default {
         data() {
@@ -129,13 +129,17 @@
             });
             if (Helper.decodeToken().userRole < 1) {
                 this.tabs.push({
-                    label: '组织',
-                    name: 'organization'
+                    label: '计算',
+                    name: 'calculate'
                 });
                 this.tabs.push({
                     label: '评价',
                     name: 'comments'
-                })
+                });
+                this.tabs.push({
+                    label: '组织',
+                    name: 'organization'
+                });
             }
             if (Helper.decodeToken().departmentId == 0) {
                 Http.zsyGetHttp(`/dept/all`,null,(res)=>{
@@ -271,6 +275,7 @@
             Project: Project,
             Intergral: Intergral,
             Organization: Organization,
+            Calculate:Calculate,
             NavIndex: NavIndex,
             AlterPassword: AlterPassword,
             IntegralHistory: IntegralHistory,

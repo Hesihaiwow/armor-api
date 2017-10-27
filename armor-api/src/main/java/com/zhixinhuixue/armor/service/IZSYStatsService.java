@@ -2,6 +2,8 @@ package com.zhixinhuixue.armor.service;
 
 
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 
@@ -18,6 +20,8 @@ public interface IZSYStatsService {
      * @return
      */
     List<StatsPageResDTO> getStats();
+
+    List<CalculateResDTO> calculate(CalculateReqDTO calculateReqDTO);
 
     /**
      * 统计用户评论

@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.controller;
 
+import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserCommentsReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -9,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -31,6 +34,17 @@ public class ZSYStatsController extends ZSYController{
     public String getStats(){
         List<StatsPageResDTO> statsPageResDTOList = statsService.getStats();
         return ZSYResult.success().data(statsPageResDTOList).build();
+    }
+
+    /**
+     * 积分奖金计算
+     * @return
+     */
+    @ApiOperation("积分奖金计算")
+    @PostMapping(value = "/calculate")
+    public String calculate(@Valid @RequestBody CalculateReqDTO calculateReqDTO){
+        List<CalculateResDTO> calculateResDTOS = statsService.calculate(calculateReqDTO);
+        return ZSYResult.success().data(calculateResDTOS).build();
     }
 
     /**
