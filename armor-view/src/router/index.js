@@ -10,6 +10,7 @@ import NavIndex from '@/components/NavIndex'
 import IntegralHistory from '@/components/IntegralHistory'
 import Stats from '@/components/Stats'
 import UserComments from '@/components/UserComments'
+import Calculate from '@/components/Calculate'
 
 
 Vue.use(Router)
@@ -70,6 +71,10 @@ export default new Router({
                 {
                     path: 'comments',
                     component: UserComments
+                },
+                {
+                    path: 'calculate',
+                    component: Calculate
                 }
             ]
         }

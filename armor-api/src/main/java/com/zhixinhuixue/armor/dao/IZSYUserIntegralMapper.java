@@ -21,6 +21,16 @@ public interface IZSYUserIntegralMapper {
     List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("departmentId")Long departmentId);
 
     /**
+     * 积分奖金计算
+     * @param startTime
+     * @param endTime
+     * @param integral
+     * @param departmentId
+     * @return
+     */
+    List<UserIntegralInfoBO> getCalculate(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("integral") BigDecimal integral, @Param("departmentId")Long departmentId);
+
+    /**
      * 积分列数
      * @param startTime
      * @param endTime
