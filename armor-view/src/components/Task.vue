@@ -2,7 +2,7 @@
     <div>
         <div class="toggle-view">
             <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
-            <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit && btnValStatus==2 ">
+            <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit">
         </div>
 
         <div class="task-con">
@@ -59,7 +59,6 @@
                                                :value="item.value"></el-option>
                                 </el-select>
                             </div>
-
                             <div class="task-top-list fl">
                                 <span class="ttl-name">截止日期</span>
                                 <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
@@ -70,13 +69,13 @@
                     </div>
                     <div class="task-top-list  clearfix">
                         <span class="ttl-name fl">排序&nbsp;</span>
-                        <div class="fl tag-name clearfix">
+                        <div class="fl tag-name " style="width: 400px">
                             <el-tooltip :content="item.name+item.tips" :enterable="false" placement="top" v-for="item in sortList" :key="item.id">
                                 <el-button class="fl" size="small" @click="choiceSort(item.id,$event)" :class="form.sort==item.id?'active':''">{{item.name}}
                                 </el-button>
                             </el-tooltip>
-
                         </div>
+                        <el-button class="f1" type="primary" icon="search" size="small" @click="searchTask()" :loading="loading" style="margin-left: 300px;">查询</el-button>
                     </div>
                     <transition name="filter">
                         <div v-show="open">
@@ -98,16 +97,16 @@
                             </div>
                         </div>
                     </transition>
-                    <div class="clearfix">
-                        <div class="task-top-list fl search-button">
-                            <el-button type="primary" icon="search" size="small" @click="searchTask()" :loading="loading">查询
-                            </el-button>
-                        </div>
-                        <div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">
-                            <span class="ttl-add-icon">+</span>
-                            <span class="ttl-add-msg">创建多人任务</span>
-                        </div>
-                    </div>
+                    <!--<div class="clearfix">-->
+                        <!--<div class="task-top-list fl search-button">-->
+                            <!--<el-button type="primary" icon="search" size="small" @click="searchTask()" :loading="loading">查询-->
+                            <!--</el-button>-->
+                        <!--</div>-->
+                        <!--<div class="task-top-list fl creat-task" @click="createTaskClick" v-show="permit">-->
+                            <!--<span class="ttl-add-icon">+</span>-->
+                            <!--<span class="ttl-add-msg">创建多人任务</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
                     <div class="filter-btn">
                         <span @click="openFun" :class="open?'':'open'">{{open ? '收起筛选' : '展开筛选'}}</span>
                     </div>
@@ -520,7 +519,7 @@
     }
 
     .select-box > div:nth-child(3n) {
-        margin-right: 200px;
+        margin-right: 40px;
     }
 
     .filter-btn {
@@ -597,7 +596,7 @@
     }
 
     .task-top-list .el-select {
-        width: 148px;
+        width: 130px;
     }
 
     .ttl-name {
@@ -610,7 +609,7 @@
         margin-right: 6px;
     }
 
-    .serch-btn {
+    .search-button {
         vertical-align: middle;
         margin-left: 10px;
     }
