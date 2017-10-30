@@ -133,7 +133,7 @@
 
     .search-btn {
         vertical-align: middle;
-        margin-left: 20px;
+        margin-left: 50px;
         cursor: pointer;
         margin-top: 8px;
     }
