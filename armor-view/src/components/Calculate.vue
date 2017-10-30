@@ -6,15 +6,17 @@
             <el-input  v-model="queryForm.datumIntegral"><template slot="prepend">基准积分:</template></el-input>
           </div>
           <div class="calculate-top-list fl">
+            <el-input v-model="queryForm.bonus"><template slot="prepend">绩效奖金池:</template></el-input>
+          </div>
+          <div class="calculate-top-list fl">
             <el-date-picker v-model="queryForm.startTime" type="date" placeholder="选择开始日期"></el-date-picker>
           </div>
           <div class="calculate-top-list fl">
             <el-date-picker v-model="queryForm.endTime" type="date" placeholder="选择结束日期"></el-date-picker>
           </div>
-          <div class="calculate-top-list fl">
-            <el-input v-model="queryForm.bonus"><template slot="prepend">绩效奖金池:</template></el-input>
+          <div class="calculate-top-list fl" style="width: 50px">
+            <img src="../assets/img/u1221.png" alt="" @click="calculateIntegral()" class="search-btn">
           </div>
-            <img src="../assets/img/u1221.png" alt="" @click="calculateIntegral()" class="serch-btn">
         </div>
 
       </div>
@@ -121,19 +123,19 @@
     }
 
     .calculate-top-list {
-      margin: 0 20px 20px 20px;
-      width: 200px;
+      margin: 0 10px 20px 10px;
+      width: 180px;
     }
 
     .select-box > div:nth-child(3n) {
-      margin-right: 200px;
+      margin-right: 50px;
     }
 
-    .serch-btn {
+    .search-btn {
         vertical-align: middle;
-        margin-left: -80px;
+        margin-left: 20px;
         cursor: pointer;
-        margin-top: 70px;
+        margin-top: 8px;
     }
 
     .calculate-data-detail {
