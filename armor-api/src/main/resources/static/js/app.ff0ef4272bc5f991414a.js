@@ -5565,7 +5565,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
@@ -9408,7 +9407,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         class: task.endColor
       }, [_vm._v(_vm._s(task.endText))])]), _vm._v(" "), _c('div', {
         staticStyle: {
-          "position": "relative",
           "border-top": "5px",
           "padding": "2px"
         }
@@ -11780,8 +11778,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: (_vm.permit && _vm.btnValStatus == 2),
-      expression: "permit && btnValStatus==2 "
+      value: (_vm.permit),
+      expression: "permit"
     }],
     attrs: {
       "type": "button",
@@ -11974,7 +11972,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('span', {
     staticClass: "ttl-name fl"
   }, [_vm._v("排序 ")]), _vm._v(" "), _c('div', {
-    staticClass: "fl tag-name clearfix"
+    staticClass: "fl tag-name ",
+    staticStyle: {
+      "width": "400px"
+    }
   }, _vm._l((_vm.sortList), function(item) {
     return _c('el-tooltip', {
       key: item.id,
@@ -11995,7 +11996,23 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }
     }, [_vm._v(_vm._s(item.name) + "\n                            ")])], 1)
-  }))]), _vm._v(" "), _c('transition', {
+  })), _vm._v(" "), _c('el-button', {
+    staticClass: "f1",
+    staticStyle: {
+      "margin-left": "300px"
+    },
+    attrs: {
+      "type": "primary",
+      "icon": "search",
+      "size": "small",
+      "loading": _vm.loading
+    },
+    on: {
+      "click": function($event) {
+        _vm.searchTask()
+      }
+    }
+  }, [_vm._v("查询")])], 1), _vm._v(" "), _c('transition', {
     attrs: {
       "name": "filter"
     }
@@ -12046,37 +12063,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [_vm._v(_vm._s(item.name) + "\n                                ")])
   }))])])]), _vm._v(" "), _c('div', {
-    staticClass: "clearfix"
-  }, [_c('div', {
-    staticClass: "task-top-list fl search-button"
-  }, [_c('el-button', {
-    attrs: {
-      "type": "primary",
-      "icon": "search",
-      "size": "small",
-      "loading": _vm.loading
-    },
-    on: {
-      "click": function($event) {
-        _vm.searchTask()
-      }
-    }
-  }, [_vm._v("查询\n                        ")])], 1), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.permit),
-      expression: "permit"
-    }],
-    staticClass: "task-top-list fl creat-task",
-    on: {
-      "click": _vm.createTaskClick
-    }
-  }, [_c('span', {
-    staticClass: "ttl-add-icon"
-  }, [_vm._v("+")]), _vm._v(" "), _c('span', {
-    staticClass: "ttl-add-msg"
-  }, [_vm._v("创建多人任务")])])]), _vm._v(" "), _c('div', {
     staticClass: "filter-btn"
   }, [_c('span', {
     class: _vm.open ? '' : 'open',
@@ -14995,4 +14981,4 @@ webpackContext.id = 350;
 
 /***/ })
 ],[244]);
-//# sourceMappingURL=app.65067b40394ea8a7a64a.js.map
+//# sourceMappingURL=app.ff0ef4272bc5f991414a.js.map
