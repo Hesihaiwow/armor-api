@@ -2355,7 +2355,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
@@ -2540,6 +2539,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
 
             this.deptVisible = false;
+        },
+        sendEmail() {
+            __WEBPACK_IMPORTED_MODULE_7__lib_Http__["a" /* default */].zsyGetHttp('/user/sendEmail' + this.emailCode, {}, res => {
+                this.$message({
+                    showClose: true,
+                    message: "已重新发送",
+                    type: 'success'
+                });
+            });
         },
         vaidateEmail() {
             if (this.emailCode != null && this.emailCode != '') {
@@ -6731,6 +6739,7 @@ __WEBPACK_IMPORTED_MODULE_1_moment___default.a.locale('zh-cn');
                 });
                 this.getTaskLog(taskId);
             }
+
             // 个人点击完成任务
             if (this.taskStatus == 'TaskDoing' && this.isPrivate) {
                 this.taskItems.forEach(task => {
@@ -13222,7 +13231,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('el-input', {
     staticStyle: {
-      "width": "80%"
+      "width": "100%"
     },
     attrs: {
       "placeholder": "请输入邮箱获取的验证码"
@@ -13234,14 +13243,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       expression: "emailCode"
     }
-  }), _vm._v(" "), _c('div', {
+  }), _vm._v(" "), _c('el-button', {
     staticStyle: {
-      "margin-bottom": "10px",
-      "margin-top": "20px"
+      "margin-top": "10px"
+    },
+    attrs: {
+      "type": "warning"
+    },
+    on: {
+      "click": _vm.sendEmail
     }
-  }, [_c('el-button', {
+  }, [_vm._v("没有收到邮件？点击重新发送")]), _vm._v(" "), _c('el-button', {
     staticStyle: {
-      "margin-left": "330px"
+      "margin-left": "200px"
     },
     attrs: {
       "type": "primary"
@@ -13249,7 +13263,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.vaidateEmail
     }
-  }, [_vm._v("确定")])], 1)], 1), _vm._v(" "), _c('el-dialog', {
+  }, [_vm._v("确定")])], 1), _vm._v(" "), _c('el-dialog', {
     attrs: {
       "title": "选择部门",
       "visible": _vm.deptVisible,
@@ -13790,6 +13804,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v(_vm._s(_vm.taskDetail.name))]), _vm._v(" "), _c('el-form-item', {
     staticClass: "task-form",
+    staticStyle: {
+      "white-space": "pre-wrap"
+    },
     attrs: {
       "label": "任务描述："
     }
@@ -14981,4 +14998,4 @@ webpackContext.id = 350;
 
 /***/ })
 ],[244]);
-//# sourceMappingURL=app.ff0ef4272bc5f991414a.js.map
+//# sourceMappingURL=app.4cee78bfd60cda5328ae.js.map
