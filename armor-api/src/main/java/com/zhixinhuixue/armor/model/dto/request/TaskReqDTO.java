@@ -29,7 +29,7 @@ public class TaskReqDTO {
      * 任务描述
      */
 //    @NotNull(message = "任务描述不能为空")
-    @Size( max = 1000, message = "任务描述长度在{min}~{max}之间")
+    @Size( max = 2000, message = "任务描述长度在{min}~{max}之间")
     private String description;
 
     /**

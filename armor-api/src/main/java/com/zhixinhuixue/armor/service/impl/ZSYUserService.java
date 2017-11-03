@@ -371,4 +371,13 @@ public class ZSYUserService implements IZSYUserService {
         user.setStatus(ZSYUserStatus.NORMAL.getValue());
         userMapper.updateSelectiveById(user);
     }
+
+    /**
+     * 重新发送邮件
+     */
+    public void sendEmail(){
+        User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
+        MailHelper.send(user.getEmail());
+    }
+
 }

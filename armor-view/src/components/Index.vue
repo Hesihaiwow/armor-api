@@ -31,10 +31,9 @@
         <el-dialog title="邮箱验证"
                    :visible.sync="emailVisible" :show-close=false :close-on-press-escape=false :close-on-click-modal=false
                    size="tiny">
-            <el-input style="width: 80%" placeholder="请输入邮箱获取的验证码" v-model="emailCode"></el-input>
-            <div style="margin-bottom: 10px;margin-top: 20px">
-                <el-button type="primary" style="margin-left: 330px;" @click="vaidateEmail">确定</el-button>
-            </div>
+            <el-input style="width: 100%" placeholder="请输入邮箱获取的验证码" v-model="emailCode"></el-input>
+            <el-button type="warning" style="margin-top: 10px" @click="sendEmail">没有收到邮件？点击重新发送</el-button>
+            <el-button type="primary" style="margin-left: 200px"   @click="vaidateEmail">确定</el-button>
         </el-dialog>
         <el-dialog title="选择部门"
                    :visible.sync="deptVisible" :show-close=false :close-on-press-escape=false :close-on-click-modal=false
@@ -247,6 +246,15 @@
                 })
 
                 this.deptVisible = false
+            },
+            sendEmail(){
+                Http.zsyGetHttp('/user/sendEmail'+this.emailCode,{},(res)=>{
+                    this.$message({
+                        showClose: true,
+                        message: "已重新发送",
+                        type: 'success'
+                    });
+                })
             },
             vaidateEmail(){
                 if(this.emailCode!=null&&this.emailCode!=''){
