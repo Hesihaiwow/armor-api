@@ -157,6 +157,13 @@ public class ZSYUserController extends ZSYController {
     @GetMapping("/validateEmail/{validateEmail}")
     public String activeEmail(@PathVariable("validateEmail") String validateEmail) {
         userService.validateEmail(validateEmail);
-        return ZSYResult.success().data("邮箱验证成功成功").build();
+        return ZSYResult.success().data("邮箱验证成功").build();
+    }
+
+    @ApiOperation("重新发送邮件")
+    @GetMapping("/sendEmail")
+    public String sendEmail() {
+        userService.sendEmail();
+        return ZSYResult.success().build();
     }
 }

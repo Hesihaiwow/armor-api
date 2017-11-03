@@ -106,6 +106,11 @@ public interface IZSYUserService {
      */
     void validateEmail(String validateEmail);
 
+    /**
+     * 重新发送邮件
+     */
+    void sendEmail();
+
 
 
 }

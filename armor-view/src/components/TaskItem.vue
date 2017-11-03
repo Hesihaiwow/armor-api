@@ -161,7 +161,7 @@
                 :before-close="hideTaskDetail">
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item class="task-form" style="white-space: pre-wrap" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
@@ -822,6 +822,7 @@
                     });
                     this.getTaskLog(taskId)
                 }
+
                 // 个人点击完成任务
                 if (this.taskStatus == 'TaskDoing' && this.isPrivate) {
                     this.taskItems.forEach((task) => {
