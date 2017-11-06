@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Task">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
-        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
         <result column="project_id" jdbcType="BIGINT" property="projectId"/>
         <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
@@ -292,7 +292,7 @@
       review_status, priority, create_by,
       complete_time, create_time, update_time, is_delete,sort
       )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
       #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
       #{status,jdbcType=INTEGER},
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
@@ -308,7 +308,7 @@
                 name = #{name,jdbcType=VARCHAR},
             </if>
             <if test="description != null">
-                description = #{description,jdbcType=VARCHAR},
+                description = #{description,jdbcType=LONGVARCHAR},
             </if>
             <if test="projectId != null">
                 project_id = #{projectId,jdbcType=BIGINT},
