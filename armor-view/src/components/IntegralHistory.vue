@@ -27,7 +27,7 @@
       <el-table-column prop="origin" label="来源" align="center" width="200px" >
         <template scope="scope">
           <el-tag
-            :type="scope.row.origin === '任务系统-单人任务' ? 'warning' : 'success'&&scope.row.origin === '手动录入' ? 'primary' : 'success'&&scope.row.origin === '转移求助' ? 'danger' : 'success'"
+            :type="scope.row.origin === '任务系统-单人任务' ? 'warning' : 'success'&&scope.row.origin === '手动录入' ? 'primary' : 'success'&&scope.row.origin === '转移求助' ? 'danger' : 'success'&&scope.row.origin === 'Bug处理结果' ? 'info' : 'success'"
             close-transition>{{scope.row.origin}}
           </el-tag>
         </template>
@@ -224,6 +224,9 @@
               list[i].createTime = this.localeTimeString(list[i].createTime);
             } else if(list[i].origin == 3) {
                 list[i].origin = "转移求助";
+                list[i].createTime = this.localeTimeString(list[i].createTime);
+            }else if(list[i].origin == 4) {
+                list[i].origin = "Bug处理结果";
                 list[i].createTime = this.localeTimeString(list[i].createTime);
             }else{
                     list[i].createTime = this.localeTimeString(list[i].createTime);

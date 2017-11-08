@@ -8,7 +8,7 @@
         <result column="task_hours" jdbcType="INTEGER" property="taskHours"/>
         <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
-        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
         <result column="complete_hours" jdbcType="INTEGER" property="completeHours"/>
         <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
