@@ -11588,9 +11588,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }
   })], 1)], 1)], 1), _vm._v(" "), _c('el-dialog', {
+    staticStyle: {
+      "width": "auto"
+    },
     attrs: {
       "title": "创建Bug处理结果",
-      "size": "tiny",
       "custom-class": "myDialog",
       "close-on-click-modal": false,
       "close-on-press-escape": false,
@@ -15871,4 +15873,4 @@ webpackContext.id = 352;
 
 /***/ })
 ],[244]);
-//# sourceMappingURL=app.d6c39783cbc81a321c99.js.map
+//# sourceMappingURL=app.f341aaeb931ff5924656.js.map

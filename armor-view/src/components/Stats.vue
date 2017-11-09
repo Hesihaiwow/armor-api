@@ -54,7 +54,6 @@
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
-                custom-class="myDialog"
                 style="width:auto;"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -250,6 +249,7 @@
             createBugSolve(){
                 this.createBugSolvingVisible = true;
                 this.bugForm.description = this.bugForm.projectId = this.bugForm.createTime = '';
+                this.bugUsers = [];
             },
             saveAddMember(){
                 if (this.addMemberIndex.userId == ''||this.addMemberIndex.integral == '') {
