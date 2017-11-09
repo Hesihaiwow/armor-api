@@ -27,15 +27,17 @@ public class MailHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYUserService.class);
 
-    public static final String HOST = "smtp.163.com";
+    public static final String HOST = "smtp.exmail.qq.com";
     public static final String PROTOCOL = "smtp";
-    public static final int PORT = 25;
-    public static final String FROM = "langzhezsh2@163.com";//发件人的email
-    public static final String PWD = "langzhe";//发件人密码
+    public static final int PORT = 465;
+    public static final String FROM = "langzhe@liancaitech.com";//发件人的email
+    public static final String PWD = "Jifen123";//发件人密码
+    public static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 
 
     private static Session getSession() {
         Properties props = new Properties();
+        props.setProperty("mail.smtp.socketFactory.class", SSL_FACTORY);
         props.put("mail.smtp.host", HOST);//设置服务器地址
         props.put("mail.store.protocol" , PROTOCOL);//设置协议
         props.put("mail.smtp.port", PORT);//设置端口
