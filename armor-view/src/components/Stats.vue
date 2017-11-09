@@ -250,6 +250,13 @@
                 this.createBugSolvingVisible = true;
                 this.bugForm.description = this.bugForm.projectId = this.bugForm.createTime = '';
                 this.bugUsers = [];
+                this.showAddDetail = false
+                this.addMemberIndex = {
+                    index: '',
+                    userId: '',
+                    userName: '',
+                    integral: '',
+                }
             },
             saveAddMember(){
                 if (this.addMemberIndex.userId == ''||this.addMemberIndex.integral == '') {
