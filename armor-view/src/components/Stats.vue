@@ -29,13 +29,13 @@
                 <div class="add-member-basic-msg fl"><el-date-picker v-model="bugList.endTime" type="date" placeholder="选择结束日期"></el-date-picker></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getBugList()" class="search-btn"></div>
                 <el-button type="primary" style="margin-left: 300px;margin-bottom: 10px;" class="add-member-basic-msg fl" @click="createBugSolve" v-show="permit">创建bug处理</el-button>
-                <el-table :data="bugManage" border >
+                <el-table :data="bugManage" border>
                     <el-table-column prop="projectId" label="序号" align="center" width="100"></el-table-column>
                     <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
                     <el-table-column prop="projectName" label="问题项目" align="center" width="130"></el-table-column>
                     <el-table-column prop="createTime" label="处理日期"  width="130"></el-table-column>
                     <el-table-column prop="users" label="开发负责" align="center" width="200"></el-table-column>
-                    <el-table-column fixed="right" label="操作" width="100">
+                    <el-table-column label="操作" width="100">
                         <template scope="scope">
                             <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
                         </template>
@@ -95,7 +95,7 @@
                             <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
                             </div>
                             <div class="add-member-basic-msg fl">
-                                <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">工时
+                                <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
                             </div>
                         </div>
                     </div>
@@ -335,8 +335,8 @@
                 })
             },
             handleCurrentChange(currentPage){
-                this.form.pageNum = currentPage
-                this.fetchUserComments();
+                this.bugList.pageNum = currentPage;
+                this.getBugList();
             },
             isDecimal(str) {
                 var regu = /^[-]{0,1}[0-9]{1,}$/;
