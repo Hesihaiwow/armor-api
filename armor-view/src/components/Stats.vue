@@ -335,8 +335,8 @@
                 })
             },
             handleCurrentChange(currentPage){
-                this.form.pageNum = currentPage
-                this.fetchUserComments();
+                this.bugList.pageNum = currentPage;
+                this.getBugList();
             },
             isDecimal(str) {
                 var regu = /^[-]{0,1}[0-9]{1,}$/;
