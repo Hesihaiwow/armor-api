@@ -54,8 +54,8 @@
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
-                size="tiny"
                 custom-class="myDialog"
+                style="width:auto;"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="createBugSolvingVisible">
@@ -257,9 +257,7 @@
                     return
                 }
                 this.showAddDetail = !this.showAddDetail;
-                console.log(this.addMemberIndex.index ==''&&this.addMemberIndex.index !=null)
                 if (this.addMemberIndex.index === '') {
-                    console.log(this.addMemberIndex.index )
                     let bugUser = {}
                     bugUser.userId = this.addMemberIndex.userId
                     bugUser.userName = this.addMemberIndex.userName

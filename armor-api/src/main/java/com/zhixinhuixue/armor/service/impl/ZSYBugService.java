@@ -77,6 +77,7 @@ public class ZSYBugService implements IZSYBugService {
             BugPageResDTO bugPageResDTO = new BugPageResDTO();
             BeanUtils.copyProperties(bugListBO, bugPageResDTO);
             bugPageResDTO.setCreateTime(DateHelper.dateFormatter(bugListBO.getCreateTime(),DateHelper.DATE_FORMAT));
+            bugPageResDTO.setProjectId(new Long((bugListReqDTO.getPageNum()-1)*10)+bugListBO.getProjectId());//projectId这里用于序号值
             bugPageResDTOS.add(bugPageResDTO);
         });
 
