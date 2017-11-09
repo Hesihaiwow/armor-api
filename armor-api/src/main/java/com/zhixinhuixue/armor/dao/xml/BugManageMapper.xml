@@ -31,7 +31,7 @@
         SELECT (@rowid := @rowid+1) AS project_id,a.* FROM(SELECT b.id,b.description,b.create_time,a.users,project.name as projectName  FROM bug_manage b
           JOIN project on b.project_id = project.id
           JOIN (SELECT bug_id,group_concat(user.name separator ',') as users
-        FROM bug_user JOIN  user on bug_user.user_id = user.id GROUP BY bug_id ORDER BY)a on a.bug_id = b.id
+        FROM bug_user JOIN  user on bug_user.user_id = user.id GROUP BY bug_id)a on a.bug_id = b.id
         <if test="userId!=null">
             JOIN (SELECT bug_id FROM bug_user WHERE user_id =#{userId})c on c.bug_id = b.id
         </if>
@@ -42,7 +42,7 @@
             <if test="endTime!=null">
                 <![CDATA[ AND b.create_time <= #{endTime} ]]>
             </if>
-            GROUP BY b.id
+            GROUP BY b.id  ORDER BY b.create_time DESC
         )as a,(SELECT (@rowid:=0))as b
     </select>
 
