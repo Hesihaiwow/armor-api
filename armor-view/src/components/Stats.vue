@@ -33,8 +33,9 @@
                     <el-table-column prop="projectId" label="序号" align="center" width="100"></el-table-column>
                     <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
                     <el-table-column prop="projectName" label="问题项目" align="center" width="130"></el-table-column>
-                    <el-table-column prop="createTime" label="处理日期"  width="130"></el-table-column>
-                    <el-table-column prop="users" label="开发负责" align="center" width="200"></el-table-column>
+                    <el-table-column prop="users" label="负责人" align="center" width="200"></el-table-column>
+                    <el-table-column prop="createTime" label="发现日期"  width="130"></el-table-column>
+                    <el-table-column prop="processTime" label="处理日期"  width="130"></el-table-column>
                     <el-table-column label="操作" width="100">
                         <template scope="scope">
                             <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
@@ -59,16 +60,18 @@
                 :close-on-press-escape="false"
                 :visible.sync="createBugSolvingVisible">
                 <div class="ctpc-con">
-                    <div class="ctpc-list-menu fl"><span class="star">*</span>项目</div>
-                    <div class="ctpc-list-con fl">
+                    <div  style="display: inline"><span class="star">*</span>项目</div>
+                    <div style="display: inline;margin-left: 60px">
                         <el-select v-model="bugForm.projectId" placeholder="请选择">
                             <el-option  v-for="item in projectForm" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
-                    <div class="ctpc-list-menu f1" ><span class="star">*</span>bug描述</div>
-                    <div style="margin-left: 80px;margin-top: -15px;">
-                        <el-input type="textarea" v-model="bugForm.description" :rows="3"></el-input>
-                    </div>
+                    <div style="margin-top: 20px"><span class="star">*</span>bug描述</div>
+                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 600px" v-model="bugForm.description" :rows="3"></el-input>
+                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
+                        <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
+                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	处理日期</div>
+                        <el-date-picker v-model="bugForm.processTime" type="date" placeholder="选择处理日期" style="position: relative;margin-left: 100px"></el-date-picker>
                 </div>
 
                 <div class="ctpc-member-con">
@@ -157,7 +160,9 @@
                 },
                 bugForm:{
                     projectId:'',
-                    description:''
+                    description:'',
+                    createTime:'',
+                    processTime:''
                 },
                 bugDetailForm:{},
                 bugManage:[],
@@ -229,6 +234,12 @@
                     this.errorMsg('请将Bug信息填写完整');
                     return
                 }
+                if (this.bugForm.createTime == ''||this.bugForm.processTime == '') {
+                    this.errorMsg('请将Bug信息填写完整');
+                    return
+                }
+                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
                 let param = this.bugForm;
                 param.projectId = param.projectId.trim()
                 param.description = param.description.trim()
@@ -240,6 +251,7 @@
                         type: 'success'
                     });
                     this.bugForm.projectId = this.bugForm.description = '';
+                    this.bugForm.createTime = this.bugForm.processTime = '';
                     this.createBugSolvingVisible = false
                     this.bugUsers = [];
                     this.getBugList();
@@ -599,7 +611,7 @@
     }
 
     .ctpc-con {
-        height: 140px;
+        height: 300px;
         overflow-y: scroll;
         padding-right: 10px;
     }

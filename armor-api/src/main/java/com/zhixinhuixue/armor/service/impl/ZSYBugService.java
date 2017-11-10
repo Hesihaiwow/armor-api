@@ -14,27 +14,22 @@ import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.BugManageBO;
 import com.zhixinhuixue.armor.model.bo.BugManageListBO;
-import com.zhixinhuixue.armor.model.bo.BugUserBO;
 import com.zhixinhuixue.armor.model.dto.request.BugListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.BugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.BugUserReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.BugDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.BugPageResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskCommentResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskUserResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
-import com.zhixinhuixue.armor.source.enums.ZSYTaskUserStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -77,6 +72,7 @@ public class ZSYBugService implements IZSYBugService {
             BugPageResDTO bugPageResDTO = new BugPageResDTO();
             BeanUtils.copyProperties(bugListBO, bugPageResDTO);
             bugPageResDTO.setCreateTime(DateHelper.dateFormatter(bugListBO.getCreateTime(),DateHelper.DATE_FORMAT));
+            bugPageResDTO.setProcessTime(DateHelper.dateFormatter(bugListBO.getProcessTime(),DateHelper.DATE_FORMAT));
             bugPageResDTO.setProjectId(new Long((bugListReqDTO.getPageNum()-1)*10)+bugListBO.getProjectId());//projectId这里用于序号值
             bugPageResDTOS.add(bugPageResDTO);
         });
@@ -107,7 +103,8 @@ public class ZSYBugService implements IZSYBugService {
 
         BugManage bugManage = new BugManage();
         bugManage.setId(snowFlakeIDHelper.nextId());
-        bugManage.setCreateTime(new Date());
+        bugManage.setCreateTime(bugReqDTO.getCreateTime());
+        bugManage.setProcessTime(bugReqDTO.getProcessTime());
         bugManage.setDescription(bugReqDTO.getDescription());
         bugManage.setProjectId(bugReqDTO.getProjectId());
         bugManageMapper.insertBug(bugManage);

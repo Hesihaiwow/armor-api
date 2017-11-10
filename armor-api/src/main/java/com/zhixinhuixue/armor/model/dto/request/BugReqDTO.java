@@ -21,6 +21,18 @@ public class BugReqDTO {
     private String description;
 
     /**
+     * 发现时间
+     */
+    @NotNull(message = "发现时间不能为空")
+    private Date createTime;
+
+    /**
+     * 处理时间
+     */
+    @NotNull(message = "发现时间不能为空")
+    private Date processTime;
+
+    /**
      * 任务负责人
      */
     @Size(min = 1, message = "任务负责人不能为空")
@@ -49,5 +61,21 @@ public class BugReqDTO {
 
     public void setBugUsers(List<BugUserReqDTO> bugUsers) {
         this.bugUsers = bugUsers;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(Date processTime) {
+        this.processTime = processTime;
     }
 }

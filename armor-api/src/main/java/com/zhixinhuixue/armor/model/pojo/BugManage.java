@@ -15,6 +15,8 @@ public class BugManage {
 
     private Long projectId;
 
+    private Date processTime;
+
     public Long getId() {
         return id;
     }
@@ -45,5 +47,13 @@ public class BugManage {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public Date getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(Date processTime) {
+        this.processTime = processTime;
     }
 }
