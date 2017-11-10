@@ -67,7 +67,7 @@
                         </el-select>
                     </div>
                     <div style="margin-top: 20px"><span class="star">*</span>bug描述</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 600px" v-model="bugForm.description" :rows="3"></el-input>
+                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 700px" v-model="bugForm.description" :rows="3"></el-input>
                     <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
                         <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
                     <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	处理日期</div>
@@ -611,7 +611,7 @@
     }
 
     .ctpc-con {
-        height: 300px;
+        height: 240px;
         overflow-y: scroll;
         padding-right: 10px;
     }
