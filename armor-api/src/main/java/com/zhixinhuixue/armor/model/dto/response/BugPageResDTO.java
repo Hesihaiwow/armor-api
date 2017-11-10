@@ -20,6 +20,8 @@ public class BugPageResDTO {
 
     private String createTime;
 
+    private String processTime;
+
     private String users;
 
     public Long getId() {
@@ -68,5 +70,13 @@ public class BugPageResDTO {
 
     public void setUsers(String users) {
         this.users = users;
+    }
+
+    public String getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(String processTime) {
+        this.processTime = processTime;
     }
 }
