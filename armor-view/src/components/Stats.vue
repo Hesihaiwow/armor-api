@@ -538,6 +538,7 @@
     .ctpc-member-con {
         padding-left: 10px; /* border-left: 1px solid #ccc; */
         margin-left: 6px;
+        margin-top: 10px;
         position: relative;
     }
 
