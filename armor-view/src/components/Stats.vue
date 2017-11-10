@@ -199,7 +199,7 @@
         computed: {
             permit() {
                 let userRole = helper.decodeToken().userRole;
-                return userRole < 1;
+                return userRole < 2;
             },
             pageLayout() {
                 if (this.bugFormPage.total > 0) {
