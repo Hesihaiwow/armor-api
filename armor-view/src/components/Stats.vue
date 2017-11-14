@@ -60,13 +60,13 @@
                 :close-on-press-escape="false"
                 :visible.sync="createBugSolvingVisible">
                 <div class="ctpc-con">
-                    <div  style="display: inline"><span class="star">*</span>项目</div>
-                    <div style="display: inline;margin-left: 60px">
+                    <div  style="display: inline"><span class="star">*</span>问题项目</div>
+                    <div style="display: inline;margin-left: 30px">
                         <el-select v-model="bugForm.projectId" placeholder="请选择">
                             <el-option  v-for="item in projectForm" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
-                    <div style="margin-top: 20px"><span class="star">*</span>bug描述</div>
+                    <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
                         <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="bugForm.description" :rows="3"></el-input>
                     <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
                         <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
@@ -230,12 +230,8 @@
                 });
             },
             saveBugForm(){
-                if (this.bugForm.projectId == ''||this.bugForm.description == '') {
-                    this.errorMsg('请将Bug信息填写完整');
-                    return
-                }
-                if (this.bugForm.createTime == ''||this.bugForm.processTime == '') {
-                    this.errorMsg('请将Bug信息填写完整');
+                if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
+                    this.errorMsg('请将问题信息填写完整');
                     return
                 }
                 this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
