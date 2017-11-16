@@ -44,6 +44,17 @@ public class ZSYBugController extends ZSYController{
     }
 
     /**
+     * 更新bug处理
+     * @return
+     */
+    @ApiOperation("更新bug处理")
+    @PutMapping(value = "/update/{id}")
+    public String update(@Valid @RequestBody BugReqDTO bugReqDTO, @PathVariable("id") Long id){
+        bugService.updateBug(id, bugReqDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
      * bug处理详情
      * @return
      */
@@ -51,6 +62,18 @@ public class ZSYBugController extends ZSYController{
     @GetMapping(value = "/{id}")
     public String getBugDetail(@PathVariable("id") Long id){
         return bugService.getBugDetail(id).build();
+    }
+
+    /**
+     * 删除Bug处理记录
+     * @param id
+     * @return
+     */
+    @ApiOperation("删除Bug处理记录")
+    @DeleteMapping(value = "/{id}")
+    public String deleteProject( @PathVariable("id") Long id){
+        bugService.deleteBug(id);
+        return ZSYResult.success().build();
     }
 
 

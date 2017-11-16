@@ -28,6 +28,11 @@
                     ofType="com.zhixinhuixue.armor.model.bo.TaskCommentBO"/>
     </resultMap>
 
+    <resultMap id="personResultMap" type="com.zhixinhuixue.armor.model.bo.PersonTaskBO" extends="BaseResultMap">
+        <result column="taskName" jdbcType="VARCHAR" property="taskName"/>
+        <result column="taskDescription" jdbcType="VARCHAR" property="taskDescription"/>
+    </resultMap>
+
     <!-- 根据task_id查询详情 -->
     <select id="selectDetailByTaskId" parameterType="java.lang.Long" resultMap="DetailResultMap">
         select t1.*,t3.`name` as userName from task_user t1
@@ -117,5 +122,18 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
+    <select id="getPersonalList" parameterType="com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO" resultMap="personResultMap">
+        SELECT (@rowid := @rowid+1) AS id,a.* FROM(
+            SELECT u.*,t.description as taskDescription,t.`name` as taskName FROM task_user u
+            JOIN task t on u.task_id = t.id
+            where user_id = #{userId}
+                <if test="startTime != null">
+                    <![CDATA[ AND  (u.begin_time > #{startTime,jdbcType=INTEGER} or u.end_time > #{startTime,jdbcType=INTEGER}) ]]>
+                </if>
+                <if test="endTime != null">
+                    <![CDATA[ AND (u.end_time < #{endTime,jdbcType=TIMESTAMP} or u.begin_time < #{endTime,jdbcType=INTEGER})]]>
+                </if>
+        )as a,(SELECT (@rowid:=0))as b
+    </select>
 
 </mapper>

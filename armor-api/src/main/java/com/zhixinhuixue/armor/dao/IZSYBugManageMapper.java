@@ -25,9 +25,23 @@ public interface IZSYBugManageMapper {
     int insertBug(BugManage bugManage);
 
     /**
+     * 更新Bug处理结果
+     * @param bugManage
+     * @return
+     */
+    int updateBug(BugManage bugManage);
+
+    /**
      * 获取bug处理详情
      * @param id
      * @return
      */
     BugManageBO selectDetailById(Long id);
+
+    /**
+     * 删除Bug处理记录
+     * @param id
+     * @return
+     */
+    int deleteById(Long id);
 }

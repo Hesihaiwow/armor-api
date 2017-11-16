@@ -10,6 +10,8 @@ import java.util.Date;
 
 public class BugUserReqDTO {
 
+    private Long id;
+
     /**
      * 负责人
      */
@@ -22,6 +24,14 @@ public class BugUserReqDTO {
     @NotNull(message = "积分不能为空")
     @Max(value = 99999, message = "积分不能大于{value}")
     private BigDecimal integral;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getUserId() {
         return userId;

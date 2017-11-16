@@ -184,5 +184,9 @@
     </where>
   </select>
 
+  <select id="getUserIntegralByTaskId" resultMap="BaseResultMap" parameterType="Map">
+      SELECT * FROM user_integral WHERE task_id = #{id}
+  </select>
+
 
 </mapper>

@@ -52,6 +52,26 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
+            <el-tab-pane label="个人任务" name="personal">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="persanalForm.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-date-picker v-model="persanalForm.startTime" type="date" placeholder="选择开始日期"></el-date-picker></div>
+                <div class="add-member-basic-msg fl"><el-date-picker v-model="persanalForm.endTime" type="date" placeholder="选择结束日期"></el-date-picker></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
+                <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
+                    <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="150"></el-table-column>
+                    <el-table-column prop="taskDescription" label="任务描述" align="center" ></el-table-column>
+                    <el-table-column prop="description" label="工作内容" align="center"></el-table-column>
+                    <el-table-column prop="createTime" label="开始日期"  width="120"></el-table-column>
+                    <el-table-column prop="endTime" label="截止日期"  width="120"></el-table-column>
+                    <el-table-column prop="taskHours" label="工作量"  width="80"></el-table-column>
+                </el-table>
+            </el-tab-pane>
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
@@ -115,6 +135,68 @@
             <el-button @click="createBugSolvingVisible = false">取 消</el-button>
           </span>
         </el-dialog>
+        <el-dialog
+                title="更新Bug处理"
+                style="width:auto;"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="updateBugSolvingVisible">
+            <div class="ctpc-con">
+                <div  style="display: inline"><span class="star">*</span>问题项目</div>
+                <div style="display: inline;margin-left: 30px">
+                    <el-select v-model="bugForm.projectId" placeholder="请选择">
+                        <el-option  v-for="item in projectForm" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
+                <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="bugForm.description" :rows="3"></el-input>
+                <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
+                <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
+                <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	处理日期</div>
+                <el-date-picker v-model="bugForm.processTime" type="date" placeholder="选择处理日期" style="position: relative;margin-left: 100px"></el-date-picker>
+            </div>
+
+            <div class="ctpc-member-con">
+                <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
+                    <span class="fl ctpc-member-head">{{item.userName}}</span>
+                    <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
+                    <span style="position: absolute;right: 10px;">
+                                <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
+                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
+                        </span>
+                </div>
+            </div>
+            <div class="ctpc-add-member-detail" v-if="showAddDetail">
+                <div class="add-member-basic">
+                    <div class="add-member-basic-list clearfix">
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
+                        <div class="add-member-basic-msg fl">
+                            <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
+                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
+                        </div>
+                    </div>
+                </div>
+                <div class="ctpc-btns">
+                    <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
+                    <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
+                </div>
+            </div>
+            <div class="add-member-opt" v-show="!showAddDetail" @click="showAddDetail = !showAddDetail;">
+                <span class="add-member-icon">+</span>
+                <span class="add-member-msg" style="">添加成员</span>
+            </div>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="editBugForm('bugForm')">立即更新</el-button>
+            <el-button @click="updateBugSolvingVisible = false">取 消</el-button>
+          </span>
+        </el-dialog>
 
         <el-dialog title="Bug处理结果详情" size="tiny" :close-on-click-modal="false"
             :close-on-press-escape="false"
@@ -127,7 +209,16 @@
                     <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
                 </div>
             </el-form>
-
+            <span slot="footer" class="dialog-footer" >
+                <div v-show="permit">
+                    <el-tooltip content="编辑该任务" placement="top">
+                     <el-button type="primary" icon="edit" @click="editBugDetail(bugDetailForm)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="删除该任务" placement="top">
+                          <el-button type="danger" icon="delete" @click="deleteBug()"></el-button>
+                    </el-tooltip>
+                </div>
+            </span>
 
         </el-dialog>
 
@@ -140,14 +231,19 @@
     import ElDialog from "../../node_modules/element-ui/packages/dialog/src/component";
     import moment from 'moment';
     import helper from '../lib/Helper'
+    import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane";
 
     export default {
+        components: {ElTabPane},
         name: 'IntegralHistory',
         data() {
             return {
                 activeName:'stat',
                 createBugSolvingVisible:false,
+                updateBugSolvingVisible:false,
                 statsData:[],
+                pesonalTaskData:[],
+                modifyId:'',
                 bugList:{
                   userId:'',
                   startTime:'',
@@ -163,6 +259,11 @@
                     description:'',
                     createTime:'',
                     processTime:''
+                },
+                persanalForm:{
+                    userId:'',
+                    startTime:'',
+                    endTime:'',
                 },
                 bugDetailForm:{},
                 bugManage:[],
@@ -229,6 +330,20 @@
                     this.bugFormPage.total = resp.data.total;
                 });
             },
+            getPersonalData(){
+                if( this.persanalForm.startTime!=''){
+                    this.persanalForm.startTime = moment(this.persanalForm.startTime).format('YYYY-MM-DD HH:mm:ss')
+                }
+                if( this.persanalForm.endTime!=''){
+                    this.persanalForm.endTime = moment(this.persanalForm.endTime).format('YYYY-MM-DD HH:mm:ss')
+                }
+                if(this.persanalForm.userId == null||this.persanalForm.userId===''){
+                    this.errorMsg("请选择你想查询的用户")
+                }
+                Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
+                    this.pesonalTaskData =  resp.data;
+                });
+            },
             saveBugForm(){
                 if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
                     this.errorMsg('请将问题信息填写完整');
@@ -254,9 +369,33 @@
                 })
 
             },
+            editBugForm(id){
+                if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
+                    this.errorMsg('请将问题信息填写完整');
+                    return
+                }
+                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                let param = this.bugForm;
+                param.projectId = param.projectId.trim()
+                param.description = param.description.trim()
+                param['bugUsers'] = this.bugUsers;
+                Http.zsyPutHttp('/bug/update/'+this.modifyId, param, (resp) => {
+                    this.$message({
+                        showClose: true,
+                        message: 'Bug处理结果更新成功',
+                        type: 'success'
+                    });
+                    this.bugForm.projectId = this.bugForm.description = '';
+                    this.bugForm.createTime = this.bugForm.processTime = '';
+                    this.updateBugSolvingVisible = false
+                    this.bugUsers = [];
+                    this.getBugList();
+                })
+            },
             createBugSolve(){
                 this.createBugSolvingVisible = true;
-                this.bugForm.description = this.bugForm.projectId = this.bugForm.createTime = '';
+                this.bugForm.description = this.bugForm.projectId = this.bugForm.createTime = this.bugForm.processTime = '';
                 this.bugUsers = [];
                 this.showAddDetail = false
                 this.addMemberIndex = {
@@ -321,6 +460,33 @@
             cancelAddMember(){
                 this.showAddDetail = !this.showAddDetail;
             },
+            editBugDetail(bugDetailForm){
+                this.updateBugSolvingVisible = true;
+                this.bugDetailVisible = false;
+                this.bugForm.projectId = bugDetailForm.projectId;
+                this.bugForm.createTime = bugDetailForm.createTime;
+                this.bugForm.processTime = bugDetailForm.processTime;
+                this.bugForm.description = bugDetailForm.description;
+                this.bugUsers = bugDetailForm.bugUsers;
+            },
+            deleteBug(){
+                this.$confirm('确认删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    Http.zsyDeleteHttp('/bug/'+this.modifyId, null, (resp) => {
+                        this.$message({
+                            showClose: true,
+                            message: 'Bug处理结果删除成功',
+                            type: 'success'
+                        });
+                    })
+                    this.bugDetailVisible = false;
+                    this.getBugList();
+                }).catch(() => {
+                });
+            },
             fetchUserList() {
                 let vm = this
                 Http.zsyGetHttp('/user/effective', {}, (resp) => {
@@ -346,6 +512,7 @@
                 Http.zsyGetHttp('/bug/'+row.id, null, (resp) => {
                     this.bugDetailForm = resp.data
                 })
+                this.modifyId = row.id;
             },
             handleCurrentChange(currentPage){
                 this.bugList.pageNum = currentPage;
@@ -370,7 +537,34 @@
                     message: msg,
                     type: 'error'
                 });
-            }
+            },
+            getSummaries(param) {
+                const { columns, data } = param;
+                const sums = [];
+                columns.forEach((column, index) => {
+                    if (index === 0) {
+                        sums[index] = '总计';
+                        return;
+                    }
+                    if (index < 6) {
+                        sums[index] = '';
+                        return;
+                    }
+                    const values = data.map(item => Number(item[column.property]));
+                    if (!values.every(value => isNaN(value))) {
+                        sums[index] = values.reduce((prev, curr) => {
+                            const value = Number(curr);
+                            if (!isNaN(value)) {
+                                return prev + curr;
+                            } else {
+                                return prev;
+                            }
+                        }, 0);
+                    }
+                });
+
+                return sums;
+            },
 
         }
     }

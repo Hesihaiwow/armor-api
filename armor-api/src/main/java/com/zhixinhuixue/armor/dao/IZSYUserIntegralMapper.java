@@ -126,4 +126,12 @@ public interface IZSYUserIntegralMapper {
      */
     int updateReview(Long id);
 
+
+    /**
+     * 根据任务Id查询积分
+     * @param id
+     * @return
+     */
+    List<UserIntegral> getUserIntegralByTaskId(@Param("id") Long id);
+
 }
