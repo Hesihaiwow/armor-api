@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserCommentsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
@@ -34,6 +35,16 @@ public class ZSYStatsController extends ZSYController{
     public String getStats(){
         List<StatsPageResDTO> statsPageResDTOList = statsService.getStats();
         return ZSYResult.success().data(statsPageResDTOList).build();
+    }
+
+    /**
+     * 个人任务统计
+     * @return
+     */
+    @ApiOperation("个人任务统计")
+    @GetMapping(value = "/personTaskList")
+    public String getPersonalList(PersonalTaskListReqDTO personalTaskListReqDTO){
+        return ZSYResult.success().data(statsService.getPersonalList(personalTaskListReqDTO)).build();
     }
 
     /**

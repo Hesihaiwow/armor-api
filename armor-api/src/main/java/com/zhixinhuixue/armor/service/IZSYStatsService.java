@@ -3,7 +3,9 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
+import com.zhixinhuixue.armor.model.dto.response.PersonTaskResDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 
@@ -20,6 +22,8 @@ public interface IZSYStatsService {
      * @return
      */
     List<StatsPageResDTO> getStats();
+
+    List<PersonTaskResDTO> getPersonalList(PersonalTaskListReqDTO personalTaskListReqDTO);
 
     List<CalculateResDTO> calculate(CalculateReqDTO calculateReqDTO);
 

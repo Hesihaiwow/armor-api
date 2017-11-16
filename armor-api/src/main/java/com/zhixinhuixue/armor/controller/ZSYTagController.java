@@ -49,7 +49,7 @@ public class ZSYTagController extends ZSYController{
      */
     @ApiOperation("删除标签")
     @DeleteMapping(value = "/{id}")
-    public String deleteTag(@PathVariable Long id){
+    public String deleteTag(@PathVariable("id") Long id){
         tagService.deleteTag(id);
         return ZSYResult.success().build();
     }

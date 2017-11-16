@@ -29,4 +29,13 @@
                 where t1.bug_id = #{id}
     </select>
 
+    <select id="getUserIntegralByTaskId" parameterType="Map" resultMap="BaseResultMap">
+          SELECT *  FROM bug_user WHERE user_id = #{userId} and  bug_id = #{id}
+    </select>
+
+    <!-- 删除Bug用户  -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from bug_user where bug_id = #{id}
+    </delete>
+
 </mapper>

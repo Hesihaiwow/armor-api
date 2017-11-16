@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.bo.BugUserBO;
 import com.zhixinhuixue.armor.model.dto.request.BugListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.BugManage;
 import com.zhixinhuixue.armor.model.pojo.BugUser;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface IZSYBugUserMapper {
      */
     int insertList(List<BugUser> bugUsers);
 
+
+    int deleteById(Long id);
 }

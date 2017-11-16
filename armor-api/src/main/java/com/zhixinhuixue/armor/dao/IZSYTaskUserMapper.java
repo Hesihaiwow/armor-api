@@ -1,10 +1,13 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
+import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 
 import java.util.List;
 
 public interface IZSYTaskUserMapper {
+
 
     /**
      * 根据主键删除
@@ -47,5 +50,14 @@ public interface IZSYTaskUserMapper {
      * @return
      */
     int deleteByTaskId(Long taskId);
+
+
+    /**
+     * 个人任务统计
+     * @param personalTaskListReqDTO
+     * @return
+     */
+    List<PersonTaskBO> getPersonalList(PersonalTaskListReqDTO personalTaskListReqDTO);
+
 
 }

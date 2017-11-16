@@ -5,11 +5,16 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYStatsMapper;
+import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
+import com.zhixinhuixue.armor.helper.DateHelper;
+import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
 import com.zhixinhuixue.armor.model.bo.UserCommentBo;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
+import com.zhixinhuixue.armor.model.dto.response.PersonTaskResDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
@@ -33,6 +38,9 @@ public class ZSYStatsService implements IZSYStatsService {
 
     @Autowired
     private IZSYUserIntegralMapper userIntegralMapper;
+
+    @Autowired
+    private IZSYTaskUserMapper taskUserMapper;
 
     @Override
     public List<StatsPageResDTO> getStats() {
@@ -65,9 +73,30 @@ public class ZSYStatsService implements IZSYStatsService {
             calculateResDTO.setBonus(x.divide(sumIntegral,2, BigDecimal.ROUND_HALF_UP));
             calculateResDTOS.add(calculateResDTO);
         });
-
-
         return calculateResDTOS;
+    }
+
+    /**
+     * 个人任务统计
+     * @param personalTaskListReqDTO
+     * @return
+     */
+    @Override
+    public List<PersonTaskResDTO> getPersonalList(PersonalTaskListReqDTO personalTaskListReqDTO) {
+        List<PersonTaskBO>  personTaskBOS = taskUserMapper.getPersonalList(personalTaskListReqDTO);
+        List<PersonTaskResDTO> personTaskResDTOS = new ArrayList<>();
+        BeanUtils.copyProperties(personTaskBOS, personTaskResDTOS);
+        personTaskBOS.stream().forEach(personTaskBO-> {
+            PersonTaskResDTO dto = new PersonTaskResDTO();
+            BeanUtils.copyProperties(personTaskBO, dto);
+            dto.setCreateTime(DateHelper.dateFormatter(personTaskBO.getCreateTime(),DateHelper.DATE_FORMAT));
+            dto.setEndTime(DateHelper.dateFormatter(personTaskBO.getEndTime(),DateHelper.DATE_FORMAT));
+            dto.setTaskHours(personTaskBO.getTaskHours());
+            dto.setId(personTaskBO.getId());
+            dto.setTaskDescription(personTaskBO.getTaskDescription());
+            personTaskResDTOS.add(dto);
+        });
+        return personTaskResDTOS;
     }
 
 

@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.model.dto.response;
 
 import com.zhixinhuixue.armor.model.bo.BugUserBO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,6 +13,12 @@ public class BugDetailResDTO {
     private String projectName;
 
     private String description;
+
+    private Date createTime;
+
+    private Date processTime;
+
+    private Long projectId;
 
     private List<BugUserBO> bugUsers;
 
@@ -37,5 +44,29 @@ public class BugDetailResDTO {
 
     public void setBugUsers(List<BugUserBO> bugUsers) {
         this.bugUsers = bugUsers;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(Date processTime) {
+        this.processTime = processTime;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }
