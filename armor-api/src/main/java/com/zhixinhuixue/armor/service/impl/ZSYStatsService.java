@@ -89,7 +89,7 @@ public class ZSYStatsService implements IZSYStatsService {
         personTaskBOS.stream().forEach(personTaskBO-> {
             PersonTaskResDTO dto = new PersonTaskResDTO();
             BeanUtils.copyProperties(personTaskBO, dto);
-            dto.setCreateTime(DateHelper.dateFormatter(personTaskBO.getCreateTime(),DateHelper.DATE_FORMAT));
+            dto.setCreateTime(DateHelper.dateFormatter(personTaskBO.getBeginTime(),DateHelper.DATE_FORMAT));
             dto.setEndTime(DateHelper.dateFormatter(personTaskBO.getEndTime(),DateHelper.DATE_FORMAT));
             dto.setTaskHours(personTaskBO.getTaskHours());
             dto.setId(personTaskBO.getId());
