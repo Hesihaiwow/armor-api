@@ -64,7 +64,11 @@
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
                 <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
                     <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
-                    <el-table-column prop="taskName" label="任务名称" align="center" width="150"></el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="150">
+                        <template scope="sco">
+                            <el-button type="text" @click="getPesonTask()">{{sco.row.taskName}}</el-button>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="taskDescription" label="任务描述" align="center" ></el-table-column>
                     <el-table-column prop="description" label="工作内容" align="center"></el-table-column>
                     <el-table-column prop="createTime" label="开始日期"  width="120"></el-table-column>
@@ -317,6 +321,9 @@
             },
             getTask(index){
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
+            },
+            getPesonTask(){
+                this.$router.push({name:'taskList', params:{ userId:this.persanalForm.userId, status:'' }})
             },
             getBugList(){
                 if( this.bugList.startTime!=''){
