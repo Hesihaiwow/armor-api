@@ -131,7 +131,7 @@
                     <![CDATA[ AND  (u.begin_time >= #{startTime,jdbcType=INTEGER} or u.end_time >= #{startTime,jdbcType=INTEGER}) ]]>
                 </if>
                 <if test="endTime != null">
-                    <![CDATA[ AND (u.end_time <= #{endTime,jdbcType=TIMESTAMP} or u.begin_time >= #{endTime,jdbcType=INTEGER})]]>
+                    <![CDATA[ AND (u.end_time <= #{endTime,jdbcType=TIMESTAMP} or u.begin_time <= #{endTime,jdbcType=INTEGER})]]>
                 </if>
         )as a,(SELECT (@rowid:=0))as b
     </select>
