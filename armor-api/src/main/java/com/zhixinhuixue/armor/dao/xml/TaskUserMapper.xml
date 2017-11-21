@@ -128,10 +128,10 @@
             JOIN task t on u.task_id = t.id
             where user_id = #{userId} AND t.is_delete = 0
                 <if test="startTime != null">
-                    <![CDATA[ AND  u.begin_time >= #{startTime,jdbcType=INTEGER} ]]>
+                    <![CDATA[ AND  (begin_time >= #{startTime,jdbcType=INTEGER} or end_time >= #{startTime,jdbcType=INTEGER}) ]]>
                 </if>
                 <if test="endTime != null">
-                    <![CDATA[ AND u.end_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+                    <![CDATA[ AND (end_time <= #{endTime,jdbcType=TIMESTAMP} or begin_time >= #{endTime,jdbcType=INTEGER})]]>
                 </if>
         )as a,(SELECT (@rowid:=0))as b
     </select>
