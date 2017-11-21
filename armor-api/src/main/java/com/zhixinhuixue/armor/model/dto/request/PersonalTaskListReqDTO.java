@@ -32,9 +32,6 @@ public class PersonalTaskListReqDTO {
     }
 
     public Date getEndTime() {
-        if(endTime!=null){
-            return new Date(endTime.getTime() + 86400000L);
-        }
         return endTime;
     }
 
