@@ -29,10 +29,9 @@
                         v-model="bugDaterange"
                         type="daterange"
                         placeholder="选择日期范围"
+                        unlink-panels
                         @change="bugTimeChange"
-                        :picker-options="pickerOptions"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
+                        :picker-options="pickerOptions">
                 </el-date-picker></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getBugList()" class="search-btn"></div>
                 <el-button type="primary" style="margin-left: 300px;margin-bottom: 10px;" class="add-member-basic-msg fl" @click="createBugSolve" v-show="permit">创建bug处理</el-button>
@@ -71,9 +70,7 @@
                         type="daterange"
                         placeholder="选择日期范围"
                         @change="timeChange"
-                        :picker-options="pickerOptions"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
+                        :picker-options="pickerOptions">
                 </el-date-picker></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
                 <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
@@ -385,7 +382,7 @@
                     this.bugList.startTime = `${time[0]} 00:00:00`
                     this.bugList.endTime = `${time[1]} 23:59:59`
                 } else {
-                    this.bugList.startTime = this.bugList.endTime = ''
+                    this.bugList.startTime = this.bugList.endTime = this.bugDaterange = ''
                 }
             },
             timeChange(time) {
@@ -395,7 +392,7 @@
                     this.persanalForm.startTime = `${time[0]} 00:00:00`
                     this.persanalForm.endTime = `${time[1]} 23:59:59`
                 } else {
-                    this.persanalForm.startTime = this.persanalForm.endTime = ''
+                    this.persanalForm.startTime = this.persanalForm.endTime = this.daterange =  ''
                 }
             },
             getPersonalData(){
