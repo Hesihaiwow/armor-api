@@ -385,7 +385,7 @@
                     this.bugList.startTime = `${time[0]} 00:00:00`
                     this.bugList.endTime = `${time[1]} 23:59:59`
                 } else {
-                    this.persanalForm.startTime = this.persanalForm.endTime = ''
+                    this.bugList.startTime = this.bugList.endTime = ''
                 }
             },
             timeChange(time) {
