@@ -25,8 +25,15 @@
                                    :value="item.id"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl"><el-date-picker v-model="bugList.startTime" type="date" placeholder="选择开始日期"></el-date-picker></div>
-                <div class="add-member-basic-msg fl"><el-date-picker v-model="bugList.endTime" type="date" placeholder="选择结束日期"></el-date-picker></div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="bugDaterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        @change="bugTimeChange"
+                        :picker-options="pickerOptions"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
+                </el-date-picker></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getBugList()" class="search-btn"></div>
                 <el-button type="primary" style="margin-left: 300px;margin-bottom: 10px;" class="add-member-basic-msg fl" @click="createBugSolve" v-show="permit">创建bug处理</el-button>
                 <el-table :data="bugManage" border>
@@ -59,14 +66,21 @@
                                    :value="item.id"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl"><el-date-picker v-model="persanalForm.startTime" type="date" placeholder="选择开始日期"></el-date-picker></div>
-                <div class="add-member-basic-msg fl"><el-date-picker v-model="persanalForm.endTime" type="date" placeholder="选择结束日期"></el-date-picker></div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="daterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        @change="timeChange"
+                        :picker-options="pickerOptions"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
+                </el-date-picker></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
                 <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
                     <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="150">
                         <template scope="sco">
-                            <el-button type="text" @click="getPesonTask()">{{sco.row.taskName}}</el-button>
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="taskDescription" label="任务描述" align="center" ></el-table-column>
@@ -236,6 +250,7 @@
     import moment from 'moment';
     import helper from '../lib/Helper'
     import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane";
+    import Task from "./Task"
 
     export default {
         components: {ElTabPane},
@@ -269,6 +284,8 @@
                     startTime:'',
                     endTime:'',
                 },
+                daterange:'',
+                bugDaterange:'',
                 bugDetailForm:{},
                 bugManage:[],
                 addMemberIndex:{
@@ -290,6 +307,36 @@
                     totals: 0,
                     pageNum: 0
                 },
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '本周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('week').valueOf());
+                            end.setTime(moment().endOf('week').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('month').valueOf());
+                            end.setTime(moment().endOf('month').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本季度',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('quarter').valueOf());
+                            end.setTime(moment().endOf('quarter').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                }
             }
         },
         beforeMount:function () {
@@ -322,28 +369,36 @@
             getTask(index){
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
             },
-            getPesonTask(){
-                this.$router.push({name:'taskList', params:{ userId:this.persanalForm.userId, status:'' }})
+            getPesonTask(taskId){
+                this.$router.push({path:'/index/task/id/'+taskId})
             },
             getBugList(){
-                if( this.bugList.startTime!=''){
-                    this.bugList.startTime = moment(this.bugList.startTime).format('YYYY-MM-DD HH:mm:ss')
-                }
-                if( this.bugList.endTime!=''){
-                    this.bugList.endTime = moment(this.bugList.endTime).format('YYYY-MM-DD HH:mm:ss')
-                }
                 Http.zsyGetHttp(`/bug/list/`, this.bugList, (resp) => {
                     this.bugManage =  resp.data.list;
                     this.bugFormPage.total = resp.data.total;
                 });
             },
+            bugTimeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.bugList.startTime = `${time[0]} 00:00:00`
+                    this.bugList.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.persanalForm.startTime = this.persanalForm.endTime = ''
+                }
+            },
+            timeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.persanalForm.startTime = `${time[0]} 00:00:00`
+                    this.persanalForm.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.persanalForm.startTime = this.persanalForm.endTime = ''
+                }
+            },
             getPersonalData(){
-                if( this.persanalForm.startTime!=''){
-                    this.persanalForm.startTime = moment(this.persanalForm.startTime).format('YYYY-MM-DD HH:mm:ss')
-                }
-                if( this.persanalForm.endTime!=''){
-                    this.persanalForm.endTime = moment(this.persanalForm.endTime).format('YYYY-MM-DD HH:mm:ss')
-                }
                 if(this.persanalForm.userId == null||this.persanalForm.userId===''){
                     this.errorMsg("请选择你想查询的用户")
                 }
@@ -715,8 +770,8 @@
         margin-left: 40px;
     }
 
-    .add-member-basic-msg .el-date-editor.el-input {
-        width: 140px;
+    .add-member-basic-msg .el-date-picker.el-input {
+        width: 300px;
     }
 
     .add-member-basic-msg {

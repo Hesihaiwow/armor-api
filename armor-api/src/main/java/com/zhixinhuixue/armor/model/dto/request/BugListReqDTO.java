@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.List;
 
 
 public class BugListReqDTO {
@@ -37,9 +34,6 @@ public class BugListReqDTO {
     }
 
     public Date getEndTime() {
-        if(endTime!=null){
-            return new Date(endTime.getTime() + 86400000L);
-        }
         return endTime;
     }
 

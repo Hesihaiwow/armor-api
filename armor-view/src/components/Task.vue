@@ -226,9 +226,6 @@
                 this.form.userId = this.$route.params.userId;
                 this.form.type = '';
                 window.localStorage.removeItem("viewType")
-                if(typeof (this.$route.params.status) !="undefined"){
-                    this.form.status = this.$route.params.status
-                }
             }
             if(typeof (this.$route.params.taskId) !="undefined"){
                 this.form.taskId = this.$route.params.taskId;

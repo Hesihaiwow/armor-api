@@ -83,8 +83,13 @@ public class ZSYStatsService implements IZSYStatsService {
      */
     @Override
     public List<PersonTaskResDTO> getPersonalList(PersonalTaskListReqDTO personalTaskListReqDTO) {
-        List<PersonTaskBO>  personTaskBOS = taskUserMapper.getPersonalList(personalTaskListReqDTO);
         List<PersonTaskResDTO> personTaskResDTOS = new ArrayList<>();
+        if(personalTaskListReqDTO.getEndTime()!=null && personalTaskListReqDTO.getStartTime()!=null){
+            if(personalTaskListReqDTO.getEndTime().before(personalTaskListReqDTO.getStartTime())){
+                return personTaskResDTOS;
+            }
+        }
+        List<PersonTaskBO>  personTaskBOS = taskUserMapper.getPersonalList(personalTaskListReqDTO);
         BeanUtils.copyProperties(personTaskBOS, personTaskResDTOS);
         personTaskBOS.stream().forEach(personTaskBO-> {
             PersonTaskResDTO dto = new PersonTaskResDTO();
@@ -93,6 +98,7 @@ public class ZSYStatsService implements IZSYStatsService {
             dto.setEndTime(DateHelper.dateFormatter(personTaskBO.getEndTime(),DateHelper.DATE_FORMAT));
             dto.setTaskHours(personTaskBO.getTaskHours());
             dto.setId(personTaskBO.getId());
+            dto.setTaskId(personTaskBO.getTaskId());
             dto.setTaskDescription(personTaskBO.getTaskDescription());
             personTaskResDTOS.add(dto);
         });

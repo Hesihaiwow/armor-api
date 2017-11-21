@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import java.math.BigDecimal;
-
 /**
  * Created by Lang on 2017/11/15 0015.
  */
@@ -10,6 +8,8 @@ public class PersonTaskResDTO {
     private Long id;
 
     private String taskName;
+
+    private Long taskId;
 
     private String description;
 
@@ -75,5 +75,13 @@ public class PersonTaskResDTO {
 
     public void setTaskHours(Double taskHours) {
         this.taskHours = taskHours;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 }
