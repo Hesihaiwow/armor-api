@@ -126,7 +126,7 @@
         SELECT (@rowid := @rowid+1) AS id,a.* FROM(
             SELECT u.*,t.description as taskDescription,t.`name` as taskName FROM task_user u
             JOIN task t on u.task_id = t.id
-            where user_id = #{userId}
+            where user_id = #{userId} AND t.is_delete = 0
                 <if test="startTime != null">
                     <![CDATA[ AND  (u.begin_time > #{startTime,jdbcType=INTEGER} or u.end_time > #{startTime,jdbcType=INTEGER}) ]]>
                 </if>
