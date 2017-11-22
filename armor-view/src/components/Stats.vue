@@ -367,7 +367,7 @@
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
             },
             getPesonTask(taskId){
-                this.$router.push({path:'/index/task/id/'+taskId})
+                this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
             },
             getBugList(){
                 Http.zsyGetHttp(`/bug/list/`, this.bugList, (resp) => {
