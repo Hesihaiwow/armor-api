@@ -133,6 +133,7 @@
                 <if test="endTime != null">
                     <![CDATA[ AND (u.end_time <= #{endTime,jdbcType=TIMESTAMP} or u.begin_time <= #{endTime,jdbcType=INTEGER})]]>
                 </if>
+              ORDER BY u.begin_time desc
         )as a,(SELECT (@rowid:=0))as b
     </select>
 
