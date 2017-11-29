@@ -5,6 +5,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Tate on 2017/8/7.
@@ -43,6 +44,11 @@ public class TaskUserReqDTO {
      */
     @NotNull(message = "结束时间不能为空")
     private Date endTime;
+
+    /**
+     * 任务周工时
+     */
+    private List<UserWeekReqDTO> userWeeks;
 
     /**
      * 阶段描述
@@ -118,5 +124,13 @@ public class TaskUserReqDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<UserWeekReqDTO> getUserWeeks() {
+        return userWeeks;
+    }
+
+    public void setUserWeeks(List<UserWeekReqDTO> userWeeks) {
+        this.userWeeks = userWeeks;
     }
 }

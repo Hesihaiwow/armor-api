@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.model.bo;
 
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
+import com.zhixinhuixue.armor.model.pojo.UserWeek;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class TaskUserBO extends TaskUser {
     private String userName;
 
     /**
+
      * 给他人的评价数
      */
     private Integer commentNum;
@@ -28,6 +30,8 @@ public class TaskUserBO extends TaskUser {
      * 评论
      */
     private List<TaskCommentBO> taskComments;
+
+    private List<UserWeek> userWeeks;
 
     public String getStageName() {
         return stageName;
@@ -60,4 +64,13 @@ public class TaskUserBO extends TaskUser {
     public void setCommentNum(Integer commentNum) {
         this.commentNum = commentNum;
     }
+
+    public List<UserWeek> getUserWeeks() {
+        return userWeeks;
+    }
+
+    public void setUserWeeks(List<UserWeek> userWeeks) {
+        this.userWeeks = userWeeks;
+    }
+
 }

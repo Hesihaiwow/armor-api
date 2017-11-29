@@ -11,6 +11,7 @@
         <result column="multi" jdbcType="DECIMAL" property="multiTask" />
         <result column="sum" jdbcType="DECIMAL" property="sum" />
     </resultMap>
+
     <select id="getStats" resultMap="BaseResultMap" parameterType="java.lang.Long">
       SELECT
       COUNT(case when (t.`status`=1 and ta.is_delete=0)  then 2 end)as process,
@@ -62,4 +63,6 @@
         </if>
         order by t2.id desc
     </select>
+
+
 </mapper>

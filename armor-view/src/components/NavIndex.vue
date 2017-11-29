@@ -643,6 +643,11 @@
                             this.$message({ showClose: true,message: '工作量请保持在1至1000范围',type: 'error'});
                             return false;
                         }
+                        console.log(moment().week())
+                        if(moment(param.endTime).week()!=moment().week()){
+                            this.$message({ showClose: true,message: '个人任务请勿跨周进行',type: 'error'});
+                            return false;
+                        }
                         var taskUsers = [{
                             userId: userId,
                             taskHours: param.taskHours.trim(),
@@ -821,6 +826,7 @@
             fetchMyHelpWaitList(){
                 http.zsyGetHttp('/integral/getMyWaitList/'+this.waitPage.pageNum, {}, (resp) => {
                     this.review.wait = resp.data.list;
+                    console.log(this.review.wait)
                     this.waitPage.total = resp.data.total;
                 })
             },
@@ -1002,6 +1008,24 @@
         components: {
             TaskItem: TaskItem
         },
+        watch:{
+            taskForm:{
+                handler:function (val, oldVal) {
+                    this.weekNumber = [];
+                    let weekData='';
+                    if ( this.taskForm.endTime != '') {
+                        var beiginWeek = moment().week()
+                        var endWeek = moment(this.step.endTime).week()
+                        if(beiginWeek == endWeek){
+                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours };
+                            this.weekNumber.push(weekData)
+                        }else {
+                            this.$message({ showClose: true,message: '请选择本周内时间',type: 'error'});
+                        }
+                    }
+                }
+            },
+        }
     }
 </script>
 <style>

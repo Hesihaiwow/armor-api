@@ -4,9 +4,8 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
-import com.zhixinhuixue.armor.model.dto.response.PersonTaskResDTO;
-import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
+import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 
 import java.util.List;
@@ -35,4 +34,11 @@ public interface IZSYStatsService {
      * @return
      */
     PageInfo<UserCommentsPageResDTO> findByPage(Integer pageNum, Long userId, String grade);
+
+    /**
+     * 周工作量统计
+     * @param userWeekStatsReqDTO
+     * @return
+     */
+    List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO userWeekStatsReqDTO);
 }

@@ -408,13 +408,23 @@
                             <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
-                        <div class="add-member-basic-msg fl"><span class="star">*</span>状态：
-                            <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
-                                <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
+                    </div>
+                        <div v-for="(item,index) in weekNumber">
+                            <div class="add-member-basic-list clearfix">
+                                <div class="fl" style="width: 120px;margin-left: 5px;"><span class="star">*</span>第{{item.weekNumber}}周工作量：</div>
+                                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">
+                            </div>
+                        </div>
+                    <div class="add-member-basic-list clearfix">
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>状态：</div>
+                        <div class="add-member-basic-msg fl">
+                        <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
+                            <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
                         </div>
                     </div>
+
                 </div>
                 <div class="ctpc-btns">
                     <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
@@ -646,7 +656,12 @@
                     completeTime: '',
                     status: ''
                 },
-                stepTemp: {},/*
+                stepTemp: {},
+                weekTime:{
+                    beginWeek:'',
+                    endWeek:''
+                },
+                weekNumber:[],/*
                 projectList: [],
                 stageList: [],
                 tagList: [],*/
@@ -1083,7 +1098,7 @@
                     description: stages[index].description,
                     completeHours: stages[index].completeHours,
                     completeTime: stages[index].completeTime,
-                    status: stages[index].status
+                    status: stages[index].status,
                 }
                 this.step = stages[index];
                 this.step.index = index;
@@ -1165,6 +1180,23 @@
                 }
             },
             saveAddMember() {
+                var sumHours=0;
+                for(var i=0;i<this.weekNumber.length;i++){
+                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
+                    if(!ishours){
+                        this.errorMsg('工作量填写错误');
+                        return false;
+                    }
+                    if(this.weekNumber[i].hours>=40||this.weekNumber[i].hours<0){
+                        this.errorMsg('周工作量应在0.1~40');
+                        return false;
+                    }
+                    sumHours +=  parseInt(this.weekNumber[i].hours)
+                }
+                if(sumHours!=this.step.taskHours){
+                    this.errorMsg('周工作量与总工作量不符，请检查');
+                    return
+                }
                 const valid =
                     this.step.userId == '' ||
                     this.step.taskHours == '' ||
@@ -1182,10 +1214,12 @@
                     taskUser.endTime = this.step.endTime;
                     taskUser.taskHours = this.step.taskHours;
                     taskUser.description = this.step.description;
+                    taskUser.userWeeks = this.weekNumber;
                     this.modifyTaskForm.taskUsers.push(taskUser);
                 } else {
                     // 取消css
                     this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
+                    this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumber;
                 }
 
                 this.showAddDetail = !this.showAddDetail;
@@ -1252,6 +1286,11 @@
                     user.description = user.description.trim()
                     user.beginTime = moment(user.beginTime).format('YYYY-MM-DD HH:mm:ss')
                     user.endTime = moment(user.endTime).format('YYYY-MM-DD 23:59:59')
+                    console.log(param.taskUsers.userWeeks)
+                    if(user.userWeeks==null){
+                        this.errorMsg('请检查周工作量是否填写完整');//判断不可用
+                        return false;
+                    }
                 })
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                 let vm = this;
@@ -1311,6 +1350,13 @@
                     type: 'warning'
                 });
             },
+            errorMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'error'
+                });
+            },
         },
         created() {
             // 监听看板任务点击事件
@@ -1324,6 +1370,31 @@
                  vm.getTaskLog(taskId)
             });
         },
+        watch:{
+            step:{
+                deep:true,
+                handler:function (val, oldVal) {
+                    this.weekNumber = [];
+                    let weekData='';
+                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != '') {
+                        this.weekTime.beiginWeek = moment(this.step.beginTime).week()
+                        this.weekTime.endWeek = moment(this.step.endTime).week()
+                        if(this.weekTime.beiginWeek == this.weekTime.endWeek){
+                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours };
+                            this.weekNumber.push(weekData)
+                        }else if(this.weekTime.endWeek - this.weekTime.beiginWeek >1){
+                            for(var i=this.weekTime.beiginWeek;i<this.weekTime.endWeek+1;i++){
+                                weekData = {'weekNumber':i, 'hours': '' };
+                                this.weekNumber.push(weekData)
+                            }
+                        }else if(this.weekTime.endWeek - this.weekTime.beiginWeek == 1){
+                            this.weekNumber.push( {'weekNumber':this.weekTime.beiginWeek, 'hours': '' })
+                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' })
+                        }
+                    }
+                }
+            },
+        }
 
     }
 </script>
@@ -2032,5 +2103,13 @@
 
     .el-dialog__body {
         padding: 20px !important;
+    }
+
+    .member-time-week{
+        width: 40px;
+        border: 1px solid #ccc;
+        height: 26px;
+        border-radius: 4px;
+        text-indent: 4px;
     }
 </style>

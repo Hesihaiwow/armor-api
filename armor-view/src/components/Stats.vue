@@ -87,6 +87,37 @@
                     <el-table-column prop="taskHours" label="工作量"  width="80"></el-table-column>
                 </el-table>
             </el-tab-pane>
+            <el-tab-pane label="周任务统计" name="week">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="userWeekForm.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="userWeekForm.weekNumber" clearable filterable   placeholder="选择周数">
+                        <el-option v-for="item in weekOption" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="userWeekForm.weekNumber=currentWeek">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
+                <el-table :data="userWeekData" border  :summary-method="getSummaries" show-summary>
+                    <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80" >
+                        <template scope="sco">
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonStats(sco.row.userId)">{{sco.row.userName}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="150">
+                        <template scope="sco">
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="description" label="工作内容" align="center"></el-table-column>
+                    <el-table-column prop="hours" label="工作量"  width="80"></el-table-column>
+                </el-table>
+            </el-tab-pane>
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
@@ -250,7 +281,9 @@
     import Task from "./Task"
 
     export default {
-        components: {ElTabPane},
+        components: {
+            ElButton,
+            ElTabPane},
         name: 'IntegralHistory',
         data() {
             return {
@@ -304,6 +337,13 @@
                     totals: 0,
                     pageNum: 0
                 },
+                userWeekForm:{
+                    weekNumber:'',
+                    userId:'',
+                },
+                weekOption:[],
+                userWeekData:[],
+                currentWeek:moment().week(),
                 pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -344,6 +384,7 @@
             this.fetchProjectList();
             this.fetchProjectList();
             this.getBugList();
+            this.getWeeks();
         },
         computed: {
             permit() {
@@ -605,7 +646,7 @@
                         sums[index] = '总计';
                         return;
                     }
-                    if (index < 6) {
+                    if (index < 4) {
                         sums[index] = '';
                         return;
                     }
@@ -624,6 +665,29 @@
 
                 return sums;
             },
+            getWeeks(){//一年工多少周
+                this.weekOption=[]
+                for(var i=1;i<=moment().weeksInYear();i++){
+                    this.weekOption.push({'name':"第"+i+"周", 'id': i})
+                }
+            },
+            getUserWeekStats(){
+                if(this.userWeekForm.weekNumber!=''&&this.userWeekForm.userId!=''){
+                    Http.zsyPostHttp('/stats/weekStats', this.userWeekForm, (resp) => {
+                        this.userWeekData = resp.data
+                    })
+                }else{
+                    this.errorMsg('请选择统计信息')
+                }
+            },
+            getPesonStats(id){
+                this.activeName='personal'
+                this.persanalForm.userId = id;
+                Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
+                    this.pesonalTaskData =  resp.data;
+                });
+            }
+
 
         }
     }

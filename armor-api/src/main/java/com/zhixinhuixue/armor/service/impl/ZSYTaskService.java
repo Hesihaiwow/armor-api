@@ -56,6 +56,8 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYUserIntegralMapper userIntegralMapper;
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+    @Autowired
+    private IZSYUserWeekMapper userWeekMaper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -143,6 +145,18 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUser.setCreateTime(new Date());
                 taskUser.setStatus(ZSYTaskUserStatus.DOING.getValue());
                 taskUsers.add(taskUser);
+
+                List<UserWeek> userWeeks = Lists.newArrayList();
+                user.getUserWeeks().forEach(week ->{
+                    UserWeek userWeek = new UserWeek();
+                    userWeek.setId(snowFlakeIDHelper.nextId());
+                    userWeek.setTaskId(task.getId());
+                    userWeek.setUserId(user.getUserId());
+                    userWeek.setHours(week.getHours());
+                    userWeek.setWeekNumber(week.getWeekNumber());
+                    userWeeks.add(userWeek);
+                });
+                userWeekMaper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
         }
@@ -185,6 +199,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
         taskCommentMapper.deleteByTaskId(taskId);
+        userWeekMaper.deleteByTaskId(taskId);
 
         // 判断含有重复的负责人
         if (taskReqDTO.getTaskUsers() != null && taskReqDTO.getTaskUsers().size() > 0) {
@@ -229,6 +244,21 @@ public class ZSYTaskService implements IZSYTaskService {
                     taskUser.setCompleteTime(user.getCompleteTime());
                 }
                 taskUsers.add(taskUser);
+
+                List<UserWeek> userWeeks = Lists.newArrayList();
+                if(user.getUserWeeks().size()<1){
+                    throw new ZSYServiceException("请检查周工作量是否填写完整");
+                }
+                user.getUserWeeks().forEach(week ->{
+                    UserWeek userWeek = new UserWeek();
+                    userWeek.setId(snowFlakeIDHelper.nextId());
+                    userWeek.setTaskId(task.getId());
+                    userWeek.setUserId(user.getUserId());
+                    userWeek.setHours(week.getHours());
+                    userWeek.setWeekNumber(week.getWeekNumber());
+                    userWeeks.add(userWeek);
+                });
+                userWeekMaper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
         }
@@ -490,6 +520,16 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskCommentResDTOS.add(taskCommentResDTO);
             });
             taskUserResDTO.setComments(taskCommentResDTOS);
+
+            // copy 周任务工作量
+            List<UserWeekResDTO> userWeekResDTOS = new ArrayList<>();
+            taskUserBO.getUserWeeks().stream().forEach(userWeekBO -> {
+                UserWeekResDTO userWeekResDTO = new UserWeekResDTO();
+                BeanUtils.copyProperties(userWeekBO, userWeekResDTO);
+                userWeekResDTOS.add(userWeekResDTO);
+            });
+            taskUserResDTO.setUserWeeks(userWeekResDTOS);
+
             taskUserResDTOS.add(taskUserResDTO);
         });
         taskDetailResDTO.setUsers(taskUserResDTOS);
