@@ -26,6 +26,10 @@
         <collection property="taskComments" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByTaskUserId"
                     ofType="com.zhixinhuixue.armor.model.bo.TaskCommentBO"/>
+        <collection property="userWeeks" column="{userId=user_id,taskId=task_id}"
+                    select="com.zhixinhuixue.armor.dao.IZSYUserWeekMapper.selectByTaskId"
+                    ofType="com.zhixinhuixue.armor.model.pojo.UserWeek">
+        </collection>
     </resultMap>
 
     <resultMap id="personResultMap" type="com.zhixinhuixue.armor.model.bo.PersonTaskBO" extends="BaseResultMap">
@@ -133,6 +137,7 @@
                 <if test="endTime != null">
                     <![CDATA[ AND (u.end_time <= #{endTime,jdbcType=TIMESTAMP} or u.begin_time <= #{endTime,jdbcType=INTEGER})]]>
                 </if>
+              ORDER BY u.begin_time desc
         )as a,(SELECT (@rowid:=0))as b
     </select>
 

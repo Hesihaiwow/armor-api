@@ -51,6 +51,11 @@ public class TaskUserResDTO{
     private List<TaskCommentResDTO> comments;
 
     /**
+     * 周工作量
+     */
+    private List<UserWeekResDTO> userWeeks;
+
+    /**
      * 任务结束时，最终评价等级
      */
     private String commentGrade;
@@ -191,5 +196,13 @@ public class TaskUserResDTO{
 
     public void setCommentNum(Integer commentNum) {
         this.commentNum = commentNum;
+    }
+
+    public List<UserWeekResDTO> getUserWeeks() {
+        return userWeeks;
+    }
+
+    public void setUserWeeks(List<UserWeekResDTO> userWeeks) {
+        this.userWeeks = userWeeks;
     }
 }

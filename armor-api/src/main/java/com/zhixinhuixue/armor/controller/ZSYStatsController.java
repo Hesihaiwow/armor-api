@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.controller;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserCommentsReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
@@ -45,6 +46,16 @@ public class ZSYStatsController extends ZSYController{
     @GetMapping(value = "/personTaskList")
     public String getPersonalList(PersonalTaskListReqDTO personalTaskListReqDTO){
         return ZSYResult.success().data(statsService.getPersonalList(personalTaskListReqDTO)).build();
+    }
+
+    /**
+     * 周工作统计
+     * @return
+     */
+    @ApiOperation("周工作统计")
+    @PostMapping(value = "/weekStats")
+    public String getWeekStats(@Valid @RequestBody UserWeekStatsReqDTO userWeekStatsReqDTO){
+        return ZSYResult.success().data(statsService.getWeekStats(userWeekStatsReqDTO)).build();
     }
 
     /**
