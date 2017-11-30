@@ -107,7 +107,7 @@
                     </el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center">
                     </el-table-column>
-                    <el-table-column prop="hours" label="周工作量"  width="80"></el-table-column>
+                    <el-table-column prop="hours" label="周工作量"  width="120"></el-table-column>
                 </el-table>
             </el-tab-pane>
         </el-tabs>
