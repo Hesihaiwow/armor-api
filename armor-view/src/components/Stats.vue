@@ -73,7 +73,7 @@
                         :picker-options="pickerOptions">
                 </el-date-picker></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
-                <el-table :data="pesonalTaskData" border>
+                <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
                     <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="150">
                         <template scope="sco">
@@ -98,7 +98,7 @@
                 </div>
                 <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
-                <el-table :data="userWeekData" border  :summary-method="getSummaries" show-summary>
+                <el-table :data="userWeekData" border >
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="80" >
                         <template scope="sco">
