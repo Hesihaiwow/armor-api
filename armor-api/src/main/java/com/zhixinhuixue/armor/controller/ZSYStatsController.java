@@ -10,10 +10,13 @@ import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,8 +57,8 @@ public class ZSYStatsController extends ZSYController{
      */
     @ApiOperation("周工作统计")
     @PostMapping(value = "/weekStats")
-    public String getWeekStats(@Valid @RequestBody UserWeekStatsReqDTO userWeekStatsReqDTO){
-        return ZSYResult.success().data(statsService.getWeekStats(userWeekStatsReqDTO)).build();
+    public String getWeekStats(@RequestBody UserWeekStatsReqDTO userWeek){
+        return ZSYResult.success().data(statsService.getWeekStats(userWeek)).build();
     }
 
     /**

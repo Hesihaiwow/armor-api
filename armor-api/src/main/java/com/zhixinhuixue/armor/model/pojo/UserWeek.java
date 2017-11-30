@@ -15,6 +15,8 @@ public class UserWeek {
 
     private Long userId;
 
+    private int year;
+
     public Long getId() {
         return id;
     }
@@ -53,5 +55,13 @@ public class UserWeek {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

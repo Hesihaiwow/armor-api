@@ -9,6 +9,8 @@ public class UserWeekReqDTO {
 
     private Double hours;
 
+    private int year;
+
     public int getWeekNumber() {
         return weekNumber;
     }
@@ -23,5 +25,13 @@ public class UserWeekReqDTO {
 
     public void setHours(Double hours) {
         this.hours = hours;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

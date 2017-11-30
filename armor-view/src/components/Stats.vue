@@ -89,18 +89,14 @@
             </el-tab-pane>
             <el-tab-pane label="周任务统计" name="week">
                 <div class="add-member-basic-msg fl" >
-                    <el-select v-model="userWeekForm.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
+                    <el-date-picker
+                            v-model="userWeekForm.date"
+                            type="week"
+                            format="yyyy 第 WW 周"
+                            placeholder="选择周">
+                    </el-date-picker>
                 </div>
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="userWeekForm.weekNumber" clearable filterable   placeholder="选择周数">
-                        <el-option v-for="item in weekOption" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <div class="add-member-basic-msg fl"><el-button type="text" @click="userWeekForm.weekNumber=currentWeek">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
                 <el-table :data="userWeekData" border  :summary-method="getSummaries" show-summary>
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
@@ -109,13 +105,9 @@
                             <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonStats(sco.row.userId)">{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="taskName" label="任务名称" align="center" width="150">
-                        <template scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
-                        </template>
+                    <el-table-column prop="taskName" label="任务名称" align="center">
                     </el-table-column>
-                    <el-table-column prop="description" label="工作内容" align="center"></el-table-column>
-                    <el-table-column prop="hours" label="工作量"  width="80"></el-table-column>
+                    <el-table-column prop="hours" label="周工作量"  width="80"></el-table-column>
                 </el-table>
             </el-tab-pane>
         </el-tabs>
@@ -339,9 +331,8 @@
                 },
                 userWeekForm:{
                     weekNumber:'',
-                    userId:'',
+                    date:''
                 },
-                weekOption:[],
                 userWeekData:[],
                 currentWeek:moment().week(),
                 pickerOptions: {
@@ -384,7 +375,6 @@
             this.fetchProjectList();
             this.fetchProjectList();
             this.getBugList();
-            this.getWeeks();
         },
         computed: {
             permit() {
@@ -403,6 +393,9 @@
                 Http.zsyGetHttp(`/stats/list/`, {}, (resp) => {
                     this.statsData =  resp.data;
                 });
+            },
+            getCurrentWeek(){
+                this.userWeekForm.date=moment()
             },
             getTask(index){
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
@@ -665,15 +658,11 @@
 
                 return sums;
             },
-            getWeeks(){//一年工多少周
-                this.weekOption=[]
-                for(var i=1;i<=moment().weeksInYear();i++){
-                    this.weekOption.push({'name':"第"+i+"周", 'id': i})
-                }
-            },
             getUserWeekStats(){
-                if(this.userWeekForm.weekNumber!=''&&this.userWeekForm.userId!=''){
-                    Http.zsyPostHttp('/stats/weekStats', this.userWeekForm, (resp) => {
+                this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
+                this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
+                if(this.userWeekForm.date!=''){
+                    Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
                         this.userWeekData = resp.data
                     })
                 }else{
@@ -683,6 +672,8 @@
             getPesonStats(id){
                 this.activeName='personal'
                 this.persanalForm.userId = id;
+                this.persanalForm.startTime = moment(this.userWeekForm.date).startOf('week').format("YYYY-MM-DD 00:00:00");
+                this.persanalForm.endTime =  moment(this.userWeekForm.date).endOf('week').format("YYYY-MM-DD 23:59:59");
                 Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
                     this.pesonalTaskData =  resp.data;
                 });

@@ -5,29 +5,45 @@ import com.zhixinhuixue.armor.model.pojo.UserWeek;
 /**
  * Created by Lang on 2017/11/29 0029.
  */
-public class UserWeekBO extends UserWeek {
+public class UserWeekBO {
 
     private int weekNumber;
 
-    private Double hours;
+    private String hours;
 
-    @Override
+    private Long taskId;
+
+    private Long userId;
+
     public int getWeekNumber() {
         return weekNumber;
     }
 
-    @Override
     public void setWeekNumber(int weekNumber) {
         this.weekNumber = weekNumber;
     }
 
-    @Override
-    public Double getHours() {
+    public String getHours() {
         return hours;
     }
 
-    @Override
-    public void setHours(Double hours) {
+    public void setHours(String hours) {
         this.hours = hours;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

@@ -493,6 +493,10 @@
                     user.description = user.description.trim();
                     user.beginTime = moment(user.beginTime).format('YYYY-MM-DD HH:mm:ss');
                     user.endTime = moment(user.endTime).format('YYYY-MM-DD 23:59:59');
+                    if(moment(user.beginTime).year()!=moment(user.beginTime).year()){
+                        this.warnMsg("任务请勿跨年");
+                        return;
+                    }
                 })
                 let vm = this;
                 http.zsyPostHttp('/task/create', param, (resp) => {
@@ -538,19 +542,31 @@
                     this.weekNumber = [];
                     let weekData='';
                     if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != '') {
-                        this.weekTime.beiginWeek = moment(this.step.beginTime).week()
-                        this.weekTime.endWeek = moment(this.step.endTime).week()
+                        this.weekTime.beiginWeek = moment(this.step.beginTime).week()+1
+                        this.weekTime.endWeek = moment(this.step.endTime).week()+1
+                        var beginYear = moment(this.step.beginTime).year();
+                        var endYear = moment(this.step.endTime).year();
+                        if(beginYear!=endYear){
+                            for(var i=this.weekTime.beiginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
+                                this.weekNumber.push(weekData)
+                            }
+                            for(var i=1;i<this.weekTime.endWeek;i++){
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
+                                this.weekNumber.push(weekData)
+                            }
+                        }
                         if(this.weekTime.beiginWeek == this.weekTime.endWeek){
-                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours };
+                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours ,'year':beginYear };
                             this.weekNumber.push(weekData)
                         }else if(this.weekTime.endWeek - this.weekTime.beiginWeek >1){
                             for(var i=this.weekTime.beiginWeek;i<this.weekTime.endWeek+1;i++){
-                                weekData = {'weekNumber':i, 'hours': '' };
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
                                 this.weekNumber.push(weekData)
                             }
                         }else if(this.weekTime.endWeek - this.weekTime.beiginWeek == 1){
-                            this.weekNumber.push( {'weekNumber':this.weekTime.beiginWeek, 'hours': '' })
-                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' })
+                            this.weekNumber.push( {'weekNumber':this.weekTime.beiginWeek, 'hours': '' ,'year':beginYear })
+                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':endYear })
                         }
                     }
                 }

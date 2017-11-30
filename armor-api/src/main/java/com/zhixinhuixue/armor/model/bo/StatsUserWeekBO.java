@@ -5,7 +5,7 @@ import com.zhixinhuixue.armor.model.pojo.UserWeek;
 /**
  * Created by Lang on 2017/11/29 0029.
  */
-public class StatsUserWeekBO  extends UserWeek{
+public class StatsUserWeekBO  extends UserWeekBO{
 
     private Long id;
 

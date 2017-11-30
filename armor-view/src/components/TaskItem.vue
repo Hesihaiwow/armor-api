@@ -486,6 +486,14 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item class="task-form-edit" label="开始日期">
+                    <el-date-picker
+                            v-model="modifyPrivateTaskForm.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
                 <el-form-item class="task-form-edit" label="截止日期">
                     <el-date-picker
                             v-model="modifyPrivateTaskForm.endTime"
@@ -586,6 +594,7 @@
                     taskName: '',
                     description: '',
                     projectId: '',
+                    beginTime:'',
                     endTime: '',
                     tags: [],
                     taskHours: '',
@@ -1020,7 +1029,7 @@
                 this.modifyPrivateTaskForm.taskUsers = [{
                     userId: this.modifyPrivateTaskForm.userId,
                     taskHours: this.modifyPrivateTaskForm.taskHours,
-                    beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    beginTime: moment(this.modifyPrivateTaskForm.beginTime).format('YYYY-MM-DD HH:mm:ss'),
                     endTime: moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59'),
                     description: this.modifyPrivateTaskForm.description.trim()
                 }]
@@ -1041,6 +1050,7 @@
                     this.modifyPrivateTaskForm.description = resp.data.description;
                     this.modifyPrivateTaskForm.projectId = resp.data.projectId;
                     this.modifyPrivateTaskForm.endTime = resp.data.endTime;
+                    this.modifyPrivateTaskForm.beginTime = resp.data.users[0].beginTime;
                     this.modifyPrivateTaskForm.taskHours = resp.data.users[0].taskHours;
                     this.modifyPrivateTaskForm.userId = resp.data.users[0].userId;
                     this.modifyPrivateTaskForm.stageId = resp.data.stageId;
@@ -1377,19 +1387,31 @@
                     this.weekNumber = [];
                     let weekData='';
                     if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != '') {
-                        this.weekTime.beiginWeek = moment(this.step.beginTime).week()
-                        this.weekTime.endWeek = moment(this.step.endTime).week()
-                        if(this.weekTime.beiginWeek == this.weekTime.endWeek){
-                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours };
-                            this.weekNumber.push(weekData)
-                        }else if(this.weekTime.endWeek - this.weekTime.beiginWeek >1){
-                            for(var i=this.weekTime.beiginWeek;i<this.weekTime.endWeek+1;i++){
-                                weekData = {'weekNumber':i, 'hours': '' };
+                        this.weekTime.beginWeek = moment(this.step.beginTime).week()+1
+                        this.weekTime.endWeek = moment(this.step.endTime).week()+1
+                        var beginYear = moment(this.step.beginTime).year();
+                        var endYear = moment(this.step.endTime).year();
+                        if(beginYear!=endYear){
+                            for(var i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
                                 this.weekNumber.push(weekData)
                             }
-                        }else if(this.weekTime.endWeek - this.weekTime.beiginWeek == 1){
-                            this.weekNumber.push( {'weekNumber':this.weekTime.beiginWeek, 'hours': '' })
-                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' })
+                            for(var i=1;i<this.weekTime.endWeek;i++){
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
+                                this.weekNumber.push(weekData)
+                            }
+                        }
+                        if(this.weekTime.beginWeek == this.weekTime.endWeek){
+                            weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.step.taskHours ,'year':beginYear };
+                            this.weekNumber.push(weekData)
+                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek >1){
+                            for(var i=this.weekTime.beginWeek;i<this.weekTime.endWeek+1;i++){
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
+                                this.weekNumber.push(weekData)
+                            }
+                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek == 1){
+                            this.weekNumber.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear })
+                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':endYear })
                         }
                     }
                 }

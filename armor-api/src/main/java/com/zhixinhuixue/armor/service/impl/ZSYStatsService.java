@@ -15,7 +15,6 @@ import com.zhixinhuixue.armor.model.bo.UserCommentBo;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserWeekReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
@@ -112,12 +111,12 @@ public class ZSYStatsService implements IZSYStatsService {
 
     /**
      * 周工作量统计
-     * @param userWeek
+     * @param date
      * @return
      */
     @Override
-    public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO userWeek){
-        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(userWeek);
+    public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO date){
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(DateHelper.getCurrentWeekNumber(date.getDate())-1,DateHelper.getYears(date.getDate()));
 
         List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
@@ -125,12 +124,24 @@ public class ZSYStatsService implements IZSYStatsService {
             StatsWeekResDTO statsWeekResDTO = new StatsWeekResDTO();
             statsWeekResDTO.setId(userWeekBO.getId());
             statsWeekResDTO.setUserId(userWeekBO.getUserId());
-            statsWeekResDTO.setUserName(userWeekBO.getUserName());
+            if(statsWeekResDTOS.size()>0&&statsWeekResDTOS.get(statsWeekResDTOS.size()-1).getUserName().equals(userWeekBO.getUserName())){
+                statsWeekResDTO.setUserName("");
+            }else{
+                statsWeekResDTO.setUserName(userWeekBO.getUserName());
+            }
             statsWeekResDTO.setWeekNumber(userWeekBO.getWeekNumber());
             statsWeekResDTO.setTaskName(userWeekBO.getTaskName());
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
             statsWeekResDTO.setDescription(userWeekBO.getDescription());
-            statsWeekResDTO.setHours(userWeekBO.getHours());
+
+            String[] hoursList = userWeekBO.getHours().split(",");
+            int hoursLength = userWeekBO.getHours().split(",").length;
+            double sum =0;
+            for(int i=0;i<hoursLength;i++){
+                sum+=Double.valueOf(hoursList[i]);
+            }
+            statsWeekResDTO.setHours(sum);
+
             statsWeekResDTOS.add(statsWeekResDTO);
         });
 
