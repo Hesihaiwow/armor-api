@@ -116,7 +116,7 @@ public class ZSYStatsService implements IZSYStatsService {
      */
     @Override
     public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO date){
-        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(DateHelper.getCurrentWeekNumber(date.getDate())-1,DateHelper.getYears(date.getDate()));
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(DateHelper.getCurrentWeekNumber(date.getDate()),DateHelper.getYears(date.getDate()));
 
         List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
@@ -124,11 +124,7 @@ public class ZSYStatsService implements IZSYStatsService {
             StatsWeekResDTO statsWeekResDTO = new StatsWeekResDTO();
             statsWeekResDTO.setId(userWeekBO.getId());
             statsWeekResDTO.setUserId(userWeekBO.getUserId());
-            if(statsWeekResDTOS.size()>0&&statsWeekResDTOS.get(statsWeekResDTOS.size()-1).getUserName().equals(userWeekBO.getUserName())){
-                statsWeekResDTO.setUserName("");
-            }else{
-                statsWeekResDTO.setUserName(userWeekBO.getUserName());
-            }
+            statsWeekResDTO.setUserName(userWeekBO.getUserName());
             statsWeekResDTO.setWeekNumber(userWeekBO.getWeekNumber());
             statsWeekResDTO.setTaskName(userWeekBO.getTaskName());
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
