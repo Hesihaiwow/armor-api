@@ -1027,9 +1027,9 @@
                     this.weekNumber = [];
                     let weekData='';
                     if ( this.taskForm.endTime != '') {
-                        var beiginWeek = moment().week()
-                        var endWeek = moment(this.step.endTime).week()
-                        if(beiginWeek == endWeek){
+                        var beginWeek = moment(this.taskForm.beginTime).week()
+                        var endWeek = moment(this.taskForm.endTime).week()
+                        if(beginWeek == endWeek){
                             weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours };
                             this.weekNumber.push(weekData)
                         }else {

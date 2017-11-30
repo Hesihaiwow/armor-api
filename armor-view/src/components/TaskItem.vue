@@ -1387,8 +1387,8 @@
                     this.weekNumber = [];
                     let weekData='';
                     if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != '') {
-                        this.weekTime.beginWeek = moment(this.step.beginTime).week()+1
-                        this.weekTime.endWeek = moment(this.step.endTime).week()+1
+                        this.weekTime.beginWeek = moment(this.step.beginTime).week()
+                        this.weekTime.endWeek = moment(this.step.endTime).week()
                         var beginYear = moment(this.step.beginTime).year();
                         var endYear = moment(this.step.endTime).year();
                         if(beginYear!=endYear){
@@ -1396,8 +1396,8 @@
                                 weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
                                 this.weekNumber.push(weekData)
                             }
-                            for(var i=1;i<this.weekTime.endWeek;i++){
-                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
+                            for(var i=1;i<this.weekTime.endWeek+1;i++){
+                                weekData = {'weekNumber':i, 'hours': '','year':endYear  };
                                 this.weekNumber.push(weekData)
                             }
                         }

@@ -155,7 +155,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     userWeek.setUserId(user.getUserId());
                     userWeek.setHours(user.getTaskHours());
                     userWeek.setYear(DateHelper.getYears(user.getEndTime()));
-                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime()));
+                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime())-1);
                     userWeeks.add(userWeek);
                 } else {
                     user.getUserWeeks().forEach(week ->{
