@@ -154,7 +154,8 @@ public class ZSYTaskService implements IZSYTaskService {
                     userWeek.setTaskId(task.getId());
                     userWeek.setUserId(user.getUserId());
                     userWeek.setHours(user.getTaskHours());
-                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber());
+                    userWeek.setYear(DateHelper.getYears(user.getEndTime()));
+                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime()));
                     userWeeks.add(userWeek);
                 } else {
                     user.getUserWeeks().forEach(week ->{
@@ -162,6 +163,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         userWeek.setId(snowFlakeIDHelper.nextId());
                         userWeek.setTaskId(task.getId());
                         userWeek.setUserId(user.getUserId());
+                        userWeek.setYear(week.getYear());
                         userWeek.setHours(week.getHours());
                         userWeek.setWeekNumber(week.getWeekNumber());
                         userWeeks.add(userWeek);
@@ -258,18 +260,30 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUsers.add(taskUser);
 
                 List<UserWeek> userWeeks = Lists.newArrayList();
-                if(user.getUserWeeks().size()<1){
-                    throw new ZSYServiceException("请检查周工作量是否填写完整");
+                if(taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()){
+                        UserWeek userWeek = new UserWeek();
+                        userWeek.setId(snowFlakeIDHelper.nextId());
+                        userWeek.setTaskId(task.getId());
+                        userWeek.setUserId(user.getUserId());
+                        userWeek.setHours(user.getTaskHours());
+                        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime())-1);
+                        userWeek.setYear(DateHelper.getYears(user.getEndTime()));
+                        userWeeks.add(userWeek);
+                }else{
+                    if(user.getUserWeeks().size()<1){
+                        throw new ZSYServiceException("请检查周工作量是否填写完整");
+                    }
+                    user.getUserWeeks().forEach(week ->{
+                        UserWeek userWeek = new UserWeek();
+                        userWeek.setId(snowFlakeIDHelper.nextId());
+                        userWeek.setTaskId(task.getId());
+                        userWeek.setUserId(user.getUserId());
+                        userWeek.setHours(week.getHours());
+                        userWeek.setWeekNumber(week.getWeekNumber());
+                        userWeek.setYear(week.getYear());
+                        userWeeks.add(userWeek);
+                    });
                 }
-                user.getUserWeeks().forEach(week ->{
-                    UserWeek userWeek = new UserWeek();
-                    userWeek.setId(snowFlakeIDHelper.nextId());
-                    userWeek.setTaskId(task.getId());
-                    userWeek.setUserId(user.getUserId());
-                    userWeek.setHours(week.getHours());
-                    userWeek.setWeekNumber(week.getWeekNumber());
-                    userWeeks.add(userWeek);
-                });
                 userWeekMaper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);

@@ -8,6 +8,7 @@ import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,8 +38,8 @@ public interface IZSYStatsService {
 
     /**
      * 周工作量统计
-     * @param userWeekStatsReqDTO
+     * @param userWeek
      * @return
      */
-    List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO userWeekStatsReqDTO);
+    List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO userWeek);
 }

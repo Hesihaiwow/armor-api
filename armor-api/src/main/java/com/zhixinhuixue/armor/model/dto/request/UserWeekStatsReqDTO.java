@@ -1,33 +1,30 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 
-import javax.validation.constraints.NotNull;
+import io.swagger.models.auth.In;
+
 import java.util.Date;
 
 
 public class UserWeekStatsReqDTO {
 
-    /**
-     * 用户Id
-     */
-    private Long userId;
+    private Date date;
 
-    @NotNull(message = "周数不能为空")
-    private int weekNumber;
+    private Integer weekNumber;
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public int getWeekNumber() {
+    public Integer getWeekNumber() {
         return weekNumber;
     }
 
-    public void setWeekNumber(int weekNumber) {
+    public void setWeekNumber(Integer weekNumber) {
         this.weekNumber = weekNumber;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

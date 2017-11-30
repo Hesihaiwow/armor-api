@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.dao;
 import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ public interface IZSYUserWeekMapper {
 
     /**
      * 周工作统计
-     * @param userWeek
+     * @param weeekNumber
      * @return
      */
-    List<StatsUserWeekBO> getUserWeekStats(UserWeekStatsReqDTO userWeek);
+    List<StatsUserWeekBO> getUserWeekStats(@Param("weekNumber") int weeekNumber, @Param("year") int year);
 }
