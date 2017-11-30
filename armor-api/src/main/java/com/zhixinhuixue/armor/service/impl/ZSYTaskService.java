@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
+import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.*;
@@ -147,15 +148,26 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUsers.add(taskUser);
 
                 List<UserWeek> userWeeks = Lists.newArrayList();
-                user.getUserWeeks().forEach(week ->{
+                if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
                     UserWeek userWeek = new UserWeek();
                     userWeek.setId(snowFlakeIDHelper.nextId());
                     userWeek.setTaskId(task.getId());
                     userWeek.setUserId(user.getUserId());
-                    userWeek.setHours(week.getHours());
-                    userWeek.setWeekNumber(week.getWeekNumber());
+                    userWeek.setHours(user.getTaskHours());
+                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber());
                     userWeeks.add(userWeek);
-                });
+                } else {
+                    user.getUserWeeks().forEach(week ->{
+                        UserWeek userWeek = new UserWeek();
+                        userWeek.setId(snowFlakeIDHelper.nextId());
+                        userWeek.setTaskId(task.getId());
+                        userWeek.setUserId(user.getUserId());
+                        userWeek.setHours(week.getHours());
+                        userWeek.setWeekNumber(week.getWeekNumber());
+                        userWeeks.add(userWeek);
+                    });
+                }
+
                 userWeekMaper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
