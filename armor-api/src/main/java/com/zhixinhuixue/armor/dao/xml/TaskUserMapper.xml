@@ -26,6 +26,10 @@
         <collection property="taskComments" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByTaskUserId"
                     ofType="com.zhixinhuixue.armor.model.bo.TaskCommentBO"/>
+        <collection property="userWeeks" column="{userId=user_id,taskId=task_id}"
+                    select="com.zhixinhuixue.armor.dao.IZSYUserWeekMapper.selectByTaskId"
+                    ofType="com.zhixinhuixue.armor.model.pojo.UserWeek">
+        </collection>
     </resultMap>
 
     <resultMap id="personResultMap" type="com.zhixinhuixue.armor.model.bo.PersonTaskBO" extends="BaseResultMap">
@@ -126,13 +130,14 @@
         SELECT (@rowid := @rowid+1) AS id,a.* FROM(
             SELECT u.*,t.description as taskDescription,t.`name` as taskName FROM task_user u
             JOIN task t on u.task_id = t.id
-            where user_id = #{userId} AND t.is_delete = 0
+            where t.is_delete = 0 AND t.review_status = 3  AND  user_id = #{userId}
                 <if test="startTime != null">
                     <![CDATA[ AND  (u.begin_time >= #{startTime,jdbcType=INTEGER} or u.end_time >= #{startTime,jdbcType=INTEGER}) ]]>
                 </if>
                 <if test="endTime != null">
                     <![CDATA[ AND (u.end_time <= #{endTime,jdbcType=TIMESTAMP} or u.begin_time <= #{endTime,jdbcType=INTEGER})]]>
                 </if>
+              ORDER BY u.begin_time desc
         )as a,(SELECT (@rowid:=0))as b
     </select>
 

@@ -268,6 +268,14 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="开始日期" prop="beginTime">
+                    <el-date-picker
+                            v-model="taskForm.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
                 <el-form-item label="截止日期" prop="endTime">
                     <el-date-picker
                             v-model="taskForm.endTime"
@@ -443,6 +451,7 @@
                     description: '',
                     projectId: '',
                     endTime: '',
+                    beginTime:'',
                     priority: 1,
                     tags: [],
                     taskType: 1,
@@ -472,6 +481,9 @@
                         {required: true, message: '项目不能为空', trigger: 'change'},
                     ],
                     endTime: [
+                        {type: 'date', required: true, message: '截止时间不能为空', trigger: 'change'},
+                    ],
+                    beginTime: [
                         {type: 'date', required: true, message: '截止时间不能为空', trigger: 'change'},
                     ],
                     taskHours: [
@@ -628,12 +640,14 @@
             },
             saveTaskInfo(formName) {
                 let vm = this;
+                this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
+                this.taskForm.beiginTime = moment(this.taskForm.beiginTime).toDate()
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
+                        param.beiginTime = moment(param.beiginTime).format('YYYY-MM-DD 00:00:00')
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
                             this.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
@@ -641,6 +655,10 @@
                         }
                         if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
                             this.$message({ showClose: true,message: '工作量请保持在1至1000范围',type: 'error'});
+                            return false;
+                        }
+                        if(moment(param.endTime).millisecond()<moment(param.beginTime).millisecond()||moment(param.endTime).week()!=moment(param.beginTime).week()){
+                            this.$message({ showClose: true,message: '请检查日期，个人任务请勿跨周进行',type: 'error'});
                             return false;
                         }
                         var taskUsers = [{
@@ -821,6 +839,7 @@
             fetchMyHelpWaitList(){
                 http.zsyGetHttp('/integral/getMyWaitList/'+this.waitPage.pageNum, {}, (resp) => {
                     this.review.wait = resp.data.list;
+                    console.log(this.review.wait)
                     this.waitPage.total = resp.data.total;
                 })
             },
@@ -1002,6 +1021,24 @@
         components: {
             TaskItem: TaskItem
         },
+        watch:{
+            taskForm:{
+                handler:function (val, oldVal) {
+                    this.weekNumber = [];
+                    let weekData='';
+                    if ( this.taskForm.endTime != '') {
+                        var beginWeek = moment(this.taskForm.beginTime).week()
+                        var endWeek = moment(this.taskForm.endTime).week()
+                        if(beginWeek == endWeek){
+                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours };
+                            this.weekNumber.push(weekData)
+                        }else {
+                            this.$message({ showClose: true,message: '请选择本周内时间',type: 'error'});
+                        }
+                    }
+                }
+            },
+        }
     }
 </script>
 <style>

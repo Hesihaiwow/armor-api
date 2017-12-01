@@ -7,15 +7,16 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYStatsMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
+import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.bo.UserCommentBo;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
-import com.zhixinhuixue.armor.model.dto.response.PersonTaskResDTO;
-import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
+import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
@@ -41,6 +42,8 @@ public class ZSYStatsService implements IZSYStatsService {
 
     @Autowired
     private IZSYTaskUserMapper taskUserMapper;
+    @Autowired
+    private IZSYUserWeekMapper userWeekMapper;
 
     @Override
     public List<StatsPageResDTO> getStats() {
@@ -103,6 +106,48 @@ public class ZSYStatsService implements IZSYStatsService {
             personTaskResDTOS.add(dto);
         });
         return personTaskResDTOS;
+    }
+
+
+    /**
+     * 周工作量统计
+     * @param date
+     * @return
+     */
+    @Override
+    public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO date){
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(date.getWeekNumber(),DateHelper.getYears(date.getDate()));
+
+        List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
+        BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
+        statsUserWeekBOS.stream().forEach(userWeekBO-> {
+            StatsWeekResDTO statsWeekResDTO = new StatsWeekResDTO();
+            statsWeekResDTO.setId(userWeekBO.getId());
+            statsWeekResDTO.setUserId(userWeekBO.getUserId());
+            statsWeekResDTO.setUserName(userWeekBO.getUserName());
+            statsWeekResDTO.setWeekNumber(userWeekBO.getWeekNumber());
+            statsWeekResDTO.setTaskName(userWeekBO.getTaskName());
+            statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
+            statsWeekResDTO.setDescription(userWeekBO.getDescription());
+
+            double sum =0;
+            if(userWeekBO.getHours().contains(",")){
+                String[] hoursList = userWeekBO.getHours().split(",");
+                int hoursLength = userWeekBO.getHours().split(",").length;
+
+                for(int i=0;i<hoursLength;i++){
+                    sum+=Double.valueOf(hoursList[i]);
+                }
+            }else{
+                sum = Double.valueOf(userWeekBO.getHours());
+            }
+
+            statsWeekResDTO.setHours(sum);
+
+            statsWeekResDTOS.add(statsWeekResDTO);
+        });
+
+        return statsWeekResDTOS;
     }
 
 

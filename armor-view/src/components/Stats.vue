@@ -69,6 +69,7 @@
                         v-model="daterange"
                         type="daterange"
                         placeholder="选择日期范围"
+                        range-separator=" 至 "
                         @change="timeChange"
                         :picker-options="pickerOptions">
                 </el-date-picker></div>
@@ -85,6 +86,34 @@
                     <el-table-column prop="createTime" label="开始日期"  width="120"></el-table-column>
                     <el-table-column prop="endTime" label="截止日期"  width="120"></el-table-column>
                     <el-table-column prop="taskHours" label="工作量"  width="80"></el-table-column>
+                </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="周任务统计" name="week">
+                <div class="add-member-basic-msg fl" >
+                    <el-date-picker
+                            v-model="userWeekForm.date"
+                            type="week"
+                            format="yyyy 第 WW 周"
+                            placeholder="选择周">
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
+                <el-table :data="userWeekData" border >
+                    <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80" >
+                        <template scope="sco">
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonStats(sco.row.userId)">{{sco.row.userName}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center">
+                    </el-table-column>
+                    <el-table-column prop="hours" label="周工作量"  width="120">
+                        <template scope="scope">
+                            <span type="text" v-show="scope.row.hours<=40">{{scope.row.hours}}</span>
+                            <span type="text" style="color: red;" v-show="scope.row.hours>40">{{scope.row.hours}}</span>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </el-tab-pane>
         </el-tabs>
@@ -250,7 +279,9 @@
     import Task from "./Task"
 
     export default {
-        components: {ElTabPane},
+        components: {
+            ElButton,
+            ElTabPane},
         name: 'IntegralHistory',
         data() {
             return {
@@ -304,6 +335,12 @@
                     totals: 0,
                     pageNum: 0
                 },
+                userWeekForm:{
+                    weekNumber:'',
+                    date:''
+                },
+                userWeekData:[],
+                currentWeek:moment().week(),
                 pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -363,11 +400,14 @@
                     this.statsData =  resp.data;
                 });
             },
+            getCurrentWeek(){
+                this.userWeekForm.date=moment().toDate()
+            },
             getTask(index){
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
             },
             getPesonTask(taskId){
-                this.$router.push({path:'/index/task/id/'+taskId})
+                this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
             },
             getBugList(){
                 Http.zsyGetHttp(`/bug/list/`, this.bugList, (resp) => {
@@ -387,7 +427,7 @@
             },
             timeChange(time) {
                 // 选择结束时间
-                time = time.split(' - ')
+                time = time.split(' 至 ')
                 if (time && time.length == 2) {
                     this.persanalForm.startTime = `${time[0]} 00:00:00`
                     this.persanalForm.endTime = `${time[1]} 23:59:59`
@@ -605,7 +645,7 @@
                         sums[index] = '总计';
                         return;
                     }
-                    if (index < 6) {
+                    if (index < 4) {
                         sums[index] = '';
                         return;
                     }
@@ -624,6 +664,27 @@
 
                 return sums;
             },
+            getUserWeekStats(){
+                this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
+                this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
+                if(this.userWeekForm.date!=''){
+                    Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
+                        this.userWeekData = resp.data
+                    })
+                }else{
+                    this.errorMsg('请选择统计信息')
+                }
+            },
+            getPesonStats(id){
+                this.activeName='personal'
+                this.persanalForm.userId = id;
+                this.persanalForm.startTime = moment(this.userWeekForm.date).startOf('week').format("YYYY-MM-DD 00:00:00");
+                this.persanalForm.endTime =  moment(this.userWeekForm.date).endOf('week').format("YYYY-MM-DD 23:59:59");
+                Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
+                    this.pesonalTaskData =  resp.data;
+                });
+            }
+
 
         }
     }

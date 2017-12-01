@@ -1,7 +1,9 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.bo.UserCommentBo;
+import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,6 +20,7 @@ public interface IZSYStatsMapper {
      * @return
      */
     List<StatsPageResDTO> getStats(Long id);
+
 
     /**
      * 统计用户评论记录

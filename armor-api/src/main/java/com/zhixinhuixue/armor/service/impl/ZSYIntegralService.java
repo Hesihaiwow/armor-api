@@ -173,7 +173,8 @@ public class ZSYIntegralService implements IZSYIntegralService {
     @Override
     public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status,int pageIndex){
         Long userId = ZSYTokenRequestContext.get().getUserId();
-        return this.getIntegralByReviewStatus(status,pageIndex,userId,null);
+        Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
+        return this.getIntegralByReviewStatus(status,pageIndex,userId,departmentId);
     }
 
     /**

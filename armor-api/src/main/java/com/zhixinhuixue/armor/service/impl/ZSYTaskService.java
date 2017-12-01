@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
+import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.*;
@@ -56,6 +57,8 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYUserIntegralMapper userIntegralMapper;
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+    @Autowired
+    private IZSYUserWeekMapper userWeekMaper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -143,6 +146,31 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUser.setCreateTime(new Date());
                 taskUser.setStatus(ZSYTaskUserStatus.DOING.getValue());
                 taskUsers.add(taskUser);
+
+                List<UserWeek> userWeeks = Lists.newArrayList();
+                if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
+                    UserWeek userWeek = new UserWeek();
+                    userWeek.setId(snowFlakeIDHelper.nextId());
+                    userWeek.setTaskId(task.getId());
+                    userWeek.setUserId(user.getUserId());
+                    userWeek.setHours(user.getTaskHours());
+                    userWeek.setYear(DateHelper.getYears(user.getEndTime()));
+                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime())-1);
+                    userWeeks.add(userWeek);
+                } else {
+                    user.getUserWeeks().forEach(week ->{
+                        UserWeek userWeek = new UserWeek();
+                        userWeek.setId(snowFlakeIDHelper.nextId());
+                        userWeek.setTaskId(task.getId());
+                        userWeek.setUserId(user.getUserId());
+                        userWeek.setYear(week.getYear());
+                        userWeek.setHours(week.getHours());
+                        userWeek.setWeekNumber(week.getWeekNumber());
+                        userWeeks.add(userWeek);
+                    });
+                }
+
+                userWeekMaper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
         }
@@ -185,6 +213,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
         taskCommentMapper.deleteByTaskId(taskId);
+        userWeekMaper.deleteByTaskId(taskId);
 
         // 判断含有重复的负责人
         if (taskReqDTO.getTaskUsers() != null && taskReqDTO.getTaskUsers().size() > 0) {
@@ -229,6 +258,33 @@ public class ZSYTaskService implements IZSYTaskService {
                     taskUser.setCompleteTime(user.getCompleteTime());
                 }
                 taskUsers.add(taskUser);
+
+                List<UserWeek> userWeeks = Lists.newArrayList();
+                if(taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()){
+                        UserWeek userWeek = new UserWeek();
+                        userWeek.setId(snowFlakeIDHelper.nextId());
+                        userWeek.setTaskId(task.getId());
+                        userWeek.setUserId(user.getUserId());
+                        userWeek.setHours(user.getTaskHours());
+                        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime())-1);
+                        userWeek.setYear(DateHelper.getYears(user.getEndTime()));
+                        userWeeks.add(userWeek);
+                }else{
+                    if(user.getUserWeeks().size()<1){
+                        throw new ZSYServiceException("请检查周工作量是否填写完整");
+                    }
+                    user.getUserWeeks().forEach(week ->{
+                        UserWeek userWeek = new UserWeek();
+                        userWeek.setId(snowFlakeIDHelper.nextId());
+                        userWeek.setTaskId(task.getId());
+                        userWeek.setUserId(user.getUserId());
+                        userWeek.setHours(week.getHours());
+                        userWeek.setWeekNumber(week.getWeekNumber());
+                        userWeek.setYear(week.getYear());
+                        userWeeks.add(userWeek);
+                    });
+                }
+                userWeekMaper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
         }
@@ -490,6 +546,16 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskCommentResDTOS.add(taskCommentResDTO);
             });
             taskUserResDTO.setComments(taskCommentResDTOS);
+
+            // copy 周任务工作量
+            List<UserWeekResDTO> userWeekResDTOS = new ArrayList<>();
+            taskUserBO.getUserWeeks().stream().forEach(userWeekBO -> {
+                UserWeekResDTO userWeekResDTO = new UserWeekResDTO();
+                BeanUtils.copyProperties(userWeekBO, userWeekResDTO);
+                userWeekResDTOS.add(userWeekResDTO);
+            });
+            taskUserResDTO.setUserWeeks(userWeekResDTOS);
+
             taskUserResDTOS.add(taskUserResDTO);
         });
         taskDetailResDTO.setUsers(taskUserResDTOS);
@@ -1010,18 +1076,21 @@ public class ZSYTaskService implements IZSYTaskService {
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
-            TaskListResDTO taskListResDTO = new TaskListResDTO();
-            BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
-            List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
-            taskListBO.getTags().stream().forEach(tag -> {
-                TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
-                taskTagResDTO.setColor(tag.getColor());
-                taskTagResDTO.setName(tag.getName());
-                taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
-                taskTagResDTOS.add(taskTagResDTO);
-            });
-            taskListResDTO.setTags(taskTagResDTOS);
-            list.add(taskListResDTO);
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&taskListBO.getStageId().equals(Long.parseLong(ZSYConstants.FINISHED)))){
+                TaskListResDTO taskListResDTO = new TaskListResDTO();
+                BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+                List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+                taskListBO.getTags().stream().forEach(tag -> {
+                    TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+                    taskTagResDTO.setColor(tag.getColor());
+                    taskTagResDTO.setName(tag.getName());
+                    taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
+                    taskTagResDTOS.add(taskTagResDTO);
+                });
+                taskListResDTO.setTags(taskTagResDTOS);
+                list.add(taskListResDTO);
+            }
+
         });
         return list;
     }
