@@ -1023,6 +1023,10 @@
                     this.$message({ showClose: true,message: '工作量正确值应为0.1~99999.9',type: 'error'});
                     return false;
                 }
+                if(moment(this.modifyPrivateTaskForm.endTime).millisecond()<moment(this.modifyPrivateTaskForm.beginTime).millisecond()||moment(this.modifyPrivateTaskForm.endTime).week()!=moment(this.modifyPrivateTaskForm.beginTime).week()){
+                    this.$message({ showClose: true,message: '请检查日期，个人任务请勿跨周进行',type: 'error'});
+                    return false;
+                }
 
                 this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
                 this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59')

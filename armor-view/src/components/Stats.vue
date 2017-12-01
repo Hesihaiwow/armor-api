@@ -107,7 +107,12 @@
                     </el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center">
                     </el-table-column>
-                    <el-table-column prop="hours" label="周工作量"  width="120"></el-table-column>
+                    <el-table-column prop="hours" label="周工作量"  width="120">
+                        <template scope="scope">
+                            <span type="text" v-show="scope.row.hours<=40">{{scope.row.hours}}</span>
+                            <span type="text" style="color: red;" v-show="scope.row.hours>40">{{scope.row.hours}}</span>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </el-tab-pane>
         </el-tabs>
@@ -395,7 +400,7 @@
                 });
             },
             getCurrentWeek(){
-                this.userWeekForm.date=moment()
+                this.userWeekForm.date=moment().toDate()
             },
             getTask(index){
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
@@ -659,6 +664,7 @@
                 return sums;
             },
             getUserWeekStats(){
+                console.log(moment().week())
                 this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
                 this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
                 if(this.userWeekForm.date!=''){
