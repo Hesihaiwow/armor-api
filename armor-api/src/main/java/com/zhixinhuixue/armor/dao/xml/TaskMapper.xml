@@ -211,10 +211,10 @@
                order by t1.priority DESC
            </when>
            <when test="sort!=null and sort !='' and sort==2">
-               order by t1.end_time ASC
+               order by t1.end_time DESC
            </when>
            <when test="sort!=null and sort !='' and sort==3">
-               order by t1.complete_time ASC
+               order by t1.complete_time DESC
            </when>
            <when test="sort!=null and sort !='' and sort==4">
                order by t1.create_time DESC

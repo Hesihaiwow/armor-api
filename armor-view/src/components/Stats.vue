@@ -69,6 +69,7 @@
                         v-model="daterange"
                         type="daterange"
                         placeholder="选择日期范围"
+                        range-separator=" 至 "
                         @change="timeChange"
                         :picker-options="pickerOptions">
                 </el-date-picker></div>
@@ -426,7 +427,7 @@
             },
             timeChange(time) {
                 // 选择结束时间
-                time = time.split(' - ')
+                time = time.split(' 至 ')
                 if (time && time.length == 2) {
                     this.persanalForm.startTime = `${time[0]} 00:00:00`
                     this.persanalForm.endTime = `${time[1]} 23:59:59`
@@ -664,7 +665,6 @@
                 return sums;
             },
             getUserWeekStats(){
-                console.log(moment().week())
                 this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
                 this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
                 if(this.userWeekForm.date!=''){

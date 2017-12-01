@@ -1076,18 +1076,21 @@ public class ZSYTaskService implements IZSYTaskService {
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
-            TaskListResDTO taskListResDTO = new TaskListResDTO();
-            BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
-            List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
-            taskListBO.getTags().stream().forEach(tag -> {
-                TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
-                taskTagResDTO.setColor(tag.getColor());
-                taskTagResDTO.setName(tag.getName());
-                taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
-                taskTagResDTOS.add(taskTagResDTO);
-            });
-            taskListResDTO.setTags(taskTagResDTOS);
-            list.add(taskListResDTO);
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&taskListBO.getStageId().equals(Long.parseLong(ZSYConstants.FINISHED)))){
+                TaskListResDTO taskListResDTO = new TaskListResDTO();
+                BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+                List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+                taskListBO.getTags().stream().forEach(tag -> {
+                    TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+                    taskTagResDTO.setColor(tag.getColor());
+                    taskTagResDTO.setName(tag.getName());
+                    taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
+                    taskTagResDTOS.add(taskTagResDTO);
+                });
+                taskListResDTO.setTags(taskTagResDTOS);
+                list.add(taskListResDTO);
+            }
+
         });
         return list;
     }

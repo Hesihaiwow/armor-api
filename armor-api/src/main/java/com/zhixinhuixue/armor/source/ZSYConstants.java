@@ -71,4 +71,9 @@ public class ZSYConstants {
      */
     public static final long NO_DEPT_ID = 0;
 
+    /**
+     * 已发布
+     */
+    public static final String FINISHED = "212754785051344898";
+
 }
