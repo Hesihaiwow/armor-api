@@ -116,7 +116,7 @@ public class ZSYStatsService implements IZSYStatsService {
      */
     @Override
     public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO date){
-        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(DateHelper.getCurrentWeekNumber(date.getDate()),DateHelper.getYears(date.getDate()));
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(date.getWeekNumber(),DateHelper.getYears(date.getDate()));
 
         List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
@@ -130,12 +130,18 @@ public class ZSYStatsService implements IZSYStatsService {
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
             statsWeekResDTO.setDescription(userWeekBO.getDescription());
 
-            String[] hoursList = userWeekBO.getHours().split(",");
-            int hoursLength = userWeekBO.getHours().split(",").length;
             double sum =0;
-            for(int i=0;i<hoursLength;i++){
-                sum+=Double.valueOf(hoursList[i]);
+            if(userWeekBO.getHours().contains(",")){
+                String[] hoursList = userWeekBO.getHours().split(",");
+                int hoursLength = userWeekBO.getHours().split(",").length;
+
+                for(int i=0;i<hoursLength;i++){
+                    sum+=Double.valueOf(hoursList[i]);
+                }
+            }else{
+                sum = Double.valueOf(userWeekBO.getHours());
             }
+
             statsWeekResDTO.setHours(sum);
 
             statsWeekResDTOS.add(statsWeekResDTO);
