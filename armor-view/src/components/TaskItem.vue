@@ -411,7 +411,7 @@
                     </div>
                         <div v-for="(item,index) in weekNumber">
                             <div class="add-member-basic-list clearfix">
-                                <div class="fl" style="width: 120px;margin-left: 5px;"><span class="star">*</span>第{{item.weekNumber}}周工作量：</div>
+                                <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
                                 <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">
                             </div>
                         </div>
@@ -1229,6 +1229,7 @@
                     taskUser.taskHours = this.step.taskHours;
                     taskUser.description = this.step.description;
                     taskUser.userWeeks = this.weekNumber;
+                    taskUser.status = this.step.status;
                     this.modifyTaskForm.taskUsers.push(taskUser);
                 } else {
                     // 取消css
@@ -1300,7 +1301,6 @@
                     user.description = user.description.trim()
                     user.beginTime = moment(user.beginTime).format('YYYY-MM-DD HH:mm:ss')
                     user.endTime = moment(user.endTime).format('YYYY-MM-DD 23:59:59')
-                    console.log(param.taskUsers.userWeeks)
                     if(user.userWeeks==null){
                         this.errorMsg('请检查周工作量是否填写完整');//判断不可用
                         return false;
@@ -1397,25 +1397,25 @@
                         var endYear = moment(this.step.endTime).year();
                         if(beginYear!=endYear){
                             for(var i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
-                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().week(i).format('MM-DD')+'至'+moment().week(i).add(6,'d').format('MM-DD') };
                                 this.weekNumber.push(weekData)
                             }
                             for(var i=1;i<this.weekTime.endWeek+1;i++){
-                                weekData = {'weekNumber':i, 'hours': '','year':endYear  };
+                                weekData = {'weekNumber':i, 'hours': '','year':endYear ,'range':moment().week(i).format('MM-DD')+'至'+moment().week(i).add(6,'d').format('MM-DD') };
                                 this.weekNumber.push(weekData)
                             }
                         }
                         if(this.weekTime.beginWeek == this.weekTime.endWeek){
-                            weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.step.taskHours ,'year':beginYear };
+                            weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.step.taskHours ,'year':beginYear ,'range':moment().week(this.weekTime.beginWeek).format('MM-DD')+'至'+moment().week(this.weekTime.beginWeek).add(6,'d').format('MM-DD')};
                             this.weekNumber.push(weekData)
                         }else if(this.weekTime.endWeek - this.weekTime.beginWeek >1){
                             for(var i=this.weekTime.beginWeek;i<this.weekTime.endWeek+1;i++){
-                                weekData = {'weekNumber':i, 'hours': '','year':beginYear  };
+                                weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().week(i).format('MM-DD')+'至'+moment().week(i).add(6,'d').format('MM-DD')  };
                                 this.weekNumber.push(weekData)
                             }
                         }else if(this.weekTime.endWeek - this.weekTime.beginWeek == 1){
-                            this.weekNumber.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear })
-                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':endYear })
+                            this.weekNumber.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear  ,'range':moment().week(this.weekTime.beginWeek).format('MM-DD')+'至'+moment().week(this.weekTime.beginWeek).add(6,'d').format('MM-DD')})
+                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':endYear ,'range':moment().week(this.weekTime.endWeek).format('MM-DD')+'至'+moment().week(this.weekTime.endWeek).add(6,'d').format('MM-DD')})
                         }
                     }
                 }

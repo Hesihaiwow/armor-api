@@ -25,7 +25,7 @@
   </resultMap>
 
   <insert id="insertList" parameterType="java.util.List">
-    insert into user_week (id, week_number, hours, task_id, user_id, year )
+    insert into user_week (id, week_number, hours, task_id, user_id ,year)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.weekNumber,jdbcType=INTEGER},
@@ -41,9 +41,13 @@
     delete from user_week where task_id = #{taskId}
   </delete>
 
+  <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Integer">
+    SELECT IFNULL(sum(hours),0) FROM user_week where user_id = #{userId} and week_number = #{weekNumber} and year = #{year}
+  </select>
+
   <!-- 周任务统计 -->
   <select id="getUserWeekStats" parameterType="java.lang.Integer" resultMap="WeekMap">
-    SELECT u.name, group_concat(t.name separator ',')  as taskName,  group_concat(w.hours separator ',')  as hours, w.*   FROM user_week w
+    SELECT u.name, group_concat(t.name separator '\n\r')  as taskName,  group_concat(w.hours separator ',')  as hours, w.*   FROM user_week w
     JOIN  user u on u.id= w.user_id
     JOIN  task t on t.id = w.task_id
     WHERE t.review_status=3 and w.week_number = #{weekNumber} and w.year=#{year}
