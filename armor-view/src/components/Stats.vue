@@ -106,7 +106,7 @@
                             <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonStats(sco.row.userId)">{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="taskName" label="任务名称" align="center">
+                    <el-table-column prop="taskName" label="任务名称" align="center" >
                     </el-table-column>
                     <el-table-column prop="hours" label="周工作量"  width="120">
                         <template scope="scope">
@@ -665,15 +665,21 @@
                 return sums;
             },
             getUserWeekStats(){
-                this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
-                this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
                 if(this.userWeekForm.date!=''){
-                    Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
-                        this.userWeekData = resp.data
-                    })
+                    this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
+                    this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
+                    if(this.userWeekForm.date!=''){
+                        Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
+                            this.userWeekData = resp.data
+                        })
+                    }else{
+                        this.errorMsg('请选择统计信息')
+                    }
                 }else{
-                    this.errorMsg('请选择统计信息')
+                    this.errorMsg("请选择时间")
                 }
+
+
             },
             getPesonStats(id){
                 this.activeName='personal'
