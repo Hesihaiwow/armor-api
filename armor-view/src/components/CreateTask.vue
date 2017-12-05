@@ -126,11 +126,12 @@
                                                     placeholder="选择日期"></el-date-picker>
                                 </div>
                             </div>
-                            <div v-for="(item,index) in weekNumber">
+                            <div v-for="(item,index) in  sortWeekNumber">
                                 <div class="add-member-basic-list clearfix">
                                     <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
-                                    <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">
-                                    <!--<div>本周已有工作量:{{userWeekHour.hours}}</div>-->
+                                    <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">  本周工作量:
+                                    <div class="f1" v-show="item.weekHours>=40" style="color:red;display:inline">{{item.weekHours}}</div>
+                                    <div class="f1" v-show="item.weekHours<40" style="display:inline">{{item.weekHours}}</div>
                                 </div>
                             </div>
                         </div>
@@ -156,6 +157,7 @@
     import http from '../lib/Http'
     import helper from '../lib/Helper'
     import moment from 'moment';
+    import _ from 'lodash'
 
     moment.locale('zh-CN');
     export default {
@@ -247,6 +249,9 @@
                     }
                 };
             },
+            sortWeekNumber(){
+                return _.orderBy(this.weekNumber, 'weekNumber')
+            }
         },
         filters: {
             getTagName(id, tagList) {
@@ -536,61 +541,93 @@
                     type: 'error'
                 });
             },
-            getWeekHours(id,week,years){
-                let userHours = {'userId':'','hours':'','weekNumber':'','year':''}
-                http.zsyGetHttp('/userWeek/'+id+'/'+years+'/'+week, {}, (resp) => {
-                    console.log(resp.data)
-                    this.userWeekHour.push({'userId':id,'hours':resp.data,'weekNumber':week,'year':years})
-                })
-            },
-            getHours(id,week,year){
-                this.userWeekHour.forEach((userHours) => {
-                    if(userHours.userId==id&&userHours.weekNumber==week&&userHours.year==year){
-                        return userHours.hours
-                    }else{
-                        return 0
-                    }
-                })
-            }
+
 
     },
-        watch:{
-            step:{
-                deep:true,
-                handler:function (val, oldVal) {
+        watch: {
+            step: {
+                deep: true,
+                handler: function (val, oldVal) {
                     this.weekNumber = [];
-                    let weekData='';
-                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != '') {
-                        this.weekTime.beiginWeek = moment(this.step.beginTime).week()
+                    let weekData = '';
+                    let param = this.weekNumber;
+                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& moment(this.step.beginTime).isBefore(this.step.endTime)) {
+                        this.weekTime.beginWeek = moment(this.step.beginTime).week()
                         this.weekTime.endWeek = moment(this.step.endTime).week()
-                        var beginYear = moment(this.step.beginTime).year();
-                        var endYear = moment(this.step.endTime).year();
-                        if(beginYear!=endYear){
-                            for(var i=this.weekTime.beiginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
-                                weekData = {'weekNumber':i,'year':beginYear ,'range':moment().week(i).format('MM-DD')+'至'+moment().week(i).add(6,'d').format('MM-DD')  };
-                                this.weekNumber.push(weekData)
+                        let beginYear = moment(this.step.beginTime).year();
+                        let endYear = moment(this.step.endTime).year();
+                        if (beginYear != endYear) {
+                            for (let i = this.weekTime.beginWeek; i < moment(this.step.beginTime).weeksInYear() + 1; i++) {
+                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                    weekData = {
+                                        'weekNumber': i,
+                                        'year': beginYear,
+                                        'weekHours': resp.data,
+                                        'range': moment().year(beginYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                                    };
+                                    param.push(weekData)
+                                })
                             }
-                            for(var i=1;i<this.weekTime.endWeek+1;i++){
-                                weekData = {'weekNumber':i,'year':endYear ,'range':moment().week(i).format('MM-DD')+'至'+moment().week(i).add(6,'d').format('MM-DD')  };
-                                this.weekNumber.push(weekData)
+                            for (let i = 1; i < this.weekTime.endWeek + 1; i++) {
+                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
+                                    weekData = {
+                                        'weekNumber': i,
+                                        'year': endYear,
+                                        'weekHours': resp.data,
+                                        'range': moment().year(endYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(endYear).week(i).endOf('week').format('MM-DD')
+                                    };
+                                    param.push(weekData)
+                                })
                             }
                         }
-                        if(this.weekTime.beiginWeek == this.weekTime.endWeek){
-                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours ,'year':beginYear,'range':moment().week(this.weekTime.beiginWeek).format('MM-DD')+'至'+moment().week(this.weekTime.beiginWeek).add(6,'d').format('MM-DD')};
-                            this.weekNumber.push(weekData)
-                        }else if(this.weekTime.endWeek - this.weekTime.beiginWeek >1){
-                            for(var i=this.weekTime.beiginWeek;i<this.weekTime.endWeek+1;i++){
-                                weekData = {'weekNumber':i, 'hours': '','year':beginYear,'range':moment().week(i).format('MM-DD')+'至'+moment().week(i).add(6,'d').format('MM-DD')  };
-                                this.weekNumber.push(weekData)
+                        if (this.weekTime.beginWeek == this.weekTime.endWeek) {
+                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                                weekData = {
+                                    'weekNumber': this.weekTime.beginWeek,
+                                    'hours': this.step.taskHours,
+                                    'weekHours': resp.data,
+                                    'year': beginYear,
+                                    'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
+                                };
+                                param.push(weekData)
+                            })
+                        } else if (this.weekTime.endWeek - this.weekTime.beginWeek > 1) {
+                            for (let i = this.weekTime.beginWeek; i < this.weekTime.endWeek + 1; i++) {
+                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                    param.push({
+                                        'weekNumber': i,
+                                        'hours': '',
+                                        'weekHours': resp.data,
+                                        'year': beginYear,
+                                        'range': moment().year(beginYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                                    })
+                                })
                             }
-                        }else if(this.weekTime.endWeek - this.weekTime.beiginWeek == 1){
-                            this.weekNumber.push( {'weekNumber':this.weekTime.beiginWeek, 'hours': '' ,'year':beginYear,'range':moment().week(this.weekTime.beiginWeek).format('MM-DD')+'至'+moment().week(this.weekTime.beiginWeek).add(6,'d').format('MM-DD') })
-                            this.weekNumber.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':endYear ,'range':moment().week(this.weekTime.endWeek).format('MM-DD')+'至'+moment().week(this.weekTime.endWeek).add(6,'d').format('MM-DD')  })
+                        } else if (this.weekTime.endWeek - this.weekTime.beginWeek == 1) {
+                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                                param.push({
+                                    'weekNumber': this.weekTime.beginWeek,
+                                    'hours': '',
+                                    'weekHours': resp.data,
+                                    'year': beginYear,
+                                    'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
+                                })
+                            })
+                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.endWeek, {}, (resp) => {
+                                param.push({
+                                    'weekNumber': this.weekTime.endWeek,
+                                    'hours': '',
+                                    'weekHours': resp.data,
+                                    'year': beginYear,
+                                    'range': moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')
+                                })
+                            })
                         }
+                        this.weekNumber = param
                     }
-                }
-            },
-        }
+                },
+            }
+        },
     }
 </script>
 <style scoped>
