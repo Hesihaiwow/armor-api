@@ -42,7 +42,9 @@
   </delete>
 
   <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Integer">
-    SELECT IFNULL(sum(hours),0) FROM user_week where user_id = #{userId} and week_number = #{weekNumber} and year = #{year}
+    SELECT IFNULL(sum(hours),0) FROM user_week
+     join task on user_week.task_id = task.id where task.review_status = 3
+     and user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year}
   </select>
 
   <!-- 周任务统计 -->
