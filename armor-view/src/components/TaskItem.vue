@@ -413,8 +413,8 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
                                 <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
-                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hours==''?0:item.hoursTemp)>=40" style="color:red;display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hours==''?0:item.hoursTemp)}}</div>
-                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hours==''?0:item.hoursTemp)<40" style="display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hours==''?0:item.hoursTemp)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp)>=40" style="color:red;display:inline">{{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) <40" style="display:inline">{{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp)}}</div>
                             </div>
                         </div>
                     <div class="add-member-basic-list clearfix">
@@ -1454,6 +1454,7 @@
                             })
                         }
                         this.weekNumber = param
+                        console.log(this.weekNumber)
                     }
                 }
             },
