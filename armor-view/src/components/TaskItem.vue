@@ -412,9 +412,9 @@
                         <div v-for="(item,index) in sortWeekNumber">
                             <div class="add-member-basic-list clearfix">
                                 <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
-                                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">本周工作量:
-                                <div class="f1" v-show="parseInt(item.weekHours)+parseInt(item.hours==''?0:item.hours)>=40" style="color:red;display:inline">{{parseInt(item.weekHours)+parseInt(item.hours==''?0:item.hours)}}</div>
-                                <div class="f1" v-show="parseInt(item.weekHours)+parseInt(item.hours==''?0:item.hours)<40" style="display:inline">{{parseInt(item.weekHours)+parseInt(item.hours==''?0:item.hours)}}</div>
+                                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">已有工作量:
+                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)>=40" style="color:red;display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)<40" style="display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)}}</div>
                             </div>
                         </div>
                     <div class="add-member-basic-list clearfix">
@@ -1203,7 +1203,7 @@
                 var sumHours=0;
                 for(var i=0;i<this.weekNumber.length;i++){
                     var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
-                    if(!ishours){
+                    if(!ishours ||ishours!=0){
                         this.errorMsg('工作量填写错误');
                         return false;
                     }
@@ -1211,7 +1211,7 @@
                         this.errorMsg('周工作量应在0.1~40');
                         return false;
                     }
-                    sumHours +=  parseInt(this.weekNumber[i].hours)
+                    sumHours +=  parseFloat(this.weekNumber[i].hours)
                 }
                 if(sumHours!=this.step.taskHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
