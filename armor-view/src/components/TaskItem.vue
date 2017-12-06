@@ -412,9 +412,9 @@
                         <div v-for="(item,index) in sortWeekNumber">
                             <div class="add-member-basic-list clearfix">
                                 <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
-                                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">已有工作量:
-                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)>=40" style="color:red;display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)}}</div>
-                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)<40" style="display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)}}</div>
+                                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">已有工作量:
+                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)>=40" style="color:red;display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)<40" style="display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)}}</div>
                             </div>
                         </div>
                     <div class="add-member-basic-list clearfix">
@@ -673,7 +673,8 @@
                     beginWeek:'',
                     endWeek:''
                 },
-                weekNumber:[],/*
+                weekNumber:[],
+                weekNumberTemp:[]/*
                 projectList: [],
                 stageList: [],
                 tagList: [],*/
@@ -724,6 +725,15 @@
                 };
             },
             sortWeekNumber(){
+                    for(let i=0;i<this.weekNumber.length;i++){
+                        for(let x =0;x<this.weekNumberTemp.length;x++){
+                            if(this.weekNumber[i]!=null){
+                                if(this.weekNumber[i].weekNumber == this.weekNumberTemp[x].weekNumber){
+                                    this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
+                                }
+                            }
+                        }
+                    }
                 return _.orderBy(this.weekNumber, 'weekNumber')
             }
         },
@@ -1127,6 +1137,7 @@
                 })
                 this.modifyTaskForm.taskUsers[index].cssClass = 'stepActive'
                 this.showAddDetail = true;
+                this.weekNumberTemp = stages[index].userWeeks
             },
             hideTaskModify() {
                 this.modifyTaskForm.taskName = '';
@@ -1403,15 +1414,15 @@
                         let beginYear = moment(this.step.beginTime).year();
                         let endYear = moment(this.step.endTime).year();
                         if(beginYear!=endYear){
-                            for(var i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
+                            for(let i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
                                 http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                                     weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
                                     param.push(weekData)
                                 })
                             }
-                            for(var i=1;i<this.weekTime.endWeek+1;i++){
-                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
-                                    weekData = {'weekNumber':i, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                            for(let i=1;i<this.weekTime.endWeek+1;i++){
+                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
+                                    weekData = {'weekNumber':i, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
                                     param.push(weekData)
                                 })
 
