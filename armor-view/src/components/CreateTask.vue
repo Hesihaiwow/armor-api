@@ -129,7 +129,7 @@
                             <div v-for="(item,index) in  sortWeekNumber">
                                 <div class="add-member-basic-list clearfix">
                                     <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
-                                    <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">  已有工作量:
+                                    <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
                                     <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)>=40" style="color:red;display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)}}</div>
                                     <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)<40" style="display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)}}</div>
                                 </div>
@@ -335,7 +335,7 @@
                 var sumHours=0;
                 for(var i=0;i<this.weekNumber.length;i++){
                     var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
-                    if(!ishours||ishours!=0){
+                    if(!ishours &&ishours!=0){
                         this.errorMsg('工作量填写错误');
                         return false;
                     }
@@ -551,7 +551,7 @@
                     this.weekNumber = [];
                     let weekData = '';
                     let param = this.weekNumber;
-                    if ((this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& moment(this.step.beginTime).isBefore(this.step.endTime))|| moment(this.step.beginTime).isSame(this.step.endTime)) {
+                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
                         this.weekTime.beginWeek = moment(this.step.beginTime).week()
                         this.weekTime.endWeek = moment(this.step.endTime).week()
                         let beginYear = moment(this.step.beginTime).year();

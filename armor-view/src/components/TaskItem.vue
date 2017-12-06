@@ -412,18 +412,18 @@
                         <div v-for="(item,index) in sortWeekNumber">
                             <div class="add-member-basic-list clearfix">
                                 <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
-                                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">已有工作量:
-                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)>=40" style="color:red;display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)}}</div>
-                                <div class="f1" v-show="parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)<40" style="display:inline">{{parseFloat(item.weekHours)+parseFloat(item.hours==''?0:item.hours)-parseFloat(item.hoursTemp)}}</div>
+                                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) > 40" style="color:red;display:inline">{{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) <=40" style="display:inline">{{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp)}}</div>
                             </div>
                         </div>
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>状态：</div>
                         <div class="add-member-basic-msg fl">
-                        <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
-                            <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
-                        </el-select>
+                            <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
+                                <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
                         </div>
                     </div>
 
@@ -675,9 +675,9 @@
                 },
                 weekNumber:[],
                 weekNumberTemp:[]/*
-                projectList: [],
-                stageList: [],
-                tagList: [],*/
+                 projectList: [],
+                 stageList: [],
+                 tagList: [],*/
             };
         },
         beforeMount() {
@@ -725,15 +725,17 @@
                 };
             },
             sortWeekNumber(){
-                    for(let i=0;i<this.weekNumber.length;i++){
-                        for(let x =0;x<this.weekNumberTemp.length;x++){
-                            if(this.weekNumber[i]!=null){
-                                if(this.weekNumber[i].weekNumber == this.weekNumberTemp[x].weekNumber){
+                if (this.weekNumber.length != null) {
+                    for (let i = 0; i < this.weekNumber.length; i++) {
+                        for (let x = 0; x < this.weekNumberTemp.length; x++) {
+                            if (this.weekNumber[i] != null) {
+                                if (this.weekNumber[i].weekNumber == this.weekNumberTemp[x].weekNumber) {
                                     this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
                                 }
                             }
                         }
                     }
+                }
                 return _.orderBy(this.weekNumber, 'weekNumber')
             }
         },
@@ -1129,6 +1131,7 @@
                     completeHours: stages[index].completeHours,
                     completeTime: stages[index].completeTime,
                     status: stages[index].status,
+                    userWeeks: stages[index].userWeeks,
                 }
                 this.step = stages[index];
                 this.step.index = index;
@@ -1209,12 +1212,13 @@
                     completeTime: '',
                     status: ''
                 }
+                this.weekNumberTemp = []
             },
             saveAddMember() {
                 var sumHours=0;
                 for(var i=0;i<this.weekNumber.length;i++){
                     var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
-                    if(!ishours ||ishours!=0){
+                    if(!ishours &&ishours!=0){
                         this.errorMsg('工作量填写错误');
                         return false;
                     }
@@ -1287,8 +1291,8 @@
             },
             saveTaskInfo() {
                 /* if (this.modifyTaskForm.description == '') {
-                     this.$message.warning("请填写任务备注");
-                     return;
+                 this.$message.warning("请填写任务备注");
+                 return;
                  }*/
                 if (this.modifyTaskForm.taskName == '') {
                     this.warnMsg("请填写任务名称");
@@ -1395,10 +1399,10 @@
             vm.$root.eventBus.$off('handleBoardClick')
             vm.$root.eventBus.$on("handleBoardClick", (taskId) => {
                 vm.showTaskDetail = true;
-                  http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                       vm.taskDetail = resp.data
-                    });
-                 vm.getTaskLog(taskId)
+                http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
+                    vm.taskDetail = resp.data
+                });
+                vm.getTaskLog(taskId)
             });
         },
         watch:{
@@ -1408,7 +1412,7 @@
                     this.weekNumber = [];
                     let weekData='';
                     let param = this.weekNumber;
-                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& moment(this.step.beginTime).isBefore(this.step.endTime)) {
+                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
                         this.weekTime.beginWeek = moment(this.step.beginTime).week()
                         this.weekTime.endWeek = moment(this.step.endTime).week()
                         let beginYear = moment(this.step.beginTime).year();
@@ -1450,6 +1454,7 @@
                             })
                         }
                         this.weekNumber = param
+                        console.log(this.weekNumber)
                     }
                 }
             },
