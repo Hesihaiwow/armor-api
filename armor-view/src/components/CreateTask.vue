@@ -551,7 +551,7 @@
                     this.weekNumber = [];
                     let weekData = '';
                     let param = this.weekNumber;
-                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& moment(this.step.beginTime).isBefore(this.step.endTime)) {
+                    if ((this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& moment(this.step.beginTime).isBefore(this.step.endTime))|| moment(this.step.beginTime).isSame(this.step.endTime)) {
                         this.weekTime.beginWeek = moment(this.step.beginTime).week()
                         this.weekTime.endWeek = moment(this.step.endTime).week()
                         let beginYear = moment(this.step.beginTime).year();
@@ -581,6 +581,7 @@
                             }
                         }
                         if (this.weekTime.beginWeek == this.weekTime.endWeek) {
+                            console.log(this.weekTime.beginWeek)
                             http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 weekData = {
                                     'weekNumber': this.weekTime.beginWeek,
