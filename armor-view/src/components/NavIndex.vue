@@ -21,6 +21,11 @@
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>创建积分转移</span>
                 </div>
+
+                <div class="add-task leave" @click="editHelpVisible=true">
+                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
+                    <span>创建请假条</span>
+                </div>
                 <p class="mic-title">我的任务</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -1135,6 +1140,10 @@
 
     .help{
         right: 20px;
+    }
+
+    .leave{
+        right: 60px;
     }
 
     .add-task > span {
