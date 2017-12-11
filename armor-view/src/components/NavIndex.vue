@@ -1202,55 +1202,50 @@
                 }
             },
             saveLeaveInfo(formName){
-                var sumHours=0;
-                for(var i=0;i<this.userWeeks.length;i++){
-                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.userWeeks[i].hours);
-                    if(!ishours){
-                        this.$message({ showClose: true,message: '请假时长填写错误',type: 'error'});
-                        return false;
-                    }
-                    if(this.userWeeks[i].hours>99999.9||this.userWeeks[i].hours<0){
-                        this.$message({ showClose: true,message: '请假时长正确值应为0~99999.9',type: 'error'});
-                        return false;
-                    }
-                    sumHours +=  parseFloat(this.userWeeks[i].hours)
+                var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.leaveForm.hours);
+                if(!ishours){
+                    this.$message({ showClose: true,message: '请假时长填写错误',type: 'error'});
+                    return false;
                 }
-                if(sumHours!=this.leaveForm.hours){
-                    this.$message({ showClose: true,message: '周请假时间与请假时长不符，请检查',type: 'error'});
-                    return false
+                if(this.leaveForm.hours>99999.9||this.leaveForm.hours<0){
+                    this.$message({ showClose: true,message: '请假时长正确值应为0~99999.9',type: 'error'});
+                    return false;
                 }
                 if(this.leaveForm.type==''||this.leaveForm.type==null){
                     this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
                     return false;
                 }
                 this.$refs[formName].validate((valid) =>{
-                    let form = this.leaveForm
-                    form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:mm:ss')
-                    form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:mm:ss')
-                    form['userWeeks'] = this.userWeeks
-                    if(form.id!=''){
-                        http.zsyPostHttp('/userLeave/editLeaveDetail/'+form.id, form, (resp) => {
-                            this.$message({
-                                showClose: true,
-                                message: '新建请假申请成功',
-                                type: 'success'
-                            });
-                            this.fetchUserLeaveList();
-                            this.clearLeaveForm();
-                            this.editLeaveVisible = false
-                        })
-                    }else{
-                        http.zsyPostHttp('/userLeave/add', form, (resp) => {
-                            this.$message({
-                                showClose: true,
-                                message: '请假申请修改成功',
-                                type: 'success'
-                            });
-                            this.fetchUserLeaveList();
-                            this.clearLeaveForm()
-                            this.editLeaveVisible = false
-                        })
+                    if (valid) {
+                        let form = this.leaveForm
+                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:mm:ss')
+                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:mm:ss')
+                        form['userWeeks'] = this.userWeeks
+                        if(form.id!=''){
+                            http.zsyPostHttp('/userLeave/editLeaveDetail/'+form.id, form, (resp) => {
+                                this.$message({
+                                    showClose: true,
+                                    message: '新建请假申请成功',
+                                    type: 'success'
+                                });
+                                this.fetchUserLeaveList();
+                                this.clearLeaveForm();
+                                this.editLeaveVisible = false
+                            })
+                        }else{
+                            http.zsyPostHttp('/userLeave/add', form, (resp) => {
+                                this.$message({
+                                    showClose: true,
+                                    message: '请假申请修改成功',
+                                    type: 'success'
+                                });
+                                this.fetchUserLeaveList();
+                                this.clearLeaveForm()
+                                this.editLeaveVisible = false
+                            })
+                        }
                     }
+
                 })
             },
             deleteLeave(id){
@@ -1383,7 +1378,8 @@
                                     };
                                     param.push(weekData)
                             } else {
-                                this.$message({ showClose: true,message: '假期请勿跨周',type: 'error'});
+                                this.$message({ showClose: true,message: '请假日期有误,假期请勿跨周,请检查',type: 'error'});
+                                return false
                             }
                             this.userWeeks = param
                         }
