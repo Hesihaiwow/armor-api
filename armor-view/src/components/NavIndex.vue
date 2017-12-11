@@ -1219,7 +1219,7 @@
                         let form = this.leaveForm
                         form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00')
                         form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00')
-                        if(moment(form.beginTime).isAfter(moment(form.endTime))||this.weekTime.beginWeek!=this.weekTime.endWeek||moment(form.beginTime).isSame(moment(form.endTime))){
+                        if(this.weekTime.beginWeek!=this.weekTime.endWeek||moment(form.beginTime).isAfter(moment(form.endTime))|| moment(form.beginTime).isSame(moment(form.endTime))){
                             this.$message({ showClose: true,message: '请假日期有误,请检查(请假时间不能跨周、相同)',type: 'warning'});
                             return false;
                         }
