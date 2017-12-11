@@ -1200,27 +1200,27 @@
                 }
             },
             saveLeaveInfo(formName){
-                var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.leaveForm.hours);
-                if(!ishours){
-                    this.$message({ showClose: true,message: '请假时长填写错误',type: 'error'});
-                    return false;
-                }
-                if(this.leaveForm.hours>99999.9||this.leaveForm.hours<0){
-                    this.$message({ showClose: true,message: '请假时长正确值应为0~99999.9',type: 'error'});
-                    return false;
-                }
-                this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
-                this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
-                if(moment(this.leaveForm.beginTime).isAfter(this.leaveForm.endTime)||this.weekTime.beginWeek!=this.weekTime.endWeek){
-                    this.$message({ showClose: true,message: '请假日期有误,请假时间不能跨周,请检查',type: 'error'});
-                    return false;
-                }
-                if(this.leaveForm.type==''||this.leaveForm.type==null){
-                    this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
-                    return false;
-                }
                 this.$refs[formName].validate((valid) =>{
                     if (valid) {
+                        var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.leaveForm.hours);
+                        if(!ishours){
+                            this.$message({ showClose: true,message: '请假时长填写错误',type: 'error'});
+                            return false;
+                        }
+                        if(this.leaveForm.hours>99999.9||this.leaveForm.hours<0){
+                            this.$message({ showClose: true,message: '请假时长正确值应为0~99999.9',type: 'error'});
+                            return false;
+                        }
+                        this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
+                        this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
+                        if(this.leaveForm.type==''||this.leaveForm.type==null){
+                            this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
+                            return false;
+                        }
+                        if(moment(this.leaveForm.beginTime).isAfter(this.leaveForm.endTime)||this.weekTime.beginWeek!=this.weekTime.endWeek){
+                            this.$message({ showClose: true,message: '请假日期有误,请假时间不能跨周,请检查',type: 'error'});
+                            return false;
+                        }
                         let form = this.leaveForm
                         form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:mm:ss')
                         form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:mm:ss')
