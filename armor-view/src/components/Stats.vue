@@ -119,6 +119,49 @@
                     </el-table-column>
                 </el-table>
             </el-tab-pane>
+            <el-tab-pane label="请假统计" name="leave"  style="">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="leaveDaterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        unlink-panels
+                        @change="leaveTimeChange"
+                        :picker-options="pickerOptions">
+                </el-date-picker></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getLeaveList()" class="search-btn"></div>
+                <el-table :data="leaveManage" border>
+                    <el-table-column type="index" label="序号" width="80"></el-table-column>
+                    <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
+                    <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
+                    <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
+                    <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
+                    <el-table-column prop="beginTime" label="开始日期"  width="150">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="endTime" label="结束日期"  width="150">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="leaveHandleCurrentChange"
+                            :current-page.sync="leaveList.pageNum"
+                            :page-size="leaveFormPage.pageSize"
+                            :layout="leavePageLayout"
+                            :total="leaveFormPage.total">
+                    </el-pagination>
+                </div>
+            </el-tab-pane>
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
@@ -300,7 +343,17 @@
                   endTime:'',
                   pageNum:1,
                 },
+                leaveList:{
+                    userId:'',
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1,
+                },
                 bugFormPage:{
+                    pageSize: 10,
+                    total: 0,
+                },
+                leaveFormPage:{
                     pageSize: 10,
                     total: 0,
                 },
@@ -317,8 +370,10 @@
                 },
                 daterange:'',
                 bugDaterange:'',
+                leaveDaterange:'',
                 bugDetailForm:{},
                 bugManage:[],
+                leaveManage:[],
                 addMemberIndex:{
                     index:'',
                     userId:'',
@@ -395,7 +450,19 @@
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
+            },
+            leavePageLayout() {
+                if (this.leaveFormPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
             }
+        },
+        filters: {
+            formatDate: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY年MM月DD日');
+            },
         },
         methods: {
             getStats(currentPage){
@@ -418,6 +485,12 @@
                     this.bugFormPage.total = resp.data.total;
                 });
             },
+            getLeaveList(){
+                Http.zsyPostHttp(`/userLeave/list/`, this.leaveList, (resp) => {
+                    this.leaveManage =  resp.data.list;
+                    this.leaveFormPage.total = resp.data.total;
+                });
+            },
             bugTimeChange(time) {
                 // 选择结束时间
                 time = time.split(' - ')
@@ -426,6 +499,16 @@
                     this.bugList.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.bugList.startTime = this.bugList.endTime = this.bugDaterange = ''
+                }
+            },
+            leaveTimeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.leaveList.beginTime = `${time[0]} 00:00:00`
+                    this.leaveList.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.leaveList.startTime = this.leaveList.endTime = this.leaveDaterange = ''
                 }
             },
             timeChange(time) {
@@ -619,6 +702,10 @@
             handleCurrentChange(currentPage){
                 this.bugList.pageNum = currentPage;
                 this.getBugList();
+            },
+            leaveHandleCurrentChange(currentPage){
+                this.leaveList.pageNum = currentPage;
+                this.getLeaveList();
             },
             isDecimal(str) {
                 var regu = /^[-]{0,1}[0-9]{1,}$/;

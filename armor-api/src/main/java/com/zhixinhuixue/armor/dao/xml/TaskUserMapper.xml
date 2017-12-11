@@ -132,10 +132,10 @@
             JOIN task t on u.task_id = t.id
             where t.is_delete = 0 AND t.review_status = 3  AND  user_id = #{userId}
                 <if test="startTime != null">
-                    <![CDATA[ AND  (u.begin_time >= #{startTime,jdbcType=INTEGER} or u.end_time >= #{startTime,jdbcType=INTEGER}) ]]>
+                    <![CDATA[ AND  (u.begin_time >= #{startTime,jdbcType=TIMESTAMP} or u.end_time >= #{startTime,jdbcType=TIMESTAMP}) ]]>
                 </if>
                 <if test="endTime != null">
-                    <![CDATA[ AND (u.end_time <= #{endTime,jdbcType=TIMESTAMP} or u.begin_time <= #{endTime,jdbcType=INTEGER})]]>
+                    <![CDATA[ AND (u.end_time <= #{endTime,jdbcType=TIMESTAMP} or u.begin_time <= #{endTime,jdbcType=TIMESTAMP})]]>
                 </if>
               ORDER BY u.begin_time desc
         )as a,(SELECT (@rowid:=0))as b

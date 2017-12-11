@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserLeaveMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserLeave">
+  <id column="id" jdbcType="BIGINT" property="id" />
+  <result column="description" jdbcType="VARCHAR" property="description" />
+  <result column="hours" jdbcType="DECIMAL" property="hours" />
+  <result column="type" jdbcType="INTEGER" property="type" />
+  <result column="review_status" jdbcType="INTEGER" property="reviewStatus" />
+  <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+  <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+  <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  <result column="user_id" jdbcType="BIGINT" property="userId" />
+</resultMap>
+  <sql id="Base_Column_List">
+    id, description, hours, type, review_status, begin_time, end_time, create_time, user_id
+  </sql>
+
+  <resultMap id="ResultMap" type="com.zhixinhuixue.armor.model.bo.UserLeaveBO" extends="BaseResultMap">
+    <result column="name" jdbcType="VARCHAR" property="userName"/>
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
+    <collection property="userWeeks" column="{userId=user_id,taskId=id}"
+                select="com.zhixinhuixue.armor.dao.IZSYUserWeekMapper.selectByTaskId"
+                ofType="com.zhixinhuixue.armor.model.pojo.UserWeek">
+    </collection>
+  </resultMap>
+
+  <insert id="insertLeave" parameterType="com.zhixinhuixue.armor.model.pojo.UserLeave">
+    insert into user_leave (id, description, hours, type, review_status, begin_time, end_time, create_time, user_id)
+    values
+      (#{id,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, #{hours,jdbcType=DECIMAL}, #{type,jdbcType=INTEGER},
+      #{reviewStatus,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP} , #{userId,jdbcType=BIGINT})
+  </insert>
+
+  <select id="getLeaveByReviewStatus" resultMap="ResultMap" parameterType="java.util.Map">
+    SELECT user_leave.*, user.name, user.avatar_url FROM user_leave JOIN user on user_leave.user_id = user.id
+    WHERE  review_status = #{reviewStatus}
+        <if test="userId!=null">
+          and user_id = #{userId}
+        </if>
+  </select>
+
+  <select id="getUserLeaveById" parameterType="java.lang.Long" resultMap="ResultMap">
+    SELECT  user_leave.*, user.name, user.avatar_url FROM user_leave JOIN  user on user_leave.user_id = user.id
+      WHERE user_leave.id = #{id}
+  </select>
+
+  <select id="getLeaveList" parameterType="com.zhixinhuixue.armor.model.dto.request.UserLeaveListReqDTO" resultMap="ResultMap">
+    SELECT user_leave.*, user.name FROM user_leave JOIN user on user_leave.user_id = user.id
+    WHERE  review_status = 3
+    <if test="userId!=null">
+      and user_id = #{userId}
+    </if>
+    <if test="beginTime!=null">
+      <![CDATA[ AND  (user_leave.begin_time >= #{beginTime,jdbcType=TIMESTAMP} or user_leave.end_time >= #{beginTime,jdbcType=TIMESTAMP}) ]]>
+    </if>
+    <if test="endTime != null">
+      <![CDATA[ AND (user_leave.end_time <= #{endTime,jdbcType=TIMESTAMP} or user_leave.begin_time <= #{endTime,jdbcType=TIMESTAMP})]]>
+    </if>
+  </select>
+
+  <update id="updateLeave">
+    UPDATE user_leave
+        <set>
+         description= #{description,jdbcType=BIGINT}, hours= #{hours,jdbcType=DECIMAL},
+          type= #{type,jdbcType=INTEGER}, begin_time= #{beginTime,jdbcType=TIMESTAMP},
+            end_time= #{endTime,jdbcType=INTEGER},
+            <if test="reviewStatus!=0">
+               review_status = #{reviewStatus}
+            </if>
+        </set>
+        WHERE id=#{id,jdbcType=BIGINT};
+  </update>
+
+
+  <delete id="deleteById">
+      DELETE FROM user_leave WHERE  id = #{id}
+  </delete>
+
+</mapper>
