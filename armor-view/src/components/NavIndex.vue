@@ -1225,8 +1225,8 @@
                 }
                 this.$refs[formName].validate((valid) =>{
                     let form = this.leaveForm
-                    form.beginTime = moment(form.beginTime).format('YYYY-MM-DD 00:00:00')
-                    form.endTime = moment(form.endTime).format('YYYY-MM-DD 23:59:59')
+                    form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:mm:ss')
+                    form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:mm:ss')
                     form['userWeeks'] = this.userWeeks
                     if(form.id!=''){
                         http.zsyPostHttp('/userLeave/editLeaveDetail/'+form.id, form, (resp) => {
