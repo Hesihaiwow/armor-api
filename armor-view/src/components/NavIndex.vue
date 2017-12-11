@@ -803,7 +803,7 @@
         filters: {
             formatDate: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY年MM月DD日');
+                return moment(value).format('YYYY年MM月DD日 HH:mm:ss');
             },
         },
         methods: {
