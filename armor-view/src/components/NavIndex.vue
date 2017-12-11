@@ -465,7 +465,7 @@
                     <el-date-picker
                             v-model="leaveForm.beginTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:mm:ss"
+                            format="yyyy-MM-dd HH:00:00"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -473,7 +473,7 @@
                     <el-date-picker
                             v-model="leaveForm.endTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:mm:ss"
+                            format="yyyy-MM-dd HH:00:00"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -489,10 +489,6 @@
                     <el-input type="input" v-model="leaveForm.hours" style="width:100px"></el-input>
                 </el-form-item>
             </el-form>
-            <div v-for="(item,index) in  userWeeks">
-                <div class="fl" style="margin-left: 5px;margin-top: 15px"><span class="star">*</span>第{{item.weekNumber}}周请假时间({{item.range}})：</div>
-                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px;margin-top: 15px">
-            </div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible">立即创建</el-button>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible">立即更新</el-button>
@@ -502,8 +498,8 @@
         <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
             <el-form>
                 <el-form-item class="task-form" label="请假原因：">{{leaveForm.description}}</el-form-item>
-                <el-form-item class="task-form" label="请假开始时间：">{{leaveForm.beginTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" label="请假结束时间：">{{leaveForm.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="请假开始时间：">{{leaveForm.beginTime | formatTime}}</el-form-item>
+                <el-form-item class="task-form" label="请假结束时间：">{{leaveForm.endTime | formatTime}}</el-form-item>
                 <el-form-item class="task-form" label="类型：">{{leaveForm.typeName }}</el-form-item>
                 <el-form-item class="task-form" label="请假时长：">{{leaveForm.hours}}小时</el-form-item>
             </el-form>
@@ -803,7 +799,11 @@
         filters: {
             formatDate: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY年MM月DD日 HH:mm:ss');
+                return moment(value).format('YYYY年MM月DD日');
+            },
+            formatTime: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY年MM月DD日 HH:00:00');
             },
         },
         methods: {
@@ -849,8 +849,8 @@
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
-                        param.beiginTime = moment(param.beiginTime).format('YYYY-MM-DD 00:00:00')
-                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
+                        param.beiginTime = moment(param.beiginTime).format('YYYY-MM-DD HH:00:00')
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:00:00')
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
                             this.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
                             return false;
@@ -1375,55 +1375,15 @@
                             this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
                             this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
                             let beginYear = moment(this.leaveForm.beginTime).year();
-                            let endYear = moment(this.leaveForm.endTime).year();
-                            if (beginYear != endYear) {
-                                for (let i = this.weekTime.beginWeek; i < moment(this.leaveForm.beginTime).weeksInYear() + 1; i++) {
-                                        weekData = {
-                                            'weekNumber': i,
-                                            'year': beginYear,
-                                            'range': moment().year(beginYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
-                                        };
-                                        param.push(weekData)
-                                }
-                                for (let i = 1; i < this.weekTime.endWeek + 1; i++) {
-                                        weekData = {
-                                            'weekNumber': i,
-                                            'year': endYear,
-                                            'range': moment().year(endYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(endYear).week(i).endOf('week').format('MM-DD')
-                                        };
-                                        param.push(weekData)
-                                }
-                            }
                             if (this.weekTime.beginWeek == this.weekTime.endWeek) {
                                     weekData = {
                                         'weekNumber': this.weekTime.beginWeek,
                                         'hours': this.leaveForm.hours,
                                         'year': beginYear,
-                                        'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
                                     };
                                     param.push(weekData)
-                            } else if (this.weekTime.endWeek - this.weekTime.beginWeek > 1) {
-                                for (let i = this.weekTime.beginWeek; i < this.weekTime.endWeek + 1; i++) {
-                                        param.push({
-                                            'weekNumber': i,
-                                            'hours': '',
-                                            'year': beginYear,
-                                            'range': moment().year(beginYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
-                                        })
-                                }
-                            } else if (this.weekTime.endWeek - this.weekTime.beginWeek == 1) {
-                                    param.push({
-                                        'weekNumber': this.weekTime.beginWeek,
-                                        'hours': '',
-                                        'year': beginYear,
-                                        'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
-                                    })
-                                    param.push({
-                                        'weekNumber': this.weekTime.endWeek,
-                                        'hours': '',
-                                        'year': beginYear,
-                                        'range': moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')
-                                    })
+                            } else {
+                                this.$message({ showClose: true,message: '假期请勿跨周',type: 'error'});
                             }
                             this.userWeeks = param
                         }
