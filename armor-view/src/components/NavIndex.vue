@@ -854,7 +854,7 @@
                             return false;
                         }
                         if(moment(param.endTime).millisecond()<moment(param.beginTime).millisecond()||moment(param.endTime).week()!=moment(param.beginTime).week()){
-                            this.$message({ showClose: true,message: '请检查日期，个人任务请勿跨周进行',type: 'error'});
+                            this.$message({ showClose: true,message: '请检查日期，个人任务请勿跨周进行',type: 'warning'});
                             return false;
                         }
                         var taskUsers = [{
@@ -1199,7 +1199,7 @@
                 this.$refs[formName].validate((valid) =>{
                     if (valid) {
                         if(this.leaveForm.type==''||this.leaveForm.type==null){
-                            this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
+                            this.$message({ showClose: true,message: '请选择请假类型',type: 'warning'});
                             return false;
                         }
                         var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.leaveForm.hours);
@@ -1220,7 +1220,7 @@
                         form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00')
                         form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00')
                         if(moment(form.beginTime).isAfter(moment(form.endTime))||this.weekTime.beginWeek!=this.weekTime.endWeek||moment(form.beginTime).isSame(moment(form.endTime))){
-                            this.$message({ showClose: true,message: '请假日期有误,请检查(请假时间不能跨周、相同)',type: 'error'});
+                            this.$message({ showClose: true,message: '请假日期有误,请检查(请假时间不能跨周、相同)',type: 'warning'});
                             return false;
                         }
                         form['userWeeks'] = this.userWeeks
