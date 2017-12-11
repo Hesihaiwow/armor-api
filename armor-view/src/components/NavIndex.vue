@@ -454,14 +454,12 @@
             </span>
         </el-dialog>
 
-
-
         <el-dialog  title="请假申请"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editLeaveVisible"  :show-close="false">
             <el-form :model="leaveForm" ref="leaveForm" :rules="leaveRules" label-width="110px">
                 <el-form-item label="请假原因" prop="description">
                     <el-input type="textarea" v-model="leaveForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item label="请假开始日期" prop="beginTime">
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span><el-form-item label="请假开始日期" prop="beginTime">
                     <el-date-picker
                             v-model="leaveForm.beginTime"
                             type="datetime"
@@ -469,7 +467,7 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="请假结束日期" prop="endTime">
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span><el-form-item label="请假结束日期" prop="endTime">
                     <el-date-picker
                             v-model="leaveForm.endTime"
                             type="datetime"
@@ -684,9 +682,7 @@
                     time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
                 },
                 leaveRules:{
-                    description: [{required: true, message: '请假原因不能为空', trigger: 'blur', min: 1}],
-                    beginTime:[{type: 'date', required: true, message: '开始日期不能为空', trigger: 'change'}],
-                    endTime:[{type: 'date', required: true, message: '结束日期不能为空', trigger: 'change'}],
+                    description: [{required: true, message: '请假原因不能为空', trigger: 'change', min: 1}],
                 },
                 task: {
                     doing: [],
@@ -1217,13 +1213,16 @@
                             this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
                             return false;
                         }
-                        if(moment(this.leaveForm.beginTime).isAfter(this.leaveForm.endTime)||this.weekTime.beginWeek!=this.weekTime.endWeek){
-                            this.$message({ showClose: true,message: '请假日期有误,请假时间不能跨周,请检查',type: 'error'});
+                        this.leaveForm.beginTime =  moment(this.leaveForm.beginTime).toDate()
+                        this.leaveForm.endTime =  moment(this.leaveForm.endTime).toDate()
+
+                        let form = this.leaveForm
+                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00')
+                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00')
+                        if(moment(form.beginTime).isAfter(moment(form.endTime))||this.weekTime.beginWeek!=this.weekTime.endWeek||moment(form.beginTime).isSame(moment(form.endTime))){
+                            this.$message({ showClose: true,message: '请假日期有误,请检查(请假时间不能跨周)',type: 'error'});
                             return false;
                         }
-                        let form = this.leaveForm
-                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:mm:ss')
-                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:mm:ss')
                         form['userWeeks'] = this.userWeeks
                         if(form.id!=''){
                             http.zsyPostHttp('/userLeave/editLeaveDetail/'+form.id, form, (resp) => {
