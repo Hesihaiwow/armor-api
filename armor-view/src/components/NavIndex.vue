@@ -21,14 +21,11 @@
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>创建积分转移</span>
                 </div>
-<<<<<<< HEAD
-=======
 
                 <div class="add-task leave" @click="editLeaveVisible=true">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>请假申请</span>
                 </div>
->>>>>>> origin/0928dev
                 <p class="mic-title">我的任务</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
