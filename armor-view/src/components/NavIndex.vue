@@ -490,7 +490,7 @@
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible">立即创建</el-button>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible">立即更新</el-button>
-                <el-button @click="editLeaveVisible = false,clearLeaveForm()">取 消</el-button>
+                <el-button @click="editLeaveVisible = false,editLeaveDetailVisible = false,clearLeaveForm()">取 消</el-button>
               </span>
         </el-dialog>
         <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" custom-class="myDialog" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
@@ -1234,6 +1234,7 @@
                                 this.fetchUserLeaveList();
                                 this.clearLeaveForm();
                                 this.editLeaveVisible = false
+                                this.editLeaveDetailVisible = false
                             })
                         }else{
                             http.zsyPostHttp('/userLeave/add', form, (resp) => {
@@ -1245,6 +1246,7 @@
                                 this.fetchUserLeaveList();
                                 this.clearLeaveForm()
                                 this.editLeaveVisible = false
+                                this.editLeaveDetailVisible = false
                             })
                         }
                     }
