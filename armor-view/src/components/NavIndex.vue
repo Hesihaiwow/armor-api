@@ -398,7 +398,7 @@
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog  title="积分求助转移"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible"  :show-close="false">
+        <el-dialog  title="积分求助转移"  size="tiny" custom-class="myDialog"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editHelpVisible"  :show-close="false">
             <el-form :model="helpForm" ref="helpForm" :rules="helpRules" label-width="80px">
                 <el-form-item label="任务详情" prop="description">
                     <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
@@ -433,7 +433,7 @@
                 <el-button @click="editHelpVisible = false,clearHelpForm()">取 消</el-button>
               </span>
         </el-dialog>
-        <el-dialog title="积分求助转移详情" :visible.sync="helpDetailVisible" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+        <el-dialog title="积分求助转移详情" custom-class="myDialog" :visible.sync="helpDetailVisible" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
             <el-form>
                 <el-form-item class="task-form" label="任务描述：">{{helpDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="发起者：">{{helpDetail.name}}</el-form-item>
@@ -454,7 +454,7 @@
             </span>
         </el-dialog>
 
-        <el-dialog  title="请假申请"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editLeaveVisible"  :show-close="false">
+        <el-dialog  title="请假申请"  size="tiny"  custom-class="myDialog"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editLeaveVisible"  :show-close="false">
             <el-form :model="leaveForm" ref="leaveForm" :rules="leaveRules" label-width="110px">
                 <el-form-item label="请假原因" prop="description">
                     <el-input type="textarea" v-model="leaveForm.description" :rows="3"></el-input>
@@ -493,7 +493,7 @@
                 <el-button @click="editLeaveVisible = false,clearLeaveForm()">取 消</el-button>
               </span>
         </el-dialog>
-        <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+        <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" custom-class="myDialog" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
             <el-form>
                 <el-form-item class="task-form" label="请假原因：">{{leaveForm.description}}</el-form-item>
                 <el-form-item class="task-form" label="请假开始时间：">{{leaveForm.beginTime | formatTime}}</el-form-item>
