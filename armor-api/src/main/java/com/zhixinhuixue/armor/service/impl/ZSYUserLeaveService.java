@@ -65,7 +65,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         userWeek.setYear(DateHelper.getYears(userLeaveReqDTO.getBeginTime()));
         userWeek.setTaskId(userLeave.getId());
         userWeek.setHours(userLeaveReqDTO.getHours().doubleValue());
-        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime()));
+        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime())-1);
         userWeeks.add(userWeek);
         userWeekMapper.insertList(userWeeks);
 
@@ -172,7 +172,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         userWeek.setYear(DateHelper.getYears(userLeaveReqDTO.getBeginTime()));
         userWeek.setTaskId(userLeave.getId());
         userWeek.setHours(userLeaveReqDTO.getHours().doubleValue());
-        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime()));
+        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime())-1);
         userWeeks.add(userWeek);
         userWeekMapper.insertList(userWeeks);
 

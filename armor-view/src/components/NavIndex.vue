@@ -1211,8 +1211,6 @@
                 }
                 this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
                 this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
-                console.log(this.weekTime.beginWeek)
-                console.log(this.weekTime.endWeek)
                 if(moment(this.leaveForm.beginTime).isAfter(this.leaveForm.endTime)||this.weekTime.beginWeek!=this.weekTime.endWeek){
                     this.$message({ showClose: true,message: '请假日期有误,请假时间不能跨周,请检查',type: 'error'});
                     return false;
