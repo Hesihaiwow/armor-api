@@ -490,7 +490,7 @@
                 </el-form-item>
             </el-form>
             <div v-for="(item,index) in  userWeeks">
-                <div class="fl" style="margin-left: 5px;margin-top: 15px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                <div class="fl" style="margin-left: 5px;margin-top: 15px"><span class="star">*</span>第{{item.weekNumber}}周请假时间({{item.range}})：</div>
                 <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px;margin-top: 15px">
             </div>
             <span slot="footer" class="dialog-footer">
