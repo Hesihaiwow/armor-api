@@ -23,6 +23,8 @@ public class StatsWeekResDTO {
 
     private String description;
 
+    private Double leaveHours;
+
     public int getWeekNumber() {
         return weekNumber;
     }
@@ -85,5 +87,13 @@ public class StatsWeekResDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Double getLeaveHours() {
+        return leaveHours;
+    }
+
+    public void setLeaveHours(Double leaveHours) {
+        this.leaveHours = leaveHours;
     }
 }

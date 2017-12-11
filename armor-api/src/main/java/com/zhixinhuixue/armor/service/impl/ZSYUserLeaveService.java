@@ -104,14 +104,6 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             BeanUtils.copyProperties(userLeaveBO, userLeaveResDTO);
             userLeaveResDTO.setTypeName(ZSYUserLeaveType.getName(userLeaveResDTO.getType()));
 
-            List<UserWeekResDTO> userWeekResDTOS = new ArrayList<>();
-            userLeaveBO.getUserWeeks().stream().forEach(userWeekBO -> {
-                UserWeekResDTO userWeekResDTO = new UserWeekResDTO();
-                BeanUtils.copyProperties(userWeekBO, userWeekResDTO);
-                userWeekResDTOS.add(userWeekResDTO);
-            });
-            userLeaveResDTO.setUserWeeks(userWeekResDTOS);
-
             page.add(userLeaveResDTO);
         });
 
@@ -177,6 +169,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             userWeek.setId(id);
             userWeek.setUserId(ZSYTokenRequestContext.get().getUserId());
             userWeek.setYear(week.getYear());
+            userWeek.setTaskId(userLeave.getId());
             userWeek.setHours(week.getHours());
             userWeek.setWeekNumber(week.getWeekNumber());
             userWeeks.add(userWeek);

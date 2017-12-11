@@ -464,16 +464,16 @@
                 <el-form-item label="请假开始日期" prop="beginTime">
                     <el-date-picker
                             v-model="leaveForm.beginTime"
-                            type="date"
-                            format="yyyy-MM-dd"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="请假结束日期" prop="endTime">
                     <el-date-picker
                             v-model="leaveForm.endTime"
-                            type="date"
-                            format="yyyy-MM-dd"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -490,7 +490,7 @@
                 </el-form-item>
             </el-form>
             <div v-for="(item,index) in  userWeeks">
-                <div class="fl" style="margin-left: 5px;margin-top: 15px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                <div class="fl" style="margin-left: 5px;margin-top: 15px"><span class="star">*</span>第{{item.weekNumber}}周请假时间({{item.range}})：</div>
                 <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px;margin-top: 15px">
             </div>
             <span slot="footer" class="dialog-footer">
@@ -632,6 +632,12 @@
                 leaveType:[
                     {id:1,name:'事假'},
                     {id:2,name:'病假'},
+                    {id:3,name:'婚假'},
+                    {id:4,name:'产假'},
+                    {id:5,name:'丧假'},
+                    {id:6,name:'产检'},
+                    {id:7,name:'年假'},
+                    {id:8,name:'调休'},
                 ] ,
                 userWeeks:[],
                 weekTime:{
