@@ -59,16 +59,14 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         userLeaveMapper.insertLeave(userLeave);
 
         List<UserWeek> userWeeks = Lists.newArrayList();
-        userLeaveReqDTO.getUserWeeks().forEach(week ->{
-            UserWeek userWeek = new UserWeek();
-            userWeek.setId(snowFlakeIDHelper.nextId());
-            userWeek.setUserId(ZSYTokenRequestContext.get().getUserId());
-            userWeek.setTaskId(userLeave.getId());
-            userWeek.setYear(week.getYear());
-            userWeek.setHours(week.getHours());
-            userWeek.setWeekNumber(week.getWeekNumber());
-            userWeeks.add(userWeek);
-        });
+        UserWeek userWeek = new UserWeek();
+        userWeek.setId(snowFlakeIDHelper.nextId());
+        userWeek.setUserId(ZSYTokenRequestContext.get().getUserId());
+        userWeek.setYear(DateHelper.getYears(userLeaveReqDTO.getBeginTime()));
+        userWeek.setTaskId(userLeave.getId());
+        userWeek.setHours(userLeaveReqDTO.getHours().doubleValue());
+        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime()));
+        userWeeks.add(userWeek);
         userWeekMapper.insertList(userWeeks);
 
     }
@@ -156,7 +154,11 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     @Override
     public void updateLeaveDetail(UserLeaveReqDTO userLeaveReqDTO, Long id) {
         UserLeave userLeave = new UserLeave();
+        UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id);
         userLeave.setId(id);
+        userLeave.setUserId(userLeaveBO.getUserId());
+        userLeave.setReviewStatus(userLeaveBO.getReviewStatus());
+        userLeave.setCreateTime(userLeaveBO.getCreateTime());
         BeanUtils.copyProperties(userLeaveReqDTO,userLeave);
         if(userLeaveMapper.updateLeave(userLeave)==0){
             throw new ZSYServiceException("更新请假信息失败");
@@ -164,16 +166,14 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
 
         userWeekMapper.deleteByTaskId(id);
         List<UserWeek> userWeeks = Lists.newArrayList();
-        userLeaveReqDTO.getUserWeeks().forEach(week ->{
-            UserWeek userWeek = new UserWeek();
-            userWeek.setId(id);
-            userWeek.setUserId(ZSYTokenRequestContext.get().getUserId());
-            userWeek.setYear(week.getYear());
-            userWeek.setTaskId(userLeave.getId());
-            userWeek.setHours(week.getHours());
-            userWeek.setWeekNumber(week.getWeekNumber());
-            userWeeks.add(userWeek);
-        });
+        UserWeek userWeek = new UserWeek();
+        userWeek.setId(snowFlakeIDHelper.nextId());
+        userWeek.setUserId(ZSYTokenRequestContext.get().getUserId());
+        userWeek.setYear(DateHelper.getYears(userLeaveReqDTO.getBeginTime()));
+        userWeek.setTaskId(userLeave.getId());
+        userWeek.setHours(userLeaveReqDTO.getHours().doubleValue());
+        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime()));
+        userWeeks.add(userWeek);
         userWeekMapper.insertList(userWeeks);
 
     }
