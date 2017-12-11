@@ -2,6 +2,8 @@ package com.zhixinhuixue.armor.model.bo;
 
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Lang on 2017/11/29 0029.
  */
@@ -23,14 +25,6 @@ public class UserWeekBO {
         this.weekNumber = weekNumber;
     }
 
-    public String getHours() {
-        return hours;
-    }
-
-    public void setHours(String hours) {
-        this.hours = hours;
-    }
-
     public Long getTaskId() {
         return taskId;
     }
@@ -45,5 +39,13 @@ public class UserWeekBO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getHours() {
+        return hours;
+    }
+
+    public void setHours(String hours) {
+        this.hours = hours;
     }
 }

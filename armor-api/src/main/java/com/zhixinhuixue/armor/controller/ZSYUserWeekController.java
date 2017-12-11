@@ -1,8 +1,6 @@
 package com.zhixinhuixue.armor.controller;
 
 
-import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
-import com.zhixinhuixue.armor.service.IZSYStageService;
 import com.zhixinhuixue.armor.service.IZSYUserWeekService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -10,8 +8,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Created by Lang on 2017/12/4 0001.

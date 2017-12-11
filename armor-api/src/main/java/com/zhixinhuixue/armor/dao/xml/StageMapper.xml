@@ -34,7 +34,7 @@
 
     <update id="update">
         UPDATE stage
-          SET  name= #{name,jdbcType=BIGINT}, sort= #{sort,jdbcType=BIGINT}
+          SET  name= #{name,jdbcType=VARCHAR}, sort= #{sort,jdbcType=BIGINT}
         WHERE id=#{id,jdbcType=BIGINT};
     </update>
 

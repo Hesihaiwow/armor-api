@@ -129,6 +129,7 @@ public class ZSYStatsService implements IZSYStatsService {
             statsWeekResDTO.setTaskName(userWeekBO.getTaskName());
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
             statsWeekResDTO.setDescription(userWeekBO.getDescription());
+            statsWeekResDTO.setLeaveHours(userWeekBO.getLeaveHours()==null?0:userWeekBO.getLeaveHours());
 
             double sum =0;
             if(userWeekBO.getHours().contains(",")){

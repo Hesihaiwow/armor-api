@@ -74,6 +74,9 @@ public class ZSYStageService implements IZSYStageService {
         stage.setId(stageResDTO.getId());
         stage.setName(stageResDTO.getName());
         stage.setSort(stageResDTO.getSort());
+        if( stageMapper.update(stage)==0){
+            throw new ZSYServiceException("更新阶段信息失败");
+        }
 
     }
 
