@@ -117,6 +117,7 @@
                             <span type="text" style="color: red;" v-show="scope.row.hours>40">{{scope.row.hours}}</span>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="请假统计" name="leave"  style="">

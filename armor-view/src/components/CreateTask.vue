@@ -95,7 +95,7 @@
                         <div class="bdl-line"></div>
                     </div>
                     <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                        <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="step.description"
+                        <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="description"
                                   :rows="3"></el-input>
                         <!--<textarea class="add-member-remark" placeholder="备注"></textarea>-->
                         <div class="add-member-basic">
@@ -170,7 +170,6 @@
         data() {
             return {
                 showCreateTask: false,
-
                 priorityList: [
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
@@ -197,6 +196,7 @@
                     endTime: '',
                     description: ''
                 },
+                description: '',
                 stepTemp: {},
                 showDesc: false,
                 showAssess: true,
@@ -376,12 +376,13 @@
                     taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD')
                     taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD')
                     taskUser.taskHours = this.step.taskHours
-                    taskUser.description = this.step.description
+                    taskUser.description = this.description
                     taskUser.userWeeks = this.weekNumber
                     this.taskUsers.push(taskUser)
                 } else {
                     // 取消css
                     this.taskUsers[this.step.index].cssClass = ''
+                    this.modifyTaskForm.taskUsers[this.step.index].description = this.description
                     this.taskUsers[this.step.index].userWeeks = this.weekNumber
                 }
 
@@ -394,6 +395,7 @@
                     endTime: '',
                     description: ''
                 }
+                this.description=''
                 this.stepTemp = {}
             },
             stepUserChange(val) {

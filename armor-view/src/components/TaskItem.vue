@@ -377,7 +377,7 @@
                 <div class="bdl-line"></div>
             </div>
             <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="step.description"
+                <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="description"
                           :rows="3"></el-input>
                 <div class="add-member-basic">
                     <div class="add-member-basic-list clearfix">
@@ -663,11 +663,12 @@
                     taskHours: '',
                     beginTime: '',
                     endTime: '',
-                    description: '',
                     completeHours: '',
                     completeTime: '',
+                    description: '',
                     status: ''
                 },
+                description: '',
                 stepTemp: {},
                 weekTime:{
                     beginWeek:'',
@@ -1135,6 +1136,7 @@
                 }
                 this.step = stages[index];
                 this.step.index = index;
+                this.description = stages[index].description;
                 this.modifyTaskForm.taskUsers.forEach((item) => {
                     item.cssClass = ''
                 })
@@ -1212,18 +1214,26 @@
                     completeTime: '',
                     status: ''
                 }
+                this.description = ''
                 this.weekNumberTemp = []
             },
             saveAddMember() {
                 var sumHours=0;
                 for(var i=0;i<this.weekNumber.length;i++){
+                    if(this.weekNumber[i].hours==''|| this.weekNumber[i].hours=== undefined){
+                        if(this.weekNumber[i].hoursTemp !== undefined &&this.weekNumber[i].hoursTemp!=''){
+                            this.weekNumber[i].hours = this.weekNumber[i].hoursTemp
+                        }else{
+                            this.weekNumber[i].hours = 0
+                        }
+                    }
                     var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
                     if(!ishours &&ishours!=0){
                         this.errorMsg('工作量填写错误');
                         return false;
                     }
-                    if(this.weekNumber[i].hours>=40||this.weekNumber[i].hours<0){
-                        this.errorMsg('周工作量应在0.1~40');
+                    if(this.weekNumber[i].hours>99999.9||this.weekNumber[i].hours<0){
+                        this.errorMsg('工作量正确值应为0~99999.9');
                         return false;
                     }
                     sumHours +=  parseFloat(this.weekNumber[i].hours)
@@ -1248,15 +1258,18 @@
                     taskUser.beginTime = this.step.beginTime;
                     taskUser.endTime = this.step.endTime;
                     taskUser.taskHours = this.step.taskHours;
-                    taskUser.description = this.step.description;
+                    taskUser.description = this.description;
                     taskUser.userWeeks = this.weekNumber;
                     taskUser.status = this.step.status;
                     this.modifyTaskForm.taskUsers.push(taskUser);
                 } else {
                     // 取消css
                     this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
+                    this.modifyTaskForm.taskUsers[this.step.index].description = this.description
                     this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumber;
                 }
+
+                console.log(this.modifyTaskForm.taskUsers)
 
                 this.showAddDetail = !this.showAddDetail;
                 this.step = {
@@ -1271,6 +1284,7 @@
                     completeTime: '',
                     status: ''
                 };
+                this.description=''
                 this.stepTemp = {};
             },
             stepUserChange(val) {
@@ -1454,7 +1468,6 @@
                             })
                         }
                         this.weekNumber = param
-                        console.log(this.weekNumber)
                     }
                 }
             },
