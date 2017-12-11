@@ -1198,6 +1198,10 @@
             saveLeaveInfo(formName){
                 this.$refs[formName].validate((valid) =>{
                     if (valid) {
+                        if(this.leaveForm.type==''||this.leaveForm.type==null){
+                            this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
+                            return false;
+                        }
                         var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.leaveForm.hours);
                         if(!ishours){
                             this.$message({ showClose: true,message: '请假时长填写错误',type: 'error'});
@@ -1209,10 +1213,6 @@
                         }
                         this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
                         this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
-                        if(this.leaveForm.type==''||this.leaveForm.type==null){
-                            this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
-                            return false;
-                        }
                         this.leaveForm.beginTime =  moment(this.leaveForm.beginTime).toDate()
                         this.leaveForm.endTime =  moment(this.leaveForm.endTime).toDate()
 
@@ -1220,7 +1220,7 @@
                         form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00')
                         form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00')
                         if(moment(form.beginTime).isAfter(moment(form.endTime))||this.weekTime.beginWeek!=this.weekTime.endWeek||moment(form.beginTime).isSame(moment(form.endTime))){
-                            this.$message({ showClose: true,message: '请假日期有误,请检查(请假时间不能跨周)',type: 'error'});
+                            this.$message({ showClose: true,message: '请假日期有误,请检查(请假时间不能跨周、相同)',type: 'error'});
                             return false;
                         }
                         form['userWeeks'] = this.userWeeks
