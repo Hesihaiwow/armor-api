@@ -22,9 +22,9 @@
                     <span>创建积分转移</span>
                 </div>
 
-                <div class="add-task leave" @click="editHelpVisible=true">
+                <div class="add-task leave" @click="editLeaveVisible=true">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建请假条</span>
+                    <span>请假申请</span>
                 </div>
                 <p class="mic-title">我的任务</p>
                 <div class="my-task-detail">
@@ -241,7 +241,7 @@
                         </div>
                         <div class="pagination" v-show="this.review.review.length>0">
                             <el-pagination
-                                    @current-change="handleWaitPage"
+                                    @current-change="handleReviewPage"
                                     :current-page.sync="reviewPage.pageNum"
                                     :page-size="reviewPage.pageSize"
                                     :layout="waitPageLayout"
@@ -253,6 +253,70 @@
                         </div>
                     </el-tab-pane>
                 </el-tabs>
+            </div>
+            <div>
+                <p class="mic-title">我的请假信息</p>
+                <div class="my-task-detail">
+                    <el-tabs v-model="activeLeaveName" @tab-click="handleClick">
+                        <el-tab-pane label="审核中" name="wait">
+                            <!--@click="reviewDetail(help)"-->
+                            <div class="task-lis" v-for="leave in leaveList.wait" >
+                                <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>{{leave.description}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">{{leave.createTime| formatDate }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-edit" @click="editLeaveDetail(leave,0)"></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="leave.avatarUrl && leave.avatarUrl!=''" :src="leave.avatarUrl" >
+                                    <span v-else="">{{leave.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.leaveList.wait.length>0">
+                                <el-pagination
+                                        @current-change="handleLeaveWaitPage"
+                                        :current-page.sync="leaveWaitPage.pageNum"
+                                        :page-size="leaveWaitPage.pageSize"
+                                        :layout="leaveWaitPageLayout"
+                                        :total="leaveWaitPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="leaveList.wait.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="完成审核" name="review">
+                            <div class="task-lis" v-for="leave in leaveList.pass" @click="leaveDetail(leave)">
+                                <div class="head-img" ><img src="../assets/img/auditSuccess.png" ></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>{{leave.description}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">{{leave.createTime| formatDate }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="leave.avatarUrl && leave.avatarUrl!=''" :src="leave.avatarUrl" >
+                                    <span v-else="">{{leave.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.leaveList.pass.length>0">
+                                <el-pagination
+                                        @current-change="handleLeavePassPage"
+                                        :current-page.sync="leavePassPage.pageNum"
+                                        :page-size="leavePassPage.pageSize"
+                                        :layout="leavePassPageLayout"
+                                        :total="leavePassPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="leaveList.pass.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
             </div>
         </div>
         <el-dialog
@@ -339,7 +403,7 @@
                 <el-form-item label="任务详情" prop="description">
                     <el-input type="textarea" v-model="helpForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item label="求助目标" prop="user">
+                <el-form-item label="求助目标" prop="userId">
                     <el-select v-model="helpForm.userId" placeholder="成员列表" >
                         <el-option
                                 v-for="item in userList"
@@ -389,6 +453,76 @@
                 </div>
             </span>
         </el-dialog>
+
+
+
+        <el-dialog  title="请假申请"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editLeaveVisible"  :show-close="false">
+            <el-form :model="leaveForm" ref="leaveForm" :rules="leaveRules" label-width="110px">
+                <el-form-item label="请假原因" prop="description">
+                    <el-input type="textarea" v-model="leaveForm.description" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="请假开始日期" prop="beginTime">
+                    <el-date-picker
+                            v-model="leaveForm.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="请假结束日期" prop="endTime">
+                    <el-date-picker
+                            v-model="leaveForm.endTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="请假类型" prop="type">
+                    <el-select
+                            v-model="leaveForm.type"
+                            placeholder="请选择类型">
+                        <el-option v-for="item in leaveType" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="请假时长" prop="hours">
+                    <el-input type="input" v-model="leaveForm.hours" style="width:100px"></el-input>
+                </el-form-item>
+            </el-form>
+            <div v-for="(item,index) in  userWeeks">
+                <div class="fl" style="margin-left: 5px;margin-top: 15px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px;margin-top: 15px">
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible">立即创建</el-button>
+                <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible">立即更新</el-button>
+                <el-button @click="editLeaveVisible = false,clearLeaveForm()">取 消</el-button>
+              </span>
+        </el-dialog>
+        <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+            <el-form>
+                <el-form-item class="task-form" label="请假原因：">{{leaveForm.description}}</el-form-item>
+                <el-form-item class="task-form" label="请假开始时间：">{{leaveForm.beginTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="请假结束时间：">{{leaveForm.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="类型：">{{leaveForm.typeName }}</el-form-item>
+                <el-form-item class="task-form" label="请假时长：">{{leaveForm.hours}}小时</el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer" >
+                <div v-show="userRole==0&&activeLeaveName=='wait'">
+                    <el-tooltip content="删除该任务" placement="top">
+                          <el-button type="danger" icon="delete" @click="deleteLeave(leaveForm.id)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="编辑该任务" placement="top">
+                     <el-button type="primary" icon="edit" @click="editLeaveDetail(leaveForm,1)"></el-button>
+                    </el-tooltip>
+                    <el-button type="success" @click="acceptLeave(leaveForm.id)">审核通过</el-button>
+                </div>
+            </span>
+        </el-dialog>
+
+
+
+
     </div>
 </template>
 <script>
@@ -415,12 +549,16 @@
                 activeName: 'doing',
                 assessActiveName: 'waitAssess',
                 activeHelpName: 'wait',
+                activeLeaveName:'wait',
                 auditTabsActiveName: 'wait',
                 auditHelpTabsActiveName:'wait',
                 editHelpDetailVisible:false,
                 editHelpVisible: false,
+                editLeaveVisible:false,
+                leaveDetailVisible:false,
                 helpDetailVisible:false,
                 createTaskVisible: false,
+                editLeaveDetailVisible:false,
                 commentedPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -441,7 +579,17 @@
                     pageSize: 5,
                     total: 0,
                 },
+                leaveWaitPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
                 reviewPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
+                leavePassPage: {
                     pageNum: 1,
                     pageSize: 5,
                     total: 0,
@@ -472,6 +620,25 @@
                     name: '',
                     username: ''
                 },
+                leaveForm:{
+                    id:'',
+                    description:'',
+                    beginTime:'',
+                    endTime:'',
+                    type:'',
+                    hours:'',
+                    typeName:''
+                },
+                leaveType:[
+                    {id:1,name:'事假'},
+                    {id:2,name:'病假'},
+                ] ,
+                userWeeks:[],
+                weekTime:{
+                    beginWeek:'',
+                    endWeek:''
+                },
+                leaveTimeRange:'',
                 helpDetail: {
                     id:'',
                     description: '',
@@ -514,6 +681,13 @@
                     userId: [ {required: true, message: '求助人不能为空', trigger: 'change'}],
                     time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
                 },
+                leaveRules:{
+                    hours: [ {required: true, message: '请假时长不能为空', trigger: 'blur'}],
+                    description: [{required: true, message: '请假原因不能为空', trigger: 'blur', min: 1}],
+                    beginTime:[{type: 'date', required: true, message: '开始日期不能为空', trigger: 'change'}],
+                    endTime:[{type: 'date', required: true, message: '结束日期不能为空', trigger: 'change'}],
+                    type:[{required: true, message: '请假类型不能为空', trigger: 'blur'},]
+                },
                 task: {
                     doing: [],
                     finished: [],
@@ -525,8 +699,11 @@
                 },
                 review:{
                     wait: [],
-                    reject: [],
                     review: []
+                },
+                leaveList:{
+                    wait:[],
+                    pass:[]
                 },
                 projectList: [],
                 stageList: [],
@@ -598,8 +775,20 @@
                 }
                 return 'total, pager'
             },
+            leaveWaitPageLayout() {
+                if (this.leaveWaitPage.total>5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             reviewPageLayout() {
                 if (this.reviewPage.total>5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            leavePassPageLayout() {
+                if (this.leavePassPage.total>5) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -631,6 +820,8 @@
                 this.fetchStageList()
                 this.fetchTagList()
                 this.fetchUserList()
+                this.fetchUserLeaveList()
+                this.fetchUserLeavePassList()
                 //this.fetchApplyFailTask();
                 if (this.userRole === 0) {
                     // 所有审核通过的数据
@@ -802,6 +993,24 @@
                     vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data))
                 })
             },
+            //获取个人请假信息
+            fetchUserLeaveList(){
+                let vm = this
+                http.zsyGetHttp('/userLeave/1/'+this.leaveWaitPage.pageNum, {}, (resp) => {
+                    vm.leaveList.wait = resp.data.list
+                    vm.leaveWaitPage.total = resp.data.total
+                    vm.leaveWaitPage.pageNum = resp.data.pageNum
+                })
+            },
+            //获取请假通过信息
+            fetchUserLeavePassList(){
+                let vm = this
+                http.zsyGetHttp('/userLeave/3/'+this.leaveWaitPage.pageNum, {}, (resp) => {
+                    vm.leaveList.pass = resp.data.list
+                    vm.leavePassPage.total = resp.data.total
+                    vm.leavePassPage.pageNum = resp.data.pageNum
+                })
+            },
             //保存用户转移积分
             saveHelpInfo(helpForm){
                 var param = this.helpForm;
@@ -844,7 +1053,6 @@
             fetchMyHelpWaitList(){
                 http.zsyGetHttp('/integral/getMyWaitList/'+this.waitPage.pageNum, {}, (resp) => {
                     this.review.wait = resp.data.list;
-                    console.log(this.review.wait)
                     this.waitPage.total = resp.data.total;
                 })
             },
@@ -921,6 +1129,33 @@
                 this.editHelpVisible = true;
                 this.helpDetailVisible = false;
             },
+            leaveDetail(leave){
+                this.leaveDetailVisible =true
+                this.leaveForm.id = leave.id
+                this.leaveForm.description = leave.description
+                this.leaveForm.beginTime = moment(leave.beginTime).toDate();
+                this.leaveForm.endTime = moment(leave.endTime).toDate();
+                this.leaveForm.typeName = leave.typeName
+                this.leaveForm.hours = leave.hours
+                this.userWeeks = leave.userWeeks
+            },
+            editLeaveDetail(leave,index){
+                if(this.userRole == 0&&index!=1){
+                    this.leaveDetail(leave)
+                }else{
+                    this.editLeaveDetailVisible = true ;
+                    this.leaveDetailVisible = false ;
+                    this.editLeaveVisible = true
+                    this.leaveForm.id = leave.id
+                    this.leaveForm.description = leave.description
+                    this.leaveForm.beginTime = moment(leave.beginTime).toDate();
+                    this.leaveForm.endTime = moment(leave.endTime).toDate();
+                    this.leaveForm.type = leave.type
+                    this.leaveForm.hours = leave.hours
+                    this.userWeeks = leave.userWeeks
+                }
+
+            },
             clearHelpForm(){
                 this.helpForm.integral = '';
                 this.helpForm.time = '';
@@ -931,6 +1166,10 @@
                 this.helpForm.name='';
                 this.editHelpDetailVisible = false;
             },
+            clearLeaveForm(){
+                this.leaveForm.id = this.leaveForm.endTime = this.leaveForm.beginTime = this.leaveForm.hours = this.leaveForm.type = this.leaveForm.description  = ''
+                this.userWeeks = []
+            },
             //待审核积分转移页
             handleWaitPage(currentPage){
                 this.waitPage.pageNum = currentPage;
@@ -939,6 +1178,99 @@
                 }else{
                     this.fetchHelpWaitAdmin();
                 }
+            },
+            handleLeaveWaitPage(currentPage){
+                this.leaveWaitPage.pageNum = currentPage;
+                if(this.userRole>0){
+                    this.fetchUserLeaveList();
+                }else{
+                    this.fetchUserLeavePassList();
+                }
+            },
+            handleLeavePassPage(currentPage){
+                this.leavePassPage.pageNum = currentPage;
+                if(this.userRole>0){
+                    this.fetchUserLeavePassList();
+                }else{
+                    this.fetchHelpWaitAdmin();
+                }
+            },
+            saveLeaveInfo(formName){
+                var sumHours=0;
+                for(var i=0;i<this.userWeeks.length;i++){
+                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.userWeeks[i].hours);
+                    if(!ishours){
+                        this.$message({ showClose: true,message: '请假时长填写错误',type: 'error'});
+                        return false;
+                    }
+                    if(this.userWeeks[i].hours>99999.9||this.userWeeks[i].hours<0){
+                        this.$message({ showClose: true,message: '请假时长正确值应为0~99999.9',type: 'error'});
+                        return false;
+                    }
+                    sumHours +=  parseFloat(this.userWeeks[i].hours)
+                }
+                if(sumHours!=this.leaveForm.hours){
+                    this.$message({ showClose: true,message: '周请假时间与请假时长不符，请检查',type: 'error'});
+                    return false
+                }
+                if(this.leaveForm.type==''||this.leaveForm.type==null){
+                    this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
+                    return false;
+                }
+                this.$refs[formName].validate((valid) =>{
+                    let form = this.leaveForm
+                    form.beginTime = moment(form.beginTime).format('YYYY-MM-DD 00:00:00')
+                    form.endTime = moment(form.endTime).format('YYYY-MM-DD 23:59:59')
+                    form['userWeeks'] = this.userWeeks
+                    if(form.id!=''){
+                        http.zsyPostHttp('/userLeave/editLeaveDetail/'+form.id, form, (resp) => {
+                            this.$message({
+                                showClose: true,
+                                message: '新建请假申请成功',
+                                type: 'success'
+                            });
+                            this.fetchUserLeaveList();
+                            this.clearLeaveForm();
+                            this.editLeaveVisible = false
+                        })
+                    }else{
+                        http.zsyPostHttp('/userLeave/add', form, (resp) => {
+                            this.$message({
+                                showClose: true,
+                                message: '请假申请修改成功',
+                                type: 'success'
+                            });
+                            this.fetchUserLeaveList();
+                            this.clearLeaveForm()
+                            this.editLeaveVisible = false
+                        })
+                    }
+                })
+            },
+            deleteLeave(id){
+                http.zsyDeleteHttp('/userLeave/'+id, null, (resp) => {
+                    this.$message({
+                        showClose: true,
+                        message: '请假申请删除成功',
+                        type: 'success'
+                    });
+                    this.fetchUserLeaveList();
+                    this.clearLeaveForm()
+                    this.leaveDetailVisible = false
+                })
+            },
+            acceptLeave(id){
+                http.zsyGetHttp('/userLeave/passLeave/'+id, null, (resp) => {
+                    this.$message({
+                        showClose: true,
+                        message: '请假申请审核完成',
+                        type: 'success'
+                    });
+                    this.fetchUserLeaveList();
+                    this.fetchUserLeavePassList();
+                    this.clearLeaveForm()
+                    this.leaveDetailVisible = false
+                })
             },
             handleReviewPage(currentPage){
                 this.reviewPage.pageNum = currentPage;
@@ -1027,21 +1359,69 @@
             TaskItem: TaskItem
         },
         watch:{
-            taskForm:{
-                handler:function (val, oldVal) {
-                    this.weekNumber = [];
-                    let weekData='';
-                    if ( this.taskForm.endTime != '') {
-                        var beginWeek = moment(this.taskForm.beginTime).week()
-                        var endWeek = moment(this.taskForm.endTime).week()
-                        if(beginWeek == endWeek){
-                            weekData = {'weekNumber':this.weekTime.beiginWeek, 'hours': this.step.taskHours };
-                            this.weekNumber.push(weekData)
-                        }else {
-                            this.$message({ showClose: true,message: '请选择本周内时间',type: 'error'});
+            leaveForm: {
+                    deep: true,
+                    handler: function (val, oldVal) {
+                        this.userWeeks = [];
+                        let weekData = '';
+                        let param = this.userWeeks;
+                        if (this.leaveForm.hours != '' && this.leaveForm.beginTime != '' && this.leaveForm.endTime != ''&& (moment(this.leaveForm.beginTime).isBefore(this.leaveForm.endTime)|| moment(this.leaveForm.beginTime).isSame(this.leaveForm.endTime))) {
+                            this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
+                            this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
+                            let beginYear = moment(this.leaveForm.beginTime).year();
+                            let endYear = moment(this.leaveForm.endTime).year();
+                            if (beginYear != endYear) {
+                                for (let i = this.weekTime.beginWeek; i < moment(this.leaveForm.beginTime).weeksInYear() + 1; i++) {
+                                        weekData = {
+                                            'weekNumber': i,
+                                            'year': beginYear,
+                                            'range': moment().year(beginYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                                        };
+                                        param.push(weekData)
+                                }
+                                for (let i = 1; i < this.weekTime.endWeek + 1; i++) {
+                                        weekData = {
+                                            'weekNumber': i,
+                                            'year': endYear,
+                                            'range': moment().year(endYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(endYear).week(i).endOf('week').format('MM-DD')
+                                        };
+                                        param.push(weekData)
+                                }
+                            }
+                            if (this.weekTime.beginWeek == this.weekTime.endWeek) {
+                                    weekData = {
+                                        'weekNumber': this.weekTime.beginWeek,
+                                        'hours': this.leaveForm.hours,
+                                        'year': beginYear,
+                                        'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
+                                    };
+                                    param.push(weekData)
+                            } else if (this.weekTime.endWeek - this.weekTime.beginWeek > 1) {
+                                for (let i = this.weekTime.beginWeek; i < this.weekTime.endWeek + 1; i++) {
+                                        param.push({
+                                            'weekNumber': i,
+                                            'hours': '',
+                                            'year': beginYear,
+                                            'range': moment().year(beginYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                                        })
+                                }
+                            } else if (this.weekTime.endWeek - this.weekTime.beginWeek == 1) {
+                                    param.push({
+                                        'weekNumber': this.weekTime.beginWeek,
+                                        'hours': '',
+                                        'year': beginYear,
+                                        'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
+                                    })
+                                    param.push({
+                                        'weekNumber': this.weekTime.endWeek,
+                                        'hours': '',
+                                        'year': beginYear,
+                                        'range': moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')
+                                    })
+                            }
+                            this.userWeeks = param
                         }
-                    }
-                }
+                    },
             },
         }
     }
@@ -1120,6 +1500,11 @@
         margin-right: 0;
     }
 
+    .star {
+        color: red;
+        padding: 1px;
+    }
+
     .my-integral-con, .my-task-con {
         margin-top: 16px;
         position: relative;
@@ -1131,7 +1516,7 @@
 
     .add-task {
         position: absolute;
-        right: 150px;
+        right: 280px;
         font-size: 16px;
         cursor: pointer;
         color: #36A8FF;
@@ -1139,11 +1524,11 @@
     }
 
     .help{
-        right: 20px;
+        right: 135px;
     }
 
     .leave{
-        right: 60px;
+        right: 20px;
     }
 
     .add-task > span {
