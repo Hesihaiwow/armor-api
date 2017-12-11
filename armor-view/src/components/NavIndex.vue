@@ -477,7 +477,7 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="请假类型" prop="type">
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span><el-form-item label="请假类型" prop="type">
                     <el-select
                             v-model="leaveForm.type"
                             placeholder="请选择类型">
@@ -485,7 +485,7 @@
                                    :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="请假时长" prop="hours">
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span><el-form-item label="请假时长" prop="hours">
                     <el-input type="input" v-model="leaveForm.hours" style="width:100px"></el-input>
                 </el-form-item>
             </el-form>
@@ -684,11 +684,9 @@
                     time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
                 },
                 leaveRules:{
-                    hours: [ {required: true, message: '请假时长不能为空', trigger: 'blur'}],
                     description: [{required: true, message: '请假原因不能为空', trigger: 'blur', min: 1}],
                     beginTime:[{type: 'date', required: true, message: '开始日期不能为空', trigger: 'change'}],
                     endTime:[{type: 'date', required: true, message: '结束日期不能为空', trigger: 'change'}],
-                    type:[{required: true, message: '请假类型不能为空', trigger: 'blur'},]
                 },
                 task: {
                     doing: [],
@@ -1211,6 +1209,12 @@
                     this.$message({ showClose: true,message: '请假时长正确值应为0~99999.9',type: 'error'});
                     return false;
                 }
+                this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
+                this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
+                if(moment(this.leaveForm.beginTime).isAfter(this.leaveForm.endTime)||this.weekTime.beginWeek!=this.weekTime.endWeek){
+                    this.$message({ showClose: true,message: '请假日期有误,请假时间不能跨周,请检查',type: 'error'});
+                    return false;
+                }
                 if(this.leaveForm.type==''||this.leaveForm.type==null){
                     this.$message({ showClose: true,message: '请选择请假类型',type: 'error'});
                     return false;
@@ -1359,33 +1363,6 @@
         components: {
             TaskItem: TaskItem
         },
-        watch:{
-            leaveForm: {
-                    deep: true,
-                    handler: function (val, oldVal) {
-                        this.userWeeks = [];
-                        let weekData = '';
-                        let param = this.userWeeks;
-                        if (this.leaveForm.hours != '' && this.leaveForm.beginTime != '' && this.leaveForm.endTime != ''&& (moment(this.leaveForm.beginTime).isBefore(this.leaveForm.endTime)|| moment(this.leaveForm.beginTime).isSame(this.leaveForm.endTime))) {
-                            this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week()
-                            this.weekTime.endWeek = moment(this.leaveForm.endTime).week()
-                            let beginYear = moment(this.leaveForm.beginTime).year();
-                            if (this.weekTime.beginWeek == this.weekTime.endWeek) {
-                                    weekData = {
-                                        'weekNumber': this.weekTime.beginWeek,
-                                        'hours': this.leaveForm.hours,
-                                        'year': beginYear,
-                                    };
-                                    param.push(weekData)
-                            } else {
-                                this.$message({ showClose: true,message: '请假日期有误,假期请勿跨周,请检查',type: 'error'});
-                                return false
-                            }
-                            this.userWeeks = param
-                        }
-                    },
-            },
-        }
     }
 </script>
 <style>
