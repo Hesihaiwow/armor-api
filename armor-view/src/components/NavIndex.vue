@@ -157,6 +157,7 @@
                 </div>
             </div>
             <div v-show="userRole===0">
+                <p class="mic-title">个人任务审核</p>
                 <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
                     <el-tab-pane label="待审核" name="wait">
                         <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
@@ -255,10 +256,10 @@
                 </el-tabs>
             </div>
             <div>
-                <p class="mic-title">我的请假信息</p>
+                <p class="mic-title">请假申请审核</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeLeaveName" @tab-click="handleClick">
-                        <el-tab-pane label="审核中" name="wait">
+                        <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
                             <!--@click="reviewDetail(help)"-->
                             <div class="task-lis" v-for="leave in leaveList.wait" >
                                 <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
@@ -287,7 +288,7 @@
                                 <h2>暂无数据</h2>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="完成审核" name="review">
+                        <el-tab-pane :label="userRole!=0?'完成审核':'审核通过'" name="review">
                             <div class="task-lis" v-for="leave in leaveList.pass" @click="leaveDetail(leave)">
                                 <div class="head-img" ><img src="../assets/img/auditSuccess.png" ></div>
                                 <div class="main-task-detail">
