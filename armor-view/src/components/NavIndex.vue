@@ -259,7 +259,7 @@
                 <p class="mic-title">请假申请审核</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeLeaveName" @tab-click="handleClick">
-                        <el-tab-pane label="待审核" name="wait">
+                        <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
                             <!--@click="reviewDetail(help)"-->
                             <div class="task-lis" v-for="leave in leaveList.wait" >
                                 <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
@@ -288,7 +288,7 @@
                                 <h2>暂无数据</h2>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="审核通过" name="review">
+                        <el-tab-pane :label="userRole!=0?'完成审核':'审核通过'" name="review">
                             <div class="task-lis" v-for="leave in leaveList.pass" @click="leaveDetail(leave)">
                                 <div class="head-img" ><img src="../assets/img/auditSuccess.png" ></div>
                                 <div class="main-task-detail">
