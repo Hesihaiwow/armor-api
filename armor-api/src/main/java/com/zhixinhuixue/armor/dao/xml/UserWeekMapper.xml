@@ -22,7 +22,7 @@
     <result column="hours" jdbcType="VARCHAR" property="hours" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <association property="leaveHours" column="{weekNumber=week_number,year=year,userId=user_id}" select="getLeaveWeekHours" javaType="java.lang.Double"/>
+    <association property="leaveHours" column="{weekNumber=week_number,year=year,userId=user_id}" select="getLeaveWeekHours"/>
   </resultMap>
 
   <insert id="insertList" parameterType="java.util.List">
@@ -38,8 +38,8 @@
         SELECT * FROM user_week where task_id = #{taskId} and user_id = #{userId}
   </select>
 
-  <select id="getLeaveWeekHours" parameterType="java.util.Map" resultType="java.lang.Double">
-    SELECT w.hours FROM user_week w JOIN user_leave l ON w.task_id = l.id
+  <select id="getLeaveWeekHours" parameterType="java.util.Map" resultType="java.lang.String">
+    SELECT GROUP_CONCAT(w.hours separator ',') FROM user_week w JOIN user_leave l ON w.task_id = l.id
      WHERE l.review_status=3 and w.week_number = #{weekNumber} and w.year=#{year} and l.user_id = #{userId}
   </select>
 

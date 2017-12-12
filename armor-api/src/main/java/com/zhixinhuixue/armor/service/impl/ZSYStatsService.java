@@ -129,7 +129,6 @@ public class ZSYStatsService implements IZSYStatsService {
             statsWeekResDTO.setTaskName(userWeekBO.getTaskName());
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
             statsWeekResDTO.setDescription(userWeekBO.getDescription());
-            statsWeekResDTO.setLeaveHours(userWeekBO.getLeaveHours()==null?0:userWeekBO.getLeaveHours());
 
             double sum =0;
             if(userWeekBO.getHours().contains(",")){
@@ -142,8 +141,20 @@ public class ZSYStatsService implements IZSYStatsService {
             }else{
                 sum = Double.valueOf(userWeekBO.getHours());
             }
-
             statsWeekResDTO.setHours(sum);
+
+            double leaveSum =0;
+            if(userWeekBO.getLeaveHours()!=null&&userWeekBO.getLeaveHours().contains(",")){
+                String[] hoursList = userWeekBO.getLeaveHours().split(",");
+                int hoursLength = userWeekBO.getLeaveHours().split(",").length;
+
+                for(int i=0;i<hoursLength;i++){
+                    leaveSum+=Double.valueOf(hoursList[i]);
+                }
+            }else{
+                leaveSum = Double.valueOf(userWeekBO.getLeaveHours()==null?0:Double.valueOf(userWeekBO.getLeaveHours()));
+            }
+            statsWeekResDTO.setLeaveHours(leaveSum);
 
             statsWeekResDTOS.add(statsWeekResDTO);
         });
