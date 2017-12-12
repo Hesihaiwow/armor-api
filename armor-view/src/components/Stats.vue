@@ -138,16 +138,16 @@
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getLeaveList()" class="search-btn"></div>
                 <el-table :data="leaveManage" border>
                     <el-table-column type="index" label="序号" width="80"></el-table-column>
-                    <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
+                    <el-table-column prop="description" label="请假原因" align="center"></el-table-column>
                     <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
                     <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
                     <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
-                    <el-table-column prop="beginTime" label="开始日期"  width="150">
+                    <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
                         <template scope="scope">
                             <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="endTime" label="结束日期"  width="150">
+                    <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
                         <template scope="scope">
                             <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
                         </template>
@@ -462,7 +462,7 @@
         filters: {
             formatDate: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY年MM月DD日');
+                return moment(value).format('YYYY年MM月DD日 HH:00:00');
             },
         },
         methods: {
