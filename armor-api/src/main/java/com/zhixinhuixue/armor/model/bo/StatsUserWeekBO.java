@@ -15,7 +15,7 @@ public class StatsUserWeekBO  extends UserWeekBO{
 
     private String description;
 
-    private Double leaveHours;
+    private String leaveHours;
 
 
     public Long getId() {
@@ -50,11 +50,11 @@ public class StatsUserWeekBO  extends UserWeekBO{
         this.description = description;
     }
 
-    public Double getLeaveHours() {
+    public String getLeaveHours() {
         return leaveHours;
     }
 
-    public void setLeaveHours(Double leaveHours) {
+    public void setLeaveHours(String leaveHours) {
         this.leaveHours = leaveHours;
     }
 }

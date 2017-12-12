@@ -1006,7 +1006,7 @@
             //获取请假通过信息
             fetchUserLeavePassList(){
                 let vm = this
-                http.zsyGetHttp('/userLeave/3/'+this.leaveWaitPage.pageNum, {}, (resp) => {
+                http.zsyGetHttp('/userLeave/3/'+this.leavePassPage.pageNum, {}, (resp) => {
                     vm.leaveList.pass = resp.data.list
                     vm.leavePassPage.total = resp.data.total
                     vm.leavePassPage.pageNum = resp.data.pageNum
@@ -1185,7 +1185,7 @@
                 if(this.userRole>0){
                     this.fetchUserLeaveList();
                 }else{
-                    this.fetchUserLeavePassList();
+                    this.fetchUserLeaveList();
                 }
             },
             handleLeavePassPage(currentPage){
@@ -1193,7 +1193,7 @@
                 if(this.userRole>0){
                     this.fetchUserLeavePassList();
                 }else{
-                    this.fetchHelpWaitAdmin();
+                    this.fetchUserLeavePassList();
                 }
             },
             saveLeaveInfo(formName){
