@@ -256,7 +256,7 @@
                 </el-tabs>
             </div>
             <div>
-                <p class="mic-title">请假申请审核</p>
+                <p class="mic-title">{{userRole!=0?'请假申请':'请假申请审核'}}</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeLeaveName" @tab-click="handleClick">
                         <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
