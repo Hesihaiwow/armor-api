@@ -440,6 +440,7 @@
             this.fetchProjectList();
             this.fetchProjectList();
             this.getBugList();
+            this.getLeaveList();
         },
         computed: {
             permit() {
