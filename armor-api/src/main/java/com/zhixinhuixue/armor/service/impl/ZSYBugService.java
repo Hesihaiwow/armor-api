@@ -66,6 +66,7 @@ public class ZSYBugService implements IZSYBugService {
     @Override
     public PageInfo<BugPageResDTO> getBugList(BugListReqDTO bugListReqDTO) {
         PageHelper.startPage(bugListReqDTO.getPageNum(), ZSYConstants.PAGE_SIZE);
+        bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<BugManageListBO> bugListBOS = bugManageMapper.getBugList(bugListReqDTO);
         Page<BugPageResDTO> bugPageResDTOS = new Page();
         BeanUtils.copyProperties(bugListBOS, bugPageResDTOS);
