@@ -256,18 +256,18 @@
                 </el-tabs>
             </div>
             <div>
-                <p class="mic-title">请假申请审核</p>
+                <p class="mic-title">{{userRole!=0?'请假申请':'请假申请审核'}}</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeLeaveName" @tab-click="handleClick">
                         <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
                             <!--@click="reviewDetail(help)"-->
-                            <div class="task-lis" v-for="leave in leaveList.wait" >
+                            <div class="task-lis" v-for="leave in leaveList.wait"  @click="editLeaveDetail(leave,0)">
                                 <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
                                 <div class="main-task-detail">
                                     <div class="task-name"><span>{{leave.description}}</span></div>
                                     <div class="task-state">
                                         <span class="task-end blue">{{leave.createTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-edit" @click="editLeaveDetail(leave,0)"></i></span>
+                                        <span class="task-time-opt"><i class="el-icon-edit"></i></span>
                                     </div>
                                 </div>
                                 <div class="task-username">
@@ -683,7 +683,7 @@
                     time: [ {type: 'date', required: true, message: '转移时间不能为空', trigger: 'change'}]
                 },
                 leaveRules:{
-                    description: [{required: true, message: '请假原因不能为空', trigger: 'change', min: 1}],
+                    description: [{required: true, message: '请假原因不能为空并保证在6字以上', trigger: 'change', min: 6}],
                 },
                 task: {
                     doing: [],
