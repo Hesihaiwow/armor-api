@@ -46,10 +46,12 @@
   </select>
 
   <select id="getLeaveList" parameterType="com.zhixinhuixue.armor.model.dto.request.UserLeaveListReqDTO" resultMap="ResultMap">
-    SELECT user_leave.*, user.name FROM user_leave JOIN user on user_leave.user_id = user.id
-    WHERE  review_status = 3
+    SELECT user_leave.*, user.name FROM user_leave
+    JOIN user on user_leave.user_id = user.id
+    JOIN department on department.id = user.department_id
+    WHERE  review_status = 3  AND department.parent_id = #{departmentId}
     <if test="userId!=null">
-      and user_id = #{userId}
+      AND user_id = #{userId}
     </if>
     <if test="beginTime!=null">
       <![CDATA[ AND  (user_leave.begin_time >= #{beginTime,jdbcType=TIMESTAMP} or user_leave.end_time >= #{beginTime,jdbcType=TIMESTAMP}) ]]>

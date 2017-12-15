@@ -1,8 +1,8 @@
 package com.zhixinhuixue.armor.source.enums;
 
 /**
- * 用户角色
- * Created by Tate on 2017/8/7.
+ * 请假类型
+ * Created by Lang on 2017/12/7.
  */
 public enum ZSYUserLeaveType {
 

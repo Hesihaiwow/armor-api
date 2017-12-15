@@ -116,7 +116,8 @@ public class ZSYStatsService implements IZSYStatsService {
      */
     @Override
     public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO date){
-        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(date.getWeekNumber(),DateHelper.getYears(date.getDate()));
+        Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(date.getWeekNumber(),DateHelper.getYears(date.getDate()),departmentId);
 
         List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
@@ -130,19 +131,6 @@ public class ZSYStatsService implements IZSYStatsService {
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
             statsWeekResDTO.setDescription(userWeekBO.getDescription());
 
-            double sum =0;
-            if(userWeekBO.getHours().contains(",")){
-                String[] hoursList = userWeekBO.getHours().split(",");
-                int hoursLength = userWeekBO.getHours().split(",").length;
-
-                for(int i=0;i<hoursLength;i++){
-                    sum+=Double.valueOf(hoursList[i]);
-                }
-            }else{
-                sum = Double.valueOf(userWeekBO.getHours());
-            }
-            statsWeekResDTO.setHours(sum);
-
             double leaveSum =0;
             if(userWeekBO.getLeaveHours()!=null&&userWeekBO.getLeaveHours().contains(",")){
                 String[] hoursList = userWeekBO.getLeaveHours().split(",");
@@ -155,6 +143,21 @@ public class ZSYStatsService implements IZSYStatsService {
                 leaveSum = Double.valueOf(userWeekBO.getLeaveHours()==null?0:Double.valueOf(userWeekBO.getLeaveHours()));
             }
             statsWeekResDTO.setLeaveHours(leaveSum);
+
+            double sum =0;
+            if(userWeekBO.getHours()!=null){
+                if(userWeekBO.getHours().contains(",")){
+                    String[] hoursList = userWeekBO.getHours().split(",");
+                    int hoursLength = userWeekBO.getHours().split(",").length;
+
+                    for(int i=0;i<hoursLength;i++){
+                        sum+=Double.valueOf(hoursList[i]);
+                    }
+                }else{
+                    sum = Double.valueOf(userWeekBO.getHours());
+                }
+            }
+            statsWeekResDTO.setHours(sum-leaveSum);
 
             statsWeekResDTOS.add(statsWeekResDTO);
         });

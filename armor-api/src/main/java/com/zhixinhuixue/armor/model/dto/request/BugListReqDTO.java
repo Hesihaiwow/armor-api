@@ -17,6 +17,8 @@ public class BugListReqDTO {
 
     private Integer pageNum;
 
+    private Long departmentId;
+
     public Long getUserId() {
         return userId;
     }
@@ -47,5 +49,13 @@ public class BugListReqDTO {
 
     public void setPageNum(Integer pageNum) {
         this.pageNum = pageNum;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }
