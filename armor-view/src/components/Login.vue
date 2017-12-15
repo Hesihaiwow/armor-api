@@ -8,7 +8,7 @@
                     <el-input type="text" v-model="loginForm.account" auto-complete="off" placeholder="账号" class="form-input"></el-input>
                 </el-form-item>
                 <el-form-item prop="checkPass">
-                    <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="密码" class="form-input"></el-input>
+                    <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="密码" @keyup.enter.native="login" class="form-input"></el-input>
                 </el-form-item>
                 <!--<el-checkbox  checked class="remember">记住密码</el-checkbox>-->
                 <el-form-item style="width:100%;">
