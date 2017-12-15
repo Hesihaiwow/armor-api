@@ -93,6 +93,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     @Override
     public PageInfo<UserLeaveResDTO> getLeaveList(UserLeaveListReqDTO userLeaveListReqDTO) {
         PageHelper.startPage(userLeaveListReqDTO.getPageNum(), 10);
+        userLeaveListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<UserLeaveBO> userLeaveBOS = userLeaveMapper.getLeaveList(userLeaveListReqDTO);
 
         Page<UserLeaveResDTO> page = new Page<>();
