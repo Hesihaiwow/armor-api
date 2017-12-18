@@ -17,9 +17,7 @@
     <result column="id" jdbcType="INTEGER" property="id"/>
     <result column="name" jdbcType="VARCHAR" property="userName"/>
     <result column="taskName" jdbcType="VARCHAR" property="taskName"/>
-    <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="week_number" jdbcType="INTEGER" property="weekNumber" />
-    <result column="hours" jdbcType="VARCHAR" property="hours" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <association property="leaveHours" column="{weekNumber=week_number,year=year,userId=user_id}" select="getLeaveWeekHours"/>
@@ -47,7 +45,7 @@
     delete from user_week where task_id = #{taskId}
   </delete>
 
-  <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Integer">
+  <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Double">
     SELECT IFNULL(sum(hours),0) FROM user_week
      join task on user_week.task_id = task.id where task.review_status = 3
      and user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year}
@@ -55,7 +53,7 @@
 
   <!-- 周任务统计 -->
   <select id="getUserWeekStats" parameterType="java.util.Map" resultMap="WeekMap">
-    SELECT u.name, group_concat(t.name separator '\n\r')  as taskName,  group_concat(w.hours separator ',')  as hours, w.*   FROM user u
+    SELECT u.name, group_concat(t.name separator '\n\r')  as taskName,  w.user_id, w.task_id, w.id, w.week_number, w.year    FROM user u
        LEFT JOIN  user_week w on u.id= w.user_id and w.week_number = #{weekNumber} and w.year=#{year}
         LEFT  JOIN  task t on t.id = w.task_id and t.review_status=3 AND t.is_delete=0
         LEFT  JOIN  department d on u.department_id = d.id

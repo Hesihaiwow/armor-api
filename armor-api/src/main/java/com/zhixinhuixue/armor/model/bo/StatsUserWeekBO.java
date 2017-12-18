@@ -13,8 +13,6 @@ public class StatsUserWeekBO  extends UserWeekBO{
 
     private String taskName;
 
-    private String description;
-
     private String leaveHours;
 
 
@@ -40,14 +38,6 @@ public class StatsUserWeekBO  extends UserWeekBO{
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getLeaveHours() {
