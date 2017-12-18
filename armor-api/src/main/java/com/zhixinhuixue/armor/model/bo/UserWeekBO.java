@@ -11,7 +11,7 @@ public class UserWeekBO {
 
     private int weekNumber;
 
-    private String hours;
+    private Double hours;
 
     private Long taskId;
 
@@ -41,11 +41,11 @@ public class UserWeekBO {
         this.userId = userId;
     }
 
-    public String getHours() {
+    public Double getHours() {
         return hours;
     }
 
-    public void setHours(String hours) {
+    public void setHours(Double hours) {
         this.hours = hours;
     }
 }

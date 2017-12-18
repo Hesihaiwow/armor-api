@@ -337,7 +337,10 @@ public class DateHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
-        return calendar.get(Calendar.WEEK_OF_YEAR);
+        if(getYears(date)!=2017){
+            return calendar.get(Calendar.WEEK_OF_YEAR);
+        }
+        return calendar.get(Calendar.WEEK_OF_YEAR)-1;
     }
 
     /**
