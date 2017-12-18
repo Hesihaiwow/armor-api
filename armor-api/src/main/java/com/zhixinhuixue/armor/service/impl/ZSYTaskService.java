@@ -155,7 +155,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     userWeek.setUserId(user.getUserId());
                     userWeek.setHours(user.getTaskHours());
                     userWeek.setYear(DateHelper.getYears(user.getEndTime()));
-                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime())-1);
+                    userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime()));
                     userWeeks.add(userWeek);
                 } else {
                     user.getUserWeeks().forEach(week ->{
@@ -266,7 +266,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         userWeek.setTaskId(task.getId());
                         userWeek.setUserId(user.getUserId());
                         userWeek.setHours(user.getTaskHours());
-                        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime())-1);
+                        userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(user.getEndTime()));
                         userWeek.setYear(DateHelper.getYears(user.getEndTime()));
                         userWeeks.add(userWeek);
                 }else{
@@ -1040,6 +1040,7 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
+        userWeekMaper.deleteByTaskId(taskId);
         taskMapper.updateByPrimaryKeySelective(task);
         return ZSYResult.success();
     }

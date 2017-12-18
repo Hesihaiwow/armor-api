@@ -57,7 +57,7 @@
   <select id="getUserWeekStats" parameterType="java.util.Map" resultMap="WeekMap">
     SELECT u.name, group_concat(t.name separator '\n\r')  as taskName,  group_concat(w.hours separator ',')  as hours, w.*   FROM user u
        LEFT JOIN  user_week w on u.id= w.user_id and w.week_number = #{weekNumber} and w.year=#{year}
-        LEFT  JOIN  task t on t.id = w.task_id and t.review_status=3
+        LEFT  JOIN  task t on t.id = w.task_id and t.review_status=3 AND t.is_delete=0
         LEFT  JOIN  department d on u.department_id = d.id
         WHERE u.user_role>0  AND u.status =0 AND d.parent_id = #{departmentId}
     GROUP BY u.id
