@@ -13,7 +13,7 @@ public class StatsUserWeekBO  extends UserWeekBO{
 
     private String taskName;
 
-    private String leaveHours;
+    private Double leaveHours;
 
 
     public Long getId() {
@@ -40,11 +40,11 @@ public class StatsUserWeekBO  extends UserWeekBO{
         this.taskName = taskName;
     }
 
-    public String getLeaveHours() {
+    public Double getLeaveHours() {
         return leaveHours;
     }
 
-    public void setLeaveHours(String leaveHours) {
+    public void setLeaveHours(Double leaveHours) {
         this.leaveHours = leaveHours;
     }
 }
