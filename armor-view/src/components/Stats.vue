@@ -92,6 +92,7 @@
                 <div class="add-member-basic-msg fl" >
                     <el-date-picker
                             v-model="userWeekForm.date"
+                            :picker-options="pickerWeek"
                             type="week"
                             format="yyyy 第 WW 周"
                             placeholder="选择周">
@@ -429,6 +430,9 @@
                             picker.$emit('pick', [start, end]);
                         }
                     }]
+                },
+                pickerWeek:{
+                    firstDayOfWeek:1
                 }
             }
         },
