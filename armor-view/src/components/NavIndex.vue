@@ -504,10 +504,10 @@
             </el-form>
             <span slot="footer" class="dialog-footer" >
                 <div v-show="userRole==0&&activeLeaveName=='wait'">
-                    <el-tooltip content="删除该任务" placement="top">
+                    <el-tooltip content="删除该申请" placement="top">
                           <el-button type="danger" icon="delete" @click="deleteLeave(leaveForm.id)"></el-button>
                     </el-tooltip>
-                    <el-tooltip content="编辑该任务" placement="top">
+                    <el-tooltip content="编辑该申请" placement="top">
                      <el-button type="primary" icon="edit" @click="editLeaveDetail(leaveForm,1)"></el-button>
                     </el-tooltip>
                     <el-button type="success" @click="acceptLeave(leaveForm.id)">审核通过</el-button>
@@ -1255,7 +1255,7 @@
                 })
             },
             deleteLeave(id){
-                http.zsyDeleteHttp('/userLeave/'+id, null, (resp) => {
+                http.zsyDeleteHttp('/userLeave/delete/'+id, null, (resp) => {
                     this.$message({
                         showClose: true,
                         message: '请假申请删除成功',
