@@ -120,11 +120,12 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     public PageInfo<UserLeaveResDTO> getUserLeaveList(Integer status, Integer pageIndex) {
         PageHelper.startPage(pageIndex, 5);
         Long userId = ZSYTokenRequestContext.get().getUserId();
+        Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
         Page<UserLeaveBO> userLeaveBOS = new Page<UserLeaveBO>();
         if(ZSYTokenRequestContext.get().getUserRole()==0){
-             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(null, status);
+             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(null, status, departmentId);
         }else{
-             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(userId, status);
+             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(userId, status,departmentId);
         }
         Page<UserLeaveResDTO> page = new Page<>();
         BeanUtils.copyProperties(userLeaveBOS, page);
