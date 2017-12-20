@@ -377,7 +377,7 @@
                 <div class="bdl-line"></div>
             </div>
             <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="description"
+                <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="otherStep.description"
                           :rows="3"></el-input>
                 <div class="add-member-basic">
                     <div class="add-member-basic-list clearfix">
@@ -420,7 +420,7 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>状态：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
+                            <el-select v-model="otherStep.status" filterable placeholder="请选择">
                                 <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
@@ -668,7 +668,10 @@
                     description: '',
                     status: ''
                 },
-                description: '',
+                otherStep:{
+                    description: '',
+                    status:'',
+                },
                 stepTemp: {},
                 weekTime:{
                     beginWeek:'',
@@ -1136,7 +1139,8 @@
                 }
                 this.step = stages[index];
                 this.step.index = index;
-                this.description = stages[index].description;
+                this.otherStep.description = stages[index].description;
+                this.otherStep.status = stages[index].status;
                 this.modifyTaskForm.taskUsers.forEach((item) => {
                     item.cssClass = ''
                 })
@@ -1214,7 +1218,8 @@
                     completeTime: '',
                     status: ''
                 }
-                this.description = ''
+                this.otherStep.description = ''
+                this.otherStep.status=''
                 this.weekNumberTemp = []
             },
             saveAddMember() {
@@ -1258,18 +1263,17 @@
                     taskUser.beginTime = this.step.beginTime;
                     taskUser.endTime = this.step.endTime;
                     taskUser.taskHours = this.step.taskHours;
-                    taskUser.description = this.description;
+                    taskUser.description = this.otherStep.description;
                     taskUser.userWeeks = this.weekNumber;
-                    taskUser.status = this.step.status;
+                    taskUser.status = this.otherStep.status;
                     this.modifyTaskForm.taskUsers.push(taskUser);
                 } else {
                     // 取消css
                     this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
-                    this.modifyTaskForm.taskUsers[this.step.index].description = this.description
+                    this.modifyTaskForm.taskUsers[this.step.index].description = this.otherStep.description
+                    this.modifyTaskForm.taskUsers[this.step.index].status = this.otherStep.status
                     this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumber;
                 }
-
-                console.log(this.modifyTaskForm.taskUsers)
 
                 this.showAddDetail = !this.showAddDetail;
                 this.step = {
@@ -1284,7 +1288,8 @@
                     completeTime: '',
                     status: ''
                 };
-                this.description=''
+                this.otherStep.description=''
+                this.otherStep.status =''
                 this.stepTemp = {};
             },
             stepUserChange(val) {
