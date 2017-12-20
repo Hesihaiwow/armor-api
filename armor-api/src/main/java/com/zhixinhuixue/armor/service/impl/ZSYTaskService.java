@@ -271,7 +271,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         userWeeks.add(userWeek);
                 }else{
                     if(user.getUserWeeks().size()<1){
-                        throw new ZSYServiceException("请检查周工作量是否填写完整");
+                        throw new ZSYServiceException("请检查各成员周工作量是否填写完整");
                     }
                     user.getUserWeeks().forEach(week ->{
                         UserWeek userWeek = new UserWeek();
