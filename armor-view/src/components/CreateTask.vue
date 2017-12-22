@@ -330,6 +330,7 @@
                     endTime: '',
                     description: ''
                 }
+                this.description = ''
             },
             saveAddMember() {
                 var sumHours=0;

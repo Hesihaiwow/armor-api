@@ -64,7 +64,7 @@ public interface IZSYUserService {
      * 修改组织
      * @param id
      */
-    void modifyDept(Long id);
+    String modifyDept(Long id);
 
 
     /**
