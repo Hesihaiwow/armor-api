@@ -239,10 +239,11 @@
                 Http.zsyPutHttp('/user/modifyDept/'+this.departmentId,null,(res)=>{
                     this.$message({
                         showClose: true,
-                        message: '组织修改成功，请重新登录',
+                        message: '组织修改成功',
                         type: 'success'
                     });
-                    this.handleLogout()
+                    window.localStorage.setItem("token", res.data);
+                    this.$router.go(0);
                 })
 
                 this.deptVisible = false

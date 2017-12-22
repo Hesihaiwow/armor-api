@@ -244,7 +244,7 @@ public class ZSYUserService implements IZSYUserService {
      * 修改组织
      * @param id
      */
-    public void modifyDept(Long id){
+    public String modifyDept(Long id){
         User user = new User();
         user.setId(ZSYTokenRequestContext.get().getUserId());
         user.setDepartmentId(id);
@@ -256,6 +256,35 @@ public class ZSYUserService implements IZSYUserService {
         if (userMapper.updateSelectiveById(user) == 0) {
             throw new ZSYServiceException("更新组织失败，请重试");
         }
+
+        User tokenUser = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
+        //生成Token
+        Algorithm algorithm = null;
+        try {
+            algorithm = Algorithm.HMAC256(jwtSecret);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Long departmentId = user.getDepartmentId();
+        if(user.getDepartmentId()!=0){
+            departmentId = departmentMapper.selectById(user.getDepartmentId()).getParentId();
+        }
+        String jwt = JWT.create()
+                .withIssuer(jwtIssuer)
+                .withExpiresAt(DateHelper.afterDate(new Date(), jwtExp))
+                .withIssuedAt(new Date())
+                .withClaim("userId", String.valueOf(tokenUser.getId()))
+                .withClaim("userName", ZSYTokenRequestContext.get().getUserName())
+                .withClaim("avatarUrl", tokenUser.getAvatarUrl())
+                .withClaim("userRole", tokenUser.getUserRole())
+                .withClaim("departmentId", departmentId)
+                .sign(algorithm);
+
+        String loginKey = String.format(ZSYConstants.LOGIN_KEY, tokenUser.getId());
+        stringRedisTemplate.opsForValue().set(loginKey, ZSYConstants.REDIS_DEFAULT_VALUE);
+        stringRedisTemplate.expire(loginKey, ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
+        logger.info("{}({})组织修改成功,token:{}", ZSYTokenRequestContext.get().getUserName(), tokenUser.getId(), jwt);
+        return jwt;
     }
 
     @Override
@@ -369,7 +398,9 @@ public class ZSYUserService implements IZSYUserService {
             }
 
         user.setStatus(ZSYUserStatus.NORMAL.getValue());
-        userMapper.updateSelectiveById(user);
+        if (userMapper.updateSelectiveById(user) == 0) {
+            throw new ZSYServiceException("更新用户信息失败,请稍后重试.");
+        }
     }
 
     /**
