@@ -485,7 +485,7 @@
                     </el-select>
                 </el-form-item>
                 <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span><el-form-item label="请假时长" prop="hours">
-                    <el-input type="input" v-model="leaveForm.hours" style="width:100px"></el-input>
+                    <el-input type="input" v-model="leaveForm.hours" style="width:100px"></el-input> 小时
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
