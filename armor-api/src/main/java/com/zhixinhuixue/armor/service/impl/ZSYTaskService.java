@@ -59,6 +59,8 @@ public class ZSYTaskService implements IZSYTaskService {
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
     private IZSYUserWeekMapper userWeekMaper;
+    @Autowired
+    private IZSYStageMapper stageMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -1077,7 +1079,7 @@ public class ZSYTaskService implements IZSYTaskService {
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
-            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&taskListBO.getStageId().equals(Long.parseLong(ZSYConstants.FINISHED)))){
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stageMapper.selectById(taskListBO.getStageId()).getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
                 TaskListResDTO taskListResDTO = new TaskListResDTO();
                 BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
                 List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
