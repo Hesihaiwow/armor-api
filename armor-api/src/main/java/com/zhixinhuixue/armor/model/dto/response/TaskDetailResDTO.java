@@ -28,6 +28,10 @@ public class TaskDetailResDTO {
 
     private Integer priority;
 
+    private Integer facility;
+
+    private Integer examine;
+
     private Date completeTime;
 
     private Date createTime;
@@ -197,4 +201,21 @@ public class TaskDetailResDTO {
     public void setStageName(String stageName) {
         this.stageName = stageName;
     }
+
+    public Integer getFacility() {
+        return facility;
+    }
+
+    public void setFacility(Integer facility) {
+        this.facility = facility;
+    }
+
+    public Integer getExamine() {
+        return examine;
+    }
+
+    public void setExamine(Integer examine) {
+        this.examine = examine;
+    }
 }
+

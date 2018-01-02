@@ -9,6 +9,7 @@ import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -166,9 +167,34 @@ public interface IZSYTaskService {
     List<TaskListResDTO> getTaskByStageId(Long stageId);
 
     /**
+     * 获取阶段下的任务
+     * @param stageId
+     * @return
+     */
+    List<TaskListResDTO> getTaskByStageTime(Long stageId);
+
+    /**
      * 移动任务
      * @param taskMoveReqDTO
      * @return
      */
     void moveTask(TaskMoveReqDTO taskMoveReqDTO);
+
+    /**
+     * 修改审查状态
+     * @param taskId
+     * @return
+     */
+    void examineTask(Long taskId);
+
+    /**
+     * 设置发版时间
+     * @param publishTime
+     */
+    void setPublishTime(Date publishTime);
+
+    /**
+     * 获取发版时间
+     */
+    Date getPublishTime();
 }

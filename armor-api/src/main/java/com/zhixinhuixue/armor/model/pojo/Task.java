@@ -30,6 +30,10 @@ public class Task {
 
     private Date updateTime;
 
+    private Integer facility;
+
+    private Integer examine;
+
     private Long createBy;
 
     private Integer isDelete;
@@ -162,5 +166,21 @@ public class Task {
 
     public void setSort(Integer sort) {
         this.sort = sort;
+    }
+
+    public Integer getFacility() {
+        return facility;
+    }
+
+    public void setFacility(Integer facility) {
+        this.facility = facility;
+    }
+
+    public Integer getExamine() {
+        return examine;
+    }
+
+    public void setExamine(Integer examine) {
+        this.examine = examine;
     }
 }

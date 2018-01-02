@@ -167,6 +167,9 @@
                 <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
                                                                    v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
+                <el-form-item class="task-form" label="难易度："><span v-for="item in facilityList"
+                                                                   v-if="item.value == taskDetail.facility">{{item.label}}</span>
+                </el-form-item>
                 <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -318,6 +321,17 @@
                     <el-select v-model="modifyTaskForm.priority" placeholder="请选择">
                         <el-option
                                 v-for="item in priorityList"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="">
+                    <span slot="label"><span class="star">*</span>难易度</span>
+                    <el-select v-model="modifyTaskForm.facility" placeholder="请选择">
+                        <el-option
+                                v-for="item in facilityList"
                                 :key="item.value"
                                 :label="item.label"
                                 :value="item.value">
@@ -639,6 +653,7 @@
                     projectId: '',
                     endTime: '',
                     priority: '',
+                    facility:'',
                     tags: [],
                     taskType: 2,
                     stageId: '',
@@ -649,6 +664,13 @@
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
                     {label: '非常紧急', value: 3},
+                ],
+                facilityList: [
+                    {label: '容易', value: 1},
+                    {label: '简单', value: 2},
+                    {label: '一般', value: 3},
+                    {label: '较难', value: 4},
+                    {label: '困难', value: 5},
                 ],
                 statusOptions:[
                     {name: '进行中', id: 1},
@@ -1041,8 +1063,8 @@
                     this.$message({ showClose: true,message: '工作量填写错误',type: 'error'});
                     return false;
                 }
-                if(this.modifyPrivateTaskForm.taskHours>99999.9||this.modifyPrivateTaskForm.taskHours<0.1){
-                    this.$message({ showClose: true,message: '工作量正确值应为0.1~99999.9',type: 'error'});
+                if(this.modifyPrivateTaskForm.taskHours>8||this.modifyPrivateTaskForm.taskHours<0.1){
+                    this.$message({ showClose: true,message: '工作量正确值应为0.1~8',type: 'error'});
                     return false;
                 }
                 if(moment(this.modifyPrivateTaskForm.endTime).millisecond()<moment(this.modifyPrivateTaskForm.beginTime).millisecond()||moment(this.modifyPrivateTaskForm.endTime).week()!=moment(this.modifyPrivateTaskForm.beginTime).week()){
@@ -1094,6 +1116,7 @@
                     userId: '',
                     taskType: 1,
                     priority: 1,
+                    facility: 1,
                     taskName: '',
                     description: '',
                     projectId: '',
@@ -1115,6 +1138,7 @@
                     this.modifyTaskForm.projectId = resp.data.projectId;
                     this.modifyTaskForm.stageId = resp.data.stageId;
                     this.modifyTaskForm.priority = resp.data.priority;
+                    this.modifyTaskForm.facility = resp.data.facility;
                     for (let i = 0; i < resp.data.tags.length; i++) {
                         this.modifyTaskForm.tags.push(resp.data.tags[i].id)
                     }
@@ -1158,6 +1182,7 @@
                 this.modifyTaskForm.priority = 1;
                 this.modifyTaskForm.tags = [];
                 this.modifyTaskForm.taskUsers = [];
+                this.modifyTaskForm.facility = 1 ;
                 this.modifyTaskForm.modifyDescription = '';
                 this.showTaskModify = false;
                 this.step = {

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 
 /**
  * Created by Tate on 2017/8/7.
@@ -170,11 +171,37 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().data(taskService.getTaskByStageId(stageId)).build();
     }
 
+    @ApiOperation("获取阶段下的任务")
+    @GetMapping("/tasksByStageTime/{stageId}")
+    public String tasksByStageTime(@PathVariable("stageId") Long stageId) {
+        return ZSYResult.success().data(taskService.getTaskByStageTime(stageId)).build();
+    }
+
     @ApiOperation("移动任务")
     @PutMapping("/move")
     public String move(@Valid @RequestBody TaskMoveReqDTO taskMoveReqDTO) {
         taskService.moveTask(taskMoveReqDTO);
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("更改审查状态")
+    @PutMapping("/approve/{taskId}")
+    public String approveTask(@PathVariable("taskId") Long taskId) {
+        taskService.examineTask(taskId);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("设置发版时间")
+    @PutMapping("/publish/{publishTime}")
+    public String setPublishTime(@PathVariable("publishTime") Date publishTime) {
+        taskService.setPublishTime(publishTime);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("获取发版时间")
+    @GetMapping("/publish")
+    public String getPublishTime() {
+        return ZSYResult.success().data(taskService.getPublishTime()).build();
     }
 }
 

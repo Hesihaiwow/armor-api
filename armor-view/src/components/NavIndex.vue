@@ -850,8 +850,8 @@
                             this.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
                             return false;
                         }
-                        if(param.taskHours.trim()>1000||param.taskHours.trim()<1){
-                            this.$message({ showClose: true,message: '工作量请保持在1至1000范围',type: 'error'});
+                        if(param.taskHours.trim()>8||param.taskHours.trim()<0.1){
+                            this.$message({ showClose: true,message: '工作量正确值应为0.1~8',type: 'error'});
                             return false;
                         }
                         if(moment(param.endTime).millisecond()<moment(param.beginTime).millisecond()||moment(param.endTime).week()!=moment(param.beginTime).week()){

@@ -3,6 +3,9 @@
         <div class="toggle-view">
             <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
             <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit">
+            <input type="button" style="margin-left: 380px" :value="publishText" @click="publishVisible=true" v-show="userRole==0&&btnValStatus == 2">
+            <el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="userRole==0&&btnValStatus == 2" @change="publishTask">选择截止日期在发版时间之前的任务
+            </el-checkbox>
         </div>
 
         <div class="task-con">
@@ -138,7 +141,20 @@
             </div>
             <task-board v-show="btnValStatus == 2" ref="taskBoard"></task-board>
         </div>
+        <el-dialog title="设置发版时间"  :visible.sync="publishVisible" size="tiny">
+            <el-date-picker
+                    v-model="publishTime"
+                    style="margin-left: 50px"
+                    type="date"
+                    placeholder="选择下次发版日期">
+            </el-date-picker>
+            <span slot="footer" class="dialog-footer" >
+                    <el-button type="primary" @click="setPublishTime">确定</el-button>
+                    <el-button type="warning" @click="publishVisible=false">取消</el-button>
+                </span>
+        </el-dialog>
     </div>
+
 
 </template>
 <script>
@@ -148,6 +164,8 @@
     import http from '../lib/Http'
     import helper from '../lib/Helper'
     import moment from 'moment';
+    import ElCheckbox from "../../node_modules/element-ui/packages/checkbox/src/checkbox";
+    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
 
     moment.locale('zh-cn');
     export default {
@@ -159,10 +177,14 @@
                 loading: true,
                 sortList:[{id:1,name:'优先级',tips:'排序'},{id:2,name:'截止时间',tips:'升序'},{id:3,name:'完成时间',tips:'升序'},{id:4,name:'创建时间',tips:'降序'}],
                 timeRange: '',
+                publishText:'下次发版时间',
                 projectList: [],
                 userList: [],
                 stageList: [],
                 tagList: [],
+                publishTime:'',
+                publishType:false,
+                publishVisible:false,
                 priorityList: [
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
@@ -235,7 +257,12 @@
             }
             // 视图状态
             const viewType = window.localStorage.getItem("viewType")
-            console.log(viewType)
+            const publishType = window.localStorage.getItem("publishType")
+            if (publishType!=1) {
+                this.publishType = false
+            }else{
+                this.publishType = true
+            }
             if (viewType!=null && viewType!== '') {
                 this.btnValStatus = viewType
             }
@@ -244,14 +271,21 @@
             this.fetchStageList()
             this.fetchTagList()
             this.fetchTaskList()
+            this.getPublishTime()
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "task");
+
+
         },
 
         computed: {
             permit() {
                 let userRole = helper.decodeToken().userRole;
                 return userRole < 2;
+            },
+            userRole() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole;
             },
             pageLayout() {
                 if (this.page.total > 0) {
@@ -289,6 +323,36 @@
 
                 // 记住状态
                 window.localStorage.setItem("viewType", this.btnValStatus);
+            },
+            setPublishTime(){
+                let vm = this
+                vm.publishTime = moment(vm.publishTime).format('YYYY-MM-DD HH:00:00')
+                http.zsyPutHttp('/task/publish/'+vm.publishTime,{} , (resp) => {
+                    if(resp.errCode=="00"){
+                        this.$message({
+                            showClose: true,
+                            message: '设置下次发版时间成功',
+                            type: 'success'
+                        });
+                        this.publishVisible = false;
+                        this.getPublishTime()
+                    }
+                })
+            },
+            getPublishTime(){
+                http.zsyGetHttp('/task/publish',{} , (resp) => {
+                    if(resp.data!=null){
+                        this.publishText="下次发版时间:"+moment(resp.data).format("YYYY-MM-DD")
+                    }
+                })
+            },
+            publishTask(){
+                if(this.publishType){
+                    window.localStorage.setItem("publishType", 1);
+                }else{
+                    window.localStorage.setItem("publishType", 0);
+                }
+                this.$router.go(0)
             },
             openFun() {
                 this.open = !this.open;
@@ -478,6 +542,8 @@
             }
         },
         components: {
+            ElButton,
+            ElCheckbox,
             TaskItem: TaskItem,
             CreateTask: CreateTask,
             TaskBoard
@@ -656,4 +722,6 @@
         /*overflow-y: auto;*/
         /*margin-top: 200px;*/
     }
+
+
 </style>

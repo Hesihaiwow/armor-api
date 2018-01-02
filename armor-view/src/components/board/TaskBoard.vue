@@ -7,7 +7,8 @@
                 <ul class="task-item" :stageId="item.id">
                     <li class="clearfix" :class="task.borderClass" draggable='true' @dragstart='drag($event)'
                         v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id"
-                        :createBy="task.createBy"  >
+                        :createBy="task.createBy" >
+                        <div class="trans" v-show="task.examine==1"></div>
                         <div class="fl complate" data-title="" >
                         </div>
                         <div class="fl task-name">
@@ -35,9 +36,11 @@
     import moment from 'moment';
     import helper from '../../lib/Helper'
     import move from '../../lib/move'
+    import ElButton from "../../../node_modules/element-ui/packages/button/src/button";
 
     moment.locale('zh-cn');
     export default {
+        components: {ElButton},
         name: "task-board",
         data() {
             return {
@@ -109,12 +112,61 @@
                 this.$root.eventBus.$emit("handleBoardClick", taskId);
             },
             getData() {
+                const publishType = window.localStorage.getItem("publishType")
                 // 获取阶段
                 let that = this;
                 that.http.zsyGetHttp('/stage/list', {}, (res) => {
                     that.stageList = res.data;
                     that.taskBoxWidth = that.stageList.length * 270 + "px";
                     that.stageList.forEach((stage) => {
+                        if(publishType==1){
+                            // 获取任务
+                            that.http.zsyGetHttp(`/task/tasksByStageTime/${stage.id}`, {}, (res) => {
+                                let list = res.data;
+                                list.forEach((el) => {
+                                    let endTime = '', today = moment().format('YYYY-MM-DD')
+                                    if (el.status == 1) {
+                                        endTime = el.endTime
+                                    } else {
+                                        endTime = el.completeTime
+                                    }
+                                    endTime = moment(endTime).format('YYYY-MM-DD')
+                                    const diffDays = moment(today).diff(moment(endTime), 'days')
+                                    let endColor = '', endText = ''
+                                    endText = moment(endTime).calendar(null, {
+                                        sameDay: '[今天]',
+                                        nextDay: '[明天]',
+                                        nextWeek: 'L',
+                                        lastDay: '[昨天]',
+                                        lastWeek: 'L',
+                                        sameElse: 'L'
+                                    })
+                                    if (el.status == 1) {
+                                        if (diffDays == 0) {
+                                            endColor = 'orange'
+                                        } else if (diffDays > 0) {
+                                            endColor = 'red'
+                                        } else if (diffDays < 0) {
+                                            endColor = 'blue'
+                                        }
+                                        endText += ' 截止'
+                                    } else {
+                                        endColor = 'green'
+                                        endText += ' 完成'
+                                    }
+                                    el['endColor'] = endColor
+                                    el['endText'] = endText
+
+                                    // 优先级样式
+                                    if (el.priority == 2) {
+                                        el.borderClass = 'orange-border'
+                                    } else if (el.priority == 3) {
+                                        el.borderClass = 'red-border'
+                                    }
+                                })
+                                that.$set(stage, 'tasks', list)
+                            })
+                        }
                         // 获取任务
                         that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
                             let list = res.data;
@@ -444,6 +496,18 @@
             .task-list:last-child {
                 margin-right: 0;
 
+            }
+
+            .triangle-topright {
+            }
+
+            .trans {
+                margin-left: -10px;
+                margin-top: -5px;
+                width: 0px;
+                height: 0px;
+                border-top: 15px solid rgb(32, 163, 191);
+                border-left: 0px solid transparent;border-right: 15px solid transparent;
             }
         }
 
