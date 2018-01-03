@@ -360,9 +360,9 @@
             getPublishTime(){
                 http.zsyGetHttp('/task/publish',{} , (resp) => {
                     if(resp.data!=null){
-                        if(resp.data=="1483286399000"&&this.userRole!=0){
+                        if(resp.data=="946742399000"&&this.userRole!=0){
                             this.publishHide = false
-                        }else if(resp.data=="1483286399000"&&this.userRole==0){
+                        }else if(resp.data=="946742399000"&&this.userRole==0){
                                 this.publishText="设置下次发版时间"
                         }else{
                                 this.publishText="下次发版时间:"+moment(resp.data).format("YYYY-MM-DD")
