@@ -349,6 +349,11 @@
                         });
                         this.publishVisible = false;
                         this.getPublishTime()
+                        if(this.publishType){
+                            this.$router.go(0)
+                        }else{
+                            this.publishType = false
+                        }
                     }
                 })
             },
