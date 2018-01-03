@@ -3,8 +3,8 @@
         <div class="toggle-view">
             <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
             <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit">
-            <input type="button" style="margin-left: 380px" :value="publishText" @click="setPublish" v-show="btnValStatus == 2&&publishHide">
-            <el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="btnValStatus == 2&&publishHide" @change="publishTask">选择截止日期在发版时间之前的任务
+            <input type="button" style="margin-left: 450px" :value="publishText" @click="setPublish" v-show="btnValStatus == 2&&publishHide">
+            <el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="btnValStatus == 2&&publishHide" @change="publishTask">仅显示发版时间之前的任务
             </el-checkbox>
         </div>
 

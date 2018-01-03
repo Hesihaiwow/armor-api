@@ -185,7 +185,7 @@ public interface IZSYTaskService {
      * @param taskId
      * @return
      */
-    void examineTask(Long taskId);
+    void examineTask(Long taskId, Integer examine);
 
     /**
      * 设置发版时间
