@@ -166,53 +166,54 @@
                                 })
                                 that.$set(stage, 'tasks', list)
                             })
-                        }
-                        // 获取任务
-                        that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
-                            let list = res.data;
-                            list.forEach((el) => {
-                                let endTime = '', today = moment().format('YYYY-MM-DD')
-                                if (el.status == 1) {
-                                    endTime = el.endTime
-                                } else {
-                                    endTime = el.completeTime
-                                }
-                                endTime = moment(endTime).format('YYYY-MM-DD')
-                                const diffDays = moment(today).diff(moment(endTime), 'days')
-                                let endColor = '', endText = ''
-                                endText = moment(endTime).calendar(null, {
-                                    sameDay: '[今天]',
-                                    nextDay: '[明天]',
-                                    nextWeek: 'L',
-                                    lastDay: '[昨天]',
-                                    lastWeek: 'L',
-                                    sameElse: 'L'
-                                })
-                                if (el.status == 1) {
-                                    if (diffDays == 0) {
-                                        endColor = 'orange'
-                                    } else if (diffDays > 0) {
-                                        endColor = 'red'
-                                    } else if (diffDays < 0) {
-                                        endColor = 'blue'
+                        }else{
+                            that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
+                                let list = res.data;
+                                list.forEach((el) => {
+                                    let endTime = '', today = moment().format('YYYY-MM-DD')
+                                    if (el.status == 1) {
+                                        endTime = el.endTime
+                                    } else {
+                                        endTime = el.completeTime
                                     }
-                                    endText += ' 截止'
-                                } else {
-                                    endColor = 'green'
-                                    endText += ' 完成'
-                                }
-                                el['endColor'] = endColor
-                                el['endText'] = endText
+                                    endTime = moment(endTime).format('YYYY-MM-DD')
+                                    const diffDays = moment(today).diff(moment(endTime), 'days')
+                                    let endColor = '', endText = ''
+                                    endText = moment(endTime).calendar(null, {
+                                        sameDay: '[今天]',
+                                        nextDay: '[明天]',
+                                        nextWeek: 'L',
+                                        lastDay: '[昨天]',
+                                        lastWeek: 'L',
+                                        sameElse: 'L'
+                                    })
+                                    if (el.status == 1) {
+                                        if (diffDays == 0) {
+                                            endColor = 'orange'
+                                        } else if (diffDays > 0) {
+                                            endColor = 'red'
+                                        } else if (diffDays < 0) {
+                                            endColor = 'blue'
+                                        }
+                                        endText += ' 截止'
+                                    } else {
+                                        endColor = 'green'
+                                        endText += ' 完成'
+                                    }
+                                    el['endColor'] = endColor
+                                    el['endText'] = endText
 
-                                // 优先级样式
-                                if (el.priority == 2) {
-                                    el.borderClass = 'orange-border'
-                                } else if (el.priority == 3) {
-                                    el.borderClass = 'red-border'
-                                }
+                                    // 优先级样式
+                                    if (el.priority == 2) {
+                                        el.borderClass = 'orange-border'
+                                    } else if (el.priority == 3) {
+                                        el.borderClass = 'red-border'
+                                    }
+                                })
+                                that.$set(stage, 'tasks', list)
                             })
-                            that.$set(stage, 'tasks', list)
-                        })
+                        }
+
                     });
                 });
             },
