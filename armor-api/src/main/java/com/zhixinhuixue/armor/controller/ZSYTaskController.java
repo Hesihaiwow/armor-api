@@ -185,9 +185,9 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("更改审查状态")
-    @PutMapping("/examine/{taskId}")
-    public String approveTask(@PathVariable("taskId") Long taskId) {
-        taskService.examineTask(taskId);
+    @PutMapping("/examine/{examine}/{taskId}")
+    public String approveTask(@PathVariable("taskId") Long taskId, @PathVariable("examine") Integer examine) {
+        taskService.examineTask(taskId,examine);
         return ZSYResult.success().build();
     }
 
