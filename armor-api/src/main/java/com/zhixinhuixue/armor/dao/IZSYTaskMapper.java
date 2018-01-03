@@ -10,6 +10,7 @@ import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskComment;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IZSYTaskMapper {
@@ -136,6 +137,15 @@ public interface IZSYTaskMapper {
     List<TaskListBO> selectTaskByStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId);
 
     /**
+     * 查询阶段任务
+     * @param stageId
+     * @param departmentId
+     * @param time
+     * @return
+     */
+    List<TaskListBO> selectTaskByStageTime(@Param("stageId") Long stageId, @Param("departmentId") Long departmentId, @Param("time")Date time);
+
+    /**
      * 查询阶段内任务最后一个index
      * @param stageId
      * @return
@@ -148,5 +158,12 @@ public interface IZSYTaskMapper {
      * @param sort
      */
     int updateIndexByStageId(@Param("stageId") Long stageId, @Param("sort") Integer sort);
+
+    /**
+     * 修改评审状态
+     * @param taskId
+     * @return
+     */
+    int examineTask(Long taskId);
 
 }

@@ -59,6 +59,10 @@ public class ZSYTaskService implements IZSYTaskService {
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
     private IZSYUserWeekMapper userWeekMaper;
+    @Autowired
+    private IZSYStageMapper stageMapper;
+    @Autowired
+    private IZSYPublishInfoMapper publishInfoMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -110,6 +114,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
         task.setPriority(taskReqDTO.getPriority());
+        task.setFacility(taskReqDTO.getFacility());
         task.setStatus(ZSYTaskStatus.DOING.getValue());
         task.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         task.setType(taskReqDTO.getTaskType());
@@ -230,6 +235,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
         task.setPriority(taskReqDTO.getPriority());
+        task.setFacility(taskReqDTO.getFacility());
         task.setUpdateTime(new Date());
         // 修改任务
         taskMapper.updateByPrimaryKeySelective(task);
@@ -1077,7 +1083,38 @@ public class ZSYTaskService implements IZSYTaskService {
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
-            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&taskListBO.getStageId().equals(Long.parseLong(ZSYConstants.FINISHED)))){
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stageMapper.selectById(taskListBO.getStageId()).getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
+                TaskListResDTO taskListResDTO = new TaskListResDTO();
+                BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+                List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+                taskListBO.getTags().stream().forEach(tag -> {
+                    TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+                    taskTagResDTO.setColor(tag.getColor());
+                    taskTagResDTO.setName(tag.getName());
+                    taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
+                    taskTagResDTOS.add(taskTagResDTO);
+                });
+                taskListResDTO.setTags(taskTagResDTOS);
+                list.add(taskListResDTO);
+            }
+
+        });
+        return list;
+    }
+
+    /**
+     * 获取阶段下的任务根据发版时间
+     *
+     * @param stageId
+     * @return
+     */
+    @Override
+    public List<TaskListResDTO> getTaskByStageTime(Long stageId) {
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageTime(stageId,ZSYTokenRequestContext.get().getDepartmentId(),publishInfoMapper.getPublishInfo());
+        List<TaskListResDTO> list = new ArrayList<>();
+        BeanUtils.copyProperties(taskListBOS, list);
+        taskListBOS.stream().forEach(taskListBO -> {
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stageMapper.selectById(taskListBO.getStageId()).getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
                 TaskListResDTO taskListResDTO = new TaskListResDTO();
                 BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
                 List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
@@ -1159,5 +1196,40 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskMapper.updateByPrimaryKeySelective(task);
             }
         }
+    }
+
+    /**
+     * 修改评审状态
+     * @param taskId
+     */
+    @Override
+    @Transactional
+    public void examineTask(Long taskId){
+        checkUser();
+        Task task = new Task();
+        task.setId(taskId);
+        task.setExamine(ZSYTaskExamine.EXAMINE.getValue());
+        taskMapper.updateByPrimaryKeySelective(task);
+    }
+
+    /**
+     * 设置发版时间
+     * @param publishTime
+     */
+    @Override
+    @Transactional
+    public void setPublishTime(Date publishTime){
+        checkUser();
+        publishInfoMapper.updatePublishInfo(publishTime);
+    }
+
+    /**
+     * 获取发版时间
+     */
+    @Override
+    @Transactional
+    public Date getPublishTime(){
+        checkUser();
+        return  publishInfoMapper.getPublishInfo();
     }
 }

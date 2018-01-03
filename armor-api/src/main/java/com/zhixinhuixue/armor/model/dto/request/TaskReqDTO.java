@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -53,6 +52,12 @@ public class TaskReqDTO {
      */
     @NotNull(message = "任务优先级不能为空")
     private Integer priority;
+
+    /**
+     * 难易度
+     */
+    @NotNull(message = "任务难易度不能为空")
+    private Integer facility;
 
     /**
      * 标签
@@ -150,5 +155,13 @@ public class TaskReqDTO {
 
     public void setModifyDescription(String modifyDescription) {
         this.modifyDescription = modifyDescription;
+    }
+
+    public Integer getFacility() {
+        return facility;
+    }
+
+    public void setFacility(Integer facility) {
+        this.facility = facility;
     }
 }
