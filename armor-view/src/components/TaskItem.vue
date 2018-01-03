@@ -1433,6 +1433,7 @@
                     vm.$emit('reload')
                     // 刷新看板
                     this.$root.eventBus.$emit('reloadBoard');
+                    this.showTaskDetail = false;
                 })
             },
             warnMsg(msg) {
