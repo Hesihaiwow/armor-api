@@ -277,7 +277,7 @@
         and t1.`type` = 2 and t1.stage_id = #{stageId}
         and t7.parent_id =#{departmentId}
         <if test="time != null">
-            <![CDATA[  and  t1.end_time < #{time} ]]>
+            <![CDATA[  and  t1.end_time <= #{time} ]]>
         </if>
         order by t1.sort ASC
     </select>
