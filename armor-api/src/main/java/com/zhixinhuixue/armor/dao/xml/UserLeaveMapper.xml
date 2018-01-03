@@ -33,8 +33,10 @@
   </insert>
 
   <select id="getLeaveByReviewStatus" resultMap="ResultMap" parameterType="java.util.Map">
-    SELECT user_leave.*, user.name, user.avatar_url FROM user_leave JOIN user on user_leave.user_id = user.id
-    WHERE  review_status = #{reviewStatus}
+    SELECT user_leave.*, user.name, user.avatar_url FROM user_leave
+    JOIN user on user_leave.user_id = user.id
+    JOIN department on user.department_id = department.id
+    WHERE  review_status = #{reviewStatus} and department.parent_id = #{departmentId}
         <if test="userId!=null">
           and user_id = #{userId}
         </if>
@@ -59,6 +61,7 @@
     <if test="endTime != null">
       <![CDATA[ AND (user_leave.end_time <= #{endTime,jdbcType=TIMESTAMP} or user_leave.begin_time <= #{endTime,jdbcType=TIMESTAMP})]]>
     </if>
+    ORDER BY user_leave.begin_time DESC
   </select>
 
   <update id="updateLeave">

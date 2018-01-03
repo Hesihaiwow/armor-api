@@ -18,7 +18,7 @@ public interface IZSYUserLeaveMapper {
 
     UserLeaveBO getUserLeaveById(Long id);
 
-    Page<UserLeaveBO> getLeaveByReviewStatus(@Param("userId")Long userId, @Param("reviewStatus")int reviewStatus);
+    Page<UserLeaveBO> getLeaveByReviewStatus(@Param("userId")Long userId, @Param("reviewStatus")int reviewStatus,@Param("departmentId")Long departmentId);
 
     int updateLeave(UserLeave userLeave);
 

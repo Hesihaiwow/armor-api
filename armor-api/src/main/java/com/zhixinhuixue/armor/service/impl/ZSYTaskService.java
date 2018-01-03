@@ -59,6 +59,10 @@ public class ZSYTaskService implements IZSYTaskService {
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
     private IZSYUserWeekMapper userWeekMaper;
+    @Autowired
+    private IZSYStageMapper stageMapper;
+    @Autowired
+    private IZSYPublishInfoMapper publishInfoMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -115,7 +119,9 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setType(taskReqDTO.getTaskType());
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
             task.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
+            task.setFacility(ZSYTaskFacility.EASY.getValue());
         } else {
+            task.setFacility(taskReqDTO.getFacility());
             // 多人任务直接通过
             task.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
             // 排序的index
@@ -129,6 +135,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
+        task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
         // 插入新任务
         taskMapper.insert(task);
         // 插入任务用户
@@ -210,6 +217,25 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("该任务已结束");
         }
         checkUser();
+
+        Task task = new Task();
+        //查询编辑任务时是否修改工作时间
+        TaskDetailBO taskTempBo = taskMapper.selectTaskDetailByTaskId(taskId);
+        if(taskTempBo.getTaskUsers().size()!=taskReqDTO.getTaskUsers().size()){
+            task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
+        }else{
+            taskTempBo.getTaskUsers().forEach(taskUser ->{
+                taskReqDTO.getTaskUsers().forEach(taskUserReq ->{
+                    if(taskUser.getUserId().equals(taskUserReq.getUserId())){
+                        if(!taskUser.getTaskHours().equals(taskUserReq.getTaskHours())){
+                            task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
+                        }
+                    }
+                });
+            });
+        }
+
+
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
         taskCommentMapper.deleteByTaskId(taskId);
@@ -222,7 +248,6 @@ public class ZSYTaskService implements IZSYTaskService {
                 throw new ZSYServiceException("负责人重复");
             }
         }
-        Task task = new Task();
         task.setId(taskId);
         task.setName(taskReqDTO.getTaskName());
         task.setDescription(taskReqDTO.getDescription());
@@ -230,6 +255,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
         task.setPriority(taskReqDTO.getPriority());
+        task.setFacility(taskReqDTO.getFacility());
         task.setUpdateTime(new Date());
         // 修改任务
         taskMapper.updateByPrimaryKeySelective(task);
@@ -271,7 +297,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         userWeeks.add(userWeek);
                 }else{
                     if(user.getUserWeeks().size()<1){
-                        throw new ZSYServiceException("请检查周工作量是否填写完整");
+                        throw new ZSYServiceException("请检查各成员周工作量是否填写完整");
                     }
                     user.getUserWeeks().forEach(week ->{
                         UserWeek userWeek = new UserWeek();
@@ -1077,7 +1103,38 @@ public class ZSYTaskService implements IZSYTaskService {
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
-            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&taskListBO.getStageId().equals(Long.parseLong(ZSYConstants.FINISHED)))){
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stageMapper.selectById(taskListBO.getStageId()).getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
+                TaskListResDTO taskListResDTO = new TaskListResDTO();
+                BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+                List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+                taskListBO.getTags().stream().forEach(tag -> {
+                    TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+                    taskTagResDTO.setColor(tag.getColor());
+                    taskTagResDTO.setName(tag.getName());
+                    taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
+                    taskTagResDTOS.add(taskTagResDTO);
+                });
+                taskListResDTO.setTags(taskTagResDTOS);
+                list.add(taskListResDTO);
+            }
+
+        });
+        return list;
+    }
+
+    /**
+     * 获取阶段下的任务根据发版时间
+     *
+     * @param stageId
+     * @return
+     */
+    @Override
+    public List<TaskListResDTO> getTaskByStageTime(Long stageId) {
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageTime(stageId,ZSYTokenRequestContext.get().getDepartmentId(),publishInfoMapper.getPublishInfo());
+        List<TaskListResDTO> list = new ArrayList<>();
+        BeanUtils.copyProperties(taskListBOS, list);
+        taskListBOS.stream().forEach(taskListBO -> {
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stageMapper.selectById(taskListBO.getStageId()).getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
                 TaskListResDTO taskListResDTO = new TaskListResDTO();
                 BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
                 List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
@@ -1159,5 +1216,40 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskMapper.updateByPrimaryKeySelective(task);
             }
         }
+    }
+
+    /**
+     * 修改评审状态
+     * @param taskId
+     */
+    @Override
+    @Transactional
+    public void examineTask(Long taskId){
+        checkUser();
+        Task task = new Task();
+        task.setId(taskId);
+        task.setExamine(ZSYTaskExamine.EXAMINE.getValue());
+        taskMapper.updateByPrimaryKeySelective(task);
+    }
+
+    /**
+     * 设置发版时间
+     * @param publishTime
+     */
+    @Override
+    @Transactional
+    public void setPublishTime(Date publishTime){
+        checkUser();
+        publishInfoMapper.updatePublishInfo(publishTime);
+    }
+
+    /**
+     * 获取发版时间
+     */
+    @Override
+    @Transactional
+    public Date getPublishTime(){
+        checkUser();
+        return  publishInfoMapper.getPublishInfo();
     }
 }

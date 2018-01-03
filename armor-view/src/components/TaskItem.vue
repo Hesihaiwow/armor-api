@@ -167,6 +167,9 @@
                 <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
                                                                    v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
+                <el-form-item class="task-form" label="难易度："><span v-for="item in facilityList"
+                                                                   v-if="item.value == taskDetail.facility">{{item.label}}</span>
+                </el-form-item>
                 <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -208,6 +211,9 @@
                 </ul>
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
+                <el-tooltip content="评审任务" placement="top" >
+                    <el-button type="primary"  @click="examineTask(taskDetail.id)" v-show="userRole===0" style="text-align: left">评审</el-button>
+                </el-tooltip>
                 <el-tooltip content="删除该任务" placement="top">
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
                 </el-tooltip>
@@ -325,6 +331,17 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="">
+                    <span slot="label"><span class="star">*</span>难易度</span>
+                    <el-select v-model="modifyTaskForm.facility" placeholder="请选择">
+                        <el-option
+                                v-for="item in facilityList"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>截止日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
@@ -377,7 +394,7 @@
                 <div class="bdl-line"></div>
             </div>
             <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="description"
+                <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="otherStep.description"
                           :rows="3"></el-input>
                 <div class="add-member-basic">
                     <div class="add-member-basic-list clearfix">
@@ -420,7 +437,7 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>状态：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-select v-model="step.status" filterable placeholder="请选择" @change="stepUserChange">
+                            <el-select v-model="otherStep.status" filterable placeholder="请选择">
                                 <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
@@ -639,6 +656,7 @@
                     projectId: '',
                     endTime: '',
                     priority: '',
+                    facility:'',
                     tags: [],
                     taskType: 2,
                     stageId: '',
@@ -649,6 +667,13 @@
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
                     {label: '非常紧急', value: 3},
+                ],
+                facilityList: [
+                    {label: '容易', value: 1},
+                    {label: '简单', value: 2},
+                    {label: '一般', value: 3},
+                    {label: '较难', value: 4},
+                    {label: '困难', value: 5},
                 ],
                 statusOptions:[
                     {name: '进行中', id: 1},
@@ -668,7 +693,10 @@
                     description: '',
                     status: ''
                 },
-                description: '',
+                otherStep:{
+                    description: '',
+                    status:'',
+                },
                 stepTemp: {},
                 weekTime:{
                     beginWeek:'',
@@ -1038,8 +1066,8 @@
                     this.$message({ showClose: true,message: '工作量填写错误',type: 'error'});
                     return false;
                 }
-                if(this.modifyPrivateTaskForm.taskHours>99999.9||this.modifyPrivateTaskForm.taskHours<0.1){
-                    this.$message({ showClose: true,message: '工作量正确值应为0.1~99999.9',type: 'error'});
+                if(this.modifyPrivateTaskForm.taskHours>8||this.modifyPrivateTaskForm.taskHours<0.1){
+                    this.$message({ showClose: true,message: '工作量正确值应为0.1~8',type: 'error'});
                     return false;
                 }
                 if(moment(this.modifyPrivateTaskForm.endTime).millisecond()<moment(this.modifyPrivateTaskForm.beginTime).millisecond()||moment(this.modifyPrivateTaskForm.endTime).week()!=moment(this.modifyPrivateTaskForm.beginTime).week()){
@@ -1091,6 +1119,7 @@
                     userId: '',
                     taskType: 1,
                     priority: 1,
+                    facility: 1,
                     taskName: '',
                     description: '',
                     projectId: '',
@@ -1112,6 +1141,7 @@
                     this.modifyTaskForm.projectId = resp.data.projectId;
                     this.modifyTaskForm.stageId = resp.data.stageId;
                     this.modifyTaskForm.priority = resp.data.priority;
+                    this.modifyTaskForm.facility = resp.data.facility;
                     for (let i = 0; i < resp.data.tags.length; i++) {
                         this.modifyTaskForm.tags.push(resp.data.tags[i].id)
                     }
@@ -1136,7 +1166,8 @@
                 }
                 this.step = stages[index];
                 this.step.index = index;
-                this.description = stages[index].description;
+                this.otherStep.description = stages[index].description;
+                this.otherStep.status = stages[index].status;
                 this.modifyTaskForm.taskUsers.forEach((item) => {
                     item.cssClass = ''
                 })
@@ -1154,6 +1185,7 @@
                 this.modifyTaskForm.priority = 1;
                 this.modifyTaskForm.tags = [];
                 this.modifyTaskForm.taskUsers = [];
+                this.modifyTaskForm.facility = 1 ;
                 this.modifyTaskForm.modifyDescription = '';
                 this.showTaskModify = false;
                 this.step = {
@@ -1214,7 +1246,8 @@
                     completeTime: '',
                     status: ''
                 }
-                this.description = ''
+                this.otherStep.description = ''
+                this.otherStep.status=''
                 this.weekNumberTemp = []
             },
             saveAddMember() {
@@ -1258,18 +1291,17 @@
                     taskUser.beginTime = this.step.beginTime;
                     taskUser.endTime = this.step.endTime;
                     taskUser.taskHours = this.step.taskHours;
-                    taskUser.description = this.description;
+                    taskUser.description = this.otherStep.description;
                     taskUser.userWeeks = this.weekNumber;
-                    taskUser.status = this.step.status;
+                    taskUser.status = this.otherStep.status;
                     this.modifyTaskForm.taskUsers.push(taskUser);
                 } else {
                     // 取消css
                     this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
-                    this.modifyTaskForm.taskUsers[this.step.index].description = this.description
+                    this.modifyTaskForm.taskUsers[this.step.index].description = this.otherStep.description
+                    this.modifyTaskForm.taskUsers[this.step.index].status = this.otherStep.status
                     this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumber;
                 }
-
-                console.log(this.modifyTaskForm.taskUsers)
 
                 this.showAddDetail = !this.showAddDetail;
                 this.step = {
@@ -1284,7 +1316,8 @@
                     completeTime: '',
                     status: ''
                 };
-                this.description=''
+                this.otherStep.description=''
+                this.otherStep.status =''
                 this.stepTemp = {};
             },
             stepUserChange(val) {
@@ -1391,6 +1424,17 @@
                     className = "finished"
                 }
                 return className;
+            },
+            //评审任务
+            examineTask(id){
+                let vm = this;
+                http.zsyPutHttp(`/task/examine/`+id, {}, (resp) => {
+                    this.$message({ showClose: true,message: '评审成功',type: 'success'});
+                    vm.$emit('reload')
+                    // 刷新看板
+                    this.$root.eventBus.$emit('reloadBoard');
+                    this.showTaskDetail = false;
+                })
             },
             warnMsg(msg) {
                 this.$message({

@@ -56,6 +56,19 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>难易度</div>
+                        <div class="ctpc-list-con fl">
+                            <el-select v-model="taskForm.facility" clearable placeholder="请选择">
+                                <el-option
+                                        v-for="item in facilityList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="ctpc-list clearfix">
                         <div class="ctpc-list-menu fl"><span class="star">*</span>阶段</div>
                         <div class="ctpc-list-con fl">
                             <el-select v-model="taskForm.stageId" :multiple-limit="1"
@@ -174,6 +187,13 @@
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
                     {label: '非常紧急', value: 3},
+                ],
+                facilityList: [
+                    {label: '容易', value: 1},
+                    {label: '简单', value: 2},
+                    {label: '一般', value: 3},
+                    {label: '较难', value: 4},
+                    {label: '困难', value: 5},
                 ],
                 taskForm: {
                     taskType: 2,
@@ -330,6 +350,7 @@
                     endTime: '',
                     description: ''
                 }
+                this.description = ''
             },
             saveAddMember() {
                 var sumHours=0;
@@ -483,6 +504,14 @@
                 }
                 if (this.taskForm.stageId === '') {
                     this.warnMsg("请选择项目阶段");
+                    return;
+                }
+                if (this.taskForm.priority === '') {
+                    this.warnMsg("请选择任务优先级");
+                    return;
+                }
+                if (this.taskForm.facility === '') {
+                    this.warnMsg("请选择任务难易度");
                     return;
                 }
                 if (this.taskForm.tags.length == 0) {

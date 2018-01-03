@@ -18,11 +18,13 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="facility" jdbcType="INTEGER" property="facility"/>
+        <result column="examine" jdbcType="INTEGER" property="examine"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, name, description, project_id,stage_id, end_time, `type`, status, review_status, priority, create_by,
-        complete_time, create_time, update_time,sort
+        complete_time, create_time, update_time, sort, facility, examine
     </sql>
 
     <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.TaskListBO" extends="BaseResultMap">
@@ -262,6 +264,24 @@
          order by t1.sort ASC
     </select>
 
+    <!-- 查询阶段下的任务 -->
+    <select id="selectTaskByStageTime" resultMap="PageResultMap" parameterType="java.util.Map">
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
+        left join task_user t2 on t1.id =t2.task_id
+        left join task_tag t3 on t1.id = t3.task_id
+        left join project t4 on t1.project_id = t4.id
+        left JOIN stage t5 on t1.stage_id = t5.id
+        left join `user` t6 on t1.create_by = t6.id
+        left join department t7 on t6.department_id = t7.id
+        where t1.review_status = 3 and t1.is_delete = 0
+        and t1.`type` = 2 and t1.stage_id = #{stageId}
+        and t7.parent_id =#{departmentId}
+        <if test="time != null">
+            <![CDATA[  and  t1.end_time <= #{time} ]]>
+        </if>
+        order by t1.sort ASC
+    </select>
+
     <!-- 查询阶段内任务最后一个index -->
     <select id="selectLastIndexByStageId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         select sort from task where stage_id = #{stageId}
@@ -290,14 +310,14 @@
       insert into task (id, name, description,
       project_id,stage_id, end_time, `type`, status,
       review_status, priority, create_by,
-      complete_time, create_time, update_time, is_delete,sort
+      complete_time, create_time, update_time, is_delete,sort, facility, examine
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
       #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
       #{status,jdbcType=INTEGER},
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
-       #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER}
+       #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER},#{facility,jdbcType=INTEGER},#{examine,jdbcType=INTEGER}
       )
   </insert>
 
@@ -330,6 +350,12 @@
             </if>
             <if test="priority != null">
                 priority = #{priority,jdbcType=INTEGER},
+            </if>
+            <if test="facility != null">
+                facility = #{facility,jdbcType=INTEGER},
+            </if>
+            <if test="examine != null">
+                examine = #{examine,jdbcType=INTEGER},
             </if>
             <if test="completeTime != null">
                 complete_time = #{completeTime,jdbcType=TIMESTAMP},

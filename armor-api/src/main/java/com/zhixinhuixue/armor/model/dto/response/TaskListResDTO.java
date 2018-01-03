@@ -34,6 +34,8 @@ public class TaskListResDTO {
 
     private Integer priority;
 
+    private Integer examine;
+
     private Date completeTime;
 
     private Date createTime;
@@ -218,5 +220,13 @@ public class TaskListResDTO {
 
     public void setDelayNo(Integer delayNo) {
         this.delayNo = delayNo;
+    }
+
+    public Integer getExamine() {
+        return examine;
+    }
+
+    public void setExamine(Integer examine) {
+        this.examine = examine;
     }
 }
