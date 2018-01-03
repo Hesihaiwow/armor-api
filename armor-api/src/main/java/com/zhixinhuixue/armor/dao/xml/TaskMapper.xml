@@ -317,7 +317,7 @@
       #{status,jdbcType=INTEGER},
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
-       #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER}
+       #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER},#{facility,jdbcType=INTEGER},#{examine,jdbcType=INTEGER}
       )
   </insert>
 

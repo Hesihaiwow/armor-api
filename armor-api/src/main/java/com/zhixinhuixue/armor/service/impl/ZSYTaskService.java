@@ -114,13 +114,14 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
         task.setPriority(taskReqDTO.getPriority());
-        task.setFacility(taskReqDTO.getFacility());
         task.setStatus(ZSYTaskStatus.DOING.getValue());
         task.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         task.setType(taskReqDTO.getTaskType());
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
             task.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
+            task.setFacility(ZSYTaskFacility.EASY.getValue());
         } else {
+            task.setFacility(taskReqDTO.getFacility());
             // 多人任务直接通过
             task.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
             // 排序的index
@@ -134,6 +135,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
+        task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
         // 插入新任务
         taskMapper.insert(task);
         // 插入任务用户
@@ -215,6 +217,25 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("该任务已结束");
         }
         checkUser();
+
+        Task task = new Task();
+        //查询编辑任务时是否修改工作时间
+        TaskDetailBO taskTempBo = taskMapper.selectTaskDetailByTaskId(taskId);
+        if(taskTempBo.getTaskUsers().size()!=taskReqDTO.getTaskUsers().size()){
+            task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
+        }else{
+            taskTempBo.getTaskUsers().forEach(taskUser ->{
+                taskReqDTO.getTaskUsers().forEach(taskUserReq ->{
+                    if(taskUser.getUserId().equals(taskUserReq.getUserId())){
+                        if(!taskUser.getTaskHours().equals(taskUserReq.getTaskHours())){
+                            task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
+                        }
+                    }
+                });
+            });
+        }
+
+
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
         taskCommentMapper.deleteByTaskId(taskId);
@@ -227,7 +248,6 @@ public class ZSYTaskService implements IZSYTaskService {
                 throw new ZSYServiceException("负责人重复");
             }
         }
-        Task task = new Task();
         task.setId(taskId);
         task.setName(taskReqDTO.getTaskName());
         task.setDescription(taskReqDTO.getDescription());
