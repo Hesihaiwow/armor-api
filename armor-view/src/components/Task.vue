@@ -339,7 +339,7 @@
                     });
                     return
                 }
-                vm.publishTime = moment(vm.publishTime).format('YYYY-MM-DD HH:00:00')
+                vm.publishTime = moment(vm.publishTime).format('YYYY-MM-DD 23:59:59')
                 http.zsyPutHttp('/task/publish/'+vm.publishTime,{} , (resp) => {
                     if(resp.errCode=="00"){
                         this.$message({

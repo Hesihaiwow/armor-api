@@ -56,7 +56,7 @@ public class TaskReqDTO {
     /**
      * 难易度
      */
-    @NotNull(message = "任务难易度不能为空")
+//    @NotNull(message = "任务难易度不能为空")
     private Integer facility;
 
     /**
