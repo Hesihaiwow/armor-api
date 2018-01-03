@@ -3,8 +3,8 @@
         <div class="toggle-view">
             <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
             <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit">
-            <input type="button" style="margin-left: 380px" :value="publishText" @click="publishVisible=true" v-show="userRole==0&&btnValStatus == 2">
-            <el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="userRole==0&&btnValStatus == 2" @change="publishTask">选择截止日期在发版时间之前的任务
+            <input type="button" style="margin-left: 380px" :value="publishText" @click="setPublish" v-show="btnValStatus == 2&&publishHide">
+            <el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="btnValStatus == 2&&publishHide" @change="publishTask">选择截止日期在发版时间之前的任务
             </el-checkbox>
         </div>
 
@@ -177,7 +177,8 @@
                 loading: true,
                 sortList:[{id:1,name:'优先级',tips:'排序'},{id:2,name:'截止时间',tips:'升序'},{id:3,name:'完成时间',tips:'升序'},{id:4,name:'创建时间',tips:'降序'}],
                 timeRange: '',
-                publishText:'下次发版时间',
+                publishText:'设置下次发版时间',
+                publishHide:true,
                 projectList: [],
                 userList: [],
                 stageList: [],
@@ -258,7 +259,8 @@
             // 视图状态
             const viewType = window.localStorage.getItem("viewType")
             const publishType = window.localStorage.getItem("publishType")
-            if (publishType!=1) {
+            console.log(publishType)
+            if (publishType!=1&&publishType==null) {
                 this.publishType = false
             }else{
                 this.publishType = true
@@ -324,8 +326,20 @@
                 // 记住状态
                 window.localStorage.setItem("viewType", this.btnValStatus);
             },
+            setPublish(){
+                if(this.userRole == 0)
+                this.publishVisible=true
+            },
             setPublishTime(){
                 let vm = this
+                if(vm.publishTime==''){
+                    this.$message({
+                        showClose: true,
+                        message: '请填写发版时间',
+                        type: 'warning'
+                    });
+                    return
+                }
                 vm.publishTime = moment(vm.publishTime).format('YYYY-MM-DD HH:00:00')
                 http.zsyPutHttp('/task/publish/'+vm.publishTime,{} , (resp) => {
                     if(resp.errCode=="00"){
@@ -342,7 +356,14 @@
             getPublishTime(){
                 http.zsyGetHttp('/task/publish',{} , (resp) => {
                     if(resp.data!=null){
-                        this.publishText="下次发版时间:"+moment(resp.data).format("YYYY-MM-DD")
+                        if(resp.data=="1483200000000"&&this.userRole!=0){
+                            this.publishHide = false
+                        }else if(resp.data=="1483200000000"&&this.userRole==0){
+                                this.publishText="设置下次发版时间"
+                        }else{
+                                this.publishText="下次发版时间:"+moment(resp.data).format("YYYY-MM-DD")
+                                this.publishHide = true
+                        }
                     }
                 })
             },

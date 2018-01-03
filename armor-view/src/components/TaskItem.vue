@@ -211,6 +211,9 @@
                 </ul>
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
+                <el-tooltip content="评审任务" placement="top" >
+                    <el-button type="primary"  @click="examineTask(taskDetail.id)" v-show="userRole===0" style="text-align: left">评审</el-button>
+                </el-tooltip>
                 <el-tooltip content="删除该任务" placement="top">
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
                 </el-tooltip>
@@ -1421,6 +1424,16 @@
                     className = "finished"
                 }
                 return className;
+            },
+            //评审任务
+            examineTask(id){
+                let vm = this;
+                http.zsyPutHttp(`/task/examine/`+id, {}, (resp) => {
+                    this.$message({ showClose: true,message: '评审成功',type: 'success'});
+                    vm.$emit('reload')
+                    // 刷新看板
+                    this.$root.eventBus.$emit('reloadBoard');
+                })
             },
             warnMsg(msg) {
                 this.$message({

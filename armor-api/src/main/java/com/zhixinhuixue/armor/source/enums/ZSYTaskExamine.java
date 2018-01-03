@@ -5,7 +5,7 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYTaskExamine {
 
-    NOTEXAM(0, "未评审"), EXAMINE(2, "已评审");
+    NOTEXAM(0, "未评审"), EXAMINE(1, "已评审");
     private int value;
     private String name;
 
