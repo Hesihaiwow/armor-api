@@ -212,7 +212,10 @@
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
                 <el-tooltip content="评审任务" placement="top" >
-                    <el-button type="primary"  @click="examineTask(taskDetail.id)" v-show="userRole===0" style="text-align: left">评审</el-button>
+                    <el-button type="primary"  @click="examineTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.examine===0" style="text-align: left">已评审</el-button>
+                </el-tooltip>
+                <el-tooltip content="评审任务" placement="top" >
+                    <el-button type="danger"  @click="examineTask(taskDetail.id,0)" v-show="userRole===0&&taskDetail.examine===1" style="text-align: left">未评审</el-button>
                 </el-tooltip>
                 <el-tooltip content="删除该任务" placement="top">
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
@@ -1426,15 +1429,32 @@
                 return className;
             },
             //评审任务
-            examineTask(id){
-                let vm = this;
-                http.zsyPutHttp(`/task/examine/`+id, {}, (resp) => {
-                    this.$message({ showClose: true,message: '评审成功',type: 'success'});
-                    vm.$emit('reload')
-                    // 刷新看板
-                    this.$root.eventBus.$emit('reloadBoard');
-                    this.showTaskDetail = false;
-                })
+            examineTask(id,exam){
+                var examText
+                if(exam!='0'){
+                    examText='确定评审完成?'
+                }else{
+                    examText='确定取消评审?'
+                }
+                this.$confirm(examText, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let vm = this;
+                    http.zsyPutHttp('/task/examine/'+exam+'/'+id, {}, (resp) => {
+                        if(exam!='0'){
+                            this.$message({ showClose: true,message: '评审成功',type: 'success'});
+                        }else{
+                            this.$message({ showClose: true,message: '取消评审成功',type: 'success'});
+                        }
+                        vm.$emit('reload')
+                        // 刷新看板
+                        this.$root.eventBus.$emit('reloadBoard');
+                        this.showTaskDetail = false;
+                    })
+                }).catch(() => {
+                });
             },
             warnMsg(msg) {
                 this.$message({

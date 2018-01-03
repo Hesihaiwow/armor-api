@@ -1224,11 +1224,11 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     @Transactional
-    public void examineTask(Long taskId){
+    public void examineTask(Long taskId,Integer examine){
         checkUser();
         Task task = new Task();
         task.setId(taskId);
-        task.setExamine(ZSYTaskExamine.EXAMINE.getValue());
+        task.setExamine(examine);
         taskMapper.updateByPrimaryKeySelective(task);
     }
 
