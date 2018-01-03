@@ -259,8 +259,7 @@
             // 视图状态
             const viewType = window.localStorage.getItem("viewType")
             const publishType = window.localStorage.getItem("publishType")
-            console.log(publishType)
-            if (publishType!=1&&publishType==null) {
+            if (publishType==0||publishType==null) {
                 this.publishType = false
             }else{
                 this.publishType = true
