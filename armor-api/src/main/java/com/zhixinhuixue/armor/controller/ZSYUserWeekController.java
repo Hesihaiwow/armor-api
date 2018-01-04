@@ -26,9 +26,9 @@ public class ZSYUserWeekController extends ZSYController {
      * @return
      */
     @ApiOperation("阶段列表")
-    @GetMapping(value = "/{id}/{year}/{weekNumber}")
-    public String getUserWeekHours(@PathVariable("id") Long id,@PathVariable("year") int year , @PathVariable("weekNumber") int weekNumber) {
-        return ZSYResult.success().data(userWeekService.getUserWeekHours(id, weekNumber, year)).build();
+    @GetMapping(value = "/{taskId}/{id}/{year}/{weekNumber}")
+    public String getUserWeekHours(@PathVariable("taskId") Long taskId,@PathVariable("id") Long id,@PathVariable("year") int year , @PathVariable("weekNumber") int weekNumber) {
+        return ZSYResult.success().data(userWeekService.getUserWeekHours(taskId, id, weekNumber, year)).build();
     }
 
 

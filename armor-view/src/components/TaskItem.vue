@@ -433,8 +433,10 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
                                 <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
-                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) > 40" style="color:red;display:inline">{{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp)}}</div>
-                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) <=40" style="display:inline">{{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) > 40" style="color:red;display:inline">
+                                    {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) <=40" style="display:inline">
+                                    {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
                             </div>
                         </div>
                     <div class="add-member-basic-list clearfix">
@@ -1497,13 +1499,13 @@
                         let endYear = moment(this.step.endTime).year();
                         if(beginYear!=endYear){
                             for(let i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
-                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                                     weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
                                     param.push(weekData)
                                 })
                             }
                             for(let i=1;i<this.weekTime.endWeek+1;i++){
-                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
+                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
                                     weekData = {'weekNumber':i, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
                                     param.push(weekData)
                                 })
@@ -1511,22 +1513,22 @@
                             }
                         }
                         if(this.weekTime.beginWeek == this.weekTime.endWeek){
-                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                            http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.step.taskHours ,'weekHours': resp.data,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
                                 param.push(weekData)
                             })
                         }else if(this.weekTime.endWeek - this.weekTime.beginWeek >1){
                             for(let i=this.weekTime.beginWeek;i<this.weekTime.endWeek+1;i++){
-                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                                     weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().week(i).year(beginYear).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD')  };
                                     param.push(weekData)
                                 })
                             }
                         }else if(this.weekTime.endWeek - this.weekTime.beginWeek == 1){
-                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                            http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 param.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear  ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
                             })
-                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + endYear + '/' + this.weekTime.endWeek, {}, (resp) => {
+                            http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + endYear + '/' + this.weekTime.endWeek, {}, (resp) => {
                                 param.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')})
 
                             })
