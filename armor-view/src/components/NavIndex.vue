@@ -503,14 +503,14 @@
                 <el-form-item class="task-form" label="请假时长：">{{leaveForm.hours}}小时</el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer" >
-                <div v-show="userRole==0&&activeLeaveName=='wait'">
+                <div v-show="userRole==0">
                     <el-tooltip content="删除该申请" placement="top">
                           <el-button type="danger" icon="delete" @click="deleteLeave(leaveForm.id)"></el-button>
                     </el-tooltip>
                     <el-tooltip content="编辑该申请" placement="top">
                      <el-button type="primary" icon="edit" @click="editLeaveDetail(leaveForm,1)"></el-button>
                     </el-tooltip>
-                    <el-button type="success" @click="acceptLeave(leaveForm.id)">审核通过</el-button>
+                    <el-button type="success" @click="acceptLeave(leaveForm.id)" v-show="activeLeaveName=='wait'">审核通过</el-button>
                 </div>
             </span>
         </el-dialog>
@@ -1137,6 +1137,7 @@
                 this.leaveForm.beginTime = moment(leave.beginTime).toDate();
                 this.leaveForm.endTime = moment(leave.endTime).toDate();
                 this.leaveForm.typeName = leave.typeName
+                this.leaveForm.type = leave.type
                 this.leaveForm.hours = leave.hours
                 this.userWeeks = leave.userWeeks
             },
