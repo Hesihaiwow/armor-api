@@ -22,7 +22,7 @@ public class ZSYUserWeekSevice implements IZSYUserWeekService{
      * @return
      */
     @Override
-    public Double getUserWeekHours(Long id, int weekNumber, int year) {
-        return userWeekMapper.getUserWeekHours(id, weekNumber, year);
+    public Double getUserWeekHours(Long taskId, Long id, int weekNumber, int year) {
+        return userWeekMapper.getUserWeekHours(taskId, id, weekNumber, year);
     }
 }

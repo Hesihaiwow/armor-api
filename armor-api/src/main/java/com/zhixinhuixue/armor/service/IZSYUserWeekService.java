@@ -12,5 +12,5 @@ public interface IZSYUserWeekService {
      * @param year
      * @return
      */
-    Double getUserWeekHours(Long id,int weekNumber, int year);
+    Double getUserWeekHours(Long taskId, Long id,int weekNumber, int year);
 }
