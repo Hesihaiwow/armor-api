@@ -2,6 +2,7 @@
     <div>
         <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id,task.type)" v-show="viewType==1"
              :class="task.borderClass">
+            <div class="trans" v-show="task.examine==1"></div>
             <div class="head-img">
                 <!-- 待审核 -->
                 <img v-if="task.reviewStatus ==1" src="../assets/img/waitAudit.png">
@@ -88,10 +89,10 @@
                 <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
+                <el-form-item class="task-form"  label="优先级："><span v-for="item in priorityList"
                                                                    v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="截止时间：" style="float: left;">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
@@ -163,14 +164,14 @@
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item class="task-form" style="white-space: pre-wrap" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
+                <el-form-item class="task-form" label="阶段：" style="margin-bottom: -36px;">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item class="task-form" label="优先级：" style="margin-left: 200px;"><span v-for="item in priorityList"
                                                                    v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item class="task-form" label="难易度："><span v-for="item in facilityList"
+                <el-form-item class="task-form" label="难易度："  style="margin-bottom: -36px;"><span v-for="item in facilityList"
                                                                    v-if="item.value == taskDetail.facility">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="截止时间：" style="margin-left: 200px;">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
@@ -224,7 +225,7 @@
                  <el-button type="primary" icon="edit" @click="showModifyDescription"
                             v-show="(taskDetail.createBy==loginUserId  || userRole===0 )&& taskDetail.type==2"></el-button>
                </el-tooltip>
-                <el-button type="primary" icon="check" @click="completeTask"
+                <el-button type="primary" icon="check" @click="completeTask(taskDetail.examine)"
                            v-show="taskDetail.status!=3 && userRole==0 && taskDetail.type==2">完成</el-button>
                 <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
           </span>
@@ -433,9 +434,9 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
                                 <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
-                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) > 40" style="color:red;display:inline">
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) > 40" style="color:red;display:inline">
                                     {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
-                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) - parseFloat(!(item.hours==''?0:item.hoursTemp)?0:item.hoursTemp) <=40" style="display:inline">
+                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) <=40" style="display:inline">
                                     {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
                             </div>
                         </div>
@@ -935,7 +936,11 @@
                     this.taskLog.hasNextPage = resp.data.hasNextPage;
                 });
             },
-            completeTask() {
+            completeTask(examine) {
+                if(examine==0){
+                    this.errorMsg('任务未评审，请在评审后完成任务')
+                    return
+                }
                 this.$confirm('此操作将完成该任务, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -949,7 +954,6 @@
                     })
                 }).catch(() => {
                 });
-
             },
             deleteTask() {
                 this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
@@ -2254,5 +2258,12 @@
         height: 26px;
         border-radius: 4px;
         text-indent: 4px;
+    }
+
+    .trans {
+        width: 0px;
+        height: 0px;
+        border-top: 15px solid rgb(32, 163, 191);
+        border-left: 0px solid transparent;border-right: 15px solid transparent;
     }
 </style>

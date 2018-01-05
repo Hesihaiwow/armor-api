@@ -589,7 +589,7 @@
                         let endYear = moment(this.step.endTime).year();
                         if (beginYear != endYear) {
                             for (let i = this.weekTime.beginWeek; i < moment(this.step.beginTime).weeksInYear() + 1; i++) {
-                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                                     weekData = {
                                         'weekNumber': i,
                                         'year': beginYear,
@@ -600,7 +600,7 @@
                                 })
                             }
                             for (let i = 1; i < this.weekTime.endWeek + 1; i++) {
-                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
+                                http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
                                     weekData = {
                                         'weekNumber': i,
                                         'year': endYear,
@@ -613,7 +613,7 @@
                         }
                         if (this.weekTime.beginWeek == this.weekTime.endWeek) {
                             console.log(this.weekTime.beginWeek)
-                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                            http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 weekData = {
                                     'weekNumber': this.weekTime.beginWeek,
                                     'hours': this.step.taskHours,
@@ -625,7 +625,7 @@
                             })
                         } else if (this.weekTime.endWeek - this.weekTime.beginWeek > 1) {
                             for (let i = this.weekTime.beginWeek; i < this.weekTime.endWeek + 1; i++) {
-                                http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                                     param.push({
                                         'weekNumber': i,
                                         'hours': '',
@@ -636,7 +636,7 @@
                                 })
                             }
                         } else if (this.weekTime.endWeek - this.weekTime.beginWeek == 1) {
-                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                            http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 param.push({
                                     'weekNumber': this.weekTime.beginWeek,
                                     'hours': '',
@@ -645,7 +645,7 @@
                                     'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
                                 })
                             })
-                            http.zsyGetHttp('/userWeek/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.endWeek, {}, (resp) => {
+                            http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.endWeek, {}, (resp) => {
                                 param.push({
                                     'weekNumber': this.weekTime.endWeek,
                                     'hours': '',
