@@ -131,7 +131,7 @@ public class ZSYStatsService implements IZSYStatsService {
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
 
             statsWeekResDTO.setLeaveHours(userWeekBO.getLeaveHours()==null?0:userWeekBO.getLeaveHours());
-            statsWeekResDTO.setHours(userWeekMapper.getUserWeekHours(0L,userWeekBO.getUserId(),date.getWeekNumber(),DateHelper.getYears(date.getDate())));
+            statsWeekResDTO.setHours(userWeekMapper.getUserWeekHours(ZSYConstants.NO_DEPT_ID,userWeekBO.getUserId(),date.getWeekNumber(),DateHelper.getYears(date.getDate())));
 
             statsWeekResDTOS.add(statsWeekResDTO);
         });
