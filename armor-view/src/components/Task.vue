@@ -748,5 +748,9 @@
         /*margin-top: 200px;*/
     }
 
+    .task-form {
+        margin-bottom: 0;
+    }
+
 
 </style>
