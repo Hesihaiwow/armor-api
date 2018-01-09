@@ -2182,12 +2182,6 @@
         border: none;
     }
 
-    .add-stage-opt {
-        color: #36A8FF;
-        cursor: pointer;
-        width: 400px;
-    }
-
     .add-member-basic-msg .el-select {
         width: 140px;
     }
@@ -2206,18 +2200,6 @@
 
     .tag-add-sel .el-select {
         width: 188px;
-    }
-
-    .ctpc-member-delete {
-        font-size: 26px;
-        cursor: pointer;
-        margin-right: 4px;
-        position: absolute;
-        right: 1px;
-    }
-
-    .add-member-stage {
-        position: relative;
     }
 
     .ctpc-ins-edit .ctpc-btns {
