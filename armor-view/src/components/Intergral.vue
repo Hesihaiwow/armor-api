@@ -343,37 +343,6 @@
         margin: auto;
     }
 
-    .intergral-con-top {
-        font-size: 14px;
-        background: #fff;
-        padding: 16px 0;
-        text-indent: 10px;
-        box-shadow: 0 0 10px #ccc;
-        margin: 0 10px;
-    }
-
-    .menu-list {
-        line-height: 36px;
-        padding: 0 4px;
-        margin-right: 10px;
-        cursor: pointer;
-    }
-
-    .div-line {
-        margin: 0 10px 0 12px;
-        color: #000;
-    }
-
-    .self-define {
-        margin-right: 14px;
-    }
-
-    .serch-btn {
-        vertical-align: middle;
-        margin-left: 10px;
-        cursor: pointer;
-    }
-
     .intergral-data-detail {
         margin: 20px 8px;
     }

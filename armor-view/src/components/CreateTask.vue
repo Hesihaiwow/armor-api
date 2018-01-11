@@ -589,7 +589,7 @@
                         let endYear = moment(this.step.endTime).year();
                         if (beginYear != endYear) {
                             for (let i = this.weekTime.beginWeek; i < moment(this.step.beginTime).weeksInYear() + 1; i++) {
-                                http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {//无任务的0状态
                                     weekData = {
                                         'weekNumber': i,
                                         'year': beginYear,

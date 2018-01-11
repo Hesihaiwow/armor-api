@@ -86,11 +86,6 @@
                         name: 'project'
                     },
                     {
-                        label: '积分',
-                        name: 'intergral'
-                    },
-
-                    {
                         label: '统计',
                         name: 'stats'
                     }
@@ -127,6 +122,10 @@
                 this.activeName = val;
             });
             if (Helper.decodeToken().userRole < 1) {
+                this.tabs.push({
+                    label: '积分',
+                    name: 'intergral'
+                },);
                 this.tabs.push({
                     label: '计算',
                     name: 'calculate'
