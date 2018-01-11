@@ -1,11 +1,15 @@
 <template>
     <div class="nav-index-con">
         <div class="my-integral-con" v-show="userRole>0">
-            <p class="mic-title">我的积分</p>
-            <div class="mic-main clearfix">
-                <div class="mic-item fl" v-for="(item,key) in integralItem">
+            <div><p class="mic-title">我的积分</p>
+                <div  class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"  @click="integralBasicVisible=true">
+                    <span class="task-time-opt" ><i class="el-icon-edit"></i></span>计算基准积分</div>
+            </div>
+
+            <div class="mic-main clearfix" >
+                <div class="mic-item fl" v-for="(item,key) in integralItem" style="margin-left: 75px;">
                     <div class="mic-item-title" ><img :src="`${require(`../assets/img/icon_${key+1}.png`)}`" class="icon-score">{{item.label}}</div>
-                    <div class="mic-item-title" style="font-size: 12px">({{item.time}})</div>
+                    <div class="mic-item-title" style="font-size: 12px">{{item.time}}</div>
                     <div class="mic-item-integral">{{item.score}}</div>
                 </div>
             </div>
@@ -515,6 +519,14 @@
             </span>
         </el-dialog>
 
+        <el-dialog title="月基准积分计算" :visible.sync="integralBasicVisible" custom-class="myDialog" :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny">
+            工资：<el-input v-model="basicIntegral.salary"   style="width: 100px"/>
+            <div class="mic-item-title" style="font-size: 14px">基准积分 = 60 + （√(工资-5000)） *0.5  </div>
+            <div class="mic-item-title" style="font-size: 14px">月基准积分：<span>{{basicIntegral.integral}}</span></div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="success" @click="calculateIntegral" v-show="activeLeaveName=='wait'">计算基准积分</el-button>
+            </span>
+        </el-dialog>
 
 
 
@@ -527,6 +539,7 @@
     import http from '../lib/Http'
     import helper from '../lib/Helper'
     import moment from 'moment';
+    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
 
     moment.locale('zh-cn');
 
@@ -543,6 +556,7 @@
             return {
                 activeName: 'doing',
                 assessActiveName: 'waitAssess',
+                integralBasicVisible:false,
                 activeHelpName: 'wait',
                 activeLeaveName:'wait',
                 auditTabsActiveName: 'wait',
@@ -554,6 +568,10 @@
                 helpDetailVisible:false,
                 createTaskVisible: false,
                 editLeaveDetailVisible:false,
+                basicIntegral:{
+                    integral:'',
+                    salary:''
+                },
                 commentedPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -717,14 +735,6 @@
                     },
                     {
                         label: '年度总积分',
-                        score: ''
-                    },
-                    {
-                        label: '季度积分排名',
-                        score: ''
-                    },
-                    {
-                        label: '年度积分排名',
                         score: ''
                     }
                 ]
@@ -922,11 +932,10 @@
                 http.zsyGetHttp(http.API_URI.USERINTEGRAL, null, (res) => {
                     let data = res.data;
                     let items = [];
-                    items.push({label: ' ', score: data.week,time:this.getDateString('week')});
+                    items.push({label: '', score: data.week,time:this.getDateString('week')});
                     items.push({label: '', score: data.month,time:this.getDateString('month')});
                     items.push({label: '', score: data.year,time:this.getDateString('year')});
-                    items.push({label: '', score: data.quarterRank,time:this.getDateString('quarter')});
-                    items.push({label: '', score: data.yearRank,time:this.getDateString('year')});
+//                    items.push({label: '', score: 0, time:'' });
                     this.integralItem = items;
                 })
             },
@@ -1338,6 +1347,9 @@
                 }
 
             },
+            calculateIntegral(){
+                this.basicIntegral.integral =(50 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
+            },
             getDateString(date){//时间期限
                 let now = new Date();
                 let curMonth = now.getMonth();
@@ -1349,21 +1361,11 @@
                     return  moment(new Date(curYear, curMonth, now.getDate() - now.getDay()+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - now.getDay())+1)).format('YYYY-MM-DD');
                 }else if(date=="year"){//本年的开始结束时间
                     return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
-                }else if(date=="quarter"){
-                    if (curMonth >= 0 && curMonth <= 2){
-                        startMonth = 0;
-                    }else if (curMonth >= 3 && curMonth <= 5){
-                        startMonth = 3;
-                    }else if (curMonth >= 6 && curMonth <= 8){
-                        startMonth = 6;
-                    }else if (curMonth >= 9 && curMonth <= 11){
-                        startMonth = 9;
-                    }
-                    return  moment(new Date(curYear, startMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, startMonth+3,1)-1).format('YYYY-MM-DD');
                 }
             }
         },
         components: {
+            ElButton,
             TaskItem: TaskItem
         },
     }
@@ -1392,7 +1394,7 @@
     }
 
     .mic-item {
-        margin: 18px 12px;
+        margin: 18px 75px;
         width: 200px;
         text-align: center;
         box-shadow: 0 0 20px #ccc;

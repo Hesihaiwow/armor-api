@@ -434,7 +434,6 @@
 .add-task-top{text-align: center;font-size: 16px;font-weight: bold;margin: 10px;border-bottom: 1px solid #ccc;line-height: 30px;padding-bottom: 10px;position: relative;}
 .add-task-top .close{position: absolute;right: 0;font-size: 28px;font-weight: normal;color: #999;cursor: pointer;transition:0.8s ease all;width: 30px;height: 30px;text-align: center;line-height: 24px;}
 .add-task-top .close:hover{color:#36A8FF;transform:rotate(360deg);}
-.att-img{margin: 16px 0;}
 .att-msg{text-align: center;color: #A7A7A7;margin-bottom: 24px;}
 .project-name,.project-intro{width: 90%;border: 1px solid #ccc;height: 36px;line-height: 36px;display: block;margin: 16px auto;border-radius: 3px;text-indent: 10px;font-size: inherit;}
 .att-bents{text-align: right;margin: 20px;}

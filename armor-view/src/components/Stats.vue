@@ -1013,16 +1013,6 @@
         margin-right: 10px;
     }
 
-    .ctpc-list-menu {
-        line-height: 30px;
-        width: 80px;
-        font-size: 14px;
-    }
-
-    .ctpc-list-con {
-        width: 410px;
-    }
-
     .ctpc-con {
         height: 240px;
         overflow-y: scroll;
