@@ -3,9 +3,8 @@
         <div class="my-integral-con" v-show="userRole>0">
             <div><p class="mic-title">我的积分</p>
                 <div  class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"  @click="integralBasicVisible=true">
-                    <span class="task-time-opt" ><i class="el-icon-edit"></i></span>计算基准积分</div>
+                    <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分</div>
             </div>
-
             <div class="mic-main clearfix" >
                 <div class="mic-item fl" v-for="(item,key) in integralItem" style="margin-left: 75px;">
                     <div class="mic-item-title" ><img :src="`${require(`../assets/img/icon_${key+1}.png`)}`" class="icon-score">{{item.label}}</div>
@@ -162,6 +161,8 @@
             </div>
             <div v-show="userRole===0">
                 <p class="mic-title">个人任务审核</p>
+                <div  class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"  @click="integralBasicVisible=true">
+                    <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分</div>
                 <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
                     <el-tab-pane label="待审核" name="wait">
                         <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
@@ -527,8 +528,6 @@
                 <el-button type="success" @click="calculateIntegral" v-show="activeLeaveName=='wait'">计算基准积分</el-button>
             </span>
         </el-dialog>
-
-
 
     </div>
 </template>
@@ -1348,7 +1347,17 @@
 
             },
             calculateIntegral(){
-                this.basicIntegral.integral =(50 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
+                if(this.basicIntegral.salary<0){
+                    this.$message({
+                        showClose: true,
+                        message: '工资请选择正数',
+                        type: 'warning'
+                    });
+                }else if(this.basicIntegral.salary<5000){
+                    this.basicIntegral.integral =(60 - Math.sqrt(5000-this.basicIntegral.salary)*0.5).toFixed(2);
+                }else{
+                    this.basicIntegral.integral =(60 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
+                }
             },
             getDateString(date){//时间期限
                 let now = new Date();
