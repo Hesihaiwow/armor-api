@@ -1346,6 +1346,13 @@
 
             },
             calculateIntegral(){
+                if(this.basicIntegral.salary<5000){
+                    this.$message({
+                        showClose: true,
+                        message: '工资请填写大于5000的数字',
+                        type: 'warning'
+                    });
+                }
                 this.basicIntegral.integral =(60 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
             },
             getDateString(date){//时间期限
