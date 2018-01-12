@@ -3,7 +3,7 @@
         <div class="my-integral-con" v-show="userRole>0">
             <div><p class="mic-title">我的积分</p>
                 <div  class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"  @click="integralBasicVisible=true">
-                    <span class="task-time-opt" ><i class="el-icon-edit"></i></span>计算基准积分</div>
+                    <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分</div>
             </div>
 
             <div class="mic-main clearfix" >
@@ -527,8 +527,6 @@
                 <el-button type="success" @click="calculateIntegral" v-show="activeLeaveName=='wait'">计算基准积分</el-button>
             </span>
         </el-dialog>
-
-
 
     </div>
 </template>
@@ -1348,7 +1346,7 @@
 
             },
             calculateIntegral(){
-                this.basicIntegral.integral =(50 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
+                this.basicIntegral.integral =(60 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
             },
             getDateString(date){//时间期限
                 let now = new Date();
