@@ -18,6 +18,7 @@ import com.zhixinhuixue.armor.model.dto.response.UserWeekResDTO;
 import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import com.zhixinhuixue.armor.service.IZSYUserLeaveService;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYUserLeaveType;
 import org.springframework.beans.BeanUtils;
@@ -92,7 +93,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      */
     @Override
     public PageInfo<UserLeaveResDTO> getLeaveList(UserLeaveListReqDTO userLeaveListReqDTO) {
-        PageHelper.startPage(userLeaveListReqDTO.getPageNum(), 10);
+        PageHelper.startPage(userLeaveListReqDTO.getPageNum(), ZSYConstants.PAGE_SIZE);
         userLeaveListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<UserLeaveBO> userLeaveBOS = userLeaveMapper.getLeaveList(userLeaveListReqDTO);
 

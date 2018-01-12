@@ -5,7 +5,6 @@
                 <div  class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"  @click="integralBasicVisible=true">
                     <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分</div>
             </div>
-
             <div class="mic-main clearfix" >
                 <div class="mic-item fl" v-for="(item,key) in integralItem" style="margin-left: 75px;">
                     <div class="mic-item-title" ><img :src="`${require(`../assets/img/icon_${key+1}.png`)}`" class="icon-score">{{item.label}}</div>
@@ -162,6 +161,8 @@
             </div>
             <div v-show="userRole===0">
                 <p class="mic-title">个人任务审核</p>
+                <div  class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"  @click="integralBasicVisible=true">
+                    <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分</div>
                 <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
                     <el-tab-pane label="待审核" name="wait">
                         <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
