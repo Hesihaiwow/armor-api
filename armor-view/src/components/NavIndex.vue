@@ -1346,14 +1346,17 @@
 
             },
             calculateIntegral(){
-                if(this.basicIntegral.salary<5000){
+                if(this.basicIntegral.salary<0){
                     this.$message({
                         showClose: true,
-                        message: '工资请填写大于5000的数字',
+                        message: '工资请选择正数',
                         type: 'warning'
                     });
+                }else if(this.basicIntegral.salary<5000){
+                    this.basicIntegral.integral =(60 - Math.sqrt(5000-this.basicIntegral.salary)*0.5).toFixed(2);
+                }else{
+                    this.basicIntegral.integral =(60 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
                 }
-                this.basicIntegral.integral =(60 + Math.sqrt(this.basicIntegral.salary-5000)*0.5).toFixed(2);
             },
             getDateString(date){//时间期限
                 let now = new Date();
