@@ -99,7 +99,7 @@
                              :class="item.cssClass">
                             <span class="fl ctpc-member-head">{{item.userName}}</span>
                             <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
-                            <span class="fl ctpc-member-end-time">截止:{{item.endTime}}</span>
+                            <span class="fl ctpc-member-end-time">截止:{{item.endTime|formatDate}}</span>
                             <span style="position: absolute;right: 10px;">
                                 <el-button type="text" icon="edit" @click="modifyStep(index,taskUsers)"></el-button>
                             <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
@@ -327,6 +327,7 @@
                     item.cssClass = ''
                 })
                 this.taskUsers[index].cssClass = 'stepActive'
+                this.description = stages[index].description
                 this.step = stages[index]
                 this.step.index = index
                 this.showAddDetail = true;
@@ -403,7 +404,7 @@
                 } else {
                     // 取消css
                     this.taskUsers[this.step.index].cssClass = ''
-                    this.modifyTaskForm.taskUsers[this.step.index].description = this.description
+                    this.taskUsers[this.step.index].description = this.description
                     this.taskUsers[this.step.index].userWeeks = this.weekNumber
                 }
 
@@ -612,7 +613,6 @@
                             }
                         }
                         if (this.weekTime.beginWeek == this.weekTime.endWeek) {
-                            console.log(this.weekTime.beginWeek)
                             http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 weekData = {
                                     'weekNumber': this.weekTime.beginWeek,
