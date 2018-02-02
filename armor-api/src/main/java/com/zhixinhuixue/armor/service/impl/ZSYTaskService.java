@@ -1130,7 +1130,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskListResDTO> getTaskByStageTime(Long stageId) {
-        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageTime(stageId,ZSYTokenRequestContext.get().getDepartmentId(),publishInfoMapper.getPublishInfo());
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageTime(stageId,ZSYTokenRequestContext.get().getDepartmentId(),publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId()));
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
@@ -1240,7 +1240,12 @@ public class ZSYTaskService implements IZSYTaskService {
     @Transactional
     public void setPublishTime(Date publishTime){
         checkUser();
-        publishInfoMapper.updatePublishInfo(publishTime);
+        if(publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId())==null){
+            publishInfoMapper.insertPublishInfo(publishTime,ZSYTokenRequestContext.get().getDepartmentId());
+        }else {
+            publishInfoMapper.updatePublishInfo(publishTime,ZSYTokenRequestContext.get().getDepartmentId());
+        }
+
     }
 
     /**
@@ -1250,6 +1255,11 @@ public class ZSYTaskService implements IZSYTaskService {
     @Transactional
     public Date getPublishTime(){
         checkUser();
-        return  publishInfoMapper.getPublishInfo();
+        if(publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId())==null){
+            return DateHelper.TimestampToDate("946742399000");
+        }else{
+
+            return  publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId());
+        }
     }
 }

@@ -400,7 +400,7 @@
 
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveTaskInfo('taskForm')">立即创建</el-button>
+            <el-button type="primary" @click="saveTaskInfo('taskForm')" :disabled="taskAble">立即创建</el-button>
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
@@ -560,6 +560,7 @@
                 activeLeaveName:'wait',
                 auditTabsActiveName: 'wait',
                 auditHelpTabsActiveName:'wait',
+                taskAble:false,
                 editHelpDetailVisible:false,
                 editHelpVisible: false,
                 editLeaveVisible:false,
@@ -846,6 +847,7 @@
             },
             saveTaskInfo(formName) {
                 let vm = this;
+                this.taskAble= true
                 this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
                 this.taskForm.beiginTime = moment(this.taskForm.beiginTime).toDate()
                 this.$refs[formName].validate((valid) => {
@@ -879,6 +881,7 @@
                             this.$message({ showClose: true,message: '任务创建成功',type: 'success'});
                             this.$refs[formName].resetFields();
                             this.createTaskVisible = false
+                            this.taskAble = false
                             vm.reload()
                         });
                     } else {

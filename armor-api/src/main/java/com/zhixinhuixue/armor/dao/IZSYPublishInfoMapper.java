@@ -1,7 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 
-import com.zhixinhuixue.armor.model.pojo.PublishInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 
@@ -13,14 +13,16 @@ public interface IZSYPublishInfoMapper {
      * @param publishTime
      * @return
      */
-    int updatePublishInfo(Date publishTime);
+    int updatePublishInfo(@Param("time") Date publishTime,@Param("id") Long id);
+
+    int insertPublishInfo(@Param("time") Date publishTime,@Param("id") Long id);
 
 
     /**
      * 获取发版时间
      * @return
      */
-    Date getPublishInfo();
+    Date getPublishInfo(Long id);
 
 
 }

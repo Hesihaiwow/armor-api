@@ -413,7 +413,7 @@
                         </div>
                         <div class="add-member-basic-msg fl">
                             <!--<input class="member-time-count" v-model="step.taskHours">工时-->
-                            <el-input v-model="step.taskHours" style="width: 70px"></el-input>
+                            <el-input v-model="otherStep.taskHours" style="width: 70px"></el-input>
                             工时
                         </div>
                     </div>
@@ -691,7 +691,6 @@
                     stageName: '',
                     userId: '',
                     userName: '',
-                    taskHours: '',
                     beginTime: '',
                     endTime: '',
                     completeHours: '',
@@ -702,6 +701,7 @@
                 otherStep:{
                     description: '',
                     status:'',
+                    taskHours:''
                 },
                 stepTemp: {},
                 weekTime:{
@@ -1177,6 +1177,7 @@
                 this.step.index = index;
                 this.otherStep.description = stages[index].description;
                 this.otherStep.status = stages[index].status;
+                this.otherStep.taskHours = stages[index].taskHours;
                 this.modifyTaskForm.taskUsers.forEach((item) => {
                     item.cssClass = ''
                 })
@@ -1247,7 +1248,6 @@
                     index: '',
                     userId: '',
                     userName: '',
-                    taskHours: '',
                     beginTime: '',
                     endTime: '',
                     description: '',
@@ -1257,6 +1257,7 @@
                 }
                 this.otherStep.description = ''
                 this.otherStep.status=''
+                this.otherStep.taskHours=''
                 this.weekNumberTemp = []
             },
             saveAddMember() {
@@ -1280,13 +1281,13 @@
                     }
                     sumHours +=  parseFloat(this.weekNumber[i].hours)
                 }
-                if(sumHours!=this.step.taskHours){
+                if(sumHours!=this.otherStep.taskHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return
                 }
                 const valid =
                     this.step.userId == '' ||
-                    this.step.taskHours == '' ||
+                    this.otherStep.taskHours == '' ||
                     this.step.beginTime == '' ||
                     this.step.endTime == '';
                 if (valid) {
@@ -1299,7 +1300,7 @@
                     taskUser.userName = this.step.userName;
                     taskUser.beginTime = this.step.beginTime;
                     taskUser.endTime = this.step.endTime;
-                    taskUser.taskHours = this.step.taskHours;
+                    taskUser.taskHours = this.otherStep.taskHours;
                     taskUser.description = this.otherStep.description;
                     taskUser.userWeeks = this.weekNumber;
                     taskUser.status = this.otherStep.status;
@@ -1309,6 +1310,7 @@
                     this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
                     this.modifyTaskForm.taskUsers[this.step.index].description = this.otherStep.description
                     this.modifyTaskForm.taskUsers[this.step.index].status = this.otherStep.status
+                    this.modifyTaskForm.taskUsers[this.step.index].taskHours = this.otherStep.taskHours
                     this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumber;
                 }
 
@@ -1327,6 +1329,7 @@
                 };
                 this.otherStep.description=''
                 this.otherStep.status =''
+                this.otherStep.taskHours =''
                 this.stepTemp = {};
             },
             stepUserChange(val) {
@@ -1496,7 +1499,7 @@
                     this.weekNumber = [];
                     let weekData='';
                     let param = this.weekNumber;
-                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
+                    if (this.step.userId != '' && this.otherStep.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
                         this.weekTime.beginWeek = moment(this.step.beginTime).week()
                         this.weekTime.endWeek = moment(this.step.endTime).week()
                         let beginYear = moment(this.step.beginTime).year();
@@ -1518,7 +1521,7 @@
                         }
                         if(this.weekTime.beginWeek == this.weekTime.endWeek){
                             http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
-                                weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.step.taskHours ,'weekHours': resp.data,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
+                                weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.otherStep.taskHours ,'weekHours': resp.data,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
                                 param.push(weekData)
                             })
                         }else if(this.weekTime.endWeek - this.weekTime.beginWeek >1){
