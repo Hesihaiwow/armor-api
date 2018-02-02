@@ -147,8 +147,8 @@ public class ZSYUserService implements IZSYUserService {
                         ZSYConstants.HINT_PASSWORD_KEY), 32, false));
         userReqDTO.setStatus(ZSYUserStatus.ACTIVE.getValue());
 
-        MailHelper.send(userReqDTO.getEmail());
         this.addUser(userReqDTO);
+        MailHelper.send(userReqDTO.getEmail());
     }
 
     @Override

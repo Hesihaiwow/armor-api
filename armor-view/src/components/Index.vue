@@ -248,7 +248,7 @@
                 this.deptVisible = false
             },
             sendEmail(){
-                Http.zsyGetHttp('/user/sendEmail'+this.emailCode,{},(res)=>{
+                Http.zsyGetHttp('/user/sendEmail',{},(res)=>{
                     this.$message({
                         showClose: true,
                         message: "已重新发送",
