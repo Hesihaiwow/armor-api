@@ -108,7 +108,7 @@
                         <div class="bdl-line"></div>
                     </div>
                     <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                        <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="description"
+                        <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="otherStep.description"
                                   :rows="3"></el-input>
                         <!--<textarea class="add-member-remark" placeholder="备注"></textarea>-->
                         <div class="add-member-basic">
@@ -123,7 +123,7 @@
                                 <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：
                                 </div>
                                 <div class="add-member-basic-msg fl">
-                                    <input class="member-time-count" v-model="step.taskHours" @change="" :maxlength="6" style="width:80px">工时
+                                    <input class="member-time-count" v-model="otherStep.taskHours" @change="" :maxlength="6" style="width:80px">工时
                                 </div>
                             </div>
                             <div class="add-member-basic-list clearfix">
@@ -216,7 +216,10 @@
                     endTime: '',
                     description: ''
                 },
-                description: '',
+                otherStep:{
+                    description: '',
+                    taskHours:''
+                },
                 stepTemp: {},
                 showDesc: false,
                 showAssess: true,
@@ -327,7 +330,8 @@
                     item.cssClass = ''
                 })
                 this.taskUsers[index].cssClass = 'stepActive'
-                this.description = stages[index].description
+                this.otherStep.description = stages[index].description
+                this.otherStep.taskHours = stages[index].taskHours
                 this.step = stages[index]
                 this.step.index = index
                 this.showAddDetail = true;
@@ -346,12 +350,12 @@
                     index: '',
                     userId: '',
                     userName: '',
-                    taskHours: '',
                     beginTime: '',
                     endTime: '',
                     description: ''
                 }
-                this.description = ''
+                this.otherStep.description = ''
+                this.otherStep.taskHours = ''
             },
             saveAddMember() {
                 var sumHours=0;
@@ -367,25 +371,25 @@
                     }
                        sumHours +=  parseFloat(this.weekNumber[i].hours)
                 }
-                if(sumHours!=this.step.taskHours){
+                if(sumHours!=this.otherStep.taskHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return
                 }
                 const valid =
                     this.step.userId == '' ||
-                    this.step.taskHours == '' ||
+                    this.otherStep.taskHours == '' ||
                     this.step.beginTime == '' ||
                     this.step.endTime == ''
                 if (valid) {
                     this.errorMsg('请将阶段填写完整');
                     return
                 }
-                var isnum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.step.taskHours);
+                var isnum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.otherStep.taskHours);
                 if(!isnum){
                     this.errorMsg('工作量填写错误');
                     return false;
                 }
-                if(this.step.taskHours>99999.9||this.step.taskHours<0.1){
+                if(this.otherStep.taskHours>99999.9||this.otherStep.taskHours<0.1){
                     this.errorMsg('工作量正确值应为0.1~99999.9');
                     return false;
                 }
@@ -397,14 +401,15 @@
                     taskUser.userName = this.step.userName
                     taskUser.beginTime = moment(this.step.beginTime).format('YYYY-MM-DD')
                     taskUser.endTime = moment(this.step.endTime).format('YYYY-MM-DD')
-                    taskUser.taskHours = this.step.taskHours
-                    taskUser.description = this.description
+                    taskUser.taskHours = this.otherStep.taskHours
+                    taskUser.description = this.otherStep.description
                     taskUser.userWeeks = this.weekNumber
                     this.taskUsers.push(taskUser)
                 } else {
                     // 取消css
                     this.taskUsers[this.step.index].cssClass = ''
-                    this.taskUsers[this.step.index].description = this.description
+                    this.taskUsers[this.step.index].description = this.otherStep.description
+                    this.taskUsers[this.step.index].taskHours = this.otherStep.taskHours
                     this.taskUsers[this.step.index].userWeeks = this.weekNumber
                 }
 
@@ -412,12 +417,12 @@
                     index: '',
                     userId: '',
                     userName: '',
-                    taskHours: '',
                     beginTime: '',
                     endTime: '',
                     description: ''
                 }
-                this.description=''
+                this.otherStep.description=''
+                this.otherStep.taskHours=''
                 this.stepTemp = {}
             },
             stepUserChange(val) {
@@ -450,10 +455,13 @@
                         index: '',
                         userId: '',
                         userName: '',
-                        taskHours: '',
                         beginTime: '',
                         endTime: '',
                         description: ''
+                    }
+                    this.otherStep = {
+                        description:'',
+                        taskHours:''
                     }
                 }
             },
@@ -583,7 +591,7 @@
                     this.weekNumber = [];
                     let weekData = '';
                     let param = this.weekNumber;
-                    if (this.step.userId != '' && this.step.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
+                    if (this.step.userId != '' && this.otherStep.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
                         this.weekTime.beginWeek = moment(this.step.beginTime).week()
                         this.weekTime.endWeek = moment(this.step.endTime).week()
                         let beginYear = moment(this.step.beginTime).year();
@@ -616,7 +624,7 @@
                             http.zsyGetHttp('/userWeek/0/' + this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 weekData = {
                                     'weekNumber': this.weekTime.beginWeek,
-                                    'hours': this.step.taskHours,
+                                    'hours': this.otherStep.taskHours,
                                     'weekHours': resp.data,
                                     'year': beginYear,
                                     'range': moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')
