@@ -1256,9 +1256,8 @@ public class ZSYTaskService implements IZSYTaskService {
     public Date getPublishTime(){
         checkUser();
         if(publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId())==null){
-            return DateHelper.TimestampToDate("946742399000");
+            return DateHelper.TimestampToDate(ZSYConstants.PUBLISHTIME);
         }else{
-
             return  publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId());
         }
     }
