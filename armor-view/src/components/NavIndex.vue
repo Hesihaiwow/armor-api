@@ -25,7 +25,7 @@
                     <span>创建积分转移</span>
                 </div>
 
-                <div class="add-task leave" @click="editLeaveVisible=true">
+                <div class="add-task leave" @click="editLeaveVisible=true,clearLeaveForm()">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>请假申请</span>
                 </div>
@@ -1241,7 +1241,7 @@
                             http.zsyPostHttp('/userLeave/editLeaveDetail/'+form.id, form, (resp) => {
                                 this.$message({
                                     showClose: true,
-                                    message: '新建请假申请成功',
+                                    message: '请假申请修改成功',
                                     type: 'success'
                                 });
                                 this.fetchUserLeaveList();
@@ -1253,7 +1253,7 @@
                             http.zsyPostHttp('/userLeave/add', form, (resp) => {
                                 this.$message({
                                     showClose: true,
-                                    message: '请假申请修改成功',
+                                    message: '新建请假申请成功',
                                     type: 'success'
                                 });
                                 this.fetchUserLeaveList();

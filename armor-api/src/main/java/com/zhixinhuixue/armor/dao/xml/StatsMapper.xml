@@ -24,7 +24,7 @@
         LEFT JOIN task_user t on t.user_id = u.id
         LEFT JOIN  task ta ON  ta.id=t.task_id
 		LEFT JOIN department d ON d.id = u.department_id
-        WHERE u.user_role>0 AND d.parent_id= #{id} AND u.status =0
+        WHERE u.user_role>0 AND u.is_delete =0 AND u.status =0 AND d.parent_id= #{id} AND u.status =0
       GROUP BY u.id
     </select>
 
