@@ -40,6 +40,7 @@
         <if test="userId!=null">
           and user_id = #{userId}
         </if>
+    ORDER BY user_leave.create_time DESC
   </select>
 
   <select id="getUserLeaveById" parameterType="java.lang.Long" resultMap="ResultMap">

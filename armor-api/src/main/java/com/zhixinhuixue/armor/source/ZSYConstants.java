@@ -71,4 +71,8 @@ public class ZSYConstants {
      */
     public static final long NO_DEPT_ID = 0;
 
+    /**
+     * 发版时间初始化
+     */
+    public static final String PUBLISHTIME = "946742399000";
 }
