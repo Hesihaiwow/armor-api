@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYFeedbackPlanMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.FeedbackPlan">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="feedback_id" jdbcType="BIGINT" property="feedbackId" />
+    <result column="expect_start_time" jdbcType="TIMESTAMP" property="expectStartTime" />
+    <result column="expect_official_time" jdbcType="TIMESTAMP" property="expectOfficialTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+      id, feedback_id, expect_start_time, expect_official_time, create_time, update_time
+  </sql>
+
+  <resultMap id="ResultMap" type="com.zhixinhuixue.armor.model.bo.FeedbackPlanBO" extends="BaseResultMap">
+    <collection property="planTask" column="task_id" select="com.zhixinhuixue.armor.dao.IZSYTaskMapper.selectTaskDetailByTaskId"
+                ofType="com.zhixinhuixue.armor.model.bo.TaskDetailBO"></collection>
+  </resultMap>
+
+  <resultMap id="ResultMapTask" type="com.zhixinhuixue.armor.model.bo.FeedbackPlanTaskBO" >
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="feedback_plan_id" jdbcType="BIGINT" property="feedbackPlanId" />
+  </resultMap>
+
+  <insert id="insertFeedbackPlan" parameterType="com.zhixinhuixue.armor.model.pojo.FeedbackPlan">
+    insert into feedback_plan ( id, feedback_id, expect_start_time, expect_official_time, create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{feedbackId,jdbcType=BIGINT}, #{expectStartTime,jdbcType=TIMESTAMP}, #{expectOfficialTime,jdbcType=TIMESTAMP},
+      #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <select id="getFeedbackPlanById" resultMap="ResultMap" parameterType="java.lang.Long">
+  SELECT  p.*,t.task_id FROM  feedback_plan_task t
+  JOIN  feedback_plan p on p.id = t.feedback_plan_id
+  WHERE p.feedback_id = #{feedbackId}
+</select>
+
+  <select id="getTaskIdFromPlan" resultMap="ResultMapTask" parameterType="java.lang.Long">
+      SELECT t.feedback_plan_id,t.task_id,f.id FROM feedback_plan_task t
+        JOIN feedback_plan p on t.feedback_plan_id=p.id
+        JOIN feedback f on p.feedback_id = f .id
+         WHERE feedback_plan_id=(
+        SELECT feedback_plan_id FROM feedback_plan_task  fpt
+        WHERE fpt.task_id=#{taskId})
+  </select>
+
+
+</mapper>

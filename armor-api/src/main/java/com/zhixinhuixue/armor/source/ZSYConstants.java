@@ -75,4 +75,15 @@ public class ZSYConstants {
      * 发版时间初始化
      */
     public static final String PUBLISHTIME = "946742399000";
+
+    /**
+     * 任务来源
+     */
+    public static final int taskOrigin = 0;
+    public static final int taskOriginPlan = 1;
+
+    /**
+     * 额外需求扩充Id
+     */
+    public static final int extralFeedbackTypeId = 3;
 }

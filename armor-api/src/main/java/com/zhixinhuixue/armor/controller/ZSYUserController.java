@@ -96,6 +96,13 @@ public class ZSYUserController extends ZSYController {
         return ZSYResult.success().data(users).build();
     }
 
+    @ApiOperation("管理设计用户列表")
+    @GetMapping("/manager")
+    public String manageUsers() {
+        List<EffectUserResDTO> users = userService.getManageUsers();
+        return ZSYResult.success().data(users).build();
+    }
+
     @ApiOperation("删除用户")
     @ApiImplicitParam(name = "userId", value = "用户ID", required = true, paramType = "path", dataType = "long")
     @DeleteMapping("/{userId}")
