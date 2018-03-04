@@ -5,7 +5,7 @@
           <div class="clearfix">
             <div class="demand-top-list fl">
                 <span class="ttl-name">负责人:</span>
-              <el-select clearable filterable v-model="feedbackList.user" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+              <el-select clearable filterable @change="fetchFeedbackList" v-model="feedbackList.user" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                 <el-option v-for="item in adminList" :key="item.id" :label="item.name"
                            :value="item.id"></el-option>
               </el-select>
@@ -13,7 +13,7 @@
             </div>
             <div class="demand-top-list fl">
               <span class="ttl-name" style="margin-left: -15px;">需求来源:</span>
-              <el-select clearable filterable v-model="feedbackList.origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+              <el-select clearable filterable @change="fetchFeedbackList" v-model="feedbackList.origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                 <el-option v-for="item in originList" :key="item" :label="item"
                            :value="item"></el-option>
               </el-select>
