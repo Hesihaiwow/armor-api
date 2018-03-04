@@ -172,7 +172,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             throw new ZSYServiceException("请添加计划任务");
         }
 
-        if(feedbackPlanReqDTO.getId()!=null){
+        if(feedbackPlanReqDTO.getId()==null){
             FeedbackPlan feedbackPlan = new FeedbackPlan();
             BeanUtils.copyProperties(feedbackPlanReqDTO,feedbackPlan);
             feedbackPlan.setCreateTime(new Date());
@@ -186,7 +186,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         feedbackPlanReqDTO.getPlanTask().stream().forEach(taskReqDTO -> {
             if(taskReqDTO.getProjectId()==0){
                 taskReqDTO.setProjectId(feedbackPlanReqDTO.getProjectId());
-                Long taskId = Long.parseLong(taskService.addTask(taskReqDTO,ZSYConstants.taskOriginPlan).getData().toString());
+                Long taskId = Long.parseLong(taskService.addTask(taskReqDTO,taskReqDTO.getCreateBy()).getData().toString());
 
                 FeedbackPlanTask feedbackPlanTask  = new FeedbackPlanTask();
                 feedbackPlanTask.setId(snowFlakeIDHelper.nextId());

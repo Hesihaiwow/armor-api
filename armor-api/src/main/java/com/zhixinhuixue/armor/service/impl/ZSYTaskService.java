@@ -101,8 +101,8 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     @Transactional
-    public ZSYResult addTask(TaskReqDTO taskReqDTO,int origin) {
-        if(origin==0){
+    public ZSYResult addTask(TaskReqDTO taskReqDTO,Long origin) {
+        if(origin.equals(ZSYConstants.taskOrigin)){
             checkUser();
         }
         // 判断含有重复的负责人
@@ -138,7 +138,12 @@ public class ZSYTaskService implements IZSYTaskService {
                 task.setSort(index + 1);
             }
         }
-        task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        if(origin.equals(ZSYConstants.taskOrigin)){//任务来源于计划中时，origin为任务创建人
+            task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        }else{
+            task.setCreateBy(origin);
+        }
+
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
         task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());

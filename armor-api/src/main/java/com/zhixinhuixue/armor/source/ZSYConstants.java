@@ -77,9 +77,7 @@ public class ZSYConstants {
     public static final String PUBLISHTIME = "946742399000";
 
     /**
-     * 任务来源
+     * 任务来源于任务页添加任务
      */
-    public static final int taskOrigin = 0;
-    public static final int taskOriginPlan = 1;
-
+    public static final Long taskOrigin = 0L;
 }
