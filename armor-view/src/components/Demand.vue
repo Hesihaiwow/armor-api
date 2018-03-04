@@ -724,6 +724,7 @@
                         message: '计划创建成功',
                         type: 'success'
                     });
+                    this.fetchFeedbackList();
                     this.planVisible = false;
                 })
                 },
