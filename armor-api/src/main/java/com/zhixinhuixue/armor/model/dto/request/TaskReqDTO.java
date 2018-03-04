@@ -65,6 +65,11 @@ public class TaskReqDTO {
     private List<Long> tags;
 
     /**
+     * 需求计划任务中的负责人
+     */
+    private Long createBy;
+
+    /**
      * 任务负责人
      */
 //    @Size(min = 1, message = "任务负责人不能为空")
@@ -163,5 +168,13 @@ public class TaskReqDTO {
 
     public void setFacility(Integer facility) {
         this.facility = facility;
+    }
+
+    public Long getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(Long createBy) {
+        this.createBy = createBy;
     }
 }
