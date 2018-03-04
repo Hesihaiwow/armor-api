@@ -148,12 +148,14 @@
         <div class="ctpc-list clearfix">
           <div class="ctpc-list-menu fl"><span class="star">*</span>预计开始时间</div>
           <div class="ctpc-list-con fl">
-            <el-date-picker v-model="feedbackPlanForm.expectStartTime" type="date" format="yyyy-MM-dd"
+            <div v-show="!permit" style="margin-top: 5px;">{{feedbackPlanForm.expectStartTime|formatDate}}</div>
+            <el-date-picker v-model="feedbackPlanForm.expectStartTime" type="date" format="yyyy-MM-dd" v-show="permit"
                             placeholder="选择日期"></el-date-picker>
           </div>
           <div class="ctpc-list-menu fl"><span class="star">*</span>预计上线时间</div>
           <div class="ctpc-list-con fl">
-            <el-date-picker v-model="feedbackPlanForm.expectOfficialTime" type="date" format="yyyy-MM-dd"
+            <div v-show="!permit" style=" margin-top: 5px;">{{feedbackPlanForm.expectStartTime|formatDate}}</div>
+            <el-date-picker v-model="feedbackPlanForm.expectOfficialTime" type="date" format="yyyy-MM-dd" v-show="permit"
                             placeholder="选择日期"></el-date-picker>
           </div>
         </div>
@@ -239,11 +241,13 @@
             <input type="button" class="ctpc-save" @click="saveAddTask" value="确定">
           </div>
         </div>
-        <div class="add-member-opt" v-show="!showTaskDetail" @click="addTask">
-          <span class="add-member-icon">+</span>
-          <span class="add-member-msg" style="margin-top: -40px;margin-left: 24px;">添加任务</span>
+        <div v-if="permit">
+          <div class="add-member-opt" v-show="!showTaskDetail" @click="addTask">
+            <span class="add-member-icon" >+</span>
+            <span class="add-member-msg" style="margin-top: -40px;margin-left: 24px;">添加任务</span>
+          </div>
+          <el-button type="text" icon="check" @click="savePlan" style="margin-left: 400px;" >保存计划</el-button>
         </div>
-        <el-button type="text" icon="check" @click="savePlan" style="margin-left: 400px;">保存计划</el-button>
       </el-dialog>
 
     </div>

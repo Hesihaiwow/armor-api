@@ -82,8 +82,4 @@ public class ZSYConstants {
     public static final int taskOrigin = 0;
     public static final int taskOriginPlan = 1;
 
-    /**
-     * 额外需求扩充Id
-     */
-    public static final int extralFeedbackTypeId = 3;
 }
