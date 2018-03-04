@@ -23,7 +23,7 @@ public interface IZSYTaskService {
      * @param taskReqDTO
      * @return
      */
-    ZSYResult addTask(TaskReqDTO taskReqDTO);
+    ZSYResult addTask(TaskReqDTO taskReqDTO, int origin);
 
     /***
      * 修改任务

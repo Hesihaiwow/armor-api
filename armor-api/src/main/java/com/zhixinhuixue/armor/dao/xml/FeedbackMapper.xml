@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYFeedbackMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Feedback">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="origin" jdbcType="VARCHAR" property="origin" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="feedback_time" jdbcType="TIMESTAMP" property="feedbackTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId" />
+    <result column="priority" jdbcType="INTEGER" property="priority" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, origin, content, feedback_time, create_time, update_time, create_by project_id, priority, status, is_delete
+  </sql>
+
+  <resultMap id="ResultMap" type="com.zhixinhuixue.armor.model.bo.FeedbackBo" extends="BaseResultMap">
+    <result column="no" jdbcType="INTEGER" property="no"/>
+    <result column="users" jdbcType="VARCHAR" property="users"/>
+    <result column="feedbackPlanId" jdbcType="VARCHAR" property="users"/>
+  </resultMap>
+
+
+  <insert id="insertFeedback" parameterType="com.zhixinhuixue.armor.model.pojo.Feedback">
+    insert into feedback ( id, title, origin, content, feedback_time, create_time, update_time, create_by, project_id, priority, status, is_delete)
+    values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{origin,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+      #{feedbackTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},
+       #{createBy,jdbcType=BIGINT}, #{projectId,jdbcType=BIGINT}, #{priority,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{isDelete,jdbcType=INTEGER})
+  </insert>
+
+  <select id="selectFeedbackPage" resultMap="ResultMap" parameterType="com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO">
+      SELECT (@rowid := @rowid+1) AS no,a.* FROM(
+			SELECT f.*,fp.id AS planId,group_concat(u.name separator ',') as users  FROM feedback f
+            LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+            LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
+            LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
+            LEFT JOIN user u on t.create_by = u.id
+            LEFT JOIN department d ON d.id = u.department_id AND d.parent_id= #{departmentId}
+			<where>
+              f.is_delete = 0
+              <if test="priority!=null and priority!=0">
+                and f.priority = #{priority}
+              </if>
+              <if test="status!=null and status!=-1">
+                and f.status = #{status}
+              </if>
+              <if test="origin!=null and origin!=''">
+                and f.origin = #{origin}
+              </if>
+              <if test="user!=null and user!=''">
+                and u.id = #{user}
+              </if>
+            </where>
+            GROUP BY f.id
+			ORDER BY f.feedback_time DESC
+     )as a,(SELECT (@rowid:=0))as b
+  </select>
+
+  <update id="updateByFeedbackId" parameterType="com.zhixinhuixue.armor.model.pojo.Feedback">
+    update feedback
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null">
+        origin = #{origin,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="feedbackTime != null">
+        feedback_time = #{feedbackTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="priority != null and priority!=3">
+        priority = #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=BIGINT},
+      </if>
+      <if test="isDelete != null or isDelete == 0">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getOrigin" resultType="java.lang.String">
+      SELECT origin FROM feedback WHERE is_delete =0
+  </select>
+
+  <select id="selectById" resultMap="BaseResultMap">
+    SELECT * FROM feedback WHERE id=#{id}
+  </select>
+</mapper>

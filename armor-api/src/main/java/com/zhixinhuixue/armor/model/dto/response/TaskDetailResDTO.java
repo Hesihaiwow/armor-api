@@ -48,6 +48,8 @@ public class TaskDetailResDTO {
      */
     private String stageName;
 
+    private String userName;
+
     /**
      * 任务标签
      */
@@ -216,6 +218,14 @@ public class TaskDetailResDTO {
 
     public void setExamine(Integer examine) {
         this.examine = examine;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
 

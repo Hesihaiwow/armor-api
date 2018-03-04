@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYFeedbackPlanTaskMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="feedback_plan_id" jdbcType="BIGINT" property="feedbackPlanId" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, feedback_plan_id, task_id
+  </sql>
+
+  <insert id="insertFeedbackPlanTask" parameterType="com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask">
+    insert into feedback_plan_task ( id, feedback_plan_id, task_id)
+    values (#{id,jdbcType=BIGINT}, #{feedbackPlanId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT})
+  </insert>
+
+</mapper>
