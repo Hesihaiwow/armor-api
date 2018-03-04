@@ -163,7 +163,7 @@
           <div class="ctpc-member-list clearfix" v-for="(item,index) in planTask"
                :class="[item.status>1?'done':'in',item.cssClass]">
             <span class="fl ctpc-member-head">{{item.userName}}</span>
-            <span class="fl ctpc-member-job-time">任务名称:{{item.taskName}}</span>
+            <span class="fl ctpc-member-job-time">{{item.taskName|StringExtract}}</span>
             <span class="fl ctpc-member-end-time">截止:{{item.endTime|formatDate}}</span>
             <!--<span style="position: absolute;right: 10px;">-->
                                 <!--<el-button type="text" icon="edit" @click="modifyStep(index,planTask)"></el-button>-->
@@ -445,6 +445,12 @@
             formatDate: function (value) {
                 if (!value) return '';
                 return moment(value).format('YYYY年MM月DD日');
+            },
+            StringExtract:function (name) {
+                if(name.length>40){
+                  return name.substring(0,40)+'...';
+                }
+                return name;
             },
         },
         methods: {
