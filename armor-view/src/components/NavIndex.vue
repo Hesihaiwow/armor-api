@@ -1367,10 +1367,12 @@
                 let curMonth = now.getMonth();
                 let curYear =  now.getFullYear();;
                 let startMonth = 0 ;
+                let nowDayOfWeek = now.getDay();
+                nowDayOfWeek = nowDayOfWeek==0?7:nowDayOfWeek;
                 if(date=="month"){//本月的开始结束时间
                     return  moment(new Date(curYear, curMonth, 1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear,curMonth+1,1)-1).format('YYYY-MM-DD');
                 }else if(date=="week"){//本季度的开始结束时间
-                    return  moment(new Date(curYear, curMonth, now.getDate() - now.getDay()+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - now.getDay())+1)).format('YYYY-MM-DD');
+                    return  moment(new Date(curYear, curMonth, now.getDate() - nowDayOfWeek+1)).format('YYYY-MM-DD')+"--"+moment(new Date(curYear, curMonth, now.getDate()+( 6 - nowDayOfWeek)+1)).format('YYYY-MM-DD');
                 }else if(date=="year"){//本年的开始结束时间
                     return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
                 }
