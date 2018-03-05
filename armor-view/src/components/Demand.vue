@@ -119,7 +119,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="原始需求:" prop="content">
-              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="height: 140px;!important;">
+              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="width:440px;height: 140px;">
               </quill-editor>
               <el-upload
                       class="avatar-uploader"
@@ -384,17 +384,12 @@
                         toolbar: {
                             container: [['bold', 'italic', 'underline', 'strike'],        // toggled buttons
                                                     ['blockquote', 'code-block'],
-                                      [{'header': 1}, {'header': 2}],               // custom button values
                                         [{'list': 'ordered'}, {'list': 'bullet'}],
                                         [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
-                                        [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
-                                        [{'direction': 'rtl'}],                         // text direction
-
+                                        [{'indent': '-1'}, {'indent': '+1'}],
+                                         [{'color': []}, {'background': []}],          // dropdown with defaults from theme
                                         [{'size': ['small', false, 'large', 'huge']}],  // custom dropdown
                                         [{'header': [1, 2, 3, 4, 5, 6, false]}],
-
-                                        [{'color': []}, {'background': []}],          // dropdown with defaults from theme
-                                        [{'font': []}],
                                         [{'align': []}],
                                         [ 'image'] ], // 工具栏
                             handlers: {
