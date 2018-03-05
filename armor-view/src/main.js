@@ -12,6 +12,13 @@ import './assets/css/base.css'
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+Vue.use(VueQuillEditor,);
+
 import request from './lib/Http'
 Vue.prototype.http = request;
 

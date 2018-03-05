@@ -75,4 +75,9 @@ public class ZSYConstants {
      * 发版时间初始化
      */
     public static final String PUBLISHTIME = "946742399000";
+
+    /**
+     * 任务来源于任务页添加任务
+     */
+    public static final Long taskOrigin = 0L;
 }

@@ -63,6 +63,10 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYStageMapper stageMapper;
     @Autowired
     private IZSYPublishInfoMapper publishInfoMapper;
+    @Autowired
+    private IZSYFeedbackPlanMapper feedbackPlanMapper;
+    @Autowired
+    private IZSYFeedbackMapper feedbackMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -97,8 +101,10 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     @Transactional
-    public ZSYResult addTask(TaskReqDTO taskReqDTO) {
-        checkUser();
+    public ZSYResult addTask(TaskReqDTO taskReqDTO,Long origin) {
+        if(origin.equals(ZSYConstants.taskOrigin)){
+            checkUser();
+        }
         // 判断含有重复的负责人
         if (taskReqDTO.getTaskUsers() != null && taskReqDTO.getTaskUsers().size() > 0) {
             List<Long> users = taskReqDTO.getTaskUsers().stream().map(TaskUserReqDTO::getUserId).distinct().collect(Collectors.toList());
@@ -132,7 +138,12 @@ public class ZSYTaskService implements IZSYTaskService {
                 task.setSort(index + 1);
             }
         }
-        task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        if(origin.equals(ZSYConstants.taskOrigin)){//任务来源于计划中时，origin为任务创建人
+            task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        }else{
+            task.setCreateBy(origin);
+        }
+
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
         task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
@@ -195,7 +206,12 @@ public class ZSYTaskService implements IZSYTaskService {
         }
         // 插入日志
         taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "创建了任务", task.getName(), task.getId()));
-        return ZSYResult.success();
+        if(origin==0){
+            return ZSYResult.success();
+
+        }else{
+            return ZSYResult.success().data(task.getId());
+        }
     }
 
 
@@ -454,6 +470,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "关闭了任务",
                 taskTemp.getName(), taskTemp.getId()));
 
+
         // 插入评价
         TaskComment taskComment = new TaskComment();
         taskComment.setId(snowFlakeIDHelper.nextId());
@@ -685,6 +702,24 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setUpdateTime(new Date());
         // 将任务状态改为已完成（待评价）
         taskMapper.updateByPrimaryKeySelective(task);
+
+        //查找计划并判断是否完成计划
+        List<FeedbackPlanTaskBO> planTasks = feedbackPlanMapper.getTaskIdFromPlan(taskId);
+        if(planTasks.size()>0){
+            Boolean planComplete = true;
+            for(int i=0;i<planTasks.size();i++){
+                Task taskPlan = taskMapper.selectByPrimaryKey(planTasks.get(i).getTaskId());
+                if(taskPlan.getStatus()!=ZSYTaskStatus.COMPLETED.getValue()){
+                    planComplete = false;
+                }
+            }
+            if(planComplete){
+                Feedback feedback =feedbackMapper.selectById(planTasks.get(0).getId());
+                feedback.setStatus(ZSYTaskStatus.COMPLETED.getValue());
+                feedbackMapper.updateByFeedbackId(feedback);
+            }
+        }
+
         // 插入日志
         taskLogMapper.insert(buildLog("阶段全部完成", "将全部阶段标记为已完成", taskId));
         return ZSYResult.success();

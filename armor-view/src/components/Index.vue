@@ -57,6 +57,7 @@
 <script>
     import Task from './Task'
     import Project from './Project'
+    import Demand from './Demand'
     import Intergral from './Intergral'
     import Organization from './Organization'
     import NavIndex from './NavIndex'
@@ -76,6 +77,10 @@
                     {
                         label: '主页',
                         name: 'navIndex'
+                    },
+                    {
+                        label: '需求',
+                        name: 'demand'
                     },
                     {
                         label: '任务',
@@ -280,6 +285,7 @@
         },
         components: {
             Task: Task,
+            Demand: Demand,
             Project: Project,
             Intergral: Intergral,
             Organization: Organization,

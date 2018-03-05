@@ -4,6 +4,7 @@ import Index from '@/components/Index'
 import Login from '@/components/Login'
 import Task from '@/components/Task'
 import Project from '@/components/Project'
+import Demand from '@/components/Demand'
 import Intergral from '@/components/Intergral'
 import Organization from '@/components/Organization'
 import NavIndex from '@/components/NavIndex'
@@ -43,6 +44,10 @@ export default new Router({
                 {
                     path: 'task',
                     component: Task
+                },
+                {
+                    path: 'demand',
+                    component: Demand
                 },
                 {
                     path: 'project',

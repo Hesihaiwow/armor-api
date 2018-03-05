@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.controller;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
@@ -31,7 +32,7 @@ public class ZSYTaskController extends ZSYController {
     @ApiOperation("创建任务")
     @PostMapping(value = "/create")
     public String addTask(@Valid @RequestBody TaskReqDTO taskReqDTO) {
-        return taskService.addTask(taskReqDTO).build();
+        return taskService.addTask(taskReqDTO, ZSYConstants.taskOrigin).build();
     }
 
     @ApiOperation("任务审核打回")

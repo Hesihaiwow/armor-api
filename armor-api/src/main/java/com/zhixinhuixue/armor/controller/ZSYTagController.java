@@ -44,7 +44,7 @@ public class ZSYTagController extends ZSYController{
     }
 
     /**
-     * 添加标签
+     * 删除标签
      * @return
      */
     @ApiOperation("删除标签")
