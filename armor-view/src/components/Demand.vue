@@ -181,17 +181,17 @@
             <div class="add-member-basic-list clearfix">
               <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务名称：</div>
               <div class="add-member-basic-msg">
-                <input class="member-time-count" v-model="taskStep.taskName" @change=""  style="width:600px">
+                <input class="member-time-count" v-model="taskStep.taskName" @change=""  style="width:300px">
               </div>
               <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务描述：
               </div>
               <div class="add-member-basic-msg ">
                 <el-input type="textarea" placeholder="添加任务描述" v-model="taskStep.description"
-                          :rows="2" style="width: 600px"></el-input>
+                          :rows="2" style="width: 300px"></el-input>
               </div>
               <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>负责人：
               </div>
-              <div class="add-member-basic-msg">
+              <div class="add-member-basic-msg fl" >
                 <el-select v-model="taskStep.createBy" clearable placeholder="请选择">
                   <el-option v-for="item in adminList" :key="item.id" :label="item.name"
                              :value="item.id"></el-option>
@@ -205,7 +205,7 @@
               </div>
               <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>难易度：
               </div>
-              <div class="add-member-basic-msg">
+              <div class="add-member-basic-msg fl">
                 <el-select v-model="taskStep.facility" clearable placeholder="请选择">
                   <el-option
                           v-for="item in facilityList"
@@ -472,7 +472,6 @@
                 this.feedbackForm.projectId =feedback.projectId
                 this.feedbackForm.priority =feedback.priority
                 this.feedbackForm.status = feedback.status
-                console.log(this.feedbackForm.status)
                 http.zsyGetHttp('/feedback/getPlan/'+feedback.id, {}, (resp) => {
                     if(resp.data.planTask.length!=0){
                         this.feedbackPlanForm.id = resp.data.id
@@ -1109,7 +1108,7 @@
   }
 
   .add-member-basic-msg .el-select {
-    width: 140px;
+    width: 120px;
   }
 
   .member-time-count {
@@ -1134,7 +1133,7 @@
   }
 
   .add-member-basic-msg .el-date-editor.el-input {
-    width: 140px;
+    width: 120px;
   }
 
   .add-member-basic-end {
@@ -1142,7 +1141,7 @@
   }
 
   .tag-add-sel .el-select {
-    width: 188px;
+    width: 180px;
   }
 
   .tag-add-sel {
