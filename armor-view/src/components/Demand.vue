@@ -66,7 +66,7 @@
           <el-table-column prop="users" label="负责人" align="center" width="150"></el-table-column>
           <el-table-column  label="操作" align="center" >
             <template scope="scope">
-              <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="scope.row.status!=2">计划</el-button>
+              <el-button @click="feedbackPlan(scope.row)" type="text" size="small" >计划</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -141,29 +141,33 @@
         <div class="ctpc-list clearfix">
           <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
           <div class="ctpc-list-con fl" v-for="item in projectList" v-if="item.id == feedbackForm.projectId">{{item.name}}</div>
-          <div class="ctpc-list-menu fl"><span class="star">*</span>优先级</div>
-          <div class="ctpc-list-con fl" v-for="item in priorityList" v-if="item.id == feedbackForm.priority">{{item.name}}
-        </div>
         </div>
         <div class="ctpc-list clearfix">
-          <div class="ctpc-list-menu fl"><span class="star">*</span>预计开始时间</div>
+          <div class="ctpc-list-menu fl"><span class="star">*</span>优先级</div>
+          <div class="ctpc-list-con fl" v-for="item in priorityList" v-if="item.id == feedbackForm.priority">{{item.name}}
+          </div>
+        </div>
+        <div class="ctpc-list clearfix">
+          <div class="ctpc-list-menu fl"><span class="star">*</span>预计开始时间:</div>
           <div class="ctpc-list-con fl">
-            <div v-show="!permit" style="margin-top: 5px;">{{feedbackPlanForm.expectStartTime|formatDate}}</div>
-            <el-date-picker v-model="feedbackPlanForm.expectStartTime" type="date" format="yyyy-MM-dd" v-show="permit"
+            <div v-if="!permit || feedbackForm.status==2" >{{feedbackPlanForm.expectStartTime|formatDate}}</div>
+            <el-date-picker v-model="feedbackPlanForm.expectStartTime" type="date" format="yyyy-MM-dd" v-else=" "
                             placeholder="选择日期"></el-date-picker>
           </div>
-          <div class="ctpc-list-menu fl"><span class="star">*</span>预计上线时间</div>
+        </div>
+        <div class="ctpc-list clearfix">
+          <div class="ctpc-list-menu fl"><span class="star">*</span>预计上线时间:</div>
           <div class="ctpc-list-con fl">
-            <div v-show="!permit" style=" margin-top: 5px;">{{feedbackPlanForm.expectStartTime|formatDate}}</div>
-            <el-date-picker v-model="feedbackPlanForm.expectOfficialTime" type="date" format="yyyy-MM-dd" v-show="permit"
+            <div v-if="!permit || feedbackForm.status==2" >{{feedbackPlanForm.expectStartTime|formatDate}}</div>
+            <el-date-picker v-model="feedbackPlanForm.expectOfficialTime" type="date" format="yyyy-MM-dd" v-else=""
                             placeholder="选择日期"></el-date-picker>
           </div>
         </div>
         <div class="ctpc-member-con">
           <div class="ctpc-member-list clearfix" v-for="(item,index) in planTask"
                :class="[item.status>1?'done':'in',item.cssClass]">
-            <span class="fl ctpc-member-head">{{item.userName}}</span>
-            <span class="fl ctpc-member-job-time">{{item.taskName|StringExtract}}</span>
+            <span class="fl ctpc-member-head" >{{item.userName}}</span>
+            <a class="fl ctpc-member-job-time" @click="directPlanTask(item.id)" style="color:black; cursor: pointer;">{{item.taskName|StringExtract}}</a>
             <span class="fl ctpc-member-end-time">截止:{{item.endTime|formatDate}}</span>
             <!--<span style="position: absolute;right: 10px;">-->
                                 <!--<el-button type="text" icon="edit" @click="modifyStep(index,planTask)"></el-button>-->
@@ -241,7 +245,8 @@
             <input type="button" class="ctpc-save" @click="saveAddTask" value="确定">
           </div>
         </div>
-        <div v-if="permit">
+        <div v-if="!permit ||feedbackForm.status==2 "></div>
+        <div v-else="">
           <div class="add-member-opt" v-show="!showTaskDetail" @click="addTask">
             <span class="add-member-icon" >+</span>
             <span class="add-member-msg" style="margin-top: -40px;margin-left: 24px;">添加任务</span>
@@ -285,13 +290,6 @@
                 feedbackDeleteIcon:false,
                 planVisible:false,
                 showTaskDetail:false,
-                ueditor: {
-                    value: '编辑器默认文字',
-                    config: {
-                        initialFrameWidth: null,
-                        initialFrameHeight: 350,
-                    }
-                },
                 feedbackForm: {
                     id:'',
                     title: '',
@@ -301,6 +299,7 @@
                     feedbackTime:'',
                     createBy:'',
                     content:'',
+                    status:''
                 },
                 taskStep:{
                     index: '',
@@ -447,8 +446,8 @@
                 return moment(value).format('YYYY年MM月DD日');
             },
             StringExtract:function (name) {
-                if(name.length>40){
-                  return name.substring(0,40)+'...';
+                if(name.length>20){
+                  return name.substring(0,20)+'...';
                 }
                 return name;
             },
@@ -463,6 +462,7 @@
                 this.feedbackForm.title=''
                 this.feedbackForm.content=''
                 this.feedbackForm.createBy=''
+                this.feedbackForm.status=''
             },
             feedbackPlan(feedback){
                 this.clearPlan();
@@ -471,6 +471,8 @@
                 this.feedbackPlanForm.projectId = feedback.projectId
                 this.feedbackForm.projectId =feedback.projectId
                 this.feedbackForm.priority =feedback.priority
+                this.feedbackForm.status = feedback.status
+                console.log(this.feedbackForm.status)
                 http.zsyGetHttp('/feedback/getPlan/'+feedback.id, {}, (resp) => {
                     if(resp.data.planTask.length!=0){
                         this.feedbackPlanForm.id = resp.data.id
@@ -808,6 +810,11 @@
                 }
                 return isImage && isLt2M;
             },
+            directPlanTask(taskId){
+                if(taskId!=null||taskId!=''){
+                    this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
+                }
+            },
             warnMsg(msg) {
                 this.$message({
                     showClose: true,
@@ -883,7 +890,7 @@
 
   .ctpc-list-menu {
     line-height: 30px;
-    width: 120px;
+    width: 170px;
     font-size: 14px;
   }
 
@@ -953,7 +960,7 @@
   }
 
   .ctpc-member-job-time {
-    width: 600px;
+    width: 300px;
   }
 
   .ctpc-member-end-time {
