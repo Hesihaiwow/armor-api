@@ -54,7 +54,7 @@
           </el-table-column>
           <el-table-column prop="feedbackTime" label="提出日期" align="center" width="150">
             <template scope="scope">
-              <div type="text" size="small" >{{scope.row.feedbackTime | formatDate}}</div>
+              <div type="text" >{{scope.row.feedbackTime | formatDate}}</div>
             </template>
           </el-table-column>
           <el-table-column prop="status" label="状态" align="center" >
@@ -82,15 +82,15 @@
 
       </div>
 
-      <el-dialog :visible.sync="feedbackVisible" size="small" title="需求描述" custom-class="myDialog" :close-on-click-modal="false" :close-on-press-escape="false">
+      <el-dialog :visible.sync="feedbackVisible" title="需求描述" size="tiny" custom-class="myDialog" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form :model="feedbackForm" ref="feedbackForm" :rules="rules" label-width="110px" :inline="true">
           <el-form-item label="需求名称:" prop="title"  >
-            <el-input type="text" v-model="feedbackForm.title" style="width: 700px"></el-input>
+            <el-input type="text" v-model="feedbackForm.title" ></el-input>
           </el-form-item>
           <el-form-item label="需求来源:" prop="origin">
-            <el-input v-model="feedbackForm.origin" style="width:217px"></el-input>
+            <el-input v-model="feedbackForm.origin"></el-input>
           </el-form-item>
-          <el-form-item label="提出日期:" prop="feedbackTime"    style="margin-bottom: 0px; ">
+          <el-form-item label="提出日期:" prop="feedbackTime"  >
             <el-date-picker
                     v-model="feedbackForm.feedbackTime"
                     type="date"
@@ -108,7 +108,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="优先级:" prop="priority" style="margin-bottom: 0px">
+          <el-form-item label="优先级:" prop="priority">
             <el-select v-model="feedbackForm.priority" placeholder="请选择">
               <el-option
                       v-for="item in priorityList"
@@ -119,6 +119,8 @@
             </el-select>
           </el-form-item>
           <el-form-item label="原始需求:" prop="content">
+              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="height: 140px;!important;">
+              </quill-editor>
               <el-upload
                       class="avatar-uploader"
                       action=""
@@ -126,8 +128,6 @@
                       :http-request="upload"
                       :before-upload="beforeAvatarUpload">
               </el-upload>
-              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="height: 140px;width: 720px;">
-              </quill-editor>
           </el-form-item>
           <div class="el-dialog__footer" style=" margin-top: 80px;margin-right: 60px;">
             <el-button type="danger" @click="deleteFeedback()"v-show="feedbackDeleteIcon">删除需求</el-button>
@@ -136,7 +136,7 @@
         </el-form>
       </el-dialog>
 
-      <el-dialog :visible.sync="planVisible" size="small" title="计划"
+      <el-dialog :visible.sync="planVisible" custom-class="myDialog"  title="计划" size="tiny"
                  :close-on-click-modal="false" :close-on-press-escape="false">
         <div class="ctpc-list clearfix">
           <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
