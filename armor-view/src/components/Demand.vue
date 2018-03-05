@@ -926,7 +926,6 @@
 
 
   .ctpc-member-con {
-    padding-left: 10px; /* border-left: 1px solid #ccc; */
     margin-left: 6px;
     position: relative;
   }
@@ -1207,4 +1206,22 @@
   .ql-editor .ql-video {
     max-width: 480px;
   }
+</style>
+
+
+<style>
+  .el-dialog__wrapper .myDialog {
+    width: 600px !important;
+  }
+
+  .my-dialog-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .my-dialog-title-tool {
+    float: right;
+  }
+
+
 </style>
