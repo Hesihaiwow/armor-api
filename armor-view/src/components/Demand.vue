@@ -129,7 +129,7 @@
                       :before-upload="beforeAvatarUpload">
               </el-upload>
           </el-form-item>
-          <div class="el-dialog__footer" style=" margin-top: 80px;margin-right: 60px;">
+          <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
             <el-button type="danger" @click="deleteFeedback()"v-show="feedbackDeleteIcon">删除需求</el-button>
             <el-button @click="saveFeedback('feedbackForm')" type="primary" >保存</el-button>
           </div >
@@ -149,7 +149,7 @@
         <div class="ctpc-list clearfix">
           <div class="ctpc-list-menu fl"><span class="star">*</span>原始需求：</div>
           <div class="ctpc-list-con fl">
-            <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption1" style="width:300px;height: 140px;">
+            <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption1" style="width:300px;height: 120px;">
             </quill-editor>
           </div>
         </div>
