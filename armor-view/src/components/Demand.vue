@@ -129,11 +129,30 @@
                       :before-upload="beforeAvatarUpload">
               </el-upload>
           </el-form-item>
-          <div class="el-dialog__footer" style=" margin-top: 80px;margin-right: 60px;">
+          <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
             <el-button type="danger" @click="deleteFeedback()"v-show="feedbackDeleteIcon">删除需求</el-button>
             <el-button @click="saveFeedback('feedbackForm')" type="primary" >保存</el-button>
           </div >
         </el-form>
+      </el-dialog>
+
+      <el-dialog :visible.sync="feedbackDetailVisible" title="需求描述" size="tiny" custom-class="myDialog" :close-on-click-modal="false" :close-on-press-escape="false">
+        <div class="ctpc-list clearfix">
+          <div class="ctpc-list-menu fl"><span class="star">*</span>名称：</div>
+          <div class="ctpc-list-con fl" >{{feedbackForm.title}}</div>
+        </div>
+        <div class="ctpc-list clearfix">
+          <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
+          <div class="ctpc-list-con fl" v-for="item in projectList" v-if="item.id == feedbackForm.projectId">{{item.name}}
+          </div>
+        </div>
+        <div class="ctpc-list clearfix">
+          <div class="ctpc-list-menu fl"><span class="star">*</span>原始需求：</div>
+          <div class="ctpc-list-con fl">
+            <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption1" style="width:300px;height: 120px;">
+            </quill-editor>
+          </div>
+        </div>
       </el-dialog>
 
       <el-dialog :visible.sync="planVisible" custom-class="myDialog"  title="计划" size="tiny"
@@ -288,6 +307,7 @@
                 demandData:[],
                 feedbackVisible:false,
                 feedbackDeleteIcon:false,
+                feedbackDetailVisible:false,
                 planVisible:false,
                 showTaskDetail:false,
                 feedbackForm: {
@@ -404,6 +424,16 @@
                         }
                     }
                 },    // 编辑器选项
+                editorOption1:{
+                    placeholder: '',
+                    theme: 'snow',  // or 'bubble'
+                    modules: {
+                        toolbar: {
+                            container: [['bold', 'italic', 'underline', 'strike'],] // 工具栏
+                        }
+                    },
+                    readOnly:true
+                },
                 addRange: {},
                 uploadData:'',
                 photoUrl :'',         // 上传图片地址
@@ -518,6 +548,14 @@
                     this.feedbackForm.title = feedback.title
                     this.feedbackForm.origin = feedback.origin
                     this.feedbackForm.feedbackTime = feedback.feedbackTime
+                    this.feedbackForm.projectId = feedback.projectId
+                    this.feedbackForm.content = feedback.content
+                }else{
+                    this.feedbackDetailVisible = true;
+                    this.clearFeedbackForm();
+                    this.feedbackForm.priority = feedback.priority;
+                    this.feedbackForm.title = feedback.title
+                    this.feedbackForm.origin = feedback.origin
                     this.feedbackForm.projectId = feedback.projectId
                     this.feedbackForm.content = feedback.content
                 }
