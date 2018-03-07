@@ -66,7 +66,7 @@
           <el-table-column prop="users" label="负责人" align="center" width="150"></el-table-column>
           <el-table-column  label="操作" align="center" >
             <template scope="scope">
-              <el-button @click="feedbackPlan(scope.row)" type="text" size="small" >计划</el-button>
+              <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNo!=0">计划</el-button>
             </template>
           </el-table-column>
         </el-table>
