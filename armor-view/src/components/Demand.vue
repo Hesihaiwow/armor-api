@@ -149,7 +149,7 @@
         <div class="ctpc-list clearfix">
           <div class="ctpc-list-menu fl"><span class="star">*</span>原始需求：</div>
           <div class="ctpc-list-con fl">
-            <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption1" style="width:300px;height: 120px;">
+            <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption1" style="width:300px;height: 120px;margin-bottom: 40px;">
             </quill-editor>
           </div>
         </div>
