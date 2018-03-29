@@ -91,6 +91,8 @@
             }
         },
         beforeMount:function () {
+            //选中任务tab
+            this.$root.eventBus.$emit("handleTabSelected", "plan");
             this.fetchTreeJson();
             this.dateTreeBuild();
         },
