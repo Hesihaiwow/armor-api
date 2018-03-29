@@ -3,11 +3,12 @@ package com.zhixinhuixue.armor.model.bo;
 import com.zhixinhuixue.armor.model.pojo.FeedbackPlan;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Tate on 2017/8/10.
  */
-public class FeedbackPlanBO extends FeedbackPlan {
+public class FeedbackPlanTaskListBO extends FeedbackPlan {
 
     private Long taskId;
 
@@ -15,20 +16,10 @@ public class FeedbackPlanBO extends FeedbackPlan {
 
     private String origin;
 
-    private Date time;
-
     /**
      * 任务
      */
-    private TaskDetailBO planTask;
-
-    public TaskDetailBO getPlanTask() {
-        return planTask;
-    }
-
-    public void setPlanTask(TaskDetailBO planTask) {
-        this.planTask = planTask;
-    }
+    private List<PlanTaskBO> planTask;
 
     public Long getTaskId() {
         return taskId;
@@ -46,14 +37,6 @@ public class FeedbackPlanBO extends FeedbackPlan {
         this.title = title;
     }
 
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
     public String getOrigin() {
         return origin;
     }
@@ -62,4 +45,11 @@ public class FeedbackPlanBO extends FeedbackPlan {
         this.origin = origin;
     }
 
+    public List<PlanTaskBO> getPlanTask() {
+        return planTask;
+    }
+
+    public void setPlanTask(List<PlanTaskBO> planTask) {
+        this.planTask = planTask;
+    }
 }

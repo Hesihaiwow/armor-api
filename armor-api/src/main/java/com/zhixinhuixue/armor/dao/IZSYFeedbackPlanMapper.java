@@ -2,6 +2,8 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.FeedbackPlanBO;
 import com.zhixinhuixue.armor.model.bo.FeedbackPlanTaskBO;
+import com.zhixinhuixue.armor.model.bo.FeedbackPlanTaskListBO;
+import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.FeedbackPlan;
 
 import java.util.List;
@@ -17,5 +19,8 @@ public interface IZSYFeedbackPlanMapper {
 
     List<FeedbackPlanBO> getFeedbackPlanById(Long feedbackId);
 
+    List<FeedbackPlanTaskListBO> getFeedbackPlanBySort(FeedbackPlanListReqDTO feedbackPlanListReqDTO);
+
     List<FeedbackPlanTaskBO> getTaskIdFromPlan(Long taskId);
+
 }
