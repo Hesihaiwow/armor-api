@@ -119,7 +119,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="原始需求:" prop="content">
-              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="width:440px;height: 140px;">
+              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="width:440px;height: 140px;padding-bottom:30px;">
               </quill-editor>
               <el-upload
                       class="avatar-uploader"
