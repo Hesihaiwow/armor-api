@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Created by Tate on 2017/8/10.
+ * 任务信息（需求-计划-任务）
  */
 public class FeedbackTaskDetailResDTO {
 
@@ -30,6 +31,10 @@ public class FeedbackTaskDetailResDTO {
     private Integer priority;
 
     private Integer taskType;
+
+    private String stageName;
+
+    private Integer percent;
 
 
     public Long getId() {
@@ -102,6 +107,22 @@ public class FeedbackTaskDetailResDTO {
 
     public void setTaskType(Integer taskType) {
         this.taskType = taskType;
+    }
+
+    public String getStageName() {
+        return stageName;
+    }
+
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
+    }
+
+    public Integer getPercent() {
+        return percent;
+    }
+
+    public void setPercent(Integer percent) {
+        this.percent = percent;
     }
 }
 

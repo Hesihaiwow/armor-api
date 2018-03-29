@@ -1,72 +1,20 @@
 <template>
     <div class="plan clearfix">
         <div class="fl plan-control">
-            <el-select v-model="value" placeholder="请选择" class="control-select">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-            </el-select>
+                <el-date-picker
+                        v-model="planYear"
+                        align="right"
+                        type="year"
+                        placeholder="选择年">
+                </el-date-picker>
             <ul class="plan-date">
-                <li>
-                    <div><span class="month">一月</span><i class="iconfont icon-circle"></i></div>
-                    <ul class="plan-date-week">
-                        <li class="active">
-                            <div><span>第一周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第二周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li class="cur">
-                            <div><span>第三周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第四周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第五周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <div><span class="month">二月</span><i class="iconfont icon-circle"></i></div>
-                    <ul class="plan-date-week">
-                        <li>
-                            <div><span>第一周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第二周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第三周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第四周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第五周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <div><span class="month">三月</span><i class="iconfont icon-circle"></i></div>
-                    <ul class="plan-date-week">
-                        <li>
-                            <div><span>第一周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第二周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第三周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第四周</span><i class="iconfont icon-circle"></i></div>
-                        </li>
-                        <li>
-                            <div><span>第五周</span><i class="iconfont icon-circle"></i></div>
+                <li v-for="date in dateTree"  style="cursor: pointer" >
+                    <div v-bind:class="{'activeMonth':date.id == curMonth}">
+                        <span class="month" @click="monthToggle(date)">{{date.name}}</span><i class="iconfont icon-circle"></i>
+                    </div>
+                    <ul class="plan-date-week" v-show="date.id == curMonth" v-for="week in dateTreeBuild(date.id,curMonth)">
+                        <li  v-bind:class="{ 'cur' : curWeekClass(week),  'active':week == activeWeek}" @click="toggleWeek(week)">
+                            <div ><span>第{{week}}周</span><i class="iconfont icon-circle"></i></div>
                         </li>
                     </ul>
                 </li>
@@ -75,9 +23,17 @@
         <div class="plan-content fl">
             <div class="plan-filter clearfix">
                 <span class="fl">排序：</span>
-                <a href="javascript:;" class="fl active">完成进度<i class="icon-arrow-top iconfont active"></i><i class="icon-arrow-bottom iconfont"></i><i class="el-icon-sort-down"></i></a>
-                <a href="javascript:;" class="fl">截止日期<i class="icon-arrow-top iconfont"></i><i class="icon-arrow-bottom iconfont"></i><i class="el-icon-sort-down"></i></a>
-                <p class="fl">需求来源：<input type="text" placeholder="请输入姓名"> <el-button type="primary"><i class="el-icon-search"></i>查询</el-button></p>
+                <a href="javascript:;" class="fl" v-bind:class="{ 'active' : activeSort == 'com'}" @click="toggleSort('com')">完成进度
+                    <i class="icon-arrow-top iconfont" v-bind:class="{ 'active' : activeSort == 'com'&&activeArrow}" ></i>
+                    <i class="icon-arrow-bottom iconfont" v-bind:class="{ 'active' : activeSort == 'com'&&!activeArrow}"></i>
+                    <i class="el-icon-sort-down"></i></a>
+                <a href="javascript:;" class="fl" v-bind:class="{ 'active' : activeSort == 'time'}"   @click="toggleSort('time')">截止日期
+                    <i class="icon-arrow-top iconfont" v-bind:class="{'active' : activeSort == 'time'&&activeTimeArrow}" ></i>
+                    <i class="icon-arrow-bottom iconfont" v-bind:class="{ 'active' : activeSort == 'time'&&!activeTimeArrow}"></i>
+                    <i class="el-icon-sort-down"></i></a>
+                <p class="fl">需求来源：<input type="text" placeholder="请输入姓名" v-model="treeList.origin">
+                    <el-button type="primary" @click="fetchTreeJson()"><i class="el-icon-search"></i>查询</el-button>
+                </p>
             </div>
             <div class="plan-list">
                 <ul>
@@ -112,23 +68,111 @@
             };
             return {
                 tree:[],
-                options: [{
-                  value: '选项1',
-                  label: '2017'
-                }, {
-                  value: '选项2',
-                  label: '2018'
-                }],
+                activeWeek:'',
+                activeSort:'',
+                activeArrow:'',
+                activeTimeArrow:'',
+                curWeek:false,
+                planYear:moment().format('YYYY'),
+                curMonth:moment().month(),
                 value:'选项2',
+                dateTree:[{id:0,name:'一月',key:[]},{id:1,name:'二月',key:[]},{id:2,name:'三月',key:[]},{id:101,name:'第一季度',key:[]},
+                        {id:3,name:'四月',key:[]},{id:4,name:'五月',key:[]},{id:5,name:'六月',key:[]},{id:102,name:'第二季度',key:[]},
+                        {id:6,name:'七月',key:[]},{id:7,name:'八月',key:[]},{id:8,name:'九月',key:[]},{id:103,name:'第三季度',key:[]},
+                        {id:9,name:'十月',key:[]},{id:10,name:'十一月',key:[]},{id:11,name:'十二月',key:[]},{id:104,name:'第四季度',key:[]},
+                        ],
+                monthWeeks:[],
+                treeList:{
+                    startTime:moment().startOf('week').week(moment().week()).format('YYYY-MM-DD 00:00:00'),
+                    endTime:moment().endOf('week').week(moment().week()).format('YYYY-MM-DD 23:59:59'),
+                    sort:'',
+                    origin:''
+                }
             }
         },
-        mounted(){
-            this.tree = treeJson.data
+        beforeMount:function () {
+            this.fetchTreeJson();
+            this.dateTreeBuild();
         },
         methods:{
             init(){
                 console.log(111)
+            },
+            fetchTreeJson(){
+                if(this.activeSort=='com'){
+                    if(this.activeArrow){
+                        this.treeList.sort = '0'//降序
+                    }else{
+                        this.treeList.sort = '1'//升序
+                    }
+                }else if(this.activeSort=='time'){
+                    if(this.activeTimeArrow){
+                        this.treeList.sort = '2'
+                    }else{
+                        this.treeList.sort = '3'
+                    }
+                }
+                console.log(this.treeList.sort)
+                http.zsyPostHttp(`/feedbackPlan/list/`, this.treeList, (resp) => {
+                    this.tree =  resp.data;
+                });
+            },
+            dateTreeBuild(id,month){
+                if(id == month && month <100 ){
+                    let startWeek = moment(moment().startOf('month').month(month)).week();
+                    let endWeek = moment(moment().endOf('month').month(month)).week();
+                    let weeks = []
+                    for(let i=startWeek;i<endWeek+1;i++){
+                        weeks.push(i)
+                    }
+                    return weeks
+                }
+            },
+            curWeekClass(week){
+                if(week ==moment().week()){
+                    return true
+                }else{
+                    return false
+                }
+            },
+            toggleWeek(week){
+                this.activeWeek =  week
+                this.treeList.startTime =moment().startOf('week').week(week).format('YYYY-MM-DD 00:00:00');
+                this.treeList.endTime =moment().endOf('week').week(week).format('YYYY-MM-DD 23:59:59');
+                this.fetchTreeJson()
+            },
+            monthToggle(date){
+                this.curMonth = date.id
+                if(date.id == '101' ){//季度时间
+                    this.treeList.startTime = moment().startOf('quarter').quarter(1).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().endOf('quarter').quarter(1).format('YYYY-MM-DD 23:59:59');
+                }else if(date.id == '102' ){//季度时间
+                    this.treeList.startTime = moment().startOf('quarter').quarter(2).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().endOf('quarter').quarter(2).format('YYYY-MM-DD 23:59:59');
+                }else if(date.id == '103' ){//季度时间
+                    this.treeList.startTime = moment().startOf('quarter').quarter(3).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().endOf('quarter').quarter(3).format('YYYY-MM-DD 23:59:59');
+                }else if(date.id == '104' ){//季度时间
+                    this.treeList.startTime = moment().startOf('quarter').quarter(4).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().endOf('quarter').quarter(4).format('YYYY-MM-DD 23:59:59');
+                }else{
+                    this.treeList.startTime = moment().startOf('month').month(date.id).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().endOf('month').month(date.id).format('YYYY-MM-DD 23:59:59');
+                }
+                this.fetchTreeJson()
+            },
+            toggleSort(name){
+                if(name =='com'){
+                    this.activeSort = name
+                    this.activeArrow = !this.activeArrow
+                }else{
+                    this.activeSort = name
+                    this.activeTimeArrow = !this.activeTimeArrow
+                }
+                this.fetchTreeJson()
             }
+
+
         }
     }
 </script>
@@ -146,8 +190,13 @@
                 margin-top: 20px;
                 width: 50px;
                 .month{
-                    margin-left: 10px;
+                    margin-left: -7px;
                     font-weight: bold;
+                }
+                .activeMonth{
+                    i{
+                        color: #4298fc;
+                    }
                 }
                 li{
                     &>div{

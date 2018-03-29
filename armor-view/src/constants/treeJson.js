@@ -4,7 +4,7 @@ var tree = {
     "data": [
         {
             "id": "443",
-            "name": "<p>集合与常用逻辑用语</p>",
+            "title": "集合与常用逻辑用语",
             "parent_id": "208",
             "depth": "3",
             "sort_order": "26",
@@ -14,7 +14,7 @@ var tree = {
             "childs": [
                 {
                     "id": "444",
-                    "name": "<p>集合与常用逻辑用语</p>",
+                    "title": "<p>集合与常用逻辑用语</p>",
                     "parent_id": "443",
                     "depth": "4",
                     "sort_order": "109",
@@ -24,7 +24,7 @@ var tree = {
                 },
                 {
                     "id": "444",
-                    "name": "<p>集合与常用逻辑用语</p>",
+                    "title": "<p>集合与常用逻辑用语</p>",
                     "parent_id": "443",
                     "depth": "4",
                     "sort_order": "109",
@@ -34,7 +34,7 @@ var tree = {
                 },
                 {
                     "id": "444",
-                    "name": "<p>集合与常用逻辑用语</p>",
+                    "title": "<p>集合与常用逻辑用语</p>",
                     "parent_id": "443",
                     "depth": "4",
                     "sort_order": "109",
@@ -46,7 +46,7 @@ var tree = {
         },
         {
             "id": "443",
-            "name": "<p>集合与常用逻辑用语</p>",
+            "title": "<p>集合与常用逻辑用语</p>",
             "parent_id": "208",
             "depth": "3",
             "sort_order": "26",
@@ -56,7 +56,7 @@ var tree = {
             "childs": [
                 {
                     "id": "444",
-                    "name": "<p>集合与常用逻辑用语</p>",
+                    "title": "<p>集合与常用逻辑用语</p>",
                     "parent_id": "443",
                     "depth": "4",
                     "sort_order": "109",
@@ -68,7 +68,7 @@ var tree = {
         },
         {
             "id": "443",
-            "name": "<p>集合与常用逻辑用语</p>",
+            "title": "<p>集合与常用逻辑用语</p>",
             "parent_id": "208",
             "depth": "3",
             "sort_order": "26",
@@ -78,7 +78,7 @@ var tree = {
             "childs": [
                 {
                     "id": "444",
-                    "name": "<p>集合与常用逻辑用语</p>",
+                    "title": "<p>集合与常用逻辑用语</p>",
                     "parent_id": "443",
                     "depth": "4",
                     "sort_order": "109",
@@ -90,7 +90,7 @@ var tree = {
         },
         {
             "id": "443",
-            "name": "<p>集合与常用逻辑用语</p>",
+            "title": "<p>集合与常用逻辑用语</p>",
             "parent_id": "208",
             "depth": "3",
             "sort_order": "26",
@@ -100,7 +100,7 @@ var tree = {
             "childs": [
                 {
                     "id": "444",
-                    "name": "<p>集合与常用逻辑用语</p>",
+                    "title": "<p>集合与常用逻辑用语</p>",
                     "parent_id": "443",
                     "depth": "4",
                     "sort_order": "109",

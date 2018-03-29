@@ -1,24 +1,46 @@
 <template>
   <li class="kl-graph-item-wrap">
-  	<div class="kl-graph-item clearfix" :class="depthStyle(model.depth)" v-show="model.depth== 3||model.depth == 4 ">
+  	<div class="kl-graph-item clearfix" :class="depthStyle(model.title)">
   		<p class="fl" @click="toggleItem(model.depth)">
-  			<i class="iconfont fl" :class="model.childs&&model.depth==3 ? 'icon-triangle-bottom' : 'icon-dian'"></i>
-  			<span v-html="deleteBr(model.name)" class="fl"></span>
+  			<i class="iconfont fl" :class="model.childs ? 'icon-triangle-bottom' : 'icon-dian'"></i>
+  			<span v-html="deleteBr(model.title==null?model.taskName:model.title)" class="fl"></span>
   		</p>
-  		<div class="fr disc-info" v-show="model.depth== 3">
-  			<span class="fl source">需求来源：谢总</span>
-  			<span class="date fl">截止2018/1/11</span>
-  			<span class="fl progress"><em class="fl" style="width:80%">80%</em></span>
+  		<div class="fr disc-info" v-show="model.origin!= null">
+  			<span class="fl source">需求来源：{{model.origin}}</span>
+  			<span class="date fl">截止{{model.endTime}}</span>
+  			<span class="fl progress"><em class="fl" :style="'width:'+model.percent+'%'">{{model.percent}}%</em></span>
   		</div>
-  		<div class="fr disc-status" v-show="model.depth == 4">
-  			<a href="javascript:;" class="fl complete">设计</a>
+  		<div class="fr disc-status" v-show="model.origin== null"  v-on="stageIcon(model)">
+  			<a href="javascript:;" :class="stage.design">设计</a>
   			<i class="iconfont fl icon-arrow-right"></i>
-  			<a href="javascript:;" class="fl playing">开发</a>
+  			<a href="javascript:;" :class="stage.dev">开发</a>
   			<i class="iconfont fl icon-arrow-right"></i>
-  			<a href="javascript:;" class="fl">测试</a>
+  			<a href="javascript:;" :class="stage.test">测试</a>
   			<i class="iconfont fl icon-arrow-right"></i>
-  			<a href="javascript:;" class="fl">发布</a>
+  			<a href="javascript:;" :class="stage.publish">发布</a>
   		</div>
+		<!--* {-->
+		<!--"id": "443",-->
+		<!--"name": "<p>集合与常用逻辑用语</p>",-->
+		<!--"parent_id": "208",-->
+		<!--"depth": "3",-->
+		<!--"sort_order": "26",-->
+		<!--"round": "0",-->
+		<!--"pKey": "3_443",-->
+		<!--"pParentId": "2_208",-->
+		<!--"childs": [-->
+		<!--{-->
+		<!--"id": "444",-->
+		<!--"name": "<p>集合与常用逻辑用语</p>",-->
+		<!--"parent_id": "443",-->
+		<!--"depth": "4",-->
+		<!--"sort_order": "109",-->
+		<!--"round": "0",-->
+		<!--"pKey": "4_444",-->
+		<!--"pParentId": "3_443"-->
+		<!--}-->
+		<!--]-->
+		<!--},-->
   	</div>
   	<ul class="sub-container" v-show="open">
   		<access-tree :model="item" :key="idx"  v-for="(item,idx) in model.childs"></access-tree>
@@ -38,6 +60,12 @@
 		data(){
 			return {
     			open:true,
+				stage:{
+    			    design:'',
+					dev:'',
+					test:'',
+                    publish:''
+				},
     			httpForm:{},
     			emitFlag:true
     		}
@@ -46,31 +74,55 @@
 			depthStyle(depth) {
 				/*class添加*/
 		      let klass = "";
-		      switch (depth) {
-		        case "3":
-		          klass = "kl-graph-item-first";
-		          break;
-		        case "4":
-		          klass = "kl-graph-item-second";
-		          break;
-		        case "5":
-		          klass = "kl-graph-item-third";
-		          break;
-		        case "4":
-		          klass = "kl-graph-item-fourth";
-		          break;
-		        default:
-		          klass = "kl-graph-item-first";
-		          break;
-		      }
+		      if(depth!=null){
+                  klass = "kl-graph-item-first";
+			  }else{
+                  klass = "kl-graph-item-second";
+				}
+//		      switch (depth) {
+//		        case "3":
+//		          klass = "kl-graph-item-first";
+//		          break;
+//		        case "4":
+//		          klass = "kl-graph-item-second";
+//		          break;
+//		        case "5":
+//		          klass = "kl-graph-item-third";
+//		          break;
+//		        case "4":
+//		          klass = "kl-graph-item-fourth";
+//		          break;
+//		        default:
+//		          klass = "kl-graph-item-first";
+//		          break;
+//		      }
 		      return klass;
 		    },
 		    deleteBr(name) {
 		    	/*去除标签*/
 		      return name && name.replace(/<br\/>/g, "");
 		    },
-		
-		 
+			stageIcon(model){
+			    var stageName = model.stageName
+			    if(model.stageName!=null){
+                    if(stageName.indexOf("设计")!=-1){
+                        this.stage.design =  "fl playing";
+                        this.stage.dev = this.stage.test = this.stage.publish = "fl"
+                    }else if(stageName.indexOf("开发")!=-1){
+                        this.stage.design = "fl complete"
+                        this.stage.dev = "fl playing"
+                        this.stage.test = this.stage.publish = "fl"
+                    }else if(stageName.indexOf("测试")!=-1){
+                        this.stage.design = this.stage.dev = "fl complete"
+                        this.stage.test = "fl playing"
+                        this.stage.publish = "fl"
+                    }else if(stageName.indexOf("发布")!=-1){
+                        this.stage.design = this.stage.dev = this.stage.test = "fl complete"
+                        this.stage.publish = "fl playing"
+                    }
+				}
+
+			},
 		    toggleItem(depth){
 		    	/*展开关闭*/
 		        this.open = !this.open;
