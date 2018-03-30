@@ -49,7 +49,6 @@
     import moment from 'moment';
     import helper from '../lib/Helper'
     import PlanTree from "./PlanTree.vue"
-    import treeJson from './../constants/treeJson.js'
 
 
     moment.locale('zh-cn');
@@ -91,12 +90,13 @@
             }
         },
         beforeMount:function () {
+            //选中任务tab
+            this.$root.eventBus.$emit("handleTabSelected", "plan");
             this.fetchTreeJson();
             this.dateTreeBuild();
         },
         methods:{
             init(){
-                console.log(111)
             },
             fetchTreeJson(){
                 if(this.activeSort=='com'){
@@ -112,7 +112,6 @@
                         this.treeList.sort = '3'
                     }
                 }
-                console.log(this.treeList.sort)
                 http.zsyPostHttp(`/feedbackPlan/list/`, this.treeList, (resp) => {
                     this.tree =  resp.data;
                 });
