@@ -43,10 +43,15 @@
   </insert>
 
   <select id="getFeedbackPlanById" resultMap="ResultMap" parameterType="java.lang.Long">
-  SELECT  p.*,t.task_id FROM  feedback_plan_task t
-  JOIN  feedback_plan p on p.id = t.feedback_plan_id
-  WHERE p.feedback_id = #{feedbackId}
-</select>
+    SELECT  p.*,t.task_id FROM  feedback_plan_task t
+    JOIN  feedback_plan p on p.id = t.feedback_plan_id
+    WHERE p.feedback_id = #{feedbackId}
+  </select>
+
+  <select id="selectById" resultMap="BaseResultMap">
+      SELECT * FROM feedback_plan WHERE
+      id = #{id}
+  </select>
 
   <select id="getFeedbackPlanBySort" resultMap="PlanMap" parameterType="com.zhixinhuixue.armor.model.dto.request.FeedbackPlanListReqDTO">
     SELECT  p.*,  f.origin, f.title
@@ -85,5 +90,24 @@
         WHERE fpt.task_id=#{taskId})
   </select>
 
+
+  <update id="updatePlan" parameterType="com.zhixinhuixue.armor.model.pojo.FeedbackPlan">
+      UPDATE feedback_plan
+    <set >
+      <if test="expectStartTime != null" >
+        expect_start_time = #{expectStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectOfficialTime != null" >
+        expect_official_time = #{expectOfficialTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 
 </mapper>

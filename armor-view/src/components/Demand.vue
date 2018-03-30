@@ -750,7 +750,7 @@
                 }
                 let param = this.feedbackPlanForm;
                 param.expectOfficialTime = moment(param.expectOfficialTime).format('YYYY-MM-DD 23:59:59');
-                param.expectStartTime = moment(param.expectStartTime).format('YYYY-MM-DD 23:59:59');
+                param.expectStartTime = moment(param.expectStartTime).format('YYYY-MM-DD 00:00:00');
                 param['planTask'] = this.planTask;
                 http.zsyPostHttp('/feedback/addPlan', param, (resp) => {
                     this.$message({

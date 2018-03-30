@@ -179,6 +179,14 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             feedbackPlan.setId(snowFlakeIDHelper.nextId());
             feedbackPlanReqDTO.setId(feedbackPlan.getId());
             feedbackPlanMapper.insertFeedbackPlan(feedbackPlan);
+        }else{
+            FeedbackPlan feedbackPlan = feedbackPlanMapper.selectById(feedbackPlanReqDTO.getId());
+            BeanUtils.copyProperties(feedbackPlanReqDTO , feedbackPlan);
+            feedbackPlan.setUpdateTime(new Date());
+            if(feedbackPlanMapper.updatePlan(feedbackPlan)==0){
+                throw new ZSYServiceException("计划修改失败");
+            }
+
         }
 
 
