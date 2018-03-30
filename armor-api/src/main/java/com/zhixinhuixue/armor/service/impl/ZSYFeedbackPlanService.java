@@ -2,7 +2,6 @@ package com.zhixinhuixue.armor.service.impl;
 
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.FeedbackPlanTaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanListReqDTO;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +34,9 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
 
         feedbackPlanBOS.stream().forEach(planTask -> {
+            if(planTask==null){
+                System.out.println(1);
+            }
             FeedbackPlanListResDTO feedbackPlanListResDTO = new FeedbackPlanListResDTO();
             BeanUtils.copyProperties(planTask, feedbackPlanListResDTO);
 
@@ -47,7 +48,7 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                 task.add(taskDetailResDTO);
 
                 if(planTaskBO.getPlanTask().getStageName().contains("设计")){
-                    taskDetailResDTO.setPercent(30);
+                    taskDetailResDTO.setPercent(25);
                 }else if(planTaskBO.getPlanTask().getStageName().contains("开发")){
                     taskDetailResDTO.setPercent(70);
                 }else if(planTaskBO.getPlanTask().getStageName().contains("测试")){

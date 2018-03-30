@@ -67,6 +67,8 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYFeedbackPlanMapper feedbackPlanMapper;
     @Autowired
     private IZSYFeedbackMapper feedbackMapper;
+    @Autowired
+    private IZSYFeedbackPlanTaskMapper feedbackPlanTaskMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -1102,6 +1104,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
         userWeekMaper.deleteByTaskId(taskId);
+        feedbackPlanTaskMapper.deleteByTaskId(taskId);
         taskMapper.updateByPrimaryKeySelective(task);
         return ZSYResult.success();
     }

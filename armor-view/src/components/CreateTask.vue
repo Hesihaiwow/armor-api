@@ -203,7 +203,8 @@
                     projectId: '',
                     stageId: '',
                     priority: '',
-                    tags: []
+                    tags: [],
+                    facility:''
                 },
                 taskUsers: [],
                 step: {
