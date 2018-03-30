@@ -19,4 +19,10 @@ public interface IZSYFeedbackPlanTaskMapper {
      * @return
      */
     List<Long> getTaskId(Long feedbackPlanId);
+
+    /**
+     * 删除任务
+     * @param taskId
+     */
+    void deleteByTaskId(Long taskId);
 }
