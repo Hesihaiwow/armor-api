@@ -24,4 +24,9 @@
       SELECT * FROM feedback_plan_task
       WHERE feedback_plan_id = #{feedbackPlanId}
   </select>
+
+  <delete id="deleteByTaskId" parameterType="java.lang.Long">
+      DELETE FROM feedback_plan_task
+      WHERE  task_id = #{taskId}
+  </delete>
 </mapper>
