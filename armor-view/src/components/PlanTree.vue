@@ -94,10 +94,13 @@
                         this.stage.design = this.stage.dev = "fl complete"
                         this.stage.test = "fl playing"
                         this.stage.publish = "fl"
-                    }else if(stageName.indexOf("发布")!=-1){
+                    }else if(stageName.indexOf("待发布")!=-1){
                         this.stage.design = this.stage.dev = this.stage.test = "fl complete"
                         this.stage.publish = "fl playing"
+                    }else if(stageName.indexOf("已发布")!=-1){
+                        this.stage.publish =  this.stage.design = this.stage.dev = this.stage.test = "fl complete"
                     }
+
 				}
 
 			},

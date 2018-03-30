@@ -23,4 +23,8 @@ public interface IZSYFeedbackPlanMapper {
 
     List<FeedbackPlanTaskBO> getTaskIdFromPlan(Long taskId);
 
+    FeedbackPlan selectById(Long id);
+
+    int updatePlan(FeedbackPlan feedbackPlan);
+
 }
