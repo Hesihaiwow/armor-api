@@ -3,7 +3,7 @@
   	<div class="kl-graph-item clearfix" :class="depthStyle(model.title)">
   		<p class="fl" @click="toggleItem(model.depth)">
   			<i class="iconfont fl" :class="model.childs ? 'icon-triangle-bottom' : 'icon-dian'"></i>
-  			<span v-html="deleteBr(model.title==null?model.taskName:model.title)" class="fl"></span>
+  			<span v-html="deleteBr(model.title==null?model.taskName:model.title)" class="fl" @click="directPlanTask(model)"></span>
   		</p>
   		<div class="fr disc-info" v-show="model.origin!= null">
   			<span class="fl source">需求来源：{{model.origin}}</span>
@@ -19,28 +19,6 @@
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.publish">发布</a>
   		</div>
-		<!--* {-->
-		<!--"id": "443",-->
-		<!--"name": "<p>集合与常用逻辑用语</p>",-->
-		<!--"parent_id": "208",-->
-		<!--"depth": "3",-->
-		<!--"sort_order": "26",-->
-		<!--"round": "0",-->
-		<!--"pKey": "3_443",-->
-		<!--"pParentId": "2_208",-->
-		<!--"childs": [-->
-		<!--{-->
-		<!--"id": "444",-->
-		<!--"name": "<p>集合与常用逻辑用语</p>",-->
-		<!--"parent_id": "443",-->
-		<!--"depth": "4",-->
-		<!--"sort_order": "109",-->
-		<!--"round": "0",-->
-		<!--"pKey": "4_444",-->
-		<!--"pParentId": "3_443"-->
-		<!--}-->
-		<!--]-->
-		<!--},-->
   	</div>
   	<ul class="sub-container" v-show="open">
   		<access-tree :model="item" :key="idx"  v-for="(item,idx) in model.childs"></access-tree>
@@ -127,6 +105,11 @@
 		    	/*展开关闭*/
 		        this.open = !this.open;
 		    },
+            directPlanTask(model){
+		        if(model.taskName!=null){
+					this.$router.push({name:'taskListFormComments', params:{ taskId:model.id }})
+				}
+            },
 		}
 	}
 </script>
