@@ -10,9 +10,18 @@
     id, feedback_plan_id, task_id
   </sql>
 
+  <resultMap id="PlanMap" type="com.zhixinhuixue.armor.model.bo.PlanTaskBO" >
+    <collection property="planTask" column="task_id" select="com.zhixinhuixue.armor.dao.IZSYTaskMapper.selectTaskDetailByTaskId"
+                ofType="com.zhixinhuixue.armor.model.bo.TaskDetailBO"></collection>
+  </resultMap>
+
   <insert id="insertFeedbackPlanTask" parameterType="com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask">
     insert into feedback_plan_task ( id, feedback_plan_id, task_id)
     values (#{id,jdbcType=BIGINT}, #{feedbackPlanId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT})
   </insert>
 
+  <select id="getTaskId" parameterType="java.lang.Long" resultMap="PlanMap">
+      SELECT * FROM feedback_plan_task
+      WHERE feedback_plan_id = #{feedbackPlanId}
+  </select>
 </mapper>

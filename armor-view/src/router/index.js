@@ -12,6 +12,7 @@ import IntegralHistory from '@/components/IntegralHistory'
 import Stats from '@/components/Stats'
 import UserComments from '@/components/UserComments'
 import Calculate from '@/components/Calculate'
+import Plan from '@/components/Plan'
 
 
 Vue.use(Router)
@@ -46,10 +47,6 @@ export default new Router({
                     component: Task
                 },
                 {
-                    path: 'demand',
-                    component: Demand
-                },
-                {
                     path: 'project',
                     component: Project
                 },
@@ -72,6 +69,14 @@ export default new Router({
                 {
                   path: 'stats',
                   component: Stats
+                },
+                {
+                    path: 'demand',
+                    component: Demand
+                },
+                {
+                    path: 'plan',
+                    component: Plan
                 },
                 {
                     path: 'comments',

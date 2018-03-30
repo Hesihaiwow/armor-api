@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * Created by Lang on 2017/8/9 0007.
+ * Created by Lang on 2018/3/2.
  */
 @Api(value = "需求接口",description="需求相关操作接口",tags = "/feedback")
 @RequestMapping("/api/feedback")
@@ -26,7 +26,7 @@ public class ZSYFeedbackController extends ZSYController{
     private IZSYFeedbackService feedbackService;
 
     /**
-     * 获取标签列表
+     * 获取需求列表
      * @return
      */
     @ApiOperation("需求列表")

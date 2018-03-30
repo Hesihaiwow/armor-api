@@ -14,8 +14,20 @@
   </sql>
 
   <resultMap id="ResultMap" type="com.zhixinhuixue.armor.model.bo.FeedbackPlanBO" extends="BaseResultMap">
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="origin" jdbcType="VARCHAR" property="origin" />
     <collection property="planTask" column="task_id" select="com.zhixinhuixue.armor.dao.IZSYTaskMapper.selectTaskDetailByTaskId"
                 ofType="com.zhixinhuixue.armor.model.bo.TaskDetailBO"></collection>
+  </resultMap>
+
+  <resultMap id="PlanMap" type="com.zhixinhuixue.armor.model.bo.FeedbackPlanTaskListBO" extends="BaseResultMap">
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="origin" jdbcType="VARCHAR" property="origin" />
+    <collection property="planTask" column="id" select="com.zhixinhuixue.armor.dao.IZSYFeedbackPlanTaskMapper.getTaskId"
+                ofType="com.zhixinhuixue.armor.model.bo.PlanTaskBO"></collection>
   </resultMap>
 
   <resultMap id="ResultMapTask" type="com.zhixinhuixue.armor.model.bo.FeedbackPlanTaskBO" >
@@ -35,6 +47,34 @@
   JOIN  feedback_plan p on p.id = t.feedback_plan_id
   WHERE p.feedback_id = #{feedbackId}
 </select>
+
+  <select id="getFeedbackPlanBySort" resultMap="PlanMap" parameterType="com.zhixinhuixue.armor.model.dto.request.FeedbackPlanListReqDTO">
+    SELECT  p.*,  f.origin, f.title
+    FROM  feedback_plan p
+    JOIN  feedback f ON  p.feedback_id = f.id
+    <where>
+      <if test="startTime!=null">
+        <![CDATA[  AND p.expect_official_time >= #{startTime} ]]>
+      </if>
+      <if test="endTime!=null">
+        <![CDATA[ AND p.expect_start_time <= #{endTime} ]]>
+      </if>
+      <if test="origin!=null and origin!=''">
+           AND f.origin = #{origin}
+      </if>
+    </where>
+    <choose>
+      <when test="sort!=null and sort !='' and sort==3">
+        order by p.expect_official_time DESC
+      </when>
+      <when test="sort!=null and sort !='' and sort==2">
+        order by p.expect_official_time
+      </when>
+      <otherwise>
+        order by p.expect_official_time DESC
+      </otherwise>
+    </choose>
+  </select>
 
   <select id="getTaskIdFromPlan" resultMap="ResultMapTask" parameterType="java.lang.Long">
       SELECT t.feedback_plan_id,t.task_id,f.id FROM feedback_plan_task t

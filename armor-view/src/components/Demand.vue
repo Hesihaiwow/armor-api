@@ -66,7 +66,7 @@
           <el-table-column prop="users" label="负责人" align="center" width="150"></el-table-column>
           <el-table-column  label="操作" align="center" >
             <template scope="scope">
-              <el-button @click="feedbackPlan(scope.row)" type="text" size="small" >计划</el-button>
+              <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNo!=0">计划</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -83,7 +83,7 @@
       </div>
 
       <el-dialog :visible.sync="feedbackVisible" title="需求描述" size="tiny" custom-class="myDialog" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form :model="feedbackForm" ref="feedbackForm" :rules="rules" label-width="110px" :inline="true">
+        <el-form :model="feedbackForm" ref="feedbackForm" :rules="rules" label-width="110px" :inline="true" >
           <el-form-item label="需求名称:" prop="title"  >
             <el-input type="text" v-model="feedbackForm.title" ></el-input>
           </el-form-item>
@@ -119,7 +119,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="原始需求:" prop="content">
-              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="width:440px;height: 140px;">
+              <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption" style="width:440px;height: 140px;padding-bottom:30px;">
               </quill-editor>
               <el-upload
                       class="avatar-uploader"
@@ -149,7 +149,7 @@
         <div class="ctpc-list clearfix">
           <div class="ctpc-list-menu fl"><span class="star">*</span>原始需求：</div>
           <div class="ctpc-list-con fl">
-            <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption1" style="width:300px;height: 120px;">
+            <quill-editor v-model="feedbackForm.content" ref="myQuillEditor" :options="editorOption1" style="width:350px;height: 120px;margin-bottom: 40px;">
             </quill-editor>
           </div>
         </div>
@@ -177,7 +177,7 @@
         <div class="ctpc-list clearfix">
           <div class="ctpc-list-menu fl"><span class="star">*</span>预计上线时间:</div>
           <div class="ctpc-list-con fl">
-            <div v-if="!permit || feedbackForm.status==2" >{{feedbackPlanForm.expectStartTime|formatDate}}</div>
+            <div v-if="!permit || feedbackForm.status==2" >{{feedbackPlanForm.expectOfficialTime|formatDate}}</div>
             <el-date-picker v-model="feedbackPlanForm.expectOfficialTime" type="date" format="yyyy-MM-dd" v-else=""
                             placeholder="选择日期"></el-date-picker>
           </div>
@@ -858,9 +858,6 @@
     }
 </script>
 <style scoped>
-  .el-dialog__wrapper .myDialog {
-    width: 600px !important;
-  }
 
   .demand-con {
     width: 1100px;
@@ -907,6 +904,7 @@
   }
 </style>
 <style>
+
   .stepActive {
     box-shadow: 0 0 10px #20A0FF !important;
   }
@@ -1165,7 +1163,7 @@
   }
 
   .add-member-basic-msg .el-date-editor.el-input {
-    width: 120px;
+    width: 140px;
   }
 
   .add-member-basic-end {
@@ -1244,6 +1242,8 @@
   .ql-editor .ql-video {
     max-width: 480px;
   }
+
+
 </style>
 
 

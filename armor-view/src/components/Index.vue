@@ -68,6 +68,7 @@
     import Stats from './Stats'
     import UploadAvatar from './UploadAvatar.vue'
     import Calculate from  './Calculate.vue'
+    import Plan from './Plan.vue'
 
     export default {
         data() {
@@ -77,10 +78,6 @@
                     {
                         label: '主页',
                         name: 'navIndex'
-                    },
-                    {
-                        label: '需求',
-                        name: 'demand'
                     },
                     {
                         label: '任务',
@@ -93,7 +90,15 @@
                     {
                         label: '统计',
                         name: 'stats'
-                    }
+                    },
+                    {
+                        label: '需求',
+                        name: 'demand'
+                    },
+                    {
+                        label: '计划',
+                        name: 'plan'
+                    },
                 ],
                 showIndex: true,
                 showPerOpt: false,
