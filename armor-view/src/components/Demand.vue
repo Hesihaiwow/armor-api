@@ -578,7 +578,7 @@
                         var param = this.feedbackForm;
                         param.origin = this.feedbackForm.origin.trim()
                         param.content = this.feedbackForm.content.trim()
-                        param.feedbackTime = moment(param.beiginTime).format('YYYY-MM-DD HH:00:00')
+                        param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:00:00')
                         if(this.feedbackForm.id!=''){
                             http.zsyPutHttp('/feedback/edit/'+this.feedbackForm.id, param, (resp) => {
                                 this.$message({ showClose: true,message: '需求修改成功',type: 'success'});
