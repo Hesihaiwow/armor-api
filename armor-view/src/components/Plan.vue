@@ -5,6 +5,7 @@
                         v-model="planYear"
                         align="right"
                         type="year"
+                        :blur="fetchTreeJson"
                         placeholder="选择年">
                 </el-date-picker>
             <ul class="plan-date">
@@ -99,6 +100,7 @@
             init(){
             },
             fetchTreeJson(){
+                console.log(this.treeList)
                 if(this.activeSort=='com'){
                     if(this.activeArrow){
                         this.treeList.sort = '0'//降序
@@ -117,9 +119,11 @@
                 });
             },
             dateTreeBuild(id,month){
+                console.log(this.planYear)
                 if(id == month && month <100 ){
-                    let startWeek = moment(moment().startOf('month').month(month)).week();
-                    let endWeek = moment(moment().endOf('month').month(month)).week();
+                    this.planYear = moment(this.planYear).format('YYYY')
+                    let startWeek = moment(moment().year(this.planYear).startOf('month').month(month)).week();
+                    let endWeek = moment(moment().year(this.planYear).endOf('month').month(month)).week();
                     let weeks = []
                     for(let i=startWeek;i<endWeek+1;i++){
                         weeks.push(i)
@@ -128,7 +132,7 @@
                 }
             },
             curWeekClass(week){
-                if(week ==moment().week()){
+                if(week ==moment().year(this.planYear).week()){
                     return true
                 }else{
                     return false
@@ -136,27 +140,29 @@
             },
             toggleWeek(week){
                 this.activeWeek =  week
-                this.treeList.startTime =moment().startOf('week').week(week).format('YYYY-MM-DD 00:00:00');
-                this.treeList.endTime =moment().endOf('week').week(week).format('YYYY-MM-DD 23:59:59');
+                this.planYear = moment(this.planYear).format('YYYY')
+                this.treeList.startTime =moment().year(this.planYear).startOf('week').week(week).format('YYYY-MM-DD 00:00:00');
+                this.treeList.endTime =moment().year(this.planYear).endOf('week').week(week).format('YYYY-MM-DD 23:59:59');
                 this.fetchTreeJson()
             },
             monthToggle(date){
                 this.curMonth = date.id
+                this.planYear = moment(this.planYear).format('YYYY')
                 if(date.id == '101' ){//季度时间
-                    this.treeList.startTime = moment().startOf('quarter').quarter(1).format('YYYY-MM-DD 00:00:00');
-                    this.treeList.endTime = moment().endOf('quarter').quarter(1).format('YYYY-MM-DD 23:59:59');
+                    this.treeList.startTime = moment().year(this.planYear).startOf('quarter').quarter(1).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().year(this.planYear).endOf('quarter').quarter(1).format('YYYY-MM-DD 23:59:59');
                 }else if(date.id == '102' ){//季度时间
-                    this.treeList.startTime = moment().startOf('quarter').quarter(2).format('YYYY-MM-DD 00:00:00');
-                    this.treeList.endTime = moment().endOf('quarter').quarter(2).format('YYYY-MM-DD 23:59:59');
+                    this.treeList.startTime = moment().year(this.planYear).startOf('quarter').quarter(2).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().year(this.planYear).endOf('quarter').quarter(2).format('YYYY-MM-DD 23:59:59');
                 }else if(date.id == '103' ){//季度时间
-                    this.treeList.startTime = moment().startOf('quarter').quarter(3).format('YYYY-MM-DD 00:00:00');
-                    this.treeList.endTime = moment().endOf('quarter').quarter(3).format('YYYY-MM-DD 23:59:59');
+                    this.treeList.startTime = moment().year(this.planYear).startOf('quarter').quarter(3).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().year(this.planYear).endOf('quarter').quarter(3).format('YYYY-MM-DD 23:59:59');
                 }else if(date.id == '104' ){//季度时间
-                    this.treeList.startTime = moment().startOf('quarter').quarter(4).format('YYYY-MM-DD 00:00:00');
-                    this.treeList.endTime = moment().endOf('quarter').quarter(4).format('YYYY-MM-DD 23:59:59');
+                    this.treeList.startTime = moment().year(this.planYear).startOf('quarter').quarter(4).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().year(this.planYear).endOf('quarter').quarter(4).format('YYYY-MM-DD 23:59:59');
                 }else{
-                    this.treeList.startTime = moment().startOf('month').month(date.id).format('YYYY-MM-DD 00:00:00');
-                    this.treeList.endTime = moment().endOf('month').month(date.id).format('YYYY-MM-DD 23:59:59');
+                    this.treeList.startTime = moment().year(this.planYear).startOf('month').month(date.id).format('YYYY-MM-DD 00:00:00');
+                    this.treeList.endTime = moment().year(this.planYear).endOf('month').month(date.id).format('YYYY-MM-DD 23:59:59');
                 }
                 this.fetchTreeJson()
             },
@@ -169,7 +175,7 @@
                     this.activeTimeArrow = !this.activeTimeArrow
                 }
                 this.fetchTreeJson()
-            }
+            },
 
 
         }
