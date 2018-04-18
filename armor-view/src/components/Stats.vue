@@ -121,7 +121,7 @@
                     <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="请假统计" name="leave"  style="">
+            <el-tab-pane label="请假统计" name="leave"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
                         <el-option v-for="item in userList" :key="item.id" :label="item.name"
@@ -451,6 +451,10 @@
                 let userRole = helper.decodeToken().userRole;
                 return userRole < 2;
             },
+            admin() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole < 1;
+            },
             pageLayout() {
                 if (this.bugFormPage.total > 0) {
                     return 'total, prev, pager, next'
@@ -463,6 +467,7 @@
                 }
                 return 'total, pager'
             }
+
         },
         filters: {
             formatDate: function (value) {
