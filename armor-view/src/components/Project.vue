@@ -86,7 +86,7 @@
         <textarea class="project-intro" placeholder="项目简介（选填）" v-model="project.description"></textarea>
         <div class="att-bents">
           <span class="cancel" @click="hidePop">取消</span>
-          <span class="save" @click="saveProject">保存</span>
+          <span class="save" @click="saveProject" :loading="isSaving">保存</span>
         </div>
       </div>
     </div>
@@ -123,7 +123,7 @@
             <el-input style="text-align:center;width: 400px;" placeholder="请输入阶段名称" v-model="stage.name" >
             <template slot="prepend">阶段名称:</template>
             </el-input>
-            <div style="display: block"><el-button @click="saveStage" type="primary" style="margin-top: 15px;margin-left: 300px">确认</el-button></div>
+            <div style="display: block"><el-button @click="saveStage" type="primary" style="margin-top: 15px;margin-left: 300px" :loading="isSaving">确认</el-button></div>
     </el-dialog>
       <el-dialog  title="编辑阶段"
                   :visible.sync="editStageVisible"
@@ -155,6 +155,7 @@
     name: 'Project',
     data() {
       return {
+          isSaving:false,
         activeName:"project",
         activeNames: 1,
         editProjectVisible:false,
@@ -259,12 +260,14 @@
         }
       },
       saveProject(){
+          this.isSaving = true
           if(this.saveAdd()){
             Http.zsyPostHttp(Http.API_URI.ADDPROJECT,this.project,(res)=>{
               this.successMsg("项目添加成功");
               this.projectList();
               this.project.name = this.project.description = this.editProjectId= '';
               this.showAddTask = false;
+                this.isSaving = false
             });
           }
       },
@@ -311,6 +314,7 @@
             })
         },
         saveStage(){
+            this.isSaving = true
             var reg = /^\+?[1-9][0-9]*$/;
             this.stage.sort = this.stage.sort.trim();
             this.stage.name = this.stage.name.trim();
@@ -323,6 +327,7 @@
                     this.stage.name= this.stage.sort = '';
                     this.fetchStageList();
                     this.addStageVisible = false;
+                    this.isSaving = false
                 })
             }else{
                 this.warnMsg("阶段名称不为空且不超过10个字");

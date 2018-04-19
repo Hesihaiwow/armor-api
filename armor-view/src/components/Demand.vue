@@ -131,7 +131,7 @@
           </el-form-item>
           <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
             <el-button type="danger" @click="deleteFeedback()"v-show="feedbackDeleteIcon">删除需求</el-button>
-            <el-button @click="saveFeedback('feedbackForm')" type="primary" >保存</el-button>
+            <el-button @click="saveFeedback('feedbackForm')" type="primary" :loading="isSaving">保存</el-button>
           </div >
         </el-form>
       </el-dialog>
@@ -261,7 +261,7 @@
           </div>
           <div class="ctpc-btns">
             <input type="button" class="ctpc-cancel" @click="cancelAddTask" value="取消">
-            <input type="button" class="ctpc-save" @click="saveAddTask" value="确定">
+            <input type="button" class="ctpc-save" @click="saveAddTask" value="确定" >
           </div>
         </div>
         <div v-if="!permit ||feedbackForm.status==2 "></div>
@@ -270,7 +270,7 @@
             <span class="add-member-icon" >+</span>
             <span class="add-member-msg" style="margin-top: -40px;margin-left: 24px;">添加任务</span>
           </div>
-          <el-button type="text" icon="check" @click="savePlan" style="margin-left: 400px;" >保存计划</el-button>
+          <el-button type="text" icon="check" @click="savePlan" style="margin-left: 400px;" :loading="isSaving">保存计划</el-button>
         </div>
       </el-dialog>
 
@@ -304,6 +304,7 @@
                 }
             };
             return {
+                isSaving:false,
                 demandData:[],
                 feedbackVisible:false,
                 feedbackDeleteIcon:false,
@@ -561,6 +562,7 @@
                 }
             },
             saveFeedback(formName){
+                this.isSaving = true
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if(this.feedbackForm.projectId==''){
@@ -585,6 +587,7 @@
                                 this.$refs[formName].resetFields();
                                 this.feedbackVisible = false
                                 this.fetchFeedbackList();
+                                this.isSaving =false
                             });
                         }else{
                             http.zsyPostHttp('/feedback/add', param, (resp) => {
@@ -592,6 +595,7 @@
                                 this.$refs[formName].resetFields();
                                 this.feedbackVisible = false
                                 this.fetchFeedbackList();
+                                this.isSaving =false
                             });
                         }
                     } else {
@@ -736,6 +740,7 @@
                 }
             },
             savePlan(){
+                this.isSaving = true
                 if(this.planTask.length<1){
                     this.warnMsg("请添加计划任务");
                     return;
@@ -760,6 +765,7 @@
                     });
                     this.fetchFeedbackList();
                     this.planVisible = false;
+                    this.isSaving = false
                 })
                 },
             modifyStep(index, stages) {

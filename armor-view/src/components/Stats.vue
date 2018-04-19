@@ -223,7 +223,7 @@
                     <span class="add-member-msg" style="">添加成员</span>
                 </div>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveBugForm('bugForm')">立即创建</el-button>
+            <el-button type="primary" @click="saveBugForm('bugForm')" :loading="isSaving">立即创建</el-button>
             <el-button @click="createBugSolvingVisible = false">取 消</el-button>
           </span>
         </el-dialog>
@@ -333,6 +333,7 @@
         name: 'IntegralHistory',
         data() {
             return {
+                isSaving:false,
                 activeName:'stat',
                 createBugSolvingVisible:false,
                 updateBugSolvingVisible:false,
@@ -541,6 +542,7 @@
                 });
             },
             saveBugForm(){
+                this.isSaving = true
                 if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
                     this.errorMsg('请将问题信息填写完整');
                     return
@@ -562,6 +564,7 @@
                     this.createBugSolvingVisible = false
                     this.bugUsers = [];
                     this.getBugList();
+                    this.isSaving = false
                 })
 
             },
