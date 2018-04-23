@@ -156,6 +156,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         feedback.setId(feedbackId);
         feedback.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
 
+        feedbackPlanMapper.deleteFeedbackPlan(feedbackId);
+
         if (feedbackMapper.updateByFeedbackId(feedback)== 0) {
             throw new ZSYServiceException("需求删除失败");
         }
