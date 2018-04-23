@@ -58,7 +58,7 @@
     FROM  feedback_plan p
     JOIN  feedback f ON  p.feedback_id = f.id
     <where>
-    f.is_delete = 0 AND f.is_delete = 0
+    f.is_delete = 0 AND p.is_delete = 0
       <if test="startTime!=null">
         <![CDATA[  AND p.expect_official_time >= #{startTime} ]]>
       </if>
