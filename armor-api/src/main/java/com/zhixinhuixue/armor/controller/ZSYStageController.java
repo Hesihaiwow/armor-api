@@ -74,6 +74,18 @@ public class ZSYStageController extends ZSYController {
 
     /**
      * 移动阶段
+     * @param id
+     * @param sort
+     * @return
+     */
+    @ApiOperation("移动阶段")
+    @PutMapping(value = "/move/{id}/{sort}")
+    public String moveStage(@PathVariable("id") Long id,@PathVariable("sort") Integer sort){
+        return  stageService.moveStage(id,sort).build();
+    }
+
+    /**
+     * 移动阶段
      * @param stageResDTO
      * @return
      */

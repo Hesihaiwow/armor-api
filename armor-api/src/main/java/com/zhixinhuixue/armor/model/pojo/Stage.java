@@ -12,7 +12,7 @@ public class Stage {
 
     private Long createBy;
 
-    private Integer sort;
+    private Long sort;
 
     private Long departmentId;
 
@@ -48,11 +48,11 @@ public class Stage {
         this.createBy = createBy;
     }
 
-    public Integer getSort() {
+    public Long getSort() {
         return sort;
     }
 
-    public void setSort(Integer sort) {
+    public void setSort(Long sort) {
         this.sort = sort;
     }
 

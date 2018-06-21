@@ -33,7 +33,7 @@ public interface IZSYStageMapper {
      * @param name
      * @return
      */
-    int validateStage(@Param("name") String name,@Param("sort") int sort,@Param("departmentId")Long departmentId);
+    int validateStage(@Param("name") String name,@Param("departmentId")Long departmentId);
 
     /**
      * 根据ID查询阶段
@@ -41,6 +41,12 @@ public interface IZSYStageMapper {
      * @return
      */
     Stage selectById(Long id);
+
+    /**
+     * 根据部门查询列表
+     * @param id
+     */
+    List<Stage> selectByDeptId(Long id);
 
     /**
      * 查询阶段ID是否被使用
@@ -59,14 +65,14 @@ public interface IZSYStageMapper {
      * @param sort
      * @return
      */
-    int updateSortById(@Param("sort") int sort, @Param("id")long id);
+    int updateSortById(@Param("sort") Long sort, @Param("id")long id);
 
     /**
      *查询排序目标上一个阶段的优先级
      * @param sort
      * @return
      */
-    int selectBySort(int sort);
+    Long selectBySort(Long sort);
 
 
 }

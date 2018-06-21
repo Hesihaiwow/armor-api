@@ -20,7 +20,7 @@
                         size="large"
                         @blur="handleInputTagConfirm">
                 </el-input>
-                <el-button v-else class="button-new-tag" size="large" @click="showTag">+ New Tag</el-button>
+                <el-button v-else class="button-new-tag" size="large" @click="showTag">+ 新增标签</el-button>
             </el-tab-pane>
             <el-tab-pane label="阶段管理" name="stage" >
                 <el-button type="primary" size="middle" style="margin-bottom: 10px;margin-left: 1000px" @click="addStageVisible=true;clearStage()">添加阶段</el-button>
@@ -31,11 +31,13 @@
                     <el-table-column
                             label="阶段名称"
                             prop="name"></el-table-column>
-                    <el-table-column
-                            label="阶段优先级"
-                            prop="sort" align="center"></el-table-column>
-                    <el-table-column  label="编辑">
+                    <!--<el-table-column-->
+                            <!--label="阶段优先级"-->
+                            <!--prop="sort" align="center"></el-table-column>-->
+                    <el-table-column  label="操作" align="center">
                         <template scope="scope">
+                            <el-button type="text" v-if="scope.row.id != scope.row.firstId" @click="moveStage(scope.row.id,0)">上移</el-button>
+                            <el-button type="text" v-if="scope.row.id != scope.row.lastId" @click="moveStage(scope.row.id,1)">下移</el-button>
                             <el-button
                                     size="small"
                                     type="primary"
@@ -86,7 +88,7 @@
         <textarea class="project-intro" placeholder="项目简介（选填）" v-model="project.description"></textarea>
         <div class="att-bents">
           <span class="cancel" @click="hidePop">取消</span>
-          <span class="save" @click="saveProject">保存</span>
+          <span class="save" @click="saveProject" :loading="isSaving">保存</span>
         </div>
       </div>
     </div>
@@ -117,24 +119,29 @@
     <el-dialog  title="添加阶段"
                 :visible.sync="addStageVisible"
                 size="tiny" >
-            <el-input style="text-align:center;width: 400px;margin-bottom: 10px" placeholder="请输入阶段优先级（请勿重复）" v-model="stage.sort">
-            <template slot="prepend">阶段优先级:</template>
-            </el-input>
-            <el-input style="text-align:center;width: 400px;" placeholder="请输入阶段名称" v-model="stage.name" >
+            <!--<el-input style="text-align:center;margin-bottom: 10px" placeholder="请输入阶段优先级（请勿重复）" v-model="stage.sort">-->
+            <!--<template slot="prepend">阶段优先级:</template>-->
+            <!--</el-input>-->
+            <el-input style="text-align:center;" placeholder="请输入阶段名称" v-model="stage.name" >
             <template slot="prepend">阶段名称:</template>
             </el-input>
-            <div style="display: block"><el-button @click="saveStage" type="primary" style="margin-top: 15px;margin-left: 300px">确认</el-button></div>
+            <div slot="footer"  class="dialog-footer">
+                <el-button @click="saveStage" type="primary" :loading="isSaving">确认</el-button>
+            </div>
     </el-dialog>
       <el-dialog  title="编辑阶段"
                   :visible.sync="editStageVisible"
                   size="tiny">
-              <el-input style="width: 250px;margin-bottom: 10px" :placeholder="stage.sort+''" v-model="stage.sort">
-                  <template slot="prepend">阶段优先级:</template>
-              </el-input>
-              <el-input style="width: 400px;" :placeholder="stage.name" v-model="stage.name" >
+              <!--<el-input style="margin-bottom: 10px" :placeholder="stage.sort+''" v-model="stage.sort">-->
+                  <!--<template slot="prepend">阶段优先级:</template>-->
+              <!--</el-input>-->
+              <el-input style="" :placeholder="stage.name" v-model="stage.name" >
                   <template slot="prepend">阶段名称:</template>
               </el-input>
-              <el-button @click="editStage" type="primary" >确认</el-button>
+              <div slot="footer" class="dialog-footer">
+                  <el-button @click="editStage" type="primary" >确认</el-button>
+              </div>
+
       </el-dialog>
   </div>
 </template>
@@ -155,6 +162,7 @@
     name: 'Project',
     data() {
       return {
+          isSaving:false,
         activeName:"project",
         activeNames: 1,
         editProjectVisible:false,
@@ -171,7 +179,6 @@
         stage:{
             id:'',
             name: '',
-            sort: '',
         },
         project:{
           imageUrl:'',
@@ -259,12 +266,14 @@
         }
       },
       saveProject(){
+          this.isSaving = true
           if(this.saveAdd()){
             Http.zsyPostHttp(Http.API_URI.ADDPROJECT,this.project,(res)=>{
               this.successMsg("项目添加成功");
               this.projectList();
               this.project.name = this.project.description = this.editProjectId= '';
               this.showAddTask = false;
+                this.isSaving = false
             });
           }
       },
@@ -311,25 +320,32 @@
             })
         },
         saveStage(){
+            this.isSaving = true
             var reg = /^\+?[1-9][0-9]*$/;
-            this.stage.sort = this.stage.sort.trim();
-            this.stage.name = this.stage.name.trim();
-            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''||this.stage.sort>100){
-                this.warnMsg("阶段优先级须为大于0并小于100的整数");
-                return false;
-            }else if (this.stage.name!=''&&this.stage.name.length>0&&this.stage.name.length<=10) {
+//            this.stage.sort = this.stage.sort.trim();
+            this.stage.name = this.stage.name+"".trim();
+//            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''||this.stage.sort>100){
+//                this.warnMsg("阶段优先级须为大于0并小于100的整数");
+//                return false;
+//            }else
+            if (this.stage.name!=''&&this.stage.name.length>0&&this.stage.name.length<=10) {
                 Http.zsyPostHttp('/stage/add', this.stage, (res) => {
                     this.successMsg("阶段添加成功");
                     this.stage.name= this.stage.sort = '';
                     this.fetchStageList();
                     this.addStageVisible = false;
+                    this.isSaving = false
                 })
             }else{
                 this.warnMsg("阶段名称不为空且不超过10个字");
             }
         },
+        moveStage(id,sortType){
+            Http.zsyPutHttp(`/stage/move/${id}/${sortType}`, null, (res) => {
+                this.fetchStageList();
+            })
+        },
         clearStage(){
-            this.stage.sort = '';
             this.stage.name = '';
         },
         deleteStage(index,rows){
@@ -353,10 +369,11 @@
         },
         editStage(){
             var reg = /^\+?[1-9][0-9]*$/;
-            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''||this.stage.sort>100){
-                this.warnMsg("阶段优先级须为大于0并小于100的整数");
-                return false;
-            }else if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.trim().length<=10) {
+//            if(!reg.test(this.stage.sort)||this.stage.sort<1||this.stage.sort==''||this.stage.sort>100){
+//                this.warnMsg("阶段优先级须为大于0并小于100的整数");
+//                return false;
+//            }else
+            if (this.stage.name!=''&&this.stage.name.trim().length>0&&this.stage.name.trim().length<=10) {
                 Http.zsyPostHttp(`/stage/edit`, this.stage, (resp) => {
                     this.successMsg("阶段更新成功");
                     this.fetchStageList()

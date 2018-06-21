@@ -7,6 +7,8 @@
         <result column="description" jdbcType="LONGVARCHAR" property="description"/>
         <result column="project_id" jdbcType="BIGINT" property="projectId"/>
         <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
+        <result column="test_time" jdbcType="TIMESTAMP" property="testTime"/>
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
@@ -23,7 +25,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, description, project_id,stage_id, end_time, `type`, status, review_status, priority, create_by,
+        id, name, description, project_id,stage_id, begin_time, test_time, end_time, `type`, status, review_status, priority, create_by,
         complete_time, create_time, update_time, sort, facility, examine
     </sql>
 
@@ -251,11 +253,13 @@
 
     <!-- 查询阶段下的任务 -->
     <select id="selectTaskByStageId" resultMap="PageResultMap" parameterType="java.util.Map">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
-        left join task_user t2 on t1.id =t2.task_id
-        left join task_tag t3 on t1.id = t3.task_id
-        left join project t4 on t1.project_id = t4.id
-        left JOIN stage t5 on t1.stage_id = t5.id
+        select DISTINCT(t1.id) as dist,
+        t1.id, t1.name,t1.end_time, t1.begin_time, t1.test_time, t1.status,t1.stage_id,
+       t6.`name` as userName,t6.avatar_url from task t1
+--         left join task_user t2 on t1.id =t2.task_id
+--         left join task_tag t3 on t1.id = t3.task_id
+--         left join project t4 on t1.project_id = t4.id
+--         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
          where t1.review_status = 3 and t1.is_delete = 0
@@ -266,11 +270,12 @@
 
     <!-- 查询阶段下的任务 -->
     <select id="selectTaskByStageTime" resultMap="PageResultMap" parameterType="java.util.Map">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
-        left join task_user t2 on t1.id =t2.task_id
-        left join task_tag t3 on t1.id = t3.task_id
-        left join project t4 on t1.project_id = t4.id
-        left JOIN stage t5 on t1.stage_id = t5.id
+        select DISTINCT(t1.id) as dist, t1.id, t1.name,t1.end_time, t1.begin_time, t1.test_time, t1.status,t1.stage_id,
+        t6.`name` as userName,t6.avatar_url from task t1
+--         left join task_user t2 on t1.id =t2.task_id
+--         left join task_tag t3 on t1.id = t3.task_id
+--         left join project t4 on t1.project_id = t4.id
+--         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
         where t1.review_status = 3 and t1.is_delete = 0
@@ -308,12 +313,13 @@
 
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Task">
       insert into task (id, name, description,
-      project_id,stage_id, end_time, `type`, status,
+      project_id,stage_id, begin_time, test_time, end_time, `type`, status,
       review_status, priority, create_by,
       complete_time, create_time, update_time, is_delete,sort, facility, examine
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
-      #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
+      #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{beginTime,jdbcType=TIMESTAMP},
+      #{testTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
       #{status,jdbcType=INTEGER},
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
@@ -336,11 +342,17 @@
             <if test="stageId != null">
                 stage_id = #{stageId,jdbcType=BIGINT},
             </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="testTime != null">
+                test_time = #{testTime,jdbcType=TIMESTAMP},
+            </if>
             <if test="endTime != null">
                 end_time = #{endTime,jdbcType=TIMESTAMP},
             </if>
             <if test="type != null">
-                status = #{type,jdbcType=INTEGER},
+                type = #{type,jdbcType=INTEGER},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=INTEGER},

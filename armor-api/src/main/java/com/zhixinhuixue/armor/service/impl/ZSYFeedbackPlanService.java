@@ -48,12 +48,14 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                 task.add(taskDetailResDTO);
 
                 if(planTaskBO.getPlanTask().getStageName().contains("设计")){
-                    taskDetailResDTO.setPercent(25);
+                    taskDetailResDTO.setPercent(0);
                 }else if(planTaskBO.getPlanTask().getStageName().contains("开发")){
-                    taskDetailResDTO.setPercent(70);
+                    taskDetailResDTO.setPercent(25);
                 }else if(planTaskBO.getPlanTask().getStageName().contains("测试")){
+                    taskDetailResDTO.setPercent(70);
+                }else if(planTaskBO.getPlanTask().getStageName().contains("待发布")){
                     taskDetailResDTO.setPercent(95);
-                }else if(planTaskBO.getPlanTask().getStageName().contains("发布")){
+                }else if(planTaskBO.getPlanTask().getStageName().contains("已发布")){
                     taskDetailResDTO.setPercent(100);
                 }
             });
