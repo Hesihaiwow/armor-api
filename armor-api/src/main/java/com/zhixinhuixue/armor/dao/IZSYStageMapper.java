@@ -65,14 +65,14 @@ public interface IZSYStageMapper {
      * @param sort
      * @return
      */
-    int updateSortById(@Param("sort") int sort, @Param("id")long id);
+    int updateSortById(@Param("sort") Long sort, @Param("id")long id);
 
     /**
      *查询排序目标上一个阶段的优先级
      * @param sort
      * @return
      */
-    int selectBySort(int sort);
+    Long selectBySort(Long sort);
 
 
 }

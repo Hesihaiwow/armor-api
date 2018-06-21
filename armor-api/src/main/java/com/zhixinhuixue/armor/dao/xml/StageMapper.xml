@@ -63,11 +63,11 @@
   <!-- 更新优先级-->
   <update id="updateSortById">
     UPDATE stage SET sort = sort +1
-        WHERE id != #{id,jdbcType=BIGINT}  and sort >= #{sort,jdbcType=INTEGER}
+        WHERE id != #{id,jdbcType=BIGINT}  and sort >= #{sort,jdbcType=BIGINT}
   </update>
 
   <!--查询排序目标上一个阶段的优先级-->
-  <select id="selectBySort" resultType="java.lang.Integer">
+  <select id="selectBySort" resultType="java.lang.Long">
     SELECT sort FROM stage ORDER BY sort limit #{sort},1
   </select>
 

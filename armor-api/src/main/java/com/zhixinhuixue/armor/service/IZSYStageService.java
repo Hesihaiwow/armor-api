@@ -44,4 +44,11 @@ public interface IZSYStageService {
      */
     ZSYResult moveStage(Long id, int sort);
 
+    /**
+     * 移动阶段
+     * @param stageResDTO
+     */
+    void moveStage(StageResDTO stageResDTO);
+
+
 }
