@@ -36,6 +36,20 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>开发日期</div>
+                        <div class="ctpc-list-con fl">
+                            <el-date-picker v-model="taskForm.beginTime" type="date" format="yyyy-MM-dd"
+                                            placeholder="选择日期"></el-date-picker>
+                        </div>
+                    </div>
+                    <div class="ctpc-list clearfix">
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>提测日期</div>
+                        <div class="ctpc-list-con fl">
+                            <el-date-picker v-model="taskForm.testTime" type="date" format="yyyy-MM-dd"
+                                            placeholder="选择日期"></el-date-picker>
+                        </div>
+                    </div>
+                    <div class="ctpc-list clearfix">
                         <div class="ctpc-list-menu fl"><span class="star">*</span>截止日期</div>
                         <div class="ctpc-list-con fl">
                             <el-date-picker v-model="taskForm.endTime" type="date" format="yyyy-MM-dd"
@@ -199,6 +213,8 @@
                     taskType: 2,
                     description: '',
                     taskName: '',
+                    beginTime:'',
+                    testTime:'',
                     endTime: '',
                     projectId: '',
                     stageId: '',
@@ -536,6 +552,8 @@
                 param.taskName = param.taskName.trim()
                 param.description = param.description.trim()
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
+                param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59');
+                param.testTime = moment(param.testTime).format('YYYY-MM-DD 23:59:59');
                 param['taskUsers'] = this.taskUsers;
                 param.taskUsers.forEach((user) => {
                     user.description = user.description.trim();
@@ -556,9 +574,12 @@
                     vm.taskForm.description = '';
                     vm.taskForm.taskName = '';
                     vm.taskForm.endTime = '';
+                    vm.taskForm.beginTime = '';
+                    vm.taskForm.testTime = '';
                     vm.taskForm.projectId = '';
-                    vm.taskForm.sta = '';
-                    vm.taskForm.priority = 1;
+                    vm.taskForm.stageId = '';
+                    vm.taskForm.priority = '';
+                    vm.taskForm.facility = '';
                     vm.taskForm.tags = [];
                     vm.taskUsers = [];
                     // 刷新看板

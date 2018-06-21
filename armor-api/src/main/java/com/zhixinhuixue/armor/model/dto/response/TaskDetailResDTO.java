@@ -18,6 +18,10 @@ public class TaskDetailResDTO {
 
     private Long stageId;
 
+    private Date beginTime;
+
+    private Date testTime;
+
     private Date endTime;
 
     private Integer type;
@@ -226,6 +230,22 @@ public class TaskDetailResDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(Date testTime) {
+        this.testTime = testTime;
     }
 }
 

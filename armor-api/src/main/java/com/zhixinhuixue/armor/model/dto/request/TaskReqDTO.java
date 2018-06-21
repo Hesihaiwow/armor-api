@@ -48,6 +48,18 @@ public class TaskReqDTO {
     private Date endTime;
 
     /**
+     * 开发开始日期
+     */
+    @NotNull(message = "开发开始日期不能为空")
+    private Date beginTime;
+
+    /**
+     * 提测日期
+     */
+    @NotNull(message = "提测日期不能为空")
+    private Date testTime;
+
+    /**
      * 任务优先级
      */
     @NotNull(message = "任务优先级不能为空")
@@ -176,5 +188,21 @@ public class TaskReqDTO {
 
     public void setCreateBy(Long createBy) {
         this.createBy = createBy;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(Date testTime) {
+        this.testTime = testTime;
     }
 }
