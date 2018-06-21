@@ -119,7 +119,6 @@
                 });
             },
             dateTreeBuild(id,month){
-                console.log(this.planYear)
                 if(id == month && month <100 ){
                     this.planYear = moment(this.planYear).format('YYYY')
                     let startWeek = moment(moment().year(this.planYear).startOf('month').month(month)).week();

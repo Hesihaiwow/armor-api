@@ -121,7 +121,7 @@
                     <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="请假统计" name="leave"  style="">
+            <el-tab-pane label="请假统计" name="leave"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
                         <el-option v-for="item in userList" :key="item.id" :label="item.name"
@@ -223,7 +223,7 @@
                     <span class="add-member-msg" style="">添加成员</span>
                 </div>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveBugForm('bugForm')">立即创建</el-button>
+            <el-button type="primary" @click="saveBugForm('bugForm')" :loading="isSaving">立即创建</el-button>
             <el-button @click="createBugSolvingVisible = false">取 消</el-button>
           </span>
         </el-dialog>
@@ -333,6 +333,7 @@
         name: 'IntegralHistory',
         data() {
             return {
+                isSaving:false,
                 activeName:'stat',
                 createBugSolvingVisible:false,
                 updateBugSolvingVisible:false,
@@ -451,6 +452,10 @@
                 let userRole = helper.decodeToken().userRole;
                 return userRole < 2;
             },
+            admin() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole < 1;
+            },
             pageLayout() {
                 if (this.bugFormPage.total > 0) {
                     return 'total, prev, pager, next'
@@ -463,6 +468,7 @@
                 }
                 return 'total, pager'
             }
+
         },
         filters: {
             formatDate: function (value) {
@@ -536,6 +542,7 @@
                 });
             },
             saveBugForm(){
+                this.isSaving = true
                 if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
                     this.errorMsg('请将问题信息填写完整');
                     return
@@ -557,6 +564,7 @@
                     this.createBugSolvingVisible = false
                     this.bugUsers = [];
                     this.getBugList();
+                    this.isSaving = false
                 })
 
             },

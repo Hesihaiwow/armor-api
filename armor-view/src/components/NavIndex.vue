@@ -434,8 +434,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="saveHelpInfo('helpForm')" v-show="!editHelpDetailVisible">立即创建</el-button>
-                <el-button type="primary" @click="saveHelpInfo('helpForm')" v-show="editHelpDetailVisible">立即更新</el-button>
+                <el-button type="primary" @click="saveHelpInfo('helpForm')" v-show="!editHelpDetailVisible" :loading="isSaving">立即创建</el-button>
+                <el-button type="primary" @click="saveHelpInfo('helpForm')" v-show="editHelpDetailVisible" :loading="isSaving">立即更新</el-button>
                 <el-button @click="editHelpVisible = false,clearHelpForm()">取 消</el-button>
               </span>
         </el-dialog>
@@ -494,8 +494,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible">立即创建</el-button>
-                <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible">立即更新</el-button>
+                <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible" :loading = "isSaving">立即创建</el-button>
+                <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible"  :loading = "isSaving">立即更新</el-button>
                 <el-button @click="editLeaveVisible = false,editLeaveDetailVisible = false,clearLeaveForm()">取 消</el-button>
               </span>
         </el-dialog>
@@ -553,6 +553,7 @@
                 }
             };
             return {
+                isSaving:false,
                 activeName: 'doing',
                 assessActiveName: 'waitAssess',
                 integralBasicVisible:false,
@@ -1025,6 +1026,7 @@
             },
             //保存用户转移积分
             saveHelpInfo(helpForm){
+                this.isSaving = true
                 var param = this.helpForm;
                 var help = {
                     userId: param.userId,
@@ -1047,12 +1049,14 @@
                                 this.$message({ showClose: true,message: '转移积分更新成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
+                                this.isSaving = false
                             });
                         }else{
                             http.zsyPostHttp('/integral/add', help, (res) => {
                                 this.$message({ showClose: true,message: '转移积分添加成功，请等待审核',type: 'success'});
                                 this.editHelpVisible = false;
                                 this.clearHelpForm();
+                                this.isSaving = false
                             });
                         }
                         this.reload();
@@ -1209,6 +1213,7 @@
                 }
             },
             saveLeaveInfo(formName){
+                this.isSaving = true
                 this.$refs[formName].validate((valid) =>{
                     if (valid) {
                         if(this.leaveForm.type==''||this.leaveForm.type==null){
@@ -1248,6 +1253,7 @@
                                 this.clearLeaveForm();
                                 this.editLeaveVisible = false
                                 this.editLeaveDetailVisible = false
+                                this.isSaving = false
                             })
                         }else{
                             http.zsyPostHttp('/userLeave/add', form, (resp) => {
@@ -1260,6 +1266,7 @@
                                 this.clearLeaveForm()
                                 this.editLeaveVisible = false
                                 this.editLeaveDetailVisible = false
+                                this.isSaving = false
                             })
                         }
                     }

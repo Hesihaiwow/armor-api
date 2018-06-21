@@ -58,7 +58,7 @@
     FROM  feedback_plan p
     JOIN  feedback f ON  p.feedback_id = f.id
     <where>
-    f.is_delete = 0 AND p.is_delete = 0
+      f.is_delete = 0
       <if test="startTime!=null">
         <![CDATA[  AND p.expect_official_time >= #{startTime} ]]>
       </if>
@@ -110,5 +110,9 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <delete id="deleteFeedbackPlan" parameterType="java.lang.Long">
+    delete from feedback_plan where feedback_id = #{feedbackId}
+  </delete>
 
 </mapper>
