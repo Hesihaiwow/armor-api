@@ -18,7 +18,6 @@ target/
 ### NetBeans ###
 nbproject/private/
 nbbuild/
-dist/
 nbdist/
 .nb-gradle/
 
@@ -60,6 +59,5 @@ Desktop.ini
 #nodejs
 node_modules/
 
-dist/
 
 generatorConfig.xml

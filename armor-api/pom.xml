@@ -121,7 +121,7 @@
 
 	<build>
 
-		<finalName>zsy-armor-${project.version}</finalName>
+		<finalName>zsy-armor-testing-${project.version}</finalName>
 
 		<plugins>
 			<!-- mybatis自动生成工具 -->

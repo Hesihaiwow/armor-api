@@ -119,6 +119,7 @@ public interface IZSYTaskService {
 
     /**
      * 获取所有审核通过的任务
+     *
      * @return
      */
     PageInfo<TaskResDTO> getAuditSuccessAll(Integer pageNum);
@@ -155,12 +156,14 @@ public interface IZSYTaskService {
 
     /**
      * 结算任务（后台同步）
+     *
      * @return
      */
     void syncSettlementTask();
 
     /**
      * 获取阶段下的任务
+     *
      * @param stageId
      * @return
      */
@@ -175,6 +178,7 @@ public interface IZSYTaskService {
 
     /**
      * 移动任务
+     *
      * @param taskMoveReqDTO
      * @return
      */

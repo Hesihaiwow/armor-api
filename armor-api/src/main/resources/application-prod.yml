@@ -4,9 +4,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://192.168.1.251:3307/zsy_armor?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
-      username: printer
-      password: HnTqLszULNvNRR5b
+      url: jdbc:mysql://10.19.63.195:3306/armor?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+      username: armor
+      password: v6x4nFmJbuA8dC26
       filters: stat
       validation-query: SELECT 1
       web-stat-filter:
@@ -18,11 +18,14 @@ spring:
         url-pattern: /druid/*
         login-username: zxhx
         login-password: zxhx
+      test-on-borrow: true
+      test-on-return: true
+      test-while-idle: true
 
 redis:
   primary:
     database: 10
-    host: 192.168.1.240
+    host: 10.19.165.180
     port: 6379
 
 jwt:
@@ -37,15 +40,15 @@ fastdfs:
   charset : UTF-8
   trackerHttpPort : 80
   antiStealToken : false
-  trackerServer : 192.168.1.252:22122
-  domain: http://fdfs.dev.xueping.com
+  trackerServer : 10.19.103.150:22122
+  domain: http://fs.zhixinhuixue.com
 
 
 #错误日志通知
 logRedis:
-  host: 192.168.1.240
+  host: 10.19.165.180
   port: 6379
-  database: 10
+  database: 9
   key: zsy-system-err
   module: zsy-armor
 

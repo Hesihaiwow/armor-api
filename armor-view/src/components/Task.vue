@@ -15,7 +15,7 @@
                         <div class="clearfix select-box">
                             <div class="task-top-list fl">
                                 <span class="ttl-name">项目</span>
-                                <el-select clearable v-model="form.projectId" placeholder="请选择">
+                                   <el-select clearable v-model="form.projectId" placeholder="请选择">
                                     <el-option v-for="item in projectList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
