@@ -171,6 +171,8 @@
                 <el-form-item class="task-form" label="难易度："  style="margin-bottom: -36px;"><span v-for="item in facilityList"
                                                                    v-if="item.value == taskDetail.facility">{{item.label}}</span>
                 </el-form-item>
+                <el-form-item class="task-form" label="开发时间：" style="margin-left: 200px;">{{taskDetail.beginTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="提测时间：" style="margin-bottom: -36px;">{{taskDetail.testTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="截止时间：" style="margin-left: 200px;">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -346,10 +348,28 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="">
+                    <span slot="label"><span class="star">*</span>开发日期</span>
+                    <el-date-picker
+                            v-model="modifyTaskForm.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="">
+                    <span slot="label"><span class="star">*</span>提测日期</span>
+                    <el-date-picker
+                            v-model="modifyTaskForm.testTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>截止日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.endTime"
-                            type="datetime"
+                            type="date"
                             format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
@@ -660,6 +680,8 @@
                     taskName: '',
                     description: '',
                     projectId: '',
+                    beginTime:'',
+                    testTime:'',
                     endTime: '',
                     priority: '',
                     facility:'',
@@ -937,10 +959,10 @@
                 });
             },
             completeTask(examine) {
-                if(examine==0){
-                    this.errorMsg('任务未评审，请在评审后完成任务')
-                    return
-                }
+//                if(examine==0){
+//                    this.errorMsg('任务未评审，请在评审后完成任务')
+//                    return
+//                }
                 this.$confirm('此操作将完成该任务, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -1147,6 +1169,8 @@
                     this.modifyTaskForm.taskName = resp.data.name;
                     this.modifyTaskForm.description = resp.data.description;
                     this.modifyTaskForm.endTime = resp.data.endTime;
+                    this.modifyTaskForm.beginTime = resp.data.beginTime;
+                    this.modifyTaskForm.testTime = resp.data.testTime;
                     this.modifyTaskForm.projectId = resp.data.projectId;
                     this.modifyTaskForm.stageId = resp.data.stageId;
                     this.modifyTaskForm.priority = resp.data.priority;
@@ -1190,6 +1214,8 @@
                 this.modifyTaskForm.description = '';
                 this.modifyTaskForm.taskName = '';
                 this.modifyTaskForm.endTime = '';
+                this.modifyTaskForm.beginTime = '';
+                this.modifyTaskForm.testTime = '';
                 this.modifyTaskForm.projectId = '';
                 this.modifyTaskForm.stageId = '';
                 this.modifyTaskForm.priority = 1;
@@ -1361,6 +1387,14 @@
                     this.warnMsg("请选择项目");
                     return;
                 }
+                if (this.modifyTaskForm.beginTime == '') {
+                    this.warnMsg("请选择开发时间");
+                    return;
+                }
+                if (this.modifyTaskForm.testTime == '') {
+                    this.warnMsg("请选择提测时间");
+                    return;
+                }
                 if (this.modifyTaskForm.endTime == '') {
                     this.warnMsg("请选择结束时间");
                     return;
@@ -1387,6 +1421,8 @@
                     }
                 })
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
+                param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59');
+                param.testTime = moment(param.testTime).format('YYYY-MM-DD 23:59:59');
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
                     this.$message({ showClose: true,message: '任务修改成功',type: 'success'});

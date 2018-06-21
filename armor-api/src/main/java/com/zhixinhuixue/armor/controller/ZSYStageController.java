@@ -74,14 +74,14 @@ public class ZSYStageController extends ZSYController {
 
     /**
      * 移动阶段
-     * @param stageResDTO
+     * @param id
+     * @param sort
      * @return
      */
     @ApiOperation("移动阶段")
-    @PutMapping(value = "/move")
-    public String moveStage(@Valid @RequestBody StageResDTO stageResDTO){
-        stageService.moveStage(stageResDTO);
-        return ZSYResult.success().build();
+    @PutMapping(value = "/move/{id}/{sort}")
+    public String moveStage(@PathVariable("id") Long id,@PathVariable("sort") Integer sort){
+        return  stageService.moveStage(id,sort).build();
     }
 
 }

@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service;
 
 
 import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
+import com.zhixinhuixue.armor.source.ZSYResult;
 
 import java.util.List;
 
@@ -38,8 +39,9 @@ public interface IZSYStageService {
 
     /**
      * 移动阶段
-     * @param stageResDTO
+     * @param id
+     * @param sort
      */
-    void moveStage(StageResDTO stageResDTO);
+    ZSYResult moveStage(Long id, int sort);
 
 }

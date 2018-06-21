@@ -14,6 +14,10 @@ public class Task {
 
     private Long stageId;
 
+    private Date beginTime;
+
+    private Date testTime;
+
     private Date endTime;
 
     private Integer type;
@@ -182,5 +186,21 @@ public class Task {
 
     public void setExamine(Integer examine) {
         this.examine = examine;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(Date testTime) {
+        this.testTime = testTime;
     }
 }

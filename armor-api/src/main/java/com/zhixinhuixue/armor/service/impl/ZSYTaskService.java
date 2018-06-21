@@ -121,6 +121,8 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setProjectId(taskReqDTO.getProjectId());
         task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
+        task.setTestTime(taskReqDTO.getTestTime());
+        task.setBeginTime(taskReqDTO.getBeginTime());
         task.setPriority(taskReqDTO.getPriority());
         task.setStatus(ZSYTaskStatus.DOING.getValue());
         task.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
@@ -272,6 +274,8 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setProjectId(taskReqDTO.getProjectId());
         task.setStageId(taskReqDTO.getStageId());
         task.setEndTime(taskReqDTO.getEndTime());
+        task.setBeginTime(taskReqDTO.getBeginTime());
+        task.setTestTime(taskReqDTO.getTestTime());
         task.setPriority(taskReqDTO.getPriority());
         task.setFacility(taskReqDTO.getFacility());
         task.setUpdateTime(new Date());
@@ -1141,7 +1145,8 @@ public class ZSYTaskService implements IZSYTaskService {
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
-            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stageMapper.selectById(taskListBO.getStageId()).getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
+            Stage stage = stageMapper.selectById(taskListBO.getStageId());
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stage.getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
                 TaskListResDTO taskListResDTO = new TaskListResDTO();
                 BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
                 List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
@@ -1152,6 +1157,11 @@ public class ZSYTaskService implements IZSYTaskService {
                     taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
                     taskTagResDTOS.add(taskTagResDTO);
                 });
+                if(stage.getName().indexOf("设计")!=-1 && taskListBO.getBeginTime()!=null){
+                    taskListResDTO.setEndTime(taskListBO.getBeginTime());
+                }else if(stage.getName().indexOf("开发")!=-1 && taskListBO.getTestTime()!=null){
+                    taskListResDTO.setEndTime(taskListBO.getTestTime());
+                }
                 taskListResDTO.setTags(taskTagResDTOS);
                 list.add(taskListResDTO);
             }
