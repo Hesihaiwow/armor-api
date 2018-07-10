@@ -1379,6 +1379,7 @@
                  this.$message.warning("请填写任务备注");
                  return;
                  }*/
+                console.log(this.modifyTaskForm)
                 if (this.modifyTaskForm.taskName == '') {
                     this.warnMsg("请填写任务名称");
                     return;
@@ -1387,16 +1388,16 @@
                     this.warnMsg("请选择项目");
                     return;
                 }
-                if (this.modifyTaskForm.beginTime == '') {
-                    this.warnMsg("请选择开发时间");
+                if (this.modifyTaskForm.beginTime==null || this.modifyTaskForm.beginTime == '') {
+                    this.warnMsg("请选择开发日期");
                     return;
                 }
-                if (this.modifyTaskForm.testTime == '') {
-                    this.warnMsg("请选择提测时间");
+                if (this.modifyTaskForm.testTime==null || this.modifyTaskForm.testTime == '') {
+                    this.warnMsg("请选择提测日期");
                     return;
                 }
-                if (this.modifyTaskForm.endTime == '') {
-                    this.warnMsg("请选择结束时间");
+                if (this.modifyTaskForm.endTime==null || this.modifyTaskForm.endTime == '') {
+                    this.warnMsg("请选择截止日期");
                     return;
                 }
                 if (this.modifyTaskForm.stageId === '') {

@@ -524,8 +524,16 @@
                     this.warnMsg("请选择项目");
                     return;
                 }
+                if (this.taskForm.beginTime == '') {
+                    this.warnMsg("请选择开发时间");
+                    return;
+                }
+                if (this.taskForm.testTime == '') {
+                    this.warnMsg("请选择提测时间");
+                    return;
+                }
                 if (this.taskForm.endTime == '') {
-                    this.warnMsg("请选择结束时间");
+                    this.warnMsg("请选择截止时间");
                     return;
                 }
                 if (this.taskForm.stageId === '') {

@@ -34,7 +34,7 @@
     insert into stage (id, name, create_time, 
       create_by, sort,department_id)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{createBy,jdbcType=BIGINT}, #{sort,jdbcType=INTEGER}, #{departmentId,jdbcType=BIGINT})
+      #{createBy,jdbcType=BIGINT}, #{sort,jdbcType=BIGINT}, #{departmentId,jdbcType=BIGINT})
   </insert>
 
     <update id="update">

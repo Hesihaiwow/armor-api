@@ -44,7 +44,7 @@
 
   <select id="getFeedbackPlanById" resultMap="ResultMap" parameterType="java.lang.Long">
     SELECT  p.*,t.task_id FROM  feedback_plan_task t
-    JOIN  feedback_plan p on p.id = t.feedback_plan_id
+    JOIN  feedback_plan p  on p.id = t.feedback_plan_id
     WHERE p.feedback_id = #{feedbackId}
   </select>
 

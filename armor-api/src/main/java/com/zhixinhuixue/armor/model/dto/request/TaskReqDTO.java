@@ -50,13 +50,11 @@ public class TaskReqDTO {
     /**
      * 开发开始日期
      */
-    @NotNull(message = "开发开始日期不能为空")
     private Date beginTime;
 
     /**
      * 提测日期
      */
-    @NotNull(message = "提测日期不能为空")
     private Date testTime;
 
     /**
