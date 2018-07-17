@@ -260,7 +260,7 @@
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
-         where t1.review_status = 3 and t1.is_delete = 0
+         where t1.review_status = 3 and t1.is_delete = 0 and t1.status !=3
          and t1.`type` = 2 and t1.stage_id = #{stageId}
          and t7.parent_id =#{departmentId}
          order by t1.sort ASC
@@ -275,7 +275,7 @@
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
-        where t1.review_status = 3 and t1.is_delete = 0
+        where t1.review_status = 3 and t1.is_delete = 0 and t1.status !=3
         and t1.`type` = 2 and t1.stage_id = #{stageId}
         and t7.parent_id =#{departmentId}
         <if test="time != null">
