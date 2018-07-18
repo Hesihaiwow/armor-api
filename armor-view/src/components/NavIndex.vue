@@ -850,13 +850,13 @@
                 let vm = this;
                 this.taskAble= true
                 this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
-                this.taskForm.beiginTime = moment(this.taskForm.beiginTime).toDate()
+                this.taskForm.beginTime = moment(this.taskForm.beginTime).toDate()
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let userId = helper.decodeToken().userId;
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
-                        param.beiginTime = moment(param.beiginTime).format('YYYY-MM-DD HH:00:00')
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00')
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:00:00')
                         if(param.taskHours.length!=parseFloat(param.taskHours).toString().length||parseFloat(param.taskHours)=="NaN"){
                             this.$message({ showClose: true,message: '工作量只能为数字或者小数',type: 'error'});
@@ -873,7 +873,7 @@
                         var taskUsers = [{
                             userId: userId,
                             taskHours: param.taskHours.trim(),
-                            beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+                            beginTime: moment(param.beginTime).format('YYYY-MM-DD HH:00:00'),
                             endTime:  moment(param.endTime).format('YYYY-MM-DD 23:59:59'),
                             description: param.description.trim()
                         }];

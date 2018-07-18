@@ -1107,11 +1107,12 @@
                 }
 
                 this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
+                this.modifyPrivateTaskForm.beginTime = moment(this.modifyPrivateTaskForm.beginTime).format('YYYY-MM-DD 23:00:00')
                 this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59')
                 this.modifyPrivateTaskForm.taskUsers = [{
                     userId: this.modifyPrivateTaskForm.userId,
                     taskHours: this.modifyPrivateTaskForm.taskHours,
-                    beginTime: moment(this.modifyPrivateTaskForm.beginTime).format('YYYY-MM-DD HH:mm:ss'),
+                    beginTime: moment(this.modifyPrivateTaskForm.beginTime).format('YYYY-MM-DD HH:00:00'),
                     endTime: moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59'),
                     description: this.modifyPrivateTaskForm.description.trim()
                 }]
