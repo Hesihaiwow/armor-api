@@ -103,7 +103,7 @@ public interface IZSYTaskMapper {
      * @param userId
      * @return
      */
-    List<TaskDetailBO> selectAllNotClosed(Long userId);
+    Page<TaskDetailBO> selectAllNotClosed(Long userId);
 
 
     /**

@@ -136,7 +136,7 @@ public interface IZSYTaskService {
      *
      * @return
      */
-    ZSYResult<List<TaskDetailBO>> getCommented(Long userId);
+    ZSYResult<List<TaskDetailBO>> getCommented(Long userId,Integer page);
 
     /**
      * 删除任务

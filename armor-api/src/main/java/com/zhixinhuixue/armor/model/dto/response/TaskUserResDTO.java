@@ -55,6 +55,8 @@ public class TaskUserResDTO{
      */
     private List<UserWeekResDTO> userWeeks;
 
+    private List<UserTaskResDTO> userTask;
+
     /**
      * 任务结束时，最终评价等级
      */
@@ -204,5 +206,13 @@ public class TaskUserResDTO{
 
     public void setUserWeeks(List<UserWeekResDTO> userWeeks) {
         this.userWeeks = userWeeks;
+    }
+
+    public List<UserTaskResDTO> getUserTask() {
+        return userTask;
+    }
+
+    public void setUserTask(List<UserTaskResDTO> userTask) {
+        this.userTask = userTask;
     }
 }

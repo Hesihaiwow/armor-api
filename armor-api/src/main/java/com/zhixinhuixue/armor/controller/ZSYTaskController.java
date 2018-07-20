@@ -108,9 +108,9 @@ public class ZSYTaskController extends ZSYController {
         return taskService.getAllWaitComment(ZSYTokenRequestContext.get().getUserId()).build();
     }
     @ApiOperation("获取用户已评价的任务")
-    @GetMapping(value = "/commented")
-    public String getCommentedTask() {
-        return taskService.getCommented(ZSYTokenRequestContext.get().getUserId()).build();
+    @GetMapping(value = "/commented/{pageNum}")
+    public String getCommentedTask(@PathVariable("pageNum") Integer pageNum) {
+        return taskService.getCommented(ZSYTokenRequestContext.get().getUserId(),pageNum).build();
     }
 
     @ApiOperation("获取用户已完成的任务")

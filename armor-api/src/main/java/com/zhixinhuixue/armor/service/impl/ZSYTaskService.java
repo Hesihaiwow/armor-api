@@ -605,6 +605,30 @@ public class ZSYTaskService implements IZSYTaskService {
             });
             taskUserResDTO.setUserWeeks(userWeekResDTOS);
 
+            //查询进行中任务
+            List<TaskBO> taskBOS = taskMapper.selectTaskByStatus(ZSYTaskStatus.DOING.getValue(),
+                    ZSYReviewStatus.ACCEPT.getValue(), ZSYTaskUserStatus.DOING.getValue(), taskUserResDTO.getUserId());
+            List<UserTaskResDTO> taskList = new ArrayList<>();
+            if (taskBOS != null && taskBOS.size() >= 0) {
+                taskBOS.stream().forEach(taskBO -> {
+                    UserTaskResDTO taskResDTO = new UserTaskResDTO();
+                    taskResDTO.setTaskName(taskBO.getName());
+                    taskBO.getTaskUsers().stream().forEach(taskUser -> {
+                        if(taskUser.getUserId().equals(taskUserBO.getUserId())){
+                            taskResDTO.setBeginTime(taskUser.getBeginTime());
+                            taskResDTO.setDescription(taskUser.getDescription());
+                            taskResDTO.setTaskHours(taskUser.getTaskHours());
+                            taskResDTO.setId(taskUser.getTaskId());
+                        }
+                    });
+
+                    if(!taskResDTO.getId().equals(taskId)){
+                        taskList.add(taskResDTO);
+                    }
+                });
+            }
+            taskUserResDTO.setUserTask(taskList);
+
             taskUserResDTOS.add(taskUserResDTO);
         });
         taskDetailResDTO.setUsers(taskUserResDTOS);
@@ -1059,10 +1083,11 @@ public class ZSYTaskService implements IZSYTaskService {
      * @return
      */
     @Override
-    public ZSYResult<List<TaskDetailBO>> getCommented(Long userId) {
-        List<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
-
-        List<TaskDetailBO> commentEndList = new ArrayList<>();
+    public ZSYResult<List<TaskDetailBO>> getCommented(Long userId,Integer page) {
+        PageHelper.startPage(page, 2);
+        Page<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
+        Page<TaskDetailBO> commentEndList = new Page<>();
+        BeanUtils.copyProperties(taskBOS,commentEndList);
         for (TaskDetailBO taskBO : taskBOS) {
             // 只要有1个评价就说明该任务已经评价过了
             boolean hasNext = true;
@@ -1085,7 +1110,9 @@ public class ZSYTaskService implements IZSYTaskService {
                 }
             }
         }
-        return ZSYResult.success().data(commentEndList);
+        PageInfo<TaskDetailBO> pageInfo = new PageInfo<>(commentEndList);
+        BeanUtils.copyProperties(commentEndList, pageInfo);
+        return ZSYResult.success().data(pageInfo);
     }
 
     /**
