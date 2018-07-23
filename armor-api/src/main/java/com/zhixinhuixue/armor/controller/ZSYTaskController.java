@@ -192,6 +192,13 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("更改暂停状态")
+    @PutMapping("/stop/{stop}/{taskId}")
+    public String stopTask(@PathVariable("taskId") Long taskId, @PathVariable("stop") Integer status) {
+        taskService.stopTask(taskId,status);
+        return ZSYResult.success().build();
+    }
+
     @ApiOperation("设置发版时间")
     @PutMapping("/publish/{publishTime}")
     public String setPublishTime(@PathVariable("publishTime") Date publishTime) {
@@ -203,6 +210,12 @@ public class ZSYTaskController extends ZSYController {
     @GetMapping("/publish")
     public String getPublishTime() {
         return ZSYResult.success().data(taskService.getPublishTime()).build();
+    }
+
+    @ApiOperation("获取未分配计划任务列表")
+    @GetMapping("/plan")
+    public String planTask() {
+        return ZSYResult.success().data(taskService.getPlanTask()).build();
     }
 }
 

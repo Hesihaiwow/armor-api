@@ -59,4 +59,11 @@ public interface IZSYFeedbackService {
      */
     FeedbackPlanResDTO getFeedbackPlan(Long feedbackId);
 
+    /**
+     * 修改任务关联
+     * @param feedbackId
+     * @param taskId
+     */
+    void editTaskStatus(Long feedbackId,Long taskId);
+
 }

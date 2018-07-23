@@ -195,7 +195,10 @@
                 </foreach>
             </if>
             <if test="status!=null and status==1">
-                and t1.`status` =1
+                and t1.`status` = 1
+            </if>
+            <if test="status!=null and status==0">
+                and t1.`status` = 0
             </if>
             <if test="status!=null and status !=0 and status!=1 ">
                 and t1.`status` in (2,3)
@@ -401,4 +404,9 @@
         and task_id = #{id}
     </select>
 
+    <!--查询项目下超时的任务数-->
+    <select id="getTaskPlanList" resultMap="BaseResultMap">
+        select id,`name` from task
+        where status=1 AND is_delete = 0 AND id not in ( SELECT task_id FROM feedback_plan_task)
+    </select>
 </mapper>

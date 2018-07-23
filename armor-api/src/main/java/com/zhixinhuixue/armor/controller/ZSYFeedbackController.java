@@ -117,5 +117,16 @@ public class ZSYFeedbackController extends ZSYController{
         return ZSYResult.success().build();
     }
 
+    /**
+     * 修改任务关联
+     * @return
+     */
+    @ApiOperation("获取计划")
+    @PutMapping(value = "/task/{feedbackId}/{taskId}")
+    public String deleteTask(@PathVariable("feedbackId") Long feedbackId,@PathVariable("taskId") Long taskId) {
+        feedbackService.editTaskStatus(feedbackId,taskId);
+        return ZSYResult.success().build();
+    }
+
 
 }

@@ -166,4 +166,9 @@ public interface IZSYTaskMapper {
      */
     int examineTask(Long taskId);
 
+    /**
+     * 查询未关联计划任务
+     * @return
+     */
+    List<Task> getTaskPlanList();
 }

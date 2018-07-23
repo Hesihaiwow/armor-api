@@ -100,7 +100,7 @@
                 </div>
                 <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
-                <el-table :data="userWeekData" border >
+                <el-table :data="userWeekData" border  >
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="80" >
                         <template scope="sco">
@@ -112,7 +112,7 @@
                             <div style="white-space: pre-wrap;text-align: left">{{sco.row.taskName}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="hours" label="周工作量"  width="120">
+                    <el-table-column prop="hours" label="周工作量"  sortable  width="120">
                         <template scope="scope">
                             <span type="text" v-show="scope.row.hours<=40">{{scope.row.hours}}</span>
                             <span type="text" style="color: red;" v-show="scope.row.hours>40">{{scope.row.hours}}</span>

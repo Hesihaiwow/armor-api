@@ -1304,7 +1304,25 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setExamine(examine);
-        taskMapper.updateByPrimaryKeySelective(task);
+        if(taskMapper.updateByPrimaryKeySelective(task)==0){
+            throw new ZSYServiceException("任务不存在，请检查");
+        }
+    }
+
+    /**
+     * 修改评审状态
+     * @param taskId
+     */
+    @Override
+    @Transactional
+    public void stopTask(Long taskId,Integer status){
+        checkUser();
+        Task task = new Task();
+        task.setId(taskId);
+        task.setStatus(status);
+        if(taskMapper.updateByPrimaryKeySelective(task)==0){
+            throw new ZSYServiceException("任务不存在，请检查");
+        }
     }
 
     /**
@@ -1335,5 +1353,21 @@ public class ZSYTaskService implements IZSYTaskService {
         }else{
             return  publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId());
         }
+    }
+
+    /**
+     * 查询未关联计划任务
+     * @return
+     */
+    @Override
+    public List<TaskPlanResDTO> getPlanTask() {
+        List<Task> task = taskMapper.getTaskPlanList();
+        List<TaskPlanResDTO> planResDTOS = new ArrayList<>();
+        task.stream().forEach(task1 -> {
+            TaskPlanResDTO planResDTO = new TaskPlanResDTO();
+            BeanUtils.copyProperties(task1,planResDTO);
+            planResDTOS.add(planResDTO);
+        });
+        return planResDTOS;
     }
 }

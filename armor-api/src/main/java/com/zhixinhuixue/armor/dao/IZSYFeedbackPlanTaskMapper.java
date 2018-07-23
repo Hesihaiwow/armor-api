@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,4 +26,12 @@ public interface IZSYFeedbackPlanTaskMapper {
      * @param taskId
      */
     void deleteByTaskId(Long taskId);
+
+    /**
+     * 查看任务关联
+     * @param feedbackPlanId
+     * @param taskId
+     * @return
+     */
+    int getTaskCount(@Param("feedbackPlanId") Long feedbackPlanId,@Param("taskId") Long taskId);
 }

@@ -76,6 +76,7 @@
                                        :viewType="1"
                                        :tagList="tagList"></task-item>
                         </el-tab-pane>
+
                         <el-tab-pane label="已评价" name="commented">
                             <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
                                        :projectList="projectList"
@@ -83,6 +84,15 @@
                                        :stageList="stageList"
                                        :viewType="1"
                                        :tagList="tagList"></task-item>
+                            <div class="pagination" v-show="this.task.commented.length>0">
+                                <el-pagination
+                                        @current-change="handleCommentedPage"
+                                        :current-page.sync="commentedPage.pageNum"
+                                        :page-size="commentedPage.pageSize"
+                                        :layout="commentedPageLayout"
+                                        :total="commentedPage.total">
+                                </el-pagination>
+                            </div>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
@@ -976,8 +986,9 @@
             // 获取用户已评价的任务
             fetchTaskCommented() {
                 let vm = this;
-                http.zsyGetHttp(`/task/commented`, {}, (resp) => {
-                    vm.task.commented = this.makeUpItems(resp.data)
+                http.zsyGetHttp(`/task/commented/${vm.commentedPage.pageNum}`, {}, (resp) => {
+                    vm.commentedPage.total = resp.data.total
+                    vm.task.commented = this.makeUpItems(resp.data.list)
                 })
             },
             // 获取所有待审核的任务

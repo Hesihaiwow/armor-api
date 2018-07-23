@@ -171,7 +171,7 @@
                 <el-form-item class="task-form" label="难易度："  style="margin-bottom: -36px;"><span v-for="item in facilityList"
                                                                    v-if="item.value == taskDetail.facility">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item class="task-form" label="开发时间：" style="margin-left: 200px;">{{taskDetail.beginTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="设计完成时间：" style="margin-left: 200px;">{{taskDetail.beginTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="提测时间：" style="margin-bottom: -36px;">{{taskDetail.testTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="截止时间：" style="margin-left: 200px;">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
@@ -182,13 +182,26 @@
                 <div class="ctpc-member-con" v-if="taskDetail.type==2">
                     <div class="ctpc-member-list clearfix" :class="taskStepStatus(item, taskDetail.users.length)"
                          v-for="(item,index) in taskDetail.users">
-                        <span class="fl ctpc-member-head">{{item.userName}}</span>
+                        <el-tooltip  placement="top">
+                            <div slot="content">
+                                <span>进行中任务:</span>
+                                <div v-for="userTask in item.userTask">
+                                    <div class="fl" style="margin-left: 20px;">任务名称:{{userTask.taskName}}</div>
+                                    <div class="fl" style="margin-left: 20px;">工作量:{{userTask.taskHours}}</div>
+                                    <div>&nbsp;&nbsp;开始时间:{{userTask.beginTime | formatDate}}</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 任务描述:{{userTask.description}}</div>
+                                </div>
+                                <div v-if="item.userTask&&item.userTask.length==0">无</div>
+                            </div>
+                            <span class="fl ctpc-member-head" >{{item.userName}}</span>
+                        </el-tooltip>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                         <span class="fl ctpc-member-assess" v-show="item.status==3">评价：{{item.commentGrade}}</span>
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
                            @click="commentDetail(item.id)">查看评价</a>
-                        <el-tooltip :content="item.description" placement="top">
+                        <el-tooltip placement="top">
+                            <div slot="content">{{item.description}}<br/>开始时间:{{item.createTime | formatDate}}</div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
                         </el-tooltip>
                     </div>
@@ -213,7 +226,13 @@
                     </li>
                 </ul>
             </div>
-            <span slot="footer" class="dialog-footer" v-show="permit && taskDetail.status==1">
+            <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status==1 || taskDetail.status==0)">
+                <el-tooltip content="启用任务" placement="top" >
+                    <el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>
+                </el-tooltip>
+                <el-tooltip content="暂停任务" placement="top" >
+                    <el-button type="danger"  @click="stopTask(taskDetail.id,0)" v-show="userRole===0&&taskDetail.status!=0" style="text-align: left">暂停任务</el-button>
+                </el-tooltip>
                 <el-tooltip content="评审任务" placement="top" >
                     <el-button type="primary"  @click="examineTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.examine===0" style="text-align: left">已评审</el-button>
                 </el-tooltip>
@@ -289,7 +308,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
                  <el-button @click="hideWaitAssess">取消</el-button>
-                <el-button type="primary" @click="taskAssess" v-show="!allComment">完成</el-button>
+                <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -622,6 +641,7 @@
             };
             return {
                 loginUserId: '',
+                isSaving:false,
                 modifyDescriptionVisible:false,
                 showFinishedTask: false,
                 showAuditTask: false,
@@ -1045,6 +1065,7 @@
             },
             // 评价任务
             taskAssess() {
+                this.isSaving=true
                 http.zsyPostHttp('/task/comment', this.assessForm, (resp) => {
                     this.$message({ showClose: true,message: '评价成功',type: 'success'});
                     this.showTaskComment = false
@@ -1054,6 +1075,7 @@
                         comments: []
                     };
                     this.$emit('reload');
+                    this.isSaving=false
                 })
             },
             // 修改单人任务
@@ -1494,6 +1516,34 @@
                             this.$message({ showClose: true,message: '评审成功',type: 'success'});
                         }else{
                             this.$message({ showClose: true,message: '取消评审成功',type: 'success'});
+                        }
+                        vm.$emit('reload')
+                        // 刷新看板
+                        this.$root.eventBus.$emit('reloadBoard');
+                        this.showTaskDetail = false;
+                    })
+                }).catch(() => {
+                });
+            },
+            //暂停任务
+            stopTask(id,status){
+                var examText
+                if(status!='0'){
+                    examText='确定启用任务?'
+                }else{
+                    examText='确定暂停任务?'
+                }
+                this.$confirm(examText, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let vm = this;
+                    http.zsyPutHttp('/task/stop/'+status+'/'+id, {}, (resp) => {
+                        if(status!='0'){
+                            this.$message({ showClose: true,message: '启用成功',type: 'success'});
+                        }else{
+                            this.$message({ showClose: true,message: '暂停成功',type: 'success'});
                         }
                         vm.$emit('reload')
                         // 刷新看板
@@ -2288,5 +2338,9 @@
         height: 0px;
         border-top: 15px solid rgb(32, 163, 191);
         border-left: 0px solid transparent;border-right: 15px solid transparent;
+    }
+
+    .el-tooltip__popper {
+        max-width: 50%
     }
 </style>

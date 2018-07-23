@@ -191,7 +191,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
         }
 
-
+        //需求任务关联
         feedbackPlanReqDTO.getPlanTask().stream().forEach(taskReqDTO -> {
             if(taskReqDTO.getProjectId()==0){
                 taskReqDTO.setProjectId(feedbackPlanReqDTO.getProjectId());
@@ -242,6 +242,23 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         feedbackPlanResDTO.setPlanTask(taskDetailResDTOS);
 
         return feedbackPlanResDTO;
+    }
+
+    @Override
+    public void editTaskStatus(Long feedbackId, Long taskId) {
+        List<FeedbackPlanBO> feedbackPlanBOS = feedbackPlanMapper.getFeedbackPlanById(feedbackId);
+        //查看是否关联，无关联则添加关联，否则删除关联
+        if(feedbackPlanTaskMapper.getTaskCount(feedbackPlanBOS.get(0).getId(),taskId)==0){
+            FeedbackPlanTask feedbackPlanTask  = new FeedbackPlanTask();
+            feedbackPlanTask.setId(snowFlakeIDHelper.nextId());
+            feedbackPlanTask.setFeedbackPlanId(feedbackPlanBOS.get(0).getId());
+            feedbackPlanTask.setTaskId(taskId);
+
+            feedbackPlanTaskMapper.insertFeedbackPlanTask(feedbackPlanTask);
+        }else{
+            feedbackPlanTaskMapper.deleteByTaskId(taskId);
+        }
+
     }
 
 }

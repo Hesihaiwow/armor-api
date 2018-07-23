@@ -29,4 +29,10 @@
       DELETE FROM feedback_plan_task
       WHERE  task_id = #{taskId}
   </delete>
+
+  <select id="getTaskCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+    SELECT count(*) FROM feedback_plan_task
+    WHERE task_id = #{taskId}
+    AND feedback_plan_id = #{feedbackPlanId}
+  </select>
 </mapper>

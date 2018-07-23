@@ -192,7 +192,7 @@
                     {label: '非常紧急', value: 3},
                 ],
                 typeList: [{value: 1, name: '个人任务'}, {value: 2, name: '多人任务'}],
-                status: [{value: 1, name: '进行中'}, {value: 3, name: '已完成'}],
+                status: [{value: 0, name: '暂停中'}, {value: 1, name: '进行中'}, {value: 3, name: '已完成'}],
                 taskItems: [],
                 page: {
                     pageNum: 0,
@@ -515,7 +515,7 @@
                     const list = resp.data.list
                     list.forEach((el) => {
                         let endTime = '',today = moment().format('YYYY-MM-DD')
-                        if (el.status == 1) {
+                        if (el.status == 1 || el.status == 0) {
                             endTime = el.endTime
                         } else {
                             endTime = el.completeTime
@@ -541,6 +541,9 @@
                                 endColor = 'blue'
                             }
                             endText += ' 截止'
+                        } else if (el.status == 0) {
+                            endText = ' 任务暂停'
+                            endColor = 'orange'
                         } else {
                             endColor = 'green'
                             endText += ' 完成'

@@ -16,6 +16,9 @@
                             <div v-if="item.name=='已发布'&&task.status==3">
                                 <span class="tips purple" >{{task.endText}}</span>
                             </div>
+                            <div v-else-if="task.status==0">
+                                <span class="tips orange">任务暂停</span>
+                            </div>
                             <div v-else="">
                                 <span class="tips" :class="task.endColor">{{task.endText}}</span>
                             </div>

@@ -3,10 +3,7 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
-import com.zhixinhuixue.armor.model.dto.response.TaskDetailResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskLogResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.source.ZSYResult;
 
 import java.util.Date;
@@ -192,6 +189,13 @@ public interface IZSYTaskService {
     void examineTask(Long taskId, Integer examine);
 
     /**
+     * 修改暂停状态
+     * @param taskId
+     * @return
+     */
+    void stopTask(Long taskId, Integer status);
+
+    /**
      * 设置发版时间
      * @param publishTime
      */
@@ -201,4 +205,6 @@ public interface IZSYTaskService {
      * 获取发版时间
      */
     Date getPublishTime();
+
+    List<TaskPlanResDTO> getPlanTask();
 }

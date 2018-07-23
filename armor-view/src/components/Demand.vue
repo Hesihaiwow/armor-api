@@ -40,7 +40,7 @@
         </div>
 
         <el-table :data="demandData" border>
-          <el-table-column prop="no" label="序号" align="center" width="80"></el-table-column>
+          <el-table-column prop="no" label="序号" align="center" width="70"></el-table-column>
           <el-table-column prop="title" label="需求名称" align="center" width="250">
             <template scope="scope">
               <a style="color:#20a0ff;cursor: pointer;" @click="feedbackEdit(scope.row)">{{scope.row.title}}</a>
@@ -62,11 +62,12 @@
               <div type="text" v-for="item in statusList" v-if="item.id == scope.row.status">{{item.name}}</div>
             </template>
           </el-table-column>
-          <el-table-column prop="taskNo" label="任务" align="center" width="80"></el-table-column>
-          <el-table-column prop="users" label="负责人" align="center" width="150"></el-table-column>
-          <el-table-column  label="操作" align="center" >
+          <el-table-column prop="taskNo" label="任务" align="center" width="70"></el-table-column>
+          <el-table-column prop="users" label="负责人" align="center"></el-table-column>
+          <el-table-column  label="操作" align="center" width="165">
             <template scope="scope">
               <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNo!=0">计划</el-button>
+              <el-button @click="linkTask(scope.row.id)" type="text" size="small" v-show="permit && scope.row.taskNo!=0">关联任务</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -188,6 +189,7 @@
             <span class="fl ctpc-member-head" >{{item.userName}}</span>
             <a class="fl ctpc-member-job-time" @click="directPlanTask(item.id)" style="color:black; cursor: pointer;">{{item.taskName|StringExtract}}</a>
             <span class="fl ctpc-member-end-time">截止:{{item.endTime|formatDate}}</span>
+            <el-button v-show="permit" style="margin-left: 20px" type="text" class="fl ctpc-member-end-time" @click="deleteTask(item.id,feedbackPlanForm.feedbackId,0)">删除关联</el-button>
             <!--<span style="position: absolute;right: 10px;">-->
                                 <!--<el-button type="text" icon="edit" @click="modifyStep(index,planTask)"></el-button>-->
                             <!--<el-button type="text" icon="close" @click="deleteTaskMember(index)"></el-button>-->
@@ -266,11 +268,33 @@
         </div>
         <div v-if="!permit ||feedbackForm.status==2 "></div>
         <div v-else="">
-          <div class="add-member-opt" v-show="!showTaskDetail" @click="addTask">
+          <div class="add-member-opt" v-show="!showTaskDetail" >
             <span class="add-member-icon" >+</span>
-            <span class="add-member-msg" style="margin-top: -40px;margin-left: 24px;">添加任务</span>
+            <span class="add-member-msg" style="margin-top: -40px;margin-left: 24px;" @click="addTask">添加任务</span>
           </div>
           <el-button type="text" icon="check" @click="savePlan" style="margin-left: 400px;" :loading="isSaving">保存计划</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog :visible.sync="linkTaskVisible" custom-class="myDialog"  title="关联任务" size="tiny"
+                 :close-on-click-modal="false" :close-on-press-escape="false">
+
+        <div class="ctpc-list clearfix">
+          <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
+          <div class="fl">
+            <el-select v-model="linkTaskId" filterable placeholder="请选择任务">
+              <el-option
+                      v-for="item in taskData"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+              </el-option>
+            </el-select>
+          </div>
+
+        </div>
+        <div slot="footer">
+          <el-button type="primary" @click="deleteTask(linkTaskId,feedbackPlanForm.feedbackId,1)">保存</el-button>
         </div>
       </el-dialog>
 
@@ -287,10 +311,12 @@
     import 'quill/dist/quill.bubble.css'
 
     import { quillEditor } from 'vue-quill-editor'
+    import ElOption from "../../node_modules/element-ui/packages/select/src/option";
 
     moment.locale('zh-cn');
     export default {
         components: {
+            ElOption,
             ElDialog,
             quillEditor,
             ElButton},
@@ -311,6 +337,10 @@
                 feedbackDetailVisible:false,
                 planVisible:false,
                 showTaskDetail:false,
+                feedbackPlanId:'',
+                linkTaskVisible:false,
+                linkTaskId:'',
+                taskData:[],
                 feedbackForm: {
                     id:'',
                     title: '',
@@ -472,8 +502,8 @@
                 return moment(value).format('YYYY年MM月DD日');
             },
             StringExtract:function (name) {
-                if(name.length>20){
-                  return name.substring(0,20)+'...';
+                if(name.length>18){
+                  return name.substring(0,18)+'...';
                 }
                 return name;
             },
@@ -506,6 +536,14 @@
                         this.planTask = resp.data.planTask
                     }
                 })
+            },
+            //关联任务
+            linkTask(id){
+              this.linkTaskVisible = true
+                http.zsyGetHttp('/task/plan', {}, (resp) => {
+                    this.taskData = resp.data
+                })
+                this.feedbackPlanForm.feedbackId=id
             },
             addTask(){
                 this.showTaskDetail = true
@@ -860,6 +898,22 @@
                     type: 'warning'
                 });
             },
+            deleteTask(taskId,feedbackId,link){
+                //任务关联
+                http.zsyPutHttp('/feedback/task/'+feedbackId+'/'+taskId, null,(resp) => {
+                    if(link==0){
+                        this.$message({ showClose: true,message: '删除关联任务成功',type: 'success'});
+                    }else{
+                        this.$message({ showClose: true,message: '任务关联成功',type: 'success'});
+                    }
+
+                    this.fetchFeedbackList();
+                    this.linkTaskVisible = false;
+                    this.planVisible = false
+                    this.isSaving = false
+                    this.linkTaskId = ''
+                })
+            },
         }
     }
 </script>
@@ -995,7 +1049,7 @@
   }
 
   .ctpc-member-job-time {
-    width: 300px;
+    width: 280px;
   }
 
   .ctpc-member-end-time {
