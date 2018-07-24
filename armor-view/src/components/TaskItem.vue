@@ -185,8 +185,8 @@
                         <el-tooltip  placement="top">
                             <div slot="content">
                                 <span>进行中任务:</span>
-                                <div v-for="userTask in item.userTask">
-                                    <div class="fl" style="margin-left: 20px;">任务名称:{{userTask.taskName}}</div>
+                                <div v-for="(userTask,userIndex) in item.userTask">
+                                    <div class="fl" style="margin-left: 20px;">{{userIndex+1}}:任务名称:{{userTask.taskName}}</div>
                                     <div class="fl" style="margin-left: 20px;">工作量:{{userTask.taskHours}}</div>
                                     <div>&nbsp;&nbsp;开始时间:{{userTask.beginTime | formatDate}}</div>
                                     <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 任务描述:{{userTask.description}}</div>
