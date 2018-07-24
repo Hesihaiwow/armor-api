@@ -257,6 +257,16 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             feedbackPlanTaskMapper.insertFeedbackPlanTask(feedbackPlanTask);
         }else{
             feedbackPlanTaskMapper.deleteByTaskId(taskId);
+            if(feedbackPlanBOS.size()==0){
+                Feedback feedback = feedbackMapper.selectById(feedbackId);
+                feedback.setUpdateTime(new Date());
+                feedback.setId(feedbackId);
+                feedback.setStatus(ZSYFeedbackStatus.WAIT.getValue());
+
+                if (feedbackMapper.updateByFeedbackId(feedback) == 0) {
+                    throw new ZSYServiceException("需求更新失败");
+                }
+            }
         }
 
     }

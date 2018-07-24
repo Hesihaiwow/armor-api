@@ -189,7 +189,7 @@
             <span class="fl ctpc-member-head" >{{item.userName}}</span>
             <a class="fl ctpc-member-job-time" @click="directPlanTask(item.id)" style="color:black; cursor: pointer;">{{item.taskName|StringExtract}}</a>
             <span class="fl ctpc-member-end-time">截止:{{item.endTime|formatDate}}</span>
-            <el-button v-show="permit" style="margin-left: 20px" type="text" class="fl ctpc-member-end-time" @click="deleteTask(item.id,feedbackPlanForm.feedbackId,0)">删除关联</el-button>
+            <el-button v-show="permit&&item.id" style="margin-left: 20px" type="text" class="fl ctpc-member-end-time" @click="deleteTask(item.id,feedbackPlanForm.feedbackId,0)">删除关联</el-button>
             <!--<span style="position: absolute;right: 10px;">-->
                                 <!--<el-button type="text" icon="edit" @click="modifyStep(index,planTask)"></el-button>-->
                             <!--<el-button type="text" icon="close" @click="deleteTaskMember(index)"></el-button>-->
@@ -781,14 +781,17 @@
                 this.isSaving = true
                 if(this.planTask.length<1){
                     this.warnMsg("请添加计划任务");
+                    this.isSaving = false
                     return;
                 }
                 if (this.feedbackPlanForm.expectStartTime == '') {
                     this.warnMsg("请选择预计开始时间");
+                    this.isSaving = false
                     return;
                 }
                 if (this.feedbackPlanForm.expectOfficialTime == '') {
                     this.warnMsg("请填写预计上线时间");
+                    this.isSaving = false
                     return;
                 }
                 let param = this.feedbackPlanForm;
@@ -887,7 +890,7 @@
                 return isImage && isLt2M;
             },
             directPlanTask(taskId){
-                if(taskId!=null||taskId!=''){
+                if(taskId!=null&&taskId!=''){
                     this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
                 }
             },

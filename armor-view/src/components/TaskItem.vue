@@ -172,7 +172,7 @@
                                                                    v-if="item.value == taskDetail.facility">{{item.label}}</span>
                 </el-form-item>
                 <el-form-item class="task-form" label="设计完成时间：" style="margin-left: 200px;">{{taskDetail.beginTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" label="提测时间：" style="margin-bottom: -36px;">{{taskDetail.testTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="开发完成时间：" style="margin-bottom: -36px;">{{taskDetail.testTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="截止时间：" style="margin-left: 200px;">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
