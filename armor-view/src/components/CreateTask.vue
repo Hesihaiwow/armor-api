@@ -36,14 +36,14 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
-                        <div class="ctpc-list-menu fl"><span class="star">*</span>开发日期</div>
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>设计完成日期</div>
                         <div class="ctpc-list-con fl">
                             <el-date-picker v-model="taskForm.beginTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
-                        <div class="ctpc-list-menu fl"><span class="star">*</span>提测日期</div>
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>开发完成日期</div>
                         <div class="ctpc-list-con fl">
                             <el-date-picker v-model="taskForm.testTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>

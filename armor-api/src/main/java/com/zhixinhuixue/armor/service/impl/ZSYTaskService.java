@@ -622,9 +622,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         }
                     });
 
-                    if(!taskResDTO.getId().equals(taskId)){
-                        taskList.add(taskResDTO);
-                    }
+                    taskList.add(taskResDTO);
                 });
             }
             taskUserResDTO.setUserTask(taskList);

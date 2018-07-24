@@ -201,7 +201,7 @@
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
                            @click="commentDetail(item.id)">查看评价</a>
                         <el-tooltip placement="top">
-                            <div slot="content">{{item.description}}<br/>开始时间:{{item.createTime | formatDate}}</div>
+                            <div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
                         </el-tooltip>
                     </div>
@@ -367,7 +367,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="">
-                    <span slot="label"><span class="star">*</span>开发日期</span>
+                    <span slot="label"><span class="star">*</span>设计完成日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.beginTime"
                             type="date"
@@ -376,7 +376,7 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="">
-                    <span slot="label"><span class="star">*</span>提测日期</span>
+                    <span slot="label"><span class="star">*</span>开发完成日期</span>
                     <el-date-picker
                             v-model="modifyTaskForm.testTime"
                             type="date"
