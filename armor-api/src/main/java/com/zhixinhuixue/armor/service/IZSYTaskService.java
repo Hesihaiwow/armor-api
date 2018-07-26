@@ -193,7 +193,7 @@ public interface IZSYTaskService {
      * @param taskId
      * @return
      */
-    void stopTask(Long taskId, Integer status);
+    void stopTask(Long taskId, Integer status,String desc);
 
     /**
      * 设置发版时间

@@ -1313,13 +1313,17 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     @Transactional
-    public void stopTask(Long taskId,Integer status){
+    public void stopTask(Long taskId,Integer status,String desc){
         checkUser();
         Task task = new Task();
         task.setId(taskId);
         task.setStatus(status);
         if(taskMapper.updateByPrimaryKeySelective(task)==0){
             throw new ZSYServiceException("任务不存在，请检查");
+        }
+        // 插入日志
+        if(status ==ZSYTaskStatus.STOP.getValue()){
+            taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "暂停了任务", desc, taskId));
         }
     }
 

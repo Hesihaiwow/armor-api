@@ -194,8 +194,9 @@ public class ZSYTaskController extends ZSYController {
 
     @ApiOperation("更改暂停状态")
     @PutMapping("/stop/{stop}/{taskId}")
-    public String stopTask(@PathVariable("taskId") Long taskId, @PathVariable("stop") Integer status) {
-        taskService.stopTask(taskId,status);
+    public String stopTask(@PathVariable("taskId") Long taskId, @PathVariable("stop") Integer status,
+                            @RequestParam String desc) {
+        taskService.stopTask(taskId,status,desc);
         return ZSYResult.success().build();
     }
 
