@@ -231,7 +231,7 @@
                     <el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>
                 </el-tooltip>
                 <el-tooltip content="暂停任务" placement="top" >
-                    <el-button type="danger"  @click="stopTask(taskDetail.id,0)" v-show="userRole===0&&taskDetail.status!=0" style="text-align: left">暂停任务</el-button>
+                    <el-button type="danger"  @click="modifyStopVisible=true" v-show="userRole===0&&taskDetail.status!=0" style="text-align: left">暂停任务</el-button>
                 </el-tooltip>
                 <el-tooltip content="评审任务" placement="top" >
                     <el-button type="primary"  @click="examineTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.examine===0" style="text-align: left">已评审</el-button>
@@ -265,6 +265,21 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="modifyTask(taskDetail.id)">确 定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="填写修改原因" top="10%"
+                   :visible.sync="modifyStopVisible"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   custom-class="myDialog"
+                   size="tiny">
+            <el-form >
+                <el-form-item label="原因">
+                    <el-input type="textarea" placeholder="请填写暂停原因" :maxlength="500" v-model="modifyTaskForm.modifyDescription" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="stopTask(taskDetail.id,0)">确 定</el-button>
             </div>
         </el-dialog>
         <el-dialog
@@ -643,6 +658,7 @@
                 loginUserId: '',
                 isSaving:false,
                 modifyDescriptionVisible:false,
+                modifyStopVisible:false,
                 showFinishedTask: false,
                 showAuditTask: false,
                 showTaskDetail: false,
@@ -1539,7 +1555,7 @@
                     type: 'warning'
                 }).then(() => {
                     let vm = this;
-                    http.zsyPutHttp('/task/stop/'+status+'/'+id, {}, (resp) => {
+                    http.zsyPutHttp('/task/stop/'+status+'/'+id+"?desc="+ vm.modifyTaskForm.modifyDescription,{}, (resp) => {
                         if(status!='0'){
                             this.$message({ showClose: true,message: '启用成功',type: 'success'});
                         }else{
@@ -1549,6 +1565,7 @@
                         // 刷新看板
                         this.$root.eventBus.$emit('reloadBoard');
                         this.showTaskDetail = false;
+                        this.modifyStopVisible =false
                     })
                 }).catch(() => {
                 });
