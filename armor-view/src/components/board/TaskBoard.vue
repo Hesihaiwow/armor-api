@@ -17,7 +17,7 @@
                                 <span class="tips purple" >{{task.endText}}</span>
                             </div>
                             <div v-else-if="task.status==0">
-                                <span class="tips orange">任务暂停</span>
+                                <span class="tips grey">任务暂停</span>
                             </div>
                             <div v-else="">
                                 <span class="tips" :class="task.endColor">{{task.endText}}</span>
@@ -468,6 +468,9 @@
                             }
                             .tips.blue {
                                 background: #36A8FF;
+                            }
+                            .tips.grey {
+                                background: #7A7A7A;
                             }
                             .tips.green {
                                 background: #339933;
