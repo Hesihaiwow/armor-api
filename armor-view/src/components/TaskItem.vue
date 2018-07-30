@@ -244,7 +244,7 @@
                 </el-tooltip>
                  <el-tooltip content="编辑该任务" placement="top">
                  <el-button type="primary" icon="edit" @click="showModifyDescription"
-                            v-show="(taskDetail.createBy==loginUserId  || userRole===0 )&& taskDetail.type==2"></el-button>
+                            v-show="((taskDetail.createBy==loginUserId&&userRole===1)  || userRole===0 )&& taskDetail.type==2"></el-button>
                </el-tooltip>
                 <el-button type="primary" icon="check" @click="completeTask(taskDetail.examine)"
                            v-show="taskDetail.status!=3 && userRole==0 && taskDetail.type==2">完成</el-button>

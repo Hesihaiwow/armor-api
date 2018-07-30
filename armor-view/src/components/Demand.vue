@@ -550,9 +550,12 @@
             },
             fetchUserList() {
                 let vm = this
-                http.zsyGetHttp('/user/manager', {}, (resp) => {
+                http.zsyGetHttp('/user/effective', {}, (resp) => {
                     vm.adminList = resp.data
                 })
+//                http.zsyGetHttp('/user/manager', {}, (resp) => {
+//                    vm.adminList = resp.data
+//                })
             },
             fetchProjectList() {
                 http.zsyGetHttp('/project/list', {}, (resp) => {
