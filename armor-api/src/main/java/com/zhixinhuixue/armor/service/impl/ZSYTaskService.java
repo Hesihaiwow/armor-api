@@ -616,7 +616,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     taskBO.getTaskUsers().stream().forEach(taskUser -> {
                         if(taskUser.getUserId().equals(taskUserBO.getUserId())){
                             taskResDTO.setBeginTime(taskUser.getBeginTime());
-                            taskResDTO.setDescription(taskUser.getDescription());
+                            taskResDTO.setEndTime(taskUser.getEndTime());
                             taskResDTO.setTaskHours(taskUser.getTaskHours());
                             taskResDTO.setId(taskUser.getTaskId());
                         }
@@ -1082,7 +1082,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public ZSYResult<List<TaskDetailBO>> getCommented(Long userId,Integer page) {
-        PageHelper.startPage(page, 2);
+        PageHelper.startPage(page, ZSYConstants.PAGE_SIZE_WAIT);
         Page<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
         Page<TaskDetailBO> commentEndList = new Page<>();
         BeanUtils.copyProperties(taskBOS,commentEndList);
@@ -1166,11 +1166,16 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskListResDTO> getTaskByStageId(Long stageId) {
-        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+        Stage stage = stageMapper.selectById(stageId);
+        List<TaskListBO> taskListBOS = new ArrayList<>();
+        if(stage.getName().equals("已发布")){
+            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+        }else{
+            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+        }
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
-            Stage stage = stageMapper.selectById(taskListBO.getStageId());
             if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stage.getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
                 TaskListResDTO taskListResDTO = new TaskListResDTO();
                 BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
@@ -1203,7 +1208,14 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskListResDTO> getTaskByStageTime(Long stageId) {
-        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageTime(stageId,ZSYTokenRequestContext.get().getDepartmentId(),publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId()));
+        Stage stage = stageMapper.selectById(stageId);
+        List<TaskListBO> taskListBOS = new ArrayList<>();
+        if(stage.getName().equals("已发布")){
+            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+        }else{
+            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+        }
+//        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageTime(stageId,ZSYTokenRequestContext.get().getDepartmentId(),publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId()));
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {

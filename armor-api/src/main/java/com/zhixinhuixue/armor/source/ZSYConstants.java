@@ -55,6 +55,7 @@ public class ZSYConstants {
      * 默认10条一页
      */
     public static final int PAGE_SIZE = 10;
+    public static final int PAGE_SIZE_WAIT = 5;
 
     /**
      * 默认20条一页

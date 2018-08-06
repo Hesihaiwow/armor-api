@@ -189,7 +189,8 @@
                                     <div class="fl" style="margin-left: 20px;">{{userIndex+1}}:任务名称:{{userTask.taskName}}</div>
                                     <div class="fl" style="margin-left: 20px;">工作量:{{userTask.taskHours}}</div>
                                     <div>&nbsp;&nbsp;开始时间:{{userTask.beginTime | formatDate}}</div>
-                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 任务描述:{{userTask.description}}</div>
+                                    <div>&nbsp;&nbsp;结束时间:{{userTask.endTime | formatDate}}</div>
+                                    <!--<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 任务描述:{{userTask.description}}</div>-->
                                 </div>
                                 <div v-if="item.userTask&&item.userTask.length==0">无</div>
                             </div>

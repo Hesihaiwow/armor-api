@@ -16,6 +16,8 @@ public class UserTaskResDTO {
 
     private Date beginTime;
 
+    private Date endTime;
+
     private String description;
 
     public Long getId() {
@@ -58,4 +60,11 @@ public class UserTaskResDTO {
         this.description = description;
     }
 
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
 }

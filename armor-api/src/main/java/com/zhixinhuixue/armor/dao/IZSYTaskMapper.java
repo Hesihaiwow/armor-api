@@ -139,11 +139,29 @@ public interface IZSYTaskMapper {
     /**
      * 查询阶段任务
      * @param stageId
+     * @return
+     */
+    List<TaskListBO> selectTaskByEndStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId);
+
+
+    /**
+     * 查询阶段任务
+     * @param stageId
      * @param departmentId
      * @param time
      * @return
      */
     List<TaskListBO> selectTaskByStageTime(@Param("stageId") Long stageId, @Param("departmentId") Long departmentId, @Param("time")Date time);
+
+    /**
+     * 查询阶段任务
+     * @param stageId
+     * @param departmentId
+     * @param time
+     * @return
+     */
+    List<TaskListBO> selectTaskByEndStageTime(@Param("stageId") Long stageId, @Param("departmentId") Long departmentId, @Param("time")Date time);
+
 
     /**
      * 查询阶段内任务最后一个index
