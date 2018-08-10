@@ -61,6 +61,7 @@ else '已完成' END) separator '\n\r')  as taskName,  w.user_id, w.task_id, w.i
        LEFT JOIN  user_week w on u.id= w.user_id and w.week_number = #{weekNumber} and w.year=#{year}
         LEFT  JOIN  task t on t.id = w.task_id and t.review_status=3 AND t.is_delete=0
         LEFT  JOIN  department d on u.department_id = d.id
+        LEFT  JOIN  task_user tu on t.id = tu.task_id and u.id=tu.user_id
         WHERE u.user_role>0  AND u.status =0 AND u.is_delete = 0 AND d.parent_id = #{departmentId}
     GROUP BY u.id
   </select>
