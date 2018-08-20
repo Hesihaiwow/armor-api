@@ -25,6 +25,8 @@ public interface IZSYFeedbackPlanMapper {
 
     FeedbackPlan selectById(Long id);
 
+    FeedbackPlan selectByFeedbackId(Long id);
+
     int updatePlan(FeedbackPlan feedbackPlan);
 
     int deleteFeedbackPlan(Long feedbackId);

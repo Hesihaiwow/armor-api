@@ -29,6 +29,7 @@ import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -168,11 +169,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * @param feedbackPlanReqDTO
      */
     @Override
+    @Transactional
     public void addFeedbackPlan(FeedbackPlanReqDTO feedbackPlanReqDTO) {
-        if(feedbackPlanReqDTO.getPlanTask().size()<1){
-            throw new ZSYServiceException("请添加计划任务");
-        }
-
         if(feedbackPlanReqDTO.getId()==null){
             FeedbackPlan feedbackPlan = new FeedbackPlan();
             BeanUtils.copyProperties(feedbackPlanReqDTO,feedbackPlan);
@@ -192,24 +190,25 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         }
 
         //需求任务关联
-        feedbackPlanReqDTO.getPlanTask().stream().forEach(taskReqDTO -> {
-            if(taskReqDTO.getProjectId()==0){
-                taskReqDTO.setProjectId(feedbackPlanReqDTO.getProjectId());
-                Long taskId = Long.parseLong(taskService.addTask(taskReqDTO,taskReqDTO.getCreateBy()).getData().toString());
+        if(feedbackPlanReqDTO.getPlanTask().size()>0){
+            feedbackPlanReqDTO.getPlanTask().stream().forEach(taskReqDTO -> {
+                if(taskReqDTO.getProjectId()==0){
+                    taskReqDTO.setProjectId(feedbackPlanReqDTO.getProjectId());
+                    Long taskId = Long.parseLong(taskService.addTask(taskReqDTO,taskReqDTO.getCreateBy()).getData().toString());
 
-                FeedbackPlanTask feedbackPlanTask  = new FeedbackPlanTask();
-                feedbackPlanTask.setId(snowFlakeIDHelper.nextId());
-                feedbackPlanTask.setFeedbackPlanId(feedbackPlanReqDTO.getId());
-                feedbackPlanTask.setTaskId(taskId);
+                    FeedbackPlanTask feedbackPlanTask  = new FeedbackPlanTask();
+                    feedbackPlanTask.setId(snowFlakeIDHelper.nextId());
+                    feedbackPlanTask.setFeedbackPlanId(feedbackPlanReqDTO.getId());
+                    feedbackPlanTask.setTaskId(taskId);
 
-                feedbackPlanTaskMapper.insertFeedbackPlanTask(feedbackPlanTask);
-            }
-        });
+                    feedbackPlanTaskMapper.insertFeedbackPlanTask(feedbackPlanTask);
+                }
+            });
+        }
 
-        Feedback feedback = new Feedback();
+        Feedback feedback = feedbackMapper.selectById(feedbackPlanReqDTO.getFeedbackId());
         feedback.setId(feedbackPlanReqDTO.getFeedbackId());
         feedback.setUpdateTime(new Date());
-        feedback.setPriority(feedbackPlanReqDTO.getPlanTask().get(0).getPriority());
         feedback.setStatus(ZSYTaskStatus.DOING.getValue());
         if (feedbackMapper.updateByFeedbackId(feedback)== 0) {
             throw new ZSYServiceException("需求修改失败");
@@ -221,25 +220,31 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * 计划信息
      */
     @Override
-    public FeedbackPlanResDTO getFeedbackPlan(Long feedbackPlanId){
-        List<FeedbackPlanBO> feedbackPlanBOS = feedbackPlanMapper.getFeedbackPlanById(feedbackPlanId);
+    public FeedbackPlanResDTO getFeedbackPlan(Long feedbackId){
+        List<FeedbackPlanBO> feedbackPlanBOS = feedbackPlanMapper.getFeedbackPlanById(feedbackId);
         FeedbackPlanResDTO feedbackPlanResDTO =  new FeedbackPlanResDTO();
 
-        List<FeedbackTaskDetailResDTO> taskDetailResDTOS = Lists.newArrayList();
-        feedbackPlanBOS.stream().forEach(feedbackPlanBO -> {
-            BeanUtils.copyProperties(feedbackPlanBO, feedbackPlanResDTO);
-            FeedbackTaskDetailResDTO feedbackTaskDetailResDTO = new FeedbackTaskDetailResDTO();
-            BeanUtils.copyProperties(feedbackPlanBO.getPlanTask(), feedbackTaskDetailResDTO);
+        if(feedbackPlanBOS.size()>0){
+            List<FeedbackTaskDetailResDTO> taskDetailResDTOS = Lists.newArrayList();
+            feedbackPlanBOS.stream().forEach(feedbackPlanBO -> {
+                BeanUtils.copyProperties(feedbackPlanBO, feedbackPlanResDTO);
+                FeedbackTaskDetailResDTO feedbackTaskDetailResDTO = new FeedbackTaskDetailResDTO();
+                BeanUtils.copyProperties(feedbackPlanBO.getPlanTask(), feedbackTaskDetailResDTO);
 
-            feedbackTaskDetailResDTO.setTaskName(feedbackPlanBO.getPlanTask().getName());
-            feedbackTaskDetailResDTO.setProjectId(feedbackPlanBO.getId());//将已存在的任务ID存储为项目ID
-            User user = userMapper.selectById(feedbackPlanBO.getPlanTask().getCreateBy());//在上一条查询中未查出
-            feedbackTaskDetailResDTO.setUserName(user.getName());
-            feedbackTaskDetailResDTO.setTaskType(ZSYTaskType.PUBLIC_TASK.getValue());
-
-            taskDetailResDTOS.add(feedbackTaskDetailResDTO);
-        });
-        feedbackPlanResDTO.setPlanTask(taskDetailResDTOS);
+                feedbackTaskDetailResDTO.setTaskName(feedbackPlanBO.getPlanTask().getName());
+                feedbackTaskDetailResDTO.setProjectId(feedbackPlanBO.getId());//将已存在的任务ID存储为项目ID
+                User user = userMapper.selectById(feedbackPlanBO.getPlanTask().getCreateBy());//在上一条查询中未查出
+                feedbackTaskDetailResDTO.setUserName(user.getName());
+                feedbackTaskDetailResDTO.setTaskType(ZSYTaskType.PUBLIC_TASK.getValue());
+                taskDetailResDTOS.add(feedbackTaskDetailResDTO);
+            });
+            feedbackPlanResDTO.setPlanTask(taskDetailResDTOS);
+        }else{
+            FeedbackPlan feedbackPlan = feedbackPlanMapper.selectByFeedbackId(feedbackId);
+            if(feedbackPlan!=null){
+                BeanUtils.copyProperties(feedbackPlan,feedbackPlanResDTO);
+            }
+        }
 
         return feedbackPlanResDTO;
     }
@@ -248,10 +253,10 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     public void editTaskStatus(Long feedbackId, Long taskId) {
         List<FeedbackPlanBO> feedbackPlanBOS = feedbackPlanMapper.getFeedbackPlanById(feedbackId);
         //查看是否关联，无关联则添加关联，否则删除关联
-        if(feedbackPlanTaskMapper.getTaskCount(feedbackPlanBOS.get(0).getId(),taskId)==0){
+        if(feedbackPlanBOS.size()==0 ||feedbackPlanTaskMapper.getTaskCount(feedbackPlanBOS.get(0).getId(),taskId)==0){
             FeedbackPlanTask feedbackPlanTask  = new FeedbackPlanTask();
             feedbackPlanTask.setId(snowFlakeIDHelper.nextId());
-            feedbackPlanTask.setFeedbackPlanId(feedbackPlanBOS.get(0).getId());
+            feedbackPlanTask.setFeedbackPlanId(feedbackPlanMapper.selectByFeedbackId(feedbackId).getId());
             feedbackPlanTask.setTaskId(taskId);
 
             feedbackPlanTaskMapper.insertFeedbackPlanTask(feedbackPlanTask);

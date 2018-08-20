@@ -67,7 +67,7 @@
           <el-table-column  label="操作" align="center" width="165">
             <template scope="scope">
               <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNo!=0">计划</el-button>
-              <el-button @click="linkTask(scope.row.id)" type="text" size="small" v-show="permit && scope.row.taskNo!=0">关联任务</el-button>
+              <el-button @click="linkTask(scope.row.id)" type="text" size="small" v-show="permit && scope.row.planId!=null">关联任务</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -529,12 +529,15 @@
                 this.feedbackForm.priority =feedback.priority
                 this.feedbackForm.status = feedback.status
                 http.zsyGetHttp('/feedback/getPlan/'+feedback.id, {}, (resp) => {
-                    if(resp.data.planTask.length!=0){
+                    if(resp.data.planTask&&resp.data.planTask.length!=0){
                         this.feedbackPlanForm.id = resp.data.id
                         this.feedbackPlanForm.expectOfficialTime =resp.data.expectOfficialTime
                         this.feedbackPlanForm.expectStartTime =resp.data.expectStartTime
                         this.planTask = resp.data.planTask
                     }
+                        this.feedbackPlanForm.id = resp.data.id
+                        this.feedbackPlanForm.expectOfficialTime =resp.data.expectOfficialTime
+                        this.feedbackPlanForm.expectStartTime =resp.data.expectStartTime
                 })
             },
             //关联任务
@@ -782,11 +785,6 @@
             },
             savePlan(){
                 this.isSaving = true
-                if(this.planTask.length<1){
-                    this.warnMsg("请添加计划任务");
-                    this.isSaving = false
-                    return;
-                }
                 if (this.feedbackPlanForm.expectStartTime == '') {
                     this.warnMsg("请选择预计开始时间");
                     this.isSaving = false

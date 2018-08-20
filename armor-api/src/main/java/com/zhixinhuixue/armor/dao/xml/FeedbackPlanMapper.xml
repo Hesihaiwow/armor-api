@@ -53,6 +53,12 @@
       id = #{id}
   </select>
 
+  <select id="selectByFeedbackId" resultMap="BaseResultMap">
+    SELECT * FROM feedback_plan WHERE
+    feedback_id = #{id}
+    ORDER BY create_time DESC limit 1
+  </select>
+
   <select id="getFeedbackPlanBySort" resultMap="PlanMap" parameterType="com.zhixinhuixue.armor.model.dto.request.FeedbackPlanListReqDTO">
     SELECT  p.*,  f.origin, f.title
     FROM  feedback_plan p

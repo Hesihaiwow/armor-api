@@ -12,6 +12,8 @@ public class FeedbackBo extends Feedback{
 
     private String users;
 
+    private Long planId;
+
     private Long feedbackPlanId;
 
     public Integer getNo() {
@@ -36,5 +38,13 @@ public class FeedbackBo extends Feedback{
 
     public void setFeedbackPlanId(Long feedbackPlanId) {
         this.feedbackPlanId = feedbackPlanId;
+    }
+
+    public Long getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(Long planId) {
+        this.planId = planId;
     }
 }

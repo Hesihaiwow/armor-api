@@ -21,6 +21,7 @@
 
   <resultMap id="ResultMap" type="com.zhixinhuixue.armor.model.bo.FeedbackBo" extends="BaseResultMap">
     <result column="no" jdbcType="INTEGER" property="no"/>
+    <result column="planId" jdbcType="BIGINT" property="planId"/>
     <result column="users" jdbcType="VARCHAR" property="users"/>
     <result column="feedbackPlanId" jdbcType="VARCHAR" property="users"/>
   </resultMap>
