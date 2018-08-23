@@ -143,7 +143,8 @@ public class ZSYTaskService implements IZSYTaskService {
             }
         }
         if(origin.equals(ZSYConstants.taskOrigin)){//任务来源于计划中时，origin为任务创建人
-            task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+//            task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            task.setCreateBy(taskReqDTO.getCreateBy());
         }else{
             task.setCreateBy(origin);
         }
@@ -279,6 +280,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setPriority(taskReqDTO.getPriority());
         task.setFacility(taskReqDTO.getFacility());
         task.setUpdateTime(new Date());
+        task.setCreateBy(taskReqDTO.getCreateBy());
         // 修改任务
         taskMapper.updateByPrimaryKeySelective(task);
         // 插入任务用户
