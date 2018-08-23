@@ -36,6 +36,19 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
+                        <div class="ctpc-list-menu fl"><span class="star">*</span>负责人</div>
+                        <div class="ctpc-list-con fl">
+                            <el-select v-model="taskForm.createBy" clearable placeholder="请选择负责人">
+                                <el-option
+                                        v-for="item in userList"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="ctpc-list clearfix">
                         <div class="ctpc-list-menu fl"><span class="star">*</span>设计完成日期</div>
                         <div class="ctpc-list-con fl">
                             <el-date-picker v-model="taskForm.beginTime" type="date" format="yyyy-MM-dd"
@@ -220,6 +233,7 @@
                     stageId: '',
                     priority: '',
                     tags: [],
+                    createBy:'',
                     facility:''
                 },
                 taskUsers: [],
@@ -524,6 +538,10 @@
                     this.warnMsg("请选择项目");
                     return;
                 }
+                if (this.taskForm.createBy == '') {
+                    this.warnMsg("请选择负责人");
+                    return;
+                }
                 if (this.taskForm.beginTime == '') {
                     this.warnMsg("请选择开发时间");
                     return;
@@ -585,6 +603,7 @@
                     vm.taskForm.beginTime = '';
                     vm.taskForm.testTime = '';
                     vm.taskForm.projectId = '';
+                    vm.taskForm.createBy = '';
                     vm.taskForm.stageId = '';
                     vm.taskForm.priority = '';
                     vm.taskForm.facility = '';

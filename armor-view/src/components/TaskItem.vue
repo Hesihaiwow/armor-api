@@ -361,6 +361,17 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="">
+                    <span slot="label"><span class="star">*</span>负责人</span>
+                    <el-select v-model="modifyTaskForm.createBy" placeholder="请选择">
+                        <el-option
+                                v-for="item in userList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>优先级</span>
                     <el-select v-model="modifyTaskForm.priority" placeholder="请选择">
                         <el-option
@@ -726,7 +737,8 @@
                     taskType: 2,
                     stageId: '',
                     taskUsers: [],
-                    modifyDescription:''
+                    modifyDescription:'',
+                    createBy:''
                 },
                 priorityList: [
                     {label: '普通', value: 1},
@@ -1215,6 +1227,7 @@
                     this.modifyTaskForm.stageId = resp.data.stageId;
                     this.modifyTaskForm.priority = resp.data.priority;
                     this.modifyTaskForm.facility = resp.data.facility;
+                    this.modifyTaskForm.createBy = resp.data.createBy;
                     for (let i = 0; i < resp.data.tags.length; i++) {
                         this.modifyTaskForm.tags.push(resp.data.tags[i].id)
                     }
@@ -1258,6 +1271,7 @@
                 this.modifyTaskForm.testTime = '';
                 this.modifyTaskForm.projectId = '';
                 this.modifyTaskForm.stageId = '';
+                this.modifyTaskForm.createBy = '';
                 this.modifyTaskForm.priority = 1;
                 this.modifyTaskForm.tags = [];
                 this.modifyTaskForm.taskUsers = [];
@@ -1425,6 +1439,10 @@
                 }
                 if (this.modifyTaskForm.projectId == '') {
                     this.warnMsg("请选择项目");
+                    return;
+                }
+                if (this.modifyTaskForm.createBy == '') {
+                    this.warnMsg("请选择负责人");
                     return;
                 }
                 if (this.modifyTaskForm.beginTime==null || this.modifyTaskForm.beginTime == '') {
