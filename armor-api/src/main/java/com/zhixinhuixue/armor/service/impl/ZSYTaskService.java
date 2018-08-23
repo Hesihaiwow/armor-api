@@ -143,8 +143,12 @@ public class ZSYTaskService implements IZSYTaskService {
             }
         }
         if(origin.equals(ZSYConstants.taskOrigin)){//任务来源于计划中时，origin为任务创建人
-//            task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-            task.setCreateBy(taskReqDTO.getCreateBy());
+            if(taskReqDTO.getCreateBy()!=null){
+                task.setCreateBy(taskReqDTO.getCreateBy());
+            }else {
+                task.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            }
+
         }else{
             task.setCreateBy(origin);
         }
