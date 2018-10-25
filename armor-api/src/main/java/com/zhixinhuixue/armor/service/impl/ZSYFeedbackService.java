@@ -11,18 +11,10 @@ import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.bo.FeedbackPlanBO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.FeedbackListResDTO;
-import com.zhixinhuixue.armor.model.bo.FeedbackBo;
-import com.zhixinhuixue.armor.model.dto.response.FeedbackPlanResDTO;
-import com.zhixinhuixue.armor.model.dto.response.FeedbackTaskDetailResDTO;
-import com.zhixinhuixue.armor.model.pojo.Feedback;
-import com.zhixinhuixue.armor.model.pojo.FeedbackPlan;
-import com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask;
-import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.dto.request.*;
+import com.zhixinhuixue.armor.model.dto.response.*;
+import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYFeedbackService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.*;
@@ -30,10 +22,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Lang on 2017/8/7 0007.
@@ -96,6 +90,506 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         return new PageInfo<>(feedbackListResDTOS);
     }
 
+    /**
+     * 获取新需求列表
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<DemandResDTO> getDemandList(DemandQueryReqDTO reqDTO) {
+        PageHelper.startPage(reqDTO.getPageNum(),ZSYConstants.PAGE_SIZE);
+        String origin = reqDTO.getOrigin();
+        Integer priority = reqDTO.getPriority();
+        Integer readStatus = reqDTO.getReadStatus();
+        Integer type = reqDTO.getType();
+        String user1 = reqDTO.getUser();
+        Long user = null;
+        if (user1 != null){
+            user = Long.valueOf(user1);
+        }
+        Page<DemandBO> demandBOS = feedbackMapper.getDemandList(origin,priority,readStatus,type,user);
+        Page<DemandResDTO> list = new Page<>();
+        if (!CollectionUtils.isEmpty(demandBOS)){
+            BeanUtils.copyProperties(demandBOS,list);
+            demandBOS.stream().forEach(demandBO -> {
+                DemandResDTO demandResDTO = new DemandResDTO();
+                BeanUtils.copyProperties(demandBO,demandResDTO);
+                list.add(demandResDTO);
+            });
+        }
+        return new PageInfo<>(list);
+    }
+
+    /**
+     * 获取驳回需求列表
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<DemandRejectedResDTO> getDemandRejectedList(DemandQueryReqDTO reqDTO) {
+        PageHelper.startPage(reqDTO.getPageNum(),ZSYConstants.PAGE_SIZE);
+        String origin = reqDTO.getOrigin();
+        Integer priority = reqDTO.getPriority();
+        Integer readStatus = reqDTO.getReadStatus();
+        Integer type = reqDTO.getType();
+        String user1 = reqDTO.getUser();
+        Long user = null;
+        if (user1 != null){
+            user = Long.valueOf(reqDTO.getUser());
+        }
+        List<DemandRejectedBO> demandRejectedBOS = feedbackMapper.getDemandRejectedList(origin,priority,readStatus,type,user);
+        List<DemandRejectedResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(demandRejectedBOS)){
+
+            BeanUtils.copyProperties(demandRejectedBOS,list);
+            demandRejectedBOS.stream().forEach(demandRejectedBO -> {
+                DemandRejectedResDTO resDTO = new DemandRejectedResDTO();
+                BeanUtils.copyProperties(demandRejectedBO,resDTO);
+                String name = feedbackMapper.getRejectUser(demandRejectedBO.getRejectUser());
+                resDTO.setRejectUser(name);
+                list.add(resDTO);
+            });
+        }
+        return new PageInfo<>(list);
+    }
+
+    /**
+     * 获取排队需求列表
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<DemandQueuedResDTO> getDemandQueuedList(DemandQueryReqDTO reqDTO) {
+        PageHelper.startPage(reqDTO.getPageNum(),ZSYConstants.PAGE_SIZE);
+        String origin = reqDTO.getOrigin();
+        Integer priority = reqDTO.getPriority();
+        Integer readStatus = reqDTO.getReadStatus();
+        Integer type = reqDTO.getType();
+        String user1 = reqDTO.getUser();
+        Long user = null;
+        if (user1 != null){
+            user = Long.valueOf(reqDTO.getUser());
+        }
+        List<DemandQueuedBO> demandQueuedBOS = feedbackMapper.getDemandQueuedList(origin,priority,readStatus,type,user);
+        List<DemandQueuedResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(demandQueuedBOS)){
+            BeanUtils.copyProperties(demandQueuedBOS,list);
+            demandQueuedBOS.stream().forEach(demandQueuedBO -> {
+                DemandQueuedResDTO resDTO = new DemandQueuedResDTO();
+                BeanUtils.copyProperties(demandQueuedBO,resDTO);
+                list.add(resDTO);
+            });
+        }
+        return new PageInfo<>(list);
+    }
+
+    /**
+     * 获取完成需求列表
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<DemandCompletedResDTO> getDemandCompletedList(DemandQueryReqDTO reqDTO) {
+        PageHelper.startPage(reqDTO.getPageNum(),ZSYConstants.PAGE_SIZE);
+        String user1 = reqDTO.getUser();
+        Long user = null;
+        if (user1 != null){
+            user = Long.valueOf(reqDTO.getUser());
+        }
+        Date beginTime = reqDTO.getBeginTime();
+        Date endTime = reqDTO.getEndTime();
+        Page<DemandCompletedBO> demandCompletedBOS = feedbackMapper.getDemandCompletedList(beginTime,endTime,user);
+        Page<DemandCompletedResDTO> list = new Page<>();
+        if (!CollectionUtils.isEmpty(demandCompletedBOS)){
+            BeanUtils.copyProperties(demandCompletedBOS,list);
+            demandCompletedBOS.stream().forEach(demandCompletedBO -> {
+                DemandCompletedResDTO resDTO = new DemandCompletedResDTO();
+                BeanUtils.copyProperties(demandCompletedBO,resDTO);
+                Long planId = feedbackPlanMapper.getPlanById(demandCompletedBO.getId());
+
+                Integer taskNum = feedbackPlanTaskMapper.getTaskNum(planId);
+                resDTO.setTaskNum(taskNum);
+
+                //按begin_time升序排序,获取taskIds   第一个即为最早开发的任务id
+                List<Long> taskIds = feedbackPlanTaskMapper.getTaskIdByPlanId(planId);
+
+                //获取最早开发的任务的  开始时间
+                Long taskId = feedbackPlanTaskMapper.getFirstTask(planId);
+                Date beginDate = feedbackPlanTaskMapper.getBeginTime(taskId);
+                //最后完成的任务
+                Long lastTaskId = feedbackPlanTaskMapper.getLastTaskId(planId);
+                //获取最后完成任务的时间
+                Date finishDate = feedbackPlanTaskMapper.selectEndTime(lastTaskId);
+                if (beginDate != null && finishDate != null){
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setFirstDayOfWeek(Calendar.MONDAY);
+                    calendar.setTime(beginDate);
+                    int i = calendar.get(Calendar.WEEK_OF_YEAR);
+                    calendar.setTime(finishDate);
+                    int j = calendar.get(Calendar.WEEK_OF_YEAR);
+                    Integer workTime = j - i;
+
+                    //设置任务开始时间
+                    resDTO.setStartTime(beginDate);
+                    //设置任务进行时长
+                    resDTO.setWorkedTime(workTime);
+                }
+
+                Set<Long> set = new HashSet<>();
+                if (!CollectionUtils.isEmpty(taskIds)){
+                    for (Long id : taskIds) {
+                        List<Long> persons = feedbackPlanTaskMapper.getPerson(id);
+                        set.addAll(persons);
+                    }
+                    resDTO.setWorkerNum(set.size());
+                }
+                //查询最早创建的任务id
+                Long taskid = feedbackPlanTaskMapper.getFirstCreateTask(planId);
+                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
+                String chargeMan = feedbackMapper.getChargeMan(taskid);
+                resDTO.setChargeMan(chargeMan);
+                list.add(resDTO);
+            });
+            //过滤指定负责人的需求
+            if (reqDTO.getChargeMan() != null && reqDTO.getChargeMan() != ""){
+                for (DemandCompletedResDTO demandCompletedResDTO : list) {
+                    if (demandCompletedResDTO.getChargeMan() != reqDTO.getChargeMan()){
+                        list.remove(demandCompletedResDTO);
+                    }
+                }
+            }
+        }
+        return new PageInfo(list);
+    }
+
+    /**
+     * 获取我参与的需求
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<DemandJoinedResDTO> getDemandJoinedList(DemandQueryReqDTO reqDTO) {
+        PageHelper.startPage(reqDTO.getPageNum(),ZSYConstants.PAGE_SIZE);
+        Long user = ZSYTokenRequestContext.get().getUserId();
+        Date beginTime = reqDTO.getBeginTime();
+        Date endTime = reqDTO.getEndTime();
+        //我提出的需求
+        Page<DemandJoinedBO> demands = feedbackMapper.getDemandJoinedList(beginTime,endTime,user);
+
+        //我参与开发的需求
+/*        Page<DemandJoinedBO> demandJoinedBOS2 = feedbackMapper.getDemandDevelopedList(beginTime,endTime,user);
+
+        Set<DemandJoinedBO> hashSet = new HashSet<>();
+        hashSet.addAll(demandJoinedBOS1);
+        hashSet.addAll(demandJoinedBOS2);
+        Page<DemandJoinedBO> demands = new Page();
+        demands.addAll(hashSet);*/
+
+        Page<DemandJoinedResDTO> set = new Page<>();
+        if (!CollectionUtils.isEmpty(demands)){
+            BeanUtils.copyProperties(demands,set);
+            demands.stream().forEach(demandJoinedBO -> {
+                DemandJoinedResDTO resDTO = new DemandJoinedResDTO();
+                BeanUtils.copyProperties(demandJoinedBO,resDTO);
+                Integer replyNum = feedbackMapper.getReplyNum(demandJoinedBO.getId());
+                resDTO.setReplyNum(replyNum);
+
+                Long planId = feedbackPlanMapper.getPlanById(demandJoinedBO.getId());
+                //查询最早创建的任务id
+                Long taskid = feedbackPlanTaskMapper.getFirstCreateTask(planId);
+                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
+                String chargeMan = feedbackMapper.getChargeMan(taskid);
+                //设置负责人
+                resDTO.setChargeMan(chargeMan);
+                set.add(resDTO);
+            });
+
+
+        }
+//        List<DemandJoinedResDTO> list = new ArrayList<>(set);
+        //过滤不是该负责人的需求
+        if (reqDTO.getChargeMan() != null && reqDTO.getChargeMan() != ""){
+            for (DemandJoinedResDTO demandJoinedResDTO : set) {
+                if (demandJoinedResDTO.getChargeMan() != reqDTO.getChargeMan()){
+                    set.remove(demandJoinedResDTO);
+                }
+            }
+        }
+        PageInfo<DemandJoinedResDTO> page = new PageInfo<>(set);
+        return page;
+    }
+
+    /**
+     * 获取进行中需求列表
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<DemandRunningResDTO> getDemandRunningList(DemandQueryReqDTO reqDTO) {
+        PageHelper.startPage(reqDTO.getPageNum(),ZSYConstants.PAGE_SIZE);
+        String origin = reqDTO.getOrigin();
+        Integer priority = reqDTO.getPriority();
+        Integer readStatus = reqDTO.getReadStatus();
+        Integer type = reqDTO.getType();
+        String user1 = reqDTO.getUser();
+        Long user = null;
+        if (user1 != null){
+            user = Long.valueOf(reqDTO.getUser());
+        }
+        Page<DemandRunningBO> demandRunningBOS = feedbackMapper.getDemandRunningList(origin,priority,readStatus,type,user);
+        Page<DemandRunningResDTO> list = new Page<>();
+        if (!CollectionUtils.isEmpty(demandRunningBOS)){
+            BeanUtils.copyProperties(demandRunningBOS,list);
+            demandRunningBOS.stream().forEach(demandRunningBO -> {
+                DemandRunningResDTO resDTO = new DemandRunningResDTO();
+                BeanUtils.copyProperties(demandRunningBO,resDTO);
+
+
+                Long planId = feedbackPlanMapper.getPlanById(demandRunningBO.getId());
+                //查询任务数
+                Integer taskNum = feedbackPlanTaskMapper.getTaskNum(planId);
+                resDTO.setTaskNum(taskNum);
+                //按begin_time升序排序,获取taskIds   第一个即为最早开发的任务id
+                List<Long> taskIds = feedbackPlanTaskMapper.getTaskIdByPlanId(planId);
+                //获取最早开发的任务的  开始时间
+                Long taskId = feedbackPlanTaskMapper.getFirstTask(planId);
+                Date beginTime = feedbackPlanTaskMapper.getBeginTime(taskId);
+                if (beginTime != null){
+                    Date today = new Date();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setFirstDayOfWeek(Calendar.MONDAY);
+                    calendar.setTime(beginTime);
+                    int i = calendar.get(Calendar.WEEK_OF_YEAR);
+                    calendar.setTime(today);
+                    int j = calendar.get(Calendar.WEEK_OF_YEAR);
+                    Integer workTime = j - i;
+                    //设置任务进行时间
+                    resDTO.setWorkedWeeks(workTime);
+
+                    //设置任务开始时间
+                    resDTO.setStartTime(beginTime);
+                }
+                Set<Long> set = new HashSet<>();
+                if (!CollectionUtils.isEmpty(taskIds)){
+                    for (Long taskId1 : taskIds) {
+                        List<Long> persons = feedbackPlanTaskMapper.getPerson(taskId1);
+                        set.addAll(persons);
+                    }
+                    //设置开发人数
+                    resDTO.setWorkerNum(set.size());
+                }
+                //查询最早创建的任务id
+                Long taskid = feedbackPlanTaskMapper.getFirstCreateTask(planId);
+                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
+                String chargeMan = feedbackMapper.getChargeMan(taskid);
+                //设置负责人
+                resDTO.setChargeMan(chargeMan);
+                list.add(resDTO);
+            });
+        }
+
+        //过滤指定负责人的需求
+        if (reqDTO.getChargeMan() != null && reqDTO.getChargeMan() != ""){
+            for (DemandRunningResDTO demandRunningResDTO : list) {
+                if (demandRunningResDTO.getChargeMan() != reqDTO.getChargeMan()){
+                    list.remove(demandRunningResDTO);
+                }
+            }
+        }
+        PageInfo<DemandRunningResDTO> pageInfo = new PageInfo<>(list);
+        return pageInfo;
+    }
+
+
+
+    /**
+     * 获取需求详情
+     * @param id
+     * @return
+     */
+    @Override
+    public DemandDetailResDTO getDemandDetail(String id) {
+        Long demandId = Long.valueOf(id);
+        //查询需求详情基本信息
+        DemandDetailBO demandDetailBO = feedbackMapper.getDemandDetail(demandId);
+        DemandDetailResDTO dto = new DemandDetailResDTO();
+        BeanUtils.copyProperties(demandDetailBO,dto);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dto.setCreateTime(dateFormat.format(demandDetailBO.getCreateTime()));
+        dto.setReleaseTime(dateFormat.format(demandDetailBO.getReleaseTime()));
+
+        //查询点赞人
+        List<String> likesPeople = feedbackMapper.getLikesPeople(demandId);
+        dto.setLikesPeople(likesPeople);
+
+        //查询已读人
+        List<String> readPeople = feedbackMapper.getReadPeople(demandId);
+        int readNum = readPeople.size();
+        dto.setReadPeople(readPeople);
+        dto.setReadNum(readNum);
+        return dto;
+    }
+
+    /**
+     * 获取需求回复详情
+     * @param id
+     * @return
+     */
+    @Override
+    public List<DemandReplyResDTO> getDemandReply(String id) {
+        Long demandId = Long.valueOf(id);
+        List<DemandReplyBO> replyBOS = feedbackMapper.getDemandReply(demandId);
+        List<DemandReplyResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(replyBOS)){
+            BeanUtils.copyProperties(replyBOS,list);
+        }
+        return list;
+    }
+
+    /**
+     * 点赞
+     * @param id
+     */
+    @Override
+    public void like(String id) {
+        Long demandId = Long.valueOf(id);
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Long flId = snowFlakeIDHelper.nextId();
+        Date likeTime = new Date();
+
+        //新增feedback_likes
+        feedbackMapper.like(demandId,userId,flId,likeTime);
+
+        //feedback中likesNum +1
+        feedbackMapper.addLikesNum(demandId);
+    }
+
+    /**
+     * 回复需求
+     * @param reqDTO
+     */
+    @Override
+    public void reply(DemandReplyReqDTO reqDTO) {
+        Long demandId = Long.valueOf(reqDTO.getDemandId());
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        String content = reqDTO.getContent();
+        Long frId = snowFlakeIDHelper.nextId();
+        Date replyTime = new Date();
+        feedbackMapper.reply(demandId,userId,content,frId,replyTime);
+    }
+
+    /**
+     * 采纳需求,进入排队中
+     * @param id
+     */
+    @Override
+    public void agreeDemand(String id) {
+        Long demandId = Long.valueOf(id);
+        //将feedback中的status设置为4(排队中)
+        int status = ZSYFeedbackStatus.QUEUE.getValue();
+        feedbackMapper.setStatus(demandId,status);
+
+        //新增需求到feedback_queue
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Long fqId = snowFlakeIDHelper.nextId();
+        Date agreeTime = new Date();
+        feedbackMapper.insertDemandQueue(fqId,demandId,userId,agreeTime);
+
+        //删除feedback_rejected中的需求
+        feedbackMapper.deleteDemandRejected(demandId);
+    }
+
+    /**
+     * 驳回需求,进入驳回表中
+     * @param id
+     */
+    @Override
+    public void rejectDemand(String id) {
+        Long demandId = Long.valueOf(id);
+        //将feedback中的status设置为3(驳回)
+        int status = ZSYFeedbackStatus.REJECT.getValue();
+        feedbackMapper.setStatus(demandId,status);
+
+        //新增需求到feedback_rejected
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Long frId = snowFlakeIDHelper.nextId();
+        Date rejectTime = new Date();
+        feedbackMapper.insertDemandReject(frId,demandId,userId,rejectTime);
+
+        //删除feedback_queue中的需求
+        feedbackMapper.deleteDemandQueue(demandId);
+    }
+
+    /**
+     * 新增需求
+     * @param reqDTO
+     */
+    @Override
+    public void addDemand(DemandReqDTO reqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
+            throw new ZSYServiceException("当前账号无权限");
+        }
+
+        Demand demand = new Demand();
+        BeanUtils.copyProperties(reqDTO,demand);
+
+        demand.setId(snowFlakeIDHelper.nextId());
+        if (reqDTO.getContent() == null){
+            demand.setContent("");
+        }
+        //新增需求时,不设置项目,暂时设置projectId为0L,再计划中加入项目
+        demand.setProjectId(0L);
+        demand.setFeedbackTime(new Date());
+        demand.setStatus(ZSYFeedbackStatus.NEW.getValue());
+        demand.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        demand.setCreateTime(new Date());
+        demand.setUpdateTime(new Date());
+        demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        demand.setReadStatus(0);
+
+        feedbackMapper.addDemand(demand);
+    }
+
+    /**
+     * 读取需求
+     * @param id
+     */
+    @Override
+    public void readDemand(String id) {
+        Long demandId = Long.valueOf(id);
+        //设置readStatus为已读(1)
+        feedbackMapper.setReadStatus(demandId);
+        //添加feedback_read
+        Long frId = snowFlakeIDHelper.nextId();
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Date readTime = new Date();
+        feedbackMapper.insertFeedbackRead(frId,demandId,userId,readTime);
+    }
+
+    /**
+     * 查询提出人员列表
+     * @return
+     */
+    @Override
+    public List<IntroducerResDTO> getIntroducerList() {
+        List<IntroducerResDTO> list = feedbackMapper.selectIntroducerList();
+        return list;
+    }
+
+    @Override
+    public void editDemand(String id, DemandReqDTO reqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
+            throw new ZSYServiceException("当前账号无权限");
+        }
+        Long demandId = Long.valueOf(id);
+        Demand demand = feedbackMapper.selectDemandById(demandId);
+        BeanUtils.copyProperties(reqDTO,demand);
+        demand.setUpdateTime(new Date());
+        if (feedbackMapper.updateByDemandId(demand) == 0){
+            throw new ZSYServiceException("需求更新失败");
+        }
+    }
+
     @Override
     public List<String> getOrigin() {
         List<String> origin =  Lists.newArrayList(new HashSet<>(feedbackMapper.getOrigin()));
@@ -117,7 +611,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         feedback.setCreateTime(new Date());
         feedback.setUpdateTime(new Date());
         feedback.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
-        feedback.setStatus(ZSYFeedbackStatus.WAIT.getValue());
+        feedback.setStatus(ZSYFeedbackStatus.NEW.getValue());
         feedback.setId(snowFlakeIDHelper.nextId());
 
         feedbackMapper.insertFeedback(feedback);
@@ -266,7 +760,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 Feedback feedback = feedbackMapper.selectById(feedbackId);
                 feedback.setUpdateTime(new Date());
                 feedback.setId(feedbackId);
-                feedback.setStatus(ZSYFeedbackStatus.WAIT.getValue());
+                feedback.setStatus(ZSYFeedbackStatus.NEW.getValue());
 
                 if (feedbackMapper.updateByFeedbackId(feedback) == 0) {
                     throw new ZSYServiceException("需求更新失败");
@@ -275,5 +769,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         }
 
     }
+
+
 
 }

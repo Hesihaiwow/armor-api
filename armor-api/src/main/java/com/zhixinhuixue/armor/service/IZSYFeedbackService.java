@@ -2,11 +2,8 @@ package com.zhixinhuixue.armor.service;
 
 
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.FeedbackListResDTO;
-import com.zhixinhuixue.armor.model.dto.response.FeedbackPlanResDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
+import com.zhixinhuixue.armor.model.dto.response.*;
 
 import java.util.List;
 
@@ -66,4 +63,109 @@ public interface IZSYFeedbackService {
      */
     void editTaskStatus(Long feedbackId,Long taskId);
 
+    /**
+     * 获取新需求反馈列表
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandResDTO> getDemandList(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 获取驳回需求列表
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandRejectedResDTO> getDemandRejectedList(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 获取排队需求列表
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandQueuedResDTO> getDemandQueuedList(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 获取完成需求列表
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandCompletedResDTO> getDemandCompletedList(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 获取进行中需求列表
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandRunningResDTO> getDemandRunningList(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 获取我参与的需求
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandJoinedResDTO> getDemandJoinedList(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 获取需求详情
+     * @param id
+     * @return
+     */
+    DemandDetailResDTO getDemandDetail(String id);
+
+    /**
+     * 获取需求回复详情
+     * @param id
+     * @return
+     */
+    List<DemandReplyResDTO> getDemandReply(String id);
+
+    /**
+     * 点赞
+     * @param id
+     */
+    void like(String id);
+
+    /**
+     * 回复需求
+     * @param reqDTO
+     */
+    void reply(DemandReplyReqDTO reqDTO);
+
+    /**
+     * 采纳需求,进入排队中
+     * @param id
+     */
+    void agreeDemand(String id);
+
+    /**
+     * 驳回需求,进入驳回表中
+     * @param id
+     */
+    void rejectDemand(String id);
+
+    /**
+     * 新增需求
+     * @param reqDTO
+     */
+    void addDemand(DemandReqDTO reqDTO);
+
+
+    /**
+     * 读取需求
+     * @param id
+     */
+    void readDemand(String id);
+
+    /**
+     * 查询提出人员列表
+     * @return
+     */
+    List<IntroducerResDTO> getIntroducerList();
+
+    /**
+     * 编辑需求
+     * @param id
+     * @param reqDTO
+     */
+    void editDemand(String id, DemandReqDTO reqDTO);
 }

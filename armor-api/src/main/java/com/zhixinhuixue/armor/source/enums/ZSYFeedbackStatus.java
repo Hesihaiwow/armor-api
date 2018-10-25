@@ -6,7 +6,8 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYFeedbackStatus {
 
-    WAIT(0, "待处理"), PLAN(1, "已计划"),COMPLETE(2, "已完成");
+//    WAIT(0, "待处理"), PLAN(1, "已计划"),COMPLETE(2, "已完成");
+    NEW(0, "新需求"), RUNNING(1, "进行中"),COMPLETE(2, "已完成"),REJECT(3,"已驳回"),QUEUE(4,"排队中");
 
     private int value;
     private String name;

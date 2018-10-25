@@ -121,4 +121,15 @@
     delete from feedback_plan where feedback_id = #{feedbackId}
   </delete>
 
+  <!-- 根据需求id查到计划id -->
+  <select id="getPlansByFeedbackId" resultType="java.lang.Long">
+    select id from feedback_plan where feedback_id = #{id} order by create_time asc
+  </select>
+
+  <!--获取计划id-->
+  <select id="getPlanById" resultType="java.lang.Long">
+    select id from feedback_plan where feedback_id = #{id} limit 1;
+  </select>
+
+
 </mapper>
