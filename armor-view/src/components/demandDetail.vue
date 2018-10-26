@@ -43,7 +43,12 @@
                             <a href="#" class="btn-down">下载附件</a>
                         </td>
                     </tr>
+                    </tbody>
+                </table>
+                    <table class="table">
+                        <tbody>
                     <tr>
+
                         <td>
                             <div>
                                 <img src="../assets/img/icon-good.png" alt="">
@@ -58,8 +63,10 @@
                         </td>
                         <td></td>
 
+
                     </tr>
                     <tr>
+
                         <td>
                             <div>
                                 <img src="../assets/img/icon-user.png" alt="">
