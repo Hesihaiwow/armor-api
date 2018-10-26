@@ -107,6 +107,8 @@ public interface IZSYTaskService {
      */
     PageInfo<TaskListResDTO> getTaskListPage(TaskListReqDTO taskListReqDTO);
 
+    List<TaskListResDTO> getTaskExport();
+
     /**
      * 获取所有待审核状态的任务
      *

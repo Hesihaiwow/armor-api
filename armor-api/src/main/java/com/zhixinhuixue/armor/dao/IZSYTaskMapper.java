@@ -85,6 +85,8 @@ public interface IZSYTaskMapper {
      */
     Page<TaskListBO> selectPage(TaskListReqDTO taskListReqDTO);
 
+    Page<TaskListBO>  selectPage1();
+
     /**
      * 查询所有待审核任务
      * @return

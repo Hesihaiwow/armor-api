@@ -144,6 +144,11 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().data(taskService.getTaskListPage(taskListReqDTO)).build();
     }
 
+    @GetMapping(value = "/public/task/all")
+    public String getTaskList() {
+        return ZSYResult.success().data(taskService.getTaskExport()).build();
+    }
+
     @ApiOperation("删除任务")
     @DeleteMapping("/delete/{taskId}")
     public String deleteTask(@PathVariable("taskId") Long taskId) {

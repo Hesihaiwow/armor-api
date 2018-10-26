@@ -988,6 +988,19 @@ public class ZSYTaskService implements IZSYTaskService {
         return new PageInfo<>(list);
     }
 
+    @Override
+    public List<TaskListResDTO> getTaskExport() {
+        List<TaskListBO> taskListBOS = taskMapper.selectPage1();
+        List<TaskListResDTO> list = Lists.newArrayList();
+        taskListBOS.stream().forEach(taskListBO -> {
+            TaskListResDTO taskListResDTO = new TaskListResDTO();
+            BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+            List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+            list.add(taskListResDTO);
+        });
+        return list;
+    }
+
     /**
      * 获取所有待审核状态的任务
      *
