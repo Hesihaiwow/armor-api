@@ -104,7 +104,7 @@
                     <div class="pagination">
                         <el-pagination
                                 @current-change="handleCurrentChange"
-                                :current-page.sync="demandPage.pageNum"
+                                :current-page.sync="pageNum0"
                                 :page-size="demandPage.pageSize"
                                 :layout="feedbackPageLayout()"
                                 :total="demandPage.total">
@@ -116,37 +116,37 @@
                         <div class="clearfix">
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">优先级:</span>
-                                <el-select clearable filterable  v-model="priority" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="priority1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in prioritys" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">类型:</span>
-                                <el-select clearable filterable  v-model="type" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="type1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in types" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable  v-model="readStatus" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="readStatus1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
-                                <el-select clearable filterable  v-model="origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="origin1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
-                                <el-select clearable filterable  v-model="chargeMan" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="chargeMan1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
+                                               :value="item.name"></el-option>
                                 </el-select>
                             </div>
                             <el-button type="primary" size="small" @click="select(1)">查询</el-button>
@@ -199,9 +199,9 @@
                                 <span>{{scope.row.workerNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column  label="已进行时间" align="center" width="130">
+                        <el-table-column  label="已进行时间(周)" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.workedWeeks}}周</span>
+                                <span>{{scope.row.workedWeeks}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="计划上线日期" align="center" width="130">
@@ -220,7 +220,7 @@
                     <div class="pagination">
                         <el-pagination
                                 @current-change="handleCurrentChange1"
-                                :current-page.sync="demandPage.pageNum"
+                                :current-page.sync="pageNum1"
                                 :page-size="demandPage.pageSize"
                                 :layout="feedbackPageLayout()"
                                 :total="demandPage.total">
@@ -232,35 +232,35 @@
                         <div class="clearfix">
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">优先级:</span>
-                                <el-select clearable filterable  v-model="priority" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="priority4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in prioritys" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">类型:</span>
-                                <el-select clearable filterable  v-model="type" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="type4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in types" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable  v-model="readStatus" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="readStatus4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
-                                <el-select clearable filterable  v-model="origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="origin4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="introducer" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="introducer4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
@@ -326,7 +326,7 @@
                     <div class="pagination">
                         <el-pagination
                                 @current-change="handleCurrentChange4"
-                                :current-page.sync="demandPage.pageNum"
+                                :current-page.sync="pageNum4"
                                 :page-size="demandPage.pageSize"
                                 :layout="feedbackPageLayout()"
                                 :total="demandPage.total">
@@ -338,35 +338,35 @@
                         <div class="clearfix">
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">优先级:</span>
-                                <el-select clearable filterable  v-model="priority" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="priority3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in prioritys" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">类型:</span>
-                                <el-select clearable filterable  v-model="type" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="type3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in types" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable  v-model="readStatus" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="readStatus3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
-                                <el-select clearable filterable  v-model="origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="origin3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="introducer" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable  v-model="introducer3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
@@ -432,7 +432,7 @@
                     <div class="pagination">
                         <el-pagination
                                 @current-change="handleCurrentChange3"
-                                :current-page.sync="demandPage.pageNum"
+                                :current-page.sync="pageNum3"
                                 :page-size="demandPage.pageSize"
                                 :layout="feedbackPageLayout()"
                                 :total="demandPage.total">
@@ -446,7 +446,7 @@
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
-                                placeholder="不能为空"
+                                clearable
                         >
                         </el-date-picker>
                         <span style="font-size: 14px;color: #606266;">-</span>
@@ -455,7 +455,7 @@
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
-                                placeholder="不能为空"
+                                clearable
                         >
                         </el-date-picker>
                         <div class="demand-top-list fl">
@@ -488,22 +488,22 @@
                         </el-table-column>
                         <el-table-column  label="提出日期" align="center" width="120">
                             <template scope="scope">
-                                <span>{{scope.row.createTime}}</span>
+                                <span>{{scope.row.createTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="期待上线日期" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.releaseTime}}</span>
+                                <span>{{scope.row.releaseTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="采纳日期" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.agreedTime}}</span>
+                                <span>{{scope.row.agreedTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="启动开发时间" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.startTime}}</span>
+                                <span>{{scope.row.startTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="任务数" align="center" width="80">
@@ -516,14 +516,14 @@
                                 <span>{{scope.row.workerNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column  label="已进行时间" align="center" width="130">
+                        <el-table-column  label="已进行时间(周)" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.workedWeeks}}周</span>
+                                <span>{{scope.row.workedWeeks}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="上线日期" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.onlineTime}}</span>
+                                <span>{{scope.row.onlineTime | formatDate}}</span>
                             </template>
                         </el-table-column>
 
@@ -531,7 +531,7 @@
                     <div class="pagination">
                         <el-pagination
                                 @current-change="handleCurrentChange2"
-                                :current-page.sync="demandPage.pageNum"
+                                :current-page.sync="pageNum2"
                                 :page-size="demandPage.pageSize"
                                 :layout="feedbackPageLayout()"
                                 :total="demandPage.total">
@@ -545,6 +545,7 @@
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
+                                clearable
                         >
                         </el-date-picker>
                         <span style="font-size: 14px;color: #606266;">-</span>
@@ -553,6 +554,7 @@
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
+                                clearable
                         >
                         </el-date-picker>
                         <div class="demand-top-list fl">
@@ -566,10 +568,10 @@
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                             <el-select clearable filterable  v-model="chargeMan" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
+                                           :value="item.name"></el-option>
                             </el-select>
                         </div>
-                        <el-button type="primary" size="small" @click="select(2)">查询</el-button>
+                        <el-button type="primary" size="small" @click="select(5)">查询</el-button>
                     </div>
                     <el-table :data="demandData" border>
                         <el-table-column prop="no" label="序号" align="center" width="70"></el-table-column>
@@ -602,7 +604,7 @@
                     <div class="pagination">
                         <el-pagination
                                 @current-change="handleCurrentChange5"
-                                :current-page.sync="demandPage.pageNum"
+                                :current-page.sync="pageNum5"
                                 :page-size="demandPage.pageSize"
                                 :layout="feedbackPageLayout()"
                                 :total="demandPage.total">
@@ -656,7 +658,7 @@
                     </el-date-picker>
                 </el-form-item>
                 <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
-                    <el-button type="danger" @click="deleteDemand()"v-show="demandDeleteIcon">删除需求</el-button>
+                    <el-button type="danger" @click="deleteDemand(0)"v-show="demandDeleteIcon">删除需求</el-button>
                     <el-button @click="saveDemand('demandForm')" type="primary" :loading="isSaving">保存</el-button>
                 </div >
             </el-form>
@@ -665,7 +667,14 @@
                    :close-on-click-modal="false" :close-on-press-escape="false">
             <div class="ctpc-list clearfix">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
-                <div class="ctpc-list-con fl" v-for="item in projectList" v-if="item.id == demandForm.projectId">{{item.name}}</div>
+                <div class="demand-top-list fl">
+                    <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
+                    <el-select clearable filterable  v-model="project" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                        <el-option v-for="item in projectList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <el-button type="primary" size="small" @click="updateDemandProject">添加项目</el-button>
             </div>
             <div class="ctpc-list clearfix">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>优先级</div>
@@ -830,6 +839,12 @@
                 }
             };
             return {
+                pageNum0:1,
+                pageNum1:1,
+                pageNum2:1,
+                pageNum3:1,
+                pageNum4:1,
+                pageNum5:1,
                 activeName:'new',
                 beginTime:'',
                 endTime:'',
@@ -885,18 +900,30 @@
                 ],
                 stageList:[],
                 tagList:[],
+                project:'',
                 projectList:[],
-                priorityList:[],
+                priority1:'',
+                type1:'',
+                readStatus1:'',
+                origin1:'',
+                chargeMan1:'',
+                priority4:'',
+                type4:'',
+                readStatus4:'',
+                origin4:'',
+                introducer4:'',
+                priority3:'',
+                type3:'',
+                readStatus3:'',
+                origin3:'',
+                introducer3:'',
+
                 reqDTO:{
                     pageNum:1,
-                    /*priority:null,
-                    readStatus:null,
-                    user:null,
-                    chargeMan:null,
-                    origin:null,
-                    type:null,
-                    beginTime:null,
-                    endTime:null*/
+                },
+                proReqDTO:{
+                    id:'',
+                    projectId:''
                 },
                 demandPage:{
                     pageSize:10,
@@ -992,6 +1019,19 @@
         },
         methods:{
 
+            //添加项目
+            updateDemandProject(){
+                if (this.project){
+                    console.log(this.feedbackPlanForm.id)
+                    this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
+                    this.proReqDTO.projectId = String(this.project)
+                }
+                http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
+
+                })
+            },
+
+
             //查询项目
             fetchProjectList() {
                 http.zsyGetHttp('/project/list', {}, (resp) => {
@@ -1023,6 +1063,7 @@
 
             //查询新需求列表
             fetchNewDemandList(){
+                this.reqDTO.pageNum = this.pageNum0
                 http.zsyPostHttp('/feedback/demand/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.total
@@ -1031,7 +1072,9 @@
 
             //查询进行中需求
             fetchRunningDemandList(){
+                this.reqDTO.pageNum = this.pageNum1
                 http.zsyPostHttp('/feedback/demand-running/list', this.reqDTO, (res) => {
+                    // this.pageNum1 = res.data.pageNum
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.total
                 })
@@ -1039,6 +1082,7 @@
 
             //查询排队中需求
             fetchQueueDemandList(){
+                this.reqDTO.pageNum = this.pageNum4
                 http.zsyPostHttp('/feedback/demand-queued/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.total
@@ -1047,6 +1091,7 @@
 
             //查询不采纳需求
             fetchRejectedDemandList(){
+                this.reqDTO.pageNum = this.pageNum3
                 http.zsyPostHttp('/feedback/demand-rejected/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.total
@@ -1055,6 +1100,7 @@
 
             //查询已完成需求
             fetchCompletedDemandList(){
+                this.reqDTO.pageNum = this.pageNum2
                 http.zsyPostHttp('/feedback/demand-completed/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.total
@@ -1063,6 +1109,7 @@
 
             //查询我参与的需求
             fetchJoinedDemandList(){
+                this.reqDTO.pageNum = this.pageNum5
                 http.zsyPostHttp('/feedback/demand-joined/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.total
@@ -1220,12 +1267,13 @@
             //查询需求计划
             feedbackPlan(feedback){
                 this.clearPlan();
-                this.planVisible=true
                 this.feedbackPlanForm.feedbackId = feedback.id
                 this.feedbackPlanForm.projectId = feedback.projectId
                 this.demandForm.projectId =feedback.projectId
                 this.demandForm.priority =feedback.priority
                 this.demandForm.status = feedback.status
+                this.planVisible=true
+
                 http.zsyGetHttp('/feedback/getPlan/'+feedback.id, {}, (resp) => {
                     if(resp.data.planTask&&resp.data.planTask.length!=0){
                         this.feedbackPlanForm.id = resp.data.id
@@ -1264,8 +1312,21 @@
                 })
             },
 
+            clearReqDTO(){
+
+                this.reqDTO.priority = null;
+                this.reqDTO.readStatus = null;
+                this.reqDTO.user = null;
+                this.reqDTO.chargeMan = null;
+                this.reqDTO.origin = null;
+                this.reqDTO.type = null;
+                this.reqDTO.beginTime = null;
+                this.reqDTO.endTime = null;
+            },
+
             //按要求查询需求
             select(num){
+                this.clearReqDTO()
                 this.reqDTO.pageNum = 1
                 /*priority:null,
                     readStatus:null,
@@ -1275,14 +1336,6 @@
                     type:null,
                     beginTime:null,
                     endTime:null*/
-                this.reqDTO.priority = undefined;
-                this.reqDTO.readStatus = undefined;
-                this.reqDTO.user = undefined;
-                this.reqDTO.chargeMan = undefined;
-                this.reqDTO.origin = undefined;
-                this.reqDTO.type = undefined;
-                this.reqDTO.beginTime = undefined;
-                this.reqDTO.endTime = undefined;
                 if (this.priority != undefined && this.priority != null){
                     this.reqDTO.priority = this.priority
                 }
@@ -1290,6 +1343,7 @@
                     this.reqDTO.readStatus = this.readStatus
                 }
                 if(this.introducer){
+                    console.log(this.introducer)
                     this.reqDTO.user = String(this.introducer)
                 }
                 if (this.chargeMan){
@@ -1302,10 +1356,10 @@
                     this.reqDTO.type = this.type
                 }
                 if (this.beginTime){
-                    this.reqDTO.beginTime = this.beginTime
+                    this.reqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
                 }
                 if (this.endTime){
-                    this.reqDTO.endTime = this.endTime
+                    this.reqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 00:00:00')
                 }
                 //当num为0  按要求查询新需求列表
                 if (num == 0){
@@ -1326,6 +1380,10 @@
                 //当num为4  按要求查询已完成需求列表
                 if (num == 2){
                     this.fetchCompletedDemandList()
+                }
+                //当num为5  按要求查询我参与的需求列表
+                if (num == 5){
+                    this.fetchJoinedDemandList()
                 }
 
             },
@@ -1398,7 +1456,7 @@
             },
 
             //删除需求
-            deleteDemand(){
+            deleteDemand(num){
                 this.$confirm('此操作将删除该需求, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -1407,7 +1465,9 @@
                     http.zsyDeleteHttp('/feedback/delete/'+this.demandForm.id, null, (resp) => {
                         this.$message({ showClose: true,message: '需求删除成功',type: 'success'});
                         this.feedbackVisible = false
-                        this.fetchRunningDemandList();
+                        if (num == 0){
+                            this.fetchRunningDemandList();
+                        }
                     });
                 }).catch(() => {
                 });
@@ -1415,6 +1475,7 @@
 
             //清空需求表单
             clearDemandForm(){
+
                 this.demandForm.id = null
                 this.demandForm.title = null
                 this.demandForm.type = null
@@ -1427,32 +1488,27 @@
             },
 
             handleCurrentChange(currentPage){
-                this.reqDTO.pageNum = currentPage;
                 this.fetchNewDemandList()
 
             },
             handleCurrentChange1(currentPage){
-                this.reqDTO.pageNum = currentPage;
+                console.log(currentPage)
                 this.fetchRunningDemandList()
 
             },
             handleCurrentChange2(currentPage){
-                this.reqDTO.pageNum = currentPage;
                 this.fetchCompletedDemandList()
 
             },
             handleCurrentChange3(currentPage){
-                this.reqDTO.pageNum = currentPage;
                 this.fetchRejectedDemandList()
 
             },
             handleCurrentChange4(currentPage){
-                this.reqDTO.pageNum = currentPage;
                 this.fetchQueueDemandList()
 
             },
             handleCurrentChange5(currentPage){
-                this.reqDTO.pageNum = currentPage;
                 this.fetchJoinedDemandList()
 
             },
@@ -1465,16 +1521,22 @@
             },
             handleClick(tab, event) {
                 if(tab.name =="new"){
+                    this.clearReqDTO()
                     this.fetchNewDemandList()
                 }else if(tab.name =="running"){
+                    this.clearReqDTO()
                     this.fetchRunningDemandList()
                 }else if (tab.name=='queue'){
+                    this.clearReqDTO()
                     this.fetchQueueDemandList()
                 }else if (tab.name == 'reject'){
+                    this.clearReqDTO()
                     this.fetchRejectedDemandList()
                 } else  if (tab.name == 'completed'){
+                    this.clearReqDTO()
                     this.fetchCompletedDemandList()
                 } else if (tab.name == 'joined'){
+                    this.clearReqDTO()
                     this.fetchJoinedDemandList()
                 }
             },
