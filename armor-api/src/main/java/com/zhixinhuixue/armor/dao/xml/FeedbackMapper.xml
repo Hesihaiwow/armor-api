@@ -345,6 +345,10 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+  <update id="updateDemandProject">
+    update feedback set project_id = #{projectId} where id = #{demandId}
+  </update>
+
   <!--删除feedback_rejected中的需求-->
   <delete id="deleteDemandRejected">
     delete from feedback_rejected where demand_id = #{demandId}
@@ -454,10 +458,10 @@
       f.is_delete = 0 and
       f.status = 2
       <if test="beginTime != null">
-        <![CDATA[ AND  (f.create_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
+        <![CDATA[ AND  f.create_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
       </if>
       <if test="endTime != null">
-        <![CDATA[ AND  (f.create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+        <![CDATA[ AND  f.create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
       </if>
       <if test="user != null">
         and f.create_by = #{user}
@@ -474,10 +478,10 @@
     <where>
       is_delete = 0
       <if test="beginTime != null">
-        <![CDATA[ AND  (create_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
+        <![CDATA[ AND  f.create_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
       </if>
       <if test="endTime != null">
-        <![CDATA[ AND  (create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+        <![CDATA[ AND  f.create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
       </if>
       and f.create_by = #{user}
       or tu.user_id = #{user}
@@ -493,10 +497,10 @@
     WHERE tu.user_id = #{user}
     and is_delete = 0
     <if test="beginTime != null">
-      <![CDATA[ AND  (f.create_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
+      <![CDATA[ AND  f.create_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
     </if>
     <if test="endTime != null">
-      <![CDATA[ AND  (f.create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+      <![CDATA[ AND  f.create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
     </if>
   </select>
 
@@ -573,6 +577,16 @@
 
   <select id="selectDemandById" resultMap="basicDemandMap">
     select * from feedback where id = #{id}
+  </select>
+
+  <!--查看是否已读-->
+  <select id="isRead" resultType="java.lang.Integer">
+    select count(1) from feedback_read where feedback_id = #{demandId} and user_id = #{userId}
+  </select>
+
+  <!--查看需求是否已点赞-->
+  <select id="isLike" resultType="java.lang.Integer">
+    select count(1) from feedback_likes where feedback_id = #{demandId} and user_id = #{userId}
   </select>
 
 

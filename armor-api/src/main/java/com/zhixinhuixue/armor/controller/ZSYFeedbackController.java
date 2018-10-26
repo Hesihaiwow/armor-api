@@ -128,6 +128,17 @@ public class ZSYFeedbackController extends ZSYController{
     }
 
     /**
+     * 查看是否已读
+     * @param id
+     * @return
+     */
+    @ApiOperation("查看是否已读")
+    @GetMapping(value = "/demand/isread/{demandid}")
+    public String isRead(@PathVariable("demandid")String id){
+        return ZSYResult.success().data(feedbackService.isRead(id)).build();
+    }
+
+    /**
      * 读取需求
      * @param id
      * @return
@@ -137,6 +148,12 @@ public class ZSYFeedbackController extends ZSYController{
     public String readDemand(@PathVariable("demandid")String id){
         feedbackService.readDemand(id);
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("需求是否点赞")
+    @PostMapping(value = "/demand/islike/{demandid}")
+    public String isLike(@PathVariable("demandid")String id){
+        return ZSYResult.success().data(feedbackService.isLike(id)).build();
     }
 
     /**
@@ -196,6 +213,18 @@ public class ZSYFeedbackController extends ZSYController{
     @PostMapping(value = "/demand/add")
     public String addDemand(@Valid @RequestBody DemandReqDTO reqDTO){
         feedbackService.addDemand(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 新增需求所属项目
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("新增需求所属项目")
+    @PostMapping(value = "/demand/project/add")
+    public String addProject(@RequestBody DemandProjectReqDTO reqDTO){
+        feedbackService.addDemandProject(reqDTO);
         return ZSYResult.success().build();
     }
 

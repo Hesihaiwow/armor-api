@@ -1,43 +1,34 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import java.util.Date;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
- * Created by Lang on 2018/3/8 0008.
+ * Created by SCH on 2018-10-25
  */
-public class FeedbackPlanListResDTO {
-
+@ApiModel("计划")
+public class DemandPlanListResDTO {
+    @ApiModelProperty("计划id")
     private Long id;
-
+    @ApiModelProperty("需求标题")
     private String title;
-
+    @ApiModelProperty("需求来源")
     private String origin;
-
+    @ApiModelProperty("百分比")
     private Integer percent;
-
+    @ApiModelProperty("计划预计上线时间")
     private String endTime;
+    @ApiModelProperty("任务详情集合")
+    private List<DemandTaskDetailResDTO> childs;
 
-    private Long stageId;
-
-    private Integer status;
-
-    public Integer getStatus() {
-        return status;
+    public Long getId() {
+        return id;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    private List<FeedbackTaskDetailResDTO> childs;
-
-    public Long getStageId() {
-        return stageId;
-    }
-
-    public void setStageId(Long stageId) {
-        this.stageId = stageId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -72,19 +63,11 @@ public class FeedbackPlanListResDTO {
         this.endTime = endTime;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<FeedbackTaskDetailResDTO> getChilds() {
+    public List<DemandTaskDetailResDTO> getChilds() {
         return childs;
     }
 
-    public void setChilds(List<FeedbackTaskDetailResDTO> childs) {
+    public void setChilds(List<DemandTaskDetailResDTO> childs) {
         this.childs = childs;
     }
 }

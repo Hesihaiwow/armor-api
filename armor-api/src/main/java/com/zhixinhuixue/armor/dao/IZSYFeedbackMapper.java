@@ -272,4 +272,26 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     int updateByDemandId(Demand demand);
+
+    /**
+     * 查看是否已读
+     * @param demandId
+     * @return
+     */
+    Integer isRead(@Param("demandId") Long demandId,@Param("userId")Long userId);
+
+    /**
+     * 查看需求是否已点赞
+     * @param demandId
+     * @param userId
+     * @return
+     */
+    Integer isLike(@Param("demandId") Long demandId,@Param("userId")Long userId);
+
+    /**
+     * 新增需求所属项目
+     * @param demandId
+     * @param projectId
+     */
+    void updateDemandProject(@Param("demandId")Long demandId, @Param("projectId")Long projectId);
 }

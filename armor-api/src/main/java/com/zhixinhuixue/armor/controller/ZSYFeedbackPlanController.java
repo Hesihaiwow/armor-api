@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 
-import com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.pojo.FeedbackPlan;
 import com.zhixinhuixue.armor.service.IZSYFeedbackPlanService;
 import com.zhixinhuixue.armor.service.IZSYFeedbackService;
@@ -35,6 +32,17 @@ public class ZSYFeedbackPlanController extends ZSYController{
     @PostMapping(value = "/list")
     public String getFeedbackPlanList(@RequestBody FeedbackPlanListReqDTO feedbackPlanListReqDTO){
         return ZSYResult.success().data(feedbackPlanService.getFeedbackPlanList(feedbackPlanListReqDTO)).build();
+    }
+
+    /**
+     * 获取计划列表
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("计划列表")
+    @PostMapping(value = "/demand-plan/list")
+    public String getDemandPlanList(@RequestBody DemandPlanQueryReqDTO reqDTO){
+        return ZSYResult.success().data(feedbackPlanService.getDemandPlanList(reqDTO)).build();
     }
 
 

@@ -168,4 +168,24 @@ public interface IZSYFeedbackService {
      * @param reqDTO
      */
     void editDemand(String id, DemandReqDTO reqDTO);
+
+    /**
+     * 查看是否已读
+     * @param id
+     * @return
+     */
+    DemandIsReadResDTO isRead(String id);
+
+    /**
+     * 查看是否已点赞
+     * @param id
+     * @return
+     */
+    DemandIsLikeResDTO isLike(String id);
+
+    /**
+     * 新增需求所属项目
+     * @param reqDTO
+     */
+    void addDemandProject(DemandProjectReqDTO reqDTO);
 }

@@ -250,14 +250,18 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 resDTO.setChargeMan(chargeMan);
                 list.add(resDTO);
             });
-            //过滤指定负责人的需求
-            if (reqDTO.getChargeMan() != null && reqDTO.getChargeMan() != ""){
-                for (DemandCompletedResDTO demandCompletedResDTO : list) {
-                    if (demandCompletedResDTO.getChargeMan() != reqDTO.getChargeMan()){
-                        list.remove(demandCompletedResDTO);
-                    }
+
+        }
+        Page<DemandCompletedResDTO> list2 = new Page<>();
+
+        //过滤指定负责人的需求
+        if (reqDTO.getChargeMan() != null && reqDTO.getChargeMan() != ""){
+            for (DemandCompletedResDTO demandCompletedResDTO : list) {
+                if (demandCompletedResDTO.getChargeMan() != null && demandCompletedResDTO.getChargeMan().equals(reqDTO.getChargeMan()) ){
+                    list2.add(demandCompletedResDTO);
                 }
             }
+            return new PageInfo<>(list2);
         }
         return new PageInfo(list);
     }
@@ -388,13 +392,16 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             });
         }
 
+        Page<DemandRunningResDTO> list2 = new Page<>();
+
         //过滤指定负责人的需求
         if (reqDTO.getChargeMan() != null && reqDTO.getChargeMan() != ""){
             for (DemandRunningResDTO demandRunningResDTO : list) {
-                if (demandRunningResDTO.getChargeMan() != reqDTO.getChargeMan()){
-                    list.remove(demandRunningResDTO);
+                if (demandRunningResDTO.getChargeMan() != null && demandRunningResDTO.getChargeMan().equals(reqDTO.getChargeMan()) ){
+                    list2.add(demandRunningResDTO);
                 }
             }
+            return new PageInfo<>(list2);
         }
         PageInfo<DemandRunningResDTO> pageInfo = new PageInfo<>(list);
         return pageInfo;
@@ -588,6 +595,49 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         if (feedbackMapper.updateByDemandId(demand) == 0){
             throw new ZSYServiceException("需求更新失败");
         }
+    }
+
+    /**
+     * 查看需求是否已读
+     * @param id
+     * @return
+     */
+    @Override
+    public DemandIsReadResDTO isRead(String id) {
+        Long demandId = Long.valueOf(id);
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Integer count = feedbackMapper.isRead(demandId,userId);
+        DemandIsReadResDTO demandIsReadResDTO = new DemandIsReadResDTO();
+        demandIsReadResDTO.setCount(count);
+        return demandIsReadResDTO;
+    }
+
+    /**
+     * 查看需求是否已点赞
+     * @param id
+     * @return
+     */
+    @Override
+    public DemandIsLikeResDTO isLike(String id) {
+        Long demandId = Long.valueOf(id);
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Integer count = feedbackMapper.isLike(demandId,userId);
+        DemandIsLikeResDTO demandIsLikeResDTO = new DemandIsLikeResDTO();
+        demandIsLikeResDTO.setCount(count);
+        return demandIsLikeResDTO;
+    }
+
+    /*
+    新增需求所属项目
+     */
+    @Override
+    public void addDemandProject(DemandProjectReqDTO reqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
+            throw new ZSYServiceException("当前账号无权限");
+        }
+        Long demandId = Long.valueOf(reqDTO.getId());
+        Long projectId = Long.valueOf(reqDTO.getProjectId());
+        feedbackMapper.updateDemandProject(demandId,projectId);
     }
 
     @Override

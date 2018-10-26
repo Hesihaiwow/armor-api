@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.LoggingMXBean;
 
 public interface IZSYFeedbackPlanTaskMapper {
 
@@ -21,6 +22,8 @@ public interface IZSYFeedbackPlanTaskMapper {
      * @return
      */
     List<Long> getTaskId(Long feedbackPlanId);
+
+    List<Long> getTaskId1(Long feedbackPlanId);
 
     /**
      * 删除任务

@@ -22,6 +22,12 @@ public class TaskDetailBO extends Task {
      * 阶段名称
      */
     private String stageName;
+
+    /**
+     * 阶段id
+     */
+    private Long stageId;
+
     /**
      * 任务用户（阶段）
      */
@@ -32,6 +38,32 @@ public class TaskDetailBO extends Task {
     private String userName;
 
     private String avatarUrl;
+
+    /**
+     * 是否暂停(0表示暂停)
+     * @return
+     */
+    private Integer status;
+
+    @Override
+    public Integer getStatus() {
+        return status;
+    }
+
+    @Override
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    @Override
+    public Long getStageId() {
+        return stageId;
+    }
+
+    @Override
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
+    }
 
     public List<Tag> getTaskTags() {
         return taskTags;
