@@ -49,7 +49,8 @@
                         </el-table-column>
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
-                                <a style="color:#20a0ff;cursor: pointer;" @click="demandDetail(scope.row.id)">{{scope.row.title}}</a>
+                                <!--<a style="color:#20a0ff;cursor: pointer;" @click.stop.prevent="demandDetail(scope.row.id)">{{scope.row.title}}</a>-->
+                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
                             </template>
                         </el-table-column>
                         <el-table-column  label="来源" align="center" width="100">
@@ -1337,9 +1338,10 @@
 
             //跳转到需求详情页
             demandDetail(id){
-                this.read(id)
-
+                console.log(id)
+                this.read(id);
                 this.$router.push({
+                    path:'demandDetail',
                     name:'demandDetail',
                     params:{
                         demandId:String(id),

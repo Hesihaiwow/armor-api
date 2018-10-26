@@ -13,6 +13,7 @@ import Stats from '@/components/Stats'
 import UserComments from '@/components/UserComments'
 import Calculate from '@/components/Calculate'
 import Plan from '@/components/Plan2'
+import demandDetail from '@/components/demandDetail'
 
 
 Vue.use(Router)
@@ -85,6 +86,10 @@ export default new Router({
                 {
                     path: 'calculate',
                     component: Calculate
+                },
+                {
+                    path: 'demandDetail',
+                    component: demandDetail
                 }
             ]
         }
