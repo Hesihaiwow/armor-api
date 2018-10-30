@@ -24,6 +24,7 @@
         <div class="plan-content fl">
             <div class="plan-filter clearfix">
                 <span class="fl" >周计划:</span>
+                <el-button @click="clearForm">全部</el-button>
                 <el-button v-for="item in stageList" v-model="stage" :key="item.id" @click="fetchTreeJson(String(item.id))">{{item.name}}</el-button>
                 <span class="fl">排序：</span>
                 <a href="javascript:;" class="fl" v-bind:class="{ 'active' : activeSort == 'time'}"   @click="toggleSort('time')">截止日期
@@ -66,12 +67,12 @@
             };
             return {
                 stageList:[
-                    {id:212754785051344898,name:'发布上线'},
-                    {id:212754785051344895,name:'完成开发'},
-                    {id:212754785051344890,name:'完成设计'},
-                    {id:212754785051344896,name:'测试中'},
-                    {id:212754785051344894,name:'开发中'},
-                    {id:212754785051344892,name:'设计中'},
+                    {id:"212754785051344898",name:'发布上线'},
+                    {id:"212754785051344895",name:'完成开发'},
+                    {id:"212754785051344890",name:'完成设计'},
+                    {id:"212754785051344896",name:'测试中'},
+                    {id:"212754785051344894",name:'开发中'},
+                    {id:"212754785051344892",name:'设计中'},
                 ],
                 tree:[],
                 activeWeek:'',
@@ -88,6 +89,7 @@
                         {id:9,name:'十月',key:[]},{id:10,name:'十一月',key:[]},{id:11,name:'十二月',key:[]},{id:104,name:'第四季度',key:[]},
                         ],
                 monthWeeks:[],
+                stage:'',
                 treeList:{
                     startTime:moment().startOf('week').week(moment().week()).format('YYYY-MM-DD 00:00:00'),
                     endTime:moment().endOf('week').week(moment().week()).format('YYYY-MM-DD 23:59:59'),
@@ -107,8 +109,13 @@
         methods:{
             init(){
             },
+            clearForm(){
+              this.activeSort = null;
+              this.activeTimeArrow = null;
+              this.stage = null;
+              this.fetchTreeJson()
+            },
             fetchTreeJson(id){
-                console.log(this.treeList)
                 if(this.activeSort=='com'){
                     if(this.activeArrow){
                         this.treeList.sort = '0'//降序
