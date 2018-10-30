@@ -45,6 +45,26 @@ public class DemandCompletedResDTO {
     private Date onlineTime;
     @ApiModelProperty("负责人")
     private String chargeMan;
+    @ApiModelProperty("项目id")
+    private Long projectId;
+    @ApiModelProperty("状态")
+    private Integer status;
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
 
     public Long getId() {
         return id;

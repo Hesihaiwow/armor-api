@@ -60,8 +60,10 @@
     <result column="release_time" property="releaseTime" jdbcType="TIMESTAMP"></result>
     <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
     <result column="read_status" property="readStatus" jdbcType="INTEGER"></result>
-      <result column="question" property="question" jdbcType="VARCHAR"></result>
-      <result column="target" property="target" jdbcType="VARCHAR"></result>
+    <result column="question" property="question" jdbcType="VARCHAR"></result>
+    <result column="target" property="target" jdbcType="VARCHAR"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
   </resultMap>
 
   <resultMap id="demandRejectedMap" type="com.zhixinhuixue.armor.model.bo.DemandRejectedBO">
@@ -78,6 +80,8 @@
     <result column="reject_time" property="rejectedTime" jdbcType="TIMESTAMP"></result>
     <result column="question" property="question" jdbcType="VARCHAR"></result>
     <result column="target" property="target" jdbcType="VARCHAR"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
   </resultMap>
 
   <resultMap id="demandQueuedMap" type="com.zhixinhuixue.armor.model.bo.DemandQueuedBO">
@@ -93,6 +97,8 @@
     <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
     <result column="question" property="question" jdbcType="VARCHAR"></result>
     <result column="target" property="target" jdbcType="VARCHAR"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
   </resultMap>
 
   <resultMap id="demandCompletedMap" type="com.zhixinhuixue.armor.model.bo.DemandCompletedBO">
@@ -108,10 +114,14 @@
     <result column="origin" property="origin" jdbcType="VARCHAR"></result>
     <result column="type" property="type" jdbcType="INTEGER"></result>
     <result column="priority" property="priority" jdbcType="INTEGER"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
   </resultMap>
 
   <resultMap id="demandRunningMap" type="com.zhixinhuixue.armor.model.bo.DemandRunningBO">
     <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
     <result column="title" property="title" jdbcType="VARCHAR"></result>
     <result column="create_user" property="createBy" jdbcType="VARCHAR"></result>
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
@@ -149,11 +159,21 @@
     <result column="title" property="title" jdbcType="VARCHAR"></result>
     <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
     <result column="status" property="status" jdbcType="INTEGER"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
   </resultMap>
 
   <resultMap id="introducerMap" type="com.zhixinhuixue.armor.model.dto.response.IntroducerResDTO">
     <id column="id" property="id" jdbcType="BIGINT"></id>
     <result column="name" property="name" jdbcType="VARCHAR"></result>
+  </resultMap>
+
+  <resultMap id="replyMap" type="com.zhixinhuixue.armor.model.bo.DemandReplyBO">
+    <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="feedback_id" property="demandId" jdbcType="BIGINT"></result>
+    <result column="user" property="replyPeople" jdbcType="VARCHAR"></result>
+    <result column="content" property="content" jdbcType="VARCHAR"></result>
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP"></result>
   </resultMap>
 
 
@@ -173,7 +193,7 @@
   <!--回复需求-->
   <insert id="reply">
     insert into feedback_reply (id,user_id,feedback_id,content,reply_time)
-    values (#{frId,jdbcType=BIGINT},#{userId},jdbcType=BIGINT,#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{replyTime,jdbcType=TIMESTAMP})
+    values (#{frId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{replyTime,jdbcType=TIMESTAMP})
   </insert>
 
   <!--新增需求到feedback_queue-->
@@ -199,13 +219,19 @@
   </insert>
 
   <!--新增已读-->
-  <insert id="insertFeedbackRead">
-    insert into feedback_read (id,feedack_id,user_id,read_time)
+  <insert id="insertFeedbackRead" >
+    insert into feedback_read (id,feedback_id,user_id,read_time)
     values (#{frId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{readTime,jdbcType=TIMESTAMP});
   </insert>
 
+  <!--新增需求附件地址-->
+  <insert id="insertFeedbackAccessory" parameterType="com.zhixinhuixue.armor.model.pojo.DemandAccessory">
+    insert into feedback_accessory (id,feedback_id,create_time,url)
+    values (#{id,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{url,jdbcType=VARCHAR})
+  </insert>
+
   <update id="addLikesNum">
-    update feedback set likes_num = likes_num + 1
+    update feedback set likes_num = likes_num + 1 where id = #{demandId}
   </update>
 
   <select id="selectFeedbackPage" resultMap="ResultMap" parameterType="com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO">
@@ -540,26 +566,26 @@
   <!-- 获取需求详情 -->
   <select id="getDemandDetail" resultMap="demandDetailMap">
     select `id`,`title`,`origin`,`type`,`create_time`,`release_time`,`likes_num`,`question`,`target`
-    from feedback where status = 0 and id = #{demandId}
+    from feedback where status = #{status} and id = #{demandId}
   </select>
 
   <!-- 查询点赞人 -->
   <select id="getLikesPeople" resultType="java.lang.String">
-    select u.name from user u left join feedback_likes fl
-    on u.id = fl.user_id
-    where fl.feedback_id = #{demandId} and u.status = 0 and is_delete = 0;
+    select u.name from user u left join feedback_likes fs
+    on u.id = fs.user_id
+    where fs.feedback_id = #{demandId} and u.status = 0 and u.is_delete = 0;
   </select>
 
   <!--查询已读人-->
   <select id="getReadPeople" resultType="java.lang.String">
     select u.name from user u left join feedback_read fr
-    on u.id = fl.user_id
-    where fr.feedback_id = #{demandId} and u.status = 0 and is_delete = 0;
+    on u.id = fr.user_id
+    where fr.feedback_id = #{demandId} and u.status = 0 and u.is_delete = 0;
   </select>
 
   <!--获取需求回复详情-->
-  <select id="getDemandReply" resultType="com.zhixinhuixue.armor.model.bo.DemandReplyBO">
-    SELECT fr.feedback_id,fr.`content`,fr.`reply_time`,u.name user
+  <select id="getDemandReply" resultMap="replyMap">
+    SELECT fr.*,u.name user
     from feedback_reply fr left join user u on fr.user_id = u.id
     where u.is_delete = 0 and u.status = 0 and fr.feedback_id = #{demandId}
   </select>
@@ -587,6 +613,26 @@
   <!--查看需求是否已点赞-->
   <select id="isLike" resultType="java.lang.Integer">
     select count(1) from feedback_likes where feedback_id = #{demandId} and user_id = #{userId}
+  </select>
+
+  <!--获取需求所属项目-->
+  <select id="selectProjectId" resultType="java.lang.Long">
+    select project_id from feedback where is_delete = 0 and id = #{demandId}
+  </select>
+
+  <!--需求是否已采纳-->
+  <select id="isAgree" resultType="java.lang.Integer">
+    select count(1) from feedback_queue where demand_id = #{demandId}
+  </select>
+
+  <!--需求是否已驳回-->
+  <select id="isReject" resultType="java.lang.Integer">
+    select count(1) from feedback_rejected where demand_id = #{demandId};
+  </select>
+
+  <!--获取需求附件-->
+  <select id="getUrl" resultType="java.lang.String">
+    select url from feedback_accessory where feedback_id = #{demandId}
   </select>
 
 

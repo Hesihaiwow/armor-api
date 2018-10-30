@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.DemandCompletedResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntroducerResDTO;
 import com.zhixinhuixue.armor.model.pojo.Demand;
+import com.zhixinhuixue.armor.model.pojo.DemandAccessory;
 import com.zhixinhuixue.armor.model.pojo.Feedback;
 import com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask;
 import org.apache.ibatis.annotations.Param;
@@ -135,7 +136,7 @@ public interface IZSYFeedbackMapper {
      * @param demandId
      * @return
      */
-    DemandDetailBO getDemandDetail(@Param("demandId") Long demandId);
+    DemandDetailBO getDemandDetail(@Param("demandId") Long demandId,@Param("status")Integer status);
 
     /**
      * 查询点赞人
@@ -171,7 +172,7 @@ public interface IZSYFeedbackMapper {
      * feedback点赞数加一
      * @param demandId
      */
-    void addLikesNum(Long demandId);
+    void addLikesNum(@Param("demandId")Long demandId);
 
     /**
      * 回复需求
@@ -294,4 +295,37 @@ public interface IZSYFeedbackMapper {
      * @param projectId
      */
     void updateDemandProject(@Param("demandId")Long demandId, @Param("projectId")Long projectId);
+
+    /**
+     * 新增需求附件地址
+     */
+    void insertFeedbackAccessory(DemandAccessory demandAccessory);
+
+    /**
+     * 获取需求所属项目
+     * @param demandId
+     * @return
+     */
+    Long selectProjectId(Long demandId);
+
+    /**
+     * 需求是否已采纳
+     * @param demandId
+     * @return
+     */
+    Integer isAgree(Long demandId);
+
+    /**
+     * 需求是否已驳回
+     * @param demandId
+     * @return
+     */
+    Integer isReject(Long demandId);
+
+    /**
+     * 获取需求附件
+     * @param demandId
+     * @return
+     */
+    List<String> getUrl(Long demandId);
 }

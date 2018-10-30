@@ -16,6 +16,16 @@ public class DemandJoinedBO {
     private Integer status;
     @ApiModelProperty("点赞数")
     private Integer likesNum;
+    @ApiModelProperty("项目id")
+    private Long projectId;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
 
     public Integer getStatus() {
         return status;

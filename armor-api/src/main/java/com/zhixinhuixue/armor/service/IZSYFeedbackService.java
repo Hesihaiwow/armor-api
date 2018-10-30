@@ -110,7 +110,7 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    DemandDetailResDTO getDemandDetail(String id);
+    DemandDetailResDTO getDemandDetail(String id,String status);
 
     /**
      * 获取需求回复详情
@@ -188,4 +188,38 @@ public interface IZSYFeedbackService {
      * @param reqDTO
      */
     void addDemandProject(DemandProjectReqDTO reqDTO);
+
+    /**
+     * 获取需求所属项目
+     * @param id
+     * @return
+     */
+    DemandProjectResDTO getProjectId(String id);
+
+    /**
+     * 需求是否已采纳
+     * @param id
+     * @return
+     */
+    DemandIsReadResDTO isAgree(String id);
+
+    /**
+     * 需求是否驳回
+     * @param id
+     * @return
+     */
+    DemandIsReadResDTO isReject(String id);
+
+    /**
+     * 获取需求附件
+     * @param id
+     * @return
+     */
+    List<String> getUrl(String id);
+
+    /**
+     * 下载需求附件
+     * @param id
+     */
+    void download(String id);
 }

@@ -16,7 +16,7 @@ public class DemandDetailResDTO {
     @ApiModelProperty("需求标题")
     private String title;
     @ApiModelProperty("需求来源")
-    private Integer origin;
+    private String origin;
     @ApiModelProperty("需求类型")
     private Integer type;
     @ApiModelProperty("需求提出时间")
@@ -76,11 +76,11 @@ public class DemandDetailResDTO {
         this.title = title;
     }
 
-    public Integer getOrigin() {
+    public String getOrigin() {
         return origin;
     }
 
-    public void setOrigin(Integer origin) {
+    public void setOrigin(String origin) {
         this.origin = origin;
     }
 

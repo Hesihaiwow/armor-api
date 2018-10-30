@@ -49,6 +49,26 @@ public class DemandRunningResDTO {
     private Integer workedWeeks;
     @ApiModelProperty("计划id")
     private Long planId;
+    @ApiModelProperty("项目id")
+    private Long projectId;
+    @ApiModelProperty("状态")
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
 
     public Long getPlanId() {
         return planId;

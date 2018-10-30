@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by SCH on 2018-10-22
@@ -39,28 +40,15 @@ public class DemandReqDTO {
     @ApiModelProperty("期待上线时间")
     private Date releaseTime;
 
-    @ApiModelProperty("原始需求")
-    private String content;
+    @ApiModelProperty("附件地址")
+    private List<String> urlList;
 
-//    @NotNull(message = "需求项目不能为空")
-//    @ApiModelProperty("项目id")
-//    private Long projectId;
-
-//    public Long getProjectId() {
-//        return projectId;
-//    }
-//
-//    public void setProjectId(Long projectId) {
-//        this.projectId = projectId;
-//    }
-
-
-    public String getContent() {
-        return content;
+    public List<String> getUrlList() {
+        return urlList;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setUrlList(List<String> urlList) {
+        this.urlList = urlList;
     }
 
     public String getTitle() {

@@ -4,20 +4,31 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by SCH on 2018-10-22
  */
 @ApiModel("需求回复详情")
 public class DemandReplyBO {
-    @ApiModelProperty("需求id")
+    @ApiModelProperty("需求回复id")
     private Long id;
+    @ApiModelProperty("需求id")
+    private Long demandId;
     @ApiModelProperty("需求回复人")
     private String replyPeople;
     @ApiModelProperty("需求回复时间")
-    private Timestamp replyTime;
+    private Date replyTime;
     @ApiModelProperty("需求回复内容")
     private String content;
+
+    public Long getDemandId() {
+        return demandId;
+    }
+
+    public void setDemandId(Long demandId) {
+        this.demandId = demandId;
+    }
 
     public Long getId() {
         return id;
@@ -35,11 +46,11 @@ public class DemandReplyBO {
         this.replyPeople = repayPeople;
     }
 
-    public Timestamp getReplyTime() {
+    public Date getReplyTime() {
         return replyTime;
     }
 
-    public void setReplyTime(Timestamp replyTime) {
+    public void setReplyTime(Date replyTime) {
         this.replyTime = replyTime;
     }
 

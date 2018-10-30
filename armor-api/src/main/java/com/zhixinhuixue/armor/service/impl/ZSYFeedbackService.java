@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYFeedbackMapper;
-import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanMapper;
-import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanTaskMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.*;
@@ -18,12 +15,16 @@ import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYFeedbackService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.*;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -52,6 +53,9 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+
+    @Autowired
+    private IZSYTaskUserMapper taskUserMapper;
 
 
     /**
@@ -277,17 +281,9 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         Long user = ZSYTokenRequestContext.get().getUserId();
         Date beginTime = reqDTO.getBeginTime();
         Date endTime = reqDTO.getEndTime();
-        //我提出的需求
+        //我参与的需求
         Page<DemandJoinedBO> demands = feedbackMapper.getDemandJoinedList(beginTime,endTime,user);
 
-        //我参与开发的需求
-/*        Page<DemandJoinedBO> demandJoinedBOS2 = feedbackMapper.getDemandDevelopedList(beginTime,endTime,user);
-
-        Set<DemandJoinedBO> hashSet = new HashSet<>();
-        hashSet.addAll(demandJoinedBOS1);
-        hashSet.addAll(demandJoinedBOS2);
-        Page<DemandJoinedBO> demands = new Page();
-        demands.addAll(hashSet);*/
 
         Page<DemandJoinedResDTO> set = new Page<>();
         if (!CollectionUtils.isEmpty(demands)){
@@ -310,15 +306,18 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
 
         }
-//        List<DemandJoinedResDTO> list = new ArrayList<>(set);
+        List<DemandJoinedResDTO> list = new ArrayList<>();
         //过滤不是该负责人的需求
         if (reqDTO.getChargeMan() != null && reqDTO.getChargeMan() != ""){
             for (DemandJoinedResDTO demandJoinedResDTO : set) {
-                if (demandJoinedResDTO.getChargeMan() != reqDTO.getChargeMan()){
-                    set.remove(demandJoinedResDTO);
+                if (demandJoinedResDTO.getChargeMan()!= null && demandJoinedResDTO.getChargeMan().equals(reqDTO.getChargeMan())){
+                    list.add(demandJoinedResDTO);
                 }
             }
+            return new PageInfo<>(list);
         }
+
+
         PageInfo<DemandJoinedResDTO> page = new PageInfo<>(set);
         return page;
     }
@@ -350,6 +349,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
 
                 Long planId = feedbackPlanMapper.getPlanById(demandRunningBO.getId());
+                resDTO.setPlanId(planId);
                 //查询任务数
                 Integer taskNum = feedbackPlanTaskMapper.getTaskNum(planId);
                 resDTO.setTaskNum(taskNum);
@@ -415,15 +415,19 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * @return
      */
     @Override
-    public DemandDetailResDTO getDemandDetail(String id) {
+    public DemandDetailResDTO getDemandDetail(String id,String stat) {
         Long demandId = Long.valueOf(id);
+        Integer status = Integer.valueOf(stat);
         //查询需求详情基本信息
-        DemandDetailBO demandDetailBO = feedbackMapper.getDemandDetail(demandId);
+        DemandDetailBO demandDetailBO = feedbackMapper.getDemandDetail(demandId,status);
         DemandDetailResDTO dto = new DemandDetailResDTO();
         BeanUtils.copyProperties(demandDetailBO,dto);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dto.setCreateTime(dateFormat.format(demandDetailBO.getCreateTime()));
-        dto.setReleaseTime(dateFormat.format(demandDetailBO.getReleaseTime()));
+        if (demandDetailBO.getReleaseTime() != null){
+            dto.setReleaseTime(dateFormat.format(demandDetailBO.getReleaseTime()));
+        }
+
 
         //查询点赞人
         List<String> likesPeople = feedbackMapper.getLikesPeople(demandId);
@@ -449,6 +453,11 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         List<DemandReplyResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(replyBOS)){
             BeanUtils.copyProperties(replyBOS,list);
+            replyBOS.stream().forEach(replyBO -> {
+                DemandReplyResDTO resDTO = new DemandReplyResDTO();
+                BeanUtils.copyProperties(replyBO,resDTO);
+                list.add(resDTO);
+            });
         }
         return list;
     }
@@ -540,11 +549,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         Demand demand = new Demand();
         BeanUtils.copyProperties(reqDTO,demand);
 
-        demand.setId(snowFlakeIDHelper.nextId());
-        if (reqDTO.getContent() == null){
-            demand.setContent("");
-        }
         //新增需求时,不设置项目,暂时设置projectId为0L,再计划中加入项目
+        demand.setId(snowFlakeIDHelper.nextId());
         demand.setProjectId(0L);
         demand.setFeedbackTime(new Date());
         demand.setStatus(ZSYFeedbackStatus.NEW.getValue());
@@ -553,8 +559,24 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setUpdateTime(new Date());
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         demand.setReadStatus(0);
-
+        demand.setContent("");
         feedbackMapper.addDemand(demand);
+
+        if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
+            //把附件地址添加到feedback_accessory
+            List<String> urls = reqDTO.getUrlList();
+            for (String url : urls) {
+                DemandAccessory demandAccessory = new DemandAccessory();
+                demandAccessory.setId(snowFlakeIDHelper.nextId());
+                demandAccessory.setDemandId(demand.getId());
+                demandAccessory.setUrl(url);
+                demandAccessory.setCreateTime(new Date());
+                feedbackMapper.insertFeedbackAccessory(demandAccessory);
+            }
+        }
+
+
+
     }
 
     /**
@@ -638,6 +660,94 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         Long demandId = Long.valueOf(reqDTO.getId());
         Long projectId = Long.valueOf(reqDTO.getProjectId());
         feedbackMapper.updateDemandProject(demandId,projectId);
+    }
+
+    /**
+     * 获取需求所属项目
+     * @param id
+     * @return
+     */
+    @Override
+    public DemandProjectResDTO getProjectId(String id) {
+        Long demandId = Long.valueOf(id);
+        Long projectId = feedbackMapper.selectProjectId(demandId);
+        DemandProjectResDTO demandProjectResDTO = new DemandProjectResDTO();
+        demandProjectResDTO.setProjectId(projectId);
+        return demandProjectResDTO;
+    }
+
+    /**
+     * 需求是否已采纳
+     * @param id
+     * @return
+     */
+    @Override
+    public DemandIsReadResDTO isAgree(String id) {
+        Long demandId = Long.valueOf(id);
+        Integer count = feedbackMapper.isAgree(demandId);
+        DemandIsReadResDTO demandIsReadResDTO = new DemandIsReadResDTO();
+        demandIsReadResDTO.setCount(count);
+        return demandIsReadResDTO;
+    }
+
+    /**
+     * 需求是否驳回
+     * @param id
+     * @return
+     */
+    @Override
+    public DemandIsReadResDTO isReject(String id) {
+        Long demandId = Long.valueOf(id);
+        Integer count = feedbackMapper.isReject(demandId);
+        DemandIsReadResDTO demandIsReadResDTO = new DemandIsReadResDTO();
+        demandIsReadResDTO.setCount(count);
+        return demandIsReadResDTO;
+    }
+
+    /**
+     * 获取需求附件
+     * @param id
+     * @return
+     */
+    @Override
+    public List<String> getUrl(String id) {
+        Long demandId = Long.valueOf(id);
+        List<String> urls = feedbackMapper.getUrl(demandId);
+        return urls;
+    }
+
+    @Override
+    public void download(String id) {
+        Long demandId = Long.valueOf(id);
+        List<String> urls = feedbackMapper.getUrl(demandId);
+        if (!CollectionUtils.isEmpty(urls)){
+            for (String url : urls) {
+                String surffix = url.substring(url.lastIndexOf(".") + 1);
+                String path = "E:\\0000\\"+ snowFlakeIDHelper.nextId()+"."+surffix;
+                URL url1 = null;
+                try {
+                    url1 = new URL(url);
+                    DataInputStream dataInputStream = new DataInputStream(url1.openStream());
+
+                    FileOutputStream fileOutputStream = new FileOutputStream(new File(path));
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+                    byte[] buffer = new byte[1024];
+                    int length;
+
+                    while ((length = dataInputStream.read(buffer)) > 0) {
+                        output.write(buffer, 0, length);
+                    }
+                    fileOutputStream.write(output.toByteArray());
+                    dataInputStream.close();
+                    fileOutputStream.close();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -746,6 +856,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                     feedbackPlanTask.setTaskId(taskId);
 
                     feedbackPlanTaskMapper.insertFeedbackPlanTask(feedbackPlanTask);
+
                 }
             });
         }
@@ -810,7 +921,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 Feedback feedback = feedbackMapper.selectById(feedbackId);
                 feedback.setUpdateTime(new Date());
                 feedback.setId(feedbackId);
-                feedback.setStatus(ZSYFeedbackStatus.NEW.getValue());
+                feedback.setStatus(ZSYFeedbackStatus.QUEUE.getValue());
 
                 if (feedbackMapper.updateByFeedbackId(feedback) == 0) {
                     throw new ZSYServiceException("需求更新失败");

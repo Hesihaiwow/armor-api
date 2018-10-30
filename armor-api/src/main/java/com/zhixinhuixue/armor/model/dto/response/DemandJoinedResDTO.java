@@ -20,6 +20,16 @@ public class DemandJoinedResDTO {
     private Integer replyNum;
     @ApiModelProperty("负责人")
     private String chargeMan;
+    @ApiModelProperty("项目id")
+    private Long projectId;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
 
     public String getChargeMan() {
         return chargeMan;
