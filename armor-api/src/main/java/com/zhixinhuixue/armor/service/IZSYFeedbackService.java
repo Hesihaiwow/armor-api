@@ -218,8 +218,15 @@ public interface IZSYFeedbackService {
     List<String> getUrl(String id);
 
     /**
-     * 下载需求附件
+     * 完成需求上线
      * @param id
      */
-    void download(String id);
+    void demandOnline(String id);
+
+    /**
+     * 需求是否已上线
+     * @param id
+     * @return
+     */
+    DemandOnlineResDTO isOnline(String id);
 }

@@ -375,6 +375,11 @@
     update feedback set project_id = #{projectId} where id = #{demandId}
   </update>
 
+  <!--完成需求上线-->
+  <update id="demandOnline">
+    update feedback set online_time = #{onlineTime,jdbcType=TIMESTAMP} where id = #{demandId}
+  </update>
+
   <!--删除feedback_rejected中的需求-->
   <delete id="deleteDemandRejected">
     delete from feedback_rejected where demand_id = #{demandId}
@@ -650,6 +655,11 @@
     JOIN task ts ON t.task_id = ts.id
     WHERE p.feedback_id = #{id}
     ORDER BY ts.end_time DESC
+  </select>
+
+  <!--需求是否上线-->
+  <select id="selectOnlineTime" resultType="java.util.Date">
+    select online_time from feedback where id = #{demandId};
   </select>
 
 

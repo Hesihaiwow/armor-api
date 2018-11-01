@@ -733,39 +733,35 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         return urls;
     }
 
+    /**
+     * 上线
+     * @param id
+     */
     @Override
-    public void download(String id) {
+    public void demandOnline(String id) {
         Long demandId = Long.valueOf(id);
-        List<String> urls = feedbackMapper.getUrl(demandId);
-        if (!CollectionUtils.isEmpty(urls)){
-            for (String url : urls) {
-                String surffix = url.substring(url.lastIndexOf(".") + 1);
-                String path = "E:\\0000\\"+ snowFlakeIDHelper.nextId()+"."+surffix;
-                URL url1 = null;
-                try {
-                    url1 = new URL(url);
-                    DataInputStream dataInputStream = new DataInputStream(url1.openStream());
-
-                    FileOutputStream fileOutputStream = new FileOutputStream(new File(path));
-                    ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-                    byte[] buffer = new byte[1024];
-                    int length;
-
-                    while ((length = dataInputStream.read(buffer)) > 0) {
-                        output.write(buffer, 0, length);
-                    }
-                    fileOutputStream.write(output.toByteArray());
-                    dataInputStream.close();
-                    fileOutputStream.close();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        Date onlineTime = new Date();
+        feedbackMapper.demandOnline(demandId,onlineTime);
     }
+
+    /**
+     * 需求是否上线
+     * @param id
+     * @return
+     */
+    @Override
+    public DemandOnlineResDTO isOnline(String id) {
+        Long demandId = Long.valueOf(id);
+        Date onlineTime = feedbackMapper.selectOnlineTime(demandId);
+        DemandOnlineResDTO resDTO = new DemandOnlineResDTO();
+        if (onlineTime != null){
+            resDTO.setOnlineTime(onlineTime);
+        }else {
+            resDTO.setOnlineTime(null);
+        }
+        return resDTO;
+    }
+
 
     @Override
     public List<String> getOrigin() {

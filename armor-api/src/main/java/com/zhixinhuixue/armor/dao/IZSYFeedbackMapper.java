@@ -342,4 +342,18 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     List<Long> selectEndTasks(Long id);
+
+    /**
+     * 完成需求上线
+     * @param demandId
+     * @param onlineTime
+     */
+    void demandOnline(@Param("demandId") Long demandId, @Param("onlineTime") Date onlineTime);
+
+    /**
+     * 需求是否上线
+     * @param demandId
+     * @return
+     */
+    Date selectOnlineTime(Long demandId);
 }

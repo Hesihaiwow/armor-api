@@ -163,8 +163,21 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         if (reqDTO.getStage() != null && reqDTO.getStage() != ""){
             Long stage = Long.valueOf(reqDTO.getStage());
-            for (FeedbackPlanListResDTO feedbackPlanListResDTO : feedbackPlanListResDTOS) {
+            /*for (FeedbackPlanListResDTO feedbackPlanListResDTO : feedbackPlanListResDTOS) {
                 if (feedbackPlanListResDTO.getStageId() != null && feedbackPlanListResDTO.getStageId().equals(stage) ){
+                    list.add(feedbackPlanListResDTO);
+                }
+            }*/
+            for (FeedbackPlanListResDTO feedbackPlanListResDTO : feedbackPlanListResDTOS) {
+                List<FeedbackTaskDetailResDTO> childs = feedbackPlanListResDTO.getChilds();
+                List<FeedbackTaskDetailResDTO> childs2 = new ArrayList<>();
+                if (!CollectionUtils.isEmpty(childs)){
+                    for (FeedbackTaskDetailResDTO child : childs) {
+                        if (child.getStageId()!= null && child.getStageId().equals(stage)){
+                            childs2.add(child);
+                        }
+                    }
+                    feedbackPlanListResDTO.setChilds(childs2);
                     list.add(feedbackPlanListResDTO);
                 }
             }
