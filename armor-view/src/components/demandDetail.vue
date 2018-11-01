@@ -2,9 +2,10 @@
     <div class="demandDetail">
         <div class="btn-box">
             <el-button onclick="javascript:history.go(-1);" class="btn-go_back">返回</el-button>
-            <el-button class="fr" v-if="permit && rejectVisible" @click="rejectDemand">不采纳</el-button>
-            <el-button class="fr" type="primary" v-if="permit && agreeVisible" @click="agreeDemand">采纳</el-button>
+            <el-button class="fr" v-if="permit && rejectVisible && notRunning" @click="rejectDemand">不采纳</el-button>
+            <el-button class="fr" type="primary" v-if="permit && agreeVisible && notRunning" @click="agreeDemand">采纳</el-button>
             <el-button v-if="isLikeVisible" class="fr" type="primary" @click="like">点赞</el-button>
+            <el-button v-if="permit && compleltedVisible && isOnlieVisible" class="fr" type="primary" @click="online">上线</el-button>
         </div>
         <div class="main">
             <div class="title-box">
@@ -166,6 +167,9 @@
                 },
                 agreeVisible:false,
                 rejectVisible:false,
+                notRunning:false,
+                compleltedVisible:false,
+                isOnlieVisible:true
 
             }
         },
@@ -176,6 +180,9 @@
             this.isReject()
             this.fetchDetail()
             this.fetchDemandReply()
+            this.isRunning()
+            this.isCompleleted()
+            this.isOnline()
 
         },
         filters: {
@@ -232,6 +239,37 @@
 
 
               })
+            },
+            //是否是进行中  进行中需求无法采纳和驳回
+            isRunning(){
+                if (this.status != 1 && this.status != 2){
+                    this.notRunning = true
+                }
+            },
+            //判断是否完成  完成需求可以点击上线
+            isCompleleted(){
+              if (this.status == 2){
+                  this.compleltedVisible = true
+              }
+            },
+            //是否已上线
+            isOnline(){
+              http.zsyGetHttp('/feedback/demand/isonline/'+this.id,{},(res)=>{
+                  if (res.data.onlineTime != null){
+                      console.log(2222)
+                      this.isOnlieVisible = false
+                  }
+              })
+            },
+            //点击上线  添加上线时间
+            online(){
+                http.zsyPostHttp('/feedback/demand/online/'+this.id,{},(res)=>{
+                    this.$message({
+                        showClose: true,
+                        message: '上线成功',
+                        type: 'success'
+                    });
+                })
             },
             //查看当前需求是否已读
             isRead(){

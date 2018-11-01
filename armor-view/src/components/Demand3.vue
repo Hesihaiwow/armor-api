@@ -677,7 +677,7 @@
                 </div >
             </el-form>
         </el-dialog>
-        <el-dialog :visible.sync="editDemandVisible" title="提需求" custom-class="myDialog" :close-on-click-modal="false"
+        <el-dialog :visible.sync="editDemandVisible" title="编辑需求" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false">
             <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px" :inline="true">
                 <el-form-item label="需求标题" prop="title">
@@ -1649,11 +1649,11 @@
                 if(this.introducer2){
                     this.reqDTO.user = String(this.introducer2)
                 }
-                if (this.beginTime){
-                    this.reqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                if (this.beginTime2){
+                    this.reqDTO.beginTime = moment(this.beginTime2).format('YYYY-MM-DD 00:00:00')
                 }
-                if (this.endTime){
-                    this.reqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 00:00:00')
+                if (this.endTime2){
+                    this.reqDTO.endTime = moment(this.endTime2).format('YYYY-MM-DD 23:59:59')
                 }
                 if (this.chargeMan2){
                     this.reqDTO.chargeMan = String(this.chargeMan2)
@@ -1671,11 +1671,11 @@
                 if(this.introducer5){
                     this.reqDTO.user = String(this.introducer5)
                 }
-                if (this.beginTime){
-                    this.reqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                if (this.beginTime5){
+                    this.reqDTO.beginTime = moment(this.beginTime5).format('YYYY-MM-DD 00:00:00')
                 }
-                if (this.endTime){
-                    this.reqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 00:00:00')
+                if (this.endTime5){
+                    this.reqDTO.endTime = moment(this.endTime5).format('YYYY-MM-DD 23:59:59')
                 }
                 if (this.chargeMan5){
                     this.reqDTO.chargeMan = String(this.chargeMan5)
@@ -1733,7 +1733,7 @@
                         http.zsyPutHttp('/feedback/demand/edit/'+this.demandForm.id, param, (resp) => {
                             this.$message({ showClose: true,message: '需求修改成功',type: 'success'});
                             this.$refs[formName].resetFields();
-                            this.feedbackVisible = false
+                            this.editDemandVisible = false
                             if (this.demandForm.status == 0){
                                 this.fetchNewDemandList()
                             }
