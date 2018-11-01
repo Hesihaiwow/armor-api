@@ -322,7 +322,7 @@
                         <el-table-column  label="操作" align="center" width="130" fixed="right">
                             <template scope="scope">
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNum!=0">计划</el-button>
-                                <a style="color:#20a0ff;cursor: pointer;" @click="deleteDemand(scope.row.id)">删除</a>
+                                <a style="color:#20a0ff;cursor: pointer;" v-show="permit" @click="deleteDemand(scope.row.id)">删除</a>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -472,7 +472,7 @@
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                             <el-select clearable filterable  v-model="chargeMan2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
+                                           :value="item.name"></el-option>
                             </el-select>
                         </div>
                         <el-button type="primary" size="small" @click="select2">查询</el-button>
@@ -521,7 +521,7 @@
                         </el-table-column>
                         <el-table-column  label="已进行时间(周)" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.workedWeeks}}</span>
+                                <span>{{scope.row.workedTime}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="上线日期" align="center" width="130">
@@ -1108,7 +1108,13 @@
             getUserName(){
                 let userName = helper.decodeToken().userName;
                 return userName;
-            }
+            },
+            /*filetype(file) {
+                let filename = file
+                let index1 = filename.lastIndexOf('.')
+                let index2 = filename.length
+                return filename.substring(index1,index2)
+            }*/
         },
         methods:{
 
@@ -1117,12 +1123,19 @@
             },
 
             beforeAvatarUpload(file) {
-                // const isJPG = file.type === 'image/jpeg'||file.type === 'image/png'||file.type === 'image/jpg';
-                 const isLt2M = file.size / 1024 / 1024 < 2;
-                //
-                // if (!isJPG) {
-                //     this.$message.error('上传图片只能是 JPG、JPEG、PNG 格式!');
-                // }
+                /*const isJPG = file.type === 'image/jpeg'||file.type === 'image/png'||file.type === 'image/jpg';
+                const isWord = file.type === 'word/doc' || file.type === 'word/docx'
+                if ((!isJPG) && (!isWord) ) {
+                    this.$message.error('上传图片只能是 JPG、JPEG、PNG 格式!');
+                }*/
+
+
+                /*if ((type != '.jpg') && (type != '.jpeg')&& (type != '.png')&& (type != '.gmp')&& (type != '.gif')&& (type != '.ico')
+                    && (type != '.doc')&& (type != '.docx')&& (type != '.pdf')&& (type != '.xls')) {
+                    this.$message.error('上传文件只能为word,PDF,Excel和图片');
+                }*/
+
+                const isLt2M = file.size / 1024 / 1024 < 2;
                 if (!isLt2M) {
                     this.$message.error('上传文件大小不能超过 2MB!');
                 }

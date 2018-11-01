@@ -209,25 +209,17 @@
                 this.id = this.$route.query.id;
                 this.status = this.$route.query.status;
             },
-            //下载图片
-            // download(){
-            //     console.log(22)
-            //     let frame = document.createElement('iframe')
-            //     frame.style.display = 'none'
-            //     document.body.appendChild(frame)
-            //
-            //     frame.src = 'http://fdfs.dev.xueping.com/group1/M00/00/CC/wKgB_FvYIhaAd9yhAABGALKl3e4406.doc'
-            //
-            // },
+
             //获取需求附件url
             fetchUrls(){
               http.zsyGetHttp('/feedback/demand/accessory/'+this.id,{},(res)=>{
                   if (res.data) {
                       res.data.forEach(url => {
-                          let frame = document.createElement('iframe')
+                          /*let frame = document.createElement('iframe')
                           frame.style.display = 'none'
                           document.body.appendChild(frame)
-                          frame.src = url
+                          frame.src = url*/
+                          window.open(url)
                       })
                   }else {
                       this.$message({

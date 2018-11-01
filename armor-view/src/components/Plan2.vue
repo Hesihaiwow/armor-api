@@ -25,12 +25,14 @@
             <div class="plan-filter clearfix">
                 <span class="fl" >周计划:</span>
                 <el-button @click="clearForm">全部</el-button>
-                <el-button v-for="item in stageList" v-model="stage" :key="item.id" @click="fetchTreeJson(String(item.id))">{{item.name}}</el-button>
+                <el-button v-for="item in stageList" v-model="stage" :key="item.id" @click="fetchTreeJson(String(item.id))">{{item.name}}</el-button><br>
                 <span class="fl">排序：</span>
+
                 <a href="javascript:;" class="fl" v-bind:class="{ 'active' : activeSort == 'time'}"   @click="toggleSort('time')">截止日期
                     <i class="icon-arrow-top iconfont" v-bind:class="{'active' : activeSort == 'time'&&activeTimeArrow}" ></i>
                     <i class="icon-arrow-bottom iconfont" v-bind:class="{ 'active' : activeSort == 'time'&&!activeTimeArrow}"></i>
                     <i class="el-icon-sort-down"></i></a>
+
                 <p class="fl">需求来源：<input type="text" placeholder="请输入姓名" v-model="treeList.origin">
                     <el-button type="primary" @click="fetchTreeJson()"><i class="el-icon-search"></i>查询</el-button>
                 </p>
@@ -67,12 +69,13 @@
             };
             return {
                 stageList:[
-                    {id:"212754785051344898",name:'发布上线'},
-                    {id:"212754785051344895",name:'完成开发'},
-                    {id:"212754785051344890",name:'完成设计'},
-                    {id:"212754785051344896",name:'测试中'},
-                    {id:"212754785051344894",name:'开发中'},
                     {id:"212754785051344892",name:'设计中'},
+                    {id:"212754785051344890",name:'完成设计'},
+                    {id:"212754785051344894",name:'开发中'},
+                    {id:"212754785051344895",name:'完成开发'},
+                    {id:"212754785051344896",name:'测试中'},
+                    {id:"212754785051344897",name:'待发布'},
+                    {id:"212754785051344898",name:'发布上线'},
                 ],
                 tree:[],
                 activeWeek:'',
