@@ -328,4 +328,18 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     List<String> getUrl(Long demandId);
+
+    /**
+     * 根据feedback_id查询task
+     * @param id
+     * @return
+     */
+    List<Long> selectTasks(Long id);
+
+    /**
+     * 根据feedback_id查询task  按任务结束时间降序排序
+     * @param id
+     * @return
+     */
+    List<Long> selectEndTasks(Long id);
 }

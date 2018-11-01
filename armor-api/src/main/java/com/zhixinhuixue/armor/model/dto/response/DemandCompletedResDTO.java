@@ -40,7 +40,7 @@ public class DemandCompletedResDTO {
     @ApiModelProperty("参与开发人数")
     private Integer workerNum;
     @ApiModelProperty("已进行时间")
-    private Integer workedTime;
+    private Long workedTime;
     @ApiModelProperty("上线时间")
     private Date onlineTime;
     @ApiModelProperty("负责人")
@@ -178,11 +178,11 @@ public class DemandCompletedResDTO {
         this.workerNum = workerNum;
     }
 
-    public Integer getWorkedTime() {
+    public Long getWorkedTime() {
         return workedTime;
     }
 
-    public void setWorkedTime(Integer workedTime) {
+    public void setWorkedTime(Long workedTime) {
         this.workedTime = workedTime;
     }
 

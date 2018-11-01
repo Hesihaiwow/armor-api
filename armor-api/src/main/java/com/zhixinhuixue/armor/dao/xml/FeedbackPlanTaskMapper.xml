@@ -60,7 +60,7 @@
 
   <!--根据taskId获取任务开始时间-->
   <select id="getBeginTime" resultType="java.util.Date">
-    select begin_time from task where is_delete = 0 and id = #{taskId}
+    select create_time from task where is_delete = 0 and id = #{taskId}
   </select>
 
   <!--获取任务id-->

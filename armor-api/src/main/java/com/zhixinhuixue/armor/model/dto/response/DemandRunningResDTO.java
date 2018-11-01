@@ -46,7 +46,7 @@ public class DemandRunningResDTO {
     @ApiModelProperty("开发人数")
     private Integer workerNum;
     @ApiModelProperty("已进行周数(自然周)")
-    private Integer workedWeeks;
+    private Long workedWeeks;
     @ApiModelProperty("计划id")
     private Long planId;
     @ApiModelProperty("项目id")
@@ -206,11 +206,11 @@ public class DemandRunningResDTO {
         this.workerNum = workerNum;
     }
 
-    public Integer getWorkedWeeks() {
+    public Long getWorkedWeeks() {
         return workedWeeks;
     }
 
-    public void setWorkedWeeks(Integer workedWeeks) {
+    public void setWorkedWeeks(Long workedWeeks) {
         this.workedWeeks = workedWeeks;
     }
 }

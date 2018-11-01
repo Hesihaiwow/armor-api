@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
@@ -209,49 +210,49 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             demandCompletedBOS.stream().forEach(demandCompletedBO -> {
                 DemandCompletedResDTO resDTO = new DemandCompletedResDTO();
                 BeanUtils.copyProperties(demandCompletedBO,resDTO);
-                Long planId = feedbackPlanMapper.getPlanById(demandCompletedBO.getId());
 
-                Integer taskNum = feedbackPlanTaskMapper.getTaskNum(planId);
-                resDTO.setTaskNum(taskNum);
 
-                //按begin_time升序排序,获取taskIds   第一个即为最早开发的任务id
-                List<Long> taskIds = feedbackPlanTaskMapper.getTaskIdByPlanId(planId);
+                //根据feedback_id查询task  按任务创建时间升序排序
+                List<Long> taskIds = feedbackMapper.selectTasks(demandCompletedBO.getId());
 
-                //获取最早开发的任务的  开始时间
-                Long taskId = feedbackPlanTaskMapper.getFirstTask(planId);
-                Date beginDate = feedbackPlanTaskMapper.getBeginTime(taskId);
-                //最后完成的任务
-                Long lastTaskId = feedbackPlanTaskMapper.getLastTaskId(planId);
-                //获取最后完成任务的时间
-                Date finishDate = feedbackPlanTaskMapper.selectEndTime(lastTaskId);
-                if (beginDate != null && finishDate != null){
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setFirstDayOfWeek(Calendar.MONDAY);
-                    calendar.setTime(beginDate);
-                    int i = calendar.get(Calendar.WEEK_OF_YEAR);
-                    calendar.setTime(finishDate);
-                    int j = calendar.get(Calendar.WEEK_OF_YEAR);
-                    Integer workTime = j - i;
+                //根据feedback_id查询task  按任务结束时间降序排序
+                List<Long> endTasks = feedbackMapper.selectEndTasks(demandCompletedBO.getId());
 
-                    //设置任务开始时间
-                    resDTO.setStartTime(beginDate);
-                    //设置任务进行时长
-                    resDTO.setWorkedTime(workTime);
-                }
-
-                Set<Long> set = new HashSet<>();
                 if (!CollectionUtils.isEmpty(taskIds)){
-                    for (Long id : taskIds) {
-                        List<Long> persons = feedbackPlanTaskMapper.getPerson(id);
+                    resDTO.setTaskNum(taskIds.size());
+
+                    //第一个即为最早创建的任务
+                    Date beginDate = feedbackPlanTaskMapper.getBeginTime(taskIds.get(0));
+
+                    //获取最后完成任务的时间
+                    Date finishDate = feedbackPlanTaskMapper.selectEndTime(endTasks.get(0));
+                    if (beginDate != null && finishDate != null){
+                        Long weeks = (finishDate.getTime()-beginDate.getTime())/1000/3600/24/7;
+                        if (weeks > 0){
+                            resDTO.setWorkedTime(weeks);
+                        }else {
+                            resDTO.setWorkedTime(1L);
+                        }
+                        //设置任务开始时间
+                        resDTO.setStartTime(beginDate);
+
+                    }
+                    Set<Long> set = new HashSet<>();
+                    for (Long taskId1 : taskIds) {
+                        List<Long> persons = feedbackPlanTaskMapper.getPerson(taskId1);
                         set.addAll(persons);
                     }
-                    resDTO.setWorkerNum(set.size());
+                    //设置开发人数
+
+                    if (!CollectionUtils.isEmpty(set)){
+                        resDTO.setWorkerNum(set.size());
+                    }else {
+                        resDTO.setWorkerNum(taskIds.size());
+                    }
+                    //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
+                    String chargeMan = feedbackMapper.getChargeMan(taskIds.get(0));
+                    resDTO.setChargeMan(chargeMan);
                 }
-                //查询最早创建的任务id
-                Long taskid = feedbackPlanTaskMapper.getFirstCreateTask(planId);
-                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
-                String chargeMan = feedbackMapper.getChargeMan(taskid);
-                resDTO.setChargeMan(chargeMan);
                 list.add(resDTO);
             });
 
@@ -346,48 +347,64 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             demandRunningBOS.stream().forEach(demandRunningBO -> {
                 DemandRunningResDTO resDTO = new DemandRunningResDTO();
                 BeanUtils.copyProperties(demandRunningBO,resDTO);
-
-
                 Long planId = feedbackPlanMapper.getPlanById(demandRunningBO.getId());
                 resDTO.setPlanId(planId);
-                //查询任务数
-                Integer taskNum = feedbackPlanTaskMapper.getTaskNum(planId);
-                resDTO.setTaskNum(taskNum);
-                //按begin_time升序排序,获取taskIds   第一个即为最早开发的任务id
-                List<Long> taskIds = feedbackPlanTaskMapper.getTaskIdByPlanId(planId);
-                //获取最早开发的任务的  开始时间
-                Long taskId = feedbackPlanTaskMapper.getFirstTask(planId);
-                Date beginTime = feedbackPlanTaskMapper.getBeginTime(taskId);
-                if (beginTime != null){
-                    Date today = new Date();
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setFirstDayOfWeek(Calendar.MONDAY);
-                    calendar.setTime(beginTime);
-                    int i = calendar.get(Calendar.WEEK_OF_YEAR);
-                    calendar.setTime(today);
-                    int j = calendar.get(Calendar.WEEK_OF_YEAR);
-                    Integer workTime = j - i;
-                    //设置任务进行时间
-                    resDTO.setWorkedWeeks(workTime);
 
-                    //设置任务开始时间
-                    resDTO.setStartTime(beginTime);
-                }
-                Set<Long> set = new HashSet<>();
+                //根据feedback_id查询task  按任务创建时间降序排序
+                List<Long> taskIds = feedbackMapper.selectTasks(demandRunningBO.getId());
                 if (!CollectionUtils.isEmpty(taskIds)){
+                    resDTO.setTaskNum(taskIds.size());
+
+                    Date beginTime = feedbackPlanTaskMapper.getBeginTime(taskIds.get(0));
+                    if (beginTime != null){
+                        Date today = new Date();
+
+                        Long weeks = (today.getTime()-beginTime.getTime())/1000/3600/24/7;
+                        if (weeks > 0){
+                            resDTO.setWorkedWeeks(weeks);
+                        }else {
+                            resDTO.setWorkedWeeks(1L);
+                        }
+
+                        /*Calendar calendar = Calendar.getInstance();
+                        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+                        calendar.setTime(beginTime);
+                        int i = calendar.get(Calendar.WEEK_OF_YEAR);
+                        calendar.setTime(today);
+                        int j = calendar.get(Calendar.WEEK_OF_YEAR);
+                        Integer workTime = j - i;
+
+                        //设置任务进行时间
+                        if (workTime == 0){
+                            resDTO.setWorkedWeeks(1);
+                        }else {
+                            resDTO.setWorkedWeeks(workTime);
+
+                        }*/
+
+                        //设置任务开始时间
+                        resDTO.setStartTime(beginTime);
+                    }
+                    Set<Long> set = new HashSet<>();
                     for (Long taskId1 : taskIds) {
                         List<Long> persons = feedbackPlanTaskMapper.getPerson(taskId1);
                         set.addAll(persons);
                     }
                     //设置开发人数
-                    resDTO.setWorkerNum(set.size());
+
+                    if (!CollectionUtils.isEmpty(set)){
+                        resDTO.setWorkerNum(set.size());
+                    }else {
+                        resDTO.setWorkerNum(taskIds.size());
+                    }
+
+                    //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
+                    String chargeMan = feedbackMapper.getChargeMan(taskIds.get(0));
+                    //设置负责人
+                    resDTO.setChargeMan(chargeMan);
                 }
-                //查询最早创建的任务id
-                Long taskid = feedbackPlanTaskMapper.getFirstCreateTask(planId);
-                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
-                String chargeMan = feedbackMapper.getChargeMan(taskid);
-                //设置负责人
-                resDTO.setChargeMan(chargeMan);
+
+
                 list.add(resDTO);
             });
         }

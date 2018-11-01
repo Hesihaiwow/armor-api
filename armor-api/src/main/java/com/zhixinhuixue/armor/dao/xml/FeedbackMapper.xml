@@ -500,9 +500,9 @@
     select distinct f.id,f.title,f.status,f.likes_num from feedback f
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
-    LEFT JOIN task_user tu on fpt.task_id = tu.task_id
+    LEFT JOIN task t on fpt.task_id = t.id
     <where>
-      is_delete = 0
+      f.is_delete = 0
       <if test="beginTime != null">
         <![CDATA[ AND  f.create_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
       </if>
@@ -510,7 +510,7 @@
         <![CDATA[ AND  f.create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
       </if>
       and f.create_by = #{user}
-      or tu.user_id = #{user}
+      or t.create_by = #{user}
     </where>
   </select>
 
@@ -633,6 +633,23 @@
   <!--获取需求附件-->
   <select id="getUrl" resultType="java.lang.String">
     select url from feedback_accessory where feedback_id = #{demandId}
+  </select>
+
+  <!--根据feedback_id查询task-->
+  <select id="selectTasks" resultType="java.lang.Long">
+    SELECT t.task_id FROM feedback_plan_task t
+    JOIN feedback_plan p on p.id = t.feedback_plan_id
+    JOIN task ts ON t.task_id = ts.id
+    WHERE p.feedback_id = #{id}
+    ORDER BY ts.create_time ASC
+  </select>
+
+  <select id="selectEndTasks" resultType="java.lang.Long">
+    SELECT t.task_id FROM feedback_plan_task t
+    JOIN feedback_plan p on p.id = t.feedback_plan_id
+    JOIN task ts ON t.task_id = ts.id
+    WHERE p.feedback_id = #{id}
+    ORDER BY ts.end_time DESC
   </select>
 
 
