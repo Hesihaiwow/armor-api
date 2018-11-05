@@ -46,7 +46,7 @@ public interface IZSYFeedbackPlanMapper {
      * @param id
      * @return
      */
-    Long getPlanById(Long id);
+    Long selectPlanById(Long id);
 
     /**
      * 获取需求计划

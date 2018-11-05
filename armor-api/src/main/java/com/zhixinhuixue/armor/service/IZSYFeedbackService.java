@@ -174,14 +174,14 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    DemandIsReadResDTO isRead(String id);
+    DemandIsOperateResDTO isRead(String id);
 
     /**
      * 查看是否已点赞
      * @param id
      * @return
      */
-    DemandIsLikeResDTO isLike(String id);
+    DemandIsOperateResDTO isLike(String id);
 
     /**
      * 新增需求所属项目
@@ -201,14 +201,14 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    DemandIsReadResDTO isAgree(String id);
+    DemandIsOperateResDTO isAgree(String id);
 
     /**
      * 需求是否驳回
      * @param id
      * @return
      */
-    DemandIsReadResDTO isReject(String id);
+    DemandIsOperateResDTO isReject(String id);
 
     /**
      * 获取需求附件

@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.service.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackMapper;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanMapper;
@@ -139,7 +140,7 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                 }
 
                 //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
-                String chargeMan = feedbackMapper.getChargeMan(planTaskBO.getPlanTask().getId());
+                String chargeMan = feedbackMapper.selectChargeManByTaskId(planTaskBO.getPlanTask().getId());
                 feedbackPlanListResDTO.setChargeMan(chargeMan);
             });
 
@@ -159,37 +160,26 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         });
 
-        List<FeedbackPlanListResDTO> list = new ArrayList<>();
+        List<FeedbackPlanListResDTO> filterList = new ArrayList<>();
 
-        if (reqDTO.getStage() != null && reqDTO.getStage() != ""){
-            Long stage = Long.valueOf(reqDTO.getStage());
-            /*for (FeedbackPlanListResDTO feedbackPlanListResDTO : feedbackPlanListResDTOS) {
-                if (feedbackPlanListResDTO.getStageId() != null && feedbackPlanListResDTO.getStageId().equals(stage) ){
-                    list.add(feedbackPlanListResDTO);
-                }
-            }*/
-            for (FeedbackPlanListResDTO feedbackPlanListResDTO : feedbackPlanListResDTOS) {
-                List<FeedbackTaskDetailResDTO> childs = feedbackPlanListResDTO.getChilds();
-                List<FeedbackTaskDetailResDTO> childs2 = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(childs)){
-                    for (FeedbackTaskDetailResDTO child : childs) {
-                        if (child.getStageId()!= null && child.getStageId().equals(stage)){
-                            childs2.add(child);
-                        }
-                    }
-                    feedbackPlanListResDTO.setChilds(childs2);
-                    list.add(feedbackPlanListResDTO);
-                }
-            }
+        if (!Strings.isNullOrEmpty(reqDTO.getStage())){
+            feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
+                List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
+                filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
+                        child.getStageId()!= null && child.getStageId().equals(Long.valueOf(reqDTO.getStage()))).collect(Collectors.toList()));
+                feedbackPlanListResDTO.setChilds(filterChilds);
+                filterList.add(feedbackPlanListResDTO);
+            });
+
             if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
-                return list.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
+                return filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
             }else if( reqDTO.getSort().equals(ZSYPlanSort.PERCENTDOWN.getValue())){
-                return  list.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
+                return  filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
             }
 
-            return list;
-        }
+            return filterList;
 
+        }
 
         if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
             return feedbackPlanListResDTOS.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());

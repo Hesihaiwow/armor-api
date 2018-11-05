@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiModelProperty;
 public class DemandJoinedResDTO {
     @ApiModelProperty("需求id")
     private Long id;
+    @ApiModelProperty("提出人")
+    private String createBy;
     @ApiModelProperty("需求标题")
     private String title;
     @ApiModelProperty("当前队列(状态)")
@@ -22,6 +24,14 @@ public class DemandJoinedResDTO {
     private String chargeMan;
     @ApiModelProperty("项目id")
     private Long projectId;
+
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
 
     public Long getProjectId() {
         return projectId;

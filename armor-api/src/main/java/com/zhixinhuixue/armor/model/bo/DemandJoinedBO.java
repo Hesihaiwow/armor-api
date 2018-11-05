@@ -18,6 +18,17 @@ public class DemandJoinedBO {
     private Integer likesNum;
     @ApiModelProperty("项目id")
     private Long projectId;
+    @ApiModelProperty("负责人")
+    private String chargeMan;
+
+
+    public String getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(String chargeMan) {
+        this.chargeMan = chargeMan;
+    }
 
     public Long getProjectId() {
         return projectId;

@@ -51,14 +51,14 @@ public interface IZSYFeedbackPlanTaskMapper {
      * @param taskId
      * @return
      */
-    List<Long> getPerson(@Param("taskId") Long taskId);
+    List<Long> selectPersonByTaskId(@Param("taskId") Long taskId);
 
     /**
      * 根据taskId获取任务开始时间
      * @param taskId
      * @return
      */
-    Date getBeginTime(@Param("taskId")Long taskId);
+    Date selectBeginTime(@Param("taskId")Long taskId);
 
 
 
@@ -82,7 +82,7 @@ public interface IZSYFeedbackPlanTaskMapper {
      * @param planId
      * @return
      */
-    Long getFirstCreateTask(Long planId);
+    Long selectFirstCreateTask(Long planId);
 
     /**
      * 获取最后完成的任务
