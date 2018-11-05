@@ -148,7 +148,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                                 <el-select clearable filterable  v-model="chargeMan1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                               :value="item.name"></el-option>
+                                               :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <el-button type="primary" size="small" @click="select1">查询</el-button>
@@ -472,7 +472,7 @@
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                             <el-select clearable filterable  v-model="chargeMan2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                           :value="item.name"></el-option>
+                                           :value="item.id"></el-option>
                             </el-select>
                         </div>
                         <el-button type="primary" size="small" @click="select2">查询</el-button>
@@ -560,7 +560,7 @@
                                 clearable
                         >
                         </el-date-picker>
-                        <div class="demand-top-list fl">
+                        <div class="demand-top-list fl" v-if="!permit">
                             <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
                             <el-select clearable filterable  v-model="introducer5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
@@ -571,7 +571,7 @@
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                             <el-select clearable filterable  v-model="chargeMan5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                           :value="item.name"></el-option>
+                                           :value="item.id"></el-option>
                             </el-select>
                         </div>
                         <el-button type="primary" size="small" @click="select5">查询</el-button>
@@ -1055,7 +1055,7 @@
                     ],
                     title: [
                         {required: true,  message: '需求名称不能为空', trigger: 'blur'},
-                        {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
+                        {min: 5, max: 100, message: '长度在 5 到 100 个字符', trigger: 'blur'}
                     ],
                     // type: [
                     //     {required: true, message: '类型不能空', trigger:'blur'}
@@ -1064,10 +1064,12 @@
                     //     {required: true, message: '优先级不能空', trigger:'blur'}
                     // ],
                     question:[
-                        {required: true, message: '问题不能为空', trigger:'blur'}
+                        {required: true, message: '问题不能为空', trigger:'blur'},
+                        {min: 5, max: 100, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
                     target:[
-                        {required: true, message: '目标不能为空', trigger:'blur'}
+                        {required: true, message: '目标不能为空', trigger:'blur'},
+                        {min: 5, max: 100, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
                     // releaseTime:[
                     //     {required: true, message: '期待上线时间不能为空', trigger:'blur'}
@@ -1157,7 +1159,11 @@
                     this.proReqDTO.projectId = String(this.project)
                 }
                 http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
-
+                    this.$message({
+                        showClose: true,
+                        message: '项目添加成功',
+                        type: 'success'
+                    });
                 })
             },
 
@@ -1440,7 +1446,7 @@
             feedbackPlan(feedback){
                 this.clearPlan();
                 http.zsyGetHttp('/feedback/demand/project/'+feedback.id,{},(res) => {
-                    if (res.data.projectId == "0"){
+                    if (res.data.projectId == 0){
                         //此时没有添加项目
                         this.projectVisible = true
                     }

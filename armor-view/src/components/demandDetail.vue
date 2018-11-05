@@ -254,7 +254,7 @@
             },
             //是否已上线
             isOnline(){
-              http.zsyGetHttp('/feedback/demand/isonline/'+this.id,{},(res)=>{
+              http.zsyGetHttp('/feedback/demand/is-online/'+this.id,{},(res)=>{
                   if (res.data.onlineTime != null){
                       console.log(2222)
                       this.isOnlieVisible = false
@@ -273,7 +273,7 @@
             },
             //查看当前需求是否已读
             isRead(){
-                http.zsyGetHttp('/feedback/demand/isread/'+this.id,{},(res)=>{
+                http.zsyGetHttp('/feedback/demand/is-read/'+this.id,{},(res)=>{
                     if (res.data.count == 0){
                         this.isReadVisible = false
                         this.readDemand()
@@ -289,7 +289,7 @@
             },
             //查看需求是否点赞
             isLike(){
-              http.zsyGetHttp('/feedback/demand/islike/'+this.id,{},(res)=> {
+              http.zsyGetHttp('/feedback/demand/is-like/'+this.id,{},(res)=> {
                     if (res.data.count == 0){
                         this.isLikeVisible = true
                     }
@@ -335,7 +335,7 @@
             },
             //查看是否已采纳
             isAgree(){
-              http.zsyGetHttp('/feedback/demand/isagree/'+this.id,{},(res)=>{
+              http.zsyGetHttp('/feedback/demand/is-agree/'+this.id,{},(res)=>{
                   if (res.data.count == 0){
                       this.agreeVisible = true
                   }
@@ -353,7 +353,7 @@
             },
             //查看需求是否驳回
             isReject(){
-              http.zsyGetHttp('/feedback/demand/isreject/'+this.id,{},(res)=>{
+              http.zsyGetHttp('/feedback/demand/is-reject/'+this.id,{},(res)=>{
                   if (res.data.count == 0){
                       this.rejectVisible = true
                   }
