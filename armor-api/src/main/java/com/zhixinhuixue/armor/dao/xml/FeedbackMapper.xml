@@ -500,12 +500,14 @@
     </where>
   </select>
 
-  <!--获取我提出的需求-->
+  <!--获取我参与的需求-->
   <select id="getDemandJoinedList" resultMap="demandJoinedMap">
     select distinct f.id,f.title,f.status,f.likes_num from feedback f
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
     LEFT JOIN task t on fpt.task_id = t.id
+    LEFT JOIN task_user tu on tu.task_id = fpt.task_id
+
     <where>
       f.is_delete = 0
       <if test="beginTime != null">
@@ -514,8 +516,13 @@
       <if test="endTime != null">
         <![CDATA[ AND  f.create_time <= #{endTime,jdbcType=TIMESTAMP}]]>
       </if>
-      and f.create_by = #{user}
-      or t.create_by = #{user}
+      <if test="userRole != null and userRole != 2">
+        and f.create_by = #{user}
+      </if>
+      <if test="userRole != null and userRole == 2">
+        and t.create_by = #{user}
+        or tu.user_id = #{user}
+      </if>
     </where>
   </select>
 

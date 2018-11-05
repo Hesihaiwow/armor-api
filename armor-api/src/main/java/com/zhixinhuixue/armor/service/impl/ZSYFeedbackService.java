@@ -282,8 +282,9 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         Long user = ZSYTokenRequestContext.get().getUserId();
         Date beginTime = reqDTO.getBeginTime();
         Date endTime = reqDTO.getEndTime();
+        Integer userRole = ZSYTokenRequestContext.get().getUserRole();
         //我参与的需求
-        Page<DemandJoinedBO> demands = feedbackMapper.getDemandJoinedList(beginTime,endTime,user);
+        Page<DemandJoinedBO> demands = feedbackMapper.getDemandJoinedList(beginTime,endTime,user,userRole);
 
 
         Page<DemandJoinedResDTO> set = new Page<>();

@@ -102,7 +102,8 @@ public interface IZSYFeedbackMapper {
      * @param user
      * @return
      */
-    Page<DemandJoinedBO> getDemandJoinedList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime,@Param("user")Long user);
+    Page<DemandJoinedBO> getDemandJoinedList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
+            ,@Param("user")Long user,@Param("userRole")Integer userRole);
 
     /**
      * 获取我参与开发的需求
