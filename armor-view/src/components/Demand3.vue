@@ -62,7 +62,7 @@
                             <template scope="scope">
                                 <span v-if="scope.row.type == 0">个人建议</span>
                                 <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else>公司决策</span>
+                                <span v-else-if="scope.row.type == 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="优先级" align="center" width="100">
@@ -286,7 +286,7 @@
                             <template scope="scope">
                                 <span v-if="scope.row.type == 0">个人建议</span>
                                 <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else>公司决策</span>
+                                <span v-else-if="scope.row.type == 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="优先级" align="center" width="100">
@@ -393,7 +393,7 @@
                             <template scope="scope">
                                 <span v-if="scope.row.type == 0">个人建议</span>
                                 <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else>公司决策</span>
+                                <span v-else-if="scope.row.type == 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="优先级" align="center" width="100">
