@@ -1069,19 +1069,19 @@
                         {required: true,  message: '需求名称不能为空', trigger: 'blur'},
                         {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
-                    // type: [
-                    //     {required: true, message: '类型不能空', trigger:'blur'}
-                    // ],
-                    // priority:[
-                    //     {required: true, message: '优先级不能空', trigger:'blur'}
-                    // ],
+                    type: [
+                        {required: true, message: '类型不能空', trigger:'blur'}
+                    ],
+                    priority:[
+                        {required: true, message: '优先级不能空', trigger:'blur'}
+                    ],
                     question:[
                         {required: true, message: '问题不能为空', trigger:'blur'},
-                        {min: 5, max: 100, message: '长度在 5 到 200 个字符', trigger: 'blur'}
+                        {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
                     target:[
                         {required: true, message: '目标不能为空', trigger:'blur'},
-                        {min: 5, max: 100, message: '长度在 5 到 200 个字符', trigger: 'blur'}
+                        {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
                     // releaseTime:[
                     //     {required: true, message: '期待上线时间不能为空', trigger:'blur'}
@@ -1736,9 +1736,9 @@
                                 this.fetchNewDemandList();
                                 this.isSaving =false
                             });
-
                     }
                 })
+                this.clearDemandForm()
             },
 
             saveEdit(formName){
@@ -1799,7 +1799,6 @@
 
             //清空需求表单
             clearDemandForm(){
-
                 this.demandForm.id = null
                 this.demandForm.title = null
                 this.demandForm.type = null
@@ -1808,7 +1807,7 @@
                 this.demandForm.question = null
                 this.demandForm.target = null
                 this.demandForm.releaseTime = null
-                this.demandForm.content= null
+                this.demandForm.urlList = []
             },
 
             handleCurrentChange(currentPage){
