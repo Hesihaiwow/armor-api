@@ -618,22 +618,24 @@
         </div>
         <el-dialog :visible.sync="newDemandVisible" title="提需求" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false">
-            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px" :inline="true">
+            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="100px" >
                 <el-form-item label="需求标题" prop="title">
-                    <el-input  type="text" v-model="demandForm.title"></el-input>
-                </el-form-item><br>
+                    <el-input type="text" v-model="demandForm.title"></el-input>
+                </el-form-item>
+                <br>
                 <el-form-item label="类型" prop="type">
-                    <el-select class="fr" v-model="demandForm.type" placeholder="请选择类型" >
+                    <el-select v-model="demandForm.type" placeholder="请选择类型">
                         <el-option
-                                    v-for="item in types"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
+                                v-for="item in types"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
                         </el-option>
                     </el-select>
-                </el-form-item><br>
+                </el-form-item>
+                <br>
                 <el-form-item label="优先级" prop="priority">
-                    <el-select v-model="demandForm.priority" placeholder="请选择优先级" >
+                    <el-select v-model="demandForm.priority" placeholder="请选择优先级">
                         <el-option
                                 v-for="item in prioritys"
                                 :key="item.id"
@@ -641,18 +643,21 @@
                                 :value="item.id">
                         </el-option>
                     </el-select>
-                </el-form-item><br>
+                </el-form-item>
+                <br>
                 <el-form-item label="来源" prop="origin">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="问题:" prop="question" >
+                <el-form-item label="问题:" prop="question">
                     <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
                               resize="horizontal" size="large"></el-input>
-                </el-form-item><br>
+                </el-form-item>
+                <br>
                 <el-form-item label="目标:" prop="target">
                     <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
-                              resize="horizontal" ></el-input>
-                </el-form-item><br>
+                              resize="horizontal"></el-input>
+                </el-form-item>
+                <br>
                 <el-form-item label="期待上线日期:" prop="releaseTime">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
@@ -660,7 +665,8 @@
                             format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
-                </el-form-item><br>
+                </el-form-item>
+                <br>
                 <el-form-item label="上传附件">
                     <el-upload
                             class="avatar-uploader"
@@ -668,33 +674,35 @@
                             :http-request="upload"
                             :on-remove="handleRemove1"
                             :before-upload="beforeAvatarUpload"
-                            >
+                    >
                         <i class="el-icon-plus"></i>
                     </el-upload>
                 </el-form-item>
-                <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
-                    <el-button @click="saveDemand('demandForm')" type="primary" :loading="isSaving">保存</el-button>
-                </div >
+                <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px; text-align: center">
+                    <el-button @click="saveDemand('demandForm')"  type="primary" :loading="isSaving">保存</el-button>
+                </div>
             </el-form>
         </el-dialog>
         <el-dialog :visible.sync="editDemandVisible" title="编辑需求" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false">
             <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px" :inline="true">
                 <el-form-item label="需求标题" prop="title">
-                    <el-input  type="text" v-model="demandForm.title"></el-input>
-                </el-form-item><br>
+                    <el-input type="text" v-model="demandForm.title"></el-input>
+                </el-form-item>
+                <br>
                 <el-form-item label="类型" prop="type">
-                    <el-select class="fr" v-model="demandForm.type" placeholder="请选择类型" >
+                    <el-select class="fr" v-model="demandForm.type" placeholder="请选择类型">
                         <el-option
-                                    v-for="item in types"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
+                                v-for="item in types"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
                         </el-option>
                     </el-select>
-                </el-form-item><br>
+                </el-form-item>
+                <br>
                 <el-form-item label="优先级" prop="priority">
-                    <el-select v-model="demandForm.priority" placeholder="请选择优先级" >
+                    <el-select v-model="demandForm.priority" placeholder="请选择优先级">
                         <el-option
                                 v-for="item in prioritys"
                                 :key="item.id"
@@ -702,18 +710,21 @@
                                 :value="item.id">
                         </el-option>
                     </el-select>
-                </el-form-item><br>
+                </el-form-item>
+                <br>
                 <el-form-item label="来源" prop="origin">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="问题:" prop="question" >
+                <el-form-item label="问题:" prop="question">
                     <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
                               resize="horizontal" size="large"></el-input>
-                </el-form-item><br>
+                </el-form-item>
+                <br>
                 <el-form-item label="目标:" prop="target">
                     <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
-                              resize="horizontal" ></el-input>
-                </el-form-item><br>
+                              resize="horizontal"></el-input>
+                </el-form-item>
+                <br>
                 <el-form-item label="期待上线日期:" prop="releaseTime">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
@@ -724,7 +735,7 @@
                 </el-form-item>
                 <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
                     <el-button @click="saveEdit('demandForm')" type="primary" :loading="isSaving">保存</el-button>
-                </div >
+                </div>
             </el-form>
         </el-dialog>
         <el-dialog :visible.sync="planVisible" custom-class="myDialog"  title="计划" size="tiny"
@@ -1058,19 +1069,19 @@
                         {required: true,  message: '需求名称不能为空', trigger: 'blur'},
                         {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
-                    type: [
-                        {required: true, message: '类型不能空', trigger:'blur'}
-                    ],
-                    priority:[
-                        {required: true, message: '优先级不能空', trigger:'blur'}
-                    ],
+                    // type: [
+                    //     {required: true, message: '类型不能空', trigger:'blur'}
+                    // ],
+                    // priority:[
+                    //     {required: true, message: '优先级不能空', trigger:'blur'}
+                    // ],
                     question:[
                         {required: true, message: '问题不能为空', trigger:'blur'},
-                        {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
+                        {min: 5, max: 100, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
                     target:[
                         {required: true, message: '目标不能为空', trigger:'blur'},
-                        {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
+                        {min: 5, max: 100, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
                     // releaseTime:[
                     //     {required: true, message: '期待上线时间不能为空', trigger:'blur'}
@@ -1728,8 +1739,6 @@
 
                     }
                 })
-                this.clearDemandForm()
-
             },
 
             saveEdit(formName){
@@ -1799,7 +1808,7 @@
                 this.demandForm.question = null
                 this.demandForm.target = null
                 this.demandForm.releaseTime = null
-                this.demandForm.urlList = []
+                this.demandForm.content= null
             },
 
             handleCurrentChange(currentPage){
