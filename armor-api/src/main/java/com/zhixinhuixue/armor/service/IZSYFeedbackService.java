@@ -229,4 +229,48 @@ public interface IZSYFeedbackService {
      * @return
      */
     DemandOnlineResDTO isOnline(String id);
+
+    /**
+     * 查看学管端用户是否已读需求
+     * @param id
+     * @param userId
+     * @return
+     */
+    DemandIsOperateResDTO isReadByCoach(String id, String userId);
+
+    /**
+     * 学管端用户读取需求
+     * @param id
+     * @param userId
+     */
+    void readDemandByCoach(String id,String userId);
+
+    /**
+     * 查看学管端用户是否点赞需求
+     * @param id
+     * @param userId
+     * @return
+     */
+    DemandIsOperateResDTO isLikeByCoach(String id, String userId);
+
+    /**
+     * 学管端用户点赞需求
+     * @param id
+     * @param userId
+     */
+    void likeDemandByCoach(String id, String userId);
+
+    /**
+     * 学管端用户评论需求
+     * @param reqDTO
+     * @param userId
+     */
+    void replyDemandByCoach(DemandReplyReqDTO reqDTO, String userId);
+
+    /**
+     * 学管端新增需求
+     * @param reqDTO
+     * @param userId
+     */
+    void addDemandByCoach(DemandReqDTO reqDTO, String userId);
 }

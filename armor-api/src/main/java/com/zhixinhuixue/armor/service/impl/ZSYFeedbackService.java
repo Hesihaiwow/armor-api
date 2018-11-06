@@ -699,6 +699,92 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         return resDTO;
     }
 
+    /**
+     * 查看学管是否读取需求
+     * @param id
+     * @param userId
+     * @return
+     */
+    @Override
+    public DemandIsOperateResDTO isReadByCoach(String id, String userId) {
+        Integer count = feedbackMapper.selectIsRead(Long.valueOf(id),Long.valueOf(userId));
+        DemandIsOperateResDTO demandIsReadResDTO = new DemandIsOperateResDTO();
+        demandIsReadResDTO.setCount(count);
+        return demandIsReadResDTO;
+    }
+
+    @Override
+    @Transactional
+    public void readDemandByCoach(String id,String userId) {
+        Long demandId = Long.valueOf(id);
+        //设置readStatus为已读(1)
+        if (feedbackMapper.updateReadStatus(demandId) == 0){
+            throw new ZSYServiceException("更新已读状态失败");
+        }
+
+        //添加feedback_read
+        feedbackMapper.insertFeedbackRead(snowFlakeIDHelper.nextId(),demandId,Long.valueOf(userId),new Date());
+    }
+
+    @Override
+    public DemandIsOperateResDTO isLikeByCoach(String id, String userId) {
+        Integer count = feedbackMapper.selectIsRead(Long.valueOf(id),Long.valueOf(userId));
+        DemandIsOperateResDTO demandIsReadResDTO = new DemandIsOperateResDTO();
+        demandIsReadResDTO.setCount(count);
+        return demandIsReadResDTO;
+    }
+
+    @Override
+    @Transactional
+    public void likeDemandByCoach(String id, String userId) {
+        Long demandId = Long.valueOf(id);
+        //新增feedback_likes
+        feedbackMapper.insertDemandLikes(demandId,Long.valueOf(userId),snowFlakeIDHelper.nextId(),new Date());
+
+        //feedback中likesNum +1
+        if (feedbackMapper.updateLikesNum(demandId) == 0){
+            throw new ZSYServiceException("点赞失败");
+        }
+    }
+
+    @Override
+    public void replyDemandByCoach(DemandReplyReqDTO reqDTO, String userId) {
+        feedbackMapper.insertReply(Long.valueOf(reqDTO.getDemandId()),Long.valueOf(userId),reqDTO.getContent()
+                ,snowFlakeIDHelper.nextId(),new Date());
+    }
+
+    @Override
+    public void addDemandByCoach(DemandReqDTO reqDTO, String userId) {
+        Demand demand = new Demand();
+        //新增需求时,不设置项目,暂时设置projectId为0L,再计划中加入项目
+        demand.setId(snowFlakeIDHelper.nextId());
+        demand.setProjectId(0L);
+        demand.setFeedbackTime(new Date());
+        demand.setStatus(ZSYFeedbackStatus.NEW.getValue());
+        demand.setCreateBy(Long.valueOf(userId));
+        demand.setCreateTime(new Date());
+        demand.setUpdateTime(new Date());
+        demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        demand.setReadStatus(0);
+        demand.setContent("");
+        feedbackMapper.insertDemand(demand);
+
+        if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
+            //把附件地址添加到feedback_accessory
+            List<String> urls = reqDTO.getUrlList();
+            List<DemandAccessory> list = new ArrayList<>();
+            for (String url : urls) {
+                DemandAccessory demandAccessory = new DemandAccessory();
+                demandAccessory.setId(snowFlakeIDHelper.nextId());
+                demandAccessory.setDemandId(demand.getId());
+                demandAccessory.setUrl(url);
+                demandAccessory.setCreateTime(new Date());
+                list.add(demandAccessory);
+            }
+            feedbackMapper.insertFeedbackAccessory(list);
+        }
+    }
+
 
     @Override
     public List<String> getOrigin() {
