@@ -15,7 +15,7 @@ import java.util.List;
 @ApiModel("新需求参数")
 public class DemandReqDTO {
     @NotBlank(message = "需求标题不能为空")
-    @Size(min = 5,max = 100,message = "需求标题长度为{min}~{max}之间")
+    @Size(min = 1,max = 100,message = "需求标题长度为{min}~{max}之间")
     @ApiModelProperty("需求标题")
     private String title;
 
@@ -28,17 +28,17 @@ public class DemandReqDTO {
     private Long priority;
 
     @NotBlank(message = "需求来源不能为空")
-    @Size(min = 2,max = 50,message = "来源长度为{min}~{max}之间")
+    @Size(min = 1,max = 50,message = "来源长度为{min}~{max}之间")
     @ApiModelProperty("来源")
     private String origin;
 
     @NotBlank(message = "需求问题不能为空")
-    @Size(min = 10,max = 200,message = "问题长度为{min}~{max}之间")
+    @Size(min = 5,max = 200,message = "问题长度为{min}~{max}之间")
     @ApiModelProperty("问题")
     private String question;
 
     @NotBlank(message = "需求目标不能为空")
-    @Size(min = 10,max = 200,message = "目标长度为{min}~{max}之间")
+    @Size(min = 5,max = 200,message = "目标长度为{min}~{max}之间")
     @ApiModelProperty("目标")
     private String target;
 
