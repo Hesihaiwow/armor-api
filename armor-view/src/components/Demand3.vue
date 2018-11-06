@@ -1052,10 +1052,11 @@
                 rules: {
                     origin: [
                         {required: true,  message: '需求来源不能为空', trigger: 'blur'},
+                        {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
                     title: [
                         {required: true,  message: '需求名称不能为空', trigger: 'blur'},
-                        {min: 5, max: 100, message: '长度在 5 到 100 个字符', trigger: 'blur'}
+                        {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
                     // type: [
                     //     {required: true, message: '类型不能空', trigger:'blur'}
