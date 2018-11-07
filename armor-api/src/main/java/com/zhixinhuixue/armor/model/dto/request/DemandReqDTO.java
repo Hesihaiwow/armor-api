@@ -2,16 +2,20 @@ package com.zhixinhuixue.armor.model.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by SCH on 2018-10-22
  */
 @ApiModel("新需求参数")
 public class DemandReqDTO {
-    @NotNull(message = "需求标题不能为空")
+    @NotBlank(message = "需求标题不能为空")
+    @Size(min = 1,max = 100,message = "需求标题长度为{min}~{max}之间")
     @ApiModelProperty("需求标题")
     private String title;
 
@@ -23,15 +27,18 @@ public class DemandReqDTO {
     @ApiModelProperty("优先级")
     private Long priority;
 
-    @NotNull(message = "需求来源不能为空")
+    @NotBlank(message = "需求来源不能为空")
+    @Size(min = 1,max = 50,message = "来源长度为{min}~{max}之间")
     @ApiModelProperty("来源")
     private String origin;
 
-    @NotNull(message = "需求问题不能为空")
+    @NotBlank(message = "需求问题不能为空")
+    @Size(min = 5,max = 200,message = "问题长度为{min}~{max}之间")
     @ApiModelProperty("问题")
     private String question;
 
-    @NotNull(message = "需求目标不能为空")
+    @NotBlank(message = "需求目标不能为空")
+    @Size(min = 5,max = 200,message = "目标长度为{min}~{max}之间")
     @ApiModelProperty("目标")
     private String target;
 
@@ -39,28 +46,15 @@ public class DemandReqDTO {
     @ApiModelProperty("期待上线时间")
     private Date releaseTime;
 
-    @ApiModelProperty("原始需求")
-    private String content;
+    @ApiModelProperty("附件地址")
+    private List<String> urlList;
 
-//    @NotNull(message = "需求项目不能为空")
-//    @ApiModelProperty("项目id")
-//    private Long projectId;
-
-//    public Long getProjectId() {
-//        return projectId;
-//    }
-//
-//    public void setProjectId(Long projectId) {
-//        this.projectId = projectId;
-//    }
-
-
-    public String getContent() {
-        return content;
+    public List<String> getUrlList() {
+        return urlList;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setUrlList(List<String> urlList) {
+        this.urlList = urlList;
     }
 
     public String getTitle() {

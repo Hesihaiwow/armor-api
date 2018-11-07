@@ -46,9 +46,29 @@ public class DemandRunningResDTO {
     @ApiModelProperty("开发人数")
     private Integer workerNum;
     @ApiModelProperty("已进行周数(自然周)")
-    private Integer workedWeeks;
+    private Long workedWeeks;
     @ApiModelProperty("计划id")
     private Long planId;
+    @ApiModelProperty("项目id")
+    private Long projectId;
+    @ApiModelProperty("状态")
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
 
     public Long getPlanId() {
         return planId;
@@ -186,11 +206,11 @@ public class DemandRunningResDTO {
         this.workerNum = workerNum;
     }
 
-    public Integer getWorkedWeeks() {
+    public Long getWorkedWeeks() {
         return workedWeeks;
     }
 
-    public void setWorkedWeeks(Integer workedWeeks) {
+    public void setWorkedWeeks(Long workedWeeks) {
         this.workedWeeks = workedWeeks;
     }
 }

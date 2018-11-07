@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.service.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.zhixinhuixue.armor.dao.IZSYFeedbackMapper;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanMapper;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
@@ -41,6 +43,9 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
     @Autowired
     private IZSYTaskMapper izsyTaskMapper;
+
+    @Autowired
+    private IZSYFeedbackMapper feedbackMapper;
 
     @Override
     public List<FeedbackPlanListResDTO> getFeedbackPlanList(FeedbackPlanListReqDTO feedbackPlanListReqDTO) {
@@ -104,7 +109,6 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         List<FeedbackPlanTaskListBO> feedbackPlanBOS = izsyFeedbackPlanMapper.getDemandPlanBySort(reqDTO);
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
-        List<FeedbackPlanListResDTO> list = new ArrayList<>();
         feedbackPlanBOS.stream().forEach(planTask -> {
             if(planTask==null){
                 System.out.println(1);
@@ -135,6 +139,9 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                     taskDetailResDTO.setPercent(100);
                 }
 
+                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
+                String chargeMan = feedbackMapper.selectChargeManByTaskId(planTaskBO.getPlanTask().getId());
+                feedbackPlanListResDTO.setChargeMan(chargeMan);
             });
 
             feedbackPlanListResDTO.setChilds(task);
@@ -153,22 +160,26 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         });
 
+        List<FeedbackPlanListResDTO> filterList = new ArrayList<>();
 
-        /*if (reqDTO.getStage() != null && reqDTO.getStage() !=""){
-            Long stage = Long.valueOf(reqDTO.getStage());
-            for (FeedbackPlanListResDTO planListResDTO : feedbackPlanListResDTOS) {
-                Long stageId = planListResDTO.getStageId();
-                if (stageId != null && planListResDTO.getStageId().equals(stage)){
-                    list.add(planListResDTO);
-                }
-                if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
-                    return list.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
-                }else if( reqDTO.getSort().equals(ZSYPlanSort.PERCENTDOWN.getValue())){
-                    return  list.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
-                }
-                return list;
+        if (!Strings.isNullOrEmpty(reqDTO.getStage())){
+            feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
+                List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
+                filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
+                        child.getStageId()!= null && child.getStageId().equals(Long.valueOf(reqDTO.getStage()))).collect(Collectors.toList()));
+                feedbackPlanListResDTO.setChilds(filterChilds);
+                filterList.add(feedbackPlanListResDTO);
+            });
+
+            if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
+                return filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
+            }else if( reqDTO.getSort().equals(ZSYPlanSort.PERCENTDOWN.getValue())){
+                return  filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
             }
-        }*/
+
+            return filterList;
+
+        }
 
         if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
             return feedbackPlanListResDTOS.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());

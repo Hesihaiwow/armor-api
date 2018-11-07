@@ -110,7 +110,7 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    DemandDetailResDTO getDemandDetail(String id);
+    DemandDetailResDTO getDemandDetail(String id,String status);
 
     /**
      * 获取需求回复详情
@@ -174,18 +174,103 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    DemandIsReadResDTO isRead(String id);
+    DemandIsOperateResDTO isRead(String id);
 
     /**
      * 查看是否已点赞
      * @param id
      * @return
      */
-    DemandIsLikeResDTO isLike(String id);
+    DemandIsOperateResDTO isLike(String id);
 
     /**
      * 新增需求所属项目
      * @param reqDTO
      */
     void addDemandProject(DemandProjectReqDTO reqDTO);
+
+    /**
+     * 获取需求所属项目
+     * @param id
+     * @return
+     */
+    DemandProjectResDTO getProjectId(String id);
+
+    /**
+     * 需求是否已采纳
+     * @param id
+     * @return
+     */
+    DemandIsOperateResDTO isAgree(String id);
+
+    /**
+     * 需求是否驳回
+     * @param id
+     * @return
+     */
+    DemandIsOperateResDTO isReject(String id);
+
+    /**
+     * 获取需求附件
+     * @param id
+     * @return
+     */
+    List<String> getUrl(String id);
+
+    /**
+     * 完成需求上线
+     * @param id
+     */
+    void demandOnline(String id);
+
+    /**
+     * 需求是否已上线
+     * @param id
+     * @return
+     */
+    DemandOnlineResDTO isOnline(String id);
+
+    /**
+     * 查看学管端用户是否已读需求
+     * @param id
+     * @param userId
+     * @return
+     */
+    DemandIsOperateResDTO isReadByCoach(String id, String userId);
+
+    /**
+     * 学管端用户读取需求
+     * @param id
+     * @param userId
+     */
+    void readDemandByCoach(String id,String userId);
+
+    /**
+     * 查看学管端用户是否点赞需求
+     * @param id
+     * @param userId
+     * @return
+     */
+    DemandIsOperateResDTO isLikeByCoach(String id, String userId);
+
+    /**
+     * 学管端用户点赞需求
+     * @param id
+     * @param userId
+     */
+    void likeDemandByCoach(String id, String userId);
+
+    /**
+     * 学管端用户评论需求
+     * @param reqDTO
+     * @param userId
+     */
+    void replyDemandByCoach(DemandReplyReqDTO reqDTO, String userId);
+
+    /**
+     * 学管端新增需求
+     * @param reqDTO
+     * @param userId
+     */
+    void addDemandByCoach(DemandReqDTO reqDTO, String userId);
 }

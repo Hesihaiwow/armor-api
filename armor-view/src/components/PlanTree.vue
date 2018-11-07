@@ -9,7 +9,7 @@
   			<span class="fl source">需求来源：{{model.origin}}</span>
   			<span class="date fl">截止{{model.endTime}}</span>
   			<span class="fl progress"><em class="fl" :style="'width:'+model.percent+'%'">{{model.percent}}%</em></span>
-			<span>负责人:{{model.origin}}</span>
+			<span>负责人:{{model.chargeMan}}</span>
   		</div>
   		<div class="fr disc-status" v-show="model.origin== null"  v-on="stageIcon(model)">
   			<a href="javascript:;" :class="stage.design">设计</a>

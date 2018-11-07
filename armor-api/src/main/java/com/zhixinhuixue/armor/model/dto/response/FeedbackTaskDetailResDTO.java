@@ -34,8 +34,17 @@ public class FeedbackTaskDetailResDTO {
 
     private String stageName;
 
+    private Long stageId;
+
     private Integer percent;
 
+    public Long getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
+    }
 
     public Long getId() {
         return id;

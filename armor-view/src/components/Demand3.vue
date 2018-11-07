@@ -40,7 +40,7 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select(0)">查询</el-button>
+                            <el-button type="primary" size="small" @click="select0">查询</el-button>
                             <el-button type="primary" size="small" @click="newDemandVisible=true,clearDemandForm()" v-show="permit">提需求</el-button>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
                                 <!--<a style="color:#20a0ff;cursor: pointer;" @click.stop.prevent="demandDetail(scope.row.id)">{{scope.row.title}}</a>-->
-                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
+                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
                             </template>
                         </el-table-column>
                         <el-table-column  label="来源" align="center" width="100">
@@ -62,7 +62,7 @@
                             <template scope="scope">
                                 <span v-if="scope.row.type == 0">个人建议</span>
                                 <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else>公司决策</span>
+                                <span v-else-if="scope.row.type == 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="优先级" align="center" width="100">
@@ -95,9 +95,10 @@
                                 <div type="text" v-for="item in readStatuses" v-if="item.id == scope.row.readStatus">{{item.name}}</div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" align="center">
+                        <el-table-column label="操作" align="center" v-if="permit" width="150" fixed="right">
                             <template scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;" @click="editDemandVisible=true,editDemand(scope.row)">编辑</a>
+                                <a style="color:#20a0ff;cursor: pointer;" @click="deleteDemand(scope.row.id)">删除</a>
                             </template>
                         </el-table-column>
 
@@ -147,17 +148,17 @@
                                 <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                                 <el-select clearable filterable  v-model="chargeMan1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                               :value="item.name"></el-option>
+                                               :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select(1)">查询</el-button>
+                            <el-button type="primary" size="small" @click="select1">查询</el-button>
                         </div>
                     </div>
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
-                                <a style="color:#20a0ff;cursor: pointer;" @click="demandDetail(scope.row.id)">{{scope.row.title}}</a>
+                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
                             </template>
                         </el-table-column>
                         <el-table-column  label="提出人" align="center" width="80">
@@ -210,7 +211,7 @@
                                 <span>{{scope.row.expectOnlineTime | formatDate}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column  label="操作" align="center" width="165">
+                        <el-table-column  label="操作" align="center" width="165" fixed="right">
                             <template scope="scope">
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNum!=0">计划</el-button>
                                 <el-button @click="linkTask(scope.row.id)" type="text" size="small" v-show="permit && scope.row.planId!=null">关联任务</el-button>
@@ -266,14 +267,14 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select(4)">查询</el-button>
+                            <el-button type="primary" size="small" @click="select4">查询</el-button>
                         </div>
                     </div>
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
-                                <a style="color:#20a0ff;cursor: pointer;" @click="demandDetail(scope.row.id)">{{scope.row.title}}</a>
+                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
                             </template>
                         </el-table-column>
                         <el-table-column  label="来源" align="center" width="100">
@@ -285,7 +286,7 @@
                             <template scope="scope">
                                 <span v-if="scope.row.type == 0">个人建议</span>
                                 <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else>公司决策</span>
+                                <span v-else-if="scope.row.type == 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="优先级" align="center" width="100">
@@ -318,9 +319,10 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column  label="操作" align="center" width="130">
+                        <el-table-column  label="操作" align="center" width="130" fixed="right">
                             <template scope="scope">
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNum!=0">计划</el-button>
+                                <a style="color:#20a0ff;cursor: pointer;" v-show="permit" @click="deleteDemand(scope.row.id)">删除</a>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -372,14 +374,14 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select(3)">查询</el-button>
+                            <el-button type="primary" size="small" @click="select3">查询</el-button>
                         </div>
                     </div>
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
-                                <a style="color:#20a0ff;cursor: pointer;" @click="demandDetail(scope.row.id)">{{scope.row.title}}</a>
+                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
                             </template>
                         </el-table-column>
                         <el-table-column  label="来源" align="center" width="100">
@@ -391,7 +393,7 @@
                             <template scope="scope">
                                 <span v-if="scope.row.type == 0">个人建议</span>
                                 <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else>公司决策</span>
+                                <span v-else-if="scope.row.type == 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="优先级" align="center" width="100">
@@ -443,7 +445,7 @@
                 <el-tab-pane label="已完成" name="completed">
                     <div class="demand-top clearfix">
                         <el-date-picker
-                                v-model="beginTime"
+                                v-model="beginTime2"
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
@@ -452,7 +454,7 @@
                         </el-date-picker>
                         <span style="font-size: 14px;color: #606266;">-</span>
                         <el-date-picker
-                                v-model="endTime"
+                                v-model="endTime2"
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
@@ -461,25 +463,25 @@
                         </el-date-picker>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                            <el-select clearable filterable  v-model="introducer" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable  v-model="introducer2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
-                            <el-select clearable filterable  v-model="chargeMan" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable  v-model="chargeMan2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <el-button type="primary" size="small" @click="select(2)">查询</el-button>
+                        <el-button type="primary" size="small" @click="select2">查询</el-button>
                     </div>
                     <el-table :data="demandData" border>
-                        <el-table-column prop="no" label="序号" align="center" width="70"></el-table-column>
+                        <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
-                                <a style="color:#20a0ff;cursor: pointer;" @click="demandDetail(scope.row.id)">{{scope.row.title}}</a>
+                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
                             </template>
                         </el-table-column>
                         <el-table-column  label="提出人" align="center" width="80">
@@ -519,7 +521,7 @@
                         </el-table-column>
                         <el-table-column  label="已进行时间(周)" align="center" width="130">
                             <template scope="scope">
-                                <span>{{scope.row.workedWeeks}}</span>
+                                <span>{{scope.row.workedTime}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="上线日期" align="center" width="130">
@@ -542,7 +544,7 @@
                 <el-tab-pane label="我参与" name="joined">
                     <div class="demand-top clearfix">
                         <el-date-picker
-                                v-model="beginTime"
+                                v-model="beginTime5"
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
@@ -551,37 +553,37 @@
                         </el-date-picker>
                         <span style="font-size: 14px;color: #606266;">-</span>
                         <el-date-picker
-                                v-model="endTime"
+                                v-model="endTime5"
                                 align="right"
                                 type="date"
                                 value-format="yyyy-MM-dd"
                                 clearable
                         >
                         </el-date-picker>
-                        <div class="demand-top-list fl">
+                        <div class="demand-top-list fl" v-if="!permit">
                             <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                            <el-select clearable filterable  v-model="introducer" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable  v-model="introducer5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
-                            <el-select clearable filterable  v-model="chargeMan" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable  v-model="chargeMan5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                           :value="item.name"></el-option>
+                                           :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <el-button type="primary" size="small" @click="select(5)">查询</el-button>
+                        <el-button type="primary" size="small" @click="select5">查询</el-button>
                     </div>
                     <el-table :data="demandData" border>
-                        <el-table-column prop="no" label="序号" align="center" width="70"></el-table-column>
-                        <el-table-column  label="需求标题" align="center" width="250">
+                        <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
+                        <el-table-column  label="需求标题" align="center">
                             <template scope="scope">
-                                <a style="color:#20a0ff;cursor: pointer;" @click="demandDetail(scope.row.id)">{{scope.row.title}}</a>
+                                <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
                             </template>
                         </el-table-column>
-                        <el-table-column  label="当前队列" align="center" width="100">
+                        <el-table-column  label="当前队列" align="center" >
                             <template scope="scope">
                                 <span v-if="scope.row.status == 0">新需求</span>
                                 <span v-else-if="scope.row.status == 1">进行中</span>
@@ -616,22 +618,24 @@
         </div>
         <el-dialog :visible.sync="newDemandVisible" title="提需求" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false">
-            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px" :inline="true">
-                <el-form-item label="需求标题">
-                    <el-input prop="title" type="text" v-model="demandForm.title" clearable></el-input>
-                </el-form-item><br>
-                <el-form-item label="类型">
-                    <el-select v-model="demandForm.type" placeholder="请选择类型" size="small" style="width:100px;margin-left: -50px">
+            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="100px" >
+                <el-form-item label="需求标题" prop="title">
+                    <el-input type="text" v-model="demandForm.title"></el-input>
+                </el-form-item>
+                <br>
+                <el-form-item label="类型" prop="type">
+                    <el-select v-model="demandForm.type" placeholder="请选择类型">
                         <el-option
-                                    v-for="item in types"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
+                                v-for="item in types"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="优先级">
-                    <el-select v-model="demandForm.priority" placeholder="请选择优先级" size="small" style="width:100px;margin-left: -50px">
+                <br>
+                <el-form-item label="优先级" prop="priority">
+                    <el-select v-model="demandForm.priority" placeholder="请选择优先级">
                         <el-option
                                 v-for="item in prioritys"
                                 :key="item.id"
@@ -640,17 +644,88 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="来源">
+                <br>
+                <el-form-item label="来源" prop="origin">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="问题:">
-                    <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable resize="horizontal"></el-input>
-                </el-form-item><br>
-                <el-form-item label="目标:">
+                <el-form-item label="问题:" prop="question">
+                    <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
+                              resize="horizontal" size="large"></el-input>
+                </el-form-item>
+                <br>
+                <el-form-item label="目标:" prop="target">
                     <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
-                              resize="horizontal" ></el-input>
-                </el-form-item><br>
-                <el-form-item label="期待上线日期:">
+                              resize="horizontal"></el-input>
+                </el-form-item>
+                <br>
+                <el-form-item label="期待上线日期:" prop="releaseTime">
+                    <el-date-picker
+                            v-model="demandForm.releaseTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <br>
+                <el-form-item label="上传附件">
+                    <el-upload
+                            class="avatar-uploader"
+                            action=""
+                            :http-request="upload"
+                            :on-remove="handleRemove1"
+                            :before-upload="beforeAvatarUpload"
+                    >
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                </el-form-item>
+                <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px; text-align: center">
+                    <el-button @click="saveDemand('demandForm')"  type="primary" :loading="isSaving">保存</el-button>
+                </div>
+            </el-form>
+        </el-dialog>
+        <el-dialog :visible.sync="editDemandVisible" title="编辑需求" custom-class="myDialog" :close-on-click-modal="false"
+                   :close-on-press-escape="false">
+            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px" :inline="true">
+                <el-form-item label="需求标题" prop="title">
+                    <el-input type="text" v-model="demandForm.title"></el-input>
+                </el-form-item>
+                <br>
+                <el-form-item label="类型" prop="type">
+                    <el-select class="fr" v-model="demandForm.type" placeholder="请选择类型">
+                        <el-option
+                                v-for="item in types"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <br>
+                <el-form-item label="优先级" prop="priority">
+                    <el-select v-model="demandForm.priority" placeholder="请选择优先级">
+                        <el-option
+                                v-for="item in prioritys"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <br>
+                <el-form-item label="来源" prop="origin">
+                    <el-input type="text" v-model="demandForm.origin" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="问题:" prop="question">
+                    <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
+                              resize="horizontal" size="large"></el-input>
+                </el-form-item>
+                <br>
+                <el-form-item label="目标:" prop="target">
+                    <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
+                              resize="horizontal"></el-input>
+                </el-form-item>
+                <br>
+                <el-form-item label="期待上线日期:" prop="releaseTime">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
                             type="date"
@@ -659,23 +734,25 @@
                     </el-date-picker>
                 </el-form-item>
                 <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
-                    <el-button type="danger" @click="deleteDemand(0)"v-show="demandDeleteIcon">删除需求</el-button>
-                    <el-button @click="saveDemand('demandForm')" type="primary" :loading="isSaving">保存</el-button>
-                </div >
+                    <el-button @click="saveEdit('demandForm')" type="primary" :loading="isSaving">保存</el-button>
+                </div>
             </el-form>
         </el-dialog>
         <el-dialog :visible.sync="planVisible" custom-class="myDialog"  title="计划" size="tiny"
                    :close-on-click-modal="false" :close-on-press-escape="false">
-            <div class="ctpc-list clearfix">
+            <div class="ctpc-list clearfix" v-if="projectVisible">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
                 <div class="demand-top-list fl">
-                    <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
                     <el-select clearable filterable  v-model="project" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                         <el-option v-for="item in projectList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
                 </div>
                 <el-button type="primary" size="small" @click="updateDemandProject">添加项目</el-button>
+            </div>
+            <div class="ctpc-list clearfix" v-else>
+                <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
+                <div class="ctpc-list-con fl" v-for="item in projectList" v-if="item.id == demandForm.projectId">{{item.name}}</div>
             </div>
             <div class="ctpc-list clearfix">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>优先级</div>
@@ -705,10 +782,6 @@
                     <a class="fl ctpc-member-job-time" @click="directPlanTask(item.id)" style="color:black; cursor: pointer;">{{item.taskName|StringExtract}}</a>
                     <span class="fl ctpc-member-end-time">截止:{{item.endTime|formatDate}}</span>
                     <el-button v-show="permit&&item.id" style="margin-left: 20px" type="text" class="fl ctpc-member-end-time" @click="deleteTask(item.id,feedbackPlanForm.feedbackId,0,demandForm.status)">删除关联</el-button>
-                    <!--<span style="position: absolute;right: 10px;">-->
-                    <!--<el-button type="text" icon="edit" @click="modifyStep(index,planTask)"></el-button>-->
-                    <!--<el-button type="text" icon="close" @click="deleteTaskMember(index)"></el-button>-->
-                    <!--</span>-->
                 </div>
                 <div class="bdl-line"></div>
             </div>
@@ -829,7 +902,11 @@
 
     moment.locale('zh-cn');
     export default {
-
+        components: {
+            ElOption,
+            ElDialog,
+            quillEditor,
+            ElButton},
         name: "Demand3",
         data(){
             var validateEmpty = (rule, value, callback) => {
@@ -840,6 +917,14 @@
                 }
             };
             return {
+                id:'',
+                title:'',
+                question:'',
+                target:'',
+                releaseTime:'',
+                content:'',
+                projectId:'',
+                status:'',
                 pageNum0:1,
                 pageNum1:1,
                 pageNum2:1,
@@ -847,31 +932,25 @@
                 pageNum4:1,
                 pageNum5:1,
                 activeName:'new',
-                beginTime:'',
-                endTime:'',
-                priority:-1,
                 prioritys:[
                     {id:-1,name:'全部'},
                     {id:0,name:'普通'},
                     {id:1,name:'紧急'},
                     {id:2,name:'非常紧急'}
                 ],
-                type:-1,
+
                 types:[
                     {id:-1,name:'全部'},
                     {id:0,name:'个人建议'},
                     {id:1,name:'市场反馈'},
                     {id:2,name:'公司决策'},
                 ],
-                readStatus:-1,
                 readStatuses:[
                     {id:-1,name:'全部'},
                     {id:0,name:'未读'},
                     {id:1,name:'已读'},
                 ],
-                origin:'',
                 originList:[],
-                introducer:'',
                 introducerList:[],
                 chargeMan:'',
                 chargeManList:[],
@@ -880,6 +959,7 @@
                 linkTaskId:'',
                 taskData:[],
                 taskStep:{
+                    taskName:'',
                     index: '',
                     taskType:2,
                     name: '',
@@ -903,21 +983,41 @@
                 tagList:[],
                 project:'',
                 projectList:[],
+
+                type:-1,
+                priority:-1,
+                readStatus:-1,
+                origin:'',
+                introducer:'',
+
+
                 priority1:'',
                 type1:'',
                 readStatus1:'',
                 origin1:'',
                 chargeMan1:'',
+
                 priority4:'',
                 type4:'',
                 readStatus4:'',
                 origin4:'',
                 introducer4:'',
+
                 priority3:'',
                 type3:'',
                 readStatus3:'',
                 origin3:'',
                 introducer3:'',
+
+                introducer2:'',
+                chargeMan2:'',
+                beginTime2:'',
+                endTime2:'',
+
+                introducer5:'',
+                chargeMan5:'',
+                beginTime5:'',
+                endTime5:'',
 
                 reqDTO:{
                     pageNum:1,
@@ -931,6 +1031,7 @@
                     total:0,
                     currentPage:1
                 },
+                projectVisible:false,
                 showTaskDetail:false,
                 planVisible:false,
                 isSaving:false,
@@ -939,17 +1040,18 @@
                 demandDeleteIcon:false,
                 linkTaskVisible:false,
                 demandForm:{
-                    id:null,
-                    title:null,
-                    type:null,
-                    priority:null,
-                    origin:null,
-                    question:null,
-                    target:null,
-                    releaseTime:null,
-                    content:null,
+                    id:'',
+                    title:'',
+                    type:'',
+                    priority:'',
+                    origin:'',
+                    question:'',
+                    target:'',
+                    releaseTime:'',
+                    content:'',
                     projectId:'',
-                    status:''
+                    status:'',
+                    urlList:[]
                 },
                 feedbackPlanForm:{
                     id:'',
@@ -960,27 +1062,30 @@
                 },
                 rules: {
                     origin: [
-                        {required: true, validator: validateEmpty, message: '需求来源不能为空', trigger: 'blur'},
+                        {required: true,  message: '需求来源不能为空', trigger: 'blur'},
+                        {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
                     title: [
-                        {required: true, validator: validateEmpty, message: '需求名称不能为空', trigger: 'blur'},
+                        {required: true,  message: '需求名称不能为空', trigger: 'blur'},
                         {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
                     type: [
-                        {required: true,validator: validateEmpty, message: '类型不能空', trigger:'blur'}
+                        {required: true, message: '类型不能空', trigger:'blur'}
                     ],
                     priority:[
-                        {required: true,validator: validateEmpty, message: '优先级不能空', trigger:'blur'}
+                        {required: true, message: '优先级不能空', trigger:'blur'}
                     ],
                     question:[
-                        {required: true,validator: validateEmpty, message: '问题不能为空', trigger:'blur'}
+                        {required: true, message: '问题不能为空', trigger:'blur'},
+                        {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
                     target:[
-                        {required: true,validator: validateEmpty, message: '目标不能为空', trigger:'blur'}
+                        {required: true, message: '目标不能为空', trigger:'blur'},
+                        {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
-                    releaseTime:[
-                        {required: true,validator: validateEmpty, message: '期待上线时间不能为空', trigger:'blur'}
-                    ]
+                    // releaseTime:[
+                    //     {required: true, message: '期待上线时间不能为空', trigger:'blur'}
+                    // ]
                 },
 
 
@@ -1005,6 +1110,7 @@
             this.fetchUserList()
             this.fetchProjectList()
             this.fetchStageList()
+            this.fetchTagList()
 
 
         },
@@ -1016,19 +1122,60 @@
             getUserName(){
                 let userName = helper.decodeToken().userName;
                 return userName;
-            }
+            },
+            /*filetype(file) {
+                let filename = file
+                let index1 = filename.lastIndexOf('.')
+                let index2 = filename.length
+                return filename.substring(index1,index2)
+            }*/
         },
         methods:{
 
+            handleRemove1(file) {
+                this.demandForm.urlList.splice(this.demandForm.urlList.findIndex(item=>item.indexOf(file.name)>-1),1)
+            },
+
+            beforeAvatarUpload(file) {
+                /*const isJPG = file.type === 'image/jpeg'||file.type === 'image/png'||file.type === 'image/jpg';
+                const isWord = file.type === 'word/doc' || file.type === 'word/docx'
+                if ((!isJPG) && (!isWord) ) {
+                    this.$message.error('上传图片只能是 JPG、JPEG、PNG 格式!');
+                }*/
+
+
+                /*if ((type != '.jpg') && (type != '.jpeg')&& (type != '.png')&& (type != '.gmp')&& (type != '.gif')&& (type != '.ico')
+                    && (type != '.doc')&& (type != '.docx')&& (type != '.pdf')&& (type != '.xls')) {
+                    this.$message.error('上传文件只能为word,PDF,Excel和图片');
+                }*/
+
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isLt2M) {
+                    this.$message.error('上传文件大小不能超过 2MB!');
+                }
+                return  isLt2M;
+            },
+
+            upload(file) {
+                var data = new FormData();
+                data.append('uploadFile', file.file);
+
+                http.zsyPostHttp('/upload/file',data,(res)=> {
+                    this.demandForm.urlList.push(res.data.url)
+                })
+            },
             //添加项目
             updateDemandProject(){
                 if (this.project){
-                    console.log(this.feedbackPlanForm.id)
                     this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
                     this.proReqDTO.projectId = String(this.project)
                 }
                 http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
-
+                    this.$message({
+                        showClose: true,
+                        message: '项目添加成功',
+                        type: 'success'
+                    });
                 })
             },
 
@@ -1141,6 +1288,14 @@
                 }
             },
 
+            warnMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'warning'
+                });
+            },
+
             //添加任务
             saveAddTask() {
                 if (this.taskStep.taskName == '') {
@@ -1171,14 +1326,48 @@
                     this.warnMsg("请选择至少一项标签");
                     return;
                 }
-                for(var i =0;i< this.adminList.length;i++){
-                    if(this.taskStep.createBy == this.adminList[i].id){
-                        this.taskStep.userName = this.adminList[i].name
+                for(var i =0;i< this.chargeManList.length;i++){
+                    if(this.taskStep.createBy == this.chargeManList[i].id){
+                        this.taskStep.userName = this.chargeManList[i].name
                     }
                 }
 
+                this.showTaskDetail = !this.showTaskDetail;
+                if (this.taskStep.index === '') {
+                    let task = {}
+                    task.taskName = this.taskStep.taskName.trim()
+                    task.description = this.taskStep.description.trim()
+                    task.createBy = this.taskStep.createBy
+                    task.endTime = moment(this.taskStep.endTime).format('YYYY-MM-DD 23:59:59')
+                    task.taskType = this.taskStep.taskType
+                    task.projectId = 0
+                    task.priority = this.demandForm.priority
+                    task.facility = this.taskStep.facility
+                    task.stageId = this.taskStep.stageId
+                    task.tags = this.taskStep.tags
+                    task.userName = this.taskStep.userName
+                    this.planTask.push(task)
+                } else {
+                    // 取消css
+                    this.planTask[this.taskStep.index].cssClass = ''
+                }
 
-        },
+                this.taskStep = {
+                    index: '',
+                    taskName:'',
+                    createBy:'',
+                    taskType:2,
+                    description: '',
+                    userName:'',
+                    endTime: '',
+                    projectId: '',
+                    priority: '',
+                    facility: '',
+                    stageId:'',
+                    tags:''
+                }
+                this.stepTemp = {}
+            },
 
             //保存计划
             savePlan(num){
@@ -1268,6 +1457,12 @@
             //查询需求计划
             feedbackPlan(feedback){
                 this.clearPlan();
+                http.zsyGetHttp('/feedback/demand/project/'+feedback.id,{},(res) => {
+                    if (res.data.projectId == 0){
+                        //此时没有添加项目
+                        this.projectVisible = true
+                    }
+                })
                 this.feedbackPlanForm.feedbackId = feedback.id
                 this.feedbackPlanForm.projectId = feedback.projectId
                 this.demandForm.projectId =feedback.projectId
@@ -1324,19 +1519,52 @@
                 this.reqDTO.beginTime = null;
                 this.reqDTO.endTime = null;
             },
+            clear0(){
+                this.priority = null
+                this.type = null
+                this.readStatus = null
+                this.origin = null
+                this.introducer = null
+            },
+            clear1(){
+              this.priority1 = null
+              this.type1 = null
+              this.readStatus1 = null
+              this.origin1 = null
+              this.chargeMan1 = null
+            },
+            clear4(){
+                this.priority4 = null
+                this.type4 = null
+                this.readStatus4 = null
+                this.origin4 = null
+                this.introducer4 = null
+            },
+            clear3(){
+                this.priority3 = null
+                this.type3 = null
+                this.readStatus3 = null
+                this.origin3 = null
+                this.introducer3 = null
+            },
+            clear2(){
+                this.introducer2 = null
+                this.chargeMan2 = null
+                this.beginTime2 = null
+                this.endTime2 = null
+            },
+            clear5(){
+                this.introducer5 = null
+                this.chargeMan5 = null
+                this.beginTime5 = null
+                this.endTime5 = null
+            },
 
-            //按要求查询需求
-            select(num){
+            //条件查询新需求
+            select0(){
                 this.clearReqDTO()
                 this.reqDTO.pageNum = 1
-                /*priority:null,
-                    readStatus:null,
-                    user:null,
-                    chargeMan:null,
-                    origin:null,
-                    type:null,
-                    beginTime:null,
-                    endTime:null*/
+
                 if (this.priority != undefined && this.priority != null){
                     this.reqDTO.priority = this.priority
                 }
@@ -1344,49 +1572,134 @@
                     this.reqDTO.readStatus = this.readStatus
                 }
                 if(this.introducer){
-                    console.log(this.introducer)
                     this.reqDTO.user = String(this.introducer)
                 }
-                if (this.chargeMan){
-                    this.reqDTO.chargeMan = String(this.chargeMan)
-                }
+
                 if(this.origin){
                     this.reqDTO.origin = this.origin
                 }
                 if (this.type != undefined && this.priority != null){
                     this.reqDTO.type = this.type
                 }
-                if (this.beginTime){
-                    this.reqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+
+                this.fetchNewDemandList()
+            },
+            //条件查询进行中需求
+            select1(){
+                this.clearReqDTO()
+                this.reqDTO.pageNum = 1
+
+                if (this.priority1 != undefined && this.priority1 != null){
+                    this.reqDTO.priority = this.priority1
                 }
-                if (this.endTime){
-                    this.reqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 00:00:00')
+                if(this.readStatus1 != undefined && this.readStatus1 != null){
+                    this.reqDTO.readStatus = this.readStatus1
                 }
-                //当num为0  按要求查询新需求列表
-                if (num == 0){
-                    this.fetchNewDemandList()
+                if (this.type1 != undefined && this.type1 != null){
+                    this.reqDTO.type = this.type1
                 }
-                //当num为1  按要求查询进行中需求列表
-                if (num == 1){
-                    this.fetchRunningDemandList()
+                if (this.chargeMan1){
+                    this.reqDTO.chargeMan = String(this.chargeMan1)
                 }
-                //当num为2  按要求查询排队中需求列表
-                if (num == 4){
-                    this.fetchQueueDemandList()
-                }
-                //当num为3  按要求查询不采纳需求列表
-                if (num == 3){
-                    this.fetchRejectedDemandList()
-                }
-                //当num为4  按要求查询已完成需求列表
-                if (num == 2){
-                    this.fetchCompletedDemandList()
-                }
-                //当num为5  按要求查询我参与的需求列表
-                if (num == 5){
-                    this.fetchJoinedDemandList()
+                if(this.origin1){
+                    this.reqDTO.origin = this.origin1
                 }
 
+                this.fetchRunningDemandList()
+            },
+
+            //条件查询排队中需求
+            select4(){
+                this.clearReqDTO()
+                this.reqDTO.pageNum = 1
+
+                if (this.priority4 != undefined && this.priority4 != null){
+                    this.reqDTO.priority = this.priority4
+                }
+                if(this.readStatus4 != undefined && this.readStatus4 != null){
+                    this.reqDTO.readStatus4 = this.readStatus4
+                }
+                if(this.introducer4){
+                    this.reqDTO.user = String(this.introducer4)
+                }
+
+                if(this.origin4){
+                    this.reqDTO.origin = this.origin4
+                }
+                if (this.type4 != undefined && this.type4 != null){
+                    this.reqDTO.type = this.type4
+                }
+
+                this.fetchQueueDemandList()
+            },
+
+            //条件查询驳回需求
+            select3(){
+                this.clearReqDTO()
+                this.reqDTO.pageNum = 1
+
+                if (this.priority3 != undefined && this.priority3 != null){
+                    this.reqDTO.priority = this.priority3
+                }
+                if(this.readStatus3 != undefined && this.readStatus3 != null){
+                    this.reqDTO.readStatus = this.readStatus3
+                }
+                if(this.introducer3){
+                    this.reqDTO.user = String(this.introducer3)
+                }
+
+                if(this.origin3){
+                    this.reqDTO.origin = this.origin3
+                }
+                if (this.type3 != undefined && this.type3 != null){
+                    this.reqDTO.type = this.type3
+                }
+
+                this.fetchRejectedDemandList()
+            },
+
+            //条件查询已完成需求
+            select2(){
+                this.clearReqDTO()
+                this.reqDTO.pageNum = 1
+
+
+                if(this.introducer2){
+                    this.reqDTO.user = String(this.introducer2)
+                }
+                if (this.beginTime2){
+                    this.reqDTO.beginTime = moment(this.beginTime2).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.endTime2){
+                    this.reqDTO.endTime = moment(this.endTime2).format('YYYY-MM-DD 23:59:59')
+                }
+                if (this.chargeMan2){
+                    this.reqDTO.chargeMan = String(this.chargeMan2)
+                }
+
+                this.fetchCompletedDemandList()
+            },
+
+            //查询我参与的需求
+            select5(){
+                this.clearReqDTO()
+                this.reqDTO.pageNum = 1
+
+
+                if(this.introducer5){
+                    this.reqDTO.user = String(this.introducer5)
+                }
+                if (this.beginTime5){
+                    this.reqDTO.beginTime = moment(this.beginTime5).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.endTime5){
+                    this.reqDTO.endTime = moment(this.endTime5).format('YYYY-MM-DD 23:59:59')
+                }
+                if (this.chargeMan5){
+                    this.reqDTO.chargeMan = String(this.chargeMan5)
+                }
+
+                this.fetchJoinedDemandList()
             },
 
             //添加任务
@@ -1396,7 +1709,6 @@
 
             //跳转到需求详情页
             demandDetail(id){
-                console.log(id)
                 this.read(id);
                 this.$router.push({
                     path:'demandDetail',
@@ -1414,17 +1726,9 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid){
                         var param = this.demandForm
+
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
-                        if (this.demandForm.id != ''){
-                            http.zsyPutHttp('/feedback/demand/edit/'+String(this.demandForm.id),param,(res) => {
-                                this.$message({ showClose: true,message: '需求修改成功',type: 'success'});
-                                this.$refs[formName].resetFields();
-                                this.editDemandVisible = false
-                                this.fetchNewDemandList();
-                                this.isSaving =false
-                                this.demandDeleteIcon = false
-                            })
-                        }else {
+
                             http.zsyPostHttp('/feedback/demand/add', param, (resp) => {
                                 this.$message({ showClose: true,message: '需求创建成功',type: 'success'});
                                 this.$refs[formName].resetFields();
@@ -1432,7 +1736,27 @@
                                 this.fetchNewDemandList();
                                 this.isSaving =false
                             });
-                        }
+                    }
+                })
+                this.clearDemandForm()
+            },
+
+            saveEdit(formName){
+                this.isSaving = true
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var param = this.demandForm
+
+                        param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
+                        http.zsyPutHttp('/feedback/demand/edit/'+this.demandForm.id, param, (resp) => {
+                            this.$message({ showClose: true,message: '需求修改成功',type: 'success'});
+                            this.$refs[formName].resetFields();
+                            this.editDemandVisible = false
+                            if (this.demandForm.status == 0){
+                                this.fetchNewDemandList()
+                            }
+                            this.isSaving =false
+                    })
                     }
                 })
             },
@@ -1458,18 +1782,16 @@
             },
 
             //删除需求
-            deleteDemand(num){
+            deleteDemand(id){
                 this.$confirm('此操作将删除该需求, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    http.zsyDeleteHttp('/feedback/delete/'+this.demandForm.id, null, (resp) => {
+                    http.zsyDeleteHttp('/feedback/delete/'+id, null, (resp) => {
                         this.$message({ showClose: true,message: '需求删除成功',type: 'success'});
-                        this.feedbackVisible = false
-                        if (num == 0){
-                            this.fetchRunningDemandList();
-                        }
+                        this.fetchNewDemandList();
+                        this.fetchQueueDemandList()
                     });
                 }).catch(() => {
                 });
@@ -1477,7 +1799,6 @@
 
             //清空需求表单
             clearDemandForm(){
-
                 this.demandForm.id = null
                 this.demandForm.title = null
                 this.demandForm.type = null
@@ -1486,7 +1807,7 @@
                 this.demandForm.question = null
                 this.demandForm.target = null
                 this.demandForm.releaseTime = null
-                this.demandForm.content= null
+                this.demandForm.urlList = []
             },
 
             handleCurrentChange(currentPage){
@@ -1494,7 +1815,6 @@
 
             },
             handleCurrentChange1(currentPage){
-                console.log(currentPage)
                 this.fetchRunningDemandList()
 
             },
@@ -1523,21 +1843,27 @@
             },
             handleClick(tab, event) {
                 if(tab.name =="new"){
+                    this.clear0()
                     this.clearReqDTO()
                     this.fetchNewDemandList()
                 }else if(tab.name =="running"){
+                    this.clear1()
                     this.clearReqDTO()
                     this.fetchRunningDemandList()
                 }else if (tab.name=='queue'){
+                    this.clear4()
                     this.clearReqDTO()
                     this.fetchQueueDemandList()
                 }else if (tab.name == 'reject'){
+                    this.clear3()
                     this.clearReqDTO()
                     this.fetchRejectedDemandList()
                 } else  if (tab.name == 'completed'){
+                    this.clear2()
                     this.clearReqDTO()
                     this.fetchCompletedDemandList()
                 } else if (tab.name == 'joined'){
+                    this.clear5()
                     this.clearReqDTO()
                     this.fetchJoinedDemandList()
                 }

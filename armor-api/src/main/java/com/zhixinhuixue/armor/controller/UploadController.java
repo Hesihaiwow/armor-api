@@ -76,6 +76,8 @@ public class UploadController {
         try {
             JSONObject result = new JSONObject();
             result.put("url",upload(uploadFile));
+            return ZSYResult.success().data(result).build();
+
         }catch (IOException e){
             e.printStackTrace();
         }catch (MyException e){

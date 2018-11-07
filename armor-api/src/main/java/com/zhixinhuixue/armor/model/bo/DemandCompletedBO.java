@@ -33,6 +33,32 @@ public class DemandCompletedBO {
     private String question;
     @ApiModelProperty("目标")
     private String target;
+    @ApiModelProperty("项目id")
+    private Long projectId;
+    @ApiModelProperty("状态")
+    private Integer status;
+    @ApiModelProperty("负责人")
+    private String chargeMan;
+
+    public String getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(String chargeMan) {
+        this.chargeMan = chargeMan;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
 
     public Long getId() {
         return id;
@@ -128,5 +154,9 @@ public class DemandCompletedBO {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }

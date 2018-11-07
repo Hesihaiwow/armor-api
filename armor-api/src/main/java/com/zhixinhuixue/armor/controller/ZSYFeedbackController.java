@@ -111,9 +111,9 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("获取需求详情")
-    @GetMapping(value = "/demand/detail/{demandid}")
-    public String getDemandDetail(@PathVariable("demandid")String id){
-        return ZSYResult.success().data(feedbackService.getDemandDetail(id)).build();
+    @GetMapping(value = "/demand/detail/{demandId}/{status}")
+    public String getDemandDetail(@PathVariable("demandId")String id,@PathVariable("status")String status){
+        return ZSYResult.success().data(feedbackService.getDemandDetail(id,status)).build();
     }
 
     /**
@@ -122,8 +122,8 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("获取需求回复详情")
-    @GetMapping(value = "/demand/reply/{demandid}")
-    public String getDemandReply(@PathVariable("demandid")String id){
+    @GetMapping(value = "/demand/reply/{demandId}")
+    public String getDemandReply(@PathVariable("demandId")String id){
         return ZSYResult.success().data(feedbackService.getDemandReply(id)).build();
     }
 
@@ -133,8 +133,8 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("查看是否已读")
-    @GetMapping(value = "/demand/isread/{demandid}")
-    public String isRead(@PathVariable("demandid")String id){
+    @GetMapping(value = "/demand/is-read/{demandId}")
+    public String isRead(@PathVariable("demandId")String id){
         return ZSYResult.success().data(feedbackService.isRead(id)).build();
     }
 
@@ -144,15 +144,15 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("需求读取")
-    @PostMapping(value = "/demand/read/{demandid}")
-    public String readDemand(@PathVariable("demandid")String id){
+    @PostMapping(value = "/demand/read/{demandId}")
+    public String readDemand(@PathVariable("demandId")String id){
         feedbackService.readDemand(id);
         return ZSYResult.success().build();
     }
 
     @ApiOperation("需求是否点赞")
-    @PostMapping(value = "/demand/islike/{demandid}")
-    public String isLike(@PathVariable("demandid")String id){
+    @GetMapping(value = "/demand/is-like/{demandId}")
+    public String isLike(@PathVariable("demandId")String id){
         return ZSYResult.success().data(feedbackService.isLike(id)).build();
     }
 
@@ -162,8 +162,8 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("需求点赞")
-    @PostMapping(value = "/demand/like/{demandid}")
-    public String like(@PathVariable("demandid")String id){
+    @PostMapping(value = "/demand/like/{demandId}")
+    public String like(@PathVariable("demandId")String id){
         feedbackService.like(id);
         return ZSYResult.success().build();
     }
@@ -186,10 +186,32 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("采纳需求")
-    @PostMapping(value = "/demand/agree/{demandid}")
-    public String agreeDemand(@PathVariable("demandid")String id){
+    @PostMapping(value = "/demand/agree/{demandId}")
+    public String agreeDemand(@PathVariable("demandId")String id){
         feedbackService.agreeDemand(id);
         return ZSYResult.success().build();
+    }
+
+    /**
+     * 需求是否采纳
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求是否采纳")
+    @GetMapping(value = "/demand/is-agree/{demandId}")
+    public String isAgree(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.isAgree(id)).build();
+    }
+
+    /**
+     * 需求是否驳回
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求是否驳回")
+    @GetMapping(value = "/demand/is-reject/{demandId}")
+    public String isReject(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.isReject(id)).build();
     }
 
     /**
@@ -198,9 +220,33 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("驳回需求")
-    @PostMapping(value = "/demand/reject/{demandid}")
-    public String rejectDemand(@PathVariable("demandid")String id){
+    @PostMapping(value = "/demand/reject/{demandId}")
+    public String rejectDemand(@PathVariable("demandId")String id){
         feedbackService.rejectDemand(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 需求是否上线
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求是否上线")
+    @GetMapping(value = "/demand/is-online/{demandId}")
+    public String isOnline(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.isOnline(id)).build();
+    }
+
+
+    /**
+     * 完成需求上线
+     * @param id
+     * @return
+     */
+    @ApiOperation("完成需求上线")
+    @PostMapping(value = "/demand/online/{demandId}")
+    public String demandOnline(@PathVariable("demandId")String id){
+        feedbackService.demandOnline(id);
         return ZSYResult.success().build();
     }
 
@@ -229,13 +275,37 @@ public class ZSYFeedbackController extends ZSYController{
     }
 
     /**
+     * 获取需求附件
+     * @param id
+     * @return
+     */
+    @ApiOperation("获取需求附件url")
+    @GetMapping(value = "/demand/accessory/{demandId}")
+    public String getUrl(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.getUrl(id)).build();
+    }
+
+
+
+    /**
+     * 获取需求所属项目
+     * @param id
+     * @return
+     */
+    @ApiOperation("查询需求所属项目")
+    @GetMapping(value = "/demand/project/{demandId}")
+    public String getProjectId(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.getProjectId(id)).build();
+    }
+
+    /**
      * 编辑需求
      * @param id
      * @param reqDTO
      * @return
      */
     @ApiOperation("编辑需求")
-    @PostMapping(value = "/demand/edit/{id}")
+    @PutMapping(value = "/demand/edit/{id}")
     public String editDemand(@PathVariable("id")String id, @Valid @RequestBody DemandReqDTO reqDTO){
         if (id == null) {
             return ZSYResult.fail().msg("需求ID不能为空").build();

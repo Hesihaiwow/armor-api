@@ -22,6 +22,16 @@ public class FeedbackPlanListResDTO {
 
     private Integer status;
 
+    private String chargeMan;
+
+    public String getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(String chargeMan) {
+        this.chargeMan = chargeMan;
+    }
+
     public Integer getStatus() {
         return status;
     }
