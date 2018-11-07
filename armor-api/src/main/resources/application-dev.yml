@@ -28,6 +28,11 @@ redis:
     host: 192.168.1.240
     port: 6379
 
+#http basic验证
+basic:
+  user: xueping.com
+  password: kaT9ewE91itIL9FBjGgcy9RMO0rL5F0F
+
 jwt:
   issuer: Akuma
   secret: a8eac6910ede47b9bedf62127b837e56
@@ -55,7 +60,6 @@ logRedis:
   database: 10
   key: zsy-system-err
   module: zsy-armor
-
 
 
 
