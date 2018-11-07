@@ -617,7 +617,7 @@
             </el-tabs>
         </div>
         <el-dialog :visible.sync="newDemandVisible" title="提需求" custom-class="myDialog" :close-on-click-modal="false"
-                   :close-on-press-escape="false">
+                   :close-on-press-escape="false" @close="closeDialog('demandForm')">
             <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="100px" >
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
@@ -629,7 +629,7 @@
                                 v-for="item in types"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="item.id">
+                                :value="String(item.id)">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -640,7 +640,7 @@
                                 v-for="item in prioritys"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="item.id">
+                                :value="String(item.id)">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -658,11 +658,13 @@
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
+                <!--<span class="star">*</span>-->
                 <el-form-item label="期待上线日期:" prop="releaseTime">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
                             type="date"
                             format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -684,19 +686,19 @@
             </el-form>
         </el-dialog>
         <el-dialog :visible.sync="editDemandVisible" title="编辑需求" custom-class="myDialog" :close-on-click-modal="false"
-                   :close-on-press-escape="false">
-            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px" :inline="true">
+                   :close-on-press-escape="false" @close="closeDialog('demandForm')">
+            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="100px">
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
                 <br>
                 <el-form-item label="类型" prop="type">
-                    <el-select class="fr" v-model="demandForm.type" placeholder="请选择类型">
+                    <el-select  v-model="demandForm.type" placeholder="请选择类型">
                         <el-option
                                 v-for="item in types"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="item.id">
+                                :value="String(item.id)">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -707,7 +709,7 @@
                                 v-for="item in prioritys"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="item.id">
+                                :value="String(item.id)">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -729,8 +731,10 @@
                     <el-date-picker
                             v-model="demandForm.releaseTime"
                             type="date"
+                            placeholder="选择日期时间"
                             format="yyyy-MM-dd"
-                            placeholder="选择日期时间">
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                    >
                     </el-date-picker>
                 </el-form-item>
                 <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
@@ -1102,6 +1106,17 @@
                 }
                 return name;
             },
+            dateFilter:function (input) {
+                var d = new Date(input);
+                var year = d.getFullYear();
+                var month = d.getMonth() + 1;
+                var day = d.getDate() <10 ? '0' + d.getDate() : '' + d.getDate();
+                var hour = d.getHours();
+                var minutes = d.getMinutes();
+                var seconds = d.getSeconds();
+                return  year+ '-' + month + '-' + day;
+            }
+
         },
         beforeMount:function () {
             this.fetchIntroducerList()
@@ -1123,12 +1138,7 @@
                 let userName = helper.decodeToken().userName;
                 return userName;
             },
-            /*filetype(file) {
-                let filename = file
-                let index1 = filename.lastIndexOf('.')
-                let index2 = filename.length
-                return filename.substring(index1,index2)
-            }*/
+
         },
         methods:{
 
@@ -1720,13 +1730,20 @@
                 })
             },
 
+            //关闭dialog
+            closeDialog(formName){
+              this.$refs[formName].resetFields();
+              this.isSaving = false
+            },
+
             //添加需求
             saveDemand(formName){
                 this.isSaving = true
                 this.$refs[formName].validate((valid) => {
                     if (valid){
-                        var param = this.demandForm
 
+                        var param = this.demandForm
+                        // param.type = Number(param.type)
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
 
                             http.zsyPostHttp('/feedback/demand/add', param, (resp) => {
@@ -1738,7 +1755,7 @@
                             });
                     }
                 })
-                this.clearDemandForm()
+
             },
 
             saveEdit(formName){
@@ -1775,6 +1792,7 @@
                     this.demandForm.question = demand.question
                     this.demandForm.target = demand.target
                     this.demandForm.releaseTime = demand.releaseTime
+
                 }else {
                     this.demandDetail(demand.id)
                     this.clearDemandForm()
