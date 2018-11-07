@@ -233,44 +233,80 @@ public interface IZSYFeedbackService {
     /**
      * 查看学管端用户是否已读需求
      * @param id
-     * @param userId
+     * @param coachId
      * @return
      */
-    DemandIsOperateResDTO isReadByCoach(String id, String userId);
+    DemandIsOperateResDTO isReadByCoach(String id, String coachId);
 
     /**
      * 学管端用户读取需求
      * @param id
-     * @param userId
+     * @param coachId
      */
-    void readDemandByCoach(String id,String userId);
+    void readDemandByCoach(String id,String coachId);
 
     /**
      * 查看学管端用户是否点赞需求
      * @param id
-     * @param userId
+     * @param coachId
      * @return
      */
-    DemandIsOperateResDTO isLikeByCoach(String id, String userId);
+    DemandIsOperateResDTO isLikeByCoach(String id, String coachId);
 
     /**
      * 学管端用户点赞需求
      * @param id
-     * @param userId
+     * @param coachId
      */
-    void likeDemandByCoach(String id, String userId);
+    void likeDemandByCoach(String id, String coachId);
 
     /**
      * 学管端用户评论需求
      * @param reqDTO
-     * @param userId
+     * @param coachId
      */
-    void replyDemandByCoach(DemandReplyReqDTO reqDTO, String userId);
+    void replyDemandByCoach(DemandReplyReqDTO reqDTO, String coachId);
 
     /**
      * 学管端新增需求
      * @param reqDTO
-     * @param userId
+     * @param coachId
      */
-    void addDemandByCoach(DemandReqDTO reqDTO, String userId);
+    void addDemandByCoach(DemandReqDTO reqDTO, String coachId);
+
+    /**
+     * 学管端查询新需求
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandResDTO> getDemandListByCoach(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端查询驳回需求
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandRejectedResDTO> getDemandRejectedListByCoach(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端获取排队需求
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandQueuedResDTO> getDemandQueuedListByCoach(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端获取已完成需求
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandCompletedResDTO> getDemandCompletedListByCoach(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端获取进行中需求
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<DemandRunningResDTO> getDemandRunningListByCoach(DemandQueryReqDTO reqDTO);
+
 }

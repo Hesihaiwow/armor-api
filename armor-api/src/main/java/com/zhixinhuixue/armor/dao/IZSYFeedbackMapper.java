@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.DemandCompletedResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntroducerResDTO;
@@ -54,7 +55,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandBO> selectDemandList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")Long user);
+                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user);
 
     /**
      * 获取驳回需求反馈列表
@@ -65,8 +66,8 @@ public interface IZSYFeedbackMapper {
      * @param user
      * @return
      */
-    List<DemandRejectedBO> selectDemandRejectedList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")Long user);
+    Page<DemandRejectedBO> selectDemandRejectedList(@Param("origin") String origin, @Param("priority")Integer priority,
+                                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user);
 
     /**
      * 获取驳回人姓名
@@ -84,8 +85,8 @@ public interface IZSYFeedbackMapper {
      * @param user
      * @return
      */
-    List<DemandQueuedBO> selectDemandQueuedList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                             @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")Long user);
+    Page<DemandQueuedBO> selectDemandQueuedList(@Param("origin") String origin, @Param("priority")Integer priority,
+                                             @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user);
 
     /**
      * 获取完成需求列表
@@ -95,7 +96,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandCompletedBO> selectDemandCompletedList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("user")Long user,@Param("chargeMan")Long chargeMan);
+            ,@Param("user")String user,@Param("chargeMan")String chargeMan);
 
     /**
      * 获取我开发的需求
@@ -104,7 +105,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandJoinedBO> selectDemandJoinedList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("chargeMan")Long chargeMan,@Param("createMan")Long createMan,@Param("user")Long user);
+            ,@Param("chargeMan")String chargeMan,@Param("createMan")String createMan,@Param("user")Long user);
 
     /**
      * 提出的需求
@@ -114,7 +115,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandJoinedBO> selectDemandCreateList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("chargeMan")Long chargeMan,@Param("user")Long user);
+            ,@Param("chargeMan")String chargeMan,@Param("user")Long user);
 
     /**
      * 获取进行中需求列表
@@ -126,8 +127,8 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandRunningBO> selectDemandRunningList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                               @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")Long user
-                                                ,@Param("chargeMan")Long chargeMan);
+                                               @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user
+                                                ,@Param("chargeMan")String chargeMan);
 
     /**
      * 获取负责人
@@ -371,4 +372,88 @@ public interface IZSYFeedbackMapper {
     String selectUserById(Long id);
 
 
+    /**
+     * 学管端查询新需求
+     * @param reqDTO
+     * @return
+     */
+    Page<DemandBO> selectDemandListByCoach(@Param("reqDTO") DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端查询驳回需求
+     * @param reqDTO
+     * @return
+     */
+    Page<DemandRejectedBO> selectDemandRejectedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端查询排队需求
+     * @param reqDTO
+     * @return
+     */
+    Page<DemandQueuedBO> selectDemandQueuedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端查询已完成需求
+     * @param reqDTO
+     * @return
+     */
+    Page<DemandCompletedBO> selectDemandCompletedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端查询进行中需求
+     * @param reqDTO
+     * @return
+     */
+    Page<DemandRunningBO> selectDemandRunningListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    /**
+     * 查看学管是否读取需求
+     * @param demandId
+     * @param coachId
+     * @return
+     */
+    Integer selectIsReadByCoach(@Param("demandId") String demandId, @Param("coachId") String coachId);
+
+    /**
+     * 学管端读取需求
+     * @param frId
+     * @param demandId
+     * @param coachId
+     * @param date
+     */
+    void insertFeedbackReadByCoach(@Param("frId") Long frId, @Param("demandId") Long demandId, @Param("coachId") Integer coachId, @Param("date") Date date);
+
+    /**
+     * 查看学管是否点赞需求
+     * @param demandId
+     * @param coachId
+     * @return
+     */
+    Integer selectIsLikeByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId);
+
+    /**
+     * 学管端点赞需求
+     * @param demandId
+     * @param coachId
+     * @param flId
+     * @param date
+     */
+    void insertDemandLikesByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId, @Param("flId") Long flId, @Param("date") Date date);
+
+    /**
+     * 学管端回复需求
+     * @param demandId
+     * @param coachId
+     * @param content
+     * @param frId
+     * @param date
+     */
+    void insertReplyByCoach(Long demandId, Integer coachId, String content, Long frId, Date date);
+
+    /**
+     * 学管端新增需求
+     * @param demand
+     */
+    void insertDemandByCoach(Demand demand);
 }
