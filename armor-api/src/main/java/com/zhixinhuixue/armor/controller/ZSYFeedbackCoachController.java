@@ -10,6 +10,7 @@ import com.zhixinhuixue.armor.service.IZSYFeedbackPlanService;
 import com.zhixinhuixue.armor.service.IZSYFeedbackService;
 import com.zhixinhuixue.armor.service.IZSYUserService;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import com.zhixinhuixue.armor.source.ZSYSwaggerResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,8 @@ public class ZSYFeedbackCoachController extends ZSYController {
      */
     @ApiOperation("新需求列表")
     @PostMapping(value = "/demand-new/list")
-    public String getDemandList(@RequestBody DemandQueryReqDTO reqDTO){
-        return ZSYResult.success().data(feedbackService.getDemandList(reqDTO)).build();
+    public ZSYSwaggerResult<PageInfo<DemandResDTO>> getDemandList(@RequestBody DemandQueryReqDTO reqDTO){
+        return new ZSYSwaggerResult<>(feedbackService.getDemandListByCoach(reqDTO));
     }
 
     /**
@@ -52,9 +53,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      */
     @ApiOperation("驳回需求列表")
     @PostMapping(value = "/demand-rejected/list")
-    public String getDemandRejectedList(@RequestBody DemandQueryReqDTO reqDTO){
-        PageInfo<DemandRejectedResDTO> list = feedbackService.getDemandRejectedList(reqDTO);
-        return ZSYResult.success().data(list).build();
+    public ZSYSwaggerResult<PageInfo<DemandRejectedResDTO>> getDemandRejectedList(@RequestBody DemandQueryReqDTO reqDTO){
+        PageInfo<DemandRejectedResDTO> list = feedbackService.getDemandRejectedListByCoach(reqDTO);
+        return new ZSYSwaggerResult<>(list);
     }
 
     /**
@@ -64,9 +65,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      */
     @ApiOperation("排队需求列表")
     @PostMapping(value = "/demand-queued/list")
-    public String getDemandQueuedList(@RequestBody DemandQueryReqDTO reqDTO){
-        PageInfo<DemandQueuedResDTO> list = feedbackService.getDemandQueuedList(reqDTO);
-        return ZSYResult.success().data(list).build();
+    public ZSYSwaggerResult<PageInfo<DemandQueuedResDTO>> getDemandQueuedList(@RequestBody DemandQueryReqDTO reqDTO){
+        PageInfo<DemandQueuedResDTO> list = feedbackService.getDemandQueuedListByCoach(reqDTO);
+        return new ZSYSwaggerResult<>(list);
     }
 
     /**
@@ -76,9 +77,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      */
     @ApiOperation("完成需求列表")
     @PostMapping(value = "/demand-completed/list")
-    public String getDemandCompletedList(@RequestBody DemandQueryReqDTO reqDTO){
-        PageInfo<DemandCompletedResDTO> list = feedbackService.getDemandCompletedList(reqDTO);
-        return ZSYResult.success().data(list).build();
+    public ZSYSwaggerResult<PageInfo<DemandCompletedResDTO>> getDemandCompletedList(@RequestBody DemandQueryReqDTO reqDTO){
+        PageInfo<DemandCompletedResDTO> list = feedbackService.getDemandCompletedListByCoach(reqDTO);
+        return new ZSYSwaggerResult<>(list);
     }
 
     /**
@@ -88,9 +89,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      */
     @ApiOperation("进行中需求列表")
     @PostMapping(value = "/demand-running/list")
-    public String getDemandRunningList(@RequestBody DemandQueryReqDTO reqDTO){
-        PageInfo<DemandRunningResDTO> list = feedbackService.getDemandRunningList(reqDTO);
-        return ZSYResult.success().data(list).build();
+    public ZSYSwaggerResult<PageInfo<DemandRunningResDTO>> getDemandRunningList(@RequestBody DemandQueryReqDTO reqDTO){
+        PageInfo<DemandRunningResDTO> list = feedbackService.getDemandRunningListByCoach(reqDTO);
+        return new ZSYSwaggerResult<>(list);
     }
 
     /**
@@ -120,9 +121,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      * @return
      */
     @ApiOperation("查看是否已读")
-    @GetMapping(value = "/demand/is-read/{demandId}/{userId}")
-    public String isRead(@PathVariable("demandId")String id,@PathVariable("userId")String userId){
-        return ZSYResult.success().data(feedbackService.isReadByCoach(id,userId)).build();
+    @GetMapping(value = "/demand/is-read/{demandId}/{coachId}")
+    public String isRead(@PathVariable("demandId")String id,@PathVariable("coachId")String coachId){
+        return ZSYResult.success().data(feedbackService.isReadByCoach(id,coachId)).build();
     }
 
     /**
@@ -131,16 +132,16 @@ public class ZSYFeedbackCoachController extends ZSYController {
      * @return
      */
     @ApiOperation("需求读取")
-    @PostMapping(value = "/demand/read/{demandId}/{userId}")
-    public String readDemand(@PathVariable("demandId")String id,@PathVariable("userId")String userId){
-        feedbackService.readDemandByCoach(id,userId);
+    @PostMapping(value = "/demand/read/{demandId}/{coachId}")
+    public String readDemand(@PathVariable("demandId")String id,@PathVariable("coachId")String coachId){
+        feedbackService.readDemandByCoach(id,coachId);
         return ZSYResult.success().build();
     }
 
     @ApiOperation("需求是否点赞")
-    @GetMapping(value = "/demand/is-like/{demandId}/{userId}")
-    public String isLike(@PathVariable("demandId")String id,@PathVariable("userId")String userId){
-        return ZSYResult.success().data(feedbackService.isLikeByCoach(id,userId)).build();
+    @GetMapping(value = "/demand/is-like/{demandId}/{coachId}")
+    public String isLike(@PathVariable("demandId")String id,@PathVariable("coachId")String coachId){
+        return ZSYResult.success().data(feedbackService.isLikeByCoach(id,coachId)).build();
     }
 
     /**
@@ -149,9 +150,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      * @return
      */
     @ApiOperation("需求点赞")
-    @PostMapping(value = "/demand/like/{demandId}/{userId}")
-    public String like(@PathVariable("demandId")String id,@PathVariable("userId")String userId){
-        feedbackService.likeDemandByCoach(id,userId);
+    @PostMapping(value = "/demand/like/{demandId}/{coachId}")
+    public String like(@PathVariable("demandId")String id,@PathVariable("coachId")String coachId){
+        feedbackService.likeDemandByCoach(id,coachId);
         return ZSYResult.success().build();
     }
 
@@ -161,9 +162,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      * @return
      */
     @ApiOperation("回复需求")
-    @PostMapping(value = "/demand/reply/{userId}")
-    public String reply(@RequestBody DemandReplyReqDTO reqDTO,@PathVariable("userId")String userId){
-        feedbackService.replyDemandByCoach(reqDTO,userId);
+    @PostMapping(value = "/demand/reply/{coachId}")
+    public String reply(@RequestBody DemandReplyReqDTO reqDTO,@PathVariable("coachId")String coachId){
+        feedbackService.replyDemandByCoach(reqDTO,coachId);
         return ZSYResult.success().build();
     }
 
@@ -173,9 +174,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      * @return
      */
     @ApiOperation("新增需求")
-    @PostMapping(value = "/demand/add/{userId}")
-    public String addDemand(@Valid @RequestBody DemandReqDTO reqDTO,@PathVariable("userId")String userId){
-        feedbackService.addDemandByCoach(reqDTO,userId);
+    @PostMapping(value = "/demand/add/{coachId}")
+    public String addDemand(@Valid @RequestBody DemandReqDTO reqDTO,@PathVariable("coachId")String coachId){
+        feedbackService.addDemandByCoach(reqDTO,coachId);
         return ZSYResult.success().build();
     }
 

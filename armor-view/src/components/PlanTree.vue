@@ -20,7 +20,9 @@
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.publish">发布</a>
   		</div>
-  	</div>
+		<div v-if="model.status == 0" class="fr" style="color: gray">暂停中</div>
+
+	</div>
   	<ul class="sub-container" v-show="open">
   		<access-tree :model="item" :key="idx"  v-for="(item,idx) in model.childs"></access-tree>
   	</ul>

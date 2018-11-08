@@ -25,7 +25,10 @@
             <div class="plan-filter clearfix">
                 <span class="fl" >周计划:</span>
                 <el-button @click="clearForm">全部</el-button>
-                <el-button v-for="item in stageList" v-model="stage" :key="item.id" @click="fetchTreeJson(String(item.id))">{{item.name}}</el-button><br>
+                <el-button v-for="item in stageList" v-model="stage" :key="item.id" @click="fetchTreeJson(String(item.id))">{{item.name}}</el-button>
+                <el-button @click="fetchPausePlan">暂停</el-button>
+                <br>
+
                 <span class="fl">排序：</span>
 
                 <a href="javascript:;" class="fl" v-bind:class="{ 'active' : activeSort == 'time'}"   @click="toggleSort('time')">截止日期
@@ -74,7 +77,6 @@
                     {id:"212754785051344894",name:'开发中'},
                     {id:"212754785051344895",name:'完成开发'},
                     {id:"212754785051344896",name:'测试中'},
-                    {id:"212754785051344897",name:'待发布'},
                     {id:"212754785051344898",name:'发布上线'},
                 ],
                 tree:[],
@@ -118,6 +120,23 @@
               this.stage = null;
               this.fetchTreeJson()
             },
+
+            //查询暂停任务
+            fetchPausePlan(){
+                if(this.activeSort=='time'){
+                    if(this.activeTimeArrow){
+                        this.treeList.sort = '2'
+                    }else{
+                        this.treeList.sort = '3'
+                    }
+                }
+                this.treeList.status = 0
+                this.treeList.stage = ''
+                http.zsyPostHttp(`/feedbackPlan/demand-plan/list/`, this.treeList, (resp) => {
+                    this.tree =  resp.data;
+                });
+            },
+
             fetchTreeJson(id){
                 if(this.activeSort=='com'){
                     if(this.activeArrow){
@@ -133,6 +152,7 @@
                     }
                 }
                 this.treeList.stage = id
+                this.treeList.status = ''
                 http.zsyPostHttp(`/feedbackPlan/demand-plan/list/`, this.treeList, (resp) => {
                     this.tree =  resp.data;
                 });

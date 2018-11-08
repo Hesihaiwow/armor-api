@@ -49,6 +49,16 @@ public class Demand {
     private Integer likesNum;
     @ApiModelProperty("上线时间")
     private Date onlineTime;
+    @ApiModelProperty("创建需求学管id")
+    private Integer coachId;
+
+    public Integer getCoachId() {
+        return coachId;
+    }
+
+    public void setCoachId(Integer coachId) {
+        this.coachId = coachId;
+    }
 
     public String getTitle() {
         return title;

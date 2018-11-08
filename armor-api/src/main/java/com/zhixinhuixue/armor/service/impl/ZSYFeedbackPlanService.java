@@ -156,19 +156,25 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
             feedbackPlanListResDTO.setPercent(Double.valueOf(new DecimalFormat(".00").format(percent)).intValue());
 
-            feedbackPlanListResDTOS.add(feedbackPlanListResDTO);
+            if (!CollectionUtils.isEmpty(feedbackPlanListResDTO.getChilds())){
+                feedbackPlanListResDTOS.add(feedbackPlanListResDTO);
+            }
 
         });
 
         List<FeedbackPlanListResDTO> filterList = new ArrayList<>();
 
+        //查询各个阶段的计划
         if (!Strings.isNullOrEmpty(reqDTO.getStage())){
             feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
                 List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
                 filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
                         child.getStageId()!= null && child.getStageId().equals(Long.valueOf(reqDTO.getStage()))).collect(Collectors.toList()));
                 feedbackPlanListResDTO.setChilds(filterChilds);
-                filterList.add(feedbackPlanListResDTO);
+                if (!CollectionUtils.isEmpty(feedbackPlanListResDTO.getChilds())){
+                    filterList.add(feedbackPlanListResDTO);
+
+                }
             });
 
             if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
@@ -179,6 +185,27 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
             return filterList;
 
+        }
+
+        //查询暂停计划
+        if (reqDTO.getStatus()!= null && reqDTO.getStatus() == 0){
+            feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
+                List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
+                filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
+                        child.getStatus() != null && child.getStatus() == reqDTO.getStatus()).collect(Collectors.toList()));
+                feedbackPlanListResDTO.setChilds(filterChilds);
+                if (!CollectionUtils.isEmpty(feedbackPlanListResDTO.getChilds())){
+                    filterList.add(feedbackPlanListResDTO);
+                }
+            });
+
+            if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
+                return filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
+            }else if( reqDTO.getSort().equals(ZSYPlanSort.PERCENTDOWN.getValue())){
+                return  filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
+            }
+
+            return filterList;
         }
 
         if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
