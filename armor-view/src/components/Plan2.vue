@@ -118,6 +118,7 @@
               this.activeSort = null;
               this.activeTimeArrow = null;
               this.stage = null;
+              this.treeList.origin = null;
               this.fetchTreeJson()
             },
 
