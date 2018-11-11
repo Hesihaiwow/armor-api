@@ -121,6 +121,10 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                 FeedbackTaskDetailResDTO taskDetailResDTO = new FeedbackTaskDetailResDTO();
                 BeanUtils.copyProperties(planTaskBO.getPlanTask(),taskDetailResDTO);
                 taskDetailResDTO.setTaskName(planTaskBO.getPlanTask().getName());
+
+                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
+                String chargeMan = feedbackMapper.selectChargeManByTaskId(planTaskBO.getPlanTask().getId());
+                taskDetailResDTO.setUserName(chargeMan);
                 task.add(taskDetailResDTO);
 
                 feedbackPlanListResDTO.setStageId(planTaskBO.getPlanTask().getStageId());
@@ -139,9 +143,6 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                     taskDetailResDTO.setPercent(100);
                 }
 
-                //查询负责人  默认最早开始的任务的负责人即为当前需求负责人
-                String chargeMan = feedbackMapper.selectChargeManByTaskId(planTaskBO.getPlanTask().getId());
-                feedbackPlanListResDTO.setChargeMan(chargeMan);
             });
 
             feedbackPlanListResDTO.setChilds(task);
@@ -177,12 +178,6 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                 }
             });
 
-            if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
-                return filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
-            }else if( reqDTO.getSort().equals(ZSYPlanSort.PERCENTDOWN.getValue())){
-                return  filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
-            }
-
             return filterList;
 
         }
@@ -199,21 +194,8 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
                 }
             });
 
-            if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
-                return filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
-            }else if( reqDTO.getSort().equals(ZSYPlanSort.PERCENTDOWN.getValue())){
-                return  filterList.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
-            }
-
             return filterList;
         }
-
-        if(reqDTO.getSort()==null || reqDTO.getSort().equals(ZSYPlanSort.PERCENTTP.getValue())){
-            return feedbackPlanListResDTOS.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent).reversed()).collect(Collectors.toList());
-        }else if( reqDTO.getSort().equals(ZSYPlanSort.PERCENTDOWN.getValue())){
-            return  feedbackPlanListResDTOS.stream().sorted(Comparator.comparing(FeedbackPlanListResDTO::getPercent)).collect(Collectors.toList());
-        }
-
 
         return feedbackPlanListResDTOS;
 

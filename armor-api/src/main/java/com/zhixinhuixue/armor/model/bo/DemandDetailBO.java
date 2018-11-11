@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by SCH on 2018-10-22
@@ -19,15 +20,41 @@ public class DemandDetailBO {
     @ApiModelProperty("需求类型")
     private Integer type;
     @ApiModelProperty("需求提出时间")
-    private Timestamp createTime;
+    private Date feedbackTime;
+    @ApiModelProperty("需求创建时间")
+    private Date createTime;
     @ApiModelProperty("需求期待上线时间")
-    private Timestamp releaseTime;
+    private Date releaseTime;
     @ApiModelProperty("需求点赞数")
     private Integer likesNum;
     @ApiModelProperty("需求问题")
     private String question;
     @ApiModelProperty("需求建议(目标)")
     private String target;
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(Date releaseTime) {
+        this.releaseTime = releaseTime;
+    }
 
     public Long getId() {
         return id;
@@ -59,22 +86,6 @@ public class DemandDetailBO {
 
     public void setType(Integer type) {
         this.type = type;
-    }
-
-    public Timestamp getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public Timestamp getReleaseTime() {
-        return releaseTime;
-    }
-
-    public void setReleaseTime(Timestamp releaseTime) {
-        this.releaseTime = releaseTime;
     }
 
     public Integer getLikesNum() {

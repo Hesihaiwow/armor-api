@@ -24,6 +24,16 @@ public class DemandJoinedResDTO {
     private String chargeMan;
     @ApiModelProperty("项目id")
     private Long projectId;
+    @ApiModelProperty("来源(需求实际提出人)")
+    private String origin;
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
 
     public String getCreateBy() {
         return createBy;

@@ -14,15 +14,17 @@ public class DemandResDTO {
     private Long id;
     @ApiModelProperty("标题")
     private String title;
-    @ApiModelProperty("来源")
+    @ApiModelProperty("来源(即为需求实际提出人)")
     private String origin;
     @ApiModelProperty("类型(0:个人建议,1:市场反馈,2:公司决策)")
     private Integer type;
     @ApiModelProperty("优先级")
     private Integer priority;
-    @ApiModelProperty("提出人")
-    private String createBy;
+//    @ApiModelProperty("提出人(需求新增人)")
+//    private String createBy;
     @ApiModelProperty("提出日期")
+    private Date feedbackTime;
+    @ApiModelProperty("创建日期")
     private Date createTime;
     @ApiModelProperty("期待上线日期")
     private Date releaseTime;
@@ -38,6 +40,14 @@ public class DemandResDTO {
     private Long projectId;
     @ApiModelProperty("状态")
     private Integer status;
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
 
     public Long getProjectId() {
         return projectId;
@@ -93,14 +103,6 @@ public class DemandResDTO {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
     }
 
     public Date getCreateTime() {

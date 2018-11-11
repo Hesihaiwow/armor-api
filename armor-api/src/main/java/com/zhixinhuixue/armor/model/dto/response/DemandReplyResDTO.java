@@ -15,12 +15,32 @@ public class DemandReplyResDTO {
     private Long id;
     @ApiModelProperty("需求id")
     private Long demandId;
-    @ApiModelProperty("需求回复人")
+    @ApiModelProperty("需求回复人姓名")
     private String replyPeople;
     @ApiModelProperty("需求回复时间")
     private Date replyTime;
     @ApiModelProperty("需求回复内容")
     private String content;
+    @ApiModelProperty("任务系统回复人id")
+    private Long userId;
+    @ApiModelProperty("学管端回复人id")
+    private Integer coachId;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Integer getCoachId() {
+        return coachId;
+    }
+
+    public void setCoachId(Integer coachId) {
+        this.coachId = coachId;
+    }
 
     public Long getId() {
         return id;

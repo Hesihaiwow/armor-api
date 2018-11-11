@@ -27,7 +27,9 @@ public class DemandRunningBO {
     private String target;
     @ApiModelProperty("提出人")
     private String createBy;
-    @ApiModelProperty("提出日期")
+    @ApiModelProperty("提出时间")
+    private Date feedbackTime;
+    @ApiModelProperty("创建日期")
     private Date createTime;
     @ApiModelProperty("期待上线时间")
     private Date releaseTime;
@@ -41,6 +43,24 @@ public class DemandRunningBO {
     private Integer status;
     @ApiModelProperty("负责人")
     private String chargeMan;
+    @ApiModelProperty("点赞数")
+    private Integer likesNum;
+
+    public Integer getLikesNum() {
+        return likesNum;
+    }
+
+    public void setLikesNum(Integer likesNum) {
+        this.likesNum = likesNum;
+    }
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
 
     public String getChargeMan() {
         return chargeMan;

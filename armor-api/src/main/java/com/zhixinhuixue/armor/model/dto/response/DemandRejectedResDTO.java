@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,15 +16,15 @@ public class DemandRejectedResDTO {
     private Long id;
     @ApiModelProperty("需求标题")
     private String title;
-    @ApiModelProperty("来源")
+    @ApiModelProperty("来源(需求实际提出人)")
     private String origin;
     @ApiModelProperty("类型")
     private Integer type;
     @ApiModelProperty("优先级")
     private Integer priority;
-    @ApiModelProperty("提出人")
-    private String createBy;
     @ApiModelProperty("提出时间")
+    private Date feedbackTime;
+    @ApiModelProperty("创建时间")
     private Date createTime;
     @ApiModelProperty("期待上线日期")
     private Date releaseTime;
@@ -41,6 +42,32 @@ public class DemandRejectedResDTO {
     private Long projectId;
     @ApiModelProperty("状态")
     private Integer status;
+    @ApiModelProperty("是否已读")
+    private Integer readStatus;
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
+
+    public Integer getReadStatus() {
+        return readStatus;
+    }
+
+    public void setReadStatus(Integer readStatus) {
+        this.readStatus = readStatus;
+    }
 
     public Long getProjectId() {
         return projectId;
@@ -88,22 +115,6 @@ public class DemandRejectedResDTO {
 
     public void setType(Integer type) {
         this.type = type;
-    }
-
-    public Integer getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Integer priority) {
-        this.priority = priority;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
     }
 
     public Date getCreateTime() {

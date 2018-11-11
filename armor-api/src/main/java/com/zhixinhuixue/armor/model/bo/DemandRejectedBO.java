@@ -15,15 +15,17 @@ public class DemandRejectedBO {
     private Long id;
     @ApiModelProperty("需求标题")
     private String title;
-    @ApiModelProperty("来源")
+    @ApiModelProperty("来源(需求实际提出人)")
     private String origin;
     @ApiModelProperty("类型")
     private Integer type;
     @ApiModelProperty("优先级")
     private Integer priority;
-    @ApiModelProperty("提出人")
-    private String createBy;
+//    @ApiModelProperty("提出人")
+//    private String createBy;
     @ApiModelProperty("提出时间")
+    private Date feedbackTime;
+    @ApiModelProperty("创建日期")
     private Date createTime;
     @ApiModelProperty("期待上线日期")
     private Date releaseTime;
@@ -41,6 +43,14 @@ public class DemandRejectedBO {
     private Long projectId;
     @ApiModelProperty("状态")
     private Integer status;
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
 
     public Long getProjectId() {
         return projectId;
@@ -96,14 +106,6 @@ public class DemandRejectedBO {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
     }
 
     public Date getCreateTime() {

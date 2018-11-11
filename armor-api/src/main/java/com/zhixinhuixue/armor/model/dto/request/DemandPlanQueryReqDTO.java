@@ -29,16 +29,7 @@ public class DemandPlanQueryReqDTO {
     private String stage;
     @ApiModelProperty("是否暂停(0:暂停)")
     private Integer status;
-    @ApiModelProperty("阶段名称")
-    private String stageName;
 
-    public String getStageName() {
-        return stageName;
-    }
-
-    public void setStageName(String stageName) {
-        this.stageName = stageName;
-    }
 
     public Date getStartTime() {
         return startTime;

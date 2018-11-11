@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.model.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 
 import java.util.Date;
 
@@ -16,8 +17,6 @@ public class DemandQueryReqDTO {
     private Integer priority;
     @ApiModelProperty("是否已读(0:未读,1:已读)")
     private Integer readStatus;
-    @ApiModelProperty("提出人")
-    private String user;
     @ApiModelProperty("负责人")
     private String chargeMan;
     @ApiModelProperty("来源")
@@ -28,6 +27,16 @@ public class DemandQueryReqDTO {
     private Date beginTime;
     @ApiModelProperty("上线时间(结束)")
     private Date endTime;
+    @ApiModelProperty("排序(0:提出日期升序,1:提出日期升序降序,2:期待上线日期升序,3:期待上线日期升序降序,4:点赞数升序,5:点赞数升序降序)")
+    private Integer sort;
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
 
     public Date getBeginTime() {
         return beginTime;
@@ -75,14 +84,6 @@ public class DemandQueryReqDTO {
 
     public void setReadStatus(Integer readStatus) {
         this.readStatus = readStatus;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
     }
 
     public String getOrigin() {

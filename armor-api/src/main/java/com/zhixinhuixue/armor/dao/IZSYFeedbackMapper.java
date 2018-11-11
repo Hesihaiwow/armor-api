@@ -51,52 +51,54 @@ public interface IZSYFeedbackMapper {
      * @param priority
      * @param readStatus
      * @param type
-     * @param user
      * @return
      */
-    Page<DemandBO> selectDemandList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user);
+    Page<DemandBO> selectDemandPage(@Param("userId")Long userId,@Param("origin") String origin, @Param("priority")Integer priority,
+                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type);
 
     /**
      * 获取驳回需求反馈列表
      * @param origin
      * @param priority
-     * @param readStatus
      * @param type
-     * @param user
      * @return
      */
-    Page<DemandRejectedBO> selectDemandRejectedList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user);
+    Page<DemandRejectedBO> selectDemandRejectedPage(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
+    /**
+     * 查询驳回需求集合
+     * @param origin
+     * @param priority
+     * @param type
+     * @return
+     */
+    List<DemandRejectedBO> selectDemandRejectedList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
 
     /**
      * 获取驳回人姓名
      * @param rejectUser
      * @return
      */
-    String selectRejectUser(@Param("rejectUser") Long rejectUser);
+    String selectUserNameByUserId(@Param("userId") Long userId);
 
     /**
      * 获取排队需求列表
      * @param origin
      * @param priority
-     * @param readStatus
      * @param type
-     * @param user
      * @return
      */
-    Page<DemandQueuedBO> selectDemandQueuedList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                             @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user);
+    Page<DemandQueuedBO> selectDemandQueuedPage(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
+
+    List<DemandQueuedBO> selectDemandQueuedList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
+
 
     /**
      * 获取完成需求列表
      * @param beginTime
      * @param endTime
-     * @param user
      * @return
      */
-    Page<DemandCompletedBO> selectDemandCompletedList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("user")String user,@Param("chargeMan")String chargeMan);
+    Page<DemandCompletedBO> selectDemandCompletedPage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime,@Param("chargeMan")String chargeMan,@Param("origin")String origin);
 
     /**
      * 获取我开发的需求
@@ -104,8 +106,8 @@ public interface IZSYFeedbackMapper {
      * @param endTime
      * @return
      */
-    Page<DemandJoinedBO> selectDemandJoinedList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("chargeMan")String chargeMan,@Param("createMan")String createMan,@Param("user")Long user);
+    Page<DemandJoinedBO> selectDemandDevelopPage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
+            ,@Param("chargeMan")String chargeMan,@Param("origin")String origin,@Param("user")Long user);
 
     /**
      * 提出的需求
@@ -114,21 +116,22 @@ public interface IZSYFeedbackMapper {
      * @param chargeMan
      * @return
      */
-    Page<DemandJoinedBO> selectDemandCreateList(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("chargeMan")String chargeMan,@Param("user")Long user);
+    Page<DemandJoinedBO> selectDemandCreatePage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
+            ,@Param("chargeMan")String chargeMan,@Param("origin")String origin,@Param("user")Long user);
 
     /**
      * 获取进行中需求列表
      * @param origin
      * @param priority
-     * @param readStatus
      * @param type
-     * @param user
      * @return
      */
-    Page<DemandRunningBO> selectDemandRunningList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                               @Param("readStatus")Integer readStatus, @Param("type")Integer type, @Param("user")String user
-                                                ,@Param("chargeMan")String chargeMan);
+    Page<DemandRunningBO> selectDemandRunningPage(@Param("origin") String origin, @Param("priority")Integer priority,
+                                                 @Param("type")Integer type,@Param("chargeMan")String chargeMan);
+
+    List<DemandRunningBO> selectDemandRunningList(@Param("origin") String origin, @Param("priority")Integer priority,
+                                              @Param("type")Integer type, @Param("chargeMan")String chargeMan);
+
 
     /**
      * 获取负责人
@@ -172,13 +175,21 @@ public interface IZSYFeedbackMapper {
      * @param flId
      * @param likeTime
      */
-    void insertDemandLikes(@Param("demandId") Long demandId, @Param("userId")Long userId, @Param("flId")Long flId, @Param("likeTime")Date likeTime);
+    void insertDemandLikes(@Param("demandId") Long demandId, @Param("userId")Long userId,@Param("likePeople")String likePeople, @Param("flId")Long flId, @Param("likeTime")Date likeTime);
 
     /**
-     * feedback点赞数加一
+     * 取消点赞
+     * @param demandId
+     * @param userId
+     */
+    void deleteDemandLikes(@Param("demandId") Long demandId, @Param("userId")Long userId);
+
+
+    /**
+     * feedback点赞数更新
      * @param demandId
      */
-    Integer updateLikesNum(@Param("demandId")Long demandId);
+    Integer updateLikesNum(@Param("demandId")Long demandId,@Param("num")Integer num);
 
     /**
      * 回复需求
@@ -188,8 +199,8 @@ public interface IZSYFeedbackMapper {
      * @param frId
      * @param replyTime
      */
-    void insertReply(@Param("demandId") Long demandId, @Param("userId")Long userId, @Param("content")String content
-            , @Param("frId")Long frId, @Param("replyTime")Date replyTime);
+    Integer insertReply(@Param("demandId") Long demandId, @Param("userId")Long userId, @Param("content")String content
+            , @Param("frId")Long frId, @Param("replyTime")Date replyTime,@Param("replyPeople")String replyPeople);
 
     /**
      * 设置feedback中status为排队中(4)
@@ -258,7 +269,7 @@ public interface IZSYFeedbackMapper {
      * @param userId
      * @param readTime
      */
-    void insertFeedbackRead(@Param("frId") Long frId, @Param("demandId")Long demandId, @Param("userId")Long userId, @Param("readTime")Date readTime);
+    Integer insertFeedbackRead(@Param("frId") Long frId, @Param("demandId")Long demandId, @Param("userId")Long userId, @Param("readPeople")String readPeople,@Param("readTime")Date readTime);
 
     /**
      * 查询提出人员列表
@@ -285,7 +296,7 @@ public interface IZSYFeedbackMapper {
      * @param demandId
      * @return
      */
-    Integer selectIsRead(@Param("demandId") Long demandId,@Param("userId")Long userId);
+    Long selectIsRead(@Param("demandId") Long demandId,@Param("userId")Long userId);
 
     /**
      * 查看需求是否已点赞
@@ -377,35 +388,55 @@ public interface IZSYFeedbackMapper {
      * @param reqDTO
      * @return
      */
-    Page<DemandBO> selectDemandListByCoach(@Param("reqDTO") DemandQueryReqDTO reqDTO);
+    Page<DemandBO> selectDemandPageByCoach(@Param("reqDTO") DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管段查询新需求
+     * @return
+     */
+    List<DemandBO> selectDemandByListCoach(@Param("reqDTO") DemandQueryReqDTO reqDTO);
 
     /**
      * 学管端查询驳回需求
      * @param reqDTO
      * @return
      */
-    Page<DemandRejectedBO> selectDemandRejectedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+    Page<DemandRejectedBO> selectDemandRejectedPageByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    /**
+     * 学管端查询驳回需求集合
+     * @param reqDTO
+     * @return
+     */
+    List<DemandRejectedBO> selectDemandRejectedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
 
     /**
      * 学管端查询排队需求
      * @param reqDTO
      * @return
      */
-    Page<DemandQueuedBO> selectDemandQueuedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+    Page<DemandQueuedBO> selectDemandQueuedPageByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    List<DemandQueuedBO> selectDemandQueuedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
 
     /**
      * 学管端查询已完成需求
      * @param reqDTO
      * @return
      */
-    Page<DemandCompletedBO> selectDemandCompletedListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+    Page<DemandCompletedBO> selectDemandCompletedPageByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
 
     /**
      * 学管端查询进行中需求
      * @param reqDTO
      * @return
      */
-    Page<DemandRunningBO> selectDemandRunningListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+    Page<DemandRunningBO> selectDemandRunningPageByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    List<DemandRunningBO> selectDemandRunningListByCoach(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
 
     /**
      * 查看学管是否读取需求
@@ -413,7 +444,7 @@ public interface IZSYFeedbackMapper {
      * @param coachId
      * @return
      */
-    Integer selectIsReadByCoach(@Param("demandId") String demandId, @Param("coachId") String coachId);
+    Long selectIsReadByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId);
 
     /**
      * 学管端读取需求
@@ -422,7 +453,7 @@ public interface IZSYFeedbackMapper {
      * @param coachId
      * @param date
      */
-    void insertFeedbackReadByCoach(@Param("frId") Long frId, @Param("demandId") Long demandId, @Param("coachId") Integer coachId, @Param("date") Date date);
+    Integer insertFeedbackReadByCoach(@Param("frId") Long frId, @Param("demandId") Long demandId, @Param("coachId") Integer coachId,@Param("readPeople")String readPeople, @Param("date") Date date);
 
     /**
      * 查看学管是否点赞需求
@@ -439,7 +470,16 @@ public interface IZSYFeedbackMapper {
      * @param flId
      * @param date
      */
-    void insertDemandLikesByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId, @Param("flId") Long flId, @Param("date") Date date);
+    void insertDemandLikesByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId, @Param("likePeople")String likePeople,
+                                  @Param("flId") Long flId, @Param("date") Date date);
+
+    /**
+     * 学管端取消点赞需求
+     * @param demandId
+     * @param coachId
+     */
+    Integer deleteDemandLikesByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId);
+
 
     /**
      * 学管端回复需求
@@ -449,11 +489,30 @@ public interface IZSYFeedbackMapper {
      * @param frId
      * @param date
      */
-    void insertReplyByCoach(Long demandId, Integer coachId, String content, Long frId, Date date);
+    Integer insertReplyByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId,
+                            @Param("content") String content, @Param("frId") Long frId, @Param("date") Date date,@Param("replyPeople")String replyPeople);
 
     /**
      * 学管端新增需求
      * @param demand
      */
     void insertDemandByCoach(Demand demand);
+
+    /**
+     * 查询新需求
+     * @param origin
+     * @param priority
+     * @param type
+     * @return
+     */
+    List<DemandBO> selectDemandList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
+
+
+    /**
+     * 获取需求点赞数
+     * @param id
+     * @return
+     */
+    Integer selectLikesNumById(Long id);
+
 }

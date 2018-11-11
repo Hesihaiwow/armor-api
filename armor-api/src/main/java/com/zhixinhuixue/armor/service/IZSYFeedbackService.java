@@ -4,6 +4,8 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
+import com.zhixinhuixue.armor.source.ArmorPageInfo;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -68,21 +70,21 @@ public interface IZSYFeedbackService {
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandResDTO> getDemandList(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo getDemandList(DemandQueryReqDTO reqDTO);
 
     /**
      * 获取驳回需求列表
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandRejectedResDTO> getDemandRejectedList(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandRejectedResDTO> getDemandRejectedList(DemandQueryReqDTO reqDTO);
 
     /**
      * 获取排队需求列表
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandQueuedResDTO> getDemandQueuedList(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandQueuedResDTO> getDemandQueuedList(DemandQueryReqDTO reqDTO);
 
     /**
      * 获取完成需求列表
@@ -96,7 +98,7 @@ public interface IZSYFeedbackService {
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandRunningResDTO> getDemandRunningList(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandRunningResDTO> getDemandRunningList(DemandQueryReqDTO reqDTO);
 
     /**
      * 获取我参与的需求
@@ -110,20 +112,27 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    DemandDetailResDTO getDemandDetail(String id,String status);
+    DemandDetailResDTO getDemandDetail(Long id,Integer status);
 
     /**
      * 获取需求回复详情
      * @param id
      * @return
      */
-    List<DemandReplyResDTO> getDemandReply(String id);
+    List<DemandReplyResDTO> getDemandReply(Long id);
 
     /**
      * 点赞
      * @param id
      */
-    void like(String id);
+    void like(Long id);
+
+    /**
+     * 需求取消点赞
+     * @param id
+     */
+    void dislike(Long id);
+
 
     /**
      * 回复需求
@@ -154,7 +163,7 @@ public interface IZSYFeedbackService {
      * 读取需求
      * @param id
      */
-    void readDemand(String id);
+    void readDemand(Long id);
 
     /**
      * 查询提出人员列表
@@ -174,14 +183,14 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    DemandIsOperateResDTO isRead(String id);
+    DemandIsOperateResDTO isRead(Long id);
 
     /**
      * 查看是否已点赞
      * @param id
      * @return
      */
-    DemandIsOperateResDTO isLike(String id);
+    DemandIsOperateResDTO isLike(Long id);
 
     /**
      * 新增需求所属项目
@@ -215,7 +224,7 @@ public interface IZSYFeedbackService {
      * @param id
      * @return
      */
-    List<String> getUrl(String id);
+    List<String> getUrl(Long id);
 
     /**
      * 完成需求上线
@@ -236,14 +245,14 @@ public interface IZSYFeedbackService {
      * @param coachId
      * @return
      */
-    DemandIsOperateResDTO isReadByCoach(String id, String coachId);
+    DemandIsOperateResDTO isReadByCoach(Long id, Integer coachId);
 
     /**
      * 学管端用户读取需求
      * @param id
-     * @param coachId
+     * @param reqDTO
      */
-    void readDemandByCoach(String id,String coachId);
+    void readDemandByCoach(Long id,DemandReadReqDTO reqDTO);
 
     /**
      * 查看学管端用户是否点赞需求
@@ -251,49 +260,57 @@ public interface IZSYFeedbackService {
      * @param coachId
      * @return
      */
-    DemandIsOperateResDTO isLikeByCoach(String id, String coachId);
+    DemandIsOperateResDTO isLikeByCoach(Long id, Integer coachId);
 
     /**
      * 学管端用户点赞需求
      * @param id
+     * @param reqDTO
+     */
+    void likeDemandByCoach(Long id, DemandLikeReqDTO reqDTO);
+
+    /**
+     * 学管端用户取消点赞需求
+     * @param id
      * @param coachId
      */
-    void likeDemandByCoach(String id, String coachId);
+    void dislikeDemandByCoach(Long id, Integer coachId);
+
 
     /**
      * 学管端用户评论需求
      * @param reqDTO
      * @param coachId
      */
-    void replyDemandByCoach(DemandReplyReqDTO reqDTO, String coachId);
+    void replyDemandByCoach(DemandReplyReqDTO reqDTO, Integer coachId);
 
     /**
      * 学管端新增需求
      * @param reqDTO
      * @param coachId
      */
-    void addDemandByCoach(DemandReqDTO reqDTO, String coachId);
+    void addDemandByCoach(DemandReqDTO reqDTO, Integer coachId);
 
     /**
      * 学管端查询新需求
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandResDTO> getDemandListByCoach(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandResDTO> getDemandListByCoach(DemandQueryReqDTO reqDTO,Integer coachId);
 
     /**
      * 学管端查询驳回需求
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandRejectedResDTO> getDemandRejectedListByCoach(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandRejectedResDTO> getDemandRejectedListByCoach(DemandQueryReqDTO reqDTO,Integer coachId);
 
     /**
      * 学管端获取排队需求
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandQueuedResDTO> getDemandQueuedListByCoach(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandQueuedResDTO> getDemandQueuedListByCoach(DemandQueryReqDTO reqDTO,Integer coachId);
 
     /**
      * 学管端获取已完成需求
@@ -307,6 +324,6 @@ public interface IZSYFeedbackService {
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandRunningResDTO> getDemandRunningListByCoach(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandRunningResDTO> getDemandRunningListByCoach(DemandQueryReqDTO reqDTO,Integer coachId);
 
 }
