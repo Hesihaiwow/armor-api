@@ -27,17 +27,10 @@
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
                                 <el-select clearable filterable  v-model="origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
-                                </el-select>
-                            </div>
-                            <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="introducer" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <el-button type="primary" size="small" @click="select0">查询</el-button>
@@ -51,11 +44,6 @@
                             <template scope="scope">
                                 <!--<a style="color:#20a0ff;cursor: pointer;" @click.stop.prevent="demandDetail(scope.row.id)">{{scope.row.title}}</a>-->
                                 <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
-                            </template>
-                        </el-table-column>
-                        <el-table-column  label="来源" align="center" width="100">
-                            <template scope="scope">
-                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="类型" align="center" width="100">
@@ -72,12 +60,12 @@
                         </el-table-column>
                         <el-table-column  label="提出人" align="center" width="80">
                             <template scope="scope">
-                                <span>{{scope.row.createBy}}</span>
+                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="提出日期" align="center" width="120">
                             <template scope="scope">
-                                <span>{{scope.row.createTime| formatDate}}</span>
+                                <span>{{scope.row.feedbackTime| formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="期待上线日期" align="center" width="130">
@@ -138,7 +126,7 @@
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
                                 <el-select clearable filterable  v-model="origin1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
@@ -163,12 +151,12 @@
                         </el-table-column>
                         <el-table-column  label="提出人" align="center" width="80">
                             <template scope="scope">
-                                <span>{{scope.row.createBy}}</span>
+                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="提出日期" align="center" width="120">
                             <template scope="scope">
-                                <span>{{scope.row.createTime | formatDate}}</span>
+                                <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="期待上线日期" align="center" width="130">
@@ -254,17 +242,10 @@
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
                                 <el-select clearable filterable  v-model="origin4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
-                                </el-select>
-                            </div>
-                            <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="introducer4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <el-button type="primary" size="small" @click="select4">查询</el-button>
@@ -275,11 +256,6 @@
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
                                 <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
-                            </template>
-                        </el-table-column>
-                        <el-table-column  label="来源" align="center" width="100">
-                            <template scope="scope">
-                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="类型" align="center" width="100">
@@ -296,12 +272,12 @@
                         </el-table-column>
                         <el-table-column  label="提出人" align="center" width="80">
                             <template scope="scope">
-                                <span>{{scope.row.createBy}}</span>
+                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="提出日期" align="center" width="120">
                             <template scope="scope">
-                                <span>{{scope.row.createTime | formatDate}}</span>
+                                <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="期待上线日期" align="center" width="130">
@@ -361,17 +337,10 @@
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
                                 <el-select clearable filterable  v-model="origin3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
-                                </el-select>
-                            </div>
-                            <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="introducer3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <el-button type="primary" size="small" @click="select3">查询</el-button>
@@ -382,11 +351,6 @@
                         <el-table-column  label="需求标题" align="center" width="250">
                             <template scope="scope">
                                 <router-link :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}" style="color:#20a0ff;">{{scope.row.title}}</router-link>
-                            </template>
-                        </el-table-column>
-                        <el-table-column  label="来源" align="center" width="100">
-                            <template scope="scope">
-                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="类型" align="center" width="100">
@@ -403,12 +367,12 @@
                         </el-table-column>
                         <el-table-column  label="提出人" align="center" width="80">
                             <template scope="scope">
-                                <span>{{scope.row.createBy}}</span>
+                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="提出日期" align="center" width="120">
                             <template scope="scope">
-                                <span>{{scope.row.createTime | formatDate}}</span>
+                                <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="期待上线日期" align="center" width="130">
@@ -463,9 +427,9 @@
                         </el-date-picker>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                            <el-select clearable filterable  v-model="introducer2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
-                                <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
+                            <el-select clearable filterable  v-model="origin2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-option v-for="item in originList" :key="item" :label="item"
+                                           :value="item"></el-option>
                             </el-select>
                         </div>
                         <div class="demand-top-list fl">
@@ -486,7 +450,7 @@
                         </el-table-column>
                         <el-table-column  label="提出人" align="center" width="80">
                             <template scope="scope">
-                                <span>{{scope.row.createBy}}</span>
+                                <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="提出日期" align="center" width="120">
@@ -560,11 +524,11 @@
                                 clearable
                         >
                         </el-date-picker>
-                        <div class="demand-top-list fl" v-if="!permit">
+                        <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                            <el-select clearable filterable  v-model="introducer5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
-                                <el-option v-for="item in introducerList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
+                            <el-select clearable filterable  v-model="origin5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-option v-for="item in originList" :key="item" :label="item"
+                                           :value="item"></el-option>
                             </el-select>
                         </div>
                         <div class="demand-top-list fl">
@@ -659,13 +623,22 @@
                 </el-form-item>
                 <br>
                 <!--<span class="star">*</span>-->
+                <el-form-item label="提出日期:">
+                    <el-date-picker
+                            v-model="demandForm.feedbackTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            placeholder="选择提出日期">
+                    </el-date-picker>
+                </el-form-item>
                 <el-form-item label="期待上线日期:" prop="releaseTime">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
                             type="date"
                             format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="选择日期时间">
+                            placeholder="选择期待上线日期">
                     </el-date-picker>
                 </el-form-item>
                 <br>
@@ -926,6 +899,7 @@
                 question:'',
                 target:'',
                 releaseTime:'',
+                feedbackTime:'',
                 content:'',
                 projectId:'',
                 status:'',
@@ -1013,12 +987,12 @@
                 origin3:'',
                 introducer3:'',
 
-                introducer2:'',
+                origin2:'',
                 chargeMan2:'',
                 beginTime2:'',
                 endTime2:'',
 
-                introducer5:'',
+                origin5:'',
                 chargeMan5:'',
                 beginTime5:'',
                 endTime5:'',
@@ -1033,6 +1007,9 @@
                 demandPage:{
                     pageSize:10,
                     total:0,
+                    total1:0,
+                    total3:0,
+                    total4:0,
                     currentPage:1
                 },
                 projectVisible:false,
@@ -1052,6 +1029,7 @@
                     question:'',
                     target:'',
                     releaseTime:'',
+                    feedbackTime:'',
                     content:'',
                     projectId:'',
                     status:'',
@@ -1186,6 +1164,9 @@
                         message: '项目添加成功',
                         type: 'success'
                     });
+                    this.planVisible = false
+                    this.projectVisible = false
+                    this.fetchQueueDemandList()
                 })
             },
 
@@ -1224,7 +1205,7 @@
                 this.reqDTO.pageNum = this.pageNum0
                 http.zsyPostHttp('/feedback/demand/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
-                    this.demandPage.total = res.data.total
+                    this.demandPage.total = res.data.totalSize
                 })
             },
 
@@ -1232,9 +1213,8 @@
             fetchRunningDemandList(){
                 this.reqDTO.pageNum = this.pageNum1
                 http.zsyPostHttp('/feedback/demand-running/list', this.reqDTO, (res) => {
-                    // this.pageNum1 = res.data.pageNum
                     this.demandData = res.data.list;
-                    this.demandPage.total = res.data.total
+                    this.demandPage.total = res.data.totalSize
                 })
             },
 
@@ -1243,7 +1223,7 @@
                 this.reqDTO.pageNum = this.pageNum4
                 http.zsyPostHttp('/feedback/demand-queued/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
-                    this.demandPage.total = res.data.total
+                    this.demandPage.total = res.data.totalSize
                 })
             },
 
@@ -1252,7 +1232,7 @@
                 this.reqDTO.pageNum = this.pageNum3
                 http.zsyPostHttp('/feedback/demand-rejected/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
-                    this.demandPage.total = res.data.total
+                    this.demandPage.total = res.data.totalSize
                 })
             },
 
@@ -1468,7 +1448,7 @@
             feedbackPlan(feedback){
                 this.clearPlan();
                 http.zsyGetHttp('/feedback/demand/project/'+feedback.id,{},(res) => {
-                    if (res.data.projectId == 0){
+                    if (res.data.projectId == 0 || res.data.projectId == null){
                         //此时没有添加项目
                         this.projectVisible = true
                     }
@@ -1581,10 +1561,6 @@
                 if(this.readStatus != undefined && this.priority != null){
                     this.reqDTO.readStatus = this.readStatus
                 }
-                if(this.introducer){
-                    this.reqDTO.user = String(this.introducer)
-                }
-
                 if(this.origin){
                     this.reqDTO.origin = this.origin
                 }
@@ -1627,12 +1603,8 @@
                     this.reqDTO.priority = this.priority4
                 }
                 if(this.readStatus4 != undefined && this.readStatus4 != null){
-                    this.reqDTO.readStatus4 = this.readStatus4
+                    this.reqDTO.readStatus = this.readStatus4
                 }
-                if(this.introducer4){
-                    this.reqDTO.user = String(this.introducer4)
-                }
-
                 if(this.origin4){
                     this.reqDTO.origin = this.origin4
                 }
@@ -1654,10 +1626,6 @@
                 if(this.readStatus3 != undefined && this.readStatus3 != null){
                     this.reqDTO.readStatus = this.readStatus3
                 }
-                if(this.introducer3){
-                    this.reqDTO.user = String(this.introducer3)
-                }
-
                 if(this.origin3){
                     this.reqDTO.origin = this.origin3
                 }
@@ -1674,8 +1642,8 @@
                 this.reqDTO.pageNum = 1
 
 
-                if(this.introducer2){
-                    this.reqDTO.user = String(this.introducer2)
+                if(this.origin2){
+                    this.reqDTO.origin = this.origin2
                 }
                 if (this.beginTime2){
                     this.reqDTO.beginTime = moment(this.beginTime2).format('YYYY-MM-DD 00:00:00')
@@ -1696,8 +1664,8 @@
                 this.reqDTO.pageNum = 1
 
 
-                if(this.introducer5){
-                    this.reqDTO.user = String(this.introducer5)
+                if(this.origin5){
+                    this.reqDTO.origin = this.origin5
                 }
                 if (this.beginTime5){
                     this.reqDTO.beginTime = moment(this.beginTime5).format('YYYY-MM-DD 00:00:00')
@@ -1745,6 +1713,7 @@
                         var param = this.demandForm
                         // param.type = Number(param.type)
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
+                        param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:00:00')
 
                             http.zsyPostHttp('/feedback/demand/add', param, (resp) => {
                                 this.$message({ showClose: true,message: '需求创建成功',type: 'success'});
@@ -1825,6 +1794,7 @@
                 this.demandForm.question = null
                 this.demandForm.target = null
                 this.demandForm.releaseTime = null
+                this.demandForm.feedbackTime = null
                 this.demandForm.urlList = []
             },
 

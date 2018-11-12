@@ -15,7 +15,7 @@ public class DemandCompletedResDTO {
     private Long id;
     @ApiModelProperty("需求标题")
     private String title;
-    @ApiModelProperty("来源")
+    @ApiModelProperty("来源(需求实际提出人)")
     private String origin;
     @ApiModelProperty("类型")
     private Integer type;
@@ -28,6 +28,8 @@ public class DemandCompletedResDTO {
     @ApiModelProperty("提出人")
     private String createBy;
     @ApiModelProperty("提出时间")
+    private Date feedbackTime;
+    @ApiModelProperty("创建日期")
     private Date createTime;
     @ApiModelProperty("期待上线日期")
     private Date releaseTime;
@@ -49,6 +51,14 @@ public class DemandCompletedResDTO {
     private Long projectId;
     @ApiModelProperty("状态")
     private Integer status;
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;

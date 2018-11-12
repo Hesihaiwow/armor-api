@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,9 +21,11 @@ public class DemandDetailResDTO {
     @ApiModelProperty("需求类型")
     private Integer type;
     @ApiModelProperty("需求提出时间")
-    private String createTime;
+    private Date feedbackTime;
+    @ApiModelProperty("需求创建时间")
+    private Date createTime;
     @ApiModelProperty("需求期待上线时间")
-    private String releaseTime;
+    private Date releaseTime;
     @ApiModelProperty("需求点赞数")
     private Integer likesNum;
     @ApiModelProperty("需求问题")
@@ -35,6 +38,16 @@ public class DemandDetailResDTO {
     private List<String> readPeople;
     @ApiModelProperty("已读人数量")
     private Integer readNum;
+    @ApiModelProperty("附件url")
+    private List<String> urlList;
+
+    public List<String> getUrlList() {
+        return urlList;
+    }
+
+    public void setUrlList(List<String> urlList) {
+        this.urlList = urlList;
+    }
 
     public Integer getReadNum() {
         return readNum;
@@ -92,22 +105,6 @@ public class DemandDetailResDTO {
         this.type = type;
     }
 
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getReleaseTime() {
-        return releaseTime;
-    }
-
-    public void setReleaseTime(String releaseTime) {
-        this.releaseTime = releaseTime;
-    }
-
     public Integer getLikesNum() {
         return likesNum;
     }
@@ -130,5 +127,29 @@ public class DemandDetailResDTO {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(Date releaseTime) {
+        this.releaseTime = releaseTime;
     }
 }

@@ -20,6 +20,17 @@ public class DemandReplyReqDTO {
     @ApiModelProperty("回复内容")
     private String content;
 
+    @ApiModelProperty("回复人姓名")
+    private String replyPeople;
+
+    public String getReplyPeople() {
+        return replyPeople;
+    }
+
+    public void setReplyPeople(String replyPeople) {
+        this.replyPeople = replyPeople;
+    }
+
     public String getDemandId() {
         return demandId;
     }

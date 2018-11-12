@@ -46,8 +46,19 @@ public class DemandReqDTO {
     @ApiModelProperty("期待上线时间")
     private Date releaseTime;
 
+    @ApiModelProperty("提出时间")
+    private Date feedbackTime;
+
     @ApiModelProperty("附件地址")
     private List<String> urlList;
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
 
     public List<String> getUrlList() {
         return urlList;

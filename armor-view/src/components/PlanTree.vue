@@ -12,15 +12,17 @@
 			<span>负责人:{{model.chargeMan}}</span>
   		</div>
   		<div class="fr disc-status" v-show="model.origin== null"  v-on="stageIcon(model)">
-  			<a href="javascript:;" :class="stage.design">设计</a>
+			<div v-if="model.status == 0" class="fl" style="color: gray">暂停中</div>
+
+			<a href="javascript:;" :class="stage.design">设计</a>
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.dev">开发</a>
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.test">测试</a>
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.publish">发布</a>
-  		</div>
-		<div v-if="model.status == 0" class="fr" style="color: gray">暂停中</div>
+			<span class="fl">负责人:{{model.userName}}</span>
+		</div>
 
 	</div>
   	<ul class="sub-container" v-show="open">

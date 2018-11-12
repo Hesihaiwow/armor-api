@@ -15,22 +15,22 @@ public class DemandBO {
     private Long id;
     @ApiModelProperty("标题")
     private String title;
-    @ApiModelProperty("来源")
+    @ApiModelProperty("来源(需求实际提出人)")
     private String origin;
     @ApiModelProperty("类型(0:个人建议,1:市场反馈,2:公司决策)")
     private Integer type;
     @ApiModelProperty("优先级")
     private Integer priority;
-    @ApiModelProperty("提出人")
-    private String createBy;
-    @ApiModelProperty("提出日期")
+//    @ApiModelProperty("提出人")
+//    private String createBy;
+    @ApiModelProperty("提出时间")
+    private Date feedbackTime;
+    @ApiModelProperty("创建日期")
     private Date createTime;
     @ApiModelProperty("期待上线日期")
     private Date releaseTime;
     @ApiModelProperty("点赞数")
     private Integer likesNum;
-    @ApiModelProperty("状态(0:未读,1:已读)")
-    private Integer readStatus;
     @ApiModelProperty("问题")
     private String question;
     @ApiModelProperty("目标")
@@ -39,6 +39,14 @@ public class DemandBO {
     private Long projectId;
     @ApiModelProperty("状态")
     private Integer status;
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
 
     public Long getProjectId() {
         return projectId;
@@ -96,14 +104,6 @@ public class DemandBO {
         this.priority = priority;
     }
 
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -126,14 +126,6 @@ public class DemandBO {
 
     public void setLikesNum(Integer likesNum) {
         this.likesNum = likesNum;
-    }
-
-    public Integer getReadStatus() {
-        return readStatus;
-    }
-
-    public void setReadStatus(Integer readStatus) {
-        this.readStatus = readStatus;
     }
 
     public String getQuestion() {

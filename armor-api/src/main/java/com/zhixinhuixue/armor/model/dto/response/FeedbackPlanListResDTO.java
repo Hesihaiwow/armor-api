@@ -21,7 +21,9 @@ public class FeedbackPlanListResDTO {
     private Long stageId;
 
     private Integer status;
-
+    /**
+     * 需求负责人
+     */
     private String chargeMan;
 
     public String getChargeMan() {

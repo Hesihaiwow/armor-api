@@ -116,7 +116,7 @@
         <![CDATA[ AND p.expect_start_time <= #{endTime} ]]>
       </if>
       <if test="origin!=null and origin!=''">
-        AND f.origin = #{origin}
+        AND f.origin like "%"#{origin}"%"
       </if>
     </where>
     <choose>

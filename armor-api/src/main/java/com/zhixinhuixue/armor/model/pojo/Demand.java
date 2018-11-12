@@ -17,7 +17,7 @@ public class Demand {
     private Long type;
     @ApiModelProperty("优先级(0：普通,1:紧急;2:非常紧急)")
     private Long priority;
-    @ApiModelProperty("来源")
+    @ApiModelProperty("来源(需求实际提出人)")
     private String origin;
     @ApiModelProperty("问题")
     private String question;

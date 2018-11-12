@@ -5,6 +5,7 @@
             <el-button class="fr" v-if="permit && rejectVisible && notRunning" @click="rejectDemand">不采纳</el-button>
             <el-button class="fr" type="primary" v-if="permit && agreeVisible && notRunning" @click="agreeDemand">采纳</el-button>
             <el-button v-if="isLikeVisible" class="fr" type="primary" @click="like">点赞</el-button>
+            <el-button v-if="!isLikeVisible" class="fr" type="primary" @click="dislike">取消点赞</el-button>
             <el-button v-if="permit && compleltedVisible && isOnlieVisible" class="fr" type="primary" @click="online">上线</el-button>
         </div>
         <div class="main">
@@ -42,10 +43,10 @@
                             </ul>
                         </td>
                     </tr>
-                    <tr>
+                    <tr v-if="downloadVisible">
                         <td><span>附件</span></td>
                         <td>
-                            <a href="#" class="btn-down" @click.prevent="fetchUrls">下载附件</a>
+                            <a href="#" class="btn-down" @click.prevent="download">下载附件</a>
                         </td>
                     </tr>
                     </tbody>
@@ -90,7 +91,7 @@
                 <div class="comment-box">
                     <div class="comment-tiele">
                         <img src="../assets/img/icon-msg.png" alt="">
-                        <span>回复{{replyList.length}}</span>
+                        <span>回复:{{replyNum}}</span>
                     </div>
                     <div class="comment-text_box">
                         <div class="comment-lis" v-for="item in replyList">
@@ -154,6 +155,8 @@
                     readNum:''
                 },
                 replyList:[],
+                replyNum:0,
+                urlList:[],
                 typeList:[
                     {id:-1,name:'全部'},
                     {id:0,name:'个人建议'},
@@ -169,7 +172,8 @@
                 rejectVisible:false,
                 notRunning:false,
                 compleltedVisible:false,
-                isOnlieVisible:true
+                isOnlieVisible:true,
+                downloadVisible:false
 
             }
         },
@@ -183,6 +187,7 @@
             this.isRunning()
             this.isCompleleted()
             this.isOnline()
+            this.fetchUrls()
 
         },
         filters: {
@@ -194,12 +199,7 @@
                 if (!value) return '';
                 return moment(value).format('YYYY-MM-DD HH:mm:ss');
             },
-            StringExtract:function (name) {
-                if(name.length>18){
-                    return name.substring(0,18)+'...';
-                }
-                return name;
-            },
+
         },
         computed: {
             permit() {
@@ -220,25 +220,21 @@
             //获取需求附件url
             fetchUrls(){
               http.zsyGetHttp('/feedback/demand/accessory/'+this.id,{},(res)=>{
-                  if (res.data) {
-                      res.data.forEach(url => {
-                          /*let frame = document.createElement('iframe')
+                  if (res.data != null && res.data.length != 0) {
+                      this.downloadVisible = true
+                      this.urlList = res.data
+                  }
+              })
+            },
+            download(){
+                this.urlList.forEach(url =>{
+                    /*let frame = document.createElement('iframe')
                           frame.style.display = 'none'
                           document.body.appendChild(frame)
                           frame.src = url*/
-                          window.open(url)
-                      })
-                  }else {
-                      this.$message({
-                          showClose: true,
-                          message: '无附件',
-                          type: 'info'
-                      });
-                  }
-
-
-
-              })
+                    window.open(url)
+                    this.downloadVisible = false
+                })
             },
             //是否是进行中  进行中需求无法采纳和驳回
             isRunning(){
@@ -256,7 +252,6 @@
             isOnline(){
               http.zsyGetHttp('/feedback/demand/is-online/'+this.id,{},(res)=>{
                   if (res.data.onlineTime != null){
-                      console.log(2222)
                       this.isOnlieVisible = false
                   }
               })
@@ -306,6 +301,12 @@
                   });
               })
             },
+            //取消点赞
+            dislike(){
+              http.zsyPostHttp('/feedback/demand/dislike/'+this.id,{},(res)=> {
+                  this.isLikeVisible = true
+              })
+            },
             //获取需求详情
             fetchDetail(){
                 http.zsyGetHttp('/feedback/demand/detail/'+this.id+'/'+this.status,{},(res)=> {
@@ -315,7 +316,10 @@
             //获取需求读取详情
             fetchDemandReply(){
               http.zsyGetHttp('/feedback/demand/reply/'+this.id,{},(res)=> {
-                  this.replyList = res.data
+                  if (res.data != null && res.data.length != 0){
+                      this.replyList = res.data
+                      this.replyNum = this.replyList.length
+                  }
               })
             },
             //回复
