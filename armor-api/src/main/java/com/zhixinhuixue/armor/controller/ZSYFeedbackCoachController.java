@@ -252,7 +252,7 @@ public class ZSYFeedbackCoachController extends ZSYController {
     @ApiOperation("计划列表")
     @PostMapping(value = "/demand-plan/list")
     public String getDemandPlanList(@RequestBody DemandPlanQueryReqDTO reqDTO){
-        return ZSYResult.success().data(feedbackPlanService.getDemandPlanList(reqDTO)).build();
+        return ZSYResult.success().data(feedbackPlanService.getDemandPlanListByCoach(reqDTO)).build();
     }
 
     /**

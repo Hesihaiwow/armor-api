@@ -26,4 +26,6 @@ public interface IZSYFeedbackPlanService {
      * @return
      */
     List<FeedbackPlanListResDTO> getDemandPlanList(DemandPlanQueryReqDTO reqDTO);
+
+    List<FeedbackPlanListResDTO> getDemandPlanListByCoach(DemandPlanQueryReqDTO reqDTO);
 }
