@@ -904,6 +904,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * @param id
      */
     @Override
+    @Transactional
     public void like(Long id) {
         //新增feedback_likes
         String likePeople = feedbackMapper.selectUserNameByUserId(ZSYTokenRequestContext.get().getUserId());
@@ -941,6 +942,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * @param id
      */
     @Override
+    @Transactional
     public void agreeDemand(String id) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
@@ -964,6 +966,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * @param id
      */
     @Override
+    @Transactional
     public void rejectDemand(String id) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
@@ -987,6 +990,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * @param reqDTO
      */
     @Override
+    @Transactional
     public void addDemand(DemandReqDTO reqDTO) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
@@ -1046,6 +1050,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     }
 
     @Override
+    @Transactional
     public void editDemand(String id, DemandReqDTO reqDTO) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
@@ -1251,6 +1256,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     }
 
     @Override
+    @Transactional
     public void addDemandByCoach(DemandReqDTO reqDTO, Integer coachId) {
         Demand demand = new Demand();
         BeanUtils.copyProperties(reqDTO,demand);
