@@ -4,19 +4,22 @@ import com.zhixinhuixue.armor.context.ZSYTokenAop;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.helper.SpringHelper;
 import com.zhixinhuixue.armor.source.FastdfsProperty;
-import com.zhixinhuixue.logback.LogbackRedisHelper;
+import com.zhixinhuixue.armor.source.ZSYBasicAuthProperty;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableScheduling
 @MapperScan("com.zhixinhuixue.armor.dao")
-@EnableConfigurationProperties({FastdfsProperty.class})
-@SpringBootApplication
+@EnableConfigurationProperties({FastdfsProperty.class,ZSYBasicAuthProperty.class})
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@EnableSwagger2
 public class ZSYArmorApplication implements CommandLineRunner {
 
 

@@ -52,3 +52,8 @@ logRedis:
   database: 10
   key: zsy-system-err
   module: zsy-armor
+
+#http basic验证
+basic:
+  user: zhixinhuixue.com
+  password: iWK77vd6mULRsCZCMbFGIXmPN1w5Ueuw

@@ -24,6 +24,8 @@ public interface IZSYUserService {
      */
     ZSYResult<String> userLogin(UserLoginReqDTO userLoginReqDTO);
 
+    String createUserJwtToken(String account);
+
     /**
      * 用户注册
      * @param userReqDTO
