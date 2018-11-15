@@ -58,6 +58,15 @@
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
+                        <el-tab-pane label="测试中" name="test" v-if="developVisible">
+                            <task-item :taskItems="task.test" :isPrivate="true"
+                                       taskStatus="TaskDoing" @reload="reload"
+                                       :projectList="projectList"
+                                       :userList="userList"
+                                       :stageList="stageList"
+                                       :viewType="1"
+                                       :tagList="tagList"></task-item>
+                        </el-tab-pane>
                         <!--<el-tab-pane label="审核失败" name="applyFail">
                             <task-item :taskItems="task.applyFail" :isPrivate="true"
                                        taskStatus="ApplyFail" @reload="reload"></task-item>
@@ -199,6 +208,64 @@
                                     :layout="auditSuccessPageLayout"
                                     :total="auditSuccessPage.total">
                             </el-pagination>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
+                <p class="mic-title">任务延长申请审核</p>
+                <el-tabs v-model="taskExpandTabsActiveName" @tab-click="handleClick">
+                    <el-tab-pane label="待审核" name="wait">
+                        <div class="task-lis" v-for="expand in taskExpand.doing" @click="getExpandDetail(expand)">
+                            <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                            <div class="main-task-detail">
+                                <div class="task-name"><span>{{expand.taskName}}:{{expand.reason}}</span></div>
+                                <div class="task-state">
+                                    <span class="task-end blue">申请人：{{expand.userName}}</span>
+                                    <span class="task-end blue">{{expand.endTime| formatDate }}</span>
+                                    <span class="task-time-opt"><i class="el-icon-edit" ></i></span>
+                                </div>
+                            </div>
+                            <div class="task-data-show">
+                                <span class="task-score">延长时间：{{expand.hours}} 小时</span>
+                            </div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="expand.avatarUrl && expand.avatarUrl!=''" :src="expand.avatarUrl" >
+                                <span v-else="">{{expand.userName}}</span>
+                            </div>
+                        </div>
+                        <div v-show="taskExpand.doing.length==0" class="empty">
+                            <h2>暂无数据</h2>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="审核通过" name="completed">
+                        <div class="task-lis" v-for="expand in taskExpand.finished" @click="getExpandDetail(expand)">
+                            <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                            <div class="main-task-detail">
+                                <div class="task-name"><span>{{expand.reason}}</span></div>
+                                <div class="task-state">
+                                    <span class="task-end blue">申请人：{{expand.userName}}</span>
+                                    <span class="task-end blue">{{expand.endTime| formatDate }}</span>
+                                    <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
+                                </div>
+                            </div>
+                            <div class="task-data-show">
+                                <span class="task-score">延长时间：{{expand.hours}} 小时</span>
+                            </div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="expand.avatarUrl && expand.avatarUrl!=''" :src="expand.avatarUrl" >
+                                <span v-else="">{{expand.userName}}</span>
+                            </div>
+                        </div>
+                        <div class="pagination" v-show="this.taskExpand.finished.length>0">
+                            <el-pagination
+                                    @current-change="handleExpandPage"
+                                    :current-page.sync="expandPage.pageNum"
+                                    :page-size="expandPage.pageSize"
+                                    :layout="expandPageLayout"
+                                    :total="expandPage.total">
+                            </el-pagination>
+                        </div>
+                        <div v-show="taskExpand.finished.length==0" class="empty">
+                            <h2>暂无数据</h2>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -470,6 +537,39 @@
             </span>
         </el-dialog>
 
+        <el-dialog title="任务延长申请详情" custom-class="myDialog" :visible.sync="expandDetailVisible" :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+            <el-form v-if="userRole != 0">
+                <el-form-item class="task-form" label="任务名称：">{{expandDetail.taskName}}</el-form-item>
+                <el-form-item class="task-form" label="申请人：">{{expandDetail.userName}}</el-form-item>
+                <el-form-item class="task-form" label="原因：">{{expandDetail.reason}}</el-form-item>
+                <el-form-item class="task-form" label="截止时间：">{{expandDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="延长时长：">{{expandDetail.hours}}小时</el-form-item>
+            </el-form>
+            <el-form v-if="userRole == 0">
+                <el-form-item class="task-form" label="任务名称：">{{expandDetail.taskName}}
+                </el-form-item>
+                <el-form-item class="task-form" label="申请人：">{{expandDetail.userName}}</el-form-item>
+                <el-form-item class="task-form" label="原因：">{{expandDetail.reason}}</el-form-item>
+                <el-form-item class="task-form" label="截止时间：">
+                    <el-date-picker
+                            v-model="expandDetail.endTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:00:00"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item class="task-form" label="延长时长：">
+                    <el-input v-model="expandDetail.hours" style="width: 30%"></el-input>小时</el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer" >
+                <div v-show="userRole==0&&taskExpandTabsActiveName=='wait'">
+                    <el-button type="success" @click="acceptTaskExpand()">申请通过</el-button>
+                    <!--<el-button type="success" @click="acceptTaskExpand()">申请驳回</el-button>-->
+                </div>
+            </span>
+        </el-dialog>
+
+
         <el-dialog  title="请假申请"  size="tiny"  custom-class="myDialog"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editLeaveVisible"  :show-close="false">
             <el-form :model="leaveForm" ref="leaveForm" :rules="leaveRules" label-width="110px">
                 <el-form-item label="请假原因" prop="description">
@@ -549,6 +649,7 @@
     import helper from '../lib/Helper'
     import moment from 'moment';
     import ElButton from "../../node_modules/element-ui/packages/button/src/button";
+    import ElInput from "../../node_modules/element-ui/packages/input/src/input";
 
     moment.locale('zh-cn');
 
@@ -571,14 +672,17 @@
                 activeLeaveName:'wait',
                 auditTabsActiveName: 'wait',
                 auditHelpTabsActiveName:'wait',
+                taskExpandTabsActiveName:'wait',
                 taskAble:false,
                 editHelpDetailVisible:false,
                 editHelpVisible: false,
                 editLeaveVisible:false,
                 leaveDetailVisible:false,
                 helpDetailVisible:false,
+                expandDetailVisible:false,
                 createTaskVisible: false,
                 editLeaveDetailVisible:false,
+                developVisible:false,
                 basicIntegral:{
                     integral:'',
                     salary:''
@@ -594,6 +698,11 @@
                     total: 0,
                 },
                 auditSuccessPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
+                expandPage:{
                     pageNum: 1,
                     pageSize: 5,
                     total: 0,
@@ -663,6 +772,11 @@
                     {id:7,name:'年假'},
                     {id:8,name:'调休'},
                 ] ,
+                status:[
+                    {id:0,name:'审核中'},
+                    {id:1,name:'审核通过'},
+                    {id:2,name:'驳回'},
+                ] ,
                 userWeeks:[],
                 weekTime:{
                     beginWeek:'',
@@ -677,6 +791,15 @@
                     integral: '',
                     name: '',
                     username: ''
+                },
+                expandDetail: {
+                    teId:'',
+                    userId:'',
+                    userName: '',
+                    hours: '',
+                    taskName: '',
+                    endTime: '',
+                    userWeek:[]
                 },
                 rules: {
                     projectId: [
@@ -716,12 +839,17 @@
                 },
                 task: {
                     doing: [],
+                    test:[],
                     finished: [],
                     waitAssess: [],
                     commented:[],
                     waitAudit: [],
                     auditSuccess: [],
                     applyFail: []
+                },
+                taskExpand: {
+                    doing: [],
+                    finished: [],
                 },
                 review:{
                     wait: [],
@@ -787,6 +915,12 @@
                 }
                 return 'total, pager'
             },
+            expandPageLayout() {
+                if (this.expandPage.total>0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             waitPageLayout() {
                 if (this.waitPage.total>5) {
                     return 'total, prev, pager, next'
@@ -825,7 +959,7 @@
         methods: {
             handleClick(tab, event) {
                 // 点击进行中和已完成
-                console.log(tab, event);
+//                console.log(tab, event);
             },
             createTaskClick() {
                 // 建个人任务
@@ -844,6 +978,7 @@
                 this.fetchUserList()
                 this.fetchUserLeaveList()
                 this.fetchUserLeavePassList()
+                this.fetchTaskExpandDoing()
                 //this.fetchApplyFailTask();
                 if (this.userRole === 0) {
                     // 所有审核通过的数据
@@ -851,6 +986,7 @@
                     //待审核的积分转移，审核通过的积分转移
                     this.fetchHelpWaitAdmin()
                     this.fetchHelpReviewAdmin()
+                    this.fetchTaskExpandSuccess()
                 }else{
                     this.fetchMyHelpWaitList();
                     this.fetchMyReviewSuccess();
@@ -898,6 +1034,8 @@
                     } else {
                         return false;
                     }
+                }, err => {
+                    this.taskAble = false
                 });
             },
             makeUpItems(items) {
@@ -950,6 +1088,7 @@
                     items.push({label: '', score: data.year,time:this.getDateString('year')});
 //                    items.push({label: '', score: 0, time:'' });
                     this.integralItem = items;
+                    this.developVisible = data.developRole
                 })
             },
             // 获取用户正在进行的任务
@@ -958,6 +1097,13 @@
                 http.zsyGetHttp('/task/doing', {}, (resp) => {
                     vm.task.doing = this.makeUpItems(resp.data)
                     vm.fetchMyTaskWaitAudit()
+                })
+            },
+            // 获取用户测试中的任务
+            fetchTaskTesting() {
+                let vm = this
+                http.zsyGetHttp('/task/testing', {}, (resp) => {
+                    vm.task.test = this.makeUpItems(resp.data)
                 })
             },
             // 获取用户已完成的任务
@@ -998,6 +1144,12 @@
                     vm.task.waitAudit = this.makeUpItems(resp.data)
                 })
             },
+            fetchTaskExpandDoing() {
+                let vm = this
+                http.zsyGetHttp(`/task-expand/doing/0`, {}, (resp) => {
+                    vm.taskExpand.doing = resp.data
+                })
+            },
             // 获取所有审核通过的任务
             fetchTaskAuditSuccess() {
                 let vm = this
@@ -1005,6 +1157,15 @@
                     vm.auditSuccessPage.pageNum = resp.data.pageNum
                     vm.auditSuccessPage.total = resp.data.total
                     vm.task.auditSuccess = this.makeUpItems(resp.data.list)
+                })
+            },
+            // 获取所有审核通过的任务
+            fetchTaskExpandSuccess() {
+                let vm = this
+                http.zsyPostHttp(`/task-expand/list`, {status:1,pageNum:vm.expandPage.pageNum}, (resp) => {
+                    vm.expandPage.pageNum = resp.data.pageNum
+                    vm.expandPage.total = resp.data.total
+                    vm.taskExpand.finished = resp.data.list
                 })
             },
             // 获取我的待审核任务
@@ -1132,6 +1293,33 @@
                     })
                 }).catch(() => {
                 });
+            },
+            acceptTaskExpand(){
+                this.$confirm('确认审核通过?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyPutHttp(`/task-expand/review/1/`+this.expandDetail.teId, {}, (resp) => {
+                        this.$message({ showClose: true,message: '审核成功',type: 'success'});
+                        this.reload();
+                        this.expandDetailVisible = false;
+                    })
+                }).catch(() => {
+                });
+            },
+            getExpandDetail(expand){
+                this.expandDetailVisible=true ;
+                this.expandDetail.teId = expand.teId;
+                this.expandDetail.userName = expand.userName;
+                this.expandDetail.taskName = expand.taskName;
+                this.expandDetail.userId = expand.userId;
+                this.expandDetail.reason = expand.reason;
+                this.expandDetail.hours = expand.hours
+                this.expandDetail.taskId = expand.taskId
+                this.expandDetail.endTime = expand.endTime
+                http.zsyGetHttp(`/userWeek/task/${this.expandDetail.taskId}/`+this.expandDetail.userId, {}, (resp) => {
+                })
             },
             //积分转移详情
             reviewDetail(help){
@@ -1265,6 +1453,8 @@
                                 this.editLeaveVisible = false
                                 this.editLeaveDetailVisible = false
                                 this.isSaving = false
+                            },err=>{
+                                this.isSaving = false
                             })
                         }else{
                             http.zsyPostHttp('/userLeave/add', form, (resp) => {
@@ -1277,6 +1467,8 @@
                                 this.clearLeaveForm()
                                 this.editLeaveVisible = false
                                 this.editLeaveDetailVisible = false
+                                this.isSaving = false
+                            },err=>{
                                 this.isSaving = false
                             })
                         }
@@ -1353,6 +1545,10 @@
                 this.auditSuccessPage.pageNum = currentPage
                 this.fetchTaskAuditSuccess()
             },
+            handleExpandPage(currentPage){
+                this.expandPage.pageNum = currentPage
+//                this.fetchTaskExpandSuccess()
+            },
             isDecimal(str) {
                 var regu = /^[-]{0,1}[0-9]{1,}$/;
                 if (regu.test(str)) {
@@ -1397,6 +1593,7 @@
             }
         },
         components: {
+            ElInput,
             ElButton,
             TaskItem: TaskItem
         },

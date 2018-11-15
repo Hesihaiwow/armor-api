@@ -23,6 +23,19 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">角色</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="modifyForm.jobRole" placeholder="请选择角色">
+            <el-option
+                    v-for="item in rolesList"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">手机号</div>
         <div class="ftp-msg fl">
           <el-input class="w280" v-model="addForm.phone" placeholder="请输入手机号"></el-input>
@@ -69,6 +82,7 @@
           jobName:'',
           phone:'',
           userRole:'',
+          jobRole:'',
           departmentId:'',
           email:''
         },
@@ -82,6 +96,16 @@
           }, {
               value: 2,
               label: '普通成员'
+        }],
+        rolesList:[{
+            roleId: 0,
+            roleName: '开发'
+        }, {
+            roleId: 1,
+            roleName: '测试'
+        }, {
+            roleId: 2,
+            roleName: '设计'
         }],
         showAddPop: false
       };
@@ -100,6 +124,7 @@
         this.addForm.phone='';
         this.addForm.userRole='';
         this.addForm.email='';
+        this.addForm.jobRole='';
       },
       //部门ID
       setDeptId(deptId){
@@ -125,6 +150,10 @@
         }
         if (Helper.trim(this.addForm.userRole)==''){
               this.warnMsg("请选择用户权限");
+            return;
+        }
+        if (Helper.trim(this.addForm.jobRole)==''){
+            this.warnMsg("请选择用户角色");
             return;
         }
         Http.zsyPostHttp('/user/add',this.addForm,(res)=>{

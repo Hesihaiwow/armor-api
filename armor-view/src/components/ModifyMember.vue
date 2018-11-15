@@ -17,6 +17,19 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">角色</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="modifyForm.jobRole" placeholder="请选择角色">
+            <el-option
+                    v-for="item in rolesList"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">职位</div>
         <div class="ftp-msg fl">
           <el-input class="w280" v-model="modifyForm.jobName" placeholder="请输入职位"></el-input>
@@ -92,14 +105,26 @@
         modifyForm:{
           userId:'',
           name:'',
+          roleId:'',
           account:'',
           jobName:'',
+          jobRole:'',
           phone:'',
           userRole:'',
           departmentId:'',
           status:'',
           email:''
         },
+        rolesList:[{
+            roleId: 0,
+            roleName: '开发'
+        }, {
+            roleId: 1,
+            roleName: '测试'
+        }, {
+            roleId: 2,
+            roleName: '设计'
+        }],
         //用户权限手
         options: [{
               value: 0,
@@ -132,6 +157,7 @@
             this.modifyForm.jobName=res.data.jobName;
             this.modifyForm.phone=res.data.phone;
             this.modifyForm.userRole=res.data.userRole;
+            this.modifyForm.jobRole=res.data.jobRole;
             this.modifyForm.status=res.data.status;
             this.modifyForm.email=res.data.email;
             this.modifyForm.departmentId=res.data.departmentId;
@@ -152,6 +178,7 @@
         this.modifyForm.phone='';
         this.modifyForm.userRole='';
         this.modifyForm.email='';
+        this.modifyForm.jobRole='';
       },
       //部门ID
       setUserId(userId){
@@ -179,10 +206,14 @@
               this.warnMsg("请选择用户权限");
             return;
         }
-          if (Helper.trim(this.modifyForm.status)==''){
-              this.warnMsg("请选择用户状态");
-              return;
-          }
+        if (Helper.trim(this.modifyForm.status)==''){
+            this.warnMsg("请选择用户状态");
+            return;
+        }
+        if (Helper.trim(this.modifyForm.jobRole)==''){
+            this.warnMsg("请选择用户角色");
+            return;
+        }
         Http.zsyPutHttp(`/user/${this.modifyForm.userId}`,this.modifyForm,(res)=>{
             this.hide();
             this.$message({
