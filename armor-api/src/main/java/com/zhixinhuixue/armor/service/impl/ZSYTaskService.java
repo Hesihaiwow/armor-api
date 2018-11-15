@@ -69,6 +69,9 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYFeedbackMapper feedbackMapper;
     @Autowired
     private IZSYFeedbackPlanTaskMapper feedbackPlanTaskMapper;
+    @Autowired
+    private IZSYTaskTestMapper taskTestMapper;
+
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -647,6 +650,20 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public ZSYResult<List<TaskResDTO>> getTaskByStatus(Integer status, Integer reviewStatus, Integer taskUserStatus, Long userId) {
         List<TaskBO> taskBOS = taskMapper.selectTaskByStatus(status, reviewStatus, taskUserStatus, userId);
+        List<TaskResDTO> taskList = new ArrayList<>();
+        if (taskBOS != null && taskBOS.size() >= 0) {
+            taskBOS.stream().forEach(taskBO -> {
+                TaskResDTO taskResDTO = new TaskResDTO();
+                BeanUtils.copyProperties(taskBO, taskResDTO);
+                taskList.add(taskResDTO);
+            });
+        }
+        return ZSYResult.success().data(taskList);
+    }
+
+    @Override
+    public ZSYResult<List<TaskResDTO>> getTestingTask(Integer status, Long userId) {
+        List<TaskBO> taskBOS = taskMapper.selectTestTask(userId);
         List<TaskResDTO> taskList = new ArrayList<>();
         if (taskBOS != null && taskBOS.size() >= 0) {
             taskBOS.stream().forEach(taskBO -> {
@@ -1389,5 +1406,41 @@ public class ZSYTaskService implements IZSYTaskService {
             planResDTOS.add(planResDTO);
         });
         return planResDTOS;
+    }
+
+    @Override
+    public void setTestingTask(TestingTaskReqDTO testingTask) {
+        TaskDetailBO bo = taskMapper.selectTaskDetailByTaskId(testingTask.getTaskId());
+        List<TaskTest> taskTests = Lists.newArrayList();
+        List<UserWeek> userWeeks = Lists.newArrayList();
+        bo.getTaskUsers().forEach(taskUserBO -> {
+            User user = userMapper.selectById(taskUserBO.getUserId());
+            if(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue()){
+                testingTask.getWeeks().forEach(userWeekReqDTO->{
+                    TaskTest taskTest = new TaskTest();
+                    taskTest.setTtId(snowFlakeIDHelper.nextId());
+                    taskTest.setTaskId(testingTask.getTaskId());
+                    taskTest.setUserId(user.getId());
+                    taskTest.setStatus(ZSYTaskStatus.TESTING.getValue());
+                    taskTests.add(taskTest);
+
+
+                    UserWeek week = new UserWeek();
+                    week.setWeekNumber(userWeekReqDTO.getWeekNumber());
+                    week.setTaskId(taskTest.getTtId());
+                    week.setUserId(user.getId());
+                    week.setYear(userWeekReqDTO.getYear());
+                    double hor=taskUserBO.getTaskHours().doubleValue()*userWeekReqDTO.getHours()*0.01;
+                    double value = new BigDecimal(hor).setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+                    week.setHours(value);
+                    userWeeks.add(week);
+                });
+            }
+        });
+
+        userWeekMaper.insertList(userWeeks);
+        taskTestMapper.insertList(taskTests);
+
+
     }
 }

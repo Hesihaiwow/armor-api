@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTestMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTest">
+    <id column="tt_id" jdbcType="BIGINT" property="ttId" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Test">
+    insert into task_test (tt_id, task_id, user_id, status)
+    values (#{ttId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER})
+  </insert>
+
+
+  <insert id="insertList" parameterType="java.util.List">
+    insert into task_test (tt_id, task_id, user_id, status)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.ttId,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, #{item.status,jdbcType=INTEGER})
+    </foreach>
+
+  </insert>
+</mapper>

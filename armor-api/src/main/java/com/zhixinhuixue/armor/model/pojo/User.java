@@ -21,6 +21,8 @@ public class User {
 
     private String jobName;
 
+    private Integer jobRole;
+
     private BigDecimal integral;
 
     private Integer status;
@@ -153,5 +155,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
     }
 }

@@ -24,4 +24,6 @@ public interface IZSYUserWeekMapper {
     List<StatsUserWeekBO> getUserWeekStats(@Param("weekNumber") int weeekNumber, @Param("year") int year,@Param("departmentId") Long departmentId);
 
     Double getUserWeekHours(@Param("taskId") Long taskId, @Param("userId") Long userId,@Param("weekNumber") int weekNumber,@Param("year") int year);
+
+    List<UserWeek> getTaskUserHours(@Param("taskId") Long taskId, @Param("userId") Long userId);
 }

@@ -71,6 +71,12 @@ public interface IZSYTaskService {
     ZSYResult<List<TaskResDTO>> getTaskByStatus(Integer status, Integer reviewStatus, Integer taskUserStatus, Long userId);
 
     /**
+     * 查询测试任务
+     *
+     * @return
+     */
+    ZSYResult<List<TaskResDTO>> getTestingTask(Integer status,Long userId);
+    /**
      * 获取已完成&已评价的任务，包含积分
      *
      * @return
@@ -207,4 +213,10 @@ public interface IZSYTaskService {
     Date getPublishTime();
 
     List<TaskPlanResDTO> getPlanTask();
+
+    /**
+     * 设置Bug修复时间
+     * @param testingTask
+     */
+    void setTestingTask(TestingTaskReqDTO testingTask);
 }

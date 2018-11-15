@@ -29,6 +29,9 @@ public class UserReqDTO {
     @NotNull(message = "用户职位不能为空")
     private String jobName;
 
+    @NotNull(message = "角色不能为空")
+    private Integer jobRole;
+
     @NotNull(message = "用户角色不能为空")
     private Integer userRole;
 
@@ -119,5 +122,13 @@ public class UserReqDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
     }
 }

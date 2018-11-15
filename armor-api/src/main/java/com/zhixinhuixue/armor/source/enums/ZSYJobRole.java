@@ -1,24 +1,25 @@
 package com.zhixinhuixue.armor.source.enums;
 
 /**
- * 任务状态
+ * 用户角色
  * Created by Tate on 2017/8/7.
  */
-public enum ZSYTaskStatus {
+public enum ZSYJobRole {
 
-    STOP(0, "暂停"), DOING(1, "进行中"), COMPLETED(2, "已完成"), FINISHED(3, "已结束"),TESTING(4, "测试中"), ;
+    TEST(0, "测试"), PROGRAMER(1, "开发"),DESIGN(2, "设计");
+
     private int value;
     private String name;
 
-    ZSYTaskStatus(int value, String name) {
+    ZSYJobRole(int value, String name) {
         this.value = value;
         this.name = name;
     }
 
     public static String getName(int value) {
-        for (ZSYTaskStatus taskStatus : ZSYTaskStatus.values()) {
-            if (taskStatus.getValue() == value) {
-                return taskStatus.getName();
+        for (ZSYJobRole status : ZSYJobRole.values()) {
+            if (status.getValue() == value) {
+                return status.getName();
             }
         }
         return "";

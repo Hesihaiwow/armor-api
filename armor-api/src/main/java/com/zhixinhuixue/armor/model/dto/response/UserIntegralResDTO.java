@@ -26,6 +26,11 @@ public class UserIntegralResDTO {
      */
     private  int yearRank;
 
+    /**
+     * 是否开发岗位
+     */
+    private boolean developRole;
+
     public long getId() {
         return id;
     }
@@ -72,5 +77,13 @@ public class UserIntegralResDTO {
 
     public void setYearRank(int yearRank) {
         this.yearRank = yearRank;
+    }
+
+    public boolean isDevelopRole() {
+        return developRole;
+    }
+
+    public void setDevelopRole(boolean developRole) {
+        this.developRole = developRole;
     }
 }

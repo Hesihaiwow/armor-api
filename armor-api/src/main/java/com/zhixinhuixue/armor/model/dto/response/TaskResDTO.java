@@ -48,6 +48,8 @@ public class TaskResDTO {
 
     private String  projectImage;
 
+    private boolean isExpand;
+
     /**
      * 任务用户
      */
@@ -219,5 +221,13 @@ public class TaskResDTO {
 
     public void setProjectImage(String projectImage) {
         this.projectImage = projectImage;
+    }
+
+    public boolean isExpand() {
+        return isExpand;
+    }
+
+    public void setExpand(boolean expand) {
+        isExpand = expand;
     }
 }

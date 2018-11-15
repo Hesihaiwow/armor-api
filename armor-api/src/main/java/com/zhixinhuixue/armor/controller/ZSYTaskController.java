@@ -95,6 +95,13 @@ public class ZSYTaskController extends ZSYController {
                 ZSYReviewStatus.ACCEPT.getValue(), ZSYTaskUserStatus.DOING.getValue(), ZSYTokenRequestContext.get().getUserId()).build();
     }
 
+    @ApiOperation("获取用户进行中的任务")
+    @GetMapping(value = "/testing")
+    public String getTestingTask() {
+        return taskService.getTestingTask(ZSYTaskStatus.TESTING.getValue(),
+                ZSYTokenRequestContext.get().getUserId()).build();
+    }
+
     @ApiOperation("获取用户被打回任务")
     @GetMapping(value = "/apply/fail")
     public String applyFail() {
@@ -217,6 +224,13 @@ public class ZSYTaskController extends ZSYController {
     @GetMapping("/plan")
     public String planTask() {
         return ZSYResult.success().data(taskService.getPlanTask()).build();
+    }
+
+    @ApiOperation("设置Bug修复时间")
+    @PostMapping("/testing")
+    public String testingTask(@Valid @RequestBody TestingTaskReqDTO taskReqDTO) {
+        taskService.setTestingTask(taskReqDTO);
+        return ZSYResult.success().build();
     }
 }
 
