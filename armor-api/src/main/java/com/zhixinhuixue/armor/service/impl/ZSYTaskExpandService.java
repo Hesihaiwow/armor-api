@@ -15,11 +15,9 @@ import com.zhixinhuixue.armor.model.bo.TaskExpandBO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskExpandResDTO;
-import com.zhixinhuixue.armor.model.pojo.Task;
-import com.zhixinhuixue.armor.model.pojo.TaskExpand;
-import com.zhixinhuixue.armor.model.pojo.TaskUser;
-import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskExpandService;
+import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskExpandStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
@@ -28,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -129,7 +128,24 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
         }
 
         if(status == ZSYTaskExpandStatus.ACCEPT.getValue()){
-
+            //task_user表  任务时间增加
+            User user = userMapper.selectById(expand.getUserId());
+            BigDecimal expandHours = expand.getHours();
+            if (taskExpandMapper.updateTaskHours(expandHours,expand.getEndTime(),expand.getTaskId(),expand.getUserId()) == 0){
+                throw new ZSYServiceException("新增时间失败");
+            }
+            //新增一条任务日志
+            TaskLog taskLog = new TaskLog();
+            taskLog.setId(snowFlakeIDHelper.nextId());
+            taskLog.setTaskId(expand.getTaskId());
+            String title = ZSYTokenRequestContext.get().getUserName()+"修改了任务";
+            taskLog.setTitle(title);
+            String content = user.getName()+"延长了任务时间"+expand.getHours()+"小时,原因:"+expand.getReason();
+            taskLog.setContent(content);
+            taskLog.setCreateTime(new Date());
+            taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
+            taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
+            taskExpandMapper.insertTaskLog(taskLog);
         }
 
 
