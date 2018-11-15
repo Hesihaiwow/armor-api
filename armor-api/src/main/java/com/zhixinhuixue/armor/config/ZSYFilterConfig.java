@@ -28,7 +28,6 @@ public class ZSYFilterConfig {
     @Value("${jwt.exp}")
     private int jwtExp;
 
-    //jwt过期时间
     @Autowired
     private ZSYBasicAuthProperty basicAuthProperty;
 

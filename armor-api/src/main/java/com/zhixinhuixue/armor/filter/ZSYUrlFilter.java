@@ -10,14 +10,12 @@ import com.google.common.base.Strings;
 import com.zhixinhuixue.armor.helper.SpringHelper;
 import com.zhixinhuixue.armor.helper.ZSYMD5Helper;
 import com.zhixinhuixue.armor.model.dto.request.BasicUserReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.JWTLoginUserReqDTO;
 import com.zhixinhuixue.armor.source.ZSYBasicAuthProperty;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -150,6 +148,10 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                             request.setAttribute("userRole",userRole);
                             request.setAttribute("departmentId",departmentId);
 
+                            //将当前登陆用户信息注入到Authentication
+                            UsernamePasswordAuthenticationToken authentication
+                                    = new UsernamePasswordAuthenticationToken(new JWTLoginUserReqDTO(Long.valueOf(userId),null,userName),null,new ArrayList<>());
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
                         }else{
                             logger.warn("Session已过期,token:{}",token);
                             sendResponse(response,ZSYResult.fail(ZSYResult.RESPONSE.NO_SESSION_ERROR).msg("Token验证失败,请重新登录."));
@@ -158,8 +160,8 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                         logger.warn("验证Token失败,token:{}",token);
                         sendResponse(response,ZSYResult.fail(ZSYResult.RESPONSE.NO_SESSION_ERROR).msg("Token验证失败,请重新登录."));
                     }finally {
-                    filterChain.doFilter(request, response);
-                }
+                        filterChain.doFilter(request, response);
+                    }
                 }
 
                 //BASIC验证
