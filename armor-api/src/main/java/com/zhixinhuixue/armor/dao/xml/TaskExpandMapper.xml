@@ -15,6 +15,7 @@
     <result column="task_name" jdbcType="VARCHAR" property="taskName" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
   </resultMap>
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskExpand">
@@ -34,9 +35,10 @@
   </select>
 
   <select id="getExpandList" parameterType="com.zhixinhuixue.armor.model.dto.request.TaskExpandListReqDTO" resultMap="detailMap">
-    SELECT te.*,t.name as task_name ,u.name as user_name, u.avatar_url as avatarUrl  FROM task_expand  te
+    SELECT te.*,t.name as task_name ,u.name as user_name, u.avatar_url as avatarUrl, tu.begin_time  FROM task_expand  te
     LEFT JOIN task t on t.id = te.task_id
     LEFT JOIN user u on u.id = te.user_id
+    LEFT JOIN task_user tu ON t.id = tu.task_id AND tu.user_id = u.id
     WHERE  t.is_delete = 0
     <if test="status != null">
       AND te.status = #{status}

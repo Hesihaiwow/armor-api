@@ -14,6 +14,8 @@ public class TaskExpandBO extends TaskExpand{
 
     private String userName;
 
+    private Date beginTime;
+
 
     public String getTaskName() {
         return taskName;
@@ -29,5 +31,13 @@ public class TaskExpandBO extends TaskExpand{
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
     }
 }

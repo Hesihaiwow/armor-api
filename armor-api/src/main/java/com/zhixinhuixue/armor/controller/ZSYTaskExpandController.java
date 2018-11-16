@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.TaskExpandReviewReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskExpandService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -51,9 +52,9 @@ public class ZSYTaskExpandController extends ZSYController {
      * @return
      */
     @ApiOperation("审核通过积分转移")
-    @PutMapping("/review/{status}/{id}")
-    public String passExpand(@PathVariable Long id,@PathVariable Integer status){
-        expandService.passExpand(id,status);
+    @PostMapping("/review")
+    public String passExpand(@Valid @RequestBody TaskExpandReviewReqDTO reqDTO){
+        expandService.passExpand(reqDTO);
         return ZSYResult.success().build();
     }
 

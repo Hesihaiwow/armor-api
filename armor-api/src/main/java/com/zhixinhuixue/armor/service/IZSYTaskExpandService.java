@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.TaskExpandReviewReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskExpandResDTO;
 
 import java.util.List;
@@ -24,6 +25,6 @@ public interface IZSYTaskExpandService {
 
     List<TaskExpandResDTO> getExpandDoing(Integer reqDTO);
 
-    void passExpand(Long id, Integer status);
+    void passExpand(TaskExpandReviewReqDTO reviewReqDTO);
 
 }

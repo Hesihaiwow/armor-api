@@ -23,6 +23,7 @@ public class TaskExpandResDTO {
 
     private String reason;
 
+    private Date beginTime;
     private Date endTime;
 
     public Long getTeId() {
@@ -87,5 +88,13 @@ public class TaskExpandResDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
     }
 }

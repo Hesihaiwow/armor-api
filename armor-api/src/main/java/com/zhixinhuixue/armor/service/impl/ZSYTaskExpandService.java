@@ -14,6 +14,7 @@ import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TaskExpandBO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.TaskExpandReviewReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskExpandResDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskExpand;
@@ -46,6 +47,8 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
     private IZSYTaskMapper taskMapper;
     @Autowired
     private IZSYUserMapper userMapper;
+    @Autowired
+    private IZSYTaskUserMapper taskUserMapper;
 
     @Override
     public void add(TaskExpandReqDTO expandReqDTO) {
@@ -118,17 +121,19 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
     }
 
     @Override
-    public void passExpand(Long id,Integer status) {
-        TaskExpand expand = taskExpandMapper.selectById(id);
+    public void passExpand(TaskExpandReviewReqDTO reviewReqDTO) {
+        TaskExpand expand = taskExpandMapper.selectById(reviewReqDTO.getTeId());
         if(expand.getStatus() != ZSYTaskExpandStatus.PENDING.getValue()){
             throw new ZSYServiceException("任务延长申请已经完成审核，请检查");
         }
 
-        if(taskExpandMapper.reviewStatus(id,status) == 0){
+        if(taskExpandMapper.reviewStatus(reviewReqDTO.getTeId(),reviewReqDTO.getStatus()) == 0){
             throw new ZSYServiceException("申请审核失败，请检查");
         }
 
-        if(status == ZSYTaskExpandStatus.ACCEPT.getValue()){
+//        TaskUser user = taskUserMapper.
+
+        if(reviewReqDTO.getStatus() == ZSYTaskExpandStatus.ACCEPT.getValue()){
 
         }
 
