@@ -4,9 +4,12 @@ import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.bo.TaskExpandBO;
 import com.zhixinhuixue.armor.model.pojo.TaskExpand;
+import com.zhixinhuixue.armor.model.pojo.TaskLog;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,4 +38,17 @@ public interface IZSYTaskExpandMapper {
      * @return
      */
     int findIsExpand(@Param("taskId") Long taskId,@Param("userId")  Long userId);
+
+    /**
+     * 延长任务时间
+     * @param expandHours
+     * @return
+     */
+    int updateTaskHours(@Param("expandHours") BigDecimal expandHours, @Param("endTime") Date endTime, @Param("taskId")Long taskId,@Param("userId")Long userId);
+
+    /**
+     * 插入一条任务日志
+     * @param taskLog
+     */
+    void insertTaskLog(@Param("taskLog") TaskLog taskLog);
 }

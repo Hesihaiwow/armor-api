@@ -24,7 +24,19 @@
      #{hours,jdbcType=DECIMAL} , #{reason,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP})
   </insert>
 
-  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <!--插入一条任务日志-->
+  <insert id="insertTaskLog" parameterType="com.zhixinhuixue.armor.model.pojo.TaskLog">
+    insert into task_log (id,task_id,user_id,user_name,title,content,create_time)
+    values (#{id,jdbcType=BIGINT},{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{userName,jdbcType=VARCHAR}
+    ,#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--延长任务时间-->
+    <update id="updateTaskHours">
+      update task_user set task_hours = task_hours + #{expandHours},end_time = #{endTime} where task_id = #{taskId} and user_id = #{userId}
+    </update>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
       SELECT * FROM task_expand WHERE  te_id = #{id}
   </select>
 
