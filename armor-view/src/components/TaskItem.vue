@@ -1847,7 +1847,7 @@
                     }
                 }
                 if(this.testing.beginWeek == this.testing.endWeek){
-                    weekData = {'weekNumber':this.testing.beginWeek, 'hours': 100+'' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
+                    weekData = {'weekNumber':this.testing.beginWeek, 'hours': 100+'' ,'year':beginYear ,'range':moment().year(beginYear).week(this.testing.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.testing.beginWeek).endOf('week').format('MM-DD')};
                     param.push(weekData)
                 }else if(this.testing.endWeek - this.testing.beginWeek >1){
                     for(let i=this.testing.beginWeek;i<this.testing.endWeek+1;i++){
@@ -1855,8 +1855,8 @@
                         param.push(weekData)
                     }
                 }else if(this.testing.endWeek - this.testing.beginWeek == 1){
-                    param.push( {'weekNumber':this.testing.beginWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
-                    param.push( {'weekNumber':this.testing.endWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')})
+                    param.push( {'weekNumber':this.testing.beginWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.testing.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.testing.beginWeek).endOf('week').format('MM-DD')})
+                    param.push( {'weekNumber':this.testing.endWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.testing.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.testing.endWeek).endOf('week').format('MM-DD')})
                 }
                 this.testWeekNumber = param
             },
