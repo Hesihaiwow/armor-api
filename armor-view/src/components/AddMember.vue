@@ -25,7 +25,7 @@
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">角色</div>
         <div class="ftp-msg fl">
-          <el-select class="w280" v-model="modifyForm.jobRole" placeholder="请选择角色">
+          <el-select class="w280" v-model="addForm.jobRole" placeholder="请选择角色">
             <el-option
                     v-for="item in rolesList"
                     :key="item.roleId"
