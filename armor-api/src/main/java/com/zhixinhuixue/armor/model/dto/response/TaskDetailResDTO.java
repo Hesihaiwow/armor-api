@@ -56,6 +56,8 @@ public class TaskDetailResDTO {
 
     private Boolean testing;
 
+    private List<String> proNames;
+
     /**
      * 任务标签
      */
@@ -256,6 +258,14 @@ public class TaskDetailResDTO {
 
     public void setTesting(Boolean testing) {
         this.testing = testing;
+    }
+
+    public List<String> getProNames() {
+        return proNames;
+    }
+
+    public void setProNames(List<String> proNames) {
+        this.proNames = proNames;
     }
 }
 

@@ -98,10 +98,10 @@
               label: '普通成员'
         }],
         rolesList:[{
-            roleId: 0,
+            roleId: 1,
             roleName: '开发'
         }, {
-            roleId: 1,
+            roleId: 0,
             roleName: '测试'
         }, {
             roleId: 2,

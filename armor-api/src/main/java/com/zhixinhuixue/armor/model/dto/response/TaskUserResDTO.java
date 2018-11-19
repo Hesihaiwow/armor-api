@@ -40,6 +40,8 @@ public class TaskUserResDTO{
      */
     private String userName;
 
+    private boolean proTest;
+
     /**
      * 给他人的评价数
      */
@@ -214,5 +216,13 @@ public class TaskUserResDTO{
 
     public void setUserTask(List<UserTaskResDTO> userTask) {
         this.userTask = userTask;
+    }
+
+    public boolean isProTest() {
+        return proTest;
+    }
+
+    public void setProTest(boolean proTest) {
+        this.proTest = proTest;
     }
 }

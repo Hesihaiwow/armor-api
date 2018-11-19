@@ -596,6 +596,8 @@ public class ZSYTaskService implements IZSYTaskService {
 
         // copy 任务阶段
         List<TaskUserResDTO> taskUserResDTOS = new ArrayList<>();
+
+        List<String> proName = Lists.newArrayList();
         taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
             TaskUserResDTO taskUserResDTO = new TaskUserResDTO();
             BeanUtils.copyProperties(taskUserBO, taskUserResDTO);
@@ -639,6 +641,13 @@ public class ZSYTaskService implements IZSYTaskService {
             }
             taskUserResDTO.setUserTask(taskList);
 
+            User user = userMapper.selectById(taskUserResDTO.getUserId());
+            if(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue()){
+                taskUserResDTO.setProTest(true);
+                proName.add(user.getName());
+            }else{
+                taskUserResDTO.setProTest(false);
+            }
             taskUserResDTOS.add(taskUserResDTO);
         });
         if(taskDetailResDTO.getStageName().contains("测试") && taskTestMapper.selectTesting(taskDetailBO.getId()) == 0){
@@ -647,6 +656,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskDetailResDTO.setTesting(false);
         }
         taskDetailResDTO.setUsers(taskUserResDTOS);
+        taskDetailResDTO.setProNames(proName);
         return ZSYResult.success().data(taskDetailResDTO);
     }
 

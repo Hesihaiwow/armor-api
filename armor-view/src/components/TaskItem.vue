@@ -207,6 +207,7 @@
                             <div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
                         </el-tooltip>
+                        <span v-if="item.proTest && !taskDetail.testing" class="fl ctpc-member-end-time" style="margin-left:20px;color: #66ccff">测试中</span>
                     </div>
                     <div class="bdl-line"></div>
                 </div>
@@ -231,7 +232,7 @@
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status==1 || taskDetail.status==0)">
                 <el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">
-                    <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name)"  style="text-align: right">添加Bug修复时间</el-button>
+                    <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name,taskDetail.proNames)"  style="text-align: right">添加Bug修复时间</el-button>
                 </el-tooltip>
                 <el-tooltip content="启用任务" placement="top" >
                     <el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>
@@ -657,6 +658,12 @@
                 </div>
             </div>
             <div class="add-member-basic-list clearfix" >
+                <div class="add-member-basic-menu  fl"><span class="star">*</span>开发人员：</div>
+                <div class="add-member-basic-msg ">
+                    {{testing.proName}}
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix" >
                 <div class="add-member-basic-menu  fl" style="width: 110px;"><span class="star">*</span>测试开始日期：</div>
                 <div class="add-member-basic-msg ">
                     <el-date-picker v-model="testing.beginTime" format="yyyy-MM-dd" type="date"
@@ -887,6 +894,7 @@
                     endTime: null,
                     percent:25,
                     taskId:'',
+                    proName:'',
                     name:''
                 },
                 expandTime:{
@@ -1743,10 +1751,11 @@
                 });
             },
             //测试弹窗
-            testTask(id, name){
+            testTask(id, name, proNames){
                 this.showTaskDetail = false
                 this.testingVisible = true
                 this.testing.taskId = id
+                this.testing.proName = proNames.toString()
                 this.testing.name = name
             },
             modifyTestTask(){
