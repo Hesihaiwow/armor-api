@@ -54,7 +54,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="task-mark"  v-show="isPrivate && task.status==1" style="margin-right: 20px;">
+            <div class="task-mark"  v-show="isPrivate && task.status==1 && !task.expand && taskStatus=='TaskDoing' " style="margin-right: 20px;">
                 <el-button @click="applyExpandTime(task)">申请延长时间</el-button>
             </div>
             <div class="task-data-show" v-show="isPrivate && task.status==3 && taskStatus!='WaitAssess'">
@@ -230,8 +230,8 @@
                 </ul>
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status==1 || taskDetail.status==0)">
-                <el-tooltip content="添加Bug修复时间" placement="top" >
-                    <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name)"  style="text-align: right">添加测试时间</el-button>
+                <el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">
+                    <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name)"  style="text-align: right">添加Bug修复时间</el-button>
                 </el-tooltip>
                 <el-tooltip content="启用任务" placement="top" >
                     <el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>
@@ -656,15 +656,15 @@
                     {{testing.name}}
                 </div>
             </div>
-            <div class="add-member-basic-list clearfix">
-                <div class="add-member-basic-menu  fl"><span class="star">*</span>测试开始日期：</div>
+            <div class="add-member-basic-list clearfix" >
+                <div class="add-member-basic-menu  fl" style="width: 110px;"><span class="star">*</span>测试开始日期：</div>
                 <div class="add-member-basic-msg ">
                     <el-date-picker v-model="testing.beginTime" format="yyyy-MM-dd" type="date"
                                     placeholder="选择日期" @change="changeTestWeek()"></el-date-picker>
                 </div>
             </div>
             <div class="add-member-basic-list clearfix">
-                <div class="add-member-basic-menu  fl"><span class="star">*</span>测试截止日期：
+                <div class="add-member-basic-menu  fl" style="width: 110px;"><span class="star">*</span>测试截止日期：
                 </div>
                 <div class="add-member-basic-msg ">
                     <el-date-picker v-model="testing.endTime" type="date" format="yyyy-MM-dd"
@@ -1729,9 +1729,13 @@
                     this.errorMsg('百分比总和应该为100%，请检查');
                     return
                 }
-
-                http.zsyPostHttp('/task/test', {taskId:this.testing.taskId,weekNumber:this.testWeekNumber}, (resp) => {
+                this.testing.beginTime = moment(this.testing.beginTime).format('YYYY-MM-DD HH:00:00')
+                this.testing.endTime = moment(this.testing.endTime).format('YYYY-MM-DD HH:00:00')
+                this.testing.weeks = this.testWeekNumber
+                http.zsyPostHttp('/task/test/add', this.testing, (resp) => {
                     this.$message({ showClose: true,message: '测试时间添加成功',type: 'success'});
+                    this.testing.weeks = []
+                    this.testing.beginTime = this.testing.endTime =this.testing.taskId =this.testing.name =this.testing.percent =''
                     this.testingVisible = false;
                 })
             },
@@ -1814,7 +1818,6 @@
                 });
             },
             applyExpandTime(task){
-                console.log(task)
                 this.expandTime.name = task.name
                 this.expandTime.beginTime= task.taskUsers[0].beginTime
                 this.expandTime.endTime= task.taskUsers[0].endTime
@@ -1829,9 +1832,9 @@
                     return false;
                 }
 
-                this.expandTime.endTime= moment(this.expandTime.endTime).format('YYYY-MM-DD HH:00:00'),
+                this.expandTime.endTime= moment(this.expandTime.endTime).format('YYYY-MM-DD HH:00:00')
                 http.zsyPostHttp('/task-expand/add', this.expandTime, (resp) => {
-                    this.$message({ showClose: true,message: '测试时间添加成功',type: 'success'});
+                    this.$message({ showClose: true,message: '任务时间延长申请成功',type: 'success'});
                     this.expandTimeVisible = false;
                     this.clearExpand();
                 })

@@ -59,13 +59,25 @@
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="测试中" name="test" v-if="developVisible">
-                            <task-item :taskItems="task.test" :isPrivate="true"
-                                       taskStatus="TaskDoing" @reload="reload"
-                                       :projectList="projectList"
-                                       :userList="userList"
-                                       :stageList="stageList"
-                                       :viewType="1"
-                                       :tagList="tagList"></task-item>
+                            <div class="task-lis" v-for="test in task.test" >
+                                <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>任务名称：{{test.taskName}}：{{test.description}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">截止日期{{test.endTime| formatDate }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-data-show">
+                                    <span class="task-score">测试时间：{{test.hours}} 小时</span>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="test.avatarUrl && test.avatarUrl!=''" :src="test.avatarUrl" >
+                                    <span v-else="">{{test.userName}}</span>
+                                </div>
+                            </div>
+                            <div v-show="task.test.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
                         </el-tab-pane>
                         <!--<el-tab-pane label="审核失败" name="applyFail">
                             <task-item :taskItems="task.applyFail" :isPrivate="true"
@@ -101,6 +113,65 @@
                                         :layout="commentedPageLayout"
                                         :total="commentedPage.total">
                                 </el-pagination>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+                <div>
+                    <p class="mic-title">任务延长申请</p>
+                    <el-tabs v-model="taskExpandTabsActiveName" @tab-click="handleClick">
+                        <el-tab-pane label="待审核" name="wait">
+                            <div class="task-lis" v-for="expand in taskExpand.doing" @click="getExpandDetail(expand)">
+                                <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>{{expand.taskName}}:{{expand.reason}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{expand.userName}}</span>
+                                        <span class="task-end blue">截止时间：{{expand.endTime| formatDate }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-data-show">
+                                    <span class="task-score">延长时间：{{expand.hours}} 小时</span>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="expand.avatarUrl && expand.avatarUrl!=''" :src="expand.avatarUrl" >
+                                    <span v-else="">{{expand.userName}}</span>
+                                </div>
+                            </div>
+                            <div v-show="taskExpand.doing.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="审核通过" name="completed">
+                            <div class="task-lis" v-for="expand in taskExpand.finished" >
+                                <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>{{expand.reason}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{expand.userName}}</span>
+                                        <span class="task-end blue">截止时间：{{expand.endTime| formatDate }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-data-show">
+                                    <span class="task-score">延长时间：{{expand.hours}} 小时</span>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="expand.avatarUrl && expand.avatarUrl!=''" :src="expand.avatarUrl" >
+                                    <span v-else="">{{expand.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.taskExpand.finished.length>0">
+                                <el-pagination
+                                        @current-change="handleExpandPage"
+                                        :current-page.sync="expandPage.pageNum"
+                                        :page-size="expandPage.pageSize"
+                                        :layout="expandPageLayout"
+                                        :total="expandPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="taskExpand.finished.length==0" class="empty">
+                                <h2>暂无数据</h2>
                             </div>
                         </el-tab-pane>
                     </el-tabs>
@@ -237,13 +308,13 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="审核通过" name="completed">
-                        <div class="task-lis" v-for="expand in taskExpand.finished" @click="getExpandDetail(expand)">
+                        <div class="task-lis" v-for="expand in taskExpand.finished" >
                             <div class="head-img" ><img src="../assets/img/waitAudit.png" ></div>
                             <div class="main-task-detail">
-                                <div class="task-name"><span>{{expand.reason}}</span></div>
+                                <div class="task-name"><span>{{expand.taskName}}:{{expand.reason}}</span></div>
                                 <div class="task-state">
                                     <span class="task-end blue">申请人：{{expand.userName}}</span>
-                                    <span class="task-end blue">{{expand.endTime| formatDate }}</span>
+                                    <span class="task-end blue">截止时间：{{expand.endTime| formatDate }}</span>
                                     <span class="task-time-opt"><i class="el-icon-circle-check" ></i></span>
                                 </div>
                             </div>
@@ -550,19 +621,30 @@
                 </el-form-item>
                 <el-form-item class="task-form" label="申请人：">{{expandDetail.userName}}</el-form-item>
                 <el-form-item class="task-form" label="原因：">{{expandDetail.reason}}</el-form-item>
+                <el-form-item class="task-form" label="开始时间：">{{expandDetail.beginTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="截止时间：">
-                    <el-date-picker
+                    <el-date-picker @change="changeExpandWeek"
                             v-model="expandDetail.endTime"
-                            type="datetime"
+                            type="date"
                             format="yyyy-MM-dd HH:00:00"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item class="task-form" label="延长时长：">
-                    <el-input v-model="expandDetail.hours" style="width: 30%"></el-input>小时</el-form-item>
+                    <el-input v-model="expandDetail.hours" style="width: 30%"></el-input>小时
+                </el-form-item>
+                <el-form-item>
+                    <div v-for="item in expandWeekNumber">
+                        <div class="add-member-basic-list add-member-basic-end clearfix">
+                            <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                            <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">
+                        </div>
+                    </div>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer" >
                 <div v-show="userRole==0&&taskExpandTabsActiveName=='wait'">
+                    <el-button type="danger" @click="deleteTaskExpand()">删除申请</el-button>
                     <el-button type="success" @click="acceptTaskExpand()">申请通过</el-button>
                     <!--<el-button type="success" @click="acceptTaskExpand()">申请驳回</el-button>-->
                 </div>
@@ -650,6 +732,7 @@
     import moment from 'moment';
     import ElButton from "../../node_modules/element-ui/packages/button/src/button";
     import ElInput from "../../node_modules/element-ui/packages/input/src/input";
+    import ElFormItem from "../../node_modules/element-ui/packages/form/src/form-item";
 
     moment.locale('zh-cn');
 
@@ -798,9 +881,12 @@
                     userName: '',
                     hours: '',
                     taskName: '',
+                    beginTime:'',
                     endTime: '',
                     userWeek:[]
                 },
+                expandReview:{},
+                expandWeekNumber:[],
                 rules: {
                     projectId: [
                         {required: true, message: '项目不能为空', trigger: 'change'},
@@ -959,6 +1045,10 @@
         methods: {
             handleClick(tab, event) {
                 // 点击进行中和已完成
+                if(tab.label=='测试中'){
+                    this.fetchTaskTesting();
+                }
+
 //                console.log(tab, event);
             },
             createTaskClick() {
@@ -980,13 +1070,13 @@
                 this.fetchUserLeavePassList()
                 this.fetchTaskExpandDoing()
                 //this.fetchApplyFailTask();
+                this.fetchTaskExpandSuccess()
                 if (this.userRole === 0) {
                     // 所有审核通过的数据
                     this.fetchTaskAuditSuccess()
                     //待审核的积分转移，审核通过的积分转移
                     this.fetchHelpWaitAdmin()
                     this.fetchHelpReviewAdmin()
-                    this.fetchTaskExpandSuccess()
                 }else{
                     this.fetchMyHelpWaitList();
                     this.fetchMyReviewSuccess();
@@ -1103,7 +1193,7 @@
             fetchTaskTesting() {
                 let vm = this
                 http.zsyGetHttp('/task/testing', {}, (resp) => {
-                    vm.task.test = this.makeUpItems(resp.data)
+                    vm.task.test = resp.data
                 })
             },
             // 获取用户已完成的任务
@@ -1294,14 +1384,53 @@
                 }).catch(() => {
                 });
             },
+            deleteTaskExpand(){
+                this.$confirm('确认删除申请?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyDeleteHttp(`/task-expand/`+this.expandDetail.teId, {}, (resp) => {
+                        this.$message({ showClose: true,message: '删除成功',type: 'success'});
+                        this.reload();
+                        this.expandDetailVisible = false;
+                    })
+                }).catch(() => {
+                });
+            },
             acceptTaskExpand(){
+                var sumHours=0;
+                for(var i=0;i<this.expandWeekNumber.length;i++){
+                    if(this.expandWeekNumber[i].hours==''|| this.expandWeekNumber[i].hours=== undefined){
+                            this.weekNumber[i].hours = 0
+                    }
+                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.expandWeekNumber[i].hours);
+                    if(!ishours &&ishours!=0){
+                        this.$message({ showClose: true,message: '工作量填写错误',type: 'error'});
+                        return false;
+                    }
+                    if(this.expandWeekNumber[i].hours>100||this.expandWeekNumber[i].hours<0){
+                        this.$message({ showClose: true,message: '工作量正确值应为0~99.99',type: 'error'});
+                        return false;
+                    }
+                    sumHours +=  parseFloat(this.expandWeekNumber[i].hours)
+                }
+                if(sumHours != this.expandDetail.hours){
+                    this.$message({ showClose: true,message: '工作量总和应为延长时间，请检查',type: 'error'});
+                    return false;
+                }
                 this.$confirm('确认审核通过?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    http.zsyPutHttp(`/task-expand/review/1/`+this.expandDetail.teId, {}, (resp) => {
+
+                    this.expandReview.teId = this.expandDetail.teId
+                    this.expandReview.status = 1
+                    this.expandReview.weeks = this.expandWeekNumber
+                    http.zsyPostHttp(`/task-expand/review`, this.expandReview, (resp) => {
                         this.$message({ showClose: true,message: '审核成功',type: 'success'});
+                        this.expandReview={}
                         this.reload();
                         this.expandDetailVisible = false;
                     })
@@ -1318,8 +1447,8 @@
                 this.expandDetail.hours = expand.hours
                 this.expandDetail.taskId = expand.taskId
                 this.expandDetail.endTime = expand.endTime
-                http.zsyGetHttp(`/userWeek/task/${this.expandDetail.taskId}/`+this.expandDetail.userId, {}, (resp) => {
-                })
+                this.expandDetail.beginTime = expand.beginTime
+                this.changeExpandWeek()
             },
             //积分转移详情
             reviewDetail(help){
@@ -1590,9 +1719,45 @@
                 }else if(date=="year"){//本年的开始结束时间
                     return  moment(new Date(now.getFullYear(),0,1)).format('YYYY-MM-DD')+"--"+moment(new Date(now.getFullYear()+1,0,1)-1).format('YYYY-MM-DD');
                 }
-            }
+            },
+            changeExpandWeek(){
+                if(this.expandDetail.beginTime == null || this.expandDetail.endTime ==null){
+                    return
+                }
+                this.expandWeekNumber = [];
+                let weekData='';
+                let param = this.expandWeekNumber;
+                this.expandDetail.beginWeek = moment(this.expandDetail.beginTime).week()
+                this.expandDetail.endWeek = moment(this.expandDetail.endTime).week()
+                let beginYear = moment(this.expandDetail.beginTime).year();
+                let endYear = moment(this.expandDetail.endTime).year();
+                if(beginYear!=endYear){
+                    for(let i=this.expandDetail.beginWeek;i<moment(this.expandDetail.beginTime).weeksInYear()+1;i++){
+                        weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                        param.push(weekData)
+                    }
+                    for(let i=1;i<this.expandDetail.endWeek+1;i++){
+                        weekData = {'weekNumber':i, 'hours': '','year':endYear ,'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
+                        param.push(weekData)
+                    }
+                }
+                if(this.expandDetail.beginWeek == this.expandDetail.endWeek){
+                    weekData = {'weekNumber':this.expandDetail.beginWeek, 'hours': this.expandDetail.hours ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
+                    param.push(weekData)
+                }else if(this.expandDetail.endWeek - this.expandDetail.beginWeek >1){
+                    for(let i=this.expandDetail.beginWeek;i<this.expandDetail.endWeek+1;i++){
+                        weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().week(i).year(beginYear).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD')  };
+                        param.push(weekData)
+                    }
+                }else if(this.expandDetail.endWeek - this.expandDetail.beginWeek == 1){
+                    param.push( {'weekNumber':this.expandDetail.beginWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
+                    param.push( {'weekNumber':this.expandDetail.endWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')})
+                }
+                this.expandWeekNumber = param
+            },
         },
         components: {
+            ElFormItem,
             ElInput,
             ElButton,
             TaskItem: TaskItem
