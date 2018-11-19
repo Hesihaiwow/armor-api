@@ -1081,7 +1081,52 @@
                         this.showFinishedTask = false;
                         this.taskDetail = {};
                         this.$message({ showClose: true,message: '操作成功',type: 'success'});
-                        this.$emit('reload');
+                        let that = this;
+                        that.http.zsyGetHttp(`/task/tasksByStage/212754785051344898`, {}, (res) => {
+                            let list = res.data;
+                            list.forEach((el) => {
+                                let endTime = '', today = moment().format('YYYY-MM-DD')
+                                if (el.status == 1) {
+                                    endTime = el.endTime
+                                } else {
+                                    endTime = el.completeTime
+                                }
+                                endTime = moment(endTime).format('YYYY-MM-DD')
+                                const diffDays = moment(today).diff(moment(endTime), 'days')
+                                let endColor = '', endText = ''
+                                endText = moment(endTime).calendar(null, {
+                                    sameDay: '[今天]',
+                                    nextDay: '[明天]',
+                                    nextWeek: 'L',
+                                    lastDay: '[昨天]',
+                                    lastWeek: 'L',
+                                    sameElse: 'L'
+                                })
+                                if (el.status == 1) {
+                                    if (diffDays == 0) {
+                                        endColor = 'orange'
+                                    } else if (diffDays > 0) {
+                                        endColor = 'red'
+                                    } else if (diffDays < 0) {
+                                        endColor = 'blue'
+                                    }
+                                    endText += ' 截止'
+                                } else {
+                                    endColor = 'green'
+                                    endText += ' 完成'
+                                }
+                                el['endColor'] = endColor
+                                el['endText'] = endText
+
+                                // 优先级样式
+                                if (el.priority == 2) {
+                                    el.borderClass = 'orange-border'
+                                } else if (el.priority == 3) {
+                                    el.borderClass = 'red-border'
+                                }
+                            })
+                            that.$set(stage, 'tasks', list)
+                        })
                     })
                 }).catch(() => {
                 });
