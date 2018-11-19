@@ -54,6 +54,8 @@ public class TaskDetailResDTO {
 
     private String userName;
 
+    private Boolean testing;
+
     /**
      * 任务标签
      */
@@ -246,6 +248,14 @@ public class TaskDetailResDTO {
 
     public void setTestTime(Date testTime) {
         this.testTime = testTime;
+    }
+
+    public Boolean getTesting() {
+        return testing;
+    }
+
+    public void setTesting(Boolean testing) {
+        this.testing = testing;
     }
 }
 

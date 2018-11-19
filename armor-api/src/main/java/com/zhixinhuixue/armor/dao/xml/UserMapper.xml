@@ -10,6 +10,7 @@
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="department_id" jdbcType="BIGINT" property="departmentId" />
     <result column="job_name" jdbcType="VARCHAR" property="jobName" />
+    <result column="job_role" jdbcType="INTEGER" property="jobRole" />
     <result column="integral" jdbcType="DECIMAL" property="integral" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
@@ -29,12 +30,12 @@
   <insert id="insertUser" parameterType="com.zhixinhuixue.armor.model.pojo.User">
     insert into `user` (id, `name`, account,
     password, phone, last_login,
-    department_id, job_name, integral,
+    department_id, job_name,job_role, integral,
     status, create_time, is_delete,user_role,email
     )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
     #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP},
-    #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{integral,jdbcType=DECIMAL},
+    #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{jobRole,jdbcType=INTEGER}, #{integral,jdbcType=DECIMAL},
     #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER},
     #{userRole,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR})
   </insert>
@@ -96,6 +97,9 @@
       </if>
       <if test="jobName != null and jobName!=''">
         job_name = #{jobName,jdbcType=VARCHAR},
+      </if>
+      <if test="jobRole != null">
+        job_role = #{jobRole,jdbcType=INTEGER},
       </if>
       <if test="integral != null">
         integral = #{integral,jdbcType=DECIMAL},

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskExpandMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskExpand">
+    <id column="te_id" jdbcType="BIGINT" property="teId" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="hours" jdbcType="DECIMAL" property="hours" />
+    <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+  </resultMap>
+
+  <resultMap id="detailMap" type="com.zhixinhuixue.armor.model.bo.TaskExpandBO" extends="BaseResultMap">
+    <result column="task_name" jdbcType="VARCHAR" property="taskName" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskExpand">
+    insert into task_expand (te_id, task_id, user_id, status, hours, reason, end_time)
+    values (#{teId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER},
+     #{hours,jdbcType=DECIMAL} , #{reason,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--延长任务时间-->
+    <update id="updateTaskHours">
+      update task_user set task_hours = task_hours + #{expandHours},end_time = #{endTime} where task_id = #{taskId} and user_id = #{userId}
+    </update>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+      SELECT * FROM task_expand WHERE  te_id = #{id}
+  </select>
+
+  <select id="selectExpandDetail" parameterType="java.lang.Long" resultMap="detailMap">
+    SELECT te.*,t.name as task_name,u.name as user_name, u.avatar_url as avatarUrl FROM task_expand  te
+    LEFT JOIN task t on t.id = te.task_id
+    WHERE  te_id = #{id}
+  </select>
+
+  <select id="getExpandList" parameterType="com.zhixinhuixue.armor.model.dto.request.TaskExpandListReqDTO" resultMap="detailMap">
+    SELECT te.*,t.name as task_name ,u.name as user_name, u.avatar_url as avatarUrl, tu.begin_time  FROM task_expand  te
+    LEFT JOIN task t on t.id = te.task_id
+    LEFT JOIN user u on u.id = te.user_id
+    LEFT JOIN task_user tu ON t.id = tu.task_id AND tu.user_id = u.id
+    WHERE  t.is_delete = 0
+    <if test="status != null">
+      AND te.status = #{status}
+    </if>
+    <if test="userId != null">
+      AND te.user_id = #{userId}
+    </if>
+  </select>
+
+  <update id="reviewStatus" parameterType="java.util.Map" >
+    update task_expand set status = #{status}
+    WHERE te_id = #{id}
+  </update>
+
+  <select id="findIsExpand" parameterType="java.util.Map" resultType="java.lang.Integer">
+    SELECT count(*) FROM task_expand
+    WHERE status = 0 AND task_id = #{taskId} AND user_id = #{userId}
+  </select>
+
+</mapper>

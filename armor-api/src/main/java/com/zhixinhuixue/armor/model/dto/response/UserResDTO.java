@@ -25,6 +25,8 @@ public class UserResDTO {
 
     private Integer userRole;
 
+    private Integer jobRole;
+
     private String avatarUrl;
 
     private String email;
@@ -115,5 +117,13 @@ public class UserResDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
     }
 }

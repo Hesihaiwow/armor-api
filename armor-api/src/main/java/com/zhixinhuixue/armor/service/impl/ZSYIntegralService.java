@@ -21,6 +21,7 @@ import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
+import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +101,8 @@ public class ZSYIntegralService implements IZSYIntegralService {
         userIntegralResDTO.setQuarterRank(quarterRank != null ? quarterRank : 0);
         Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId());//年度排名为空设为0
         userIntegralResDTO.setYearRank(yearRank != null ? yearRank : 0);
+        User user = userMapper.selectById(id);
+        userIntegralResDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());
         return userIntegralResDTO;
     }
 

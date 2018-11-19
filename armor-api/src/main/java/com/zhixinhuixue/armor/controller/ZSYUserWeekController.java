@@ -31,6 +31,17 @@ public class ZSYUserWeekController extends ZSYController {
         return ZSYResult.success().data(userWeekService.getUserWeekHours(taskId, id, weekNumber, year)).build();
     }
 
+    /**
+     * 获取任务时间详情
+     *
+     * @return
+     */
+    @ApiOperation("获取任务时间详情")
+    @GetMapping(value = "/task/{taskId}/{userId}")
+    public String getUserWeekHours(@PathVariable("taskId") Long taskId,@PathVariable("userId") Long userId) {
+        return ZSYResult.success().data(userWeekService.getTaskUserHours(taskId, userId)).build();
+    }
+
 
 
 }

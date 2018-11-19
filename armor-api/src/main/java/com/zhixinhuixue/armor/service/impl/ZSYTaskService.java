@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -69,6 +70,11 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYFeedbackMapper feedbackMapper;
     @Autowired
     private IZSYFeedbackPlanTaskMapper feedbackPlanTaskMapper;
+    @Autowired
+    private IZSYTaskTestMapper taskTestMapper;
+    @Autowired
+    private IZSYTaskExpandMapper expandMapper;
+
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
@@ -635,6 +641,11 @@ public class ZSYTaskService implements IZSYTaskService {
 
             taskUserResDTOS.add(taskUserResDTO);
         });
+        if(taskDetailResDTO.getStageName().contains("测试") && taskTestMapper.selectTesting(taskDetailBO.getId()) == 0){
+            taskDetailResDTO.setTesting(true);
+        }else {
+            taskDetailResDTO.setTesting(false);
+        }
         taskDetailResDTO.setUsers(taskUserResDTOS);
         return ZSYResult.success().data(taskDetailResDTO);
     }
@@ -652,6 +663,31 @@ public class ZSYTaskService implements IZSYTaskService {
             taskBOS.stream().forEach(taskBO -> {
                 TaskResDTO taskResDTO = new TaskResDTO();
                 BeanUtils.copyProperties(taskBO, taskResDTO);
+                if(expandMapper.findIsExpand(taskBO.getId(),ZSYTokenRequestContext.get().getUserId())>0){
+                    taskResDTO.setExpand(true);
+                }else {
+                    taskResDTO.setExpand(false);
+                }
+                taskList.add(taskResDTO);
+            });
+        }
+        return ZSYResult.success().data(taskList);
+    }
+
+    @Override
+    public ZSYResult<List<TaskTestResDTO>> getTestingTask(Long userId) {
+        List<TaskTestBO> taskBOS = taskTestMapper.selectTestTask(userId);
+        List<TaskTestResDTO> taskList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskBOS)) {
+            taskBOS.stream().forEach(taskTestBO -> {
+                TaskTestResDTO taskResDTO = new TaskTestResDTO();
+                User user = userMapper.selectById(taskTestBO.getUserId());
+                BeanUtils.copyProperties(taskTestBO, taskResDTO);
+                taskResDTO.setAvatarUrl(user.getAvatarUrl());
+                taskResDTO.setUserName(user.getName());
+                double hor=taskTestBO.getPercent()*taskTestBO.getHours()*0.01;
+                double value = new BigDecimal(hor).setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+                taskResDTO.setHours(value);
                 taskList.add(taskResDTO);
             });
         }
@@ -1402,5 +1438,81 @@ public class ZSYTaskService implements IZSYTaskService {
             planResDTOS.add(planResDTO);
         });
         return planResDTOS;
+    }
+
+    @Override
+    public void setTestingTask(TestingTaskReqDTO testingTask) {
+        TaskDetailBO bo = taskMapper.selectTaskDetailByTaskId(testingTask.getTaskId());
+        List<TaskTest> taskTests = Lists.newArrayList();
+
+        List<UserWeek> userWeeks = Lists.newArrayList();
+
+        bo.getTaskUsers().forEach(taskUserBO -> {
+            User user = userMapper.selectById(taskUserBO.getUserId());
+            if(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue()){
+                TaskTest taskTest = new TaskTest();
+                taskTest.setTtId(snowFlakeIDHelper.nextId());
+                taskTest.setTaskId(testingTask.getTaskId());
+                taskTest.setUserId(user.getId());
+                taskTest.setPercent(testingTask.getPercent());
+                taskTest.setBeginTime(testingTask.getBeginTime());
+                taskTest.setEndTime(testingTask.getEndTime());
+                taskTests.add(taskTest);
+
+                testingTask.getWeeks().forEach(userWeekReqDTO->{
+                    UserWeek week = new UserWeek();
+                    week.setId(snowFlakeIDHelper.nextId());
+                    week.setWeekNumber(userWeekReqDTO.getWeekNumber());
+                    week.setTaskId(taskTest.getTtId());
+                    week.setUserId(user.getId());
+                    week.setYear(userWeekReqDTO.getYear());
+
+                    double hor=(taskUserBO.getTaskHours().doubleValue()*userWeekReqDTO.getHours()*0.01)*(testingTask.getPercent()*0.01);
+                    double value = new BigDecimal(hor).setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+                    week.setHours(value);
+                    userWeeks.add(week);
+                });
+            }
+
+            UserIntegral userIntegral = new UserIntegral();
+            userIntegral.setId(snowFlakeIDHelper.nextId());
+            userIntegral.setTaskId(taskUserBO.getTaskId());
+            userIntegral.setUserId(taskUserBO.getUserId());
+            double integral = new BigDecimal(taskUserBO.getTaskHours()*testingTask.getPercent()*0.01).setScale(0,BigDecimal.ROUND_HALF_UP).doubleValue();
+            userIntegral.setIntegral(BigDecimal.valueOf(integral));
+            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
+            userIntegral.setDescription("新增开发Bug修复时间：" + bo.getName());
+            userIntegral.setCreateTime(new Date());
+            userIntegralMapper.insert(userIntegral);
+
+            // 修改用户积分
+            User userTemp = userMapper.selectById(taskUserBO.getUserId());
+            BigDecimal currentIntegral = userTemp.getIntegral();
+            User userNow = new User();
+            userNow.setId(taskUserBO.getUserId());
+            userNow.setIntegral(currentIntegral.add(BigDecimal.valueOf(integral)));
+            userMapper.updateSelectiveById(user);
+        });
+
+        if(CollectionUtils.isEmpty(userWeeks)){
+            throw new ZSYServiceException("没有开发任务，请检查");
+        }
+
+        userWeekMaper.insertList(userWeeks);
+        taskTestMapper.insertList(taskTests);
+
+        //新增一条任务日志
+        TaskLog taskLog = new TaskLog();
+        taskLog.setId(snowFlakeIDHelper.nextId());
+        taskLog.setTaskId(bo.getId());
+        String title = ZSYTokenRequestContext.get().getUserName()+"修改了任务";
+        taskLog.setTitle(title);
+        String content = "添加开发Bug修复时间";
+        taskLog.setContent(content);
+        taskLog.setCreateTime(new Date());
+        taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
+        taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
+        taskLogMapper.insert(taskLog);
+
     }
 }

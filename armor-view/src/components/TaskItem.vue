@@ -45,8 +45,7 @@
                         <!-- 审核通过 -->
                       <i v-show="taskStatus=='auditSuccess' " @click.stop="modifyPrivateTask(task.id)"
                          class="el-icon-edit"></i>
-
-                  </span>
+                    </span>
                     <ul class="task-key-tag">
                         <li class="task-key-lis" v-for="tag in task.tags">
                             <span class="circle" :style="{background:tag.colorValue}"></span>
@@ -54,6 +53,9 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+            <div class="task-mark"  v-show="isPrivate && task.status==1 && !task.expand && taskStatus=='TaskDoing' " style="margin-right: 20px;">
+                <el-button @click="applyExpandTime(task)">申请延长时间</el-button>
             </div>
             <div class="task-data-show" v-show="isPrivate && task.status==3 && taskStatus!='WaitAssess'">
                 <span class="task-score">+{{task.userIntegral}}</span>
@@ -228,6 +230,9 @@
                 </ul>
             </div>
             <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status==1 || taskDetail.status==0)">
+                <el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">
+                    <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name)"  style="text-align: right">添加Bug修复时间</el-button>
+                </el-tooltip>
                 <el-tooltip content="启用任务" placement="top" >
                     <el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>
                 </el-tooltip>
@@ -637,6 +642,102 @@
             <el-button @click="hideModifyPrivateTaskDialog">取 消</el-button>
           </span>
         </el-dialog>
+
+        <el-dialog title="填写Bug修复时间" top="10%"
+                   :visible.sync="testingVisible"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   custom-class="myDialog"
+                   size="tiny">
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu fl"><span class="star">*</span>任务名称：
+                </div>
+                <div class="add-member-basic-msg ">
+                    {{testing.name}}
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix" >
+                <div class="add-member-basic-menu  fl" style="width: 110px;"><span class="star">*</span>测试开始日期：</div>
+                <div class="add-member-basic-msg ">
+                    <el-date-picker v-model="testing.beginTime" format="yyyy-MM-dd" type="date"
+                                    placeholder="选择日期" @change="changeTestWeek()"></el-date-picker>
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu  fl" style="width: 110px;"><span class="star">*</span>测试截止日期：
+                </div>
+                <div class="add-member-basic-msg ">
+                    <el-date-picker v-model="testing.endTime" type="date" format="yyyy-MM-dd"
+                                    placeholder="选择日期" @change="changeTestWeek()"></el-date-picker>
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu fl"><span class="star">*</span>时间比例：
+                </div>
+                <div class="add-member-basic-msg ">
+                    <input class="member-time-week" v-model="testing.percent" :maxlength="6" style="width:80px">%
+                </div>
+            </div>
+            <div v-for="item in testWeekNumber">
+                <div class="add-member-basic-list add-member-basic-end clearfix">
+                    <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                    <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px">%
+                </div>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="testingVisible= false">取消</el-button>
+                <el-button type="primary" @click="modifyTestTask()">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <el-dialog title="申请延长任务时间" top="10%"
+                   :visible.sync="expandTimeVisible"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   custom-class="myDialog"
+                   size="tiny">
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu fl"><span class="star">*</span>任务名称：
+                </div>
+                <div class="add-member-basic-msg ">
+                    {{expandTime.name}}
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu  fl"><span class="star">*</span>开始日期：
+                </div>
+                <div class="add-member-basic-msg ">
+                    <el-date-picker v-model="expandTime.beginTime" type="date" :disabled=true format="yyyy-MM-dd"
+                                    placeholder="选择日期"></el-date-picker>
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu  fl"><span class="star">*</span>截止日期：
+                </div>
+                <div class="add-member-basic-msg ">
+                    <el-date-picker v-model="expandTime.endTime" type="date" format="yyyy-MM-dd"
+                                    placeholder="选择日期"></el-date-picker>
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu  fl"><span class="star">*</span>延长时间：
+                </div>
+                <div class="add-member-basic-msg ">
+                    <el-input v-model="expandTime.hours" style="width: 70px"></el-input>
+                </div>
+            </div>
+            <div class="add-member-basic-list clearfix">
+                <div class="add-member-basic-menu  fl"><span class="star">*</span>原因：
+                </div>
+                <div class="add-member-basic-msg ">
+                    <el-input v-model="expandTime.reason" style="width:80%" type="textarea" :rows="3" ></el-input>
+                </div>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="expandTimeVisible= false">取消</el-button>
+                <el-button type="primary" @click="addTaskExpand()">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -644,9 +745,14 @@
     import moment from 'moment';
     import helper from '../lib/Helper'
     import _ from 'lodash'
+    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
+    import ElInput from "../../node_modules/element-ui/packages/input/src/input";
 
     moment.locale('zh-cn');
     export default {
+        components: {
+            ElInput,
+            ElButton},
         name: 'TaskItem',
         props: {
             taskItems: Array,
@@ -680,6 +786,8 @@
                 showTaskCommentDetail: false,
                 taskCommentDetail: {},
                 showModifyPrivateTask: false,
+                testingVisible:false,
+                expandTimeVisible:false,
                 modifyPrivateTaskForm: {
                     id: '',
                     userId: '',
@@ -774,11 +882,27 @@
                     status:'',
                     taskHours:''
                 },
+                testing:{
+                    beginTime: null,
+                    endTime: null,
+                    percent:25,
+                    taskId:'',
+                    name:''
+                },
+                expandTime:{
+                    name:'',
+                    beginTime:'',
+                    endTime:'',
+                    reason:'',
+                    hours:0,
+                },
                 stepTemp: {},
                 weekTime:{
                     beginWeek:'',
                     endWeek:''
                 },
+                testWeekNumber:[],
+                testWeekNumberTemp:[],
                 weekNumber:[],
                 weekNumberTemp:[]/*
                  projectList: [],
@@ -837,6 +961,20 @@
                             if (this.weekNumber[i] != null) {
                                 if (this.weekNumber[i].weekNumber == this.weekNumberTemp[x].weekNumber) {
                                     this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
+                                }
+                            }
+                        }
+                    }
+                }
+                return _.orderBy(this.weekNumber, 'weekNumber')
+            },
+            sortTestWeekNumber(){
+                if (this.testWeekNumber.length != 0) {
+                    for (let i = 0; i < this.testWeekNumber.length; i++) {
+                        for (let x = 0; x < this.testWeekNumberTemp.length; x++) {
+                            if (this.testWeekNumber[i] != null) {
+                                if (this.testWeekNumber[i].weekNumber == this.testWeekNumberTemp[x].weekNumber) {
+                                    this.testWeekNumber[i].hoursTemp = this.testWeekNumberTemp[x].hours
                                 }
                             }
                         }
@@ -943,7 +1081,52 @@
                         this.showFinishedTask = false;
                         this.taskDetail = {};
                         this.$message({ showClose: true,message: '操作成功',type: 'success'});
-                        this.$emit('reload');
+                        let that = this;
+                        that.http.zsyGetHttp(`/task/tasksByStage/212754785051344898`, {}, (res) => {
+                            let list = res.data;
+                            list.forEach((el) => {
+                                let endTime = '', today = moment().format('YYYY-MM-DD')
+                                if (el.status == 1) {
+                                    endTime = el.endTime
+                                } else {
+                                    endTime = el.completeTime
+                                }
+                                endTime = moment(endTime).format('YYYY-MM-DD')
+                                const diffDays = moment(today).diff(moment(endTime), 'days')
+                                let endColor = '', endText = ''
+                                endText = moment(endTime).calendar(null, {
+                                    sameDay: '[今天]',
+                                    nextDay: '[明天]',
+                                    nextWeek: 'L',
+                                    lastDay: '[昨天]',
+                                    lastWeek: 'L',
+                                    sameElse: 'L'
+                                })
+                                if (el.status == 1) {
+                                    if (diffDays == 0) {
+                                        endColor = 'orange'
+                                    } else if (diffDays > 0) {
+                                        endColor = 'red'
+                                    } else if (diffDays < 0) {
+                                        endColor = 'blue'
+                                    }
+                                    endText += ' 截止'
+                                } else {
+                                    endColor = 'green'
+                                    endText += ' 完成'
+                                }
+                                el['endColor'] = endColor
+                                el['endText'] = endText
+
+                                // 优先级样式
+                                if (el.priority == 2) {
+                                    el.borderClass = 'orange-border'
+                                } else if (el.priority == 3) {
+                                    el.borderClass = 'red-border'
+                                }
+                            })
+                            that.$set(stage, 'tasks', list)
+                        })
                     })
                 }).catch(() => {
                 });
@@ -974,7 +1157,7 @@
                 // 个人点击完成任务
                 if (this.taskStatus == 'TaskDoing' && this.isPrivate) {
                     this.taskItems.forEach((task) => {
-                        if (task.id === taskId && task.reviewStatus==3) {
+                        if (task.id === taskId && task.reviewStatus==3 && !this.expandTimeVisible) {
                             this.showFinishedPop(taskId, task.taskUsers[0].id, taskType)
                         }
                     });
@@ -1559,6 +1742,48 @@
                 }).catch(() => {
                 });
             },
+            //测试弹窗
+            testTask(id, name){
+                this.showTaskDetail = false
+                this.testingVisible = true
+                this.testing.taskId = id
+                this.testing.name = name
+            },
+            modifyTestTask(){
+                let sumPercent = 0
+                for(var i=0;i<this.testWeekNumber.length;i++){
+                    if(this.testWeekNumber[i].hours==''|| this.testWeekNumber[i].hours=== undefined){
+                        if(this.testWeekNumber[i].hoursTemp !== undefined &&this.testWeekNumber[i].hoursTemp!=''){
+                            this.testWeekNumber[i].hours = this.testWeekNumber[i].hoursTemp
+                        }else{
+                            this.testWeekNumber[i].hours = 0
+                        }
+                    }
+                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.testWeekNumber[i].hours);
+                    if(!ishours &&ishours!=0){
+                        this.errorMsg('百分比填写错误');
+                        return false;
+                    }
+                    if(this.testWeekNumber[i].hours>100 ||this.testWeekNumber[i].hours<0){
+                        this.errorMsg('百分比正确值应为0~100');
+                        return false;
+                    }
+                    sumPercent +=  parseFloat(this.testWeekNumber[i].hours)
+                }
+                if(sumPercent!=100){
+                    this.errorMsg('百分比总和应该为100%，请检查');
+                    return
+                }
+                this.testing.beginTime = moment(this.testing.beginTime).format('YYYY-MM-DD HH:00:00')
+                this.testing.endTime = moment(this.testing.endTime).format('YYYY-MM-DD HH:00:00')
+                this.testing.weeks = this.testWeekNumber
+                http.zsyPostHttp('/task/test/add', this.testing, (resp) => {
+                    this.$message({ showClose: true,message: '测试时间添加成功',type: 'success'});
+                    this.testing.weeks = []
+                    this.testing.beginTime = this.testing.endTime =this.testing.taskId =this.testing.name =this.testing.percent =''
+                    this.testingVisible = false;
+                })
+            },
             //暂停任务
             stopTask(id,status){
                 var examText
@@ -1588,6 +1813,41 @@
                 }).catch(() => {
                 });
             },
+            changeTestWeek(){
+                if(this.testing.beginTime == null || this.testing.endTime ==null){
+                    return
+                }
+                this.testWeekNumber = [];
+                let weekData='';
+                let param = this.testWeekNumber;
+                this.testing.beginWeek = moment(this.testing.beginTime).week()
+                this.testing.endWeek = moment(this.testing.endTime).week()
+                let beginYear = moment(this.testing.beginTime).year();
+                let endYear = moment(this.testing.endTime).year();
+                if(beginYear!=endYear){
+                    for(let i=this.testing.beginWeek;i<moment(this.testing.beginTime).weeksInYear()+1;i++){
+                        weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                        param.push(weekData)
+                    }
+                    for(let i=1;i<this.testing.endWeek+1;i++){
+                        weekData = {'weekNumber':i, 'hours': '','year':endYear ,'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
+                        param.push(weekData)
+                    }
+                }
+                if(this.testing.beginWeek == this.testing.endWeek){
+                    weekData = {'weekNumber':this.testing.beginWeek, 'hours': 100+'' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
+                    param.push(weekData)
+                }else if(this.testing.endWeek - this.testing.beginWeek >1){
+                    for(let i=this.testing.beginWeek;i<this.testing.endWeek+1;i++){
+                        weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().week(i).year(beginYear).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD')  };
+                        param.push(weekData)
+                    }
+                }else if(this.testing.endWeek - this.testing.beginWeek == 1){
+                    param.push( {'weekNumber':this.testing.beginWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
+                    param.push( {'weekNumber':this.testing.endWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')})
+                }
+                this.testWeekNumber = param
+            },
             warnMsg(msg) {
                 this.$message({
                     showClose: true,
@@ -1602,6 +1862,36 @@
                     type: 'error'
                 });
             },
+            applyExpandTime(task){
+                this.expandTime.name = task.name
+                this.expandTime.beginTime= task.taskUsers[0].beginTime
+                this.expandTime.endTime= task.taskUsers[0].endTime
+                this.expandTime.taskId= task.id
+                this.expandTimeVisible = true
+                this.showFinishedTask = false
+            },
+            addTaskExpand(){
+                var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.expandTime.hours);
+                if(!ishours){
+                    this.errorMsg('时间填写错误');
+                    return false;
+                }
+
+                this.expandTime.endTime= moment(this.expandTime.endTime).format('YYYY-MM-DD HH:00:00')
+                http.zsyPostHttp('/task-expand/add', this.expandTime, (resp) => {
+                    this.$message({ showClose: true,message: '任务时间延长申请成功',type: 'success'});
+                    this.expandTimeVisible = false;
+                    this.clearExpand();
+                })
+            },
+            clearExpand(){
+                this.expandTime.name = ''
+                this.expandTime.beginTime= null
+                this.expandTime.endTime= null
+                this.expandTime.taskId= ''
+                this.expandTime.hours = 0
+            }
+
         },
         created() {
             // 监听看板任务点击事件
