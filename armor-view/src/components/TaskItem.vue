@@ -1755,7 +1755,10 @@
                 this.showTaskDetail = false
                 this.testingVisible = true
                 this.testing.taskId = id
-                this.testing.proName = proNames.toString()
+                if(proNames && proNames != ""){
+                    this.testing.proName = proNames.toString()
+                }
+
                 this.testing.name = name
             },
             modifyTestTask(){
