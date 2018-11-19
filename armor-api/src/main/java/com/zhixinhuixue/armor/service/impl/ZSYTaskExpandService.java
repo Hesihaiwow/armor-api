@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYTaskExpandMapper;
-import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
-import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TaskExpandBO;
@@ -18,17 +15,15 @@ import com.zhixinhuixue.armor.model.dto.request.TaskExpandReviewReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskExpandResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskExpandService;
-import com.zhixinhuixue.armor.service.IZSYTaskService;
-import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskExpandStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +42,10 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
     @Autowired
     private IZSYUserMapper userMapper;
     @Autowired
-    private IZSYTaskUserMapper taskUserMapper;
+    private IZSYUserWeekMapper weekMapper;
+    @Autowired
+    private IZSYTaskLogMapper logMapper;
+
 
     @Override
     public void add(TaskExpandReqDTO expandReqDTO) {
@@ -120,6 +118,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
     }
 
     @Override
+    @Transactional
     public void passExpand(TaskExpandReviewReqDTO reviewReqDTO) {
         TaskExpand expand = taskExpandMapper.selectById(reviewReqDTO.getTeId());
         if(expand.getStatus() != ZSYTaskExpandStatus.PENDING.getValue()){
@@ -137,6 +136,27 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
             if (taskExpandMapper.updateTaskHours(expandHours,expand.getEndTime(),expand.getTaskId(),expand.getUserId()) == 0){
                 throw new ZSYServiceException("新增时间失败");
             }
+
+            reviewReqDTO.getWeeks().forEach(userWeek -> {
+                UserWeek week = weekMapper.getSameWeek(expand.getTaskId(),expand.getUserId(),userWeek.getWeekNumber(),userWeek.getYear());
+                if(week!=null){
+                    week.setHours(userWeek.getHours()+week.getHours());
+                    if( weekMapper.updateHours(week.getId(),week.getHours())==0){
+                        throw new ZSYServiceException("周任务时间修改失败");
+                    }
+                }else{
+                    List<UserWeek> userWeeks = Lists.newArrayList();
+                    UserWeek newWeek = new UserWeek();
+                    week.setWeekNumber(userWeek.getWeekNumber());
+                    week.setTaskId(expand.getTaskId());
+                    week.setUserId(expand.getUserId());
+                    week.setYear(userWeek.getYear());
+                    week.setHours(userWeek.getHours());
+                    userWeeks.add(newWeek);
+                    weekMapper.insertList(userWeeks);
+                }
+            });
+
             //新增一条任务日志
             TaskLog taskLog = new TaskLog();
             taskLog.setId(snowFlakeIDHelper.nextId());
@@ -148,11 +168,17 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
             taskLog.setCreateTime(new Date());
             taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
             taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
-            taskExpandMapper.insertTaskLog(taskLog);
+            logMapper.insert(taskLog);
         }
 
 
 
+    }
+
+    @Override
+    public void deleteExpand(Long id) {
+        taskExpandMapper.reviewStatus(id,ZSYTaskExpandStatus.REJECT.getValue());
+        weekMapper.deleteByTaskId(id);
     }
 }
 

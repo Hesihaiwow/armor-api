@@ -70,13 +70,6 @@ public interface IZSYTaskMapper {
                                     @Param("taskUserStatus") Integer taskUserStatus,
                                     @Param("userId") Long userId);
 
-    /**
-     * 根据状态查询任务
-     *
-     * @param id
-     * @return
-     */
-    List<TaskBO> selectTestTask(Long id);
 
     /**
      * 查询已结束的任务，包含评价

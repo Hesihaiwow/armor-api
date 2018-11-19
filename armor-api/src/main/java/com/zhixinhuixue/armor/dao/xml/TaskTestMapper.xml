@@ -5,21 +5,43 @@
     <id column="tt_id" jdbcType="BIGINT" property="ttId" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="percent" jdbcType="INTEGER" property="percent" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+  </resultMap>
+
+  <resultMap id="testMap" type="com.zhixinhuixue.armor.model.bo.TaskTestBO" extends="BaseResultMap">
+    <result column="task_name" jdbcType="VARCHAR" property="taskName" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="hours" jdbcType="INTEGER" property="hours" />
   </resultMap>
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Test">
-    insert into task_test (tt_id, task_id, user_id, status)
-    values (#{ttId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER})
+    insert into task_test (tt_id, task_id, user_id, percent, begin_time,end_time )
+    values (#{ttId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
+     #{percent,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP})
   </insert>
 
 
   <insert id="insertList" parameterType="java.util.List">
-    insert into task_test (tt_id, task_id, user_id, status)
+    insert into task_test (tt_id, task_id, user_id,  percent, begin_time, end_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.ttId,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, #{item.status,jdbcType=INTEGER})
+      (#{item.ttId,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT},
+      #{item.percent,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP})
     </foreach>
 
   </insert>
+
+  <select id="selectTesting" parameterType="java.lang.Long" resultType="java.lang.Integer">
+     SELECT count(*) FROM  task_test
+     WHERE task_id = #{taskId}
+  </select>
+
+  <select id="selectTestTask" parameterType="java.lang.Long" resultMap="testMap">
+    SELECT tt.*,t.name as task_name,tu.description,tu.task_hours as hours  FROM  task_test tt
+    LEFT JOIN  task t ON  tt.task_id = t.id
+    LEFT JOIN task_user tu ON  tu.task_id = t.id AND tu.user_id = tt.user_id
+    WHERE <![CDATA[  tt.end_time > now() ]]>  AND tt.user_id = #{userId}
+  </select>
 </mapper>

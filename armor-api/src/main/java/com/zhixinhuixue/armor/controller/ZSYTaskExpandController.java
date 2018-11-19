@@ -48,6 +48,17 @@ public class ZSYTaskExpandController extends ZSYController {
     }
 
     /**
+     * 获取延长任务时间信息
+     * @return
+     */
+    @ApiOperation("删除延长任务时间信息")
+    @DeleteMapping(value = "/{id}")
+    public String deleteExpand(@PathVariable  Long id){
+        expandService.deleteExpand(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
      * 审核延长任务时间申请
      * @return
      */

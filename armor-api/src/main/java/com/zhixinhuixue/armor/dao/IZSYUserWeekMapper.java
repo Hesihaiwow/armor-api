@@ -26,4 +26,12 @@ public interface IZSYUserWeekMapper {
     Double getUserWeekHours(@Param("taskId") Long taskId, @Param("userId") Long userId,@Param("weekNumber") int weekNumber,@Param("year") int year);
 
     List<UserWeek> getTaskUserHours(@Param("taskId") Long taskId, @Param("userId") Long userId);
+
+    /**
+     * 延长时间，获取相同任务相同周的任务
+     * @return
+     */
+    UserWeek getSameWeek(@Param("taskId") Long taskId, @Param("userId") Long userId,@Param("weekNumber") int weekNumber,@Param("year") int year);
+
+    int updateHours(@Param("id") Long id, @Param("hours") Double hours);
 }

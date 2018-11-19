@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import java.util.Date;
+
 public class TaskTest {
 
     private Long ttId;
@@ -8,7 +10,11 @@ public class TaskTest {
 
     private Long userId;
 
-    private Integer status;
+    private Integer percent;
+
+    private Date beginTime;
+
+    private Date endTime;
 
     public Long getTtId() {
         return ttId;
@@ -34,11 +40,27 @@ public class TaskTest {
         this.userId = userId;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Date getBeginTime() {
+        return beginTime;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Integer getPercent() {
+        return percent;
+    }
+
+    public void setPercent(Integer percent) {
+        this.percent = percent;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }

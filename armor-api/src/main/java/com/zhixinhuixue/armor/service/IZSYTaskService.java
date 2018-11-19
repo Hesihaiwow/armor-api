@@ -75,7 +75,7 @@ public interface IZSYTaskService {
      *
      * @return
      */
-    ZSYResult<List<TaskResDTO>> getTestingTask(Integer status,Long userId);
+    ZSYResult<List<TaskTestResDTO>> getTestingTask(Long userId);
     /**
      * 获取已完成&已评价的任务，包含积分
      *

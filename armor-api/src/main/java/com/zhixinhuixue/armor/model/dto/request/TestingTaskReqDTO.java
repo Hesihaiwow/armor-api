@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -8,6 +10,14 @@ import java.util.List;
 public class TestingTaskReqDTO {
 
     private Long taskId;
+
+    private Integer percent;
+
+    @NotNull(message = "测试开始时间不能为空")
+    private Date beginTime;
+
+    @NotNull(message = "测试结束时间不能为空")
+    private Date endTime;
 
     private List<UserWeekReqDTO> weeks;
 
@@ -25,5 +35,29 @@ public class TestingTaskReqDTO {
 
     public void setWeeks(List<UserWeekReqDTO> weeks) {
         this.weeks = weeks;
+    }
+
+    public Integer getPercent() {
+        return percent;
+    }
+
+    public void setPercent(Integer percent) {
+        this.percent = percent;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }

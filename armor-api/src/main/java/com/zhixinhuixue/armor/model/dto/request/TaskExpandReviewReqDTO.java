@@ -41,4 +41,5 @@ public class TaskExpandReviewReqDTO {
     public void setWeeks(List<UserWeekReqDTO> weeks) {
         this.weeks = weeks;
     }
+
 }

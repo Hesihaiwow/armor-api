@@ -24,13 +24,6 @@
      #{hours,jdbcType=DECIMAL} , #{reason,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP})
   </insert>
 
-  <!--插入一条任务日志-->
-  <insert id="insertTaskLog" parameterType="com.zhixinhuixue.armor.model.pojo.TaskLog">
-    insert into task_log (id,task_id,user_id,user_name,title,content,create_time)
-    values (#{id,jdbcType=BIGINT},{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{userName,jdbcType=VARCHAR}
-    ,#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
-  </insert>
-
   <!--延长任务时间-->
     <update id="updateTaskHours">
       update task_user set task_hours = task_hours + #{expandHours},end_time = #{endTime} where task_id = #{taskId} and user_id = #{userId}
@@ -60,13 +53,14 @@
     </if>
   </select>
 
-  <select id="reviewStatus" parameterType="java.util.Map" resultType="java.lang.Integer">
+  <update id="reviewStatus" parameterType="java.util.Map" >
     update task_expand set status = #{status}
     WHERE te_id = #{id}
-  </select>
+  </update>
 
   <select id="findIsExpand" parameterType="java.util.Map" resultType="java.lang.Integer">
     SELECT count(*) FROM task_expand
-    WHERE task_id = #{taskId} AND user_id = #{userId}
+    WHERE status = 0 AND task_id = #{taskId} AND user_id = #{userId}
   </select>
+
 </mapper>

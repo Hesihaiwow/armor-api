@@ -27,4 +27,6 @@ public interface IZSYTaskExpandService {
 
     void passExpand(TaskExpandReviewReqDTO reviewReqDTO);
 
+    void deleteExpand(Long id);
+
 }

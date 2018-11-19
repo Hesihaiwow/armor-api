@@ -98,8 +98,7 @@ public class ZSYTaskController extends ZSYController {
     @ApiOperation("获取用户进行中的任务")
     @GetMapping(value = "/testing")
     public String getTestingTask() {
-        return taskService.getTestingTask(ZSYTaskStatus.TESTING.getValue(),
-                ZSYTokenRequestContext.get().getUserId()).build();
+        return taskService.getTestingTask(ZSYTokenRequestContext.get().getUserId()).build();
     }
 
     @ApiOperation("获取用户被打回任务")
@@ -227,7 +226,7 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("设置Bug修复时间")
-    @PostMapping("/testing")
+    @PostMapping("/test/add")
     public String testingTask(@Valid @RequestBody TestingTaskReqDTO taskReqDTO) {
         taskService.setTestingTask(taskReqDTO);
         return ZSYResult.success().build();

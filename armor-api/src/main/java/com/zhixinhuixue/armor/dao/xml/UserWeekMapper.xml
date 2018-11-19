@@ -47,22 +47,26 @@
 
   <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Double">
     SELECT IFNULL(sum(hours),0) FROM user_week
-     join task on user_week.task_id = task.id where task.review_status = 3
-     <if test="taskId!=0">
-       and task.id != #{taskId}
-     </if>
-     and user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year}
+    left join task on user_week.task_id = task.id  AND  task.review_status = 3
+      <if test="taskId!=0">
+        and task.id != #{taskId}
+      </if>
+      where  user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year}
   </select>
 
   <!-- 周任务统计 -->
   <select id="getUserWeekStats" parameterType="java.util.Map" resultMap="WeekMap">
-    SELECT u.name, group_concat(t.name,'   工时:',w.hours,'  ',(case  tu.`status` WHEN '1' then ''
-else '已完成' END) separator '\n\r')  as taskName,  w.user_id, w.task_id, w.id, w.week_number, w.year    FROM user u
+      SELECT u.name, group_concat(IFNULL(t.name,t1.name),'   工时:',w.hours,'  ',  (case  tu.`status` WHEN '1' then ''
+            WHEN '2' then '已完成'
+            when '3' then '已评价'
+            else '测试中' END) separator '\n\r')  as taskName,  w.user_id, w.task_id, w.id, w.week_number, w.year
+            FROM user u
        LEFT JOIN  user_week w on u.id= w.user_id and w.week_number = #{weekNumber} and w.year=#{year}
         LEFT  JOIN  task t on t.id = w.task_id and t.review_status=3 AND t.is_delete=0
         LEFT  JOIN  department d on u.department_id = d.id
         LEFT  JOIN  task_user tu on t.id = tu.task_id and u.id=tu.user_id
-        LEFT JOIN task_test tt ON tt.task_id = t.task_id  AND u.id = tt.user_id
+        LEFT JOIN task_test tt ON  u.id = tt.user_id AND w.task_id = tt.tt_id
+        LEFT JOIN task t1 ON t1.id = tt.task_id
         WHERE u.user_role>0  AND u.status =0 AND u.is_delete = 0 AND d.parent_id = #{departmentId}
     GROUP BY u.id
   </select>
@@ -72,4 +76,18 @@ else '已完成' END) separator '\n\r')  as taskName,  w.user_id, w.task_id, w.i
         WHERE user_id = #{userId}
         and task_id = #{taskId}
     </select>
+
+    <select id="getSameWeek" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT * FROM  user_week
+        WHERE user_id = #{userId}
+        and task_id = #{taskId}
+        and week_number = #{weekNumber}
+        and year = #{year}
+    </select>
+
+    <update id="updateHours" parameterType="java.util.Map" >
+        update user_week SET  hours = #{hours}
+        where id = #{id}
+    </update>
+
 </mapper>

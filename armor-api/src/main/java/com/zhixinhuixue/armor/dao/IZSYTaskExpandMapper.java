@@ -45,10 +45,4 @@ public interface IZSYTaskExpandMapper {
      * @return
      */
     int updateTaskHours(@Param("expandHours") BigDecimal expandHours, @Param("endTime") Date endTime, @Param("taskId")Long taskId,@Param("userId")Long userId);
-
-    /**
-     * 插入一条任务日志
-     * @param taskLog
-     */
-    void insertTaskLog(@Param("taskLog") TaskLog taskLog);
 }
