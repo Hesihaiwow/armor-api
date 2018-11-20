@@ -147,11 +147,12 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
                 }else{
                     List<UserWeek> userWeeks = Lists.newArrayList();
                     UserWeek newWeek = new UserWeek();
-                    week.setWeekNumber(userWeek.getWeekNumber());
-                    week.setTaskId(expand.getTaskId());
-                    week.setUserId(expand.getUserId());
-                    week.setYear(userWeek.getYear());
-                    week.setHours(userWeek.getHours());
+                    newWeek.setId(snowFlakeIDHelper.nextId());
+                    newWeek.setWeekNumber(userWeek.getWeekNumber());
+                    newWeek.setTaskId(expand.getTaskId());
+                    newWeek.setUserId(expand.getUserId());
+                    newWeek.setYear(userWeek.getYear());
+                    newWeek.setHours(userWeek.getHours());
                     userWeeks.add(newWeek);
                     weekMapper.insertList(userWeeks);
                 }
