@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * Globe Filter Register
  * Created by Akuma on 16/4/18.
  */
-//@Configuration
+@Configuration
 public class ZSYFilterConfig {
 
     //jwt密钥
