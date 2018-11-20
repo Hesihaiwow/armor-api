@@ -642,7 +642,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskUserResDTO.setUserTask(taskList);
 
             User user = userMapper.selectById(taskUserResDTO.getUserId());
-            if(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue()){
+            if(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue() && taskDetailResDTO.getStageName().contains("测试")){
                 taskUserResDTO.setProTest(true);
                 proName.add(user.getName());
             }else{
