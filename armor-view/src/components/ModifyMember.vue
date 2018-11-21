@@ -124,6 +124,12 @@
         }, {
             roleId: 2,
             roleName: '设计'
+        }, {
+            roleId: 3,
+            roleName: '产品'
+        }, {
+            roleId: 4,
+            roleName: '其他'
         }],
         //用户权限手
         options: [{
