@@ -97,16 +97,22 @@
               value: 2,
               label: '普通成员'
         }],
-        rolesList:[{
-            roleId: 1,
-            roleName: '开发'
-        }, {
-            roleId: 0,
-            roleName: '测试'
-        }, {
-            roleId: 2,
-            roleName: '设计'
-        }],
+          rolesList:[{
+              roleId: 1,
+              roleName: '开发'
+          }, {
+              roleId: 0,
+              roleName: '测试'
+          }, {
+              roleId: 2,
+              roleName: '设计'
+          }, {
+              roleId: 3,
+              roleName: '产品'
+          }, {
+              roleId: 4,
+              roleName: '其他'
+          }],
         showAddPop: false
       };
     },
