@@ -109,10 +109,9 @@ public interface IZSYFeedbackService {
 
     /**
      * 获取需求详情
-     * @param id
      * @return
      */
-    DemandDetailResDTO getDemandDetail(Long id,Integer status);
+    DemandDetailResDTO getDemandDetailByCoach(DemandDetailQueryReqDTO reqDTO);
 
     /**
      * 获取需求回复详情
@@ -326,4 +325,5 @@ public interface IZSYFeedbackService {
      */
     ArmorPageInfo<DemandRunningResDTO> getDemandRunningListByCoach(DemandQueryReqDTO reqDTO,Integer coachId);
 
+    DemandDetailResDTO getDemandDetail(DemandDetailQueryReqDTO reqDTO);
 }

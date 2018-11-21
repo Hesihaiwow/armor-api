@@ -843,31 +843,72 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         return new ArmorPageInfo<>(list);
     }
 
-
-    /**
-     * 获取需求详情
-     * @param id
-     * @return
-     */
     @Override
-    public DemandDetailResDTO getDemandDetail(Long id,Integer status) {
+    public DemandDetailResDTO getDemandDetail(DemandDetailQueryReqDTO reqDTO) {
+        //先根据coachId和需求id判断当前需求是否已读
+
+        if (feedbackMapper.selectIsRead(Long.valueOf(reqDTO.getDemandId()),ZSYTokenRequestContext.get().getUserId()) == null){
+            String readName = feedbackMapper.selectUserNameByUserId(ZSYTokenRequestContext.get().getUserId());
+            feedbackMapper.insertFeedbackRead(snowFlakeIDHelper.nextId(),Long.valueOf(reqDTO.getDemandId())
+                    ,ZSYTokenRequestContext.get().getUserId(),readName,new Date());
+        }
         //查询需求详情基本信息
-        DemandDetailBO demandDetailBO = feedbackMapper.selectDemandDetail(id,status);
+        DemandDetailBO demandDetailBO = feedbackMapper.selectDemandDetail(Long.valueOf(reqDTO.getDemandId()),reqDTO.getStatus());
         DemandDetailResDTO dto = new DemandDetailResDTO();
         if (demandDetailBO != null){
             BeanUtils.copyProperties(demandDetailBO,dto);
 
-            List<String> urlList = feedbackMapper.selectUrlsById(id);
+            List<String> urlList = feedbackMapper.selectUrlsById(Long.valueOf(reqDTO.getDemandId()));
             if (!CollectionUtils.isEmpty(urlList)){
                 dto.setUrlList(urlList);
             }
 
             //查询点赞人
-            List<String> likesPeople = feedbackMapper.selectLikesPeople(id);
+            List<String> likesPeople = feedbackMapper.selectLikesPeople(Long.valueOf(reqDTO.getDemandId()));
             dto.setLikesPeople(likesPeople);
 
             //查询已读人
-            List<String> readPeople = feedbackMapper.selectReadPeople(id);
+            List<String> readPeople = feedbackMapper.selectReadPeople(Long.valueOf(reqDTO.getDemandId()));
+            if (!CollectionUtils.isEmpty(readPeople)){
+                dto.setReadNum(readPeople.size());
+            }else {
+                dto.setReadNum(0);
+            }
+            dto.setReadPeople(readPeople);
+        }
+
+        return dto;
+    }
+
+
+    /**
+     * 获取需求详情
+     * @return
+     */
+    @Override
+    public DemandDetailResDTO getDemandDetailByCoach(DemandDetailQueryReqDTO reqDTO) {
+        //先根据coachId和需求id判断当前需求是否已读
+        if (feedbackMapper.selectIsReadByCoach(Long.valueOf(reqDTO.getDemandId()),reqDTO.getCoachId()) == null){
+            feedbackMapper.insertFeedbackReadByCoach(snowFlakeIDHelper.nextId(),Long.valueOf(reqDTO.getDemandId())
+                                                    ,reqDTO.getCoachId(),reqDTO.getReadPeople(),new Date());
+        }
+        //查询需求详情基本信息
+        DemandDetailBO demandDetailBO = feedbackMapper.selectDemandDetail(Long.valueOf(reqDTO.getDemandId()),reqDTO.getStatus());
+        DemandDetailResDTO dto = new DemandDetailResDTO();
+        if (demandDetailBO != null){
+            BeanUtils.copyProperties(demandDetailBO,dto);
+
+            List<String> urlList = feedbackMapper.selectUrlsById(Long.valueOf(reqDTO.getDemandId()));
+            if (!CollectionUtils.isEmpty(urlList)){
+                dto.setUrlList(urlList);
+            }
+
+            //查询点赞人
+            List<String> likesPeople = feedbackMapper.selectLikesPeople(Long.valueOf(reqDTO.getDemandId()));
+            dto.setLikesPeople(likesPeople);
+
+            //查询已读人
+            List<String> readPeople = feedbackMapper.selectReadPeople(Long.valueOf(reqDTO.getDemandId()));
             if (!CollectionUtils.isEmpty(readPeople)){
                 dto.setReadNum(readPeople.size());
             }else {
@@ -922,6 +963,11 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     public void dislike(Long id) {
         //删除feedback_likes
         feedbackMapper.deleteDemandLikes(id,ZSYTokenRequestContext.get().getUserId());
+        Integer likesNum = feedbackMapper.selectLikesNumById(id);
+        likesNum -= 1;
+        if (feedbackMapper.updateLikesNum(id,likesNum) == 0){
+            throw new ZSYServiceException("取消点赞失败");
+        }
     }
 
     /**

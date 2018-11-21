@@ -112,9 +112,9 @@ public class ZSYFeedbackCoachController extends ZSYController {
      * @return
      */
     @ApiOperation("获取需求详情")
-    @GetMapping(value = "/demand/detail/{demandId}/{status}")
-    public ZSYSwaggerResult<DemandDetailResDTO> getDemandDetail(@PathVariable("demandId")Long id,@PathVariable("status")Integer status){
-        return new ZSYSwaggerResult<>(feedbackService.getDemandDetail(id,status));
+    @PostMapping(value = "/demand/detail")
+    public ZSYSwaggerResult<DemandDetailResDTO> getDemandDetail(@RequestBody DemandDetailQueryReqDTO reqDTO){
+        return new ZSYSwaggerResult<>(feedbackService.getDemandDetailByCoach(reqDTO));
     }
 
     /**
