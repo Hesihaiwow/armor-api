@@ -298,7 +298,7 @@
                         <el-table-column  label="操作" align="center" width="130" fixed="right">
                             <template scope="scope">
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNum!=0">计划</el-button>
-                                <a style="color:#20a0ff;cursor: pointer;" v-show="permit" @click="deleteDemand(scope.row.id)">删除</a>
+                                <a style="color:#20a0ff;cursor: pointer;" v-show="permit" @click="deleteDemand(scope.row.id,scope.row.status)">删除</a>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -582,29 +582,28 @@
         </div>
         <el-dialog :visible.sync="newDemandVisible" title="提需求" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false" @close="closeDialog('demandForm')">
-            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="100px" >
+            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px" >
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
-                <br>
-                <el-form-item label="类型" prop="type">
+                <el-form-item label="类型">
                     <el-select v-model="demandForm.type" placeholder="请选择类型">
                         <el-option
                                 v-for="item in types"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="String(item.id)">
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="优先级" prop="priority">
+                <el-form-item label="优先级">
                     <el-select v-model="demandForm.priority" placeholder="请选择优先级">
                         <el-option
                                 v-for="item in prioritys"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="String(item.id)">
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -623,7 +622,7 @@
                 </el-form-item>
                 <br>
                 <!--<span class="star">*</span>-->
-                <el-form-item label="提出日期:">
+                <el-form-item label="提出日期:" prop="feedbackTime">
                     <el-date-picker
                             v-model="demandForm.feedbackTime"
                             type="date"
@@ -665,24 +664,24 @@
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="类型" prop="type">
-                    <el-select  v-model="demandForm.type" placeholder="请选择类型">
+                <el-form-item label="类型">
+                    <el-select  v-model.number="demandForm.type" placeholder="请选择类型">
                         <el-option
                                 v-for="item in types"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="String(item.id)">
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="优先级" prop="priority">
+                <el-form-item label="优先级">
                     <el-select v-model="demandForm.priority" placeholder="请选择优先级">
                         <el-option
                                 v-for="item in prioritys"
                                 :key="item.id"
                                 :label="item.name"
-                                :value="String(item.id)">
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -700,16 +699,16 @@
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="期待上线日期:" prop="releaseTime">
-                    <el-date-picker
-                            v-model="demandForm.releaseTime"
-                            type="date"
-                            placeholder="选择日期时间"
-                            format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd HH:mm:ss"
-                    >
-                    </el-date-picker>
-                </el-form-item>
+                <!--<el-form-item label="期待上线日期:" prop="releaseTime">-->
+                    <!--<el-date-picker-->
+                            <!--v-model="demandForm.releaseTime"-->
+                            <!--type="date"-->
+                            <!--placeholder="选择日期时间"-->
+                            <!--format="yyyy-MM-dd"-->
+                            <!--value-format="yyyy-MM-dd HH:mm:ss"-->
+                    <!--&gt;-->
+                    <!--</el-date-picker>-->
+                <!--</el-form-item>-->
                 <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
                     <el-button @click="saveEdit('demandForm')" type="primary" :loading="isSaving">保存</el-button>
                 </div>
@@ -911,20 +910,17 @@
                 pageNum5:1,
                 activeName:'new',
                 prioritys:[
-                    {id:-1,name:'全部'},
                     {id:0,name:'普通'},
                     {id:1,name:'紧急'},
                     {id:2,name:'非常紧急'}
                 ],
 
                 types:[
-                    {id:-1,name:'全部'},
                     {id:0,name:'个人建议'},
                     {id:1,name:'市场反馈'},
                     {id:2,name:'公司决策'},
                 ],
                 readStatuses:[
-                    {id:-1,name:'全部'},
                     {id:0,name:'未读'},
                     {id:1,name:'已读'},
                 ],
@@ -962,9 +958,9 @@
                 project:'',
                 projectList:[],
 
-                type:-1,
-                priority:-1,
-                readStatus:-1,
+                type:'',
+                priority:'',
+                readStatus:'',
                 origin:'',
                 introducer:'',
 
@@ -1023,6 +1019,21 @@
                 demandForm:{
                     id:'',
                     title:'',
+                    type:0,
+                    priority:0,
+                    origin:'',
+                    question:'',
+                    target:'',
+                    releaseTime:'',
+                    feedbackTime:'',
+                    content:'',
+                    projectId:'',
+                    status:'',
+                    urlList:[]
+                },
+                demandForm2:{
+                    id:'',
+                    title:'',
                     type:'',
                     priority:'',
                     origin:'',
@@ -1052,7 +1063,8 @@
                         {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
                     type: [
-                        {required: true, message: '类型不能空', trigger:'blur'}
+                        {required: true, message: '类型不能空', trigger:'blur'},
+                        {type:'number'}
                     ],
                     priority:[
                         {required: true, message: '优先级不能空', trigger:'blur'}
@@ -1065,9 +1077,12 @@
                         {required: true, message: '目标不能为空', trigger:'blur'},
                         {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
-                    // releaseTime:[
-                    //     {required: true, message: '期待上线时间不能为空', trigger:'blur'}
-                    // ]
+                    releaseTime:[
+                        {type:'date',required: true, message: '期待上线时间不能为空', trigger:'blur'}
+                    ],
+                    feedbackTime:[
+                        {type:'date',required: true, message: '需求提出时间不能为空', trigger:'blur'}
+                    ]
                 },
 
 
@@ -1104,7 +1119,7 @@
             this.fetchProjectList()
             this.fetchStageList()
             this.fetchTagList()
-
+            this.$root.eventBus.$emit("handleTabSelected", "demand");
 
         },
         computed: {
@@ -1125,17 +1140,13 @@
             },
 
             beforeAvatarUpload(file) {
-                /*const isJPG = file.type === 'image/jpeg'||file.type === 'image/png'||file.type === 'image/jpg';
-                const isWord = file.type === 'word/doc' || file.type === 'word/docx'
-                if ((!isJPG) && (!isWord) ) {
-                    this.$message.error('上传图片只能是 JPG、JPEG、PNG 格式!');
-                }*/
-
-
-                /*if ((type != '.jpg') && (type != '.jpeg')&& (type != '.png')&& (type != '.gmp')&& (type != '.gif')&& (type != '.ico')
-                    && (type != '.doc')&& (type != '.docx')&& (type != '.pdf')&& (type != '.xls')) {
-                    this.$message.error('上传文件只能为word,PDF,Excel和图片');
-                }*/
+                const isJPG = file.type === 'image/jpeg'||file.type === 'image/png'||file.type === 'image/jpg';
+                const isWord = file.type === 'application/msword' || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                const isExcel = file.type === 'application/vnd.ms-excel'
+                if ((!isJPG) && (!isWord) && (!isExcel) ) {
+                    this.$message.error('上传文件只能是 JPG、JPEG、PNG、word、pdf、excel 格式!');
+                    return false
+                }
 
                 const isLt2M = file.size / 1024 / 1024 < 2;
                 if (!isLt2M) {
@@ -1147,7 +1158,7 @@
             upload(file) {
                 var data = new FormData();
                 data.append('uploadFile', file.file);
-
+                console.log(file.file.type)
                 http.zsyPostHttp('/upload/file',data,(res)=> {
                     this.demandForm.urlList.push(res.data.url)
                 })
@@ -1709,7 +1720,12 @@
                 this.isSaving = true
                 this.$refs[formName].validate((valid) => {
                     if (valid){
-
+                        if (this.demandForm.type == null){
+                            this.$message({ showClose: true,message: '类型不能为空',type: 'warning'});
+                        }
+                        if(this.demandForm.priority == null){
+                            this.$message({ showClose: true,message: '优先级不能为空',type: 'warning'});
+                        }
                         var param = this.demandForm
                         // param.type = Number(param.type)
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
@@ -1732,7 +1748,12 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         var param = this.demandForm
-
+                        if (this.demandForm.type == null){
+                            this.$message({ showClose: true,message: '类型不能为空',type: 'warning'});
+                        }
+                        if(this.demandForm.priority == null){
+                            this.$message({ showClose: true,message: '优先级不能为空',type: 'warning'});
+                        }
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
                         http.zsyPutHttp('/feedback/demand/edit/'+this.demandForm.id, param, (resp) => {
                             this.$message({ showClose: true,message: '需求修改成功',type: 'success'});
@@ -1761,7 +1782,7 @@
                     this.demandForm.question = demand.question
                     this.demandForm.target = demand.target
                     this.demandForm.releaseTime = demand.releaseTime
-
+                    this.demandForm = Object.assign({},this.demandForm)
                 }else {
                     this.demandDetail(demand.id)
                     this.clearDemandForm()
@@ -1769,7 +1790,7 @@
             },
 
             //删除需求
-            deleteDemand(id){
+            deleteDemand(id,status){
                 this.$confirm('此操作将删除该需求, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -1777,8 +1798,12 @@
                 }).then(() => {
                     http.zsyDeleteHttp('/feedback/delete/'+id, null, (resp) => {
                         this.$message({ showClose: true,message: '需求删除成功',type: 'success'});
-                        this.fetchNewDemandList();
-                        this.fetchQueueDemandList()
+                        if (status == 0){
+                            this.fetchNewDemandList()
+                        }else if (status == 4){
+                            this.fetchQueueDemandList()
+
+                        }
                     });
                 }).catch(() => {
                 });
@@ -1788,8 +1813,8 @@
             clearDemandForm(){
                 this.demandForm.id = null
                 this.demandForm.title = null
-                this.demandForm.type = null
-                this.demandForm.priority= null
+                this.demandForm.type = 0
+                this.demandForm.priority= 0
                 this.demandForm.origin= null
                 this.demandForm.question = null
                 this.demandForm.target = null

@@ -2,7 +2,7 @@
     <div class="demandDetail">
         <div class="btn-box">
             <el-button onclick="javascript:history.go(-1);" class="btn-go_back">返回</el-button>
-            <el-button class="fr" v-if="permit && rejectVisible && notRunning" @click="rejectDemand">不采纳</el-button>
+            <el-button class="fr" v-if="permit && !agreeVisible && notRunning" @click="rejectDemand">不采纳</el-button>
             <el-button class="fr" type="primary" v-if="permit && agreeVisible && notRunning" @click="agreeDemand">采纳</el-button>
             <el-button v-if="isLikeVisible" class="fr" type="primary" @click="like">点赞</el-button>
             <el-button v-if="!isLikeVisible" class="fr" type="primary" @click="dislike">取消点赞</el-button>
@@ -134,7 +134,7 @@
         data() {
             return {
                 id: 0,
-                status:-1,
+                status:'',
                 textarea: '',
                 testval:'张三',
                 testval2:'张三王二',
@@ -173,12 +173,13 @@
                 notRunning:false,
                 compleltedVisible:false,
                 isOnlieVisible:true,
-                downloadVisible:false
+                downloadVisible:false,
+                demandDetailReqDTO:{}
 
             }
         },
         beforeMount:function () {
-            this.isRead()
+            // this.isRead()
             this.isLike()
             this.isAgree()
             this.isReject()
@@ -233,7 +234,6 @@
                           document.body.appendChild(frame)
                           frame.src = url*/
                     window.open(url)
-                    this.downloadVisible = false
                 })
             },
             //是否是进行中  进行中需求无法采纳和驳回
@@ -299,17 +299,22 @@
                       message: '点赞成功',
                       type: 'success'
                   });
+                  this.fetchDetail()
               })
             },
             //取消点赞
             dislike(){
               http.zsyPostHttp('/feedback/demand/dislike/'+this.id,{},(res)=> {
                   this.isLikeVisible = true
+                  this.fetchDetail()
               })
             },
             //获取需求详情
             fetchDetail(){
-                http.zsyGetHttp('/feedback/demand/detail/'+this.id+'/'+this.status,{},(res)=> {
+                this.demandDetailReqDTO.demandId = this.id
+                this.demandDetailReqDTO.status = this.status
+                console.log(this.demandDetailReqDTO.status)
+                http.zsyPostHttp('/feedback/demand/detail',this.demandDetailReqDTO,(res)=> {
                     this.demandDetail = res.data
                 })
             },
@@ -333,7 +338,12 @@
                             message: '回复成功',
                             type: 'success'
                         });
+                        this.replyContent = null
+                        this.replyDTO.demandId = null
+                        this.replyDTO.content = null
+                        this.fetchDemandReply()
                     })
+
 
                 }
             },
@@ -342,6 +352,8 @@
               http.zsyGetHttp('/feedback/demand/is-agree/'+this.id,{},(res)=>{
                   if (res.data.count == 0){
                       this.agreeVisible = true
+                  }else {
+                      this.agreeVisible = false
                   }
                 })
             },
@@ -353,13 +365,16 @@
                       message: '采纳成功',
                       type: 'success'
                   });
+                  this.isAgree()
               })
             },
             //查看需求是否驳回
             isReject(){
               http.zsyGetHttp('/feedback/demand/is-reject/'+this.id,{},(res)=>{
                   if (res.data.count == 0){
-                      this.rejectVisible = true
+                      this.agreeVisible = false
+                  }else {
+                      this.agreeVisible = true
                   }
               })
             },
@@ -371,6 +386,7 @@
                       message: '已驳回',
                       type: 'success'
                   });
+                  this.isReject()
               })
             },
 
