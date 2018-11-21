@@ -2,7 +2,7 @@
     <div class="demandDetail">
         <div class="btn-box">
             <el-button onclick="javascript:history.go(-1);" class="btn-go_back">返回</el-button>
-            <el-button class="fr" v-if="permit && !agreeVisible && notRunning" @click="rejectDemand">不采纳</el-button>
+            <el-button class="fr" v-if="permit && rejectVisible && notRunning" @click="rejectDemand">不采纳</el-button>
             <el-button class="fr" type="primary" v-if="permit && agreeVisible && notRunning" @click="agreeDemand">采纳</el-button>
             <el-button v-if="isLikeVisible" class="fr" type="primary" @click="like">点赞</el-button>
             <el-button v-if="!isLikeVisible" class="fr" type="primary" @click="dislike">取消点赞</el-button>
@@ -313,7 +313,6 @@
             fetchDetail(){
                 this.demandDetailReqDTO.demandId = this.id
                 this.demandDetailReqDTO.status = this.status
-                console.log(this.demandDetailReqDTO.status)
                 http.zsyPostHttp('/feedback/demand/detail',this.demandDetailReqDTO,(res)=> {
                     this.demandDetail = res.data
                 })
@@ -365,16 +364,18 @@
                       message: '采纳成功',
                       type: 'success'
                   });
-                  this.isAgree()
+                  this.agreeVisible = false
+                  this.rejectVisible = true
+                  // this.isAgree()
               })
             },
             //查看需求是否驳回
             isReject(){
               http.zsyGetHttp('/feedback/demand/is-reject/'+this.id,{},(res)=>{
                   if (res.data.count == 0){
-                      this.agreeVisible = false
+                      this.rejectVisible = true
                   }else {
-                      this.agreeVisible = true
+                      this.rejectVisible = false
                   }
               })
             },
@@ -386,7 +387,9 @@
                       message: '已驳回',
                       type: 'success'
                   });
-                  this.isReject()
+                  this.rejectVisible = false
+                  this.agreeVisible = true
+                  // this.isReject()
               })
             },
 

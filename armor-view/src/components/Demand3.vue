@@ -1148,17 +1148,16 @@
                     return false
                 }
 
-                const isLt2M = file.size / 1024 / 1024 < 2;
-                if (!isLt2M) {
-                    this.$message.error('上传文件大小不能超过 2MB!');
+                const isLt1M = file.size / 1024 / 1024 < 1;
+                if (!isLt1M) {
+                    this.$message.error('上传文件大小不能超过 1MB!');
                 }
-                return  isLt2M;
+                return  isLt1M;
             },
 
             upload(file) {
                 var data = new FormData();
                 data.append('uploadFile', file.file);
-                console.log(file.file.type)
                 http.zsyPostHttp('/upload/file',data,(res)=> {
                     this.demandForm.urlList.push(res.data.url)
                 })
