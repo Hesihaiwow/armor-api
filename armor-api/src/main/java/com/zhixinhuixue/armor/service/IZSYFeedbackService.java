@@ -316,7 +316,7 @@ public interface IZSYFeedbackService {
      * @param reqDTO
      * @return
      */
-    PageInfo<DemandCompletedResDTO> getDemandCompletedListByCoach(DemandQueryReqDTO reqDTO);
+    ArmorPageInfo<DemandCompletedResDTO> getDemandCompletedListByCoach(DemandQueryReqDTO reqDTO);
 
     /**
      * 学管端获取进行中需求

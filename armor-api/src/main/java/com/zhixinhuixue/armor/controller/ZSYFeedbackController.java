@@ -112,9 +112,9 @@ public class ZSYFeedbackController extends ZSYController{
      * @return
      */
     @ApiOperation("获取需求详情")
-    @GetMapping(value = "/demand/detail/{demandId}/{status}")
-    public String getDemandDetail(@PathVariable("demandId")Long id,@PathVariable("status")Integer status){
-        return ZSYResult.success().data(feedbackService.getDemandDetail(id,status)).build();
+    @PostMapping(value = "/demand/detail")
+    public String getDemandDetail(@RequestBody DemandDetailQueryReqDTO reqDTO){
+        return ZSYResult.success().data(feedbackService.getDemandDetail(reqDTO)).build();
     }
 
     /**

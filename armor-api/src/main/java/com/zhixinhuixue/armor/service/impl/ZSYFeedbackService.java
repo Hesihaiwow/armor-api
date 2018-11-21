@@ -433,7 +433,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      * @return
      */
     @Override
-    public PageInfo<DemandCompletedResDTO> getDemandCompletedListByCoach(DemandQueryReqDTO reqDTO) {
+    public ArmorPageInfo<DemandCompletedResDTO> getDemandCompletedListByCoach(DemandQueryReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
         Page<DemandCompletedBO> demandCompletedBOS = feedbackMapper.selectDemandCompletedPageByCoach(reqDTO);
         Page<DemandCompletedResDTO> list = new Page<>();
@@ -484,7 +484,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 list.add(resDTO);
             });
         }
-        return new PageInfo(list);
+        return new ArmorPageInfo(list);
     }
 
 

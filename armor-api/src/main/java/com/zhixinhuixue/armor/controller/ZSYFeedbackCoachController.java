@@ -90,8 +90,8 @@ public class ZSYFeedbackCoachController extends ZSYController {
      */
     @ApiOperation("完成需求列表")
     @PostMapping(value = "/demand-completed/list")
-    public ZSYSwaggerResult<PageInfo<DemandCompletedResDTO>> getDemandCompletedList(@RequestBody DemandQueryReqDTO reqDTO){
-        PageInfo<DemandCompletedResDTO> list = feedbackService.getDemandCompletedListByCoach(reqDTO);
+    public ZSYSwaggerResult<ArmorPageInfo<DemandCompletedResDTO>> getDemandCompletedList(@RequestBody DemandQueryReqDTO reqDTO){
+        ArmorPageInfo<DemandCompletedResDTO> list = feedbackService.getDemandCompletedListByCoach(reqDTO);
         return new ZSYSwaggerResult<>(list);
     }
 
