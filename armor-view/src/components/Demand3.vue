@@ -1056,7 +1056,7 @@
                 rules: {
                     origin: [
                         {required: true,  message: '需求来源不能为空', trigger: 'blur'},
-                        {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
+                        {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
                     ],
                     title: [
                         {required: true,  message: '需求名称不能为空', trigger: 'blur'},
@@ -1142,7 +1142,7 @@
             beforeAvatarUpload(file) {
                 const isJPG = file.type === 'image/jpeg'||file.type === 'image/png'||file.type === 'image/jpg';
                 const isWord = file.type === 'application/msword' || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                const isExcel = file.type === 'application/vnd.ms-excel'
+                const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 if ((!isJPG) && (!isWord) && (!isExcel) ) {
                     this.$message.error('上传文件只能是 JPG、JPEG、PNG、word、pdf、excel 格式!');
                     return false

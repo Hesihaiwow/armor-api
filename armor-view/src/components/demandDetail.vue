@@ -110,7 +110,8 @@
                                     v-model="replyContent"
                                     type="textarea"
                                     :rows="2"
-                                    placeholder="请输入评论内容"
+                                    placeholder="请输入评论内容,不超过100字"
+                                    :maxlength=100
                                     >
                             </el-input>
                         </div>
@@ -174,8 +175,7 @@
                 compleltedVisible:false,
                 isOnlieVisible:true,
                 downloadVisible:false,
-                demandDetailReqDTO:{}
-
+                demandDetailReqDTO:{},
             }
         },
         beforeMount:function () {
