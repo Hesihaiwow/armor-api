@@ -1848,6 +1848,8 @@
                     this.$message({ showClose: true,message: '任务时间延长申请成功',type: 'success'});
                     this.expandTimeVisible = false;
                     this.clearExpand();
+                    this.$emit('reload');
+                    this.$root.eventBus.$emit('reloadBoard');
                 })
             },
             clearExpand(){
