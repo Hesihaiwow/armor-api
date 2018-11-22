@@ -10,7 +10,7 @@ feedback表更新字段
   ALTER TABLE feedback ADD COLUMN coach_id int(10) DEFAULT NULL COMMENT '学管端需求创建者id';
   ALTER TABLE feedback MODIFY project_id bigint(20) DEFAULT NULL COMMENT '项目id';
   ALTER TABLE feedback MODIFY create_by bigint(20) DEFAULT NULL COMMENT '任务系统需求创建者id';
-  ALTER TABLE feedback MODIRY content text DEFAULT NULL COMMENT '需求反馈内容';
+  ALTER TABLE feedback MODIFY content text DEFAULT NULL COMMENT '需求反馈内容';
 /**
 新建表feedback_accessory
  */
