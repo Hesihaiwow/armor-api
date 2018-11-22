@@ -455,7 +455,7 @@
                         </el-table-column>
                         <el-table-column  label="提出日期" align="center" width="120">
                             <template scope="scope">
-                                <span>{{scope.row.createTime | formatDate}}</span>
+                                <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column  label="期待上线日期" align="center" width="130">
