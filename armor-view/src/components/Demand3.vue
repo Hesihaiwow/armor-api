@@ -7,28 +7,28 @@
                         <div class="clearfix">
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">优先级:</span>
-                                <el-select clearable filterable  v-model="priority" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="priority" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in prioritys" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">类型:</span>
-                                <el-select clearable filterable  v-model="type" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="type" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in types" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable  v-model="readStatus" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="readStatus" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="origin" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
                                 </el-select>
@@ -106,35 +106,35 @@
                         <div class="clearfix">
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">优先级:</span>
-                                <el-select clearable filterable  v-model="priority1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="priority1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in prioritys" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">类型:</span>
-                                <el-select clearable filterable  v-model="type1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="type1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in types" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable  v-model="readStatus1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="readStatus1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="origin1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="origin1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
-                                <el-select clearable filterable  v-model="chargeMan1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="chargeMan1" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
@@ -222,28 +222,28 @@
                         <div class="clearfix">
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">优先级:</span>
-                                <el-select clearable filterable  v-model="priority4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="priority4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in prioritys" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">类型:</span>
-                                <el-select clearable filterable  v-model="type4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="type4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in types" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable  v-model="readStatus4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="readStatus4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="origin4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="origin4" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
                                 </el-select>
@@ -317,28 +317,28 @@
                         <div class="clearfix">
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">优先级:</span>
-                                <el-select clearable filterable  v-model="priority3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="priority3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in prioritys" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">类型:</span>
-                                <el-select clearable filterable  v-model="type3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="type3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in types" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable  v-model="readStatus3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="readStatus3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                                <el-select clearable filterable  v-model="origin3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                                <el-select clearable filterable no-match-text=" " v-model="origin3" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
                                                :value="item"></el-option>
                                 </el-select>
@@ -427,14 +427,14 @@
                         </el-date-picker>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                            <el-select clearable filterable  v-model="origin2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable no-match-text=" " v-model="origin2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in originList" :key="item" :label="item"
                                            :value="item"></el-option>
                             </el-select>
                         </div>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
-                            <el-select clearable filterable  v-model="chargeMan2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable no-match-text=" " v-model="chargeMan2" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
@@ -526,14 +526,14 @@
                         </el-date-picker>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                            <el-select clearable filterable  v-model="origin5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable no-match-text=" " v-model="origin5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in originList" :key="item" :label="item"
                                            :value="item"></el-option>
                             </el-select>
                         </div>
                         <div class="demand-top-list fl">
                             <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
-                            <el-select clearable filterable  v-model="chargeMan5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
+                            <el-select clearable filterable no-match-text=" " v-model="chargeMan5" placeholder="请选择" size="small" style="width:100px;margin-left: -50px">
                                 <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
