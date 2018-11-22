@@ -3,7 +3,7 @@ feedback表更新字段
  */
   ALTER TABLE feedback ADD COLUMN target varchar(200) DEFAULT NULL COMMENT '达成的目标';
   ALTER TABLE feedback ADD COLUMN release_time datetime DEFAULT NULL COMMENT '期待上线时间';
-  ALTER TABLE feedback ADD COLUMN question text COMMENT '需要解决什么问题';
+  ALTER TABLE feedback ADD COLUMN question varchar(200) DEFAULT NULL COMMENT '需要解决什么问题';
   ALTER TABLE feedback ADD COLUMN type int(1) DEFAULT NULL COMMENT '0:个人建议,1:市场反馈,2:公司决策';
   ALTER TABLE feedback ADD COLUMN likes_num int(10) DEFAULT '0' COMMENT '点赞总数';
   ALTER TABLE feedback ADD COLUMN online_time datetime DEFAULT NULL COMMENT '上线时间';

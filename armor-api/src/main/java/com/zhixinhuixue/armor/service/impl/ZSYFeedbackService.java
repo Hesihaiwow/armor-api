@@ -457,7 +457,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                     resDTO.setTaskNum(taskIds.size());
 
                     //第一个即为最早创建的任务
-                    Date beginDate = feedbackPlanTaskMapper.selectEndTime(taskIds.get(0));
+                    Date beginDate = feedbackPlanTaskMapper.selectBeginTime(taskIds.get(0));
 
                     //获取最后完成任务的时间
                     Date finishDate = feedbackPlanTaskMapper.selectEndTime(endTasks.get(0));
@@ -520,7 +520,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                     resDTO.setTaskNum(taskIds.size());
 
                     //第一个即为最早创建的任务
-                    Date beginDate = feedbackPlanTaskMapper.selectEndTime(taskIds.get(0));
+                    Date beginDate = feedbackPlanTaskMapper.selectBeginTime(taskIds.get(0));
 
                     //获取最后完成任务的时间
                     Date finishDate = feedbackPlanTaskMapper.selectEndTime(endTasks.get(0));
