@@ -240,6 +240,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 demandRejectedBOList.stream().forEach(demandRejectedBO -> {
                     DemandRejectedResDTO demandRejectedResDTO = new DemandRejectedResDTO();
                     BeanUtils.copyProperties(demandRejectedBO,demandRejectedResDTO);
+                    String name = feedbackMapper.selectUserNameByUserId(demandRejectedBO.getRejectUser());
+                    demandRejectedResDTO.setRejectUser(name);
                     if (feedbackMapper.selectIsRead(demandRejectedBO.getId(),ZSYTokenRequestContext.get().getUserId()) != null){
                         demandRejectedResDTO.setReadStatus(1);
                     }else {
@@ -299,6 +301,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 demandRejectedBOList.stream().forEach(demandRejectedBO -> {
                     DemandRejectedResDTO demandRejectedResDTO = new DemandRejectedResDTO();
                     BeanUtils.copyProperties(demandRejectedBO,demandRejectedResDTO);
+                    String name = feedbackMapper.selectUserNameByUserId(demandRejectedBO.getRejectUser());
+                    demandRejectedResDTO.setRejectUser(name);
                     if (feedbackMapper.selectIsReadByCoach(demandRejectedBO.getId(),coachId)!= null){
                         demandRejectedResDTO.setReadStatus(1);
                     }else {
