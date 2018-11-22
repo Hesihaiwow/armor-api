@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -44,10 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -132,6 +130,48 @@ public class ZSYUserService implements IZSYUserService {
         stringRedisTemplate.expire(loginKey, ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
         logger.info("{}({})登录成功,token:{}", user.getName(), user.getId(), jwt);
         return ZSYResult.success().data(jwt);
+    }
+
+    @Override
+    public String createUserJwtToken(String account) {
+        //验证登录用户
+        List<User> users = userMapper.selectByAccount(account);
+        User user = users.get(0);
+        //验证通过
+        //修改登录时间
+        User modifyUser = new User();
+        modifyUser.setId(user.getId());
+        modifyUser.setLastLogin(new Date());
+        if (userMapper.updateSelectiveById(modifyUser) == 0) {
+            throw new ZSYServiceException("更新登录时间失败,登录异常.");
+        }
+        //生成Token
+        Algorithm algorithm = null;
+        try {
+            algorithm = Algorithm.HMAC256(jwtSecret);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Long departmentId = user.getDepartmentId();
+        if(user.getDepartmentId()!=0){
+            departmentId = departmentMapper.selectById(user.getDepartmentId()).getParentId();
+        }
+        String jwt = JWT.create()
+                .withIssuer(jwtIssuer)
+                .withExpiresAt(DateHelper.afterDate(new Date(), jwtExp))
+                .withIssuedAt(new Date())
+                .withClaim("userId", String.valueOf(user.getId()))
+                .withClaim("userName", user.getName())
+                .withClaim("avatarUrl", user.getAvatarUrl())
+                .withClaim("userRole", user.getUserRole())
+                .withClaim("departmentId", departmentId)
+                .sign(algorithm);
+
+        String loginKey = String.format(ZSYConstants.LOGIN_KEY, user.getId());
+        stringRedisTemplate.opsForValue().set(loginKey, ZSYConstants.REDIS_DEFAULT_VALUE);
+        stringRedisTemplate.expire(loginKey, ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
+        logger.info("{}({})登录成功,token:{}", user.getName(), user.getId(), jwt);
+        return jwt;
     }
 
     @Override

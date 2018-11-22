@@ -1,7 +1,9 @@
 package com.zhixinhuixue.armor.config;
 
 import com.zhixinhuixue.armor.filter.ZSYUrlFilter;
+import com.zhixinhuixue.armor.source.ZSYBasicAuthProperty;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +28,8 @@ public class ZSYFilterConfig {
     @Value("${jwt.exp}")
     private int jwtExp;
 
-
+    @Autowired
+    private ZSYBasicAuthProperty basicAuthProperty;
 
     /**
      * 登陆拦截器
@@ -35,7 +38,7 @@ public class ZSYFilterConfig {
     @Bean
     public FilterRegistrationBean urlFilter(){
         FilterRegistrationBean frb = new FilterRegistrationBean();
-        frb.setFilter(new ZSYUrlFilter());
+        frb.setFilter(new ZSYUrlFilter(jwtSecret,jwtIssuer,jwtExp,basicAuthProperty));
         frb.addUrlPatterns("/*");
         frb.addInitParameter("jwtSecret",jwtSecret);
         frb.addInitParameter("jwtIssuer",jwtIssuer);

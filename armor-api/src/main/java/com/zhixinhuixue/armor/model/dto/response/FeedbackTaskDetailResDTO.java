@@ -34,8 +34,31 @@ public class FeedbackTaskDetailResDTO {
 
     private String stageName;
 
+    private Long stageId;
+
     private Integer percent;
 
+    /**
+     * 任务状态
+     * @return
+     */
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
+    }
 
     public Long getId() {
         return id;

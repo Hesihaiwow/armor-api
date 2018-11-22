@@ -15,6 +15,11 @@
                 ofType="com.zhixinhuixue.armor.model.bo.TaskDetailBO"></collection>
   </resultMap>
 
+  <resultMap id="PlanMap1" type="com.zhixinhuixue.armor.model.bo.PlanTaskBO" >
+    <collection property="planTask" column="{id=task_id,stage=stage,status=status}" select="com.zhixinhuixue.armor.dao.IZSYTaskMapper.selectTaskDetailByTaskId1"
+                ofType="com.zhixinhuixue.armor.model.bo.TaskDetailBO"></collection>
+  </resultMap>
+
   <insert id="insertFeedbackPlanTask" parameterType="com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask">
     insert into feedback_plan_task ( id, feedback_plan_id, task_id)
     values (#{id,jdbcType=BIGINT}, #{feedbackPlanId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT})
@@ -23,6 +28,13 @@
   <select id="getTaskId" parameterType="java.lang.Long" resultMap="PlanMap">
       SELECT * FROM feedback_plan_task
       WHERE feedback_plan_id = #{feedbackPlanId}
+
+  </select>
+
+  <select id="getTaskId1" parameterType="java.lang.Long" resultType="java.lang.Long">
+      SELECT task_id
+      FROM feedback_plan_task
+      WHERE feedback_plan_id = #{id}
   </select>
 
   <delete id="deleteByTaskId" parameterType="java.lang.Long">
@@ -35,4 +47,57 @@
     WHERE task_id = #{taskId}
     AND feedback_plan_id = #{feedbackPlanId}
   </select>
+
+  <!-- 根据planId获取任务数 -->
+    <select id="getTaskNum" resultType="java.lang.Integer">
+      select count(*) from feedback_plan_task where feedback_plan_id = #{planId}
+    </select>
+
+  <!-- 根据taskId获取任务人数 -->
+  <select id="selectPersonByTaskId" resultType="java.lang.Long">
+    select user_id from task_user where task_id = #{taskId}
+  </select>
+
+  <!--根据taskId获取任务开始时间-->
+  <select id="selectBeginTime" resultType="java.util.Date">
+    select create_time from task where is_delete = 0 and id = #{taskId}
+  </select>
+
+  <!--获取任务id-->
+  <select id="getTaskIdByPlanId" resultType="java.lang.Long">
+    select t.id from task t
+    left join feedback_plan_task fpt on t.id = fpt.task_id
+    where feedback_plan_id = #{planId}
+    order by t.begin_time asc
+  </select>
+
+  <!--获取最早开始的任务-->
+  <select id="getFirstTask" resultType="java.lang.Long">
+    select t.id from task t
+    left join feedback_plan_task fpt on t.id = fpt.task_id
+    where feedback_plan_id = #{planId}
+    order by t.begin_time asc limit 1
+  </select>
+
+  <!--获取最早创建的任务-->
+  <select id="selectFirstCreateTask" resultType="java.lang.Long">
+    select t.id from task t
+    left join feedback_plan_task fpt on t.id = fpt.task_id
+    where fpt.feedback_plan_id = #{planId}
+    order by t.create_time asc limit 1
+  </select>
+
+  <!--获取最后完成的任务-->
+  <select id="getLastTaskId" resultType="java.lang.Long">
+    select t.id from task t
+    left join feedback_plan_task fpt on t.id = fpt.task_id
+    where fpt.feedback_plan_id = #{planId}
+    order by t.complete_time desc limit 1
+  </select>
+
+  <!--获取最后完成任务的时间-->
+  <select id="selectEndTime" resultType="java.util.Date">
+    select complete_time from task where is_delete = 0 and id = #{taskId}
+  </select>
+
 </mapper>

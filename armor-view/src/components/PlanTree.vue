@@ -9,21 +9,26 @@
   			<span class="fl source">需求来源：{{model.origin}}</span>
   			<span class="date fl">截止{{model.endTime}}</span>
   			<span class="fl progress"><em class="fl" :style="'width:'+model.percent+'%'">{{model.percent}}%</em></span>
+			<span>负责人:{{model.chargeMan}}</span>
   		</div>
   		<div class="fr disc-status" v-show="model.origin== null"  v-on="stageIcon(model)">
-  			<a href="javascript:;" :class="stage.design">设计</a>
+			<div v-if="model.status == 0" class="fl" style="color: gray">暂停中</div>
+
+			<a href="javascript:;" :class="stage.design">设计</a>
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.dev">开发</a>
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.test">测试</a>
   			<i class="iconfont fl icon-arrow-right"></i>
   			<a href="javascript:;" :class="stage.publish">发布</a>
-  		</div>
-  	</div>
+			<span class="fl">负责人:{{model.userName}}</span>
+		</div>
+
+	</div>
   	<ul class="sub-container" v-show="open">
   		<access-tree :model="item" :key="idx"  v-for="(item,idx) in model.childs"></access-tree>
   	</ul>
-   
+
   </li>
 </template>
 <script>

@@ -18,7 +18,39 @@ public class FeedbackPlanListResDTO {
 
     private String endTime;
 
+    private Long stageId;
+
+    private Integer status;
+    /**
+     * 需求负责人
+     */
+    private String chargeMan;
+
+    public String getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(String chargeMan) {
+        this.chargeMan = chargeMan;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     private List<FeedbackTaskDetailResDTO> childs;
+
+    public Long getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(Long stageId) {
+        this.stageId = stageId;
+    }
 
     public String getTitle() {
         return title;

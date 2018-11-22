@@ -8,6 +8,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 // common css
 import './assets/css/base.css'
+import './assets/css/iconfont.css'
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;

@@ -1,10 +1,11 @@
 package com.zhixinhuixue.armor.controller;
 
 
-import com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.FeedbackReqDTO;
+import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.dto.request.*;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.service.IZSYFeedbackService;
+import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +34,307 @@ public class ZSYFeedbackController extends ZSYController{
     @PostMapping(value = "/list")
     public String getList(@RequestBody FeedbackListReqDTO feedbackListReqDTO){
         return ZSYResult.success().data(feedbackService.getFeedback(feedbackListReqDTO)).build();
+    }
+
+    /**
+     * 获取新需求列表
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("新需求列表")
+    @PostMapping(value = "/demand/list")
+    public String getDemandList(@RequestBody DemandQueryReqDTO reqDTO){
+        return ZSYResult.success().data(feedbackService.getDemandList(reqDTO)).build();
+    }
+
+    /**
+     * 获取驳回需求列表
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("驳回需求列表")
+    @PostMapping(value = "/demand-rejected/list")
+    public String getDemandRejectedList(@RequestBody DemandQueryReqDTO reqDTO){
+        ArmorPageInfo<DemandRejectedResDTO> list = feedbackService.getDemandRejectedList(reqDTO);
+        return ZSYResult.success().data(list).build();
+    }
+
+    /**
+     * 获取排队中需求
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("排队需求列表")
+    @PostMapping(value = "/demand-queued/list")
+    public String getDemandQueuedList(@RequestBody DemandQueryReqDTO reqDTO){
+        ArmorPageInfo<DemandQueuedResDTO> list = feedbackService.getDemandQueuedList(reqDTO);
+        return ZSYResult.success().data(list).build();
+    }
+
+    /**
+     * 获取已完成需求
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("完成需求列表")
+    @PostMapping(value = "/demand-completed/list")
+    public String getDemandCompletedList(@RequestBody DemandQueryReqDTO reqDTO){
+        PageInfo<DemandCompletedResDTO> list = feedbackService.getDemandCompletedList(reqDTO);
+        return ZSYResult.success().data(list).build();
+    }
+
+    /**
+     * 获取进行中需求
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("进行中需求列表")
+    @PostMapping(value = "/demand-running/list")
+    public String getDemandRunningList(@RequestBody DemandQueryReqDTO reqDTO){
+        ArmorPageInfo<DemandRunningResDTO> list = feedbackService.getDemandRunningList(reqDTO);
+        return ZSYResult.success().data(list).build();
+    }
+
+    /**
+     * 获取我参与的需求
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("我参与的需求")
+    @PostMapping(value = "/demand-joined/list")
+    public String getDemandJoinedList(@RequestBody DemandQueryReqDTO reqDTO){
+        PageInfo<DemandJoinedResDTO> list = feedbackService.getDemandJoinedList(reqDTO);
+        return ZSYResult.success().data(list).build();
+    }
+
+    /**
+     * 获取需求详情
+     * @return
+     */
+    @ApiOperation("获取需求详情")
+    @PostMapping(value = "/demand/detail")
+    public String getDemandDetail(@RequestBody DemandDetailQueryReqDTO reqDTO){
+        return ZSYResult.success().data(feedbackService.getDemandDetail(reqDTO)).build();
+    }
+
+    /**
+     * 获取需求回复详情
+     * @param id
+     * @return
+     */
+    @ApiOperation("获取需求回复详情")
+    @GetMapping(value = "/demand/reply/{demandId}")
+    public String getDemandReply(@PathVariable("demandId")Long id){
+        return ZSYResult.success().data(feedbackService.getDemandReply(id)).build();
+    }
+
+    /**
+     * 查看是否已读
+     * @param id
+     * @return
+     */
+    @ApiOperation("查看是否已读")
+    @GetMapping(value = "/demand/is-read/{demandId}")
+    public String isRead(@PathVariable("demandId")Long id){
+        return ZSYResult.success().data(feedbackService.isRead(id)).build();
+    }
+
+    /**
+     * 读取需求
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求读取")
+    @PostMapping(value = "/demand/read/{demandId}")
+    public String readDemand(@PathVariable("demandId")Long id){
+        feedbackService.readDemand(id);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("需求是否点赞")
+    @GetMapping(value = "/demand/is-like/{demandId}")
+    public String isLike(@PathVariable("demandId")Long id){
+        return ZSYResult.success().data(feedbackService.isLike(id)).build();
+    }
+
+    /**
+     * 需求点赞
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求点赞")
+    @PostMapping(value = "/demand/like/{demandId}")
+    public String like(@PathVariable("demandId")Long id){
+        feedbackService.like(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 需求取消点赞
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求取消点赞")
+    @PostMapping(value = "/demand/dislike/{demandId}")
+    public String dislike(@PathVariable("demandId")Long id){
+        feedbackService.dislike(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 回复需求
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("回复需求")
+    @PostMapping(value = "/demand/reply")
+    public String reply(@RequestBody DemandReplyReqDTO reqDTO){
+        feedbackService.reply(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 采纳需求,进入排队表中
+     * @param id
+     * @return
+     */
+    @ApiOperation("采纳需求")
+    @PostMapping(value = "/demand/agree/{demandId}")
+    public String agreeDemand(@PathVariable("demandId")String id){
+        feedbackService.agreeDemand(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 需求是否采纳
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求是否采纳")
+    @GetMapping(value = "/demand/is-agree/{demandId}")
+    public String isAgree(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.isAgree(id)).build();
+    }
+
+    /**
+     * 需求是否驳回
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求是否驳回")
+    @GetMapping(value = "/demand/is-reject/{demandId}")
+    public String isReject(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.isReject(id)).build();
+    }
+
+    /**
+     * 驳回需求,进入驳回表中
+     * @param id
+     * @return
+     */
+    @ApiOperation("驳回需求")
+    @PostMapping(value = "/demand/reject/{demandId}")
+    public String rejectDemand(@PathVariable("demandId")String id){
+        feedbackService.rejectDemand(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 需求是否上线
+     * @param id
+     * @return
+     */
+    @ApiOperation("需求是否上线")
+    @GetMapping(value = "/demand/is-online/{demandId}")
+    public String isOnline(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.isOnline(id)).build();
+    }
+
+
+    /**
+     * 完成需求上线
+     * @param id
+     * @return
+     */
+    @ApiOperation("完成需求上线")
+    @PostMapping(value = "/demand/online/{demandId}")
+    public String demandOnline(@PathVariable("demandId")String id){
+        feedbackService.demandOnline(id);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 新增需求
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("新增需求")
+    @PostMapping(value = "/demand/add")
+    public String addDemand(@Valid @RequestBody DemandReqDTO reqDTO){
+        feedbackService.addDemand(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 新增需求所属项目
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("新增需求所属项目")
+    @PostMapping(value = "/demand/project/add")
+    public String addProject(@RequestBody DemandProjectReqDTO reqDTO){
+        feedbackService.addDemandProject(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 获取需求附件
+     * @param id
+     * @return
+     */
+    @ApiOperation("获取需求附件url")
+    @GetMapping(value = "/demand/accessory/{demandId}")
+    public String getUrl(@PathVariable("demandId")Long id){
+        return ZSYResult.success().data(feedbackService.getUrl(id)).build();
+    }
+
+
+
+    /**
+     * 获取需求所属项目
+     * @param id
+     * @return
+     */
+    @ApiOperation("查询需求所属项目")
+    @GetMapping(value = "/demand/project/{demandId}")
+    public String getProjectId(@PathVariable("demandId")String id){
+        return ZSYResult.success().data(feedbackService.getProjectId(id)).build();
+    }
+
+    /**
+     * 编辑需求
+     * @param id
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation("编辑需求")
+    @PutMapping(value = "/demand/edit/{id}")
+    public String editDemand(@PathVariable("id")String id, @Valid @RequestBody DemandReqDTO reqDTO){
+        if (id == null) {
+            return ZSYResult.fail().msg("需求ID不能为空").build();
+        }
+        feedbackService.editDemand(id,reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 查询提出人员列表
+     * @return
+     */
+    @ApiOperation("提出人员列表")
+    @GetMapping(value = "/demand/introducers")
+    public String getIntroducerList(){
+        return ZSYResult.success().data(feedbackService.getIntroducerList()).build();
     }
 
     /**

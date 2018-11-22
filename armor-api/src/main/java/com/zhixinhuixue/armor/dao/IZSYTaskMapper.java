@@ -57,6 +57,8 @@ public interface IZSYTaskMapper {
      */
     TaskDetailBO selectTaskDetailByTaskId(Long taskId);
 
+    TaskDetailBO selectTaskDetailByTaskId1(@Param("taskId") Long taskId,@Param("stage")Long stage,@Param("status")Integer status);
+
 
     /**
      * 根据状态查询任务

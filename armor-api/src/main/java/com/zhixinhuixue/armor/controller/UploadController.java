@@ -62,6 +62,31 @@ public class UploadController {
     }
 
     /**
+     * 上传文件(image,Word,PDF,Excel)
+     * @param uploadFile
+     * @return
+     */
+    @RequestMapping(value = "file",produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String words(@RequestParam(value = "uploadFile") MultipartFile uploadFile){
+        String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
+        if (!isWord(suffix) && !isImg(suffix) && !isExcel(suffix)){
+            return ZSYResult.fail().msg("只能上传图片,Word,PDF和Excel").build();
+        }
+        try {
+            JSONObject result = new JSONObject();
+            result.put("url",upload(uploadFile));
+            return ZSYResult.success().data(result).build();
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }catch (MyException e){
+            e.printStackTrace();
+        }
+        return ZSYResult.fail().msg("上传失败").build();
+    }
+
+    /**
      * 获取上传文件后缀名
      *
      * @param uploadName
@@ -84,6 +109,28 @@ public class UploadController {
     public static boolean isImg(String url){
 
         Pattern p=Pattern.compile("\\.(png|PNG|jpg|JPG|jpeg|JPEG|bmp|BMP|gif|GIF|ico|ICO)");
+        Matcher m=p.matcher(url);
+        if(m.find()){
+            return true;
+        }
+        return false;
+    }
+
+    //判断是否是word文档和pdf
+    public static boolean isWord(String url){
+
+        Pattern p=Pattern.compile("\\.(doc|docx|PDF|pdf)");
+        Matcher m=p.matcher(url);
+        if(m.find()){
+            return true;
+        }
+        return false;
+    }
+
+    //判断是否是excel
+    public static boolean isExcel(String url){
+
+        Pattern p=Pattern.compile("\\.(xls|XLS)");
         Matcher m=p.matcher(url);
         if(m.find()){
             return true;

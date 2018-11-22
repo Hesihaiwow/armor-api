@@ -19,11 +19,117 @@
     id, title, origin, content, feedback_time, create_time, update_time, create_by project_id, priority, status, is_delete
   </sql>
 
+  <resultMap id="basicDemandMap" type="com.zhixinhuixue.armor.model.pojo.Demand">
+    <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="title" property="title" jdbcType="VARCHAR"></result>
+    <result column="origin" property="origin" jdbcType="VARCHAR"></result>
+    <result column="content" property="content" jdbcType="VARCHAR"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="priority" property="priority" jdbcType="INTEGER"></result>
+    <result column="feedback_time" property="feedbackTime" jdbcType="TIMESTAMP"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
+    <result column="create_by" property="createBy" jdbcType="BIGINT"></result>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+    <result column="is_delete" property="isDelete" jdbcType="INTEGER"></result>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"></result>
+    <result column="target" property="target" jdbcType="VARCHAR"></result>
+    <result column="release_time" property="releaseTime" jdbcType="TIMESTAMP"></result>
+    <result column="read_status" property="readStatus" jdbcType="INTEGER"></result>
+    <result column="question" property="question" jdbcType="VARCHAR"></result>
+    <result column="type" property="type" jdbcType="INTEGER"></result>
+    <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
+    <result column="online_time" property="onlineTime" jdbcType="TIMESTAMP"></result>
+  </resultMap>
+
+
   <resultMap id="ResultMap" type="com.zhixinhuixue.armor.model.bo.FeedbackBo" extends="BaseResultMap">
     <result column="no" jdbcType="INTEGER" property="no"/>
     <result column="planId" jdbcType="BIGINT" property="planId"/>
     <result column="users" jdbcType="VARCHAR" property="users"/>
     <result column="feedbackPlanId" jdbcType="VARCHAR" property="users"/>
+  </resultMap>
+
+  <resultMap id="demandMap" type="com.zhixinhuixue.armor.model.bo.DemandBO">
+    <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="title" property="title" jdbcType="VARCHAR"></result>
+    <result column="origin" property="origin" jdbcType="VARCHAR"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="priority" property="priority" jdbcType="INTEGER"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
+    <result column="feedback_time" property="feedbackTime" jdbcType="TIMESTAMP"></result>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+    <result column="target" property="target" jdbcType="VARCHAR"></result>
+    <result column="release_time" property="releaseTime" jdbcType="TIMESTAMP"></result>
+    <result column="question" property="question" jdbcType="VARCHAR"></result>
+    <result column="type" property="type" jdbcType="INTEGER"></result>
+    <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
+  </resultMap>
+
+  <resultMap id="demandRejectedMap" type="com.zhixinhuixue.armor.model.bo.DemandRejectedBO" extends="demandMap">
+    <result column="reject_user_id" property="rejectUser" jdbcType="BIGINT"></result>
+    <result column="reject_time" property="rejectedTime" jdbcType="TIMESTAMP"></result>
+  </resultMap>
+
+  <resultMap id="demandQueuedMap" type="com.zhixinhuixue.armor.model.bo.DemandQueuedBO" extends="demandMap">
+    <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
+  </resultMap>
+
+  <resultMap id="demandCompletedMap" type="com.zhixinhuixue.armor.model.bo.DemandCompletedBO" extends="demandMap">
+    <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
+    <result column="online_time" property="onlineTime" jdbcType="TIMESTAMP"></result>
+    <result column="users" property="chargeMan" jdbcType="VARCHAR"></result>
+  </resultMap>
+
+  <resultMap id="demandRunningMap" type="com.zhixinhuixue.armor.model.bo.DemandRunningBO" extends="demandMap">
+    <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
+    <result column="expect_official_time" property="expectOnlineTime" jdbcType="TIMESTAMP"></result>
+    <result column="users" property="chargeMan" jdbcType="VARCHAR"></result>
+  </resultMap>
+
+  <resultMap id="demandDetailMap" type="com.zhixinhuixue.armor.model.bo.DemandDetailBO">
+    <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="title" property="title" jdbcType="VARCHAR"></result>
+    <result column="origin" property="origin" jdbcType="VARCHAR"></result>
+    <result column="type" property="type" jdbcType="INTEGER"></result>
+    <result column="feedback_time" property="feedbackTime" jdbcType="TIMESTAMP"></result>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+    <result column="release_time" property="releaseTime" jdbcType="TIMESTAMP"></result>
+    <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
+    <result column="question" property="question" jdbcType="VARCHAR"></result>
+    <result column="target" jdbcType="VARCHAR" property="target"></result>
+  </resultMap>
+
+  <resultMap id="demandReplyMap" type="com.zhixinhuixue.armor.model.bo.DemandReplyBO">
+    <id column="feedback_id" property="id" jdbcType="BIGINT"></id>
+    <result column="user" property="replyPeople" jdbcType="VARCHAR"></result>
+    <result column="content" property="content" jdbcType="VARCHAR"></result>
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP"></result>
+  </resultMap>
+
+  <resultMap id="demandJoinedMap" type="com.zhixinhuixue.armor.model.bo.DemandJoinedBO">
+    <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="title" property="title" jdbcType="VARCHAR"></result>
+    <result column="origin" property="origin" jdbcType="VARCHAR"></result>
+    <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+    <result column="status" property="status" jdbcType="INTEGER"></result>
+    <result column="users" property="chargeMan" jdbcType="VARCHAR"></result>
+  </resultMap>
+
+  <resultMap id="introducerMap" type="com.zhixinhuixue.armor.model.dto.response.IntroducerResDTO">
+    <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="name" property="name" jdbcType="VARCHAR"></result>
+  </resultMap>
+
+  <resultMap id="replyMap" type="com.zhixinhuixue.armor.model.bo.DemandReplyBO">
+    <id column="id" property="id" jdbcType="BIGINT"></id>
+    <result column="feedback_id" property="demandId" jdbcType="BIGINT"></result>
+    <result column="reply_people" property="replyPeople" jdbcType="VARCHAR"></result>
+    <result column="content" property="content" jdbcType="VARCHAR"></result>
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP"></result>
+    <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+    <result column="coach_id" property="coachId" jdbcType="INTEGER"></result>
   </resultMap>
 
 
@@ -33,6 +139,88 @@
       #{feedbackTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},
        #{createBy,jdbcType=BIGINT}, #{projectId,jdbcType=BIGINT}, #{priority,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{isDelete,jdbcType=INTEGER})
   </insert>
+
+  <!--点赞-->
+  <insert id="insertDemandLikes">
+    insert into feedback_likes (id,user_id,like_people,feedback_id,create_time)
+    values (#{flId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{likePeople,jdbcType=VARCHAR},#{demandId,jdbcType=BIGINT},#{likeTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--学管端点赞需求-->
+  <insert id="insertDemandLikesByCoach">
+    insert into feedback_likes (id,coach_id,like_people,feedback_id,create_time)
+    values (#{flId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{likePeople,jdbcType=VARCHAR},#{demandId,jdbcType=BIGINT},#{date,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--回复需求-->
+  <insert id="insertReply">
+    insert into feedback_reply (id,user_id,feedback_id,content,reply_time,reply_people)
+    values (#{frId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{replyTime,jdbcType=TIMESTAMP},#{replyPeople,jdbcType=VARCHAR})
+  </insert>
+
+  <!--学管端回复需求-->
+  <insert id="insertReplyByCoach">
+    insert into feedback_reply (id,coach_id,feedback_id,content,reply_time,reply_people)
+    values (#{frId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{date,jdbcType=TIMESTAMP},#{replyPeople,jdbcType=VARCHAR})
+  </insert>
+
+  <!--新增需求到feedback_queue-->
+  <insert id="insertDemandQueue">
+    insert into feedback_queue (id,demand_id,agree_user_id,agree_time)
+    values (#{fqId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{agreeTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--新增需求到feedback_rejected-->
+  <insert id="insertDemandReject">
+    insert into feedback_rejected (id,demand_id,reject_user_id,reject_time)
+    values (#{frId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{rejectTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--新增需求-->
+  <insert id="insertDemand" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
+    insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,create_by,create_time,
+    is_delete,update_time,target,release_time,question,`type`)
+    values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
+    ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
+    ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
+    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER});
+  </insert>
+
+  <!--学管端新增需求-->
+  <insert id="insertDemandByCoach" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
+    insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,coach_id,create_time,
+    is_delete,update_time,target,release_time,question,`type`)
+    values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
+    ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{coachId,jdbcType=INTEGER}
+    ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
+    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER});
+  </insert>
+
+  <!--新增已读-->
+  <insert id="insertFeedbackRead" >
+    insert into feedback_read (id,feedback_id,user_id,read_time,read_people)
+    values (#{frId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{readTime,jdbcType=TIMESTAMP},#{readPeople,jdbcType=VARCHAR});
+  </insert>
+
+  <!--学管端读取需求-->
+  <insert id="insertFeedbackReadByCoach">
+    insert into feedback_read (id,coach_id,feedback_id,read_time,read_people)
+    values (#{frId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{demandId,jdbcType=BIGINT},#{date,jdbcType=TIMESTAMP},#{readPeople,jdbcType=VARCHAR})
+  </insert>
+
+  <!--新增需求附件地址-->
+  <insert id="insertFeedbackAccessory" parameterType="com.zhixinhuixue.armor.model.pojo.DemandAccessory">
+    insert into feedback_accessory (id,feedback_id,create_time,url)
+    values
+    <foreach collection="list" item="accessory" separator=",">
+      (#{accessory.id,jdbcType=BIGINT},#{accessory.demandId,jdbcType=BIGINT},#{accessory.createTime,jdbcType=TIMESTAMP},#{accessory.url,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+
+  <update id="updateLikesNum">
+    update feedback set likes_num = #{num} where id = #{demandId}
+  </update>
 
   <select id="selectFeedbackPage" resultMap="ResultMap" parameterType="com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO">
       SELECT (@rowid := @rowid+1) AS no,a.* FROM(
@@ -102,6 +290,104 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+  <update id="updateStatus">
+    update feedback set status = #{status,jdbcType=INTEGER} where id = #{demandId}
+  </update>
+
+  <update id="updateReadStatus">
+    update feedback set read_status = 1 where id = #{demandId}
+  </update>
+
+  <update id="updateByDemandId" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
+    update feedback
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null">
+        origin = #{origin,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="feedbackTime != null">
+        feedback_time = #{feedbackTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=BIGINT},
+      </if>
+      <if test="priority != null and priority!=3">
+        priority = #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=BIGINT},
+      </if>
+      <if test="isDelete != null or isDelete == 0">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="target != null">
+        target = #{target,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="releaseTime != null">
+        release_time = #{releaseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="readStatus != null">
+        read_status = #{readStatus,jdbcType=INTEGER},
+      </if>
+      <if test="question != null">
+        question = #{question,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="likesNum != null">
+        likes_num = #{likesNum,jdbcType=INTEGER},
+      </if>
+      <if test="onlineTime != null">
+        online_time = #{onlineTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateDemandProject">
+    update feedback set project_id = #{projectId} where id = #{demandId}
+  </update>
+
+  <!--完成需求上线-->
+  <update id="updateOnlineTime">
+    update feedback set online_time = #{onlineTime,jdbcType=TIMESTAMP} where id = #{demandId}
+  </update>
+
+  <!--删除feedback_rejected中的需求-->
+  <delete id="deleteDemandRejected">
+    delete from feedback_rejected where demand_id = #{demandId}
+  </delete>
+
+  <!--删除feedback_queue中的需求-->
+  <delete id="deleteDemandQueue">
+    delete from feedback_queue where demand_id = #{demandId}
+  </delete>
+
+  <!--学管端取消点赞需求-->
+  <delete id="deleteDemandLikesByCoach">
+    delete from feedback_likes where feedback_id = #{demandId} and coach_id = #{coachId}
+  </delete>
+
+  <!--取消点赞-->
+  <delete id="deleteDemandLikes">
+    delete from feedback_likes where feedback_id =#{demandId} and user_id = #{userId}
+  </delete>
+
   <select id="getOrigin" resultType="java.lang.String">
       SELECT origin FROM feedback WHERE is_delete =0
   </select>
@@ -109,4 +395,640 @@
   <select id="selectById" resultMap="BaseResultMap">
     SELECT * FROM feedback WHERE id=#{id}
   </select>
+
+  <!-- 获取新需求反馈列表 -->
+  <select id="selectDemandPage" resultMap="demandMap">
+    select * from feedback
+    <where>
+      is_delete = 0
+      and status = 0
+      <if test="origin != null and origin != ''">
+        and origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and type = #{type}
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+
+  <select id="selectDemandList" resultMap="demandMap">
+    select f.* from feedback f left join user u on f.create_by = u.id
+    <where>
+      f.is_delete = 0
+      and f.status = 0
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and f.priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and f.type = #{type}
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+
+  <!--学管段查询新需求-->
+  <select id="selectDemandPageByCoach" resultMap="demandMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select * from feedback
+    <where>
+      is_delete = 0
+      and status = 0
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and type = #{reqDTO.type}
+      </if>
+    </where>
+    <choose>
+      <when test="reqDTO.sort != null and reqDTO.sort == 0">
+        order by feedback_time asc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 1">
+        order by feedback_time desc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 2">
+        order by release_time asc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 3">
+        order by release_time desc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 4">
+        order by likes_num asc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 5">
+        order by likes_num desc
+      </when>
+      <otherwise>
+        order by feedback_time desc
+      </otherwise>
+    </choose>
+  </select>
+
+  <select id="selectDemandByListCoach" resultMap="demandMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select * from feedback
+    <where>
+      is_delete = 0
+      and status = 0
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and type = #{reqDTO.type}
+      </if>
+    </where>
+    <choose>
+      <when test="reqDTO.sort != null and reqDTO.sort == 0">
+        order by feedback_time asc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 1">
+        order by feedback_time desc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 2">
+        order by release_time asc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 3">
+        order by release_time desc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 4">
+        order by likes_num asc
+      </when>
+      <when test="reqDTO.sort != null and reqDTO.sort == 5">
+        order by likes_num desc
+      </when>
+      <otherwise>
+        order by feedback_time desc
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 获取驳回需求反馈列表 -->
+  <select id="selectDemandRejectedPage" resultMap="demandRejectedMap">
+    select f.*,fr.reject_user_id,fr.reject_time
+    from feedback f left join feedback_rejected fr on f.id = fr.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 3
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and f.priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and f.type = #{type}
+      </if>
+    </where>
+    order by fr.reject_time desc
+  </select>
+
+  <select id="selectDemandRejectedList" resultMap="demandRejectedMap">
+    select f.*,fr.reject_user_id,fr.reject_time
+    from feedback f left join feedback_rejected fr on f.id = fr.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 3
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and f.priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and f.type = #{type}
+      </if>
+    </where>
+    order by fr.reject_time desc
+  </select>
+
+
+  <!--学管端获取驳回需求-->
+  <select id="selectDemandRejectedPageByCoach" resultMap="demandRejectedMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select f.*,fr.reject_user_id,fr.reject_time
+    from feedback f left join feedback_rejected fr on f.id = fr.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 3
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and f.origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and f.priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and f.type = #{reqDTO.type}
+      </if>
+    </where>
+    order by fr.reject_time desc
+  </select>
+
+  <select id="selectDemandRejectedListByCoach" resultMap="demandRejectedMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select f.*,fr.reject_user_id,fr.reject_time
+    from feedback f left join feedback_rejected fr on f.id = fr.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 3
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and f.origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and f.priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and f.type = #{reqDTO.type}
+      </if>
+    </where>
+    order by fr.reject_time desc
+  </select>
+
+
+  <!-- 获取驳回人姓名 -->
+  <select id="selectUserNameByUserId" resultType="java.lang.String">
+    select user.name from user where id = #{userId}
+  </select>
+
+  <!-- 获取排队需求列表 -->
+  <select id="selectDemandQueuedPage" resultMap="demandQueuedMap">
+    select f.*,fq.agree_time
+    from feedback f left join feedback_queue fq on f.id = fq.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 4
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and f.priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and f.type = #{type}
+      </if>
+    </where>
+    order by fq.agree_time desc
+  </select>
+
+  <select id="selectDemandQueuedList" resultMap="demandQueuedMap">
+    select f.*,fq.agree_time
+    from feedback f left join feedback_queue fq on f.id = fq.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 4
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and f.priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and f.type = #{type}
+      </if>
+    </where>
+    order by fq.agree_time desc
+  </select>
+
+
+  <!--学管端查询排队需求-->
+  <select id="selectDemandQueuedPageByCoach" resultMap="demandQueuedMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select f.*,fq.agree_time
+    from feedback f left join feedback_queue fq on f.id = fq.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 4
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and f.origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and f.priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and f.type = #{reqDTO.type}
+      </if>
+    </where>
+    order by fq.agree_time desc
+  </select>
+
+  <select id="selectDemandQueuedListByCoach" resultMap="demandQueuedMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select f.*,fq.agree_time
+    from feedback f left join feedback_queue fq on f.id = fq.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 4
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and f.origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and f.priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and f.type = #{reqDTO.type}
+      </if>
+    </where>
+    order by fq.agree_time desc
+  </select>
+
+
+  <!-- 获取完成需求列表 -->
+  <select id="selectDemandCompletedPage" resultMap="demandCompletedMap">
+    select f.*,fq.agree_time,group_concat(u.name separator ',') users
+    from feedback f
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
+    LEFT JOIN task t on fpt.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    left join feedback_queue fq on f.id = fq.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 2
+      <if test="beginTime != null">
+        <![CDATA[ AND  f.online_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="endTime != null">
+        <![CDATA[ AND  f.online_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="chargeMan != null">
+        and u.id = #{chargeMan}
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+  </select>
+
+  <!--学管端查询已完成需求-->
+  <select id="selectDemandCompletedPageByCoach" resultMap="demandCompletedMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select * from (
+    select f.*,fq.agree_time,group_concat(u.name separator ',') users
+    from feedback f
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
+    LEFT JOIN task t on fpt.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    left join feedback_queue fq on f.id = fq.demand_id
+    <where>
+      f.is_delete = 0 and
+      f.status = 2
+      <if test="reqDTO.beginTime != null">
+        <![CDATA[ AND  f.online_time >= #{reqDTO.beginTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="reqDTO.endTime != null">
+        <![CDATA[ AND  f.online_time <= #{reqDTO.endTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and f.origin like "%"#{reqDTO.origin}"%"
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+    ) t
+    <if test="reqDTO.chargeMan != null and reqDTO.chargeMan != ''">
+      where users like "%"#{reqDTO.chargeMan}"%"
+    </if>
+  </select>
+
+  <!--获取我开发的需求-->
+  <select id="selectDemandDevelopPage" resultMap="demandJoinedMap">
+    select distinct f.id,f.origin,f.title,f.status,f.likes_num,group_concat(distinct u.name separator ',') users
+    from feedback f
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
+    LEFT JOIN task t on fpt.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    left join task_user tu on t.id = tu.task_id
+    <where>
+      f.is_delete = 0
+      and tu.user_id = #{user}
+      <if test="beginTime != null">
+        <![CDATA[ AND  f.online_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="endTime != null">
+        <![CDATA[ AND  f.online_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="chargeMan != null">
+        and u.id = #{chargeMan}
+      </if>
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+  </select>
+
+  <!--提出的需求-->
+  <select id="selectDemandCreatePage" resultMap="demandJoinedMap">
+    select distinct f.id,f.origin,f.title,f.status,f.likes_num,group_concat(distinct u.name separator ',') users
+    from feedback f
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
+    LEFT JOIN task t on fpt.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    left join task_user tu on t.id = tu.task_id
+    <where>
+      f.is_delete = 0
+      and f.create_by = #{user}
+      <if test="beginTime != null">
+        <![CDATA[ AND  f.online_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="endTime != null">
+        <![CDATA[ AND  f.online_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="chargeMan != null">
+        and u.id = #{chargeMan}
+      </if>
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+  </select>
+
+  <!-- 获取进行中需求列表 -->
+  <select id="selectDemandRunningPage" resultMap="demandRunningMap">
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    from feedback f
+    left join feedback_queue fq on f.id = fq.demand_id
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
+    LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    <where>
+      f.is_delete = 0 and
+      f.status = 1
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and f.priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and f.type = #{type}
+      </if>
+      <if test="chargeMan != null">
+        and u.id = #{chargeMan}
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+  </select>
+
+  <select id="selectDemandRunningList" resultMap="demandRunningMap">
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    from feedback f
+    left join feedback_queue fq on f.id = fq.demand_id
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
+    LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    <where>
+      f.is_delete = 0 and
+      f.status = 1
+      <if test="origin != null and origin != ''">
+        and f.origin = #{origin}
+      </if>
+      <if test="priority != null and priority != -1">
+        and f.priority = #{priority}
+      </if>
+      <if test="type != null and type != -1">
+        and f.type = #{type}
+      </if>
+      <if test="chargeMan != null">
+        and u.id = #{chargeMan}
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+  </select>
+
+  <!--学管端查询进行中需求-->
+  <select id="selectDemandRunningPageByCoach" resultMap="demandRunningMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select * from (
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    from feedback f
+    left join feedback_queue fq on f.id = fq.demand_id
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
+    LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    <where>
+      f.is_delete = 0 and
+      f.status = 1
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and f.origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and f.priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and f.type = #{reqDTO.type}
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+    ) t
+    <if test="reqDTO.chargeMan != null and reqDTO.chargeMan != ''">
+      where users like "%"#{reqDTO.chargeMan}"%"
+    </if>
+  </select>
+
+  <select id="selectDemandRunningListByCoach" resultMap="demandRunningMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select * from (
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    from feedback f
+    left join feedback_queue fq on f.id = fq.demand_id
+    LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
+    LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
+    LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
+    LEFT JOIN user u on t.create_by = u.id
+    <where>
+      f.is_delete = 0 and
+      f.status = 1
+      <if test="reqDTO.origin != null and reqDTO.origin != ''">
+        and f.origin like "%"#{reqDTO.origin}"%"
+      </if>
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and f.priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and f.type = #{reqDTO.type}
+      </if>
+    </where>
+    GROUP BY f.id
+    ORDER BY f.feedback_time DESC
+    ) t
+    <if test="reqDTO.chargeMan != null and reqDTO.chargeMan != ''">
+      where users like "%"#{reqDTO.chargeMan}"%"
+    </if>
+  </select>
+
+
+  <select id="selectChargeManByTaskId" resultType="java.lang.String">
+    select u.name from user u
+    left join task t on u.id = t.create_by
+    where t.is_delete = 0 and t.id = #{taskId}
+  </select>
+
+  <!-- 获取需求详情 -->
+  <select id="selectDemandDetail" resultMap="demandDetailMap">
+    select `id`,`title`,`origin`,`type`,`feedback_time`,`create_time`,`release_time`,`likes_num`,`question`,`target`
+    from feedback where status = #{status} and id = #{demandId}
+  </select>
+
+  <!-- 查询点赞人 -->
+  <select id="selectLikesPeople" resultType="java.lang.String">
+    select like_people from feedback_likes where feedback_id = #{demandId}
+  </select>
+
+  <!--查询已读人-->
+  <select id="selectReadPeople" resultType="java.lang.String">
+    select read_people from feedback_read where feedback_id = #{demandId}
+  </select>
+
+  <!--获取需求回复详情-->
+  <select id="selectDemandReply" resultMap="replyMap">
+    SELECT * from feedback_reply where feedback_id = #{demandId}
+  </select>
+
+  <!--获取需求回复数-->
+  <select id="selectReplyNum" resultType="java.lang.Integer">
+    select count(*) from feedback_reply where feedback_id = #{id}
+  </select>
+
+  <select id="selectIntroducerList" resultMap="introducerMap">
+    select distinct u.id,u.name from user u
+    left join feedback f on u.id = f.create_by
+    where f.is_delete = 0 and u.is_delete = 0 and u.status = 0
+  </select>
+
+  <select id="selectDemandById" resultMap="basicDemandMap">
+    select * from feedback where id = #{id}
+  </select>
+
+  <!--查看是否已读-->
+  <select id="selectIsRead" resultType="java.lang.Long">
+    select id from feedback_read where feedback_id = #{demandId} and user_id = #{userId}
+  </select>
+
+  <!--查看学管是否读取需求-->
+  <select id="selectIsReadByCoach" resultType="java.lang.Long">
+    select id from feedback_read where feedback_id = #{demandId} and coach_id = #{coachId}
+  </select>
+
+  <!--查看需求是否已点赞-->
+  <select id="selectIsLike" resultType="java.lang.Integer">
+    select count(1) from feedback_likes where feedback_id = #{demandId} and user_id = #{userId}
+  </select>
+
+  <!--查看学管是否点赞需求-->
+  <select id="selectIsLikeByCoach" resultType="java.lang.Integer">
+    select count(1) from feedback_likes where feedback_id = #{demandId} and coach_id = #{coachId}
+  </select>
+
+  <!--获取需求所属项目-->
+  <select id="selectProjectId" resultType="java.lang.Long">
+    select project_id from feedback where is_delete = 0 and id = #{demandId}
+  </select>
+
+  <!--需求是否已采纳-->
+  <select id="selectIsAgree" resultType="java.lang.Integer">
+    select count(1) from feedback_queue where demand_id = #{demandId}
+  </select>
+
+  <!--需求是否已驳回-->
+  <select id="isReject" resultType="java.lang.Integer">
+    select count(1) from feedback_rejected where demand_id = #{demandId};
+  </select>
+
+  <!--获取需求附件-->
+  <select id="selectUrlsById" resultType="java.lang.String">
+    select url from feedback_accessory where feedback_id = #{demandId}
+  </select>
+
+  <!--根据feedback_id查询task-->
+  <select id="selectTasks" resultType="java.lang.Long">
+    SELECT t.task_id FROM feedback_plan_task t
+    JOIN feedback_plan p on p.id = t.feedback_plan_id
+    JOIN task ts ON t.task_id = ts.id
+    WHERE p.feedback_id = #{id}
+    ORDER BY ts.create_time ASC
+  </select>
+
+  <select id="selectEndTasks" resultType="java.lang.Long">
+    SELECT t.task_id FROM feedback_plan_task t
+    JOIN feedback_plan p on p.id = t.feedback_plan_id
+    JOIN task ts ON t.task_id = ts.id
+    WHERE p.feedback_id = #{id}
+    ORDER BY ts.end_time DESC
+  </select>
+
+  <!--需求是否上线-->
+  <select id="selectOnlineTime" resultType="java.util.Date">
+    select online_time from feedback where id = #{demandId};
+  </select>
+
+  <!--查询需求提出人-->
+  <select id="selectUserById" resultType="java.lang.String">
+    select u.name from user u left join feedback f on u.id = f.create_by where f.id = #{id}
+  </select>
+
+  <!--获取需求点赞数-->
+  <select id="selectLikesNumById" resultType="java.lang.Integer">
+    select likes_num from feedback where id = #{id}
+  </select>
+
+
 </mapper>

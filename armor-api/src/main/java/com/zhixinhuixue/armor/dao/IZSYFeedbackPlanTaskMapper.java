@@ -3,7 +3,9 @@ package com.zhixinhuixue.armor.dao;
 import com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
+import java.util.logging.LoggingMXBean;
 
 public interface IZSYFeedbackPlanTaskMapper {
 
@@ -21,6 +23,8 @@ public interface IZSYFeedbackPlanTaskMapper {
      */
     List<Long> getTaskId(Long feedbackPlanId);
 
+    List<Long> getTaskId1(Long feedbackPlanId);
+
     /**
      * 删除任务
      * @param taskId
@@ -34,4 +38,63 @@ public interface IZSYFeedbackPlanTaskMapper {
      * @return
      */
     int getTaskCount(@Param("feedbackPlanId") Long feedbackPlanId,@Param("taskId") Long taskId);
+
+    /**
+     * 根据planId获取任务数
+     * @param planId
+     * @return
+     */
+    Integer getTaskNum(@Param("planId") Long planId);
+
+    /**
+     * 根据taskId获取任务人数
+     * @param taskId
+     * @return
+     */
+    List<Long> selectPersonByTaskId(@Param("taskId") Long taskId);
+
+    /**
+     * 根据taskId获取任务开始时间
+     * @param taskId
+     * @return
+     */
+    Date selectBeginTime(@Param("taskId")Long taskId);
+
+
+
+    /**
+     *
+     * @param planId
+     * @return
+     */
+
+    List<Long> getTaskIdByPlanId(@Param("planId") Long planId);
+
+    /**
+     * 获取最早开始的任务
+     * @param planId
+     * @return
+     */
+    Long getFirstTask(Long planId);
+
+    /**
+     * 获取最早创建的任务
+     * @param planId
+     * @return
+     */
+    Long selectFirstCreateTask(Long planId);
+
+    /**
+     * 获取最后完成的任务
+     * @param planId
+     * @return
+     */
+    Long getLastTaskId(Long planId);
+
+    /**
+     * 获取最后完成任务的时间
+     * @param lastTaskId
+     * @return
+     */
+    Date selectEndTime(Long lastTaskId);
 }

@@ -4,7 +4,7 @@ import Index from '@/components/Index'
 import Login from '@/components/Login'
 import Task from '@/components/Task'
 import Project from '@/components/Project'
-import Demand from '@/components/Demand'
+import Demand from '@/components/Demand3'
 import Intergral from '@/components/Intergral'
 import Organization from '@/components/Organization'
 import NavIndex from '@/components/NavIndex'
@@ -12,7 +12,8 @@ import IntegralHistory from '@/components/IntegralHistory'
 import Stats from '@/components/Stats'
 import UserComments from '@/components/UserComments'
 import Calculate from '@/components/Calculate'
-import Plan from '@/components/Plan'
+import Plan from '@/components/Plan2'
+import demandDetail from '@/components/demandDetail'
 
 
 Vue.use(Router)
@@ -85,6 +86,10 @@ export default new Router({
                 {
                     path: 'calculate',
                     component: Calculate
+                },
+                {
+                    path: 'demandDetail',
+                    component: demandDetail
                 }
             ]
         }
