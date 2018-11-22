@@ -1167,19 +1167,17 @@
                     if (this.project){
                         this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
                         this.proReqDTO.projectId = String(this.project)
+                        http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
+                            this.$message({
+                                showClose: true,
+                                message: '项目添加成功',
+                                type: 'success'
+                            });
+                            this.planVisible = false
+                            this.projectVisible = false
+                            this.fetchQueueDemandList()
+                        })
                     }
-                    http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
-                        this.$message({
-                            showClose: true,
-                            message: '项目添加成功',
-                            type: 'success'
-                        });
-                        this.planVisible = false
-                        this.projectVisible = false
-                        this.fetchQueueDemandList()
-                    })
-
-
             },
 
 
@@ -1373,14 +1371,27 @@
 
             //保存计划
             savePlan(num){
-                if (this.project == null || this.project == ''){
-                    this.$message({
-                        showClose: true,
-                        message: '请选择项目',
-                        type: 'warning'
-                    });
-                    return false;
+                if (num == 4){
+                    if (this.project == null || this.project == ''){
+                        this.$message({
+                            showClose: true,
+                            message: '请选择项目',
+                            type: 'warning'
+                        });
+                        return false;
+                    }
                 }
+                if (num == 1){
+                    if (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId == ''){
+                        this.$message({
+                            showClose: true,
+                            message: '请选择项目',
+                            type: 'warning'
+                        });
+                        return false;
+                    }
+                }
+
                 this.updateDemandProject()
                 this.isSaving = true
                 if (this.feedbackPlanForm.expectStartTime == '') {
