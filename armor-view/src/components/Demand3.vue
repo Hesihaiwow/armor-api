@@ -724,7 +724,7 @@
                                    :value="item.id"></el-option>
                     </el-select>
                 </div>
-                <el-button type="primary" size="small" @click="updateDemandProject">添加项目</el-button>
+                <!--<el-button type="primary" size="small" @click="updateDemandProject">添加项目</el-button>-->
             </div>
             <div class="ctpc-list clearfix" v-else>
                 <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
@@ -1164,28 +1164,22 @@
             },
             //添加项目
             updateDemandProject(){
-                if (this.project == null || this.project == ''){
-                    this.$message({
-                        showClose: true,
-                        message: '请选择项目',
-                        type: 'warning'
-                    });
-                    return false;
-                }
-                if (this.project){
-                    this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
-                    this.proReqDTO.projectId = String(this.project)
-                }
-                http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
-                    this.$message({
-                        showClose: true,
-                        message: '项目添加成功',
-                        type: 'success'
-                    });
-                    this.planVisible = false
-                    this.projectVisible = false
-                    this.fetchQueueDemandList()
-                })
+                    if (this.project){
+                        this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
+                        this.proReqDTO.projectId = String(this.project)
+                    }
+                    http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
+                        this.$message({
+                            showClose: true,
+                            message: '项目添加成功',
+                            type: 'success'
+                        });
+                        this.planVisible = false
+                        this.projectVisible = false
+                        this.fetchQueueDemandList()
+                    })
+
+
             },
 
 
@@ -1379,6 +1373,15 @@
 
             //保存计划
             savePlan(num){
+                if (this.project == null || this.project == ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请选择项目',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+                this.updateDemandProject()
                 this.isSaving = true
                 if (this.feedbackPlanForm.expectStartTime == '') {
                     this.warnMsg("请选择预计开始时间");
