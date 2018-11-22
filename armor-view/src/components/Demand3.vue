@@ -1164,6 +1164,14 @@
             },
             //添加项目
             updateDemandProject(){
+                if (this.project == null || this.project == ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请选择项目',
+                        type: 'warning'
+                    });
+                    return false;
+                }
                 if (this.project){
                     this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
                     this.proReqDTO.projectId = String(this.project)
