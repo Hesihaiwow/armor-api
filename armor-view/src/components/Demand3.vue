@@ -78,7 +78,7 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column  label="状态" align="center" >
+                        <el-table-column  label="状态" align="center" fixed="right">
                             <template scope="scope">
                                 <div type="text" v-for="item in readStatuses" v-if="item.id == scope.row.readStatus">{{item.name}}</div>
                             </template>
@@ -608,7 +608,7 @@
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="来源" prop="origin">
+                <el-form-item label="提出人" prop="origin">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="问题:" prop="question">
@@ -686,7 +686,7 @@
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="来源" prop="origin">
+                <el-form-item label="提出人" prop="origin">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="问题:" prop="question">
