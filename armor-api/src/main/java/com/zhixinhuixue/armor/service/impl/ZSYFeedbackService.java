@@ -8,7 +8,9 @@ import com.sun.mail.util.BEncoderStream;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
+import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
@@ -16,14 +18,21 @@ import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYFeedbackService;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.ZSYQinuOssProperty;
 import com.zhixinhuixue.armor.source.enums.*;
 import io.swagger.models.auth.In;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -56,6 +65,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     @Autowired
     private IZSYTaskUserMapper taskUserMapper;
 
+    @Autowired
+    private ZSYQinuOssProperty qinuOssProperty;
 
     /**
      * 需求列表
@@ -1525,6 +1536,135 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
     }
 
+    /**
+     * 新需求导出Excel
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public String newDemandExcel(DemandQueryReqDTO reqDTO) {
+        List<DemandBO> demandBOList = feedbackMapper.selectDemandListByReqDTO(reqDTO);
+        List<DemandResDTO> demandResDTOList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(demandBOList)){
+            BeanUtils.copyProperties(demandBOList,demandResDTOList);
+            demandBOList.stream().forEach(demandBO -> {
+                DemandResDTO demandResDTO = new DemandResDTO();
+                BeanUtils.copyProperties(demandBO,demandResDTO);
+                //设置当前登录人对需求是否已读
+                if (feedbackMapper.selectIsRead(demandBO.getId(),ZSYTokenRequestContext.get().getUserId()) != null){
+                    demandResDTO.setReadStatus(1);
+                }else {
+                    demandResDTO.setReadStatus(0);
+                }
+                demandResDTOList.add(demandResDTO);
+            });
+        }
+
+        //过滤是否已读
+        List<DemandResDTO> filterList = Lists.newArrayList();
+        if (reqDTO.getReadStatus() != null && reqDTO.getReadStatus() != -1){
+            filterList.addAll(demandResDTOList.stream().filter(demandResDTO -> demandResDTO.getReadStatus() == reqDTO.getReadStatus()).collect(Collectors.toList()));
+            return getDemandNewExcel(filterList);
+        }
+        return getDemandNewExcel(demandResDTOList);
+
+    }
+
+    //导出新需求Excel
+    private String getDemandNewExcel(List<DemandResDTO> demandResDTOList) {
+        //设置表头
+        List<String> headers = new ArrayList<>();
+        headers.add("需求标题");
+        headers.add("类型");
+        headers.add("优先级");
+        headers.add("提出人");
+        headers.add("提出日期");
+        headers.add("期待上线日期");
+        headers.add("点赞数");
+        headers.add("状态");
+
+        //设置文件名
+        String fileName = "新需求" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+             HSSFWorkbook workbook = new HSSFWorkbook()){
+            //创建sheet
+            HSSFSheet sheet = workbook.createSheet("新需求");
+            //设置列宽
+            sheet.setDefaultColumnWidth(25);
+            //创建行
+            HSSFRow row = sheet.createRow(0);
+            //创建样式
+            HSSFCellStyle style = workbook.createCellStyle();
+            //设置样式
+            style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+            style.setAlignment(HorizontalAlignment.CENTER_SELECTION);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            //创建字体
+            HSSFFont font = workbook.createFont();
+            //设置字体
+            font.setFontHeightInPoints((short) 15);
+            font.setBold(true);
+            font.setFontName("微软雅黑");
+            style.setFont(font);
+            HSSFCell cell = null;
+            //创建标题
+            for (int i = 0; i < headers.size(); i++) {
+                cell = row.createCell(i);
+                cell.setCellValue(headers.get(i));
+                cell.setCellStyle(style);
+            }
+            int num = 0;
+            //创建内容
+            for (int i = 0; i < demandResDTOList.size(); i++) {
+                row = sheet.createRow(num + 1);
+                row.setRowStyle(style);
+                row.createCell(0).setCellValue(demandResDTOList.get(i).getTitle());
+                //设置类型
+                if (demandResDTOList.get(i).getType() != null){
+                    if (demandResDTOList.get(i).getType() == 0){
+                        row.createCell(1).setCellValue("个人建议");
+                    }else if (demandResDTOList.get(i).getType() == 1){
+                        row.createCell(1).setCellValue("市场反馈");
+                    }else {
+                        row.createCell(1).setCellValue("公司建议");
+                    }
+                }else {
+                    row.createCell(1).setCellValue("无");
+                }
+                //设置优先级
+                if (demandResDTOList.get(i).getPriority() != null){
+                    if (demandResDTOList.get(i).getPriority() == 0){
+                        row.createCell(2).setCellValue("普通");
+                    }else if (demandResDTOList.get(i).getPriority() == 1){
+                        row.createCell(2).setCellValue("紧急");
+                    }else {
+                        row.createCell(2).setCellValue("非常紧急");
+                    }
+                }else {
+                    row.createCell(2).setCellValue("无");
+                }
+                row.createCell(3).setCellValue(demandResDTOList.get(i).getOrigin());
+                row.createCell(4).setCellValue(DateHelper.dateFormatter(demandResDTOList.get(i).getFeedbackTime(),"yyyy-MM-dd"));
+                if (demandResDTOList.get(i).getReleaseTime() != null){
+                    row.createCell(5).setCellValue(DateHelper.dateFormatter(demandResDTOList.get(i).getReleaseTime(),"yyyy-MM-dd"));
+                }else {
+                    row.createCell(5).setCellValue("无");
+                }
+                row.createCell(6).setCellValue(demandResDTOList.get(i).getLikesNum());
+                if (demandResDTOList.get(i).getReadStatus() == 1){
+                    row.createCell(7).setCellValue("已读");
+                }else {
+                    row.createCell(7).setCellValue("未读");
+                }
+                num++;
+            }
+            workbook.write(os);
+            return ZSYQinuHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel", qinuOssProperty);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new ZSYServiceException("导出表失败");
+        }
+    }
 
 
 }

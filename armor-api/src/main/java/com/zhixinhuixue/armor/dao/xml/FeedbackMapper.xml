@@ -1030,5 +1030,24 @@
     select likes_num from feedback where id = #{id}
   </select>
 
+  <!--新需求导出Excel-->
+  <select id="selectDemandListByReqDTO" resultMap="demandMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
+    select * from feedback
+    <where>
+      status = 0
+      and is_delete = 0
+      <if test="reqDTO.priority != null and reqDTO.priority != -1">
+        and priority = #{reqDTO.priority}
+      </if>
+      <if test="reqDTO.type != null and reqDTO.type != -1">
+        and type = #{reqDTO.type}
+      </if>
+      <if test="reqDTO.origin != null and reqDTO.origin != '' ">
+        and origin like "%"#{reqDTO.origin}"%"
+      </if>
+    </where>
+    order by feedback_time desc
+  </select>
+
 
 </mapper>

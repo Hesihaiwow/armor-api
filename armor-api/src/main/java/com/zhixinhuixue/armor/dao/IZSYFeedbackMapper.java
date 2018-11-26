@@ -515,4 +515,10 @@ public interface IZSYFeedbackMapper {
      */
     Integer selectLikesNumById(Long id);
 
+    /**
+     * 新需求导出Excel
+     * @param reqDTO
+     * @return
+     */
+    List<DemandBO> selectDemandListByReqDTO(@Param("reqDTO")DemandQueryReqDTO reqDTO);
 }

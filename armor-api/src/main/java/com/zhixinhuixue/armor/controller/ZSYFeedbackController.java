@@ -48,6 +48,15 @@ public class ZSYFeedbackController extends ZSYController{
     }
 
     /**
+     * 新需求导出Excel
+     */
+    @ApiOperation("新需求导出Excel")
+    @PostMapping(value = "/demand-new/list/excel")
+    public String newDemandExcel(@RequestBody DemandQueryReqDTO reqDTO){
+        return ZSYResult.success().data(feedbackService.newDemandExcel(reqDTO)).build();
+    }
+
+    /**
      * 获取驳回需求列表
      * @param reqDTO
      * @return
