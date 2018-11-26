@@ -659,7 +659,7 @@
         </el-dialog>
         <el-dialog :visible.sync="editDemandVisible" title="编辑需求" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false" @close="closeDialog('demandForm')">
-            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="100px">
+            <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px">
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
@@ -699,16 +699,15 @@
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <!--<el-form-item label="期待上线日期:" prop="releaseTime">-->
-                    <!--<el-date-picker-->
-                            <!--v-model="demandForm.releaseTime"-->
-                            <!--type="date"-->
-                            <!--placeholder="选择日期时间"-->
-                            <!--format="yyyy-MM-dd"-->
-                            <!--value-format="yyyy-MM-dd HH:mm:ss"-->
-                    <!--&gt;-->
-                    <!--</el-date-picker>-->
-                <!--</el-form-item>-->
+                <el-form-item label="期待上线日期:" prop="releaseTime">
+                    <el-date-picker
+                            v-model="demandForm.releaseTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            placeholder="选择期待上线日期">
+                    </el-date-picker>
+                </el-form-item>
                 <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px;">
                     <el-button @click="saveEdit('demandForm')" type="primary" :loading="isSaving">保存</el-button>
                 </div>
@@ -1165,8 +1164,11 @@
             //添加项目
             updateDemandProject(){
                     if (this.project){
+                        console.log(this.project+"aaaa")
                         this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
                         this.proReqDTO.projectId = String(this.project)
+                        this.feedbackPlanForm.projectId = this.project
+                        console.log(this.feedbackPlanForm.projectId+"bbbb")
                         http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
                             this.$message({
                                 showClose: true,
@@ -1176,7 +1178,9 @@
                             this.planVisible = false
                             this.projectVisible = false
                             this.fetchQueueDemandList()
+
                         })
+                        this.project = null
                     }
             },
 
@@ -1372,7 +1376,7 @@
             //保存计划
             savePlan(num){
                 if (num == 4){
-                    if (this.project == null || this.project == ''){
+                    if ((this.project == null || this.project == '') && (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId == '' || this.feedbackPlanForm.projectId == 0) ){
                         this.$message({
                             showClose: true,
                             message: '请选择项目',
@@ -1382,7 +1386,7 @@
                     }
                 }
                 if (num == 1){
-                    if (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId == ''){
+                    if (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId == '' || this.feedbackPlanForm.projectId == 0){
                         this.$message({
                             showClose: true,
                             message: '请选择项目',
@@ -1405,6 +1409,10 @@
                     return;
                 }
                 let param = this.feedbackPlanForm;
+                // if (this.project){
+                //     param.projectId = this.project
+                // }
+                console.log(this.feedbackPlanForm.projectId+"cccc")
                 param.expectOfficialTime = moment(param.expectOfficialTime).format('YYYY-MM-DD 23:59:59');
                 param.expectStartTime = moment(param.expectStartTime).format('YYYY-MM-DD 00:00:00');
                 param['planTask'] = this.planTask;
@@ -1483,10 +1491,12 @@
                     if (res.data.projectId == 0 || res.data.projectId == null){
                         //此时没有添加项目
                         this.projectVisible = true
+                    }else {
+                        this.feedbackPlanForm.projectId = res.data.projectId
+                        console.log(this.feedbackPlanForm.projectId+"jjjjj")
                     }
                 })
                 this.feedbackPlanForm.feedbackId = feedback.id
-                this.feedbackPlanForm.projectId = feedback.projectId
                 this.demandForm.projectId =feedback.projectId
                 this.demandForm.priority =feedback.priority
                 this.demandForm.status = feedback.status
@@ -1780,9 +1790,8 @@
                             this.$message({ showClose: true,message: '需求修改成功',type: 'success'});
                             this.$refs[formName].resetFields();
                             this.editDemandVisible = false
-                            if (this.demandForm.status == 0){
-                                this.fetchNewDemandList()
-                            }
+                            this.fetchNewDemandList()
+
                             this.isSaving =false
                     })
                     }
