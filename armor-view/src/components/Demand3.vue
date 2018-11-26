@@ -35,6 +35,7 @@
                             </div>
                             <el-button type="primary" size="small" @click="select0">查询</el-button>
                             <el-button type="primary" size="small" @click="newDemandVisible=true,clearDemandForm()" v-show="permit">提需求</el-button>
+                            <el-button type="primary" size="small" @click="export0">导出</el-button>
                         </div>
                     </div>
                     <el-table :data="demandData" border>
@@ -1601,6 +1602,27 @@
                 }
 
                 this.fetchNewDemandList()
+            },
+            //导出新需求
+            export0(){
+              this.clearReqDTO()
+                if (this.priority != undefined && this.priority != null){
+                    this.reqDTO.priority = this.priority
+                }
+                if(this.readStatus != undefined && this.priority != null){
+                    this.reqDTO.readStatus = this.readStatus
+                }
+                if(this.origin){
+                    this.reqDTO.origin = this.origin
+                }
+                if (this.type != undefined && this.priority != null){
+                    this.reqDTO.type = this.type
+                }
+                http.zsyPostHttp('feedback/demand-new/list/excel',this.reqDTO,(res) =>{
+                    if (res.data){
+                        window.open(res.data)
+                    }
+                })
             },
             //条件查询进行中需求
             select1(){
