@@ -29,6 +29,36 @@ public class DemandQueryReqDTO {
     private Date endTime;
     @ApiModelProperty("排序(0:提出日期升序,1:提出日期升序降序,2:期待上线日期升序,3:期待上线日期升序降序,4:点赞数升序,5:点赞数升序降序)")
     private Integer sort;
+    @ApiModelProperty("是否由学管提出")
+    private Integer fromCoach;
+    @ApiModelProperty("提出时间(开始)")
+    private Date fbTimeStart;
+    @ApiModelProperty("提出时间(结束)")
+    private Date fbTimeEnd;
+
+    public Date getFbTimeEnd() {
+        return fbTimeEnd;
+    }
+
+    public void setFbTimeEnd(Date fbTimeEnd) {
+        this.fbTimeEnd = fbTimeEnd;
+    }
+
+    public Date getFbTimeStart() {
+        return fbTimeStart;
+    }
+
+    public void setFbTimeStart(Date fbTimeStart) {
+        this.fbTimeStart = fbTimeStart;
+    }
+
+    public Integer getFromCoach() {
+        return fromCoach;
+    }
+
+    public void setFromCoach(Integer fromCoach) {
+        this.fromCoach = fromCoach;
+    }
 
     public Integer getSort() {
         return sort;

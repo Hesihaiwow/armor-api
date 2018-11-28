@@ -63,6 +63,7 @@
     <result column="question" property="question" jdbcType="VARCHAR"></result>
     <result column="type" property="type" jdbcType="INTEGER"></result>
     <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
+    <result column="from_coach" property="fromCoach" jdbcType="INTEGER"></result>
   </resultMap>
 
   <resultMap id="demandRejectedMap" type="com.zhixinhuixue.armor.model.bo.DemandRejectedBO" extends="demandMap">
@@ -179,21 +180,21 @@
   <!--新增需求-->
   <insert id="insertDemand" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
     insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,create_by,create_time,
-    is_delete,update_time,target,release_time,question,`type`)
+    is_delete,update_time,target,release_time,question,`type`,from_coach)
     values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
     ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
     ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
-    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER});
+    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{fromCoach,jdbcType=INTEGER});
   </insert>
 
   <!--学管端新增需求-->
   <insert id="insertDemandByCoach" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
     insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,coach_id,create_time,
-    is_delete,update_time,target,release_time,question,`type`)
+    is_delete,update_time,target,release_time,question,`type`,from_coach)
     values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
     ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{coachId,jdbcType=INTEGER}
     ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
-    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER});
+    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{fromCoach,jdbcType=INTEGER});
   </insert>
 
   <!--新增已读-->
@@ -411,6 +412,15 @@
       <if test="type != null and type != -1">
         and type = #{type}
       </if>
+      <if test="fromCoach != null">
+        and from_coach = #{fromCoach}
+      </if>
+      <if test="fbTimeStart != null">
+        <![CDATA[ AND  feedback_time >= #{fbTimeStart,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="fbTimeEnd != null">
+        <![CDATA[ AND  feedback_time <= #{fbTimeEnd,jdbcType=TIMESTAMP}]]>
+      </if>
     </where>
     order by create_time desc
   </select>
@@ -428,6 +438,15 @@
       </if>
       <if test="type != null and type != -1">
         and f.type = #{type}
+      </if>
+      <if test="fromCoach != null">
+        and from_coach = #{fromCoach}
+      </if>
+      <if test="fbTimeStart != null">
+        <![CDATA[ AND  feedback_time >= #{fbTimeStart,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="fbTimeEnd != null">
+        <![CDATA[ AND  feedback_time <= #{fbTimeEnd,jdbcType=TIMESTAMP}]]>
       </if>
     </where>
     order by create_time desc

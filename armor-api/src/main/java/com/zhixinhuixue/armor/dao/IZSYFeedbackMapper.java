@@ -49,12 +49,11 @@ public interface IZSYFeedbackMapper {
      * 获取新需求反馈列表
      * @param origin
      * @param priority
-     * @param readStatus
      * @param type
      * @return
      */
-    Page<DemandBO> selectDemandPage(@Param("userId")Long userId,@Param("origin") String origin, @Param("priority")Integer priority,
-                                 @Param("readStatus")Integer readStatus, @Param("type")Integer type);
+    Page<DemandBO> selectDemandPage(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type
+            ,@Param("fromCoach")Integer fromCoach,@Param("fbTimeStart")Date fbTimeStart,@Param("fbTimeEnd")Date fbTimeEnd);
 
     /**
      * 获取驳回需求反馈列表
@@ -505,7 +504,8 @@ public interface IZSYFeedbackMapper {
      * @param type
      * @return
      */
-    List<DemandBO> selectDemandList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
+    List<DemandBO> selectDemandList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type
+            ,@Param("fromCoach")Integer fromCoach,@Param("fbTimeStart")Date fbTimeStart,@Param("fbTimeEnd")Date fbTimeEnd);
 
 
     /**

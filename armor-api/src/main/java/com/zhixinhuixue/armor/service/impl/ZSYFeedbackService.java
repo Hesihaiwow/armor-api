@@ -113,7 +113,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     public ArmorPageInfo<DemandResDTO> getDemandList(DemandQueryReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandBO> demandBOS = feedbackMapper.selectDemandPage(ZSYTokenRequestContext.get().getUserId(),reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getReadStatus(),reqDTO.getType());
+        Page<DemandBO> demandBOS = feedbackMapper.selectDemandPage(reqDTO.getOrigin(),reqDTO.getPriority()
+                ,reqDTO.getType(),reqDTO.getFromCoach(),reqDTO.getFbTimeStart(),reqDTO.getFbTimeEnd());
         Page<DemandResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandBOS)){
             BeanUtils.copyProperties(demandBOS,list);
@@ -133,7 +134,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         if (reqDTO.getReadStatus() != null && reqDTO.getReadStatus() != -1){
             List<DemandResDTO> demandResDTOS = new ArrayList<>();
             List<DemandResDTO> filterList = new ArrayList<>();
-            List<DemandBO> demandBOList = feedbackMapper.selectDemandList(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType());
+            List<DemandBO> demandBOList = feedbackMapper.selectDemandList(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType()
+                    ,reqDTO.getFromCoach(),reqDTO.getFbTimeStart(),reqDTO.getFbTimeEnd());
             if (!CollectionUtils.isEmpty(demandBOList)){
                 BeanUtils.copyProperties(demandBOList,demandResDTOS);
                 demandBOList.stream().forEach(demandBO -> {
@@ -1067,6 +1069,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setCreateTime(new Date());
         demand.setUpdateTime(new Date());
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        demand.setFromCoach(0);
         feedbackMapper.insertDemand(demand);
 
         if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
@@ -1331,6 +1334,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setCreateTime(new Date());
         demand.setUpdateTime(new Date());
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        demand.setFromCoach(1);
         feedbackMapper.insertDemandByCoach(demand);
 
         if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
