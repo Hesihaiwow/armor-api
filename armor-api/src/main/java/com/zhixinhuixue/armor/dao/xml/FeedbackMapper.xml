@@ -799,7 +799,7 @@
 
   <!-- 获取进行中需求列表 -->
   <select id="selectDemandRunningPage" resultMap="demandRunningMap">
-    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
@@ -827,7 +827,7 @@
   </select>
 
   <select id="selectDemandRunningList" resultMap="demandRunningMap">
-    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
@@ -857,7 +857,7 @@
   <!--学管端查询进行中需求-->
   <select id="selectDemandRunningPageByCoach" resultMap="demandRunningMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
     select * from (
-    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
@@ -887,7 +887,7 @@
 
   <select id="selectDemandRunningListByCoach" resultMap="demandRunningMap" parameterType="com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO">
     select * from (
-    select f.*,fq.agree_time,fp.expect_official_time,group_concat(u.name separator ',') users
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
