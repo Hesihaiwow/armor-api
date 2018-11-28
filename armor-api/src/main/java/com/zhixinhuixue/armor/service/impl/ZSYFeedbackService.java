@@ -1579,13 +1579,13 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         //设置表头
         List<String> headers = new ArrayList<>();
         headers.add("需求标题");
+        headers.add("来源");
         headers.add("类型");
         headers.add("优先级");
         headers.add("提出人");
         headers.add("提出日期");
         headers.add("期待上线日期");
         headers.add("点赞数");
-        headers.add("状态");
 
         //设置文件名
         String fileName = "新需求" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
@@ -1623,43 +1623,48 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 row = sheet.createRow(num + 1);
                 row.setRowStyle(style);
                 row.createCell(0).setCellValue(demandResDTOList.get(i).getTitle());
+                //设置来源(是否来自学管端)
+                if (demandResDTOList.get(i).getFromCoach() != null){
+                    if (demandResDTOList.get(i).getFromCoach() == 0){
+                        row.createCell(1).setCellValue("其他");
+                    }else {
+                        row.createCell(1).setCellValue("学管端");
+                    }
+                }else {
+                    row.createCell(1).setCellValue("学管端");
+                }
                 //设置类型
                 if (demandResDTOList.get(i).getType() != null){
                     if (demandResDTOList.get(i).getType() == 0){
-                        row.createCell(1).setCellValue("个人建议");
+                        row.createCell(2).setCellValue("个人建议");
                     }else if (demandResDTOList.get(i).getType() == 1){
-                        row.createCell(1).setCellValue("市场反馈");
+                        row.createCell(2).setCellValue("市场反馈");
                     }else {
-                        row.createCell(1).setCellValue("公司建议");
-                    }
-                }else {
-                    row.createCell(1).setCellValue("无");
-                }
-                //设置优先级
-                if (demandResDTOList.get(i).getPriority() != null){
-                    if (demandResDTOList.get(i).getPriority() == 0){
-                        row.createCell(2).setCellValue("普通");
-                    }else if (demandResDTOList.get(i).getPriority() == 1){
-                        row.createCell(2).setCellValue("紧急");
-                    }else {
-                        row.createCell(2).setCellValue("非常紧急");
+                        row.createCell(2).setCellValue("公司建议");
                     }
                 }else {
                     row.createCell(2).setCellValue("无");
                 }
-                row.createCell(3).setCellValue(demandResDTOList.get(i).getOrigin());
-                row.createCell(4).setCellValue(DateHelper.dateFormatter(demandResDTOList.get(i).getFeedbackTime(),"yyyy-MM-dd"));
+                //设置优先级
+                if (demandResDTOList.get(i).getPriority() != null){
+                    if (demandResDTOList.get(i).getPriority() == 0){
+                        row.createCell(3).setCellValue("普通");
+                    }else if (demandResDTOList.get(i).getPriority() == 1){
+                        row.createCell(3).setCellValue("紧急");
+                    }else {
+                        row.createCell(3).setCellValue("非常紧急");
+                    }
+                }else {
+                    row.createCell(3).setCellValue("无");
+                }
+                row.createCell(4).setCellValue(demandResDTOList.get(i).getOrigin());
+                row.createCell(5).setCellValue(DateHelper.dateFormatter(demandResDTOList.get(i).getFeedbackTime(),"yyyy-MM-dd"));
                 if (demandResDTOList.get(i).getReleaseTime() != null){
-                    row.createCell(5).setCellValue(DateHelper.dateFormatter(demandResDTOList.get(i).getReleaseTime(),"yyyy-MM-dd"));
+                    row.createCell(6).setCellValue(DateHelper.dateFormatter(demandResDTOList.get(i).getReleaseTime(),"yyyy-MM-dd"));
                 }else {
-                    row.createCell(5).setCellValue("无");
+                    row.createCell(6).setCellValue("无");
                 }
-                row.createCell(6).setCellValue(demandResDTOList.get(i).getLikesNum());
-                if (demandResDTOList.get(i).getReadStatus() == 1){
-                    row.createCell(7).setCellValue("已读");
-                }else {
-                    row.createCell(7).setCellValue("未读");
-                }
+                row.createCell(7).setCellValue(demandResDTOList.get(i).getLikesNum());
                 num++;
             }
             workbook.write(os);

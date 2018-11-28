@@ -1064,6 +1064,15 @@
       <if test="reqDTO.origin != null and reqDTO.origin != '' ">
         and origin like "%"#{reqDTO.origin}"%"
       </if>
+      <if test="reqDTO.fromCoach != null">
+        and from_coach = #{reqDTO.fromCoach}
+      </if>
+      <if test="reqDTO.fbTimeStart != null">
+        <![CDATA[ AND  feedback_time >= #{reqDTO.fbTimeStart,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="reqDTO.fbTimeEnd != null">
+        <![CDATA[ AND  feedback_time <= #{reqDTO.fbTimeEnd,jdbcType=TIMESTAMP}]]>
+      </if>
     </where>
     order by feedback_time desc
   </select>
