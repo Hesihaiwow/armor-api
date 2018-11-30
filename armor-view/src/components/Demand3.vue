@@ -1,7 +1,7 @@
 <template>
     <div class="demand-con" style="width: 1250px">
         <div>
-            <el-button  type="primary" size="small" @click="newDemandVisible=true,clearDemandForm()"
+            <el-button style="margin-left: 1150px" type="primary" size="big" @click="newDemandVisible=true,clearDemandForm()"
                         v-show="permit">提需求
             </el-button>
             <el-tabs @tab-click="handleClick" v-model='tabName' style="position:relative;margin-bottom: 20px;">
@@ -367,6 +367,8 @@
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!=0">计划
                                 </el-button>
+                                <a style="color:#20a0ff;cursor: pointer;"
+                                   @click="editDemandVisible=true,editDemand(scope.row)">编辑</a>
                                 <a style="color:#20a0ff;cursor: pointer;" v-show="permit"
                                    @click="deleteDemand(scope.row.id,scope.row.status)">删除</a>
                             </template>
@@ -633,7 +635,6 @@
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <!--<span class="star">*</span>-->
                 <el-form-item label="提出日期:" prop="feedbackTime">
                     <el-date-picker
                             v-model="demandForm.feedbackTime"
@@ -1710,7 +1711,7 @@
                 if (this.origin) {
                     this.reqDTO.origin = this.origin
                 }
-                if (this.type != undefined && this.priority != null) {
+                if (this.type != undefined && this.type != null) {
                     this.reqDTO.type = this.type
                 }
                 if (this.fromCoach != undefined && this.fromCoach !=null){
@@ -1743,7 +1744,7 @@
                 if (this.origin) {
                     this.reqDTO.origin = this.origin
                 }
-                if (this.type != undefined && this.priority != null) {
+                if (this.type != undefined && this.type != null) {
                     this.reqDTO.type = this.type
                 }
                 if (this.fromCoach != undefined && this.fromCoach !=null){
@@ -1936,7 +1937,12 @@
                             this.$message({showClose: true, message: '需求修改成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.editDemandVisible = false
-                            this.fetchNewDemandList()
+                            if (param.status == 0){
+                                this.fetchNewDemandList()
+                            }else if (param.status == 4){
+                                this.fetchQueueDemandList()
+                            }
+
 
                             this.isSaving = false
                         })
@@ -1958,10 +1964,9 @@
                     this.demandForm.origin = demand.origin
                     this.demandForm.question = demand.question
                     this.demandForm.target = demand.target
-                    this.demandForm.releaseTime = demand.releaseTime
-                    this.demandForm.feedbackTime = demand.feedbackTime
+                    this.demandForm.releaseTime = new Date(demand.releaseTime)
+                    this.demandForm.feedbackTime = new Date(demand.feedbackTime)
                     this.demandForm = Object.assign({}, this.demandForm)
-                    console.log(this.demandForm.status)
                 } else {
                     this.demandDetail(demand.id)
                     this.clearDemandForm()
