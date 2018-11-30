@@ -57,3 +57,10 @@ logRedis:
 basic:
   user: zhixinhuixue.com
   password: iWK77vd6mULRsCZCMbFGIXmPN1w5Ueuw
+
+#Qinu Oss服务
+oss:
+  bucketName: zsy-file-oss
+  accessKey: PxMjAKZ-yOu94twi5VKGUbCMHwL1mYLOHdnXzr4p
+  secretKey: m5GFGc0VeiX0Hcfoj35LLfpnEZcyP-eEhZjZ-fvg
+  domain: report.zhixinhuixue.net

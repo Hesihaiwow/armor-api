@@ -1346,15 +1346,17 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 }
             }
             List<DemandAccessory> list = new ArrayList<>();
-            for (String url : urls) {
-                DemandAccessory demandAccessory = new DemandAccessory();
-                demandAccessory.setId(snowFlakeIDHelper.nextId());
-                demandAccessory.setDemandId(demand.getId());
-                demandAccessory.setUrl(url);
-                demandAccessory.setCreateTime(new Date());
-                list.add(demandAccessory);
+            if (!CollectionUtils.isEmpty(urls)){
+                for (String url : urls) {
+                    DemandAccessory demandAccessory = new DemandAccessory();
+                    demandAccessory.setId(snowFlakeIDHelper.nextId());
+                    demandAccessory.setDemandId(demand.getId());
+                    demandAccessory.setUrl(url);
+                    demandAccessory.setCreateTime(new Date());
+                    list.add(demandAccessory);
+                }
+                feedbackMapper.insertFeedbackAccessory(list);
             }
-            feedbackMapper.insertFeedbackAccessory(list);
         }
     }
 
@@ -1588,7 +1590,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         headers.add("点赞数");
 
         //设置文件名
-        String fileName = "新需求" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+        String fileName = "待处理需求" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();
              HSSFWorkbook workbook = new HSSFWorkbook()){
             //创建sheet
