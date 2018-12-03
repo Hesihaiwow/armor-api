@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sun.mail.util.BEncoderStream;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
@@ -1322,23 +1323,18 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         feedbackMapper.insertDemandByCoach(demand);
 
-        if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
-            //把附件地址添加到feedback_accessory
-            List<String> urls = new ArrayList<>();
-            for (String s : reqDTO.getUrlList()) {
-                if (!s.equals("")){
-                    urls.add(s);
-                }
-            }
-            List<DemandAccessory> list = new ArrayList<>();
-            for (String url : urls) {
-                DemandAccessory demandAccessory = new DemandAccessory();
-                demandAccessory.setId(snowFlakeIDHelper.nextId());
-                demandAccessory.setDemandId(demand.getId());
-                demandAccessory.setUrl(url);
-                demandAccessory.setCreateTime(new Date());
-                list.add(demandAccessory);
-            }
+        List<DemandAccessory> list = new ArrayList<>();
+        reqDTO.getUrlList()
+                .stream().filter(url -> !Strings.isNullOrEmpty(url))
+                .forEach(url -> {
+                    DemandAccessory demandAccessory = new DemandAccessory();
+                    demandAccessory.setId(snowFlakeIDHelper.nextId());
+                    demandAccessory.setDemandId(demand.getId());
+                    demandAccessory.setUrl(url);
+                    demandAccessory.setCreateTime(new Date());
+                    list.add(demandAccessory);
+                });
+        if (!list.isEmpty()){
             feedbackMapper.insertFeedbackAccessory(list);
         }
     }
