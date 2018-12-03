@@ -485,6 +485,6 @@
     <!--查询项目下超时的任务数-->
     <select id="getTaskPlanList" resultMap="BaseResultMap">
         select id,`name` from task
-        where status=1 AND is_delete = 0 AND id not in ( SELECT task_id FROM feedback_plan_task)
+        where status=1 AND is_delete = 0
     </select>
 </mapper>
