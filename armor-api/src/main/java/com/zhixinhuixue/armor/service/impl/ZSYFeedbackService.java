@@ -1324,7 +1324,12 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
         if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
             //把附件地址添加到feedback_accessory
-            List<String> urls = reqDTO.getUrlList();
+            List<String> urls = new ArrayList<>();
+            for (String s : reqDTO.getUrlList()) {
+                if (!s.equals("")){
+                    urls.add(s);
+                }
+            }
             List<DemandAccessory> list = new ArrayList<>();
             for (String url : urls) {
                 DemandAccessory demandAccessory = new DemandAccessory();
