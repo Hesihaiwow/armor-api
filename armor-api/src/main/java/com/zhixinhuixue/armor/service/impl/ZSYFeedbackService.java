@@ -1335,7 +1335,9 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setUpdateTime(new Date());
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         demand.setFromCoach(1);
-        feedbackMapper.insertDemandByCoach(demand);
+        if (feedbackMapper.insertDemandByCoach(demand) == 0){
+            throw new ZSYServiceException("提需求失败");
+        }
 
         if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
             //把附件地址添加到feedback_accessory

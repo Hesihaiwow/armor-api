@@ -495,7 +495,7 @@ public interface IZSYFeedbackMapper {
      * 学管端新增需求
      * @param demand
      */
-    void insertDemandByCoach(Demand demand);
+    int insertDemandByCoach(Demand demand);
 
     /**
      * 查询新需求
