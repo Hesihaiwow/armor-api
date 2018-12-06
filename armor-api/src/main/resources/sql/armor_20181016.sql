@@ -8,6 +8,7 @@ feedback表更新字段
   ALTER TABLE feedback ADD COLUMN likes_num int(10) DEFAULT '0' COMMENT '点赞总数';
   ALTER TABLE feedback ADD COLUMN online_time datetime DEFAULT NULL COMMENT '上线时间';
   ALTER TABLE feedback ADD COLUMN coach_id int(10) DEFAULT NULL COMMENT '学管端需求创建者id';
+  ALTER TABLE feedback ADD COLUMN from_coach int(1) DEFAULT NULL COMMENT '是否来自学管端(0:其他,1:学管端)'
   ALTER TABLE feedback MODIFY project_id bigint(20) DEFAULT NULL COMMENT '项目id';
   ALTER TABLE feedback MODIFY create_by bigint(20) DEFAULT NULL COMMENT '任务系统需求创建者id';
   ALTER TABLE feedback MODIFY content text DEFAULT NULL COMMENT '需求反馈内容';

@@ -1,8 +1,11 @@
 <template>
-    <div class="demand-con">
+    <div class="demand-con" style="width: 1250px">
         <div>
+            <el-button style="margin-left: 1150px" type="primary" size="big" @click="newDemandVisible=true,clearDemandForm()"
+                        v-show="permit">提需求
+            </el-button>
             <el-tabs @tab-click="handleClick" v-model='tabName' style="position:relative;margin-bottom: 20px;">
-                <el-tab-pane label="新需求" name="new">
+                <el-tab-pane label="待处理" name="new">
                     <div class="demand-top clearfix">
                         <div class="clearfix">
                             <div class="demand-top-list fl">
@@ -21,14 +24,7 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <div class="demand-top-list fl">
-                                <span class="ttl-name">读取状态:</span>
-                                <el-select clearable filterable no-match-text=" " v-model="readStatus" placeholder="请选择"
-                                           size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
-                                </el-select>
-                            </div>
+
                             <div class="demand-top-list fl">
                                 <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="origin" placeholder="请选择"
@@ -37,22 +33,58 @@
                                                :value="item"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select0">查询</el-button>
-                            <el-button type="primary" size="small" @click="newDemandVisible=true,clearDemandForm()"
-                                       v-show="permit">提需求
+                            <div class="demand-top-list fl">
+                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="fromCoach" placeholder="请选择"
+                                           size="small" style="width:100px;margin-left: -50px">
+                                    <el-option v-for="item in fromCoachList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="demand-top-list fl">
+                                <el-date-picker
+                                        v-model="fbTimeStart"
+                                        align="right"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        clearable
+                                        size="small"
+                                >
+                                </el-date-picker>
+                                <span style="font-size: 14px;color: #606266;">-</span>
+                                <el-date-picker
+                                        v-model="fbTimeEnd"
+                                        align="right"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        clearable
+                                        size="small"
+                                >
+                                </el-date-picker>
+                            </div>
+
+                            <el-button class="fl" type="primary" size="small" @click="select0">查询</el-button>
+                            <el-button class="fl" type="primary" size="small" @click="excel"
+                                       v-show="permit">导出
                             </el-button>
                         </div>
                     </div>
                     <el-table :data="demandData" border>
-                        <el-table-column prop="no" label="序号" align="center" width="70" type="index">
+                        <el-table-column prop="no" label="序号" align="center" width="65" type="index">
                         </el-table-column>
-                        <el-table-column label="需求标题" align="center" width="250">
+                        <el-table-column label="需求标题" align="center">
                             <template scope="scope">
                                 <!--<a style="color:#20a0ff;cursor: pointer;" @click.stop.prevent="demandDetail(scope.row.id)">{{scope.row.title}}</a>-->
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
                                         style="color:#20a0ff;">{{scope.row.title}}
                                 </router-link>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="来源" align="center" width="100">
+                            <template scope="scope">
+                                <span v-if="scope.row.fromCoach == 0">其他</span>
+                                <span v-else>学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
@@ -69,7 +101,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="提出人" align="center" width="80">
+                        <el-table-column label="提出人" align="center" width="100">
                             <template scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
@@ -89,13 +121,13 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="状态" align="center" fixed="right">
-                            <template scope="scope">
-                                <div type="text" v-for="item in readStatuses" v-if="item.id == scope.row.readStatus">
-                                    {{item.name}}
-                                </div>
-                            </template>
-                        </el-table-column>
+                        <!--<el-table-column label="状态" align="center" fixed="right">-->
+                        <!--<template scope="scope">-->
+                        <!--<div type="text" v-for="item in readStatuses" v-if="item.id == scope.row.readStatus">-->
+                        <!--{{item.name}}-->
+                        <!--</div>-->
+                        <!--</template>-->
+                        <!--</el-table-column>-->
                         <el-table-column label="操作" align="center" v-if="permit" width="150" fixed="right">
                             <template scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;"
@@ -283,7 +315,7 @@
                     </div>
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
-                        <el-table-column label="需求标题" align="center" width="250">
+                        <el-table-column label="需求标题" align="center">
                             <template scope="scope">
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
@@ -335,6 +367,8 @@
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!=0">计划
                                 </el-button>
+                                <a style="color:#20a0ff;cursor: pointer;"
+                                   @click="editDemandVisible=true,editDemand(scope.row)">编辑</a>
                                 <a style="color:#20a0ff;cursor: pointer;" v-show="permit"
                                    @click="deleteDemand(scope.row.id,scope.row.status)">删除</a>
                             </template>
@@ -390,7 +424,7 @@
                     </div>
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
-                        <el-table-column label="需求标题" align="center" width="250">
+                        <el-table-column label="需求标题" align="center">
                             <template scope="scope">
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
@@ -412,7 +446,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="提出人" align="center" width="80">
+                        <el-table-column label="提出人" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
@@ -500,7 +534,7 @@
                                 </router-link>
                             </template>
                         </el-table-column>
-                        <el-table-column label="提出人" align="center" width="80">
+                        <el-table-column label="提出人" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
@@ -557,84 +591,7 @@
                         </el-pagination>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="我参与" name="joined">
-                    <div class="demand-top clearfix">
-                        <el-date-picker
-                                v-model="beginTime5"
-                                align="right"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                clearable
-                        >
-                        </el-date-picker>
-                        <span style="font-size: 14px;color: #606266;">-</span>
-                        <el-date-picker
-                                v-model="endTime5"
-                                align="right"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                clearable
-                        >
-                        </el-date-picker>
-                        <div class="demand-top-list fl">
-                            <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
-                            <el-select clearable filterable no-match-text=" " v-model="origin5" placeholder="请选择"
-                                       size="small" style="width:100px;margin-left: -50px">
-                                <el-option v-for="item in originList" :key="item" :label="item"
-                                           :value="item"></el-option>
-                            </el-select>
-                        </div>
-                        <div class="demand-top-list fl">
-                            <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
-                            <el-select clearable filterable no-match-text=" " v-model="chargeMan5" placeholder="请选择"
-                                       size="small" style="width:100px;margin-left: -50px">
-                                <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                        <el-button type="primary" size="small" @click="select5">查询</el-button>
-                    </div>
-                    <el-table :data="demandData" border>
-                        <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
-                        <el-table-column label="需求标题" align="center">
-                            <template scope="scope">
-                                <router-link
-                                        :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
-                                        style="color:#20a0ff;">{{scope.row.title}}
-                                </router-link>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="当前队列" align="center">
-                            <template scope="scope">
-                                <span v-if="scope.row.status == 0">新需求</span>
-                                <span v-else-if="scope.row.status == 1">进行中</span>
-                                <span v-else-if="scope.row.status == 2">已完成</span>
-                                <span v-else-if="scope.row.status == 3">不采纳</span>
-                                <span v-else-if="scope.row.status == 4">排队中</span>
-                                <span v-else>无状态</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="点赞数" align="center" width="80">
-                            <template scope="scope">
-                                <span>{{scope.row.likesNum}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="回复数" align="center" width="80">
-                            <template scope="scope">
-                                <span>{{scope.row.replyNum}}</span>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <div class="pagination">
-                        <el-pagination
-                                @current-change="handleCurrentChange5"
-                                :current-page.sync="pageNum5"
-                                :page-size="demandPage.pageSize"
-                                :layout="feedbackPageLayout()"
-                                :total="demandPage.total">
-                        </el-pagination>
-                    </div>
-                </el-tab-pane>
+
             </el-tabs>
         </div>
         <el-dialog :visible.sync="newDemandVisible" title="提需求" custom-class="myDialog" :close-on-click-modal="false"
@@ -678,7 +635,6 @@
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <!--<span class="star">*</span>-->
                 <el-form-item label="提出日期:" prop="feedbackTime">
                     <el-date-picker
                             v-model="demandForm.feedbackTime"
@@ -980,7 +936,6 @@
                 pageNum3: 1,
                 pageNum4: 1,
                 pageNum5: 1,
-                activeName: 'new',
                 prioritys: [
                     {id: 0, name: '普通'},
                     {id: 1, name: '紧急'},
@@ -1029,12 +984,19 @@
                 tagList: [],
                 project: '',
                 projectList: [],
+                fromCoachList:[
+                    {id:0,name:'其他'},
+                    {id:1,name:'学管端'}
+                ],
 
                 type: '',
                 priority: '',
                 readStatus: '',
                 origin: '',
                 introducer: '',
+                fromCoach:'',
+                fbTimeStart:'',
+                fbTimeEnd:'',
 
 
                 priority1: '',
@@ -1213,7 +1175,6 @@
                 sessionStorage.screenData = JSON.stringify(screenData);
             },
             getDefaultSessionScreenData() {
-
                 if(!sessionStorage.screenData){
                     this.fetchNewDemandList()
                     return
@@ -1260,14 +1221,15 @@
                     this.chargeMan2 = this.reqDTO.chargeMan;
                     this.origin2 = this.reqDTO.origin;
                     this.handleCurrentChange2();
-                } else if (this.tabName == 'joined') {
-                    this.beginTime5 = this.reqDTO.beginTime2;
-                    this.endTime5 = this.reqDTO.endTime2;
-                    this.pageNum5 = screenData.pageNum;
-                    this.chargeMan5 = this.reqDTO.chargeMan;
-                    this.origin5 = this.reqDTO.origin;
-                    this.handleCurrentChange5();
                 }
+                // else if (this.tabName == 'joined') {
+                //     this.beginTime5 = this.reqDTO.beginTime2;
+                //     this.endTime5 = this.reqDTO.endTime2;
+                //     this.pageNum5 = screenData.pageNum;
+                //     this.chargeMan5 = this.reqDTO.chargeMan;
+                //     this.origin5 = this.reqDTO.origin;
+                //     this.handleCurrentChange5();
+                // }
             },
             // setScreenData(type) {
             //     this.priority = this.reqDTO.priority;
@@ -1307,11 +1269,9 @@
             //添加项目
             updateDemandProject() {
                 if (this.project) {
-                    console.log(this.project + "aaaa")
                     this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
                     this.proReqDTO.projectId = String(this.project)
                     this.feedbackPlanForm.projectId = this.project
-                    console.log(this.feedbackPlanForm.projectId + "bbbb")
                     http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
                         this.$message({
                             showClose: true,
@@ -1403,14 +1363,14 @@
             },
 
             //查询我参与的需求
-            fetchJoinedDemandList() {
-                console.log(this.pageNum5,89898)
-                this.reqDTO.pageNum = this.pageNum5
-                http.zsyPostHttp('/feedback/demand-joined/list', this.reqDTO, (res) => {
-                    this.demandData = res.data.list;
-                    this.demandPage.total = res.data.total
-                })
-            },
+            // fetchJoinedDemandList() {
+            //     console.log(this.pageNum5,89898)
+            //     this.reqDTO.pageNum = this.pageNum5
+            //     http.zsyPostHttp('/feedback/demand-joined/list', this.reqDTO, (res) => {
+            //         this.demandData = res.data.list;
+            //         this.demandPage.total = res.data.total
+            //     })
+            // },
 
             //取消添加任务
             cancelAddTask() {
@@ -1556,7 +1516,6 @@
                 // if (this.project){
                 //     param.projectId = this.project
                 // }
-                console.log(this.feedbackPlanForm.projectId + "cccc")
                 param.expectOfficialTime = moment(param.expectOfficialTime).format('YYYY-MM-DD 23:59:59');
                 param.expectStartTime = moment(param.expectStartTime).format('YYYY-MM-DD 00:00:00');
                 param['planTask'] = this.planTask;
@@ -1637,7 +1596,6 @@
                         this.projectVisible = true
                     } else {
                         this.feedbackPlanForm.projectId = res.data.projectId
-                        console.log(this.feedbackPlanForm.projectId + "jjjjj")
                     }
                 })
                 this.feedbackPlanForm.feedbackId = feedback.id
@@ -1694,6 +1652,9 @@
                 this.reqDTO.type = null;
                 this.reqDTO.beginTime = null;
                 this.reqDTO.endTime = null;
+                this.reqDTO.fromCoach = null;
+                this.reqDTO.fbTimeStart = null;
+                this.reqDTO.fbTimeEnd = null;
             },
             clear0() {
                 this.priority = null
@@ -1701,6 +1662,9 @@
                 this.readStatus = null
                 this.origin = null
                 this.introducer = null
+                this.fromCoach = null
+                this.fbTimeStart = null
+                this.fbTimeEnd = null
             },
             clear1() {
                 this.priority1 = null
@@ -1729,11 +1693,41 @@
                 this.beginTime2 = null
                 this.endTime2 = null
             },
-            clear5() {
-                this.introducer5 = null
-                this.chargeMan5 = null
-                this.beginTime5 = null
-                this.endTime5 = null
+            // clear5() {
+            //     this.introducer5 = null
+            //     this.chargeMan5 = null
+            //     this.beginTime5 = null
+            //     this.endTime5 = null
+            // },
+
+            //导出新需求
+            excel(){
+                this.clearReqDTO()
+                this.reqDTO.pageNum = 1
+
+                if (this.priority != undefined && this.priority != null) {
+                    this.reqDTO.priority = this.priority
+                }
+                if (this.origin) {
+                    this.reqDTO.origin = this.origin
+                }
+                if (this.type != undefined && this.type != null) {
+                    this.reqDTO.type = this.type
+                }
+                if (this.fromCoach != undefined && this.fromCoach !=null){
+                    this.reqDTO.fromCoach = this.fromCoach
+                }
+                if (this.fbTimeStart){
+                    this.reqDTO.fbTimeStart = moment(this.fbTimeStart).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.fbTimeEnd){
+                    this.reqDTO.fbTimeEnd = moment(this.fbTimeEnd).format('YYYY-MM-DD 23:59:59')
+                }
+                http.zsyPostHttp('feedback/demand-new/list/excel',this.reqDTO,(res) =>{
+                    if (res.data) {
+                        window.open(res.data)
+                    }
+                })
             },
 
             //条件查询新需求
@@ -1744,14 +1738,23 @@
                 if (this.priority != undefined && this.priority != null) {
                     this.reqDTO.priority = this.priority
                 }
-                if (this.readStatus != undefined && this.priority != null) {
-                    this.reqDTO.readStatus = this.readStatus
-                }
+                // if (this.readStatus != undefined && this.priority != null) {
+                //     this.reqDTO.readStatus = this.readStatus
+                // }
                 if (this.origin) {
                     this.reqDTO.origin = this.origin
                 }
-                if (this.type != undefined && this.priority != null) {
+                if (this.type != undefined && this.type != null) {
                     this.reqDTO.type = this.type
+                }
+                if (this.fromCoach != undefined && this.fromCoach !=null){
+                    this.reqDTO.fromCoach = this.fromCoach
+                }
+                if (this.fbTimeStart){
+                    this.reqDTO.fbTimeStart = moment(this.fbTimeStart).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.fbTimeEnd){
+                    this.reqDTO.fbTimeEnd = moment(this.fbTimeEnd).format('YYYY-MM-DD 23:59:59')
                 }
                 this.setSessionScreenData();
                 this.fetchNewDemandList()
@@ -1845,26 +1848,26 @@
             },
 
             //查询我参与的需求
-            select5() {
-                this.clearReqDTO()
-                this.reqDTO.pageNum = 1
-
-
-                if (this.origin5) {
-                    this.reqDTO.origin = this.origin5
-                }
-                if (this.beginTime5) {
-                    this.reqDTO.beginTime = moment(this.beginTime5).format('YYYY-MM-DD 00:00:00')
-                }
-                if (this.endTime5) {
-                    this.reqDTO.endTime = moment(this.endTime5).format('YYYY-MM-DD 23:59:59')
-                }
-                if (this.chargeMan5) {
-                    this.reqDTO.chargeMan = String(this.chargeMan5)
-                }
-
-                this.fetchJoinedDemandList()
-            },
+            // select5() {
+            //     this.clearReqDTO()
+            //     this.reqDTO.pageNum = 1
+            //
+            //
+            //     if (this.origin5) {
+            //         this.reqDTO.origin = this.origin5
+            //     }
+            //     if (this.beginTime5) {
+            //         this.reqDTO.beginTime = moment(this.beginTime5).format('YYYY-MM-DD 00:00:00')
+            //     }
+            //     if (this.endTime5) {
+            //         this.reqDTO.endTime = moment(this.endTime5).format('YYYY-MM-DD 23:59:59')
+            //     }
+            //     if (this.chargeMan5) {
+            //         this.reqDTO.chargeMan = String(this.chargeMan5)
+            //     }
+            //
+            //     this.fetchJoinedDemandList()
+            // },
 
             //添加任务
             addTask() {
@@ -1934,7 +1937,12 @@
                             this.$message({showClose: true, message: '需求修改成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.editDemandVisible = false
-                            this.fetchNewDemandList()
+                            if (param.status == 0){
+                                this.fetchNewDemandList()
+                            }else if (param.status == 4){
+                                this.fetchQueueDemandList()
+                            }
+
 
                             this.isSaving = false
                         })
@@ -1948,6 +1956,7 @@
                     this.clearDemandForm()
                     this.editDemandVisible = true
                     this.demandDeleteIcon = true
+                    this.demandForm.status = demand.status
                     this.demandForm.id = demand.id
                     this.demandForm.title = demand.title
                     this.demandForm.type = demand.type
@@ -1955,7 +1964,8 @@
                     this.demandForm.origin = demand.origin
                     this.demandForm.question = demand.question
                     this.demandForm.target = demand.target
-                    this.demandForm.releaseTime = demand.releaseTime
+                    this.demandForm.releaseTime = new Date(demand.releaseTime)
+                    this.demandForm.feedbackTime = new Date(demand.feedbackTime)
                     this.demandForm = Object.assign({}, this.demandForm)
                 } else {
                     this.demandDetail(demand.id)
@@ -2021,11 +2031,11 @@
                 this.setSessionScreenData();
 
             },
-            handleCurrentChange5(currentPage) {
-                console.log(this.pageNum5,4444)
-                this.fetchJoinedDemandList()
-                this.setSessionScreenData();
-            },
+            // handleCurrentChange5(currentPage) {
+            //     console.log(this.pageNum5,4444)
+            //     this.fetchJoinedDemandList()
+            //     this.setSessionScreenData();
+            // },
 
             feedbackPageLayout() {
                 if (this.demandPage.total > 0) {
@@ -2055,11 +2065,12 @@
                     this.clear2()
                     this.clearReqDTO()
                     this.fetchCompletedDemandList()
-                } else if (tab.name == 'joined') {
-                    this.clear5()
-                    this.clearReqDTO()
-                    this.fetchJoinedDemandList()
                 }
+                // else if (tab.name == 'joined') {
+                //     this.clear5()
+                //     this.clearReqDTO()
+                //     this.fetchJoinedDemandList()
+                // }
             },
         },
     }

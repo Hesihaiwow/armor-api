@@ -326,4 +326,11 @@ public interface IZSYFeedbackService {
     ArmorPageInfo<DemandRunningResDTO> getDemandRunningListByCoach(DemandQueryReqDTO reqDTO,Integer coachId);
 
     DemandDetailResDTO getDemandDetail(DemandDetailQueryReqDTO reqDTO);
+
+    /**
+     * 新需求导出Excel
+     * @param reqDTO
+     * @return
+     */
+    String newDemandExcel(DemandQueryReqDTO reqDTO);
 }
