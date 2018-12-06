@@ -51,16 +51,6 @@ public class Demand {
     private Date onlineTime;
     @ApiModelProperty("创建需求学管id")
     private Integer coachId;
-    @ApiModelProperty("是否来自学管端")
-    private Integer fromCoach;
-
-    public Integer getFromCoach() {
-        return fromCoach;
-    }
-
-    public void setFromCoach(Integer fromCoach) {
-        this.fromCoach = fromCoach;
-    }
 
     public Integer getCoachId() {
         return coachId;

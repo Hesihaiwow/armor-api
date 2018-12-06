@@ -1070,7 +1070,6 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setCreateTime(new Date());
         demand.setUpdateTime(new Date());
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
-        demand.setFromCoach(0);
         feedbackMapper.insertDemand(demand);
 
         if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
@@ -1335,7 +1334,6 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setCreateTime(new Date());
         demand.setUpdateTime(new Date());
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
-        demand.setFromCoach(1);
         if (feedbackMapper.insertDemandByCoach(demand) == 0){
             throw new ZSYServiceException("提需求失败");
         }
@@ -1624,14 +1622,14 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 row.setRowStyle(style);
                 row.createCell(0).setCellValue(demandResDTOList.get(i).getTitle());
                 //设置来源(是否来自学管端)
-                if (demandResDTOList.get(i).getFromCoach() != null){
-                    if (demandResDTOList.get(i).getFromCoach() == 0){
+                if (demandResDTOList.get(i).getCoachId() != null){
+                    if (demandResDTOList.get(i).getCoachId() == 0){
                         row.createCell(1).setCellValue("其他");
                     }else {
                         row.createCell(1).setCellValue("学管端");
                     }
                 }else {
-                    row.createCell(1).setCellValue("学管端");
+                    row.createCell(1).setCellValue("其他");
                 }
                 //设置类型
                 if (demandResDTOList.get(i).getType() != null){

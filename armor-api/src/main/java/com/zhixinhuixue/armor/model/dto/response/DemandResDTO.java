@@ -42,6 +42,16 @@ public class DemandResDTO {
     private Integer status;
     @ApiModelProperty("是否来自学管端")
     private Integer fromCoach;
+    @ApiModelProperty("学管id")
+    private Integer coachId;
+
+    public Integer getCoachId() {
+        return coachId;
+    }
+
+    public void setCoachId(Integer coachId) {
+        this.coachId = coachId;
+    }
 
     public Integer getFromCoach() {
         return fromCoach;

@@ -41,15 +41,15 @@ public class DemandCompletedBO {
     private String chargeMan;
     @ApiModelProperty("点赞数")
     private Integer likesNum;
-    @ApiModelProperty("是否来自学管端")
-    private Integer fromCoach;
+    @ApiModelProperty("学管id")
+    private Integer coachId;
 
-    public Integer getFromCoach() {
-        return fromCoach;
+    public Integer getCoachId() {
+        return coachId;
     }
 
-    public void setFromCoach(Integer fromCoach) {
-        this.fromCoach = fromCoach;
+    public void setCoachId(Integer coachId) {
+        this.coachId = coachId;
     }
 
     public Integer getLikesNum() {
