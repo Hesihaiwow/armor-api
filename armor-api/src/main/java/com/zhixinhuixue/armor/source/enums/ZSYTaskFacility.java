@@ -16,9 +16,9 @@ public enum ZSYTaskFacility {
     }
 
     public static String getName(int value) {
-        for (ZSYTaskStatus taskStatus : ZSYTaskStatus.values()) {
-            if (taskStatus.getValue() == value) {
-                return taskStatus.getName();
+        for (ZSYTaskFacility taskFacility : ZSYTaskFacility.values()) {
+            if (taskFacility.getValue() == value) {
+                return taskFacility.getName();
             }
         }
         return "";

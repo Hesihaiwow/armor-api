@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.dao;
 import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -60,4 +61,12 @@ public interface IZSYTaskUserMapper {
     List<PersonTaskBO> getPersonalList(PersonalTaskListReqDTO personalTaskListReqDTO);
 
 
+    /** sch --
+     * 查询任务开发人员
+     * @param id
+     * @return
+     */
+    List<Long> selectUserByTaskId(@Param("id") Long id);
+
+    // -- sch
 }
