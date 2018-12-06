@@ -83,8 +83,8 @@
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.fromCoach == 0">其他</span>
-                                <span v-else>学管端</span>
+                                <span v-if="scope.row.coachId > 0">学管端</span>
+                                <span v-else>其他</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
@@ -985,8 +985,8 @@
                 project: '',
                 projectList: [],
                 fromCoachList:[
-                    {id:0,name:'其他'},
-                    {id:1,name:'学管端'}
+                    {id:0,name:'学管端'},
+                    {id:1,name:'其他'}
                 ],
 
                 type: '',
