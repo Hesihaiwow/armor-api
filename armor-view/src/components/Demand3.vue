@@ -1965,7 +1965,7 @@
                     this.demandForm.question = demand.question
                     this.demandForm.target = demand.target
                     this.demandForm.releaseTime = new Date(demand.releaseTime)
-                    this.demandForm.feedbackTime = new Date(demand.feedbackTime)
+                    // this.demandForm.feedbackTime = new Date(demand.feedbackTime)
                     this.demandForm = Object.assign({}, this.demandForm)
                 } else {
                     this.demandDetail(demand.id)
