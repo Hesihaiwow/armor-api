@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sun.mail.util.BEncoderStream;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
@@ -1339,19 +1340,21 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             throw new ZSYServiceException("提需求失败");
         }
 
-        List<DemandAccessory> list = new ArrayList<>();
-        reqDTO.getUrlList()
-                .stream().filter(url -> !Strings.isNullOrEmpty(url))
-                .forEach(url -> {
-                    DemandAccessory demandAccessory = new DemandAccessory();
-                    demandAccessory.setId(snowFlakeIDHelper.nextId());
-                    demandAccessory.setDemandId(demand.getId());
-                    demandAccessory.setUrl(url);
-                    demandAccessory.setCreateTime(new Date());
-                    list.add(demandAccessory);
-                });
-        if (!list.isEmpty()){
-            feedbackMapper.insertFeedbackAccessory(list);
+        if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
+            List<DemandAccessory> list = new ArrayList<>();
+            reqDTO.getUrlList()
+                    .stream().filter(url -> !Strings.isNullOrEmpty(url))
+                    .forEach(url -> {
+                        DemandAccessory demandAccessory = new DemandAccessory();
+                        demandAccessory.setId(snowFlakeIDHelper.nextId());
+                        demandAccessory.setDemandId(demand.getId());
+                        demandAccessory.setUrl(url);
+                        demandAccessory.setCreateTime(new Date());
+                        list.add(demandAccessory);
+                    });
+            if (!list.isEmpty()){
+                feedbackMapper.insertFeedbackAccessory(list);
+            }
         }
     }
 
