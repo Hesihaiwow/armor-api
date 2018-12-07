@@ -2,10 +2,7 @@ package com.zhixinhuixue.armor.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.model.dto.request.UploadAvatarReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
@@ -172,4 +169,13 @@ public class ZSYUserController extends ZSYController {
         userService.sendEmail();
         return ZSYResult.success().build();
     }
+
+    // sch --
+    @ApiOperation("用户修改个人基本信息")
+    @PutMapping("/modify/info")
+    public String modifyBasicInfo(@Valid @RequestBody UserInfoReqDTO userInfoReqDTO){
+        userService.modifyBasicInfo(userInfoReqDTO);
+        return ZSYResult.success().build();
+    }
+    // -- sch
 }

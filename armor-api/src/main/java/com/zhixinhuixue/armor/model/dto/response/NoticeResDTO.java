@@ -1,11 +1,15 @@
-package com.zhixinhuixue.armor.model.pojo;
+package com.zhixinhuixue.armor.model.dto.response;
+
+/**
+ * Created by SCH on 2018-12-07
+ */
 
 import java.util.Date;
 
 /**
- * Created by SCH on 2018-12-06
+ * 通知
  */
-public class Notification {
+public class NoticeResDTO {
     /**
      * 通知id
      */

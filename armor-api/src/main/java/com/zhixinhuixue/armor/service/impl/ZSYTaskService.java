@@ -1651,6 +1651,68 @@ public class ZSYTaskService implements IZSYTaskService {
             }
         }
     }
+
+    /**
+     * 查询最近5条未读通知
+     * @return
+     */
+    @Override
+    public List<NoticeResDTO> getUnreadNotification() {
+        List<Notification> notifications = notificationMapper.selectUnReadNotice(ZSYTokenRequestContext.get().getUserId());
+        List<NoticeResDTO> noticeResDTOList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(notifications)){
+            BeanUtils.copyProperties(notifications,noticeResDTOList);
+            notifications.stream().forEach(notification -> {
+                NoticeResDTO noticeResDTO = new NoticeResDTO();
+                BeanUtils.copyProperties(notification,noticeResDTO);
+                noticeResDTOList.add(noticeResDTO);
+            });
+        }
+        return noticeResDTOList;
+    }
+
+    /**
+     * 查询所有通知
+     * @return
+     */
+    @Override
+    public PageInfo<NoticeResDTO> getAllNotifications(NoticeReqDTO reqDTO) {
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        Page<Notification> notifications = notificationMapper.selectAllNotice(ZSYTokenRequestContext.get().getUserId());
+        Page<NoticeResDTO> noticeResDTOList = new Page<>();
+        if (!CollectionUtils.isEmpty(notifications)){
+            BeanUtils.copyProperties(notifications,noticeResDTOList);
+            notifications.stream().forEach(notification -> {
+                NoticeResDTO noticeResDTO = new NoticeResDTO();
+                BeanUtils.copyProperties(notification,noticeResDTO);
+                noticeResDTOList.add(noticeResDTO);
+            });
+        }
+        return new PageInfo<>(noticeResDTOList);
+    }
+
+    /**
+     * 查询所有未读通知条数
+     * @return
+     */
+    @Override
+    public UnreadNoticeNumResDTO getUnreadNoticeNum() {
+        Integer count = notificationMapper.selectUnreadNoticeNum(ZSYTokenRequestContext.get().getUserId());
+        UnreadNoticeNumResDTO unreadNoticeNumResDTO = new UnreadNoticeNumResDTO();
+        unreadNoticeNumResDTO.setCount(count);
+        return unreadNoticeNumResDTO;
+    }
+
+    /**
+     * 读取通知
+     */
+    @Override
+    @Transactional
+    public void readNotice(Long nid) {
+        if (notificationMapper.updateNoticeById(nid,new Date()) == 0){
+            throw new ZSYServiceException("读取通知失败");
+        }
+    }
     // -- sch
 
     /**

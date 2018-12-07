@@ -236,6 +236,33 @@ public class ZSYTaskController extends ZSYController {
         taskService.setTestingTask(taskReqDTO);
         return ZSYResult.success().build();
     }
+
+    // sch --
+    @ApiOperation("查询最近5条未读通知")
+    @GetMapping("/notification/un-read")
+    public String getUnreadNotification(){
+        return ZSYResult.success().data(taskService.getUnreadNotification()).build();
+    }
+
+    @ApiOperation("查询所有通知")
+    @PostMapping("/notification/all")
+    public String getAllNotifications(@RequestBody NoticeReqDTO reqDTO){
+        return ZSYResult.success().data(taskService.getAllNotifications(reqDTO)).build();
+    }
+
+    @ApiOperation("查询所有未读通知条数")
+    @GetMapping("/notification/un-read/num")
+    public String getUnreadNoticeNum(){
+        return ZSYResult.success().data(taskService.getUnreadNoticeNum()).build();
+    }
+
+    @ApiOperation("更新通知为已读")
+    @PutMapping("/notification/read/{nid}")
+    public String readNotice(@PathVariable("nid")Long nid){
+        taskService.readNotice(nid);
+        return ZSYResult.success().build();
+    }
+    // -- sch
 }
 
 

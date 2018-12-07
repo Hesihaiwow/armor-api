@@ -221,4 +221,31 @@ public interface IZSYTaskService {
      * @param testingTask
      */
     void setTestingTask(TestingTaskReqDTO testingTask);
+
+    // sch --
+
+    /**
+     * 查询最近5条未读通知
+     * @return
+     */
+    List<NoticeResDTO> getUnreadNotification();
+
+    /**
+     * 查询所有通知
+     * @return
+     */
+    PageInfo<NoticeResDTO> getAllNotifications(NoticeReqDTO reqDTO);
+
+    /**
+     * 查询所有未读通知条数
+     * @return
+     */
+    UnreadNoticeNumResDTO getUnreadNoticeNum();
+
+    /**
+     * 读取通知
+     */
+    void readNotice(Long nid);
+
+    // -- sch
 }
