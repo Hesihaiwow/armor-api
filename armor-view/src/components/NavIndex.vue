@@ -626,7 +626,7 @@
                     <el-date-picker @change="changeExpandWeek"
                             v-model="expandDetail.endTime"
                             type="date"
-                            format="yyyy-MM-dd HH:00:00"
+                            format="yyyy-MM-dd HH:23:59"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
