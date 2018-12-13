@@ -1424,7 +1424,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.expandReview.endTime= moment(this.expandTime.endTime).format('YYYY-MM-DD 23:59:59')
+                    this.expandReview.endTime= moment(this.expandReview.endTime).format('YYYY-MM-DD 23:59:59')
                     this.expandReview.teId = this.expandDetail.teId
                     this.expandReview.status = 1
                     this.expandReview.weeks = this.expandWeekNumber
