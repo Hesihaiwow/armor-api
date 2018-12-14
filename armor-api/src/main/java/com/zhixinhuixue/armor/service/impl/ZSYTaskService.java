@@ -9,7 +9,9 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
+import com.zhixinhuixue.armor.helper.MD5Helper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.helper.ZSYOKHttpHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
@@ -27,7 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -35,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Tate on 2017/8/7.
@@ -1420,7 +1429,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 list.add(notification);
             });
             if (notificationMapper.insertBatch(list) == 0){
-                throw new ZSYServiceException("插入通知失败");
+                throw new ZSYServiceException("新增任务阶段变化通知失败");
             }
 
         }
@@ -1450,7 +1459,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 list.add(notification);
             });
             if (notificationMapper.insertBatch(list) == 0){
-                throw new ZSYServiceException("插入通知失败");
+                throw new ZSYServiceException("新增暂停任务通知失败");
             }
         }else {
             joiners.stream().forEach(userId -> {
@@ -1465,7 +1474,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 list.add(notification);
             });
             if (notificationMapper.insertBatch(list) == 0){
-                throw new ZSYServiceException("插入通知失败");
+                throw new ZSYServiceException("新增启动任务通知失败");
             }
         }
     }
@@ -1494,7 +1503,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 list.add(notification);
             });
             if (notificationMapper.insertBatch(list) == 0){
-                throw new ZSYServiceException("插入通知失败");
+                throw new ZSYServiceException("新增主任务完成通知失败");
             }
         }
     }
@@ -1517,57 +1526,57 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setUserId(userId);
 //                String content = "您参与的任务:"+taskTemp.getName()+"("+taskTemp.getId()+")已完成,请及时评价;";
                 StringBuilder sb = new StringBuilder();
-                sb.append("您参与的任务:"+taskTemp.getName()+"("+taskTemp.getId()+")有修改:"+"\n");
+                sb.append("您参与的任务:"+taskTemp.getName()+"("+taskTemp.getId()+")有修改: "+"\n");
                 if (taskReqDTO.getTaskType() != null && taskReqDTO.getTaskType() != taskTemp.getType()){
-                    String str = "类型由"+ZSYTaskType.getName(taskTemp.getType())+"变为"+ZSYTaskType.getName(taskReqDTO.getTaskType())+"\n";
+                    String str = "类型由"+ZSYTaskType.getName(taskTemp.getType())+" --> "+ZSYTaskType.getName(taskReqDTO.getTaskType())+";\n";
                     sb.append(str);
                 }
                 if ((!Strings.isNullOrEmpty(taskReqDTO.getTaskName())) && (!taskReqDTO.getTaskName().equals(taskTemp.getName()))){
-                    String str = "名称改为:"+taskReqDTO.getTaskName()+"\n";
+                    String str = "名称改为:"+taskReqDTO.getTaskName()+";\n";
                     sb.append(str);
                 }
                 if((!Strings.isNullOrEmpty(taskReqDTO.getDescription())) && (!taskReqDTO.getDescription().equals(taskTemp.getDescription()))){
-                    String str = "描述改为:"+taskReqDTO.getDescription()+"\n";
+                    String str = "描述改为:"+taskReqDTO.getDescription()+";\n";
                     sb.append(str);
                 }
                 if(taskReqDTO.getProjectId() != null && (!taskReqDTO.getProjectId().equals(taskTemp.getProjectId()))){
-                    String str = "项目id改为:"+taskReqDTO.getProjectId()+"\n";
+                    String str = "项目id改为:"+taskReqDTO.getProjectId()+";\n";
                     sb.append(str);
                 }
                 if(taskReqDTO.getStageId() != null && (!taskReqDTO.getStageId().equals(taskTemp.getStageId()))){
                     Stage oldStage = stageMapper.selectById(taskTemp.getStageId());
                     Stage newStage = stageMapper.selectById(taskReqDTO.getStageId());
-                    String str = "阶段由 "+oldStage.getName()+" 变成 "+newStage.getName()+"\n";
+                    String str = "阶段由 "+oldStage.getName()+" --> "+newStage.getName()+";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getPriority() != null && taskReqDTO.getPriority() != taskTemp.getPriority()){
-                    String str = "优先级由 "+ZSYTaskPriority.getName(taskTemp.getPriority())+" 变成 "+ZSYTaskPriority.getName(taskReqDTO.getPriority())+"\n";
+                    String str = "优先级由 "+ZSYTaskPriority.getName(taskTemp.getPriority())+" --> "+ZSYTaskPriority.getName(taskReqDTO.getPriority())+";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getFacility() != null && taskReqDTO.getFacility() != taskTemp.getFacility()){
-                    String str = "难易度由 "+ZSYTaskFacility.getName(taskTemp.getFacility())+" 变成 "+ZSYTaskFacility.getName(taskReqDTO.getFacility())+"\n";
+                    String str = "难易度由 "+ZSYTaskFacility.getName(taskTemp.getFacility())+" --> "+ZSYTaskFacility.getName(taskReqDTO.getFacility())+";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getBeginTime() != null && (taskReqDTO.getBeginTime().compareTo(Optional.ofNullable(taskTemp.getBeginTime()).orElse(new Date())) != 0)){
 //                    String oldTime = DateHelper.dateFormatter(taskTemp.getBeginTime(), DateHelper.DATE_FORMAT);
                     String newTime = DateHelper.dateFormatter(taskReqDTO.getBeginTime(), DateHelper.DATE_FORMAT);
-                    String str = "开始开发时间改成 "+ newTime + "\n";
+                    String str = "开始开发时间改成 "+ newTime + ";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getTestTime() != null && (taskReqDTO.getTestTime().compareTo(Optional.ofNullable(taskTemp.getTestTime()).orElse(new Date())) != 0)){
                     String newTime = DateHelper.dateFormatter(taskReqDTO.getTestTime(), DateHelper.DATE_FORMAT);
-                    String str = "提测时间改成 "+ newTime + "\n";
+                    String str = "提测时间改成 "+ newTime + ";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getEndTime() != null && (taskReqDTO.getEndTime().compareTo(Optional.ofNullable(taskTemp.getEndTime()).orElse(new Date())) != 0)){
                     String newTime = DateHelper.dateFormatter(taskReqDTO.getEndTime(), DateHelper.DATE_FORMAT);
-                    String str = "截止时间改成 "+ newTime + "\n";
+                    String str = "截止时间改成 "+ newTime + ";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getCreateBy() != null && (!taskReqDTO.getCreateBy().equals(taskTemp.getCreateBy()))){
                     User oldMan = userMapper.selectById(taskTemp.getCreateBy());
                     User newMan = userMapper.selectById(taskReqDTO.getCreateBy());
-                    String str  = "负责人由 "+oldMan.getName() + " 变成 " + newMan.getName() + "\n";
+                    String str  = "负责人由 "+oldMan.getName() + " --> " + newMan.getName() + ";\n";
                     sb.append(str);
                 }
                 if ((!CollectionUtils.isEmpty(taskReqDTO.getTaskUsers()))){
@@ -1584,12 +1593,14 @@ public class ZSYTaskService implements IZSYTaskService {
                     }else if (taskReqDTO.getTaskUsers().size() > taskTemp.getTaskUsers().size()){
                         Set<Long> taskUsers = new HashSet<>();
                         taskTemp.getTaskUsers().stream().forEach(taskUserBO -> {
-                            //过滤出新增的taskUser
-                            List<TaskUserReqDTO> taskUserReqDTOS = taskReqDTO.getTaskUsers().stream().filter(taskUserReqDTO -> (!taskUserReqDTO.getUserId().equals(taskUserBO.getUserId()))).collect(Collectors.toList());
+                            //过滤出相同的taskUser
+                            List<TaskUserReqDTO> taskUserReqDTOS = taskReqDTO.getTaskUsers().stream().filter(taskUserReqDTO -> (taskUserReqDTO.getUserId().equals(taskUserBO.getUserId()))).collect(Collectors.toList());
                             List<Long> userIds = taskUserReqDTOS.stream().map(TaskUserReqDTO::getUserId).collect(Collectors.toList());
                             taskUsers.addAll(userIds);
                         });
-                        taskUsers.stream().forEach(userId2 -> {
+                        List<Long> addUserIds = taskReqDTO.getTaskUsers().stream().map(TaskUserReqDTO::getUserId).collect(Collectors.toList());
+                        addUserIds.removeAll(taskUsers);
+                        addUserIds.stream().forEach(userId2 -> {
                             User user = userMapper.selectById(userId2);
                             userNames.add(user.getName());
                         });
@@ -1598,11 +1609,14 @@ public class ZSYTaskService implements IZSYTaskService {
                     }else if (taskReqDTO.getTaskUsers().size() < taskTemp.getTaskUsers().size()){
                         Set<Long> removeUsers = new HashSet<>();
                         taskReqDTO.getTaskUsers().stream().forEach(taskUserReqDTO -> {
-                            List<TaskUserBO> taskUserBOS = taskTemp.getTaskUsers().stream().filter(taskUserBO -> (!taskUserBO.getUserId().equals(taskUserReqDTO.getUserId()))).collect(Collectors.toList());
+                            //获取相同的部分
+                            List<TaskUserBO> taskUserBOS = taskTemp.getTaskUsers().stream().filter(taskUserBO -> (taskUserBO.getUserId().equals(taskUserReqDTO.getUserId()))).collect(Collectors.toList());
                             List<Long> userIds = taskUserBOS.stream().map(TaskUser::getUserId).collect(Collectors.toList());
                             removeUsers.addAll(userIds);
                         });
-                        removeUsers.stream().forEach(userId3 -> {
+                        List<Long> reduceUserIds = taskTemp.getTaskUsers().stream().map(TaskUser::getUserId).collect(Collectors.toList());
+                        reduceUserIds.removeAll(removeUsers);
+                        reduceUserIds.stream().forEach(userId3 -> {
                             User user = userMapper.selectById(userId3);
                             userNames.add(user.getName());
                         });
@@ -1616,7 +1630,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 list.add(notification);
             });
             if (notificationMapper.insertBatch(list) == 0){
-                throw new ZSYServiceException("插入通知失败");
+                throw new ZSYServiceException("新增任务修改通知失败");
             }
         }
     }
@@ -1647,7 +1661,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 list.add(notification);
             });
             if (notificationMapper.insertBatch(list) == 0){
-                throw new ZSYServiceException("插入通知失败");
+                throw new ZSYServiceException("新增完成子任务通知失败");
             }
         }
     }
@@ -1678,7 +1692,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public PageInfo<NoticeResDTO> getAllNotifications(NoticeReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
-        Page<Notification> notifications = notificationMapper.selectAllNotice(ZSYTokenRequestContext.get().getUserId());
+        Page<Notification> notifications = notificationMapper.selectAllNotice(ZSYTokenRequestContext.get().getUserId(),reqDTO);
         Page<NoticeResDTO> noticeResDTOList = new Page<>();
         if (!CollectionUtils.isEmpty(notifications)){
             BeanUtils.copyProperties(notifications,noticeResDTOList);
@@ -1712,6 +1726,180 @@ public class ZSYTaskService implements IZSYTaskService {
         if (notificationMapper.updateNoticeById(nid,new Date()) == 0){
             throw new ZSYServiceException("读取通知失败");
         }
+    }
+
+    /**
+     * 检查是否有主任务超时,有的话,新增通知并短信通知负责人
+     * @return
+     */
+    @Override
+    @Transactional
+    public void noticeDelayMasterTaskPrincipal() {
+        //查询审核通过,进行中的任务
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskList();
+        //有超时的任务集合
+        List<TaskListBO> delayTaskList = Lists.newArrayList();
+        taskListBOS.stream().forEach(taskListBO -> {
+            //设计阶段任务
+            if (taskListBO.getStageId().equals(212754785051344891L) || taskListBO.getStageId().equals(212754785051344892L)){
+                if ((taskListBO.getBeginTime() != null) && (taskListBO.getBeginTime().compareTo(new Date()) < 0) || taskListBO.getEndTime().compareTo(new Date()) < 0){
+                    delayTaskList.add(taskListBO);
+                }
+            }
+            //开发阶段任务
+            else if (taskListBO.getStageId().equals(212754785051344894L) || taskListBO.getStageId().equals(212754785051344890L)){
+                if ((taskListBO.getTestTime() != null) && (taskListBO.getTestTime().compareTo(new Date()) < 0) || taskListBO.getEndTime().compareTo(new Date()) < 0){
+                    delayTaskList.add(taskListBO);
+                }
+            }else {
+                if ((taskListBO.getEndTime() != null) && (taskListBO.getEndTime().compareTo(new Date()) < 0)){
+                    delayTaskList.add(taskListBO);
+                }
+            }
+        });
+        //因短信接口一分钟只可以给一个手机发一次短信,当一个负责人有多个超时任务,将任务拼接起来
+        Map<String,String> taskMap = new HashMap<>();
+        delayTaskList.stream().forEach(delayTask -> {
+            //根据taskid查询超时人员信息
+            User user = userMapper.selectById(delayTask.getCreateBy());
+            //要发信息的人员
+            List<String> messagePhones = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+            if (messagePhones.contains(user.getPhone())){
+                taskMap.put(user.getPhone(),taskMap.get(user.getPhone())+","+delayTask.getName());
+            }else {
+                taskMap.put(user.getPhone(),delayTask.getName());
+            }
+            //新增通知
+            Notification notification = new Notification();
+            notification.setNid(snowFlakeIDHelper.nextId());
+            notification.setTaskId(delayTask.getId());
+            notification.setUserId(delayTask.getCreateBy());
+            String content = "您负责的任务 ("+delayTask.getName()+") 已超时,请及时确认;";
+            notification.setContent(content);
+            notification.setCreateTime(new Date());
+            notification.setStatus(0);
+            if (notificationMapper.insertNotice(notification) == 0){
+                throw new ZSYServiceException("新增任务超时通知失败");
+            }
+            // todo 发短信通知
+        });
+        taskMap.entrySet().stream().forEach(longStringEntry -> {
+            System.out.println(longStringEntry.getKey()+":"+longStringEntry.getValue());
+        });
+    }
+    private void sendMessage(String phone,String templateId,String templateJson){
+        List<ZSYOKHttpHelper.OkHttpParam> params = new ArrayList<>();
+        params.add(new ZSYOKHttpHelper.OkHttpParam("mobile", phone));
+        params.add(new ZSYOKHttpHelper.OkHttpParam("appId", "6wax3awc7rfh5ijm"));
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        params.add(new ZSYOKHttpHelper.OkHttpParam("timestamp", timestamp));
+        params.add(new ZSYOKHttpHelper.OkHttpParam("sign", MD5Helper.convert("6wax3awc7rfh5ijm" + "3b47ba17f2eb45709312fce39fcc2d71" + timestamp, 32, false)));
+        params.add(new ZSYOKHttpHelper.OkHttpParam("templateId", templateId));
+        params.add(new ZSYOKHttpHelper.OkHttpParam("templateJson", templateJson));
+        ZSYOKHttpHelper.post(ZSYOKHttpHelper.componentUrl("http://fcsms.kaozhengbao.com/captcha/notify",params));
+    }
+
+    /**
+     * 9点定时检查是否有子任务超时,有的话,新增通知并短信通知负责人
+     */
+    @Override
+    @Transactional
+    public void noticeDelaySonTaskPrincipal() {
+        //查询审核通过,进行中的子任务
+        List<TaskBO> taskBOS = taskMapper.selectSonTaskList();
+        Map<String,String> taskMap = new HashMap<>();
+        taskBOS.stream().forEach(taskBO -> {
+            if (!CollectionUtils.isEmpty(taskBO.getTaskUsers())){
+                taskBO.getTaskUsers().stream().forEach(taskUser -> {
+                    if (taskUser.getEndTime().compareTo(new Date()) < 0){
+                        //新增通知
+                        //负责人
+                        User user = userMapper.selectByTaskId(taskBO.getId());
+                        //超时人员
+                        User delayUser = userMapper.selectById(taskUser.getUserId());
+                        //要发信息的人员
+                        List<String> messagePhones = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+                        if (messagePhones.contains(delayUser.getPhone())){
+                            taskMap.put(delayUser.getPhone(),taskMap.get(delayUser.getPhone())+","+taskBO.getName()+"="+delayUser.getName());
+                        }else {
+                            taskMap.put(delayUser.getPhone(),taskBO.getName()+"+"+delayUser.getName());
+                        }
+                        Notification notification = new Notification();
+                        notification.setNid(snowFlakeIDHelper.nextId());
+                        notification.setTaskId(taskBO.getId());
+                        notification.setUserId(user.getId());
+                        String content = "您负责的任务 ("+taskBO.getName()+") 有超时子任务,请及时确认;超时人员: " + delayUser.getName();
+                        notification.setContent(content);
+                        notification.setCreateTime(new Date());
+                        notification.setStatus(0);
+                        if (notificationMapper.insertNotice(notification) == 0){
+                            throw new ZSYServiceException("新增任务超时通知失败");
+                        }
+                        //TODO 发短信
+                    }
+                });
+            }
+        });
+        taskMap.entrySet().stream().forEach(entrySet ->{
+            System.out.println(entrySet.getKey()+":"+entrySet.getValue());
+            //获取超时任务和人员的集合
+            List<String> taskUsers = Arrays.asList(entrySet.getValue().split(","));
+            //超时任务集合
+            List<String> delayTasks = new ArrayList<>();
+            //超时人员集合
+            List<String> delayUsers = new ArrayList<>();
+            taskUsers.stream().forEach(taskUser ->{
+                String taskName = Arrays.asList(taskUser.split("=")).get(0);
+                String userName = Arrays.asList(taskUser.split("=")).get(1);
+                delayTasks.add(taskName);
+                delayUsers.add(userName);
+            });
+            String templateJson = "{\"taskName\":\""+delayTasks.toString()+ "\",\"timeOutUsers\":\""+delayUsers.toString()+"\"}";
+
+        });
+    }
+
+    /**
+     * 9点定时检查是否有子任务超时,有的话,新增通知并短信通知当前子任务负责人
+     */
+    @Override
+    public void noticeDelaySonTaskChargeMan() {
+        //查询审核通过,进行中的子任务
+        List<TaskBO> taskBOS = taskMapper.selectSonTaskList();
+        Map<String,String> taskMap = new HashMap<>();
+        taskBOS.stream().forEach(taskBO -> {
+            if (!CollectionUtils.isEmpty(taskBO.getTaskUsers())){
+                taskBO.getTaskUsers().stream().forEach(taskUser -> {
+                    if (taskUser.getEndTime().compareTo(new Date()) < 0){
+                        //超时人员
+                        User delayUser = userMapper.selectById(taskUser.getUserId());
+                        //要发信息的人员
+                        List<String> messagePhones = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+                        if (messagePhones.contains(delayUser.getPhone())){
+                            taskMap.put(delayUser.getPhone(),taskMap.get(delayUser.getPhone())+","+taskBO.getName());
+                        }else {
+                            taskMap.put(delayUser.getPhone(),taskBO.getName());
+                        }
+                        //新增通知
+                       /* Notification notification = new Notification();
+                        notification.setNid(snowFlakeIDHelper.nextId());
+                        notification.setTaskId(taskBO.getId());
+                        notification.setUserId(delayUser.getId());
+                        String content = "("+taskBO.getName()+") 任务已超时,请及时确认!!! 如需延期，请及时联系任务负责人！";
+                        notification.setContent(content);
+                        notification.setCreateTime(new Date());
+                        notification.setStatus(0);
+                        if (notificationMapper.insertNotice(notification) == 0){
+                            throw new ZSYServiceException("新增任务超时通知失败");
+                        }*/
+                        //TODO 发短信
+                    }
+                });
+            }
+        });
+        taskMap.entrySet().stream().forEach(entrySet ->{
+            System.out.println(entrySet.getKey()+":"+entrySet.getValue());
+        });
     }
     // -- sch
 

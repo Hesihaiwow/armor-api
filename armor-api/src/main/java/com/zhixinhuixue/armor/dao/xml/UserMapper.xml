@@ -144,4 +144,14 @@
       SELECT COUNT(*) FROM `user` WHERE department_id=#{id}
   </select>
 
+  <!-- sch -->
+  <!--根据taskid查询超时人员信息-->
+  <select id="selectByTaskId" resultMap="BaseResultMap">
+    SELECT u.* FROM `user` u
+    LEFT JOIN `task` t ON t.create_by = u.id
+    where t.id = #{taskId}
+    limit 1
+  </select>
+  <!-- sch -->
+
 </mapper>

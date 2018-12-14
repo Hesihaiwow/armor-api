@@ -194,4 +194,16 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<Task> getTaskPlanList();
+
+    /**
+     * 查询审核通过,进行中的任务
+     * @return
+     */
+    List<TaskListBO> selectTaskList();
+
+    /**
+     * 查询审核通过,进行中的子任务
+     * @return
+     */
+    List<TaskBO> selectSonTaskList();
 }

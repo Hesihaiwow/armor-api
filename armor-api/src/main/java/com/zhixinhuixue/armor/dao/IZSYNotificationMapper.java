@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.dto.request.NoticeReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Notification;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public interface IZSYNotificationMapper {
      * @param userId
      * @return
      */
-    Page<Notification> selectAllNotice(@Param("userId")Long userId);
+    Page<Notification> selectAllNotice(@Param("userId")Long userId, @Param("reqDTO") NoticeReqDTO reqDTO);
 
     /**
      * 查询所有未读通知条数
@@ -48,4 +49,10 @@ public interface IZSYNotificationMapper {
      */
     int updateNoticeById(@Param("nid") Long nid,@Param("readTime") Date readTime);
 
+    /**
+     * 插入通知
+     * @param notification
+     * @return
+     */
+    int insertNotice(@Param("notification") Notification notification);
 }
