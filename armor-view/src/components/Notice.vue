@@ -164,7 +164,6 @@
                 })
             },
             clearReqDTO() {
-                this.reqDTO.pageNum = 1
                 this.reqDTO.readStatus = null;
                 this.reqDTO.beginTime = null;
                 this.reqDTO.endTime = null;
