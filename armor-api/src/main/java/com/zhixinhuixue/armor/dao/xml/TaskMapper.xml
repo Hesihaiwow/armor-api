@@ -503,6 +503,7 @@
         where t1.`status` = 1 and t1.review_status = 3
         and t2.`status`= 1
         and t1.is_delete = 0
+        and t1.type = 2
         order by t1.create_time desc
     </select>
     <!-- sch -->

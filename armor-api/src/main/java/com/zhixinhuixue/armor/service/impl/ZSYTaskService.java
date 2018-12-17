@@ -42,6 +42,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.logging.LoggingMXBean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1758,16 +1759,16 @@ public class ZSYTaskService implements IZSYTaskService {
             }
         });
         //因短信接口一分钟只可以给一个手机发一次短信,当一个负责人有多个超时任务,将任务拼接起来
-        Map<String,String> taskMap = new HashMap<>();
+        Map<Long,String> taskMap = new HashMap<>();
         delayTaskList.stream().forEach(delayTask -> {
             //根据taskid查询超时人员信息
             User user = userMapper.selectById(delayTask.getCreateBy());
             //要发信息的人员
-            List<String> messagePhones = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
-            if (messagePhones.contains(user.getPhone())){
-                taskMap.put(user.getPhone(),taskMap.get(user.getPhone())+","+delayTask.getName());
+            List<Long> messageUsers = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+            if (messageUsers.contains(delayTask.getCreateBy())){
+                taskMap.put(delayTask.getCreateBy(),taskMap.get(delayTask.getCreateBy())+","+delayTask.getName());
             }else {
-                taskMap.put(user.getPhone(),delayTask.getName());
+                taskMap.put(delayTask.getCreateBy(),delayTask.getName());
             }
             //新增通知
             Notification notification = new Notification();
@@ -1781,12 +1782,21 @@ public class ZSYTaskService implements IZSYTaskService {
             if (notificationMapper.insertNotice(notification) == 0){
                 throw new ZSYServiceException("新增任务超时通知失败");
             }
-            // todo 发短信通知
         });
         taskMap.entrySet().stream().forEach(longStringEntry -> {
-            System.out.println(longStringEntry.getKey()+":"+longStringEntry.getValue());
+            User user = userMapper.selectById(longStringEntry.getKey());
+            String taskName = longStringEntry.getValue().replaceAll("&", ";");
+            String templateJson = "{\"taskName\":\""+taskName+"\"}";
+            sendMessage(user.getPhone(),ZSYConstants.TEMPLATE_ID_ONE,templateJson);
         });
     }
+
+    /**
+     * 发短信
+     * @param phone
+     * @param templateId
+     * @param templateJson
+     */
     private void sendMessage(String phone,String templateId,String templateJson){
         List<ZSYOKHttpHelper.OkHttpParam> params = new ArrayList<>();
         params.add(new ZSYOKHttpHelper.OkHttpParam("mobile", phone));
@@ -1807,22 +1817,21 @@ public class ZSYTaskService implements IZSYTaskService {
     public void noticeDelaySonTaskPrincipal() {
         //查询审核通过,进行中的子任务
         List<TaskBO> taskBOS = taskMapper.selectSonTaskList();
-        Map<String,String> taskMap = new HashMap<>();
+        Map<Long,String> taskMap = new HashMap<>();
         taskBOS.stream().forEach(taskBO -> {
             if (!CollectionUtils.isEmpty(taskBO.getTaskUsers())){
                 taskBO.getTaskUsers().stream().forEach(taskUser -> {
                     if (taskUser.getEndTime().compareTo(new Date()) < 0){
-                        //新增通知
                         //负责人
                         User user = userMapper.selectByTaskId(taskBO.getId());
                         //超时人员
                         User delayUser = userMapper.selectById(taskUser.getUserId());
                         //要发信息的人员
-                        List<String> messagePhones = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
-                        if (messagePhones.contains(delayUser.getPhone())){
-                            taskMap.put(delayUser.getPhone(),taskMap.get(delayUser.getPhone())+","+taskBO.getName()+"="+delayUser.getName());
+                        List<Long> messageUsers = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+                        if (messageUsers.contains(taskBO.getCreateBy())){
+                            taskMap.put(taskBO.getCreateBy(),taskMap.get(taskBO.getCreateBy())+","+taskBO.getName()+"="+delayUser.getName());
                         }else {
-                            taskMap.put(delayUser.getPhone(),taskBO.getName()+"+"+delayUser.getName());
+                            taskMap.put(taskBO.getCreateBy(),taskBO.getName()+"="+delayUser.getName());
                         }
                         Notification notification = new Notification();
                         notification.setNid(snowFlakeIDHelper.nextId());
@@ -1835,13 +1844,12 @@ public class ZSYTaskService implements IZSYTaskService {
                         if (notificationMapper.insertNotice(notification) == 0){
                             throw new ZSYServiceException("新增任务超时通知失败");
                         }
-                        //TODO 发短信
                     }
                 });
             }
         });
         taskMap.entrySet().stream().forEach(entrySet ->{
-            System.out.println(entrySet.getKey()+":"+entrySet.getValue());
+            User user = userMapper.selectById(entrySet.getKey());
             //获取超时任务和人员的集合
             List<String> taskUsers = Arrays.asList(entrySet.getValue().split(","));
             //超时任务集合
@@ -1854,8 +1862,9 @@ public class ZSYTaskService implements IZSYTaskService {
                 delayTasks.add(taskName);
                 delayUsers.add(userName);
             });
-            String templateJson = "{\"taskName\":\""+delayTasks.toString()+ "\",\"timeOutUsers\":\""+delayUsers.toString()+"\"}";
-
+            String taskNames = delayTasks.toString().replaceAll("&", ";");
+            String templateJson = "{\"taskName\":\""+taskNames+ "\",\"timeOutUsers\":\""+delayUsers.toString()+"\"}";
+            sendMessage(user.getPhone(),ZSYConstants.TEMPLATE_ID_TWO,templateJson);
         });
     }
 
@@ -1866,7 +1875,7 @@ public class ZSYTaskService implements IZSYTaskService {
     public void noticeDelaySonTaskChargeMan() {
         //查询审核通过,进行中的子任务
         List<TaskBO> taskBOS = taskMapper.selectSonTaskList();
-        Map<String,String> taskMap = new HashMap<>();
+        Map<Long,String> taskMap = new HashMap<>();
         taskBOS.stream().forEach(taskBO -> {
             if (!CollectionUtils.isEmpty(taskBO.getTaskUsers())){
                 taskBO.getTaskUsers().stream().forEach(taskUser -> {
@@ -1874,14 +1883,14 @@ public class ZSYTaskService implements IZSYTaskService {
                         //超时人员
                         User delayUser = userMapper.selectById(taskUser.getUserId());
                         //要发信息的人员
-                        List<String> messagePhones = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
-                        if (messagePhones.contains(delayUser.getPhone())){
-                            taskMap.put(delayUser.getPhone(),taskMap.get(delayUser.getPhone())+","+taskBO.getName());
+                        List<Long> messageUsers = taskMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+                        if (messageUsers.contains(delayUser.getId())){
+                            taskMap.put(delayUser.getId(),taskMap.get(delayUser.getId())+","+taskBO.getName());
                         }else {
-                            taskMap.put(delayUser.getPhone(),taskBO.getName());
+                            taskMap.put(delayUser.getId(),taskBO.getName());
                         }
                         //新增通知
-                       /* Notification notification = new Notification();
+                        Notification notification = new Notification();
                         notification.setNid(snowFlakeIDHelper.nextId());
                         notification.setTaskId(taskBO.getId());
                         notification.setUserId(delayUser.getId());
@@ -1891,14 +1900,16 @@ public class ZSYTaskService implements IZSYTaskService {
                         notification.setStatus(0);
                         if (notificationMapper.insertNotice(notification) == 0){
                             throw new ZSYServiceException("新增任务超时通知失败");
-                        }*/
-                        //TODO 发短信
+                        }
                     }
                 });
             }
         });
         taskMap.entrySet().stream().forEach(entrySet ->{
-            System.out.println(entrySet.getKey()+":"+entrySet.getValue());
+            User user = userMapper.selectById(entrySet.getKey());
+            String taskName = entrySet.getValue().replaceAll("&", ";");
+            String templateJson = "{\"taskName\":\""+taskName+"\"}";
+            sendMessage(user.getPhone(),ZSYConstants.TEMPLATE_ID_THREE,templateJson);
         });
     }
     // -- sch

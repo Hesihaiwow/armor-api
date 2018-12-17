@@ -19,7 +19,7 @@ public class NoticeTrigger {
     /**
      * 9点定时检查是否有主任务超时,有的话,新增通知并短信通知负责人
      */
-    @Scheduled(cron = "0 31 16 ? * *")
+//    @Scheduled(cron = "0 0 9 ? * *")
     public void noticeDelayMasterTaskPrincipal(){
         taskService.noticeDelayMasterTaskPrincipal();
     }
@@ -27,7 +27,7 @@ public class NoticeTrigger {
     /**
      * 9点定时检查是否有子任务超时,有的话,新增通知并短信通知负责人
      */
-    @Scheduled(cron = "0 48 17 ? * *")
+//    @Scheduled(cron = "0 2 9 ? * *")
     public void noticeDelaySonTaskPrincipal(){
         taskService.noticeDelaySonTaskPrincipal();
     }
@@ -35,7 +35,7 @@ public class NoticeTrigger {
     /**
      * 9点定时检查是否有子任务超时,有的话,新增通知并短信通知当前子任务负责人
      */
-    @Scheduled(cron = "0 49 16 ? * *")
+//    @Scheduled(cron = "0 4 9 ? * *")
     public void noticeDelaySonTaskChargeMan(){
         taskService.noticeDelaySonTaskChargeMan();
     }
