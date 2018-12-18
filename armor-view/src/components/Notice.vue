@@ -9,13 +9,14 @@
                         <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
-                    <span class="ttl-name">通知时间:</span>
+                    <!--<span class="ttl-name">通知时间:</span>-->
                     <el-date-picker
                             v-model="beginTime"
                             align="right"
                             type="date"
                             value-format="yyyy-MM-dd"
                             clearable
+                            placeholder="请选择开始时间"
                     >
                     </el-date-picker>
                     <span style="font-size: 14px;color: #606266;">-</span>
@@ -25,6 +26,7 @@
                             type="date"
                             value-format="yyyy-MM-dd"
                             clearable
+                            placeholder="请选择截止时间"
                     >
                     </el-date-picker>
                 </div>
