@@ -96,4 +96,19 @@ public class ZSYConstants {
      * 子任务超时,通知当前任务人员  短信模板templateId
      */
     public static final String TEMPLATE_ID_THREE = "SMS_152507424";
+
+    /**
+     * 短信接口appId
+     */
+    public static final String APP_ID = "6wax3awc7rfh5ijm";
+
+    /**
+     * 短信接口appSecret
+     */
+    public static final String APP_SECRET = "3b47ba17f2eb45709312fce39fcc2d71";
+
+    /**
+     * 短信接口地址
+     */
+    public static final String URL = "http://fcsms.kaozhengbao.com/captcha/notify";
 }

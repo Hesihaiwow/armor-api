@@ -264,6 +264,27 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("检查是否有主任务超时,有的话,新增通知并短信通知负责人")
+    @PostMapping("/notification/master/principal")
+    public String noticeDelayMasterTaskPrincipal(){
+        taskService.noticeDelayMasterTaskPrincipal();
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("检查是否有子任务超时,有的话,新增通知并短信通知负责人")
+    @PostMapping("/notification/son/principal")
+    public String noticeDelaySonTaskPrincipal(){
+        taskService.noticeDelaySonTaskPrincipal();
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("检查是否有子任务超时,有的话,新增通知并短信通知超时人员")
+    @PostMapping("/notification/son/chargeMan")
+    public String noticeDelaySonTaskChargeMan(){
+        taskService.noticeDelaySonTaskChargeMan();
+        return ZSYResult.success().build();
+    }
+
     // -- sch
 }
 
