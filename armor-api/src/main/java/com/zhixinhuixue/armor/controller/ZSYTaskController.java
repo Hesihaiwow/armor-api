@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -236,6 +237,55 @@ public class ZSYTaskController extends ZSYController {
         taskService.setTestingTask(taskReqDTO);
         return ZSYResult.success().build();
     }
+
+    // sch --
+    @ApiOperation("查询最近5条未读通知")
+    @GetMapping("/notification/un-read")
+    public String getUnreadNotification(){
+        return ZSYResult.success().data(taskService.getUnreadNotification()).build();
+    }
+
+    @ApiOperation("查询所有通知")
+    @PostMapping("/notification/all")
+    public String getAllNotifications(@RequestBody NoticeReqDTO reqDTO){
+        return ZSYResult.success().data(taskService.getAllNotifications(reqDTO)).build();
+    }
+
+    @ApiOperation("查询所有未读通知条数")
+    @GetMapping("/notification/un-read/num")
+    public String getUnreadNoticeNum(){
+        return ZSYResult.success().data(taskService.getUnreadNoticeNum()).build();
+    }
+
+    @ApiOperation("更新通知为已读")
+    @PutMapping("/notification/read/{nid}")
+    public String readNotice(@PathVariable("nid")Long nid){
+        taskService.readNotice(nid);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("检查是否有主任务超时,有的话,新增通知并短信通知负责人")
+    @PostMapping("/notification/master/principal")
+    public String noticeDelayMasterTaskPrincipal(){
+        taskService.noticeDelayMasterTaskPrincipal();
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("检查是否有子任务超时,有的话,新增通知并短信通知负责人")
+    @PostMapping("/notification/son/principal")
+    public String noticeDelaySonTaskPrincipal(){
+        taskService.noticeDelaySonTaskPrincipal();
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("检查是否有子任务超时,有的话,新增通知并短信通知超时人员")
+    @PostMapping("/notification/son/chargeMan")
+    public String noticeDelaySonTaskChargeMan(){
+        taskService.noticeDelaySonTaskChargeMan();
+        return ZSYResult.success().build();
+    }
+
+    // -- sch
 }
 
 

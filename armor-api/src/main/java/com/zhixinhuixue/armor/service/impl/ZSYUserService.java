@@ -19,10 +19,7 @@ import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.*;
 import com.zhixinhuixue.armor.model.bo.DeptBo;
 import com.zhixinhuixue.armor.model.bo.UserBo;
-import com.zhixinhuixue.armor.model.dto.request.UploadAvatarReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
@@ -465,4 +462,21 @@ public class ZSYUserService implements IZSYUserService {
         MailHelper.send(user.getEmail());
     }
 
+    // sch --
+
+    /**
+     * 用户修改个人基本信息
+     * @param userInfoReqDTO
+     */
+    @Override
+    public void modifyBasicInfo(UserInfoReqDTO userInfoReqDTO) {
+        User user = new User();
+        BeanUtils.copyProperties(userInfoReqDTO,user);
+        user.setId(ZSYTokenRequestContext.get().getUserId());
+        if (userMapper.updateSelectiveById(user) == 0){
+            throw new ZSYServiceException("更新个人基本信息失败");
+        }
+    }
+
+    // -- sch
 }

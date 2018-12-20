@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYNotificationMapper">
+
+    <resultMap id="basicMap" type="com.zhixinhuixue.armor.model.pojo.Notification">
+        <id column="nid" property="nid" jdbcType="BIGINT"></id>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="content" property="content" jdbcType="VARCHAR"></result>
+        <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+        <result column="read_time" property="readTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <!-- 批量插入通知 -->
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO `notification`
+        (`nid`,`task_id`,`user_id`,`content`,`status`,`create_time`)
+        VALUES
+        <foreach collection="list" item="item" separator="," >
+            (#{item.nid,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
+            ,#{item.userId,jdbcType=BIGINT},#{item.content,jdbcType=VARCHAR}
+            ,#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--插入通知-->
+    <insert id="insertNotice">
+        INSERT INTO `notification`
+        (`nid`,`task_id`,`user_id`,`content`,`status`,`create_time`)
+        VALUES
+        (#{notification.nid,jdbcType=BIGINT},#{notification.taskId,jdbcType=BIGINT},#{notification.userId,jdbcType=BIGINT}
+        ,#{notification.content,jdbcType=VARCHAR},#{notification.status,jdbcType=INTEGER},#{notification.createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!--读取通知-->
+    <update id="updateNoticeById">
+        UPDATE `notification` SET `status` = 1,`read_time` = #{readTime,jdbcType=TIMESTAMP} WHERE `nid` = #{nid}
+    </update>
+
+    <!--查询最近5条未读通知-->
+    <select id="selectUnReadNotice" resultMap="basicMap">
+        SELECT * FROM `notification` WHERE `user_id` = #{userId} and `status` = 0
+        ORDER BY `create_time` DESC LIMIT 5
+    </select>
+
+    <!--查询所有通知-->
+    <select id="selectAllNotice" resultMap="basicMap">
+        SELECT * FROM `notification` WHERE `user_id` = #{userId}
+        <if test="reqDTO.readStatus != null">
+            and `status` = #{reqDTO.readStatus}
+        </if>
+        <if test="reqDTO.beginTime != null">
+            <![CDATA[  and create_time > #{reqDTO.beginTime} ]]>
+        </if>
+        <if test="reqDTO.endTime != null">
+            <![CDATA[  and create_time < #{reqDTO.endTime} ]]>
+        </if>
+         ORDER BY `status` ASC,`create_time` DESC
+    </select>
+
+    <!--查询所有未读通知条数-->
+    <select id="selectUnreadNoticeNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `notification` WHERE `user_id` = #{userId} and `status` = 0
+    </select>
+</mapper>

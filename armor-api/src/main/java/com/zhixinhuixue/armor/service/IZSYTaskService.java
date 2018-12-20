@@ -221,4 +221,47 @@ public interface IZSYTaskService {
      * @param testingTask
      */
     void setTestingTask(TestingTaskReqDTO testingTask);
+
+    // sch --
+
+    /**
+     * 查询最近5条未读通知
+     * @return
+     */
+    List<NoticeResDTO> getUnreadNotification();
+
+    /**
+     * 查询所有通知
+     * @return
+     */
+    PageInfo<NoticeResDTO> getAllNotifications(NoticeReqDTO reqDTO);
+
+    /**
+     * 查询所有未读通知条数
+     * @return
+     */
+    UnreadNoticeNumResDTO getUnreadNoticeNum();
+
+    /**
+     * 读取通知
+     */
+    void readNotice(Long nid);
+
+    /**
+     * 检查是否有主任务超时,有的话,新增通知并短信通知负责人
+     * @return
+     */
+    void noticeDelayMasterTaskPrincipal();
+
+    /**
+     * 检查是否有子任务超时,有的话,新增通知并短信通知负责人
+     */
+    void noticeDelaySonTaskPrincipal();
+
+    /**
+     * 9点定时检查是否有子任务超时,有的话,新增通知并短信通知当前子任务负责人
+     */
+    void noticeDelaySonTaskChargeMan();
+
+    // -- sch
 }

@@ -78,4 +78,14 @@ public interface IZSYUserMapper {
      * @return
      */
     int countByDepartmentId(long id);
+
+    // sch --
+
+    /**
+     * 根据taskid查询超时人员信息
+     * @param taskId
+     * @return
+     */
+    User selectByTaskId(@Param("taskId") Long taskId);
+    // -- sch
 }

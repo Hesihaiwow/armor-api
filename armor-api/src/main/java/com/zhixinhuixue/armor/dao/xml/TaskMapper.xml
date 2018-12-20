@@ -487,4 +487,24 @@
         select id,`name` from task
         where status=1 AND is_delete = 0
     </select>
+
+    <!-- sch -->
+    <!--查询审核通过,进行中的任务-->
+    <select id="selectTaskList" resultMap="PageResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `type` = 2 AND `status` = 1
+    </select>
+
+    <!--查询审核通过,进行中的子任务-->
+    <select id="selectSonTaskList" resultMap="TaskResultMap">
+        select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t3.image_url as projectImage, t2.user_id,t4.`name` as userName, t4.avatar_url from task t1
+        join task_user t2 on t1.id = t2.task_id
+        left join project t3 on t1.project_id = t3.id
+           left join `user` t4 on t1.create_by = t4.id
+        where t1.`status` = 1 and t1.review_status = 3
+        and t2.`status`= 1
+        and t1.is_delete = 0
+        and t1.type = 2
+        order by t1.create_time desc
+    </select>
+    <!-- sch -->
 </mapper>

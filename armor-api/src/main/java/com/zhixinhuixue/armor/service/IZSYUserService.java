@@ -2,10 +2,7 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.dto.request.UploadAvatarReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserLoginReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserPwdReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
@@ -120,5 +117,12 @@ public interface IZSYUserService {
     void sendEmail();
 
 
+    // sch --
+    /**
+     *  用户修改个人基本信息
+     * @param userInfoReqDTO
+     */
+    void modifyBasicInfo(UserInfoReqDTO userInfoReqDTO);
 
+    // -- sch
 }

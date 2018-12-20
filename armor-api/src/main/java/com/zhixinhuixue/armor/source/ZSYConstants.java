@@ -81,4 +81,34 @@ public class ZSYConstants {
      * 任务来源于任务页添加任务
      */
     public static final Long taskOrigin = 0L;
+
+    /**
+     * 主任务超时,通知负责人  短信模板templateId
+     */
+    public static final String TEMPLATE_ID_ONE = "SMS_152507421";
+
+    /**
+     * 子任务超时,通知负责人  短信模板templateId
+     */
+    public static final String TEMPLATE_ID_TWO = "SMS_152512354";
+
+    /**
+     * 子任务超时,通知当前任务人员  短信模板templateId
+     */
+    public static final String TEMPLATE_ID_THREE = "SMS_152507424";
+
+    /**
+     * 短信接口appId
+     */
+    public static final String APP_ID = "6wax3awc7rfh5ijm";
+
+    /**
+     * 短信接口appSecret
+     */
+    public static final String APP_SECRET = "3b47ba17f2eb45709312fce39fcc2d71";
+
+    /**
+     * 短信接口地址
+     */
+    public static final String URL = "http://fcsms.kaozhengbao.com/captcha/notify";
 }

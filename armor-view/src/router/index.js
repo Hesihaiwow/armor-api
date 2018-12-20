@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@/components/Index'
+import Index from '@/components/Index2'
 import Login from '@/components/Login'
 import Task from '@/components/Task'
 import Project from '@/components/Project'
@@ -14,6 +14,7 @@ import UserComments from '@/components/UserComments'
 import Calculate from '@/components/Calculate'
 import Plan from '@/components/Plan2'
 import demandDetail from '@/components/demandDetail'
+import Notice from '@/components/Notice'
 
 
 Vue.use(Router)
@@ -90,6 +91,10 @@ export default new Router({
                 {
                     path: 'demandDetail',
                     component: demandDetail
+                },
+                {
+                    path: 'notice',
+                    component: Notice
                 }
             ]
         }
