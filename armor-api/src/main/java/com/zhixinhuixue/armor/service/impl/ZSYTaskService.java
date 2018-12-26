@@ -20,6 +20,7 @@ import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -1785,17 +1786,19 @@ public class ZSYTaskService implements IZSYTaskService {
         });
         taskMap.entrySet().stream().forEach(longStringEntry -> {
             User user = userMapper.selectById(longStringEntry.getKey());
-            List<String> taskNames = Arrays.asList(longStringEntry.getValue().replaceAll("&", ";").split(","));
-            taskNames = taskNames.stream().map(taskName -> "<"+taskName+">").collect(Collectors.toList());
-            String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
-            logger.info("主任务超时,发短信通知负责人");
-            String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_ONE, templateJson);
-            String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
-            String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
-            if ("00".equals(code)){
-                logger.info("短信发送成功");
-            }else {
-                logger.info("短信发送失败: "+errorMessage);
+            if (user.getStatus() == 0 && user.getIsDelete() == 0){
+                List<String> taskNames = Arrays.asList(longStringEntry.getValue().replaceAll("&", ";").split(","));
+                taskNames = taskNames.stream().map(taskName -> "<"+taskName+">").collect(Collectors.toList());
+                String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
+                logger.info("主任务超时,发短信通知负责人");
+                String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_ONE, templateJson);
+                String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
+                String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
+                if ("00".equals(code)){
+                    logger.info("短信发送成功");
+                }else {
+                    logger.info("短信发送失败: "+errorMessage);
+                }
             }
         });
     }
@@ -1860,28 +1863,30 @@ public class ZSYTaskService implements IZSYTaskService {
         });
         taskMap.entrySet().stream().forEach(entrySet ->{
             User user = userMapper.selectById(entrySet.getKey());
-            //获取超时任务和人员的集合
-            List<String> taskUsers = Arrays.asList(entrySet.getValue().split(","));
-            //超时任务集合
-            List<String> delayTasks = new ArrayList<>();
-            //超时人员集合
-            List<String> delayUsers = new ArrayList<>();
-            taskUsers.stream().forEach(taskUser ->{
-                String taskName = "<"+Arrays.asList(taskUser.split("=")).get(0)+">";
-                String userName = "<"+Arrays.asList(taskUser.split("=")).get(1)+">";
-                delayTasks.add(taskName);
-                delayUsers.add(userName);
-            });
-            String taskNames = delayTasks.toString().replaceAll("&", ";");
-            String templateJson = "{\"taskName\":\""+taskNames+ "\",\"timeOutUsers\":\""+delayUsers.toString()+"\"}";
-            logger.info("子任务超时,发短信通知任务负责人");
-            String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_TWO, templateJson);
-            String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
-            String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
-            if ("00".equals(code)){
-                logger.info("短信发送成功");
-            }else {
-                logger.info("短信发送失败: "+errorMessage);
+            if (user.getIsDelete() == 0 && user.getStatus() == 0){
+                //获取超时任务和人员的集合
+                List<String> taskUsers = Arrays.asList(entrySet.getValue().split(","));
+                //超时任务集合
+                List<String> delayTasks = new ArrayList<>();
+                //超时人员集合
+                List<String> delayUsers = new ArrayList<>();
+                taskUsers.stream().forEach(taskUser ->{
+                    String taskName = "<"+Arrays.asList(taskUser.split("=")).get(0)+">";
+                    String userName = "<"+Arrays.asList(taskUser.split("=")).get(1)+">";
+                    delayTasks.add(taskName);
+                    delayUsers.add(userName);
+                });
+                String taskNames = delayTasks.toString().replaceAll("&", ";");
+                String templateJson = "{\"taskName\":\""+taskNames+ "\",\"timeOutUsers\":\""+delayUsers.toString()+"\"}";
+                logger.info("子任务超时,发短信通知任务负责人");
+                String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_TWO, templateJson);
+                String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
+                String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
+                if ("00".equals(code)){
+                    logger.info("短信发送成功");
+                }else {
+                    logger.info("短信发送失败: "+errorMessage);
+                }
             }
         });
     }
@@ -1925,17 +1930,19 @@ public class ZSYTaskService implements IZSYTaskService {
         });
         taskMap.entrySet().stream().forEach(entrySet ->{
             User user = userMapper.selectById(entrySet.getKey());
-            List<String> taskNames = Arrays.asList(entrySet.getValue().replaceAll("&", ";").split(","));
-            taskNames = taskNames.stream().map(taskName -> "<" + taskName + ">").collect(Collectors.toList());
-            String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
-            logger.info("子任务超时,发短信通知超时人员");
-            String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_THREE, templateJson);
-            String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
-            String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
-            if ("00".equals(code)){
-                logger.info("短信发送成功");
-            }else {
-                logger.info("短信发送失败: "+errorMessage);
+            if (user.getStatus() == 0 && user.getIsDelete() == 0){
+                List<String> taskNames = Arrays.asList(entrySet.getValue().replaceAll("&", ";").split(","));
+                taskNames = taskNames.stream().map(taskName -> "<" + taskName + ">").collect(Collectors.toList());
+                String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
+                logger.info("子任务超时,发短信通知超时人员");
+                String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_THREE, templateJson);
+                String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
+                String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
+                if ("00".equals(code)){
+                    logger.info("短信发送成功");
+                }else {
+                    logger.info("短信发送失败: "+errorMessage);
+                }
             }
         });
     }
