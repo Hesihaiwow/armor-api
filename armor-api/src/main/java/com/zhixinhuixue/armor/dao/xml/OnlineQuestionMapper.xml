@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYOnlineQuestionMapper">
+    <resultMap id="baseMap" type="com.zhixinhuixue.armor.model.pojo.OnlineQuestion">
+        <id column="oqr_id" property="oqrId" jdbcType="BIGINT"></id>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="description" property="description" jdbcType="VARCHAR"></result>
+        <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+        <result column="work_hour" property="workHour" jdbcType="INTEGER"></result>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
+        <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"></result>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+        <result column="complete_time" property="completeTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <resultMap id="myMap" type="com.zhixinhuixue.armor.model.bo.OnlineQuestionBO" extends="baseMap">
+        <association property="projectName" column="project_id" javaType="java.lang.String" select="selectProjectNameById"></association>
+    </resultMap>
+
+    <resultMap id="questionMap" type="com.zhixinhuixue.armor.model.bo.OnlineQuestionBO" extends="baseMap">
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="avatar_url" property="avatar_url" jdbcType="VARCHAR"></result>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"></result>
+        <result column="project_image" property="projectImage" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <sql id="baseSql">
+        `oqr_id`,`name`,`description`,`project_id`,`work_hour`,`begin_time`,`end_time`,`status`,
+        `review_status`,`is_delete`,`create_by`,`create_time`,`complete_time`
+    </sql>
+
+    <!--新增线上问题-->
+    <insert id="insertQuestion" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineQuestion">
+        INSERT INTO `online_question_record`
+        (`oqr_id`,`name`,`description`,`project_id`,`work_hour`,`begin_time`,`end_time`,
+        `status`,`review_status`,`is_delete`,`create_by`,`create_time`,`complete_time`)
+        VALUES
+        (#{oqrId,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},
+        #{workHour,jdbcType=INTEGER},#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},
+        #{status,jdbcType=INTEGER},#{reviewStatus,jdbcType=INTEGER},#{isDelete,jdbcType=INTEGER},
+        #{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{completeTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!--新增线上问题图片地址-->
+    <insert id="insertUrls" parameterType="com.zhixinhuixue.armor.model.pojo.QuestionUrl">
+        INSERT INTO `record_url`
+        (`id`,`oqr_id`,`url`,`create_time`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.oqrId,jdbcType=BIGINT},#{item.url,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--审核通过-->
+    <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineQuestion">
+        UPDATE `online_question_record`
+        <set>
+            <if test="onlineQuestion.name != null and onlineQuestion.name != '' ">
+                `name` = #{onlineQuestion.name,jdbcType=VARCHAR},
+            </if>
+            <if test="onlineQuestion.description != null and onlineQuestion.description != '' ">
+                `description` = #{onlineQuestion.description,jdbcType=VARCHAR},
+            </if>
+            <if test="onlineQuestion.projectId != null">
+                `project_id` = #{onlineQuestion.projectId,jdbcType=BIGINT},
+            </if>
+            <if test="onlineQuestion.workHour != null">
+                `work_hour` = #{onlineQuestion.workHour,jdbcType=INTEGER},
+            </if>
+            <if test="onlineQuestion.beginTime != null">
+                `begin_time` = #{onlineQuestion.beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="onlineQuestion.endTime != null">
+                `end_time` = #{onlineQuestion.endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="onlineQuestion.status != null">
+                `status` = #{onlineQuestion.status,jdbcType=INTEGER}
+            </if>
+            <if test="onlineQuestion.reviewStatus != null">
+                `review_status` =#{onlineQuestion.reviewStatus,jdbcType=INTEGER},
+            </if>
+            <if test="onlineQuestion.isDelete != null">
+                `is_delete` = #{onlineQuestion.isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="onlineQuestion.completeTime != null">
+                `complete_time` = #{onlineQuestion.completeTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        WHERE `oqr_id` = #{onlineQuestion.oqrId}
+    </update>
+
+    <delete id="deleteUrlByOqrId">
+        DELETE FROM `record_url` WHERE `oqr_id` = #{oqrId}
+    </delete>
+
+    <!--根据状态分页查看我的线上问题-->
+    <select id="selectOnlineQuestionPageByStatus" resultMap="myMap" parameterType="com.zhixinhuixue.armor.model.dto.request.MyQuestionReqDTO">
+        SELECT <include refid="baseSql"/> FROM `online_question_record`
+        <where>
+            create_by = #{userId}
+            AND is_delete = 0
+            <if test="reqDTO.status != null">
+                AND status = #{reqDTO.status}
+            </if>
+            <if test="reqDTO.reviewStatus != null">
+                AND review_status = #{reqDTO.reviewStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectProjectNameById" resultType="java.lang.String">
+        SELECT `name` AS project_name  FROM `project` WHERE `id` = #{projectId}
+    </select>
+
+    <select id="selectCheckQuestionPageByReviewStatus" parameterType="com.zhixinhuixue.armor.model.dto.request.MyQuestionReqDTO" resultMap="myMap">
+        SELECT <include refid="baseSql"/> FROM `online_question_record`
+        <where>
+            is_delete = 0
+            <if test="reqDTO.reviewStatus != null">
+                AND review_status = #{reqDTO.reviewStatus}
+            </if>
+        </where>
+    </select>
+
+    <!--审核线上问题通过-->
+    <select id="selectById" resultMap="baseMap">
+        SELECT <include refid="baseSql"/> FROM `online_question_record` WHERE `oqr_id` = #{oqrId}
+    </select>
+
+    <!--查看进行中线上问题-->
+    <select id="selectRunningQuestion" resultMap="questionMap">
+        SELECT t1.*,t2.name as user_name,t2.avatar_url,t3.name as project_name,t3.image_url as project_image
+        FROM `online_question_record` t1
+        LEFT JOIN `user` t2 on t1.create_by = t2.id
+        LEFT JOIN `project` t3 on t1.project_id = t3.id
+        WHERE t1.`create_by` = #{userId} AND t1.`status` = 1 and t1.`is_delete` = 0
+    </select>
+</mapper>

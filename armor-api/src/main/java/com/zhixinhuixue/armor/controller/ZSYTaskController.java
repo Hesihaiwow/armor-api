@@ -251,6 +251,12 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().data(taskService.getAllNotifications(reqDTO)).build();
     }
 
+    @ApiOperation("查询所有人所有通知")
+    @PostMapping("/notification/everyone/all")
+    public String getEveryoneNotice(@RequestBody NoticeReqDTO reqDTO){
+        return ZSYResult.success().data(taskService.getEveryoneNotice(reqDTO)).build();
+    }
+
     @ApiOperation("查询所有未读通知条数")
     @GetMapping("/notification/un-read/num")
     public String getUnreadNoticeNum(){

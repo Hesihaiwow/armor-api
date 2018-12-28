@@ -12,6 +12,10 @@
         <result column="read_time" property="readTime" jdbcType="TIMESTAMP"></result>
     </resultMap>
 
+    <resultMap id="everyoneNoticeMap" type="com.zhixinhuixue.armor.model.bo.NotificationBO" extends="basicMap">
+        <result column="notice_user" property="noticeUser" jdbcType="VARCHAR"></result>
+    </resultMap>
+
     <!-- 批量插入通知 -->
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO `notification`
@@ -62,5 +66,22 @@
     <!--查询所有未读通知条数-->
     <select id="selectUnreadNoticeNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM `notification` WHERE `user_id` = #{userId} and `status` = 0
+    </select>
+
+    <!--查询所有人所有通知-->
+    <select id="selectEveryoneNotice" resultMap="everyoneNoticeMap">
+        SELECT n.*,u.name as notice_user FROM `notification` n left join `user` u on n.user_id = u.id
+        <where>
+        <if test="reqDTO.readStatus != null">
+            and `status` = #{reqDTO.readStatus}
+        </if>
+        <if test="reqDTO.beginTime != null">
+            <![CDATA[  and create_time > #{reqDTO.beginTime} ]]>
+        </if>
+        <if test="reqDTO.endTime != null">
+            <![CDATA[  and create_time < #{reqDTO.endTime} ]]>
+        </if>
+        </where>
+        ORDER BY `status` ASC,`create_time` DESC
     </select>
 </mapper>
