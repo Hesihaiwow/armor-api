@@ -68,4 +68,11 @@ oss:
   secretKey: m5GFGc0VeiX0Hcfoj35LLfpnEZcyP-eEhZjZ-fvg
   domain: report.zhixinhuixue.net
 
+#密钥配置
+ufile:
+  publicKey: ucloudyunkaopei@outlook.com13615403931104805307
+  privateKey: bcfd5bb66ca527c9be9fd7f3e784fbfc90c4bba5
+  uploadProxySuffix: .cn-bj.ufileos.com
+  bucketName: zxhx-test
+
 

@@ -27,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by SCH on 2018-12-27
@@ -117,11 +114,98 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
             onlineQuestionBOList.stream().forEach(onlineQuestionBO -> {
                 OnlineQuestionResDTO resDTO = new OnlineQuestionResDTO();
                 BeanUtils.copyProperties(onlineQuestionBO,resDTO);
+                if ((onlineQuestionBO.getEndTime().getDate()) == (new Date().getDate())){
+                    resDTO.setIsToday(0);
+                }else if ((onlineQuestionBO.getEndTime().getDate()) < (new Date().getDate())){
+                    resDTO.setIsToday(-1);
+                }else{
+                    resDTO.setIsToday(1);
+                }
+                List<String> urls = onlineQuestionMapper.selectUrlsById(onlineQuestionBO.getOqrId());
+                if (!CollectionUtils.isEmpty(urls)){
+                    resDTO.setUrlList(urls);
+                }else {
+                    resDTO.setUrlList(null);
+                }
                 list.add(resDTO);
             });
         }
         return list;
     }
+
+    /**
+     * 查看已完成线上问题
+     * @return
+     */
+    @Override
+    public PageInfo<OnlineQuestionResDTO> selectCompletedQuestion(Integer pageNum) {
+        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE_WAIT);
+        Page<OnlineQuestionBO> onlineQuestionBOList = onlineQuestionMapper.selectCompletedQuestion(ZSYTokenRequestContext.get().getUserId());
+        Page<OnlineQuestionResDTO> page = new Page<>();
+        if (!CollectionUtils.isEmpty(onlineQuestionBOList)){
+            BeanUtils.copyProperties(onlineQuestionBOList,page);
+            onlineQuestionBOList.stream().forEach(onlineQuestionBO -> {
+                OnlineQuestionResDTO resDTO = new OnlineQuestionResDTO();
+                BeanUtils.copyProperties(onlineQuestionBO,resDTO);
+                page.add(resDTO);
+            });
+        }
+        return new PageInfo<>(page);
+    }
+
+    /**
+     * 查看待审核线上问题
+     * @return
+     */
+    @Override
+    public List<OnlineQuestionResDTO> selectWaitQuestion() {
+        List<OnlineQuestionBO> onlineQuestionBOList = onlineQuestionMapper.selectWaitQuestion();
+        List<OnlineQuestionResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(onlineQuestionBOList)){
+            BeanUtils.copyProperties(onlineQuestionBOList,list);
+            onlineQuestionBOList.stream().forEach(onlineQuestionBO -> {
+                OnlineQuestionResDTO resDTO = new OnlineQuestionResDTO();
+                BeanUtils.copyProperties(onlineQuestionBO,resDTO);
+                if ((onlineQuestionBO.getEndTime().getDate()) == (new Date().getDate())){
+                    resDTO.setIsToday(0);
+                }else if ((onlineQuestionBO.getEndTime().getDate()) < (new Date().getDate())){
+                    resDTO.setIsToday(-1);
+                }else{
+                    resDTO.setIsToday(1);
+                }
+                List<String> urls = onlineQuestionMapper.selectUrlsById(onlineQuestionBO.getOqrId());
+                if (!CollectionUtils.isEmpty(urls)){
+                    resDTO.setUrlList(urls);
+                }else {
+                    resDTO.setUrlList(null);
+                }
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 查看审核通过线上问题
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public PageInfo<OnlineQuestionResDTO> selectAcceptedQuestion(Integer pageNum) {
+        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE_WAIT);
+        Page<OnlineQuestionBO> onlineQuestionBOS = onlineQuestionMapper.selectAcceptedQuestion();
+        Page<OnlineQuestionResDTO> page = new Page<>();
+        if (!CollectionUtils.isEmpty(onlineQuestionBOS)){
+            BeanUtils.copyProperties(onlineQuestionBOS,page);
+            onlineQuestionBOS.stream().forEach(onlineQuestionBO -> {
+                OnlineQuestionResDTO resDTO = new OnlineQuestionResDTO();
+                BeanUtils.copyProperties(onlineQuestionBO,resDTO);
+                page.add(resDTO);
+            });
+        }
+        return new PageInfo<>(page);
+    }
+
 
     /**
      * 查看审核中(审核通过)线上问题
@@ -177,11 +261,35 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
         }
         onlineQuestion.setIsDelete(1);
         onlineQuestion.setStatus(3);
+        onlineQuestion.setReviewStatus(2);
         if (onlineQuestionMapper.updateById(onlineQuestion) == 0){
             throw new ZSYServiceException("删除失败");
         }
-        if (onlineQuestionMapper.deleteUrlByOqrId(onlineQuestion.getOqrId()) == 0){
+        List<String> urls = onlineQuestionMapper.selectUrlsById(onlineQuestion.getOqrId());
+        if ( !CollectionUtils.isEmpty(urls) && onlineQuestionMapper.deleteUrlByOqrId(onlineQuestion.getOqrId()) == 0){
             throw new ZSYServiceException("修改失败");
+        }
+        return ZSYResult.success().data(onlineQuestion.getOqrId());
+    }
+
+
+    /**
+     * 个人完成线上问题
+     * @param oqrId
+     * @return
+     */
+    @Override
+    @Transactional
+    public ZSYResult finishQuestion(Long oqrId) {
+        OnlineQuestion onlineQuestion = onlineQuestionMapper.selectById(oqrId);
+        if (onlineQuestion == null || onlineQuestion.getIsDelete() == 1){
+            throw new ZSYServiceException("该线上问题不存在");
+        }
+        onlineQuestion.setStatus(2);
+        onlineQuestion.setReviewStatus(3);
+        onlineQuestion.setCompleteTime(new Date());
+        if (onlineQuestionMapper.updateById(onlineQuestion) == 0){
+            throw new ZSYServiceException("线上问题完成失败");
         }
         return ZSYResult.success().data(onlineQuestion.getOqrId());
     }
@@ -225,6 +333,26 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
             }
         }
         return null;
+    }
+
+    private static boolean isSameDay(Date date1, Date date2) {
+        if(date1 != null && date2 != null) {
+            Calendar cal1 = Calendar.getInstance();
+            cal1.setTime(date1);
+            Calendar cal2 = Calendar.getInstance();
+            cal2.setTime(date2);
+            return isSameDay(cal1, cal2);
+        } else {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+    }
+
+    private static boolean isSameDay(Calendar cal1, Calendar cal2) {
+        if(cal1 != null && cal2 != null) {
+            return cal1.get(0) == cal2.get(0) && cal1.get(1) == cal2.get(1) && cal1.get(6) == cal2.get(6);
+        } else {
+            throw new IllegalArgumentException("The date must not be null");
+        }
     }
 
 

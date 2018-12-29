@@ -61,4 +61,30 @@ public interface IZSYOnlineQuestionService {
      * @return
      */
     List<OnlineQuestionResDTO> selectRunningQuestion();
+
+    /**
+     * 查看已完成线上问题
+     * @return
+     */
+    PageInfo<OnlineQuestionResDTO> selectCompletedQuestion(Integer pageNum);
+
+    /**
+     * 查看待审核线上问题
+     * @return
+     */
+    List<OnlineQuestionResDTO> selectWaitQuestion();
+
+    /**
+     * 查看审核通过线上问题
+     * @param pageNum
+     * @return
+     */
+    PageInfo<OnlineQuestionResDTO> selectAcceptedQuestion(Integer pageNum);
+
+    /**
+     * 个人完成线上问题
+     * @param oqrId
+     * @return
+     */
+    ZSYResult finishQuestion(Long oqrId);
 }

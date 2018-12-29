@@ -68,4 +68,30 @@ public interface IZSYOnlineQuestionMapper {
      * @return
      */
     List<OnlineQuestionBO> selectRunningQuestion(Long userId);
+
+    /**
+     * 查看已完成线上问题
+     * @param userId
+     * @return
+     */
+    Page<OnlineQuestionBO> selectCompletedQuestion(Long userId);
+
+    /**
+     * 查询图片地址
+     * @param oqrId
+     * @return
+     */
+    List<String> selectUrlsById(Long oqrId);
+
+    /**
+     * 查看待审核问题
+     * @return
+     */
+    List<OnlineQuestionBO> selectWaitQuestion();
+
+    /**
+     * 查看审核通过线上问题
+     * @return
+     */
+    Page<OnlineQuestionBO> selectAcceptedQuestion();
 }

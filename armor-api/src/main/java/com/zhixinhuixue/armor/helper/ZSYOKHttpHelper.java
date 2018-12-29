@@ -23,6 +23,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class ZSYOKHttpHelper {
 
+    /**
+     * 请求头
+     */
+    public static final String HTTP_REQUEST_HEAD = "Authorization";
+
+
     //连接超时时间(1分钟)
     public static final int CONNECT_TIMEOUT = 60;
     //读取超时时间(2分钟)

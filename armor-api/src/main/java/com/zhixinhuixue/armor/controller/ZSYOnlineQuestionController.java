@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.sun.org.apache.regexp.internal.RE;
 import com.zhixinhuixue.armor.model.dto.request.MyQuestionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.OnlineQuestionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UpdateQuestionReqDTO;
@@ -44,6 +45,27 @@ public class ZSYOnlineQuestionController {
         return ZSYResult.success().data(list).build();
     }
 
+    @ApiOperation("查看已完成线上问题")
+    @GetMapping("/completed/{pageNum}")
+    public String getCompletedQuestion(@PathVariable("pageNum")Integer pageNum){
+        PageInfo<OnlineQuestionResDTO> list = onlineQuestionService.selectCompletedQuestion(pageNum);
+        return ZSYResult.success().data(list).build();
+    }
+
+    @ApiOperation("查看待审核线上问题")
+    @GetMapping("/wait")
+    public String getWaitQuestion(){
+        List<OnlineQuestionResDTO> list = onlineQuestionService.selectWaitQuestion();
+        return ZSYResult.success().data(list).build();
+    }
+
+    @ApiOperation("查看审核通过线上问题")
+    @GetMapping("/accepted/{pageNum}")
+    public String getAcceptedQuestion(@PathVariable("pageNum")Integer pageNum){
+        PageInfo<OnlineQuestionResDTO> list = onlineQuestionService.selectAcceptedQuestion(pageNum);
+        return ZSYResult.success().data(list).build();
+    }
+
     @ApiOperation("查看审核中(审核通过)线上问题")
     @PostMapping("/check")
     public String getCheckQuestion(@RequestBody MyQuestionReqDTO reqDTO){
@@ -61,6 +83,12 @@ public class ZSYOnlineQuestionController {
     @PutMapping("/delete/{oqrId}")
     public String deleteQuestion(@PathVariable("oqrId")Long oqrId){
         return onlineQuestionService.deleteQuestion(oqrId).build();
+    }
+
+    @ApiOperation("个人完成线上问题")
+    @PutMapping("/finish/{oqrId}")
+    public String finishQuestion(@PathVariable("oqrId")Long oqrId){
+        return onlineQuestionService.finishQuestion(oqrId).build();
     }
 
     @ApiOperation("修改线上问题")

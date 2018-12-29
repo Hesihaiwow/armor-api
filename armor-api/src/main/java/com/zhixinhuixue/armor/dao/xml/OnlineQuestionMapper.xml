@@ -78,7 +78,7 @@
                 `end_time` = #{onlineQuestion.endTime,jdbcType=TIMESTAMP},
             </if>
             <if test="onlineQuestion.status != null">
-                `status` = #{onlineQuestion.status,jdbcType=INTEGER}
+                `status` = #{onlineQuestion.status,jdbcType=INTEGER},
             </if>
             <if test="onlineQuestion.reviewStatus != null">
                 `review_status` =#{onlineQuestion.reviewStatus,jdbcType=INTEGER},
@@ -138,5 +138,36 @@
         LEFT JOIN `user` t2 on t1.create_by = t2.id
         LEFT JOIN `project` t3 on t1.project_id = t3.id
         WHERE t1.`create_by` = #{userId} AND t1.`status` = 1 and t1.`is_delete` = 0
+    </select>
+
+    <select id="selectCompletedQuestion" resultMap="questionMap">
+        SELECT t1.*,t2.name as user_name,t2.avatar_url,t3.name as project_name,t3.image_url as project_image
+        FROM `online_question_record` t1
+        LEFT JOIN `user` t2 on t1.create_by = t2.id
+        LEFT JOIN `project` t3 on t1.project_id = t3.id
+        WHERE t1.`create_by` = #{userId} AND t1.`status` = 2 and t1.`is_delete` = 0 and t1.`review_status` = 3
+    </select>
+
+    <!--查询图片地址-->
+    <select id="selectUrlsById" resultType="java.lang.String">
+        select url from record_url where oqr_id = #{oqrId}
+    </select>
+
+    <!--查看待审核问题-->
+    <select id="selectWaitQuestion" resultMap="questionMap">
+        SELECT t1.*,t2.name as user_name,t2.avatar_url,t3.name as project_name,t3.image_url as project_image
+        FROM `online_question_record` t1
+        LEFT JOIN `user` t2 on t1.create_by = t2.id
+        LEFT JOIN `project` t3 on t1.project_id = t3.id
+        WHERE t1.`status` = 1 and t1.`is_delete` = 0 and t1.`review_status` = 1
+    </select>
+
+    <!--查看审核通过线上问题-->
+    <select id="selectAcceptedQuestion" resultMap="questionMap">
+        SELECT t1.*,t2.name as user_name,t2.avatar_url,t3.name as project_name,t3.image_url as project_image
+        FROM `online_question_record` t1
+        LEFT JOIN `user` t2 on t1.create_by = t2.id
+        LEFT JOIN `project` t3 on t1.project_id = t3.id
+        WHERE t1.`is_delete` = 0 and t1.`review_status` = 3
     </select>
 </mapper>
