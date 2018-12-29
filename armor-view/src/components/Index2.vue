@@ -13,30 +13,12 @@
                         <div class="logout-btn" @click.stop.prevent="handleLogout">退出登录</div>
                     </div>
                 </div>
-                <!--<div class="fr" style="margin-right: 40px;margin-top: 13px">-->
-                    <!--<el-popover-->
-                            <!--placement="top-start"-->
-                            <!--width="450"-->
-                            <!--trigger="hover"-->
-                            <!--&gt;-->
-                        <!--<el-table :data="unreadNoticeData" border>-->
-                            <!--<el-table-column property="content" label="未读通知">-->
-                                <!--<template scope="scope">-->
-                                    <!--<a style="color:red;cursor: pointer;" @click="showTaskDetails(scope.row.taskId)">{{scope.row.content}}</a>-->
-                                <!--</template>-->
-                            <!--</el-table-column>-->
-                        <!--</el-table>-->
-                        <!--<el-button slot="reference" size="small" type="warning" circle><span style="font-size: 5px">通知:</span><span style="color: red">{{unreadNoticeNum}}</span></el-button>-->
-                        <!--<el-button @click="fetchAllNotice">查看所有</el-button>-->
-                    <!--</el-popover>-->
-                <!--</div>-->
             </div>
         </div>
         <div class="nav-top">
             <div class="el-tab-bar">
                 <el-tabs v-model="activeName" @tab-click="handleClick(activeName)">
                     <el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">
-                        <!-- <component :is="item.name"></component> -->
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -327,8 +309,8 @@
             this.fetchMyProfile();
             this.activeName = 'navIndex';
             //this.$router.push(`/index/navIndex`);
-            this.fetchUnreadNoticeNum()
-            this.fetchUnreadNotice()
+            // this.fetchUnreadNoticeNum()
+            // this.fetchUnreadNotice()
         },
         mounted(){
             // this.checkNotice()

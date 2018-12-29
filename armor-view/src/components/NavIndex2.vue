@@ -1,5 +1,10 @@
 <template>
     <div class="nav-index-con">
+        <div>
+            <a v-if="unreadNoticeNum > 0" style="font-size: 18px;color: blue;cursor: pointer" class="fr" @click="toNotice">
+                您有<span style="color: red;font-size: 20px">{{unreadNoticeNum}}</span>条未读通知!请及时查阅
+            </a>
+        </div>
         <div class="my-integral-con" v-show="userRole>0">
             <div><p class="mic-title">我的积分</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"
@@ -17,6 +22,7 @@
                 </div>
             </div>
         </div>
+
 
         <div class="my-task-con">
             <div v-show="userRole>0">
@@ -99,11 +105,18 @@
                 <div class="my-task-detail">
                     <el-tabs v-model="activeQuestionName" @tab-click="handleClick">
                         <el-tab-pane label="进行中" name="running">
-                            <div class="task-lis" v-for="item in question.running" @click="getExpandDetail(expand)">
+                            <div class="task-lis" v-for="item in question.running" @click="item.reviewStatus == 1 ? editQuestion(item) : finishQuestion(item)">
                                 <div class="head-img"><img src="../assets/img/doing.png"></div>
                                 <div class="main-task-detail">
-                                    <div class="task-name">
-                                        <span>{{item.name}}:({{item.description}})</span>
+                                    <div class="task-name" style="width: 700px;">
+                                        <span v-if="item.reviewStatus == 1" style="color: red">(待审核)</span><span>{{item.name}}:({{item.description}})</span>
+                                        <!--<i v-show="item.reviewStatus==1 " class="el-icon-edit"></i>-->
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span v-if="item.isToday == -1" class="task-end red">截止时间：{{item.endTime| formatDate }}</span>
+                                        <span v-if="item.isToday == 0" class="task-end orange">截止时间：{{item.endTime| formatDate }}</span>
+                                        <span v-if="item.isToday == 1" class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
                                     </div>
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
@@ -125,14 +138,40 @@
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="已完成" name="completed">
-
-                            <el-pagination
-                                    @current-change="handleFinishedPage"
-                                    :current-page.sync="finishedPage.pageNum"
-                                    :page-size="finishedPage.pageSize"
-                                    :layout="finishedPageLayout"
-                                    :total="finishedPage.total">
-                            </el-pagination>
+                            <div class="task-lis" v-for="item in question.completed">
+                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name" style="width: 700px;">
+                                        <span>{{item.name}}:({{item.description}})</span>
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span class="task-end green">完成时间：{{item.completeTime| formatDate }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-mark" style="position:relative; left:-10px">
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <!--<img src="../assets/img/u431.png" alt="">-->
+                                    <span  class="mark-msg">{{item.projectName}}</span>
+                                </div>
+                                <div class="task-data-show">
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
+                                         :src="item.avatarUrl" :alt="item.userName">
+                                    <span v-else="">{{item.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.question.completed.length>0">
+                                <el-pagination
+                                        @current-change="handleFinishedPage1"
+                                        :current-page.sync="finishedPage1.pageNum"
+                                        :page-size="finishedPage1.pageSize"
+                                        :layout="finishedPageLayout1"
+                                        :total="finishedPage1.total">
+                                </el-pagination>
+                            </div>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
@@ -350,7 +389,7 @@
                                 <div class="task-state">
                                     <span class="task-end blue">申请人：{{expand.userName}}</span>
                                     <span class="task-end blue">{{expand.endTime| formatDate }}</span>
-                                    <span class="task-time-opt"><i class="el-icon-edit"></i></span>
+                                    <span class="task-time-opt"><i class="el-icon-edit" ></i></span>
                                 </div>
                             </div>
                             <div class="task-data-show">
@@ -396,6 +435,78 @@
                             </el-pagination>
                         </div>
                         <div v-show="taskExpand.finished.length==0" class="empty">
+                            <h2>暂无数据</h2>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
+                <p class="mic-title">线上问题审核</p>
+                <el-tabs v-model="questionActiveName" @tab-click="handleClick">
+                    <el-tab-pane label="待审核" name="wait">
+                        <div class="task-lis" v-for="item in question.wait" @click="checkQuestion(item)">
+                            <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
+                            <div class="main-task-detail">
+                                <div class="task-name"><span>{{item.name}}:({{item.description}})</span></div>
+                                <div class="task-state">
+                                    <span class="task-end blue">申请人：{{item.userName}}</span>
+                                    <span v-if="item.isToday == -1" class="task-end red">截止时间：{{item.endTime| formatDate }}</span>
+                                    <span v-if="item.isToday == 0" class="task-end orange">截止时间：{{item.endTime| formatDate }}</span>
+                                    <span v-if="item.isToday == 1" class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
+                                </div>
+                            </div>
+                            <div class="task-mark" style="position:relative; left:-10px">
+                                <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                <img v-else="" src="../assets/img/u431.png" alt="" >
+                                <!--<img src="../assets/img/u431.png" alt="">-->
+                                <span  class="mark-msg">{{item.projectName}}</span>
+                            </div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
+                                     :src="item.avatarUrl" :alt="item.userName">
+                                <span v-else="">{{item.userName}}</span>
+                            </div>
+                        </div>
+                        <div v-show="question.wait.length==0" class="empty">
+                            <h2>暂无数据</h2>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="审核通过" name="completed">
+                        <div class="task-lis" v-for="item in question.accepted">
+                            <div class="head-img"><img src="../assets/img/finished.jpg"></div>
+                            <div class="main-task-detail">
+                                <div class="task-name" style="width: 700px;">
+                                    <span>{{item.name}}:({{item.description}})</span>
+                                </div>
+                                <div class="task-state">
+                                    <span class="task-end blue">申请人：{{item.userName}}</span>
+                                    <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
+                                    <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
+                                    <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
+                                </div>
+                            </div>
+                            <div class="task-mark" style="position:relative; left:-10px">
+                                <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                <img v-else="" src="../assets/img/u431.png" alt="" >
+                                <!--<img src="../assets/img/u431.png" alt="">-->
+                                <span  class="mark-msg">{{item.projectName}}</span>
+                            </div>
+                            <div class="task-data-show">
+                            </div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
+                                     :src="item.avatarUrl" :alt="item.userName">
+                                <span v-else="">{{item.userName}}</span>
+                            </div>
+                        </div>
+                        <div class="pagination" v-show="this.question.completed.length>0">
+                            <el-pagination
+                                    @current-change="handleFinishedPage2"
+                                    :current-page.sync="acceptedPage.pageNum"
+                                    :page-size="acceptedPage.pageSize"
+                                    :layout="finishedPageLayout2"
+                                    :total="acceptedPage.total">
+                            </el-pagination>
+                        </div>
+                        <div v-show="question.accepted.length==0" class="empty">
                             <h2>暂无数据</h2>
                         </div>
                     </el-tab-pane>
@@ -603,6 +714,7 @@
           </span>
         </el-dialog>
         <el-dialog
+                @close="closeDialog('questionForm')"
                 title="创建线上问题(数据)记录"
                 size="tiny"
                 custom-class="myDialog"
@@ -636,8 +748,8 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="工作量" prop="workHours">
-                    <el-input style="width:100px" v-model="questionForm.workHours" :maxlength="6"></el-input>
+                <el-form-item label="工作量" prop="workHour">
+                    <el-input style="width:100px" v-model="questionForm.workHour" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item label="主题" prop="name">
@@ -645,7 +757,7 @@
                 </el-form-item>
 
                 <el-form-item label="描述" prop="description">
-                    <el-input type="textarea" v-model="taskForm.description" :rows="3"></el-input>
+                    <el-input type="textarea" v-model="questionForm.description" :rows="3"></el-input>
                 </el-form-item>
                 <el-form-item label="上传图片">
                     <el-upload
@@ -664,9 +776,133 @@
 
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveQuestionInfo('questionForm')" :disabled="taskAble">立即创建</el-button>
-            <el-button @click="createQuestionVisible = false,clearPic">取 消</el-button>
+            <el-button type="primary" @click="saveQuestionInfo('questionForm')">立即创建</el-button>
+            <el-button @click="createQuestionVisible = false,closeDialog('questionForm')">取 消</el-button>
           </span>
+        </el-dialog>
+        <el-dialog
+                @close="closeDialog('questionForm')"
+                title="修改线上问题(数据)记录"
+                size="tiny"
+                custom-class="myDialog"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="editQuestionVisible">
+            <el-form :model="questionForm" :rules="questionRules" ref="questionForm" label-width="80px">
+                <el-form-item label="项目" prop="projectId">
+                    <el-select v-model="questionForm.projectId">
+                        <el-option
+                                v-for="item in projectList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="开始日期" prop="beginTime">
+                    <el-date-picker
+                            v-model="questionForm.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="截止日期" prop="endTime">
+                    <el-date-picker
+                            v-model="questionForm.endTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="工作量" prop="workHour">
+                    <el-input style="width:100px" v-model="questionForm.workHour" :maxlength="6"></el-input>
+                    小时
+                </el-form-item>
+                <el-form-item label="主题" prop="name">
+                    <el-input v-model="questionForm.name"></el-input>
+                </el-form-item>
+
+                <el-form-item label="描述" prop="description">
+                    <el-input type="textarea" v-model="questionForm.description" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <image v-for="url in questionForm.urlList" :src="url"></image>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveQuestionInfo('questionForm')">保存</el-button>
+            <el-button @click="editQuestionVisible = false,closeDialog('questionForm')">取 消</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+                @close="closeDialog('questionForm')"
+                title="线上问题(数据)记录"
+                size="tiny"
+                custom-class="myDialog"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="checkQuestionVisible">
+            <el-form :model="questionForm" :rules="questionRules" ref="questionForm" label-width="100px">
+                <el-form-item label="项目:" prop="projectId">
+                    {{questionForm.projectName}}
+                </el-form-item>
+                <el-form-item label="开始日期:" prop="beginTime">
+                    {{questionForm.beginTime}}
+                </el-form-item>
+                <el-form-item label="截止日期:" prop="endTime">
+                    {{questionForm.endTime}}
+                </el-form-item>
+                <el-form-item label="工作量:" prop="workHour">
+                    {{questionForm.workHour}} 小时
+                </el-form-item>
+                <el-form-item label="主题:" prop="name">
+                    {{questionForm.name}}
+                </el-form-item>
+                <el-form-item label="描述:" prop="description">
+                    {{questionForm.description}}
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="danger" @click="deleteQuestion(questionForm.oqrId)">删除</el-button>
+            <el-button type="primary" @click="acceptQuestion(questionForm.oqrId)">审核通过</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+                @close="closeDialog('questionForm')"
+                title="线上问题(数据)记录"
+                size="tiny"
+                custom-class="myDialog"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="finishQuestionVisible">
+            <el-form :model="questionForm" :rules="questionRules" ref="questionForm" label-width="100px">
+                <el-form-item label="项目:" prop="projectId">
+                    {{questionForm.projectName}}
+                </el-form-item>
+                <el-form-item label="开始日期:" prop="beginTime">
+                    {{questionForm.beginTime}}
+                </el-form-item>
+                <el-form-item label="截止日期:" prop="endTime">
+                    {{questionForm.endTime}}
+                </el-form-item>
+                <el-form-item label="工作量:" prop="workHour">
+                    {{questionForm.workHour}} 小时
+                </el-form-item>
+                <el-form-item label="主题:" prop="name">
+                    {{questionForm.name}}
+                </el-form-item>
+                <el-form-item label="描述:" prop="description">
+                    {{questionForm.description}}
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button v-if="questionForm.reviewStatus == 1" type="warning">待审核</el-button>
+                <el-button v-else type="success" @click="saveFinishQuestion(questionForm.oqrId)">完成</el-button>
+            </span>
         </el-dialog>
         <el-dialog :visible.sync="dialogVisible" width="200px">
             <img width="100%" :src="dialogImageUrl" alt="">
@@ -916,6 +1152,16 @@
                     pageSize: 5,
                     total: 0,
                 },
+                finishedPage1: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
+                acceptedPage:{
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
                 auditSuccessPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -1109,7 +1355,7 @@
                     projectId: '',
                     endTime: '',
                     beginTime: '',
-                    workHours: '',
+                    workHour: '',
                     urlList: []
                 },
                 questionRules: {
@@ -1122,7 +1368,7 @@
                     beginTime: [
                         {type: 'date', required: true, message: '开始时间不能为空', trigger: 'change'},
                     ],
-                    workHours: [
+                    workHour: [
                         {required: true, validator: validateEmpty, message: '工作量不能为空', trigger: 'blur'},
                     ],
                     name: [
@@ -1137,12 +1383,20 @@
                 },
                 dialogImageUrl: '',
                 dialogVisible: false,
-                activeQuestionName: 'doing',
+                activeQuestionName: 'running',
                 question: {
                     running: [],
-                    completed: []
+                    completed: [],
+                    wait:[],
+                    accepted:[]
                 },
-                reqDTO: {}
+                reqDTO: {},
+                editQuestionVisible:false,
+                checkQuestionVisible:false,
+                finishQuestionVisible:false,
+                fileList:[],
+                questionActiveName:'wait',
+                unreadNoticeNum:0
                 // -- sch
             };
         },
@@ -1166,6 +1420,18 @@
             },
             finishedPageLayout() {
                 if (this.finishedPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            finishedPageLayout1() {
+                if (this.finishedPage1.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            finishedPageLayout2() {
+                if (this.finishedPage1.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -1262,7 +1528,11 @@
                     this.fetchMyHelpWaitList();
                     this.fetchMyReviewSuccess();
                 }
-                this.fetchQuestionDoing()
+                this.fetchQuestionDoing();
+                this.fetchQuestionCompleted();
+                this.fetchQuestionAccepted();
+                this.fetchQuestionWait();
+                this.fetchUnreadNoticeNum();
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -1848,6 +2118,14 @@
                 this.finishedPage.pageNum = currentPage
                 this.fetchTaskFinished()
             },
+            handleFinishedPage1(currentPage) {
+                this.finishedPage1.pageNum = currentPage
+                this.fetchQuestionCompleted()
+            },
+            handleFinishedPage2(currentPage) {
+                this.acceptedPage.pageNum = currentPage
+                this.fetchQuestionAccepted()
+            },
             handleCommentedPage(currentPage) {
                 this.commentedPage.pageNum = currentPage
                 this.fetchTaskCommented()
@@ -1974,7 +2252,45 @@
             createQuestionClick() {
                 this.createQuestionVisible = true
             },
-            saveQuestionInfo() {
+            //完成线上问题
+            finishQuestion(item){
+                this.finishQuestionVisible = true
+                this.questionForm.oqrId = item.oqrId
+                this.questionForm.name = item.name;
+                this.questionForm.beginTime = moment(item.beginTime).format('YYYY-MM-DD');
+                this.questionForm.endTime = moment(item.endTime).format('YYYY-MM-DD');
+                this.questionForm.projectId = item.projectId;
+                this.questionForm.projectName = item.projectName;
+                this.questionForm.description = item.description;
+                this.questionForm.workHour = item.workHour;
+                this.questionForm.urlList = item.urlList;
+                this.questionForm.reviewStatus = item.reviewStatus;
+            },
+            //编辑问题
+            editQuestion(item){
+                this.editQuestionVisible = true
+                this.questionForm.name = item.name;
+                this.questionForm.beginTime = item.beginTime;
+                this.questionForm.endTime = item.endTime;
+                this.questionForm.projectId = item.projectId;
+                this.questionForm.description = item.description;
+                this.questionForm.workHour = item.workHour;
+                this.questionForm.urlList = item.urlList;
+            },
+            //审核问题
+            checkQuestion(item){
+                this.checkQuestionVisible = true
+                this.questionForm.oqrId = item.oqrId
+                this.questionForm.name = item.name;
+                this.questionForm.beginTime = moment(item.beginTime).format('YYYY-MM-DD');
+                this.questionForm.endTime = moment(item.endTime).format('YYYY-MM-DD');
+                this.questionForm.projectId = item.projectId;
+                this.questionForm.projectName = item.projectName;
+                this.questionForm.description = item.description;
+                this.questionForm.workHour = item.workHour;
+                this.questionForm.urlList = item.urlList;
+            },
+            saveQuestionInfo(formName) {
                 let vm = this;
                 this.questionAble = true
                 this.questionForm.endTime = moment(this.questionForm.endTime).toDate()
@@ -1984,17 +2300,9 @@
                         var param = this.questionForm;
                         param.name = param.name.trim();
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00')
-                        param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:00:00')
-                        if (param.workHours.length != parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
+                        if (param.workHour.length != parseFloat(param.workHour).toString().length || parseFloat(param.workHour) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
-                            return false;
-                        }
-                        if (param.workHours.trim() > 8 || param.workHours.trim() < 0.1) {
-                            this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
-                            return false;
-                        }
-                        if (moment(param.endTime).millisecond() < moment(param.beginTime).millisecond() || moment(param.endTime).week() != moment(param.beginTime).week()) {
-                            this.$message({showClose: true, message: '请检查日期，个人任务请勿跨周进行', type: 'warning'});
                             return false;
                         }
                         http.zsyPostHttp('/question/add', param, (resp) => {
@@ -2015,6 +2323,9 @@
                 this.dialogImageUrl = file.url;
                 this.dialogVisible = true;
             },
+            handleChange(file,fileList){
+                this.questionForm.urlList = fileList.slice(-3)
+            },
             handleRemove(file) {
                 this.questionForm.urlList.splice(this.questionForm.urlList.findIndex(item => item.indexOf(file.name) > -1), 1)
             },
@@ -2030,11 +2341,32 @@
                 }
                 return isJPG && isLt2M;
             },
-            upload(file) {
+            /*upload(file) {
                 var data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/uplode/file').then(res => {
                     this.questionForm.urlList.push(res.data.url)
+                })
+            },*/
+            upload(file) {
+                var data = new FormData();
+                data.append('uploadFile', file.file);
+                http.zsyPostHttp('/upload/ucloud/image', data, (res) => {
+                    this.demandForm.urlList.push(res.data.url)
+                })
+            },
+            //查询待审核线上问题
+            fetchQuestionWait(){
+                let vm = this
+                http.zsyGetHttp('/question/wait', {}, (res) => {
+                    vm.question.wait = res.data
+                })
+            },
+            fetchQuestionAccepted(){
+                let vm = this
+                http.zsyGetHttp(`/question/accepted/${vm.acceptedPage.pageNum}`, {}, (res) => {
+                    vm.question.accepted = res.data.list
+                    vm.acceptedPage.total = res.data.total
                 })
             },
             //查询进行中线上问题
@@ -2043,7 +2375,91 @@
                 http.zsyGetHttp('/question/running', {}, (res) => {
                     vm.question.running = res.data
                 })
+            },
+            //查询已完成线上问题
+            fetchQuestionCompleted(){
+                let vm = this
+                http.zsyGetHttp(`/question/completed/${vm.finishedPage.pageNum}`, {}, (res) => {
+                    vm.question.completed = res.data.list
+                    vm.finishedPage1.total = res.data.total
+                })
+            },
+            //关闭dialog
+            closeDialog(formName) {
+                this.$refs[formName].resetFields();
+                this.isSaving = false
+            },
+            //删除线上问题
+            deleteQuestion(id){
+                this.$confirm('此操作将删除该需求, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    http.zsyPutHttp('question/delete/'+id,{},(res)=>{
+                        if (res.data){
+                            this.$message({
+                                showClose: true,
+                                message: '删除线上问题成功',
+                                type: 'success'
+                            });
+                            this.checkQuestionVisible = false
+                            this.fetchQuestionWait()
+                            // this.$router.go(0)
+                        }
+                    })
+                }).catch(() => {
+                });
 
+            },
+            //审核通过线上问题
+            acceptQuestion(id){
+                http.zsyPutHttp('question/auditing/accept/'+id,{},(res)=>{
+                    if (res.data){
+                        this.$message({
+                            showClose: true,
+                            message: '审核成功',
+                            type: 'success'
+                        });
+                        this.fetchQuestionWait()
+                        this.fetchQuestionAccepted()
+                    }
+                })
+                this.checkQuestionVisible = false;
+                // this.$router.go(0)
+            },
+            //完成线上问题
+            saveFinishQuestion(id){
+                this.$confirm('此操作将完成该任务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                  http.zsyPutHttp('/question/finish/'+id,{},(res)=>{
+                      if (res.data){
+                          this.$message({
+                              showClose: true,
+                              message: '完成线上问题',
+                              type: 'success'
+                          });
+                          this.fetchQuestionDoing();
+                          this.fetchQuestionCompleted()
+                          this.finishQuestionVisible = false
+                      }
+                  })
+                }).catch(() => {
+                });
+            },
+            //查询所有未读通知数量
+            fetchUnreadNoticeNum(){
+                http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
+                    this.unreadNoticeNum = res.data.count
+                })
+            },
+            //跳转到通知页面
+            toNotice(){
+                this.$router.push(`/index/notice`)
+                console.log(111)
             }
             // -- sch
         },
@@ -2237,6 +2653,24 @@
         color: #fff;
     }
 
+    .task-end.orange {
+        background: orange;
+        padding: 2px 10px;
+        color: #fff;
+    }
+
+    .task-end.red {
+        background: red;
+        padding: 2px 10px;
+        color: #fff;
+    }
+
+    .task-end.green {
+        background: green;
+        padding: 2px 10px;
+        color: #fff;
+    }
+
     .task-state {
         margin-top: 10px;
     }
@@ -2289,5 +2723,9 @@
     .task-mark {
         line-height: 90px;
         font-size: 18px;
+    }
+
+    .iconfont {
+        margin-right: 5px;
     }
 </style>
