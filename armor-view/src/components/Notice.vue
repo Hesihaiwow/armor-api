@@ -210,6 +210,11 @@
                 this.reqDTO.beginTime = null;
                 this.reqDTO.endTime = null;
             },
+            clearReqDTO1() {
+                this.reqDTO1.readStatus = null;
+                this.reqDTO1.beginTime = null;
+                this.reqDTO1.endTime = null;
+            },
             select(){
                 this.showEveryoneVisible = false
                 this.pageNum = 1
@@ -224,23 +229,18 @@
                   this.reqDTO.readStatus = this.readStatus
               }
               this.fetchAllNotice()
-                console.log(this.showEveryoneVisible)
             },
             selectEveryoneNotice(){
                 this.showEveryoneVisible = true
-                this.clearReqDTO()
                 this.pageNum1 = 1
+                this.clearReqDTO1()
                 if (this.beginTime){
                     this.reqDTO1.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
                 }
                 if (this.endTime){
                     this.reqDTO1.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
                 }
-                if (this.readStatus != undefined && this.readStatus != null){
-                    this.reqDTO1.readStatus = this.readStatus
-                }
                 this.fetchEveryoneNotice()
-                console.log(this.showEveryoneVisible)
             },
             fetchEveryoneNotice(){
                 Http.zsyPostHttp('/task/notification/everyone/all',this.reqDTO1,(res)=>{

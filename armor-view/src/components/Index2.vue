@@ -16,9 +16,14 @@
             </div>
         </div>
         <div class="nav-top">
-            <div class="el-tab-bar">
-                <el-tabs v-model="activeName" @tab-click="handleClick(activeName)">
-                    <el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">
+            <div class="el-tab-bar" style="width: 104px">
+                <el-tabs v-model="activeName" @tab-click="handleClick(activeName)" >
+                    <!--<el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">-->
+                        <!---->
+                        <!--<el-badge :value="12" class="item">111</el-badge>-->
+                        <!--</el-tab-pane>-->
+                    <el-tab-pane v-for="(item,idx) in tabs" :name="item.name" :key="idx">
+                        <span slot="label"><el-badge :value="item.value" class="item">{{item.label}}</el-badge></span>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -309,7 +314,7 @@
             this.fetchMyProfile();
             this.activeName = 'navIndex';
             //this.$router.push(`/index/navIndex`);
-            // this.fetchUnreadNoticeNum()
+            this.fetchUnreadNoticeNum()
             // this.fetchUnreadNotice()
         },
         mounted(){
@@ -361,6 +366,7 @@
                 this.showIndex = false;
                 /*tab切换*/
                 this.$router.push(`/index/${path}`);
+                this.fetchUnreadNoticeNum()
             },
             showIndexEvent() {
                 // 显示首页
@@ -397,6 +403,8 @@
             fetchUnreadNoticeNum(){
                 Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
                     this.unreadNoticeNum = res.data.count
+                    this.tabs[6].value = this.unreadNoticeNum
+
                 })
             },
             //查询所有通知
@@ -472,7 +480,7 @@
             checkNotice(){
               setInterval(() => {
                   this.fetchUnreadNoticeNum()
-              },1000*60*5)
+              },1000*5)
             },
             // -- sch
 
@@ -592,6 +600,11 @@
         }
     }
 </script>
+<style>
+    .el-tabs__item{
+        width: 100px;
+    }
+</style>
 <style scoped>
     .nav-top-bg {
         position: fixed;
@@ -804,5 +817,11 @@
         margin-top: 3px;
         overflow: hidden;
         margin-right: 10px;
+    }
+
+    .item {
+        size: 10px;
+        margin-top: 10px;
+        margin-right: 40px;
     }
 </style>

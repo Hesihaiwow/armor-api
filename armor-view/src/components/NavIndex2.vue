@@ -1,10 +1,11 @@
 <template>
     <div class="nav-index-con">
-        <div>
-            <a v-if="unreadNoticeNum > 0" style="font-size: 18px;color: blue;cursor: pointer" class="fr" @click="toNotice">
+        <!--<div v-show="unreadNoticeNum > 0" class="message">
+            <i class="el-icon-message" style="color: white;font-size: 15px"></i>
+            <a  style="font-size: 18px;color: white;cursor: pointer"  @click="toNotice">
                 您有<span style="color: red;font-size: 20px">{{unreadNoticeNum}}</span>条未读通知!请及时查阅
             </a>
-        </div>
+        </div>-->
         <div class="my-integral-con" v-show="userRole>0">
             <div><p class="mic-title">我的积分</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"
@@ -465,12 +466,21 @@
                                 <span v-else="">{{item.userName}}</span>
                             </div>
                         </div>
+                        <div class="pagination" v-show="this.question.wait.length>0">
+                            <el-pagination
+                                    @current-change="handleFinishedPage3"
+                                    :current-page.sync="waitPage1.pageNum"
+                                    :page-size="waitPage1.pageSize"
+                                    :layout="finishedPageLayout3"
+                                    :total="waitPage1.total">
+                            </el-pagination>
+                        </div>
                         <div v-show="question.wait.length==0" class="empty">
                             <h2>暂无数据</h2>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="审核通过" name="completed">
-                        <div class="task-lis" v-for="item in question.accepted">
+                        <div class="task-lis" v-for="item in question.accepted" @click="acceptedQuestion(item)">
                             <div class="head-img"><img src="../assets/img/finished.jpg"></div>
                             <div class="main-task-detail">
                                 <div class="task-name" style="width: 700px;">
@@ -497,7 +507,7 @@
                                 <span v-else="">{{item.userName}}</span>
                             </div>
                         </div>
-                        <div class="pagination" v-show="this.question.completed.length>0">
+                        <div class="pagination" v-show="this.question.accepted.length>0">
                             <el-pagination
                                     @current-change="handleFinishedPage2"
                                     :current-page.sync="acceptedPage.pageNum"
@@ -648,8 +658,7 @@
                 </div>
             </div>
         </div>
-        <el-dialog
-                title="创建个人任务"
+        <el-dialog title="创建个人任务"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -713,9 +722,8 @@
             <el-button @click="createTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog
-                @close="closeDialog('questionForm')"
-                title="创建线上问题(数据)记录"
+        <el-dialog title="创建线上问题(数据)记录"
+                   @close="closeDialog('questionForm')"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -771,18 +779,15 @@
                             list-type="picture-card">
                         <i class="el-icon-plus"></i>
                     </el-upload>
-
                 </el-form-item>
-
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="saveQuestionInfo('questionForm')">立即创建</el-button>
             <el-button @click="createQuestionVisible = false,closeDialog('questionForm')">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog title="修改线上问题(数据)记录"
                 @close="closeDialog('questionForm')"
-                title="修改线上问题(数据)记录"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -804,6 +809,7 @@
                             v-model="questionForm.beginTime"
                             type="date"
                             format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -812,11 +818,12 @@
                             v-model="questionForm.endTime"
                             type="date"
                             format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="工作量" prop="workHour">
-                    <el-input style="width:100px" v-model="questionForm.workHour" :maxlength="6"></el-input>
+                <el-form-item label="工作量" prop="workHour"  >
+                    <el-input style="width:100px"  v-model="questionForm.workHour" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item label="主题" prop="name">
@@ -826,19 +833,35 @@
                 <el-form-item label="描述" prop="description">
                     <el-input type="textarea" v-model="questionForm.description" :rows="3"></el-input>
                 </el-form-item>
+                <el-form-item label="上传图片">
+                    <el-upload
+                            class="upload-demo"
+                            action=""
+                            ref='uploadPic'
+                            :on-preview="handlePictureCardPreview"
+                            :on-remove="handleRemove"
+                            :http-request="upload"
+                            :before-upload="beforeAvatarUpload"
+                            list-type="picture-card">
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                </el-form-item>
                 <el-form-item>
-                    <image v-for="url in questionForm.urlList" :src="url"></image>
+                    <span v-for="url in questionForm.urlList" v-show="questionForm.urlList.length != 0">
+                        <img :src="url" v-if="url" style="margin-left: -50px;cursor: pointer" @click="showPic(url)">
+                        <i class="el-icon-delete" style="margin-left: 10px" @click="removeUrl(url)"></i>
+                        <!--<a style="color: blue;cursor: pointer" @click="showPic(url)">点击查看问题原件</a><i class="el-icon-delete" style="margin-left: 10px" @click="removeUrl(url)"></i><br/>-->
+                    </span>
                 </el-form-item>
 
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveQuestionInfo('questionForm')">保存</el-button>
+            <el-button type="primary" @click="editQuestionInfo('questionForm')">修改</el-button>
             <el-button @click="editQuestionVisible = false,closeDialog('questionForm')">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog title="线上问题(数据)记录"
                 @close="closeDialog('questionForm')"
-                title="线上问题(数据)记录"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -863,16 +886,55 @@
                 <el-form-item label="描述:" prop="description">
                     {{questionForm.description}}
                 </el-form-item>
-
+                <el-form-item>
+                    <span v-for="url in questionForm.urlList" v-show="questionForm.urlList.length != 0">
+                        <img :src="url" v-if="url" style="margin-left: -50px;cursor: pointer" @click="showPic(url)">
+                        <!--<a style="color: blue;cursor: pointer" @click="showPic(url)" class="fl">点击查看问题原件</a><br/>-->
+                    </span>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button type="danger" @click="deleteQuestion(questionForm.oqrId)">删除</el-button>
+            <el-button type="primary" icon="edit" @click="editQuestion(questionForm)"></el-button>
             <el-button type="primary" @click="acceptQuestion(questionForm.oqrId)">审核通过</el-button>
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog title="线上问题(数据)记录"
                 @close="closeDialog('questionForm')"
-                title="线上问题(数据)记录"
+                size="tiny"
+                custom-class="myDialog"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="acceptedQuestionVisible">
+            <el-form :model="questionForm" :rules="questionRules" ref="questionForm" label-width="100px">
+                <el-form-item label="项目:" prop="projectId">
+                    {{questionForm.projectName}}
+                </el-form-item>
+                <el-form-item label="开始日期:" prop="beginTime">
+                    {{questionForm.beginTime}}
+                </el-form-item>
+                <el-form-item label="截止日期:" prop="endTime">
+                    {{questionForm.endTime}}
+                </el-form-item>
+                <el-form-item label="工作量:" prop="workHour">
+                    {{questionForm.workHour}} 小时
+                </el-form-item>
+                <el-form-item label="主题:" prop="name">
+                    {{questionForm.name}}
+                </el-form-item>
+                <el-form-item label="描述:" prop="description">
+                    {{questionForm.description}}
+                </el-form-item>
+                <el-form-item>
+                    <span v-for="url in questionForm.urlList" v-show="questionForm.urlList.length != 0">
+                        <img :src="url" v-if="url" style="margin-left: -50px;cursor: pointer" @click="showPic(url)">
+                        <!--<a style="color: blue;cursor: pointer" @click="showPic(url)" class="fl">点击查看问题原件</a><br/>-->
+                    </span>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+        <el-dialog title="线上问题(数据)记录"
+                @close="closeDialog('questionForm')"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -897,7 +959,12 @@
                 <el-form-item label="描述:" prop="description">
                     {{questionForm.description}}
                 </el-form-item>
-
+                <el-form-item>
+                    <span v-for="url in questionForm.urlList" v-show="questionForm.urlList.length != 0">
+                        <img :src="url" v-if="url" style="margin-left: -50px;cursor: pointer" @click="showPic(url)">
+                        <!--<a style="color: blue;cursor: pointer" @click="showPic(url)" class="fl">点击查看问题来源</a><br/>-->
+                    </span>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button v-if="questionForm.reviewStatus == 1" type="warning">待审核</el-button>
@@ -1162,6 +1229,11 @@
                     pageSize: 5,
                     total: 0,
                 },
+                waitPage:{
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
                 auditSuccessPage: {
                     pageNum: 1,
                     pageSize: 5,
@@ -1172,7 +1244,7 @@
                     pageSize: 5,
                     total: 0,
                 },
-                waitPage: {
+                waitPage1: {
                     pageNum: 1,
                     pageSize: 5,
                     total: 0,
@@ -1363,20 +1435,20 @@
                         {required: true, message: '项目不能为空', trigger: 'change'},
                     ],
                     endTime: [
-                        {type: 'date', required: true, message: '截止时间不能为空', trigger: 'change'},
+                        {type: 'date', required: true, message: '截止时间不能为空', trigger: 'blur'},
                     ],
                     beginTime: [
-                        {type: 'date', required: true, message: '开始时间不能为空', trigger: 'change'},
+                        {type: 'date', required: true, message: '开始时间不能为空', trigger: 'blur'},
                     ],
                     workHour: [
-                        {required: true, validator: validateEmpty, message: '工作量不能为空', trigger: 'blur'},
+                        {required: true,  validator: validateEmpty,message: '工作量不能为空', trigger: 'blur'},
                     ],
                     name: [
-                        {required: true, validator: validateEmpty, message: '任务名称不能为空', trigger: 'blur'},
+                        {required: true,  validator: validateEmpty,message: '任务名称不能为空', trigger: 'blur'},
                         {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
                     ],
                     description: [
-                        {required: true, validator: validateEmpty, message: '描述不能为空', trigger: 'blur'},
+                        {required: true,  validator: validateEmpty,message: '描述不能为空', trigger: 'blur'},
                         {min: 1, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur'}
                     ],
 
@@ -1393,6 +1465,7 @@
                 reqDTO: {},
                 editQuestionVisible:false,
                 checkQuestionVisible:false,
+                acceptedQuestionVisible:false,
                 finishQuestionVisible:false,
                 fileList:[],
                 questionActiveName:'wait',
@@ -1431,7 +1504,13 @@
                 return 'total, pager'
             },
             finishedPageLayout2() {
-                if (this.finishedPage1.total > 0) {
+                if (this.acceptedPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            finishedPageLayout3() {
+                if (this.waitPage1.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -2126,6 +2205,10 @@
                 this.acceptedPage.pageNum = currentPage
                 this.fetchQuestionAccepted()
             },
+            handleFinishedPage3(currentPage) {
+                this.waitPage1.pageNum = currentPage
+                this.fetchQuestionWait()
+            },
             handleCommentedPage(currentPage) {
                 this.commentedPage.pageNum = currentPage
                 this.fetchTaskCommented()
@@ -2248,8 +2331,19 @@
             },
 
             // sch --
+            //清空数据
+            clearQuestionForm(){
+              this.questionForm.name = null;
+              this.questionForm.description = null;
+              this.questionForm.beginTime = null;
+              this.questionForm.endTime = null;
+              this.questionForm.workHour = null;
+              this.questionForm.urlList = [];
+              this.questionForm.projectId = null;
+            },
             //创建线上问题记录
             createQuestionClick() {
+                this.clearQuestionForm()
                 this.createQuestionVisible = true
             },
             //完成线上问题
@@ -2268,13 +2362,15 @@
             },
             //编辑问题
             editQuestion(item){
-                this.editQuestionVisible = true
+                this.checkQuestionVisible = false;
+                this.editQuestionVisible = true;
+                this.questionForm.oqrId = item.oqrId;
                 this.questionForm.name = item.name;
                 this.questionForm.beginTime = item.beginTime;
                 this.questionForm.endTime = item.endTime;
                 this.questionForm.projectId = item.projectId;
                 this.questionForm.description = item.description;
-                this.questionForm.workHour = item.workHour;
+                this.questionForm.workHour = String(item.workHour);
                 this.questionForm.urlList = item.urlList;
             },
             //审核问题
@@ -2290,6 +2386,20 @@
                 this.questionForm.workHour = item.workHour;
                 this.questionForm.urlList = item.urlList;
             },
+            //打开已完成审核的弹框
+            acceptedQuestion(item){
+                this.acceptedQuestionVisible = true
+                this.questionForm.oqrId = item.oqrId
+                this.questionForm.name = item.name;
+                this.questionForm.beginTime = moment(item.beginTime).format('YYYY-MM-DD');
+                this.questionForm.endTime = moment(item.endTime).format('YYYY-MM-DD');
+                this.questionForm.projectId = item.projectId;
+                this.questionForm.projectName = item.projectName;
+                this.questionForm.description = item.description;
+                this.questionForm.workHour = item.workHour;
+                this.questionForm.urlList = item.urlList;
+            },
+            //新增线上问题
             saveQuestionInfo(formName) {
                 let vm = this;
                 this.questionAble = true
@@ -2319,25 +2429,56 @@
                     this.questionAble = false
                 });
             },
+            //修改线上问题
+            editQuestionInfo(formName) {
+                let vm = this;
+                this.questionAble = true
+                this.questionForm.endTime = moment(this.questionForm.endTime).toDate()
+                this.questionForm.beginTime = moment(this.questionForm.beginTime).toDate()
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var param = this.questionForm;
+                        param.name = param.name.trim();
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00')
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
+                        param.oqrId = this.questionForm.oqrId;
+                        if (param.workHour.length != parseFloat(param.workHour).toString().length || parseFloat(param.workHour) == "NaN") {
+                            this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            return false;
+                        }
+                        http.zsyPutHttp('/question/update', param, (resp) => {
+                            this.$message({showClose: true, message: '线上问题修改成功', type: 'success'});
+                            this.$refs[formName].resetFields();
+                            this.editQuestionVisible = false
+                            this.questionAble = false
+                            vm.reload()
+                        });
+                    } else {
+                        return false;
+                    }
+                }, err => {
+                    this.questionAble = false
+                });
+            },
             handlePictureCardPreview(file) {
                 this.dialogImageUrl = file.url;
                 this.dialogVisible = true;
             },
             handleChange(file,fileList){
-                this.questionForm.urlList = fileList.slice(-3)
+                this.questionForm.urlList = fileList.splice(-3)
             },
             handleRemove(file) {
                 this.questionForm.urlList.splice(this.questionForm.urlList.findIndex(item => item.indexOf(file.name) > -1), 1)
             },
             beforeAvatarUpload(file) {
                 const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
-                const isLt2M = file.size / 1024 / 1024 < 2;
+                const isLt2M = file.size / 1024 / 1024 < 1;
 
                 if (!isJPG) {
                     this.$message.error('上传图片只能是 JPG、JPEG、PNG 格式!');
                 }
                 if (!isLt2M) {
-                    this.$message.error('上传图片大小不能超过 2MB!');
+                    this.$message.error('上传图片大小不能超过 1MB!');
                 }
                 return isJPG && isLt2M;
             },
@@ -2352,14 +2493,24 @@
                 var data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/upload/ucloud/image', data, (res) => {
-                    this.demandForm.urlList.push(res.data.url)
+                    this.questionForm.urlList.push(res.data.url)
+
                 })
             },
+            showPic(url){
+                console.log(url)
+              window.open(url)
+            },
+            removeUrl(url){
+                this.questionForm.urlList.splice(this.questionForm.urlList.findIndex(item => item.indexOf(url) > -1), 1)
+            },
+
             //查询待审核线上问题
             fetchQuestionWait(){
                 let vm = this
-                http.zsyGetHttp('/question/wait', {}, (res) => {
-                    vm.question.wait = res.data
+                http.zsyGetHttp(`/question/wait/${vm.waitPage1.pageNum}`, {}, (res) => {
+                    vm.question.wait = res.data.list
+                    vm.waitPage1.total = res.data.total
                 })
             },
             fetchQuestionAccepted(){
@@ -2458,8 +2609,7 @@
             },
             //跳转到通知页面
             toNotice(){
-                this.$router.push(`/index/notice`)
-                console.log(111)
+                this.$router.push({path:`/index/notice`,param:{activeName:'notice'}})
             }
             // -- sch
         },
@@ -2727,5 +2877,13 @@
 
     .iconfont {
         margin-right: 5px;
+    }
+
+    .message {
+        background-color: #20a0ff;
+        color: #fff;
+        line-height: 30px;
+        padding: 0 10px;
+        width: 300px;
     }
 </style>
