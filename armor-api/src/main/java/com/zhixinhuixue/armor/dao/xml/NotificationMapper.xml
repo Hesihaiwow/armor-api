@@ -73,15 +73,15 @@
         SELECT n.*,u.name as notice_user FROM `notification` n left join `user` u on n.user_id = u.id
         <where>
         <if test="reqDTO.readStatus != null">
-            and `status` = #{reqDTO.readStatus}
+            and n.`status` = #{reqDTO.readStatus}
         </if>
         <if test="reqDTO.beginTime != null">
-            <![CDATA[  and create_time > #{reqDTO.beginTime} ]]>
+            <![CDATA[  and n.create_time > #{reqDTO.beginTime} ]]>
         </if>
         <if test="reqDTO.endTime != null">
-            <![CDATA[  and create_time < #{reqDTO.endTime} ]]>
+            <![CDATA[  and n.create_time < #{reqDTO.endTime} ]]>
         </if>
         </where>
-        ORDER BY `status` ASC,`create_time` DESC
+        ORDER BY n.`status` ASC,n.`create_time` DESC
     </select>
 </mapper>

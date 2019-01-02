@@ -242,9 +242,12 @@ public class UploadController {
     }
 
 
-    @RequestMapping(value = "ucloud/image", produces = "application/json; charset=utf-8")
+
     public String uploadToUcloud(MultipartFile uploadFile){
         try {
+            if (uploadFile.getBytes().length / (1024 * 1024) > 1) {
+                return ZSYResult.fail().msg("上传的文件大小超过最大限制(1MB)").build();
+            }
             String contentType = uploadFile.getContentType();
             String fileName = escapeFileName(contentType,uploadFile.getOriginalFilename());
             String url = getUploadUrl(fileName);
@@ -259,4 +262,15 @@ public class UploadController {
         }
     }
 
+    @RequestMapping(value = "ucloud/image", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String uploadImageToUcloud(@RequestParam(value = "uploadFile") MultipartFile uploadFile){
+        String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
+        if (!isImg(suffix)) {
+            return ZSYResult.fail().msg("只能上传图片格式").build();
+        }
+        JSONObject result = new JSONObject();
+        result.put("url", uploadToUcloud(uploadFile));
+        return ZSYResult.success().data(result).build();
+    }
 }

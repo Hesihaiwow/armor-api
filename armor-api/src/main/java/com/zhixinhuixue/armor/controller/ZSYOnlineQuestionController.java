@@ -53,9 +53,9 @@ public class ZSYOnlineQuestionController {
     }
 
     @ApiOperation("查看待审核线上问题")
-    @GetMapping("/wait")
-    public String getWaitQuestion(){
-        List<OnlineQuestionResDTO> list = onlineQuestionService.selectWaitQuestion();
+    @GetMapping("/wait/{pageNum}")
+    public String getWaitQuestion(@PathVariable("pageNum")Integer pageNum){
+        PageInfo<OnlineQuestionResDTO> list = onlineQuestionService.selectWaitQuestion(pageNum);
         return ZSYResult.success().data(list).build();
     }
 

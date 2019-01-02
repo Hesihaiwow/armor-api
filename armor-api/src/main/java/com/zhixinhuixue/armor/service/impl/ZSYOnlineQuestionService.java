@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -114,12 +116,21 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
             onlineQuestionBOList.stream().forEach(onlineQuestionBO -> {
                 OnlineQuestionResDTO resDTO = new OnlineQuestionResDTO();
                 BeanUtils.copyProperties(onlineQuestionBO,resDTO);
-                if ((onlineQuestionBO.getEndTime().getDate()) == (new Date().getDate())){
-                    resDTO.setIsToday(0);
-                }else if ((onlineQuestionBO.getEndTime().getDate()) < (new Date().getDate())){
-                    resDTO.setIsToday(-1);
-                }else{
-                    resDTO.setIsToday(1);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String endDate = sdf.format(onlineQuestionBO.getEndTime());
+                String today = sdf.format(new Date());
+                try {
+                    Date endTime = sdf.parse(endDate);
+                    Date nowTime = sdf.parse(today);
+                    if (endTime.before(nowTime)){
+                        resDTO.setIsToday(-1);
+                    }else if (endTime.after(nowTime)){
+                        resDTO.setIsToday(1);
+                    }else{
+                        resDTO.setIsToday(0);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
                 List<String> urls = onlineQuestionMapper.selectUrlsById(onlineQuestionBO.getOqrId());
                 if (!CollectionUtils.isEmpty(urls)){
@@ -158,20 +169,30 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
      * @return
      */
     @Override
-    public List<OnlineQuestionResDTO> selectWaitQuestion() {
-        List<OnlineQuestionBO> onlineQuestionBOList = onlineQuestionMapper.selectWaitQuestion();
-        List<OnlineQuestionResDTO> list = new ArrayList<>();
+    public PageInfo<OnlineQuestionResDTO> selectWaitQuestion(Integer pageNum) {
+        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE_WAIT);
+        Page<OnlineQuestionBO> onlineQuestionBOList = onlineQuestionMapper.selectWaitQuestion();
+        Page<OnlineQuestionResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(onlineQuestionBOList)){
             BeanUtils.copyProperties(onlineQuestionBOList,list);
             onlineQuestionBOList.stream().forEach(onlineQuestionBO -> {
                 OnlineQuestionResDTO resDTO = new OnlineQuestionResDTO();
                 BeanUtils.copyProperties(onlineQuestionBO,resDTO);
-                if ((onlineQuestionBO.getEndTime().getDate()) == (new Date().getDate())){
-                    resDTO.setIsToday(0);
-                }else if ((onlineQuestionBO.getEndTime().getDate()) < (new Date().getDate())){
-                    resDTO.setIsToday(-1);
-                }else{
-                    resDTO.setIsToday(1);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String endDate = sdf.format(onlineQuestionBO.getEndTime());
+                String today = sdf.format(new Date());
+                try {
+                    Date endTime = sdf.parse(endDate);
+                    Date nowTime = sdf.parse(today);
+                    if (endTime.before(nowTime)){
+                        resDTO.setIsToday(-1);
+                    }else if (endTime.after(nowTime)){
+                        resDTO.setIsToday(1);
+                    }else{
+                        resDTO.setIsToday(0);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
                 List<String> urls = onlineQuestionMapper.selectUrlsById(onlineQuestionBO.getOqrId());
                 if (!CollectionUtils.isEmpty(urls)){
@@ -182,7 +203,7 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
                 list.add(resDTO);
             });
         }
-        return list;
+        return new PageInfo<>(list);
     }
 
     /**
@@ -200,6 +221,12 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
             onlineQuestionBOS.stream().forEach(onlineQuestionBO -> {
                 OnlineQuestionResDTO resDTO = new OnlineQuestionResDTO();
                 BeanUtils.copyProperties(onlineQuestionBO,resDTO);
+                List<String> urls = onlineQuestionMapper.selectUrlsById(onlineQuestionBO.getOqrId());
+                if (!CollectionUtils.isEmpty(urls)){
+                    resDTO.setUrlList(urls);
+                }else {
+                    resDTO.setUrlList(null);
+                }
                 page.add(resDTO);
             });
         }
@@ -310,11 +337,14 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
         if (onlineQuestionMapper.updateById(onlineQuestion) == 0){
             throw new ZSYServiceException("修改失败");
         }
-        if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
+        List<String> urls = onlineQuestionMapper.selectUrlsById(reqDTO.getOqrId());
+        if (!CollectionUtils.isEmpty(urls)){
             //删除原来的图片地址
             if (onlineQuestionMapper.deleteUrlByOqrId(onlineQuestion.getOqrId()) == 0){
                 throw new ZSYServiceException("修改失败");
             }
+        }
+        if (!CollectionUtils.isEmpty(reqDTO.getUrlList())){
             List<QuestionUrl> list = new ArrayList<>();
             reqDTO.getUrlList()
                     .stream().filter(url -> !Strings.isNullOrEmpty(url))
@@ -332,7 +362,7 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
                 }
             }
         }
-        return null;
+        return ZSYResult.success().data(onlineQuestion.getOqrId());
     }
 
     private static boolean isSameDay(Date date1, Date date2) {

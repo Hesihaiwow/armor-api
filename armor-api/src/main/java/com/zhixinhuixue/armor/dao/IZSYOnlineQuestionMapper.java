@@ -87,7 +87,7 @@ public interface IZSYOnlineQuestionMapper {
      * 查看待审核问题
      * @return
      */
-    List<OnlineQuestionBO> selectWaitQuestion();
+    Page<OnlineQuestionBO> selectWaitQuestion();
 
     /**
      * 查看审核通过线上问题

@@ -72,7 +72,7 @@ public interface IZSYOnlineQuestionService {
      * 查看待审核线上问题
      * @return
      */
-    List<OnlineQuestionResDTO> selectWaitQuestion();
+    PageInfo<OnlineQuestionResDTO> selectWaitQuestion(Integer pageNum);
 
     /**
      * 查看审核通过线上问题
