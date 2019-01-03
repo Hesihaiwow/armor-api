@@ -35,7 +35,12 @@
             </div>
         </div>
         <el-table :data="noticeData" border width="1200px" v-show="!showEveryoneVisible">
-            <el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>
+            <el-table-column align="center" label='序号' width="80px">
+                <template scope="scope">
+                    {{(reqDTO.pageNum-1)*10 + scope.$index + 1}}
+                </template>
+            </el-table-column>
+            <!--<el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>-->
             <el-table-column property="content" label="内容" align="left">
                 <template scope="scope">
                         <span v-if="scope.row.status == 0" style="text-align: left">
@@ -63,7 +68,12 @@
             </el-table-column>
         </el-table>
         <el-table :data="noticeData" border width="1200px" v-show="showEveryoneVisible">
-            <el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>
+            <el-table-column align="center" label='序号' width="80px">
+                <template scope="scope">
+                    {{(reqDTO1.pageNum-1)*10 + scope.$index + 1}}
+                </template>
+            </el-table-column>
+            <!--<el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>-->
             <el-table-column property="content" label="内容" align="left">
                 <template scope="scope">
                     <span>{{scope.row.content}}</span>

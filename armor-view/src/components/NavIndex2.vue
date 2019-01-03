@@ -2362,6 +2362,7 @@
             },
             //编辑问题
             editQuestion(item){
+                this.fetchQuestionDoing()
                 this.checkQuestionVisible = false;
                 this.editQuestionVisible = true;
                 this.questionForm.oqrId = item.oqrId;
@@ -2371,10 +2372,11 @@
                 this.questionForm.projectId = item.projectId;
                 this.questionForm.description = item.description;
                 this.questionForm.workHour = String(item.workHour);
-                this.questionForm.urlList = item.urlList;
+                this.questionForm.urlList = item.urlList == null ? []:item.urlList;
             },
             //审核问题
             checkQuestion(item){
+                this.fetchQuestionWait()
                 this.checkQuestionVisible = true
                 this.questionForm.oqrId = item.oqrId
                 this.questionForm.name = item.name;
@@ -2494,7 +2496,6 @@
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/upload/ucloud/image', data, (res) => {
                     this.questionForm.urlList.push(res.data.url)
-
                 })
             },
             showPic(url){
@@ -2538,7 +2539,8 @@
             //关闭dialog
             closeDialog(formName) {
                 this.$refs[formName].resetFields();
-                this.isSaving = false
+                this.isSaving = false;
+                this.$refs.uploadPic.clearFiles();
             },
             //删除线上问题
             deleteQuestion(id){
