@@ -20,7 +20,7 @@ public class UserReqDTO {
     @NotNull(message = "用户账号不能为空")
     private String account;
 
-    @Pattern(regexp = "^1[3|4|5|7|8][0-9]\\d{8}$",message = "用户手机号格式错误")
+    @Pattern(regexp = "^1[3|4|5|6|7|8|9][0-9]\\d{8}$",message = "用户手机号格式错误")
     private String phone;
 
     private Long departmentId;

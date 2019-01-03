@@ -16,7 +16,7 @@ public class UserInfoReqDTO {
     @NotNull(message = "用户名称不能为空")
     private String name;
 
-    @Pattern(regexp = "^1[3|4|5|7|8][0-9]\\d{8}$",message = "用户手机号格式错误")
+    @Pattern(regexp = "^1[3|4|5|6|7|8|9][0-9]\\d{8}$",message = "用户手机号格式错误")
     private String phone;
 
     @Pattern(regexp = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}",message = "邮箱格式错误")
