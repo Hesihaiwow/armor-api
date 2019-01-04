@@ -446,7 +446,7 @@
                         <div class="task-lis" v-for="item in question.wait" @click="checkQuestion(item)">
                             <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
                             <div class="main-task-detail">
-                                <div class="task-name"><span>{{item.name}}:({{item.description}})</span></div>
+                                <div class="task-name" style="width: 700px"><span>{{item.name}}:({{item.description}})</span></div>
                                 <div class="task-state">
                                     <span class="task-end blue">申请人：{{item.userName}}</span>
                                     <span v-if="item.isToday == -1" class="task-end red">截止时间：{{item.endTime| formatDate }}</span>
@@ -861,7 +861,6 @@
           </span>
         </el-dialog>
         <el-dialog title="线上问题(数据)记录"
-                @close="closeDialog('questionForm')"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -900,7 +899,6 @@
           </span>
         </el-dialog>
         <el-dialog title="线上问题(数据)记录"
-                @close="closeDialog('questionForm')"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -932,9 +930,12 @@
                     </span>
                 </el-form-item>
             </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="danger" @click="deleteQuestion(questionForm.oqrId)">删除</el-button>
+            <el-button type="primary" icon="edit" @click="editQuestion(questionForm)"></el-button>
+          </span>
         </el-dialog>
         <el-dialog title="线上问题(数据)记录"
-                @close="closeDialog('questionForm')"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -2363,6 +2364,7 @@
             //编辑问题
             editQuestion(item){
                 this.fetchQuestionDoing()
+                this.acceptedQuestionVisible = false;
                 this.checkQuestionVisible = false;
                 this.editQuestionVisible = true;
                 this.questionForm.oqrId = item.oqrId;
@@ -2499,7 +2501,6 @@
                 })
             },
             showPic(url){
-                console.log(url)
               window.open(url)
             },
             removeUrl(url){
@@ -2531,7 +2532,7 @@
             //查询已完成线上问题
             fetchQuestionCompleted(){
                 let vm = this
-                http.zsyGetHttp(`/question/completed/${vm.finishedPage.pageNum}`, {}, (res) => {
+                http.zsyGetHttp(`/question/completed/${vm.finishedPage1.pageNum}`, {}, (res) => {
                     vm.question.completed = res.data.list
                     vm.finishedPage1.total = res.data.total
                 })
@@ -2540,11 +2541,13 @@
             closeDialog(formName) {
                 this.$refs[formName].resetFields();
                 this.isSaving = false;
+                console.log(111)
                 this.$refs.uploadPic.clearFiles();
+                console.log(222)
             },
             //删除线上问题
             deleteQuestion(id){
-                this.$confirm('此操作将删除该需求, 是否继续?', '提示', {
+                this.$confirm('删除线上问题, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -2567,19 +2570,25 @@
             },
             //审核通过线上问题
             acceptQuestion(id){
-                http.zsyPutHttp('question/auditing/accept/'+id,{},(res)=>{
-                    if (res.data){
-                        this.$message({
-                            showClose: true,
-                            message: '审核成功',
-                            type: 'success'
-                        });
-                        this.fetchQuestionWait()
-                        this.fetchQuestionAccepted()
-                    }
-                })
-                this.checkQuestionVisible = false;
-                // this.$router.go(0)
+                this.$confirm('确认审核通过, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    http.zsyPutHttp('question/auditing/accept/'+id,{},(res)=>{
+                        if (res.data){
+                            this.$message({
+                                showClose: true,
+                                message: '审核成功',
+                                type: 'success'
+                            });
+                            this.fetchQuestionWait()
+                            this.fetchQuestionAccepted()
+                        }
+                    })
+                    this.checkQuestionVisible = false;
+                }).catch(() => {
+                });
             },
             //完成线上问题
             saveFinishQuestion(id){

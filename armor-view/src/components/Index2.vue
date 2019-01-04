@@ -603,6 +603,7 @@
 <style>
     .el-tabs__item{
         width: 100px;
+        line-height: 32px;
     }
 </style>
 <style scoped>
