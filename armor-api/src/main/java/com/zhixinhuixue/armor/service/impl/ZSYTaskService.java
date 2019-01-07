@@ -607,6 +607,9 @@ public class ZSYTaskService implements IZSYTaskService {
         // copy 任务基本属性
         TaskDetailResDTO taskDetailResDTO = new TaskDetailResDTO();
         BeanUtils.copyProperties(taskDetailBO, taskDetailResDTO);
+        if (taskDetailResDTO.getStageName() == null){
+            taskDetailResDTO.setStageName("无");
+        }
         // copy 任务标签
         List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
         taskDetailBO.getTaskTags().stream().forEach(tag -> {
@@ -1424,7 +1427,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setNid(snowFlakeIDHelper.nextId());
                 notification.setTaskId(originTask.getId());
                 notification.setUserId(userId);
-                String content = "您参与的任务:"+originTask.getName()+"("+originTask.getId()+")阶段有变化;"+oldStage.getName()+"-->"+newStage.getName();
+                String content = "您参与的任务: ( "+originTask.getName()+" )阶段有变化; "+oldStage.getName()+" --> "+newStage.getName();
                 notification.setContent(content);
                 notification.setCreateTime(new Date());
                 notification.setStatus(0);
@@ -1454,7 +1457,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setNid(snowFlakeIDHelper.nextId());
                 notification.setTaskId(taskId);
                 notification.setUserId(userId);
-                String content = "您参与的任务:"+task.getName()+"("+task.getId()+")已暂停;原因: "+ desc;
+                String content = "您参与的任务: ( "+task.getName()+" )已暂停; 原因: "+ desc;
                 notification.setContent(content);
                 notification.setCreateTime(new Date());
                 notification.setStatus(0);
@@ -1469,7 +1472,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setNid(snowFlakeIDHelper.nextId());
                 notification.setTaskId(taskId);
                 notification.setUserId(userId);
-                String content = "您参与的任务:"+task.getName()+"("+task.getId()+")已启动;";
+                String content = "您参与的任务: ( "+task.getName()+" )已启动;";
                 notification.setContent(content);
                 notification.setCreateTime(new Date());
                 notification.setStatus(0);
@@ -1498,7 +1501,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setNid(snowFlakeIDHelper.nextId());
                 notification.setTaskId(taskId);
                 notification.setUserId(userId);
-                String content = "您参与的任务:"+task.getName()+"("+task.getId()+")已完成,请及时评价;";
+                String content = "您参与的任务: ( "+task.getName()+" )已完成,请及时评价;";
                 notification.setContent(content);
                 notification.setCreateTime(new Date());
                 notification.setStatus(0);
@@ -1528,57 +1531,57 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setUserId(userId);
 //                String content = "您参与的任务:"+taskTemp.getName()+"("+taskTemp.getId()+")已完成,请及时评价;";
                 StringBuilder sb = new StringBuilder();
-                sb.append("您参与的任务:"+taskTemp.getName()+"("+taskTemp.getId()+")有修改: "+"\n");
+                sb.append("您参与的任务:( "+taskTemp.getName()+" )有修改: "+"\n\t");
                 if (taskReqDTO.getTaskType() != null && taskReqDTO.getTaskType() != taskTemp.getType()){
-                    String str = "类型由"+ZSYTaskType.getName(taskTemp.getType())+" --> "+ZSYTaskType.getName(taskReqDTO.getTaskType())+";\n";
+                    String str = "类型由 ( "+ZSYTaskType.getName(taskTemp.getType())+" ) --> ( "+ZSYTaskType.getName(taskReqDTO.getTaskType())+" );\n";
                     sb.append(str);
                 }
                 if ((!Strings.isNullOrEmpty(taskReqDTO.getTaskName())) && (!taskReqDTO.getTaskName().equals(taskTemp.getName()))){
-                    String str = "名称改为:"+taskReqDTO.getTaskName()+";\n";
+                    String str = "名称改为: ( "+taskReqDTO.getTaskName()+" );\n";
                     sb.append(str);
                 }
                 if((!Strings.isNullOrEmpty(taskReqDTO.getDescription())) && (!taskReqDTO.getDescription().equals(taskTemp.getDescription()))){
-                    String str = "描述改为:"+taskReqDTO.getDescription()+";\n";
+                    String str = "描述改为: ( "+taskReqDTO.getDescription()+" );\n";
                     sb.append(str);
                 }
                 if(taskReqDTO.getProjectId() != null && (!taskReqDTO.getProjectId().equals(taskTemp.getProjectId()))){
-                    String str = "项目id改为:"+taskReqDTO.getProjectId()+";\n";
+                    String str = "项目id改为: ["+taskReqDTO.getProjectId()+"];\n";
                     sb.append(str);
                 }
                 if(taskReqDTO.getStageId() != null && (!taskReqDTO.getStageId().equals(taskTemp.getStageId()))){
                     Stage oldStage = stageMapper.selectById(taskTemp.getStageId());
                     Stage newStage = stageMapper.selectById(taskReqDTO.getStageId());
-                    String str = "阶段由 "+oldStage.getName()+" --> "+newStage.getName()+";\n";
+                    String str = "阶段由( "+oldStage.getName()+" ) --> ( "+newStage.getName()+" );\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getPriority() != null && taskReqDTO.getPriority() != taskTemp.getPriority()){
-                    String str = "优先级由 "+ZSYTaskPriority.getName(taskTemp.getPriority())+" --> "+ZSYTaskPriority.getName(taskReqDTO.getPriority())+";\n";
+                    String str = "优先级由( "+ZSYTaskPriority.getName(taskTemp.getPriority())+" ) --> ( "+ZSYTaskPriority.getName(taskReqDTO.getPriority())+" );\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getFacility() != null && taskReqDTO.getFacility() != taskTemp.getFacility()){
-                    String str = "难易度由 "+ZSYTaskFacility.getName(taskTemp.getFacility())+" --> "+ZSYTaskFacility.getName(taskReqDTO.getFacility())+";\n";
+                    String str = "难易度由( "+ZSYTaskFacility.getName(taskTemp.getFacility())+" ) --> ( "+ZSYTaskFacility.getName(taskReqDTO.getFacility())+" );\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getBeginTime() != null && (taskReqDTO.getBeginTime().compareTo(Optional.ofNullable(taskTemp.getBeginTime()).orElse(new Date())) != 0)){
 //                    String oldTime = DateHelper.dateFormatter(taskTemp.getBeginTime(), DateHelper.DATE_FORMAT);
                     String newTime = DateHelper.dateFormatter(taskReqDTO.getBeginTime(), DateHelper.DATE_FORMAT);
-                    String str = "开始开发时间改成 "+ newTime + ";\n";
+                    String str = "开始开发时间改成: "+ newTime + ";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getTestTime() != null && (taskReqDTO.getTestTime().compareTo(Optional.ofNullable(taskTemp.getTestTime()).orElse(new Date())) != 0)){
                     String newTime = DateHelper.dateFormatter(taskReqDTO.getTestTime(), DateHelper.DATE_FORMAT);
-                    String str = "提测时间改成 "+ newTime + ";\n";
+                    String str = "提测时间改成: "+ newTime + ";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getEndTime() != null && (taskReqDTO.getEndTime().compareTo(Optional.ofNullable(taskTemp.getEndTime()).orElse(new Date())) != 0)){
                     String newTime = DateHelper.dateFormatter(taskReqDTO.getEndTime(), DateHelper.DATE_FORMAT);
-                    String str = "截止时间改成 "+ newTime + ";\n";
+                    String str = "截止时间改成: "+ newTime + ";\n";
                     sb.append(str);
                 }
                 if (taskReqDTO.getCreateBy() != null && (!taskReqDTO.getCreateBy().equals(taskTemp.getCreateBy()))){
                     User oldMan = userMapper.selectById(taskTemp.getCreateBy());
                     User newMan = userMapper.selectById(taskReqDTO.getCreateBy());
-                    String str  = "负责人由 "+oldMan.getName() + " --> " + newMan.getName() + ";\n";
+                    String str  = "负责人由( "+oldMan.getName() + " ) --> ( " + newMan.getName() + " );\n";
                     sb.append(str);
                 }
                 if ((!CollectionUtils.isEmpty(taskReqDTO.getTaskUsers()))){
@@ -1590,7 +1593,7 @@ public class ZSYTaskService implements IZSYTaskService {
                             User user = userMapper.selectById(userId1);
                             userNames.add(user.getName());
                         });
-                        String str = "新增任务人员: " + userNames.toString() + "\n";
+                        String str = "新增任务人员: " + userNames.toString() + ";\n";
                         sb.append(str);
                     }else if (taskReqDTO.getTaskUsers().size() > taskTemp.getTaskUsers().size()){
                         Set<Long> taskUsers = new HashSet<>();
@@ -1606,7 +1609,7 @@ public class ZSYTaskService implements IZSYTaskService {
                             User user = userMapper.selectById(userId2);
                             userNames.add(user.getName());
                         });
-                        String str = "新增任务人员: " + userNames.toString() + "\n";
+                        String str = "新增任务人员: " + userNames.toString() + ";\n";
                         sb.append(str);
                     }else if (taskReqDTO.getTaskUsers().size() < taskTemp.getTaskUsers().size()){
                         Set<Long> removeUsers = new HashSet<>();
@@ -1622,7 +1625,7 @@ public class ZSYTaskService implements IZSYTaskService {
                             User user = userMapper.selectById(userId3);
                             userNames.add(user.getName());
                         });
-                        String str = "移除任务人员: " + userNames.toString() + "\n";
+                        String str = "移除任务人员: " + userNames.toString() + ";\n";
                         sb.append(str);
                     }
                 }
@@ -1656,7 +1659,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setNid(snowFlakeIDHelper.nextId());
                 notification.setTaskId(taskCompleteReqDTO.getTaskId());
                 notification.setUserId(userId);
-                String content = "您参与的任务:"+task.getName()+"("+task.getId()+")有变化;" + user.getName() + "完成了子任务!完成时间为: " + time;
+                String content = "您参与的任务:( "+task.getName()+" )有变化; " + user.getName() + " 完成了子任务!完成时间为: " + time;
                 notification.setContent(content);
                 notification.setCreateTime(new Date());
                 notification.setStatus(0);
@@ -1790,7 +1793,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 List<String> taskNames = Arrays.asList(longStringEntry.getValue().replaceAll("&", ";").split(","));
                 taskNames = taskNames.stream().map(taskName -> "<"+taskName+">").collect(Collectors.toList());
                 String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
-                logger.info("主任务超时,发短信通知负责人");
+                /*logger.info("主任务超时,发短信通知负责人");
                 String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_ONE, templateJson);
                 String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
                 String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
@@ -1798,7 +1801,8 @@ public class ZSYTaskService implements IZSYTaskService {
                     logger.info("短信发送成功");
                 }else {
                     logger.info("短信发送失败: "+errorMessage);
-                }
+                }*/
+                System.out.println(templateJson);
             }
         });
     }
@@ -1878,7 +1882,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 });
                 String taskNames = delayTasks.toString().replaceAll("&", ";");
                 String templateJson = "{\"taskName\":\""+taskNames+ "\",\"timeOutUsers\":\""+delayUsers.toString()+"\"}";
-                logger.info("子任务超时,发短信通知任务负责人");
+                /*logger.info("子任务超时,发短信通知任务负责人");
                 String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_TWO, templateJson);
                 String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
                 String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
@@ -1886,7 +1890,8 @@ public class ZSYTaskService implements IZSYTaskService {
                     logger.info("短信发送成功");
                 }else {
                     logger.info("短信发送失败: "+errorMessage);
-                }
+                }*/
+                System.out.println(templateJson);
             }
         });
     }
@@ -1934,7 +1939,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 List<String> taskNames = Arrays.asList(entrySet.getValue().replaceAll("&", ";").split(","));
                 taskNames = taskNames.stream().map(taskName -> "<" + taskName + ">").collect(Collectors.toList());
                 String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
-                logger.info("子任务超时,发短信通知超时人员");
+                /*logger.info("子任务超时,发短信通知超时人员");
                 String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_THREE, templateJson);
                 String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
                 String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
@@ -1942,9 +1947,29 @@ public class ZSYTaskService implements IZSYTaskService {
                     logger.info("短信发送成功");
                 }else {
                     logger.info("短信发送失败: "+errorMessage);
-                }
+                }*/
+                System.out.println(templateJson);
             }
         });
+    }
+
+    @Override
+    public PageInfo<NoticeResDTO> getEveryoneNotice(NoticeReqDTO reqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
+            throw new ZSYServiceException("当前账号无权限");
+        }
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        Page<NotificationBO> notifications = notificationMapper.selectEveryoneNotice(reqDTO);
+        Page<NoticeResDTO> noticeResDTOList = new Page<>();
+        if (!CollectionUtils.isEmpty(notifications)){
+            BeanUtils.copyProperties(notifications,noticeResDTOList);
+            notifications.stream().forEach(notification -> {
+                NoticeResDTO noticeResDTO = new NoticeResDTO();
+                BeanUtils.copyProperties(notification,noticeResDTO);
+                noticeResDTOList.add(noticeResDTO);
+            });
+        }
+        return new PageInfo<>(noticeResDTOList);
     }
     // -- sch
 

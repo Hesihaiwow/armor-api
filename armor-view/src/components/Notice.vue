@@ -31,13 +31,19 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" size="small" @click="select">查询</el-button>
+                <el-button v-show="userRole == 0" type="primary" size="small" @click="selectEveryoneNotice">查看所有人通知</el-button>
             </div>
         </div>
-        <el-table :data="noticeData" border width="1200px">
-            <el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>
-            <el-table-column property="content" label="内容" align="center">
+        <el-table :data="noticeData" border width="1200px" v-show="!showEveryoneVisible">
+            <el-table-column align="center" label='序号' width="80px">
                 <template scope="scope">
-                        <span v-if="scope.row.status == 0" style="color:orangered;">
+                    {{(reqDTO.pageNum-1)*10 + scope.$index + 1}}
+                </template>
+            </el-table-column>
+            <!--<el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>-->
+            <el-table-column property="content" label="内容" align="left">
+                <template scope="scope">
+                        <span v-if="scope.row.status == 0" style="text-align: left">
                             {{scope.row.content}}
                         </span>
                     <span v-else style="color:gray;">{{scope.row.content}}</span>
@@ -61,7 +67,39 @@
                 </template>
             </el-table-column>
         </el-table>
-        <div class="fr">
+        <el-table :data="noticeData" border width="1200px" v-show="showEveryoneVisible">
+            <el-table-column align="center" label='序号' width="80px">
+                <template scope="scope">
+                    {{(reqDTO1.pageNum-1)*10 + scope.$index + 1}}
+                </template>
+            </el-table-column>
+            <!--<el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>-->
+            <el-table-column property="content" label="内容" align="left">
+                <template scope="scope">
+                    <span>{{scope.row.content}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column property="time" width="200" label="时间" align="center">
+                <template scope="scope">
+                    <span>{{scope.row.createTime | formatTime}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column property="noticeUser" width="200" label="通知人" align="center" v-show="showEveryoneVisible">
+                <template scope="scope">
+                    <span>{{scope.row.noticeUser}}</span>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="fr" v-show="showEveryoneVisible">
+            <el-pagination
+                    @current-change="handleCurrentChange1"
+                    :current-page.sync="pageNum1"
+                    :page-size="noticePage.pageSize"
+                    :layout="pageLayout()"
+                    :total="noticePage.total">
+            </el-pagination>
+        </div>
+        <div class="fr" v-show="!showEveryoneVisible">
             <el-pagination
                     @current-change="handleCurrentChange"
                     :current-page.sync="pageNum"
@@ -76,6 +114,7 @@
 <script>
     import Http from "../lib/Http";
     import moment from 'moment';
+    import helper from "../lib/Helper";
     export default {
         name: "Notice",
         data(){
@@ -93,7 +132,11 @@
                 //所有未读通知数量
                 unreadNoticeNum:0,
                 pageNum:1,
+                pageNum1:1,
                 reqDTO:{
+                    pageNum:1
+                },
+                reqDTO1:{
                     pageNum:1
                 },
                 noticePage:{
@@ -107,7 +150,14 @@
                 ],
                 beginTime:'',
                 endTime:'',
+                showEveryoneVisible:false
             }
+        },
+        computed:{
+            userRole(){
+                let userRole = helper.decodeToken().userRole;
+                return userRole;
+            },
         },
         filters:{
             formatDate: function (value) {
@@ -170,7 +220,14 @@
                 this.reqDTO.beginTime = null;
                 this.reqDTO.endTime = null;
             },
+            clearReqDTO1() {
+                this.reqDTO1.readStatus = null;
+                this.reqDTO1.beginTime = null;
+                this.reqDTO1.endTime = null;
+            },
             select(){
+                this.showEveryoneVisible = false
+                this.pageNum = 1
               this.clearReqDTO()
               if (this.beginTime){
                   this.reqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
@@ -183,9 +240,31 @@
               }
               this.fetchAllNotice()
             },
+            selectEveryoneNotice(){
+                this.showEveryoneVisible = true
+                this.pageNum1 = 1
+                this.clearReqDTO1()
+                if (this.beginTime){
+                    this.reqDTO1.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.endTime){
+                    this.reqDTO1.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
+                }
+                this.fetchEveryoneNotice()
+            },
+            fetchEveryoneNotice(){
+                Http.zsyPostHttp('/task/notification/everyone/all',this.reqDTO1,(res)=>{
+                    this.noticeData = res.data.list
+                    this.noticePage.total = res.data.total
+                })
+            },
             handleCurrentChange(currentPage) {
                 this.reqDTO.pageNum = currentPage
                 this.fetchAllNotice()
+            },
+            handleCurrentChange1(currentPage) {
+                this.reqDTO1.pageNum = currentPage
+                this.fetchEveryoneNotice()
             },
             pageLayout() {
                 if (this.noticePage.total > 0) {

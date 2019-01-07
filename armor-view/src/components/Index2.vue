@@ -13,30 +13,17 @@
                         <div class="logout-btn" @click.stop.prevent="handleLogout">退出登录</div>
                     </div>
                 </div>
-                <!--<div class="fr" style="margin-right: 40px;margin-top: 13px">-->
-                    <!--<el-popover-->
-                            <!--placement="top-start"-->
-                            <!--width="450"-->
-                            <!--trigger="hover"-->
-                            <!--&gt;-->
-                        <!--<el-table :data="unreadNoticeData" border>-->
-                            <!--<el-table-column property="content" label="未读通知">-->
-                                <!--<template scope="scope">-->
-                                    <!--<a style="color:red;cursor: pointer;" @click="showTaskDetails(scope.row.taskId)">{{scope.row.content}}</a>-->
-                                <!--</template>-->
-                            <!--</el-table-column>-->
-                        <!--</el-table>-->
-                        <!--<el-button slot="reference" size="small" type="warning" circle><span style="font-size: 5px">通知:</span><span style="color: red">{{unreadNoticeNum}}</span></el-button>-->
-                        <!--<el-button @click="fetchAllNotice">查看所有</el-button>-->
-                    <!--</el-popover>-->
-                <!--</div>-->
             </div>
         </div>
         <div class="nav-top">
-            <div class="el-tab-bar">
-                <el-tabs v-model="activeName" @tab-click="handleClick(activeName)">
-                    <el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">
-                        <!-- <component :is="item.name"></component> -->
+            <div class="el-tab-bar" style="width: 104px">
+                <el-tabs v-model="activeName" @tab-click="handleClick(activeName)" >
+                    <!--<el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">-->
+                        <!---->
+                        <!--<el-badge :value="12" class="item">111</el-badge>-->
+                        <!--</el-tab-pane>-->
+                    <el-tab-pane v-for="(item,idx) in tabs" :name="item.name" :key="idx">
+                        <span slot="label"><el-badge :value="item.value" class="item">{{item.label}}</el-badge></span>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -328,7 +315,7 @@
             this.activeName = 'navIndex';
             //this.$router.push(`/index/navIndex`);
             this.fetchUnreadNoticeNum()
-            this.fetchUnreadNotice()
+            // this.fetchUnreadNotice()
         },
         mounted(){
             // this.checkNotice()
@@ -379,6 +366,7 @@
                 this.showIndex = false;
                 /*tab切换*/
                 this.$router.push(`/index/${path}`);
+                this.fetchUnreadNoticeNum()
             },
             showIndexEvent() {
                 // 显示首页
@@ -415,6 +403,8 @@
             fetchUnreadNoticeNum(){
                 Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
                     this.unreadNoticeNum = res.data.count
+                    this.tabs[6].value = this.unreadNoticeNum
+
                 })
             },
             //查询所有通知
@@ -490,7 +480,7 @@
             checkNotice(){
               setInterval(() => {
                   this.fetchUnreadNoticeNum()
-              },1000*60*5)
+              },1000*5)
             },
             // -- sch
 
@@ -610,6 +600,12 @@
         }
     }
 </script>
+<style>
+    .el-tabs__item{
+        width: 100px;
+        line-height: 32px;
+    }
+</style>
 <style scoped>
     .nav-top-bg {
         position: fixed;
@@ -822,5 +818,11 @@
         margin-top: 3px;
         overflow: hidden;
         margin-right: 10px;
+    }
+
+    .item {
+        size: 10px;
+        margin-top: 10px;
+        margin-right: 40px;
     }
 </style>

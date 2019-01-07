@@ -491,7 +491,7 @@
     <!-- sch -->
     <!--查询审核通过,进行中的任务-->
     <select id="selectTaskList" resultMap="PageResultMap">
-        SELECT * FROM `task` WHERE `is_delete` = 0 AND `type` = 2 AND `status` = 1
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `type` = 2 AND `status` = 1 and `review_status` = 3
     </select>
 
     <!--查询审核通过,进行中的子任务-->

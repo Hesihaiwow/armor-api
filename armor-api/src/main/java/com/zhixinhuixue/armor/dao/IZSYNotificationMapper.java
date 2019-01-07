@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.NotificationBO;
 import com.zhixinhuixue.armor.model.dto.request.NoticeReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Notification;
 import org.apache.ibatis.annotations.Param;
@@ -55,4 +56,11 @@ public interface IZSYNotificationMapper {
      * @return
      */
     int insertNotice(@Param("notification") Notification notification);
+
+    /**
+     * 查询所有人所有通知
+     * @param reqDTO
+     * @return
+     */
+    Page<NotificationBO> selectEveryoneNotice(@Param("reqDTO")NoticeReqDTO reqDTO);
 }

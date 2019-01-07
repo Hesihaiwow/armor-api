@@ -263,5 +263,12 @@ public interface IZSYTaskService {
      */
     void noticeDelaySonTaskChargeMan();
 
+    /**
+     * 查询所有人所有通知
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<NoticeResDTO> getEveryoneNotice(NoticeReqDTO reqDTO);
+
     // -- sch
 }

@@ -46,6 +46,20 @@ public class NoticeResDTO {
      */
     private Date readTime;
 
+    /**
+     * 通知人
+     * @return
+     */
+    private String noticeUser;
+
+    public String getNoticeUser() {
+        return noticeUser;
+    }
+
+    public void setNoticeUser(String noticeUser) {
+        this.noticeUser = noticeUser;
+    }
+
     public Date getReadTime() {
         return readTime;
     }
