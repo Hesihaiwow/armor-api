@@ -270,5 +270,10 @@ public interface IZSYTaskService {
      */
     PageInfo<NoticeResDTO> getEveryoneNotice(NoticeReqDTO reqDTO);
 
+    /**
+     * 标记全部通知已读
+     */
+    void readAll();
+
     // -- sch
 }

@@ -291,6 +291,12 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("标记全部通知已读")
+    @PutMapping("/notification/read-all")
+    public String readAll(){
+        taskService.readAll();
+        return ZSYResult.success().build();
+    }
     // -- sch
 }
 
