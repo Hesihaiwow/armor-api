@@ -1089,6 +1089,7 @@
                         this.showFinishedTask = false;
                         this.taskDetail = {};
                         this.$message({ showClose: true,message: '操作成功',type: 'success'});
+                        this.$emit('reload');
                     })
                 }).catch(() => {
                 });
