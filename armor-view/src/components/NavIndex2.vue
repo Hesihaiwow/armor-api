@@ -8,7 +8,7 @@
         </div>-->
         <div class="my-integral-con" v-show="userRole>0">
             <div><p class="mic-title">我的积分</p>
-                <div class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"
+                <div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"
                      @click="integralBasicVisible=true">
                     <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分
                 </div>
@@ -27,13 +27,13 @@
 
         <div class="my-task-con">
             <div v-show="userRole>0">
-                <div class="add-task" @click="createTaskClick">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建个人任务</span>
-                </div>
-                <div class="add-question" @click="createQuestionClick">
+                <div class="add-task" @click="createQuestionClick">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>创建线上问题(数据)记录</span>
+                </div>
+                <div class="add-task  question" @click="createTaskClick">
+                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
+                    <span>创建个人任务</span>
                 </div>
                 <div class="add-task help" @click="editHelpVisible=true">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
@@ -2542,9 +2542,7 @@
             closeDialog(formName) {
                 this.$refs[formName].resetFields();
                 this.isSaving = false;
-                console.log(111)
                 this.$refs.uploadPic.clearFiles();
-                console.log(222)
             },
             //删除线上问题
             deleteQuestion(id){
@@ -2730,7 +2728,7 @@
 
     .add-task {
         position: absolute;
-        right: 280px;
+        right: 430px;
         font-size: 16px;
         cursor: pointer;
         color: #36A8FF;
@@ -2744,6 +2742,10 @@
         cursor: pointer;
         color: #36A8FF;
         z-index: 30;
+    }
+
+    .question {
+        right: 280px;
     }
 
     .help {
