@@ -1960,6 +1960,7 @@
                     this.expandReview.teId = this.expandDetail.teId
                     this.expandReview.status = 1
                     this.expandReview.weeks = this.expandWeekNumber
+                    this.expandReview.hours = sumHours
                     http.zsyPostHttp(`/task-expand/review`, this.expandReview, (resp) => {
                         this.$message({showClose: true, message: '审核成功', type: 'success'});
                         this.expandReview = {}
