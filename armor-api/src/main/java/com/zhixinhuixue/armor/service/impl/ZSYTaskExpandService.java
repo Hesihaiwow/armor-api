@@ -132,8 +132,8 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
         if(reviewReqDTO.getStatus() == ZSYTaskExpandStatus.ACCEPT.getValue()){
             //task_user表  任务时间增加
             User user = userMapper.selectById(expand.getUserId());
-            BigDecimal expandHours = expand.getHours();
-            if (taskExpandMapper.updateTaskHours(expandHours,expand.getEndTime(),expand.getTaskId(),expand.getUserId()) == 0){
+            BigDecimal expandHours = reviewReqDTO.getHours();
+            if (taskExpandMapper.updateTaskHours(expandHours,reviewReqDTO.getEndTime(),expand.getTaskId(),expand.getUserId()) == 0){
                 throw new ZSYServiceException("新增时间失败");
             }
 
