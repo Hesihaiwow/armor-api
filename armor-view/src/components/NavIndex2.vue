@@ -347,7 +347,7 @@
             </div>
             <div v-show="userRole===0">
                 <p class="mic-title">个人任务审核</p>
-                <div class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"
+                <div class="add-task" style="float: left;margin-top: -22px;margin-right: 400px;font-size: 14px"
                      @click="integralBasicVisible=true">
                     <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分
                 </div>
@@ -1934,7 +1934,7 @@
                 var sumHours = 0;
                 for (var i = 0; i < this.expandWeekNumber.length; i++) {
                     if (this.expandWeekNumber[i].hours == '' || this.expandWeekNumber[i].hours === undefined) {
-                        this.weekNumber[i].hours = 0
+                        this.expandWeekNumber[i].hours = 0
                     }
                     var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.expandWeekNumber[i].hours);
                     if (!ishours && ishours != 0) {
