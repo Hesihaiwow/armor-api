@@ -16,6 +16,10 @@ public class TaskExpandReviewReqDTO {
     @NotNull(message = "审核状态不能为空")
     private Integer status;
 
+    private Date endTime;
+
+    private BigDecimal hours;
+
     private List<UserWeekReqDTO> weeks;
 
     public Long getTeId() {
@@ -42,4 +46,19 @@ public class TaskExpandReviewReqDTO {
         this.weeks = weeks;
     }
 
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public BigDecimal getHours() {
+        return hours;
+    }
+
+    public void setHours(BigDecimal hours) {
+        this.hours = hours;
+    }
 }
