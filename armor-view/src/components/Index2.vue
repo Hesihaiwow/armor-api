@@ -18,12 +18,12 @@
         <div class="nav-top">
             <div class="el-tab-bar" style="width: 104px">
                 <el-tabs v-model="activeName" @tab-click="handleClick(activeName)" >
-                    <!--<el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">-->
-                        <!---->
-                        <!--<el-badge :value="12" class="item">111</el-badge>-->
-                        <!--</el-tab-pane>-->
+                    <!--<el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">
+                        </el-tab-pane>-->
+
                     <el-tab-pane v-for="(item,idx) in tabs" :name="item.name" :key="idx">
-                        <span slot="label"><el-badge :value="item.value" class="item">{{item.label}}</el-badge></span>
+                        <span v-if="item.name == 'notice'" slot="label">{{item.label}}<span style="color: red">({{unreadNoticeNum}})</span></span>
+                        <span v-else slot="label">{{item.label}}</span>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -285,19 +285,6 @@
                     {label: '较难', value: 4},
                     {label: '困难', value: 5},
                 ],
-
-                // unreadNoticeData:{
-                //     nid:'',
-                //     taskId:'',
-                //     userId:'',
-                //     content:'',
-                //     status:'',
-                //     createTime:'',
-                //     readTime:''
-                // },
-                // -- sch
-
-
             };
         },
         filters:{
@@ -313,9 +300,7 @@
         created() {
             this.fetchMyProfile();
             this.activeName = 'navIndex';
-            //this.$router.push(`/index/navIndex`);
             this.fetchUnreadNoticeNum()
-            // this.fetchUnreadNotice()
         },
         mounted(){
             // this.checkNotice()
@@ -478,9 +463,11 @@
             },
             //每5分钟定时检查当前用户是否由未读通知
             checkNotice(){
-              setInterval(() => {
-                  this.fetchUnreadNoticeNum()
-              },1000*5)
+                if (this.checkVisible){
+                    setInterval(() => {
+                        this.fetchUnreadNoticeNum()
+                    },1000)
+                }
             },
             // -- sch
 
@@ -601,10 +588,10 @@
     }
 </script>
 <style>
-    .el-tabs__item{
+    /*.el-tabs__item{
         width: 100px;
         line-height: 32px;
-    }
+    }*/
 </style>
 <style scoped>
     .nav-top-bg {
