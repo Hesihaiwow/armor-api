@@ -1793,7 +1793,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 List<String> taskNames = Arrays.asList(longStringEntry.getValue().replaceAll("&", ";").split(","));
                 taskNames = taskNames.stream().map(taskName -> "<"+taskName+">").collect(Collectors.toList());
                 String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
-                /*logger.info("主任务超时,发短信通知负责人");
+                logger.info("主任务超时,发短信通知负责人");
                 String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_ONE, templateJson);
                 String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
                 String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
@@ -1801,8 +1801,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     logger.info("短信发送成功");
                 }else {
                     logger.info("短信发送失败: "+errorMessage);
-                }*/
-                System.out.println(templateJson);
+                }
             }
         });
     }
@@ -1882,7 +1881,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 });
                 String taskNames = delayTasks.toString().replaceAll("&", ";");
                 String templateJson = "{\"taskName\":\""+taskNames+ "\",\"timeOutUsers\":\""+delayUsers.toString()+"\"}";
-                /*logger.info("子任务超时,发短信通知任务负责人");
+                logger.info("子任务超时,发短信通知任务负责人");
                 String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_TWO, templateJson);
                 String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
                 String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
@@ -1890,8 +1889,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     logger.info("短信发送成功");
                 }else {
                     logger.info("短信发送失败: "+errorMessage);
-                }*/
-                System.out.println(templateJson);
+                }
             }
         });
     }
@@ -1939,7 +1937,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 List<String> taskNames = Arrays.asList(entrySet.getValue().replaceAll("&", ";").split(","));
                 taskNames = taskNames.stream().map(taskName -> "<" + taskName + ">").collect(Collectors.toList());
                 String templateJson = "{\"taskName\":\""+taskNames.toString()+"\"}";
-                /*logger.info("子任务超时,发短信通知超时人员");
+                logger.info("子任务超时,发短信通知超时人员");
                 String message = sendMessage(user.getPhone(), ZSYConstants.TEMPLATE_ID_THREE, templateJson);
                 String code = Arrays.asList(Arrays.asList(message.split(",")).get(1).split(":")).get(1).replaceAll("\"", "");
                 String errorMessage = Arrays.asList(Arrays.asList(message.split(",")).get(2).split(":")).get(1).replaceAll("\"", "");
@@ -1947,8 +1945,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     logger.info("短信发送成功");
                 }else {
                     logger.info("短信发送失败: "+errorMessage);
-                }*/
-                System.out.println(templateJson);
+                }
             }
         });
     }
