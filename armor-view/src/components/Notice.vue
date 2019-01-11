@@ -170,7 +170,6 @@
         },
         created() {
             this.fetchUnreadNoticeNum()
-            this.fetchUnreadNotice()
             this.fetchAllNotice()
         },
         beforeMount(){
@@ -199,6 +198,7 @@
             fetchUnreadNoticeNum(){
                 Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
                     this.unreadNoticeNum = res.data.count
+                    window.localStorage.setItem("unreadNum",res.data.count)
                 })
             },
             //查询所有通知
@@ -214,8 +214,7 @@
                 Http.zsyPutHttp('/task/notification/read/'+nid,{},(res) => {
                     this.$message({showClose: true, message: '标记成功', type: 'success'});
                     this.fetchAllNotice()
-                    // this.fetchUnreadNoticeNum()
-                    this.$emit("index2",event.target)
+                    this.fetchUnreadNoticeNum()
                 })
             },
             clearReqDTO() {
@@ -245,7 +244,6 @@
             },
             //阅读全部
             readAll(){
-                console.log(111)
                 this.$confirm('此操作将标记全部已读?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -253,8 +251,9 @@
                 }).then(() => {
                     Http.zsyPutHttp(`/task/notification/read-all`, {}, (resp) => {
                         this.$message({showClose: true, message: '标记成功', type: 'success'});
+                        this.fetchUnreadNoticeNum()
                     })
-                    window.history.go(0)
+                    // window.history.go(0)
                 }).catch(() => {
                 });
             },

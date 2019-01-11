@@ -22,7 +22,7 @@
                         </el-tab-pane>-->
 
                     <el-tab-pane v-for="(item,idx) in tabs" :name="item.name" :key="idx">
-                        <span v-if="item.name == 'notice'" slot="label">{{item.label}}<span style="color: red">({{unreadNoticeNum}})</span></span>
+                        <span v-if="item.name == 'notice' && unreadNoticeNum > 0" slot="label">{{item.label}}<span style="color: red">({{unreadNoticeNum}})</span></span>
                         <span v-else slot="label">{{item.label}}</span>
                     </el-tab-pane>
                 </el-tabs>
@@ -194,6 +194,7 @@
     import AlterInfo from './AlterInfo'
     import moment from 'moment';
     import Notice from './Notice'
+    import Echarts from './Echarts'
 
     export default {
         data() {
@@ -227,6 +228,10 @@
                     {
                         label: '通知',
                         name: 'notice'
+                    },
+                    {
+                        label:'数据',
+                        name:'echarts'
                     }
                 ],
                 showIndex: true,
@@ -301,9 +306,10 @@
             this.fetchMyProfile();
             this.activeName = 'navIndex';
             this.fetchUnreadNoticeNum()
+            this.checkNotice()
         },
         mounted(){
-            // this.checkNotice()
+
         },
         beforeMount() {
             //监听子组件传过来的tab选中事件
@@ -388,6 +394,7 @@
             fetchUnreadNoticeNum(){
                 Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
                     this.unreadNoticeNum = res.data.count
+                    window.localStorage.setItem("unreadNum",res.data.count)
                     this.tabs[6].value = this.unreadNoticeNum
 
                 })
@@ -463,11 +470,10 @@
             },
             //每5分钟定时检查当前用户是否由未读通知
             checkNotice(){
-                if (this.checkVisible){
                     setInterval(() => {
-                        this.fetchUnreadNoticeNum()
+                        this.unreadNoticeNum = window.localStorage.getItem("unreadNum")
+                        // console.log(this.unreadNoticeNum)
                     },1000)
-                }
             },
             // -- sch
 
@@ -583,7 +589,8 @@
             Stats: Stats,
             UploadAvatar: UploadAvatar,
             AlterInfo:AlterInfo,
-            Notice:Notice
+            Notice:Notice,
+            Echarts:Echarts
         }
     }
 </script>

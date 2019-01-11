@@ -15,6 +15,7 @@ import Calculate from '@/components/Calculate'
 import Plan from '@/components/Plan2'
 import demandDetail from '@/components/demandDetail'
 import Notice from '@/components/Notice'
+import Echarts from '@/components/Echarts'
 
 
 Vue.use(Router)
@@ -95,6 +96,10 @@ export default new Router({
                 {
                     path: 'notice',
                     component: Notice
+                },
+                {
+                    path:'echarts',
+                    component:Echarts
                 }
             ]
         }
