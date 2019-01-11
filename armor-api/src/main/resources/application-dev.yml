@@ -75,4 +75,13 @@ ufile:
   uploadProxySuffix: .cn-bj.ufileos.com
   bucketName: zxhx-test
 
+#短信配置
+sms:
+  api: nothing
+  appId: 6wax3awc7rfh5ijm
+  appSecret: 3b47ba17f2eb45709312fce39fcc2d71
+  smsTemplateOne: SMS_152507421
+  smsTemplateTwo: SMS_152512354
+  smsTemplateThree: SMS_152507424
+
 

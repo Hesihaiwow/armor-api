@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYDataMapper">
+
+    <!--查询年度需求  来自学管端-->
+    <select id="selectAnnualFeedbackFromCoach" resultType="java.lang.Integer">
+        select count(1) from feedback where is_delete = 0 and coach_id > 0
+        <![CDATA[  and feedback_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询年度需求  来自其他-->
+    <select id="selectAnnualFeedbackOhter" resultType="java.lang.Integer">
+        select count(1) from feedback where is_delete = 0 and create_by > 0
+        <![CDATA[  and feedback_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询年度 多人任务数-->
+    <select id="selectAnnualMultiTaskNum" resultType="java.lang.Integer">
+        select count(1) from task where is_delete = 0 and review_status = 3 and type = 2
+        <![CDATA[  and create_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询年度 单人任务数-->
+    <select id="selectAnnualSingleTaskNum" resultType="java.lang.Integer">
+        select count(1) from task where is_delete = 0 and review_status = 3 and type = 1
+        <![CDATA[  and create_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+</mapper>
