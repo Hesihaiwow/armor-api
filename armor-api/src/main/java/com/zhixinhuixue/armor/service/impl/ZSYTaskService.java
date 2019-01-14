@@ -1268,14 +1268,12 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public List<TaskListResDTO> getTaskByStageId(Long stageId) {
         Stage stage = stageMapper.selectById(stageId);
-        long begin = System.currentTimeMillis();
 
         List<TaskListBO> taskListBOS = new ArrayList<>();
         if(stage.getName().equals("已发布")){
-            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
-            System.out.println("查询耗时: "+(System.currentTimeMillis()-begin)+"ms");
-        }else{
             taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+        }else{
+            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
         }
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
@@ -1304,7 +1302,6 @@ public class ZSYTaskService implements IZSYTaskService {
         if (stageId.equals(212754785051344898L)){
 
         }
-        System.out.println("总耗时: "+(System.currentTimeMillis()-begin)+"ms");
         return list;
     }
 
