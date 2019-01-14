@@ -306,8 +306,6 @@
     <!-- 查询阶段下的任务 -->
     <select id="selectTaskByStageId" resultMap="PageResultMap" parameterType="java.util.Map">
         select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
-        left join task_user t2 on t1.id =t2.task_id
-        left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
@@ -319,14 +317,13 @@
     </select>
     <select id="selectTaskByEndStageId" resultMap="PageResultMap" parameterType="java.util.Map">
         select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
-        left join task_user t2 on t1.id =t2.task_id
-        left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
         where t1.review_status = 3 and t1.is_delete = 0
         and t1.`type` = 2 and t1.stage_id = #{stageId}
+        and t1.status != 3
         and t7.parent_id =#{departmentId}
         order by t1.sort ASC
     </select>
