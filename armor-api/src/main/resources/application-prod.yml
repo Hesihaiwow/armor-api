@@ -70,3 +70,12 @@ ufile:
   privateKey: bcfd5bb66ca527c9be9fd7f3e784fbfc90c4bba5
   uploadProxySuffix: .cn-bj.ufileos.com
   bucketName: zxhx-test
+
+#短信配置
+sms:
+  api: http://fcsms.kaozhengbao.com/captcha/notify
+  appId: 6wax3awc7rfh5ijm
+  appSecret: 3b47ba17f2eb45709312fce39fcc2d71
+  smsTemplateOne: SMS_152507421
+  smsTemplateTwo: SMS_152512354
+  smsTemplateThree: SMS_152507424
