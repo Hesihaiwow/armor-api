@@ -194,7 +194,7 @@
     import AlterInfo from './AlterInfo'
     import moment from 'moment';
     import Notice from './Notice'
-    import Echarts from './Echarts'
+    import SummaryNav from './SummaryNav'
 
     export default {
         data() {
@@ -230,8 +230,8 @@
                         name: 'notice'
                     },
                     {
-                        label:'数据',
-                        name:'echarts'
+                        label:'总结',
+                        name:'summaryNav'
                     }
                 ],
                 showIndex: true,
@@ -590,7 +590,7 @@
             UploadAvatar: UploadAvatar,
             AlterInfo:AlterInfo,
             Notice:Notice,
-            Echarts:Echarts
+            SummaryNav:SummaryNav
         }
     }
 </script>
