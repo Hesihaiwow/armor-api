@@ -2,31 +2,221 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYDataMapper">
 
+    <resultMap id="maxOrMinMap" type="com.zhixinhuixue.armor.model.bo.FeedbackMonthBO">
+        <result column="feedback_num" property="feedbackNum" jdbcType="INTEGER"></result>
+        <result column="month" property="month" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="projectTaskMap" type="com.zhixinhuixue.armor.model.bo.ProjectTaskBO">
+        <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"></result>
+        <result column="task_num" property="taskNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="personTaskMap" type="com.zhixinhuixue.armor.model.bo.PersonCompleteTaskBO">
+        <result column="task_num" property="taskNum" jdbcType="INTEGER"></result>
+        <result column="task_time" property="taskTime" jdbcType="FLOAT"></result>
+    </resultMap>
+
+    <resultMap id="personVacationMap" type="com.zhixinhuixue.armor.model.bo.PersonVacationBO">
+        <result column="vacation_count" property="vacationCount" jdbcType="INTEGER"></result>
+        <result column="vacation_time" property="vacationTime" jdbcType="FLOAT"></result>
+    </resultMap>
+
     <!--查询年度需求  来自学管端-->
     <select id="selectAnnualFeedbackFromCoach" resultType="java.lang.Integer">
         select count(1) from feedback where is_delete = 0 and coach_id > 0
-        <![CDATA[  and feedback_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
-        <![CDATA[  and feedback_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
 
     <!--查询年度需求  来自其他-->
     <select id="selectAnnualFeedbackOhter" resultType="java.lang.Integer">
         select count(1) from feedback where is_delete = 0 and create_by > 0
-        <![CDATA[  and feedback_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
-        <![CDATA[  and feedback_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
 
     <!--查询年度 多人任务数-->
     <select id="selectAnnualMultiTaskNum" resultType="java.lang.Integer">
         select count(1) from task where is_delete = 0 and review_status = 3 and type = 2
-        <![CDATA[  and create_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
-        <![CDATA[  and create_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
 
     <!--查询年度 单人任务数-->
     <select id="selectAnnualSingleTaskNum" resultType="java.lang.Integer">
         select count(1) from task where is_delete = 0 and review_status = 3 and type = 1
-        <![CDATA[  and create_time > #{beginTime,jdbcType=TIMESTAMP} ]]>
-        <![CDATA[  and create_time < #{endTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--根据type查询需求数量-->
+    <select id="selectDiffFbNumByType" resultType="java.lang.Integer">
+        select count(1) from `feedback` where is_delete = 0 and `type` = #{type}
+        <![CDATA[  and feedback_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询所有需求数量-->
+    <select id="selectAnnualAllFbNum" resultType="java.lang.Integer">
+        select count(1) from `feedback` where is_delete = 0
+        <![CDATA[  and feedback_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询年度需求最少(最多)的月份及数量-->
+    <select id="selectFbMonth" resultMap="maxOrMinMap">
+        select month
+        <if test="maxOrMin != null and maxOrMin == 1">
+            ,MAX(num) feedback_num
+        </if>
+        <if test="maxOrMin != null and maxOrMin == 0">
+            ,MIN(num) feedback_num
+        </if>
+        from
+        (SELECT
+        count(1) num,
+        MONTH (create_time) month
+        FROM
+        feedback
+        WHERE
+        is_delete = 0
+        <![CDATA[  and feedback_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        GROUP BY
+        (MONTH(create_time))) t
+    </select>
+
+    <!--查询每个月的需求-->
+    <select id="selectFbMonthList" resultMap="maxOrMinMap">
+        SELECT
+        count(1) feedback_num,
+        MONTH (create_time) month
+        FROM
+        feedback
+        WHERE
+        is_delete = 0
+        <![CDATA[  and feedback_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        GROUP BY
+        (MONTH(create_time))
+    </select>
+
+    <!--年度任务总耗时(小时)-->
+    <select id="selectTotalHours" resultType="java.lang.Integer">
+        select sum(tu.task_hours) from task_user tu
+        left join task t on tu.task_id = t.id
+        where t.is_delete = 0 and review_status = 3
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--年度耗时最长任务id-->
+    <select id="selectMostTimeTaskId" resultType="java.lang.Long">
+        select tu.task_id from task_user tu
+        left join task t on tu.task_id = t.id
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by tu.task_id
+        order by sum(tu.task_hours) desc limit 1
+    </select>
+
+    <!--年度耗时最短任务id-->
+    <select id="selectLessTimeTaskId" resultType="java.lang.Long">
+        select tu.task_id from task_user tu
+        left join task t on tu.task_id = t.id
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by tu.task_id
+        order by sum(tu.task_hours) asc limit 1
+    </select>
+
+    <select id="selectProjectTaskList" resultMap="projectTaskMap">
+        select t.project_id,count(t.id) task_num,p.name project_name from task t
+        left join project p on t.project_id = p.id
+        where t.is_delete = 0 and review_status = 3
+        <![CDATA[  and t.create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and t.create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by t.project_id
+    </select>
+
+    <!--年度请假总次数-->
+    <select id="selectVacationCount" resultType="java.lang.Integer">
+        select count(id) from `user_leave` where review_status = 3
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--年度请假总时长-->
+    <select id="selectVacationTime" resultType="java.lang.Float">
+        select sum(hours) from `user_leave` where review_status = 3
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询请假 月份-次数-时长  集合-->
+    <select id="getMonthAndCountAndTimeList" resultType="java.lang.String">
+        select concat(MONTH(create_time),'-',COUNT(id),'-',SUM(hours)) from `user_leave` where review_status = 3
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by MONTH(create_time)
+    </select>
+
+    <!--查询个人年度完成任务-->
+    <select id="selectPersonTask" resultMap="personTaskMap">
+        select count(id) task_num,sum(task_hours) task_time FROM `task_user` WHERE user_id = #{userId} and status != 1
+        <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询个人年度请假情况-->
+    <select id="selectPersonVacation" resultMap="personVacationMap">
+        select count(id) vacation_count,sum(hours) vacation_time from `user_leave` where review_status = 3 and user_id = #{userId}
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询任务总时长-->
+    <select id="selectTaskTimeById" resultType="java.lang.Float">
+        select sum(task_hours) from `task_user` where task_id = #{taskId}
+    </select>
+
+    <!--查询年度个人完成的多人任务-->
+    <select id="selectPersonMultiTaskNum" resultType="java.lang.Integer">
+        select count(tu.id) from  `task_user` tu
+        left join `task` t on tu.task_id = t.id
+        where tu.user_id = #{userId} and tu.status != 1 and t.type = 2
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询年度个人完成的耗时最长多人任务-->
+    <select id="selectPersonMostTimeTaskId" resultType="java.lang.Long">
+        select tu.task_id from task_user tu
+        left join task t on tu.task_id = t.id
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1 and tu.user_id = #{userId}
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by tu.task_id
+        order by sum(tu.task_hours) desc limit 1
+    </select>
+
+    <!--查询年度个人完成的耗时最短多人任务-->
+    <select id="selectPersonLessTimeTaskId" resultType="java.lang.Long">
+        select tu.task_id from task_user tu
+        left join task t on tu.task_id = t.id
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1 and tu.user_id = #{userId}
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by tu.task_id
+        order by sum(tu.task_hours) asc limit 1
+    </select>
+
+    <!--查询任务  个人耗时-->
+    <select id="selectPersonTaskTimeById" resultType="java.lang.Float">
+        select sum(task_hours) from `task_user` where `task_id` = #{taskId} and `user_id` = #{userId}
     </select>
 </mapper>
