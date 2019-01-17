@@ -34,6 +34,20 @@ public class ZSYDataController {
         return ZSYResult.success().data(resDTO).build();
     }
 
+    @ApiOperation("年度每月需求总数")
+    @PostMapping("/annual/feedback/month")
+    public String getEveryMonthFeedback(@RequestBody YearReqDTO reqDTO){
+        List<Integer> list = zsyDataService.getEveryMonthFeedback(reqDTO);
+        return ZSYResult.success().data(list).build();
+    }
+
+    @ApiOperation("年度每月任务完成总数")
+    @PostMapping("/annual/task/month")
+    public String getEveryMonthTask(@RequestBody YearReqDTO reqDTO){
+        List<Integer> list = zsyDataService.getEveryMonthTask(reqDTO);
+        return ZSYResult.success().data(list).build();
+    }
+
     @ApiOperation("年度任务总数(多人任务,个人任务)")
     @PostMapping("/annual/task-num")
     public String getAnnualTaskData(@RequestBody YearReqDTO reqDTO){
@@ -67,6 +81,13 @@ public class ZSYDataController {
     public String getAnnualProjectTaskNum(@RequestBody YearReqDTO reqDTO){
         List<ProjectTaskResDTO> list = zsyDataService.getAnnualProjectTaskNum(reqDTO);
         return ZSYResult.success().data(list).build();
+    }
+
+    @ApiOperation("年度任务数(优先级)")
+    @PostMapping("/annual/task/priority")
+    public String getAnnualTaskByPriority(@RequestBody YearReqDTO reqDTO){
+        DiffPriorityTaskResDTO resDTO = zsyDataService.getAnnualTaskByPriority(reqDTO);
+        return ZSYResult.success().data(resDTO).build();
     }
 
     @ApiOperation("年度请假次数,总时长")

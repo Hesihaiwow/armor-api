@@ -19,6 +19,20 @@ public class EveryMonthVacationResDTO {
      */
     private List<Float> vacationTimeList;
 
+    /**
+     * 请假人次集合
+     * @return
+     */
+    private List<Integer> vacationPersonList;
+
+    public List<Integer> getVacationPersonList() {
+        return vacationPersonList;
+    }
+
+    public void setVacationPersonList(List<Integer> vacationPersonList) {
+        this.vacationPersonList = vacationPersonList;
+    }
+
     public List<Integer> getVacationCountList() {
         return vacationCountList;
     }

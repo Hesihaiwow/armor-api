@@ -14,6 +14,7 @@ import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.service.IZSYDataService;
 import com.zhixinhuixue.armor.source.enums.ZSYFeedbackType;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskPriority;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,6 +190,26 @@ public class ZSYDataService implements IZSYDataService {
     }
 
     /**
+     * 年度任务数(优先级)
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public DiffPriorityTaskResDTO getAnnualTaskByPriority(YearReqDTO reqDTO) {
+        Date beginTime = getBeginTime(reqDTO);
+        Date endTime = getEndTime(reqDTO);
+        Integer normalNum = dataMapper.selectPriorityTaskNum(beginTime,endTime, ZSYTaskPriority.NORMAL.getValue());
+        Integer urgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.URGENT.getValue());
+        Integer veryUrgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.VERY_URGENT.getValue());
+        DiffPriorityTaskResDTO resDTO = new DiffPriorityTaskResDTO();
+        resDTO.setNormalNum(normalNum);
+        resDTO.setUrgentNum(urgentNum);
+        resDTO.setVeryUrgentNum(veryUrgentNum);
+        return resDTO;
+    }
+
+
+    /**
      * 年度请假次数,总时长
      * @author sch
      * @param reqDTO
@@ -241,6 +262,65 @@ public class ZSYDataService implements IZSYDataService {
         resDTO.setVacationCountList(counts);
         resDTO.setVacationTimeList(times);
         return resDTO;
+    }
+
+
+    /**
+     * 年度每月需求总数
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public List<Integer> getEveryMonthFeedback(YearReqDTO reqDTO) {
+        Date beginTime = getBeginTime(reqDTO);
+        Date endTime = getEndTime(reqDTO);
+        List<String> monthAndCountList = dataMapper.selectMonthAndFbCountList(beginTime,endTime);
+        Map<Integer,Integer> treeMap = new TreeMap<>();
+        List<Integer> counts = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(monthAndCountList)){
+            monthAndCountList.stream().forEach(monthAndCount->{
+                String[] split = monthAndCount.split("-");
+                treeMap.put(Integer.valueOf(split[0]),Integer.valueOf(split[1]));
+            });
+            for (int i = 1;i <= 12;i ++){
+                if (!treeMap.keySet().contains(i)){
+                    treeMap.put(i,0);
+                }
+            }
+            for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
+                counts.add(entry.getValue());
+            }
+        }
+        return counts;
+    }
+
+    /**
+     * 年度每月任务完成总数
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public List<Integer> getEveryMonthTask(YearReqDTO reqDTO) {
+        Date beginTime = getBeginTime(reqDTO);
+        Date endTime = getEndTime(reqDTO);
+        List<String> monthAndCountList = dataMapper.selectMonthAndTaskCountList(beginTime,endTime);
+        Map<Integer,Integer> treeMap = new TreeMap<>();
+        List<Integer> counts = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(monthAndCountList)){
+            monthAndCountList.stream().forEach(monthAndCount->{
+                String[] split = monthAndCount.split("-");
+                treeMap.put(Integer.valueOf(split[0]),Integer.valueOf(split[1]));
+            });
+            for (int i = 1;i <= 12;i ++){
+                if (!treeMap.keySet().contains(i)){
+                    treeMap.put(i,0);
+                }
+            }
+            for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
+                counts.add(entry.getValue());
+            }
+        }
+        return counts;
     }
 
     /**
@@ -338,6 +418,7 @@ public class ZSYDataService implements IZSYDataService {
             return resDTO;
         }
     }
+
 
     /**
      * 获取开始时间

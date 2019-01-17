@@ -93,4 +93,25 @@ public interface IZSYDataService {
      * @return
      */
     PersonDataResDTO getPersonDataByUserId(YearReqDTO reqDTO, Long userId);
+
+    /**
+     * 年度任务数(优先级)
+     * @param reqDTO
+     * @return
+     */
+    DiffPriorityTaskResDTO getAnnualTaskByPriority(YearReqDTO reqDTO);
+
+    /**
+     * 年度每月需求总数
+     * @param reqDTO
+     * @return
+     */
+    List<Integer> getEveryMonthFeedback(YearReqDTO reqDTO);
+
+    /**
+     * 年度每月任务完成总数
+     * @param reqDTO
+     * @return
+     */
+    List<Integer> getEveryMonthTask(YearReqDTO reqDTO);
 }

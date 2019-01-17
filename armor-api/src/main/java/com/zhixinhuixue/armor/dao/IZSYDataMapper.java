@@ -192,4 +192,29 @@ public interface IZSYDataMapper {
      * @return
      */
     Float selectPersonTaskTimeById(@Param("taskId") Long taskId,@Param("userId") Long userId);
+
+    /**
+     * 年度任务数(优先级)
+     * @param beginTime
+     * @param endTime
+     * @param priority
+     * @return
+     */
+    Integer selectPriorityTaskNum(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime, @Param("priority") int priority);
+
+    /**
+     * 查询没有需求数
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<String> selectMonthAndFbCountList(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
+     * 年度每月任务完成总数
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<String> selectMonthAndTaskCountList(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 }

@@ -39,14 +39,14 @@
 
     <!--查询年度 多人任务数-->
     <select id="selectAnnualMultiTaskNum" resultType="java.lang.Integer">
-        select count(1) from task where is_delete = 0 and review_status = 3 and type = 2
+        select count(1) from task where is_delete = 0 and review_status = 3 and type = 2 and status in (2,3)
         <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
 
     <!--查询年度 单人任务数-->
     <select id="selectAnnualSingleTaskNum" resultType="java.lang.Integer">
-        select count(1) from task where is_delete = 0 and review_status = 3 and type = 1
+        select count(1) from task where is_delete = 0 and review_status = 3 and type = 1 and status in (2,3)
         <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
@@ -107,7 +107,7 @@
     <select id="selectTotalHours" resultType="java.lang.Integer">
         select sum(tu.task_hours) from task_user tu
         left join task t on tu.task_id = t.id
-        where t.is_delete = 0 and review_status = 3
+        where t.is_delete = 0 and t.review_status = 3 and t.status in (2,3)
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
@@ -116,7 +116,7 @@
     <select id="selectMostTimeTaskId" resultType="java.lang.Long">
         select tu.task_id from task_user tu
         left join task t on tu.task_id = t.id
-        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status in (2,3)
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         group by tu.task_id
@@ -127,7 +127,7 @@
     <select id="selectLessTimeTaskId" resultType="java.lang.Long">
         select tu.task_id from task_user tu
         left join task t on tu.task_id = t.id
-        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status in (2,3)
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         group by tu.task_id
@@ -137,7 +137,7 @@
     <select id="selectProjectTaskList" resultMap="projectTaskMap">
         select t.project_id,count(t.id) task_num,p.name project_name from task t
         left join project p on t.project_id = p.id
-        where t.is_delete = 0 and review_status = 3
+        where t.is_delete = 0 and t.review_status = 3 and t.status in (2,3)
         <![CDATA[  and t.create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and t.create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         group by t.project_id
@@ -167,7 +167,7 @@
 
     <!--查询个人年度完成任务-->
     <select id="selectPersonTask" resultMap="personTaskMap">
-        select count(id) task_num,sum(task_hours) task_time FROM `task_user` WHERE user_id = #{userId} and status != 1
+        select count(id) task_num,sum(task_hours) task_time FROM `task_user` WHERE user_id = #{userId} and status in (2,3)
         <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
@@ -188,7 +188,7 @@
     <select id="selectPersonMultiTaskNum" resultType="java.lang.Integer">
         select count(tu.id) from  `task_user` tu
         left join `task` t on tu.task_id = t.id
-        where tu.user_id = #{userId} and tu.status != 1 and t.type = 2
+        where tu.user_id = #{userId} and tu.status in (2,3) and t.type = 2
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
@@ -197,7 +197,7 @@
     <select id="selectPersonMostTimeTaskId" resultType="java.lang.Long">
         select tu.task_id from task_user tu
         left join task t on tu.task_id = t.id
-        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1 and tu.user_id = #{userId}
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status in (2,3) and tu.user_id = #{userId}
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         group by tu.task_id
@@ -208,7 +208,7 @@
     <select id="selectPersonLessTimeTaskId" resultType="java.lang.Long">
         select tu.task_id from task_user tu
         left join task t on tu.task_id = t.id
-        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status != 1 and tu.user_id = #{userId}
+        where t.is_delete = 0 and t.review_status = 3 and t.type = 2 and t.status in (2,3) and tu.user_id = #{userId}
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         group by tu.task_id
@@ -218,5 +218,28 @@
     <!--查询任务  个人耗时-->
     <select id="selectPersonTaskTimeById" resultType="java.lang.Float">
         select sum(task_hours) from `task_user` where `task_id` = #{taskId} and `user_id` = #{userId}
+    </select>
+
+    <!--年度任务数(优先级)-->
+    <select id="selectPriorityTaskNum" resultType="java.lang.Integer">
+        select ifnull(count(id),0) from `task` where is_delete = 0 and review_status = 3 and status in (2,3) and priority = #{priority}
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--查询没有需求数-->
+    <select id="selectMonthAndFbCountList" resultType="java.lang.String">
+        select concat(MONTH(feedback_time),'-',ifnull(count(id),0)) from `feedback` where is_delete = 0
+        <![CDATA[  and feedback_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and feedback_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by MONTH(feedback_time)
+    </select>
+
+    <!--年度每月任务完成总数-->
+    <select id="selectMonthAndTaskCountList" resultType="java.lang.String">
+        select concat(ifnull(MONTH(complete_time),12),'-',ifnull(COUNT(id),0)) from `task` where is_delete = 0 and review_status = 3 and status in (2,3)
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by MONTH(complete_time)
     </select>
 </mapper>
