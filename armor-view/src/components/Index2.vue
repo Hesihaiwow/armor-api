@@ -187,7 +187,7 @@
     import Helper from "../lib/Helper";
     import Http from "../lib/Http";
     import IntegralHistory from './IntegralHistory'
-    import Stats from './Stats'
+    import Stats from './Stats2'
     import UploadAvatar from './UploadAvatar.vue'
     import Calculate from  './Calculate.vue'
     import Plan from './Plan.vue'
