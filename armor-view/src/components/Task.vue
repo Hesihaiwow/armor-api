@@ -3,9 +3,11 @@
         <div class="toggle-view">
             <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
             <input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit">
-            <input type="button" style="margin-left: 450px" :value="publishText" @click="setPublish" v-show="btnValStatus == 2&&publishHide">
-            <!--<el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="btnValStatus == 2&&publishHide" @change="publishTask">仅显示发版时间之前的任务-->
-            <!--</el-checkbox>-->
+            <!--<input type="button" style="margin-left: 450px" :value="publishText" @click="setPublish" v-show="btnValStatus == 2&&publishHide">-->
+            <!--<el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="btnValStatus == 2&&publishHide" @change="publishTask">仅显示发版时间之前的任务
+            </el-checkbox>-->
+            <el-checkbox v-model="showMyTaskVisible" style="display: inline-block;margin-left: 10px" v-show="userRole > 0 && btnValStatus == 2" @change="showMyTask(showMyTaskVisible)">仅显示我负责的任务
+            </el-checkbox>
         </div>
 
         <div class="task-con">
@@ -212,7 +214,8 @@
                     endTime: '',
                     sort:'2',
                     createBy:''
-                }, pickerOptions: {
+                },
+                pickerOptions: {
                     shortcuts: [{
                         text: '本周',
                         onClick(picker) {
@@ -241,7 +244,8 @@
                             picker.$emit('pick', [start, end]);
                         }
                     }]
-                }
+                },
+                showMyTaskVisible:false
             };
         },
         created() {
@@ -267,6 +271,17 @@
             if (viewType!=null && viewType!== '') {
                 this.btnValStatus = viewType
             }
+            // sch --
+            const justMine = window.localStorage.getItem("justMine")
+            if (justMine==0||justMine==null) {
+                this.showMyTaskVisible = false
+            }else{
+                this.showMyTaskVisible = true
+            }
+            if (viewType!=null && viewType!== '') {
+                this.btnValStatus = viewType
+            }
+            // -- sch
             this.fetchProjectList()
             this.fetchUserList()
             this.fetchStageList()
@@ -567,7 +582,28 @@
                 })
                 // 刷新看板
                 //this.$root.eventBus.$emit("reloadBoard");
-            }
+            },
+
+            // sch --
+            //显示我的任务
+            showMyTask(flag){
+                if (flag){
+                    this.fetchMyTaskByStageId()
+                }else {
+                    this.fetchTaskByStageId()
+                }
+                this.$router.go(0)
+            },
+            //根据stageId查看  我负责的任务
+            fetchMyTaskByStageId(){
+                window.localStorage.setItem("justMine",1);
+            },
+
+            //根据stageId查询任务
+            fetchTaskByStageId(){
+                window.localStorage.setItem("justMine",0);
+            },
+            // -- sch
         },
         components: {
             ElButton,

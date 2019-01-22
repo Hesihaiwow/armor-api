@@ -364,6 +364,7 @@
                 /*tab切换*/
                 this.$router.push(`/index/${path}`);
                 this.fetchUnreadNoticeNum()
+                window.localStorage.removeItem("justMine")
             },
             showIndexEvent() {
                 // 显示首页
