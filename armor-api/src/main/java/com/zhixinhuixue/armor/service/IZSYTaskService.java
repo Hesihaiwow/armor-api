@@ -275,5 +275,12 @@ public interface IZSYTaskService {
      */
     void readAll();
 
+    /**
+     * 获取阶段下用户负责的任务
+     * @param stageId
+     * @return
+     */
+    List<TaskListResDTO> getMyTaskByStage(Long stageId);
+
     // -- sch
 }

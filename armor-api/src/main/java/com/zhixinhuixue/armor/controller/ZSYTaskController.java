@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.*;
+import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Tate on 2017/8/7.
@@ -296,6 +298,13 @@ public class ZSYTaskController extends ZSYController {
     public String readAll(){
         taskService.readAll();
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("获取阶段下用户负责的任务")
+    @GetMapping("/tasksByStage/mine/{stageId}")
+    public String getMyTaskByStage(@PathVariable("stageId") Long stageId){
+        List<TaskListResDTO> list = taskService.getMyTaskByStage(stageId);
+        return ZSYResult.success().data(list).build();
     }
     // -- sch
 }

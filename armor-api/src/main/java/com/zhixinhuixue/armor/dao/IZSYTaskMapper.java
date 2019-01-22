@@ -206,4 +206,24 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<TaskBO> selectSonTaskList();
+
+    /**
+     * 通过stageId查询我的已发布任务
+     * @author sch
+     * @param stageId
+     * @param departmentId
+     * @param userId
+     * @return
+     */
+    List<TaskListBO> selectMyTaskByStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId,@Param("userId") Long userId);
+
+    /**
+     * 通过stageId查询我的任务
+     * @author sch
+     * @param stageId
+     * @param departmentId
+     * @param userId
+     * @return
+     */
+    List<TaskListBO> selectMyTaskByEndStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId,@Param("userId") Long userId);
 }

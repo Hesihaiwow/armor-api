@@ -1748,6 +1748,42 @@ public class ZSYTaskService implements IZSYTaskService {
         }
     }
 
+    @Override
+    public List<TaskListResDTO> getMyTaskByStage(Long stageId) {
+        Stage stage = stageMapper.selectById(stageId);
+        List<TaskListBO> taskListBOS = new ArrayList<>();
+        if(stage.getName().equals("已发布")){
+            taskListBOS = taskMapper.selectMyTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getUserId());
+        }else{
+            taskListBOS = taskMapper.selectMyTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getUserId());
+        }
+        List<TaskListResDTO> list = new ArrayList<>();
+        BeanUtils.copyProperties(taskListBOS, list);
+        taskListBOS.stream().forEach(taskListBO -> {
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stage.getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
+                TaskListResDTO taskListResDTO = new TaskListResDTO();
+                BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+                List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+                taskListBO.getTags().stream().forEach(tag -> {
+                    TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+                    taskTagResDTO.setColor(tag.getColor());
+                    taskTagResDTO.setName(tag.getName());
+                    taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
+                    taskTagResDTOS.add(taskTagResDTO);
+                });
+                if(stage.getName().indexOf("设计")!=-1 && taskListBO.getBeginTime()!=null){
+                    taskListResDTO.setEndTime(taskListBO.getBeginTime());
+                }else if(stage.getName().indexOf("开发")!=-1 && taskListBO.getTestTime()!=null){
+                    taskListResDTO.setEndTime(taskListBO.getTestTime());
+                }
+                taskListResDTO.setTags(taskTagResDTOS);
+                list.add(taskListResDTO);
+            }
+
+        });
+        return list;
+    }
+
     /**
      * 检查是否有主任务超时,有的话,新增通知并短信通知负责人
      * @return
