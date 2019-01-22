@@ -1,6 +1,7 @@
 <template>
     <div class="nav-index-con">
         <div class="my-integral-con" v-show="userRole>0">
+            <a class="mic-title" @click="toMySummary" style="cursor: pointer">我得年度总结</a>
             <div><p class="mic-title">我的积分</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"
                      @click="integralBasicVisible=true">
@@ -155,6 +156,9 @@
                                          :src="item.avatarUrl" :alt="item.userName">
                                     <span v-else="">{{item.userName}}</span>
                                 </div>
+                            </div>
+                            <div v-show="question.completed.length==0 || question.completed == null" class="empty">
+                                <h2>暂无数据</h2>
                             </div>
                             <div class="pagination" v-show="this.question.completed.length>0">
                                 <el-pagination
@@ -2608,7 +2612,12 @@
             //跳转到通知页面
             toNotice(){
                 this.$router.push({path:`/index/notice`,param:{activeName:'notice'}})
-            }
+            },
+
+            //跳转到我的年度总结
+            toMySummary(){
+                this.$router.push({path:`/index/SummaryNav`})
+            },
             // -- sch
         },
         components: {

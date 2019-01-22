@@ -199,6 +199,7 @@
                         </div>
                         <div class="steps-body">
                             <div id="myChart3" :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <div id="myChart6" :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
                             <!--<div v-else class="steps-body" style="height: 300px">
                                 <h1 style="text-align: center;width: 100%;font-size: 50px">暂无数据</h1>
                             </div>-->
@@ -219,7 +220,7 @@
                             <el-button type="primary" @click="selectTaskByYear4">查询</el-button>
                         </div>
                         <div class="steps-body">
-                            <div id="myChart4" :style="{width:'600px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <div id="myChart4" :style="{width:'600px',height:'400px',left:'230px',float:'left',marginTop:'50px'}"></div>
                             <!--<div v-else class="steps-body" style="height: 300px">
                                 <h1 style="text-align: center;width: 100%;font-size: 50px">暂无数据</h1>
                             </div>-->
@@ -253,6 +254,46 @@
                         </div>-->
                     </div>
                 </div>
+            </el-tab-pane>
+            <el-tab-pane label="个人请假统计" name="personalLeave" v-if="admin">
+                <span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">请假时间:</span>
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="beginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择日期"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="endTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择日期"
+                    >
+                    </el-date-picker>
+                </div>
+                <el-button type="primary" @click="selectVacationByDate" style="margin-left: 10px" size="small">查询</el-button>
+                <el-table :data="personVacationData" border>
+                    <el-table-column type="index" label="序号" width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80">
+                        <template scope="scope">
+                            {{scope.row.userName}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="remark" label="备注" align="left">
+                        <template scope="scope">
+                            {{scope.row.remarkList}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="vacationNum" label="请假次数" align="center" width="120" sortable></el-table-column>
+                    <el-table-column prop="vacationTime" label="请假时长" align="center" width="120" sortable></el-table-column>
+                </el-table>
             </el-tab-pane>
         </el-tabs>
         <el-dialog
@@ -553,6 +594,10 @@
                 projectTaskList:[],
                 feedbackMonthList:[],
                 feedbackTotal:0,
+                fbTotalCount:0,
+                fromCoach:0,
+                other:0,
+                feedbackData:[],
                 taskMonthList:[],
                 taskTotal:0,
 
@@ -565,6 +610,13 @@
                 },
                 vacationCountList:[],
                 vacationTimeList:[],
+                beginTime:null,
+                endTime:null,
+                personVacationData:[],
+                personVacationReqDTO:{
+                    beginTime:null,
+                    endTime:null
+                }
 
                 // -- sch
             }
@@ -584,6 +636,8 @@
             this.fetchEveryMonthTask();
             this.fetchEveryMonthVacation();
             this.fetchAnnualVacation();
+            this.fetchAnnualFeedback();
+            this.fetchPersonVacation();
         },
         computed: {
             permit() {
@@ -1020,7 +1074,7 @@
                 // 绘制图表
                 myChart.setOption({
                     title: {
-                        text: '年度需求',
+                        text: '每月需求',
                         x:'center',
                         subtext:'需求总数: ' + this.feedbackTotal,
                         subtextStyle:{
@@ -1055,6 +1109,46 @@
                             type: 'bar',
                             barGap: 0,
                             data: this.feedbackMonthList
+                        }
+                    ]
+                });
+            },
+            drawLine6(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart6'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '年度需求 ',
+                        x:'center' ,
+                        subtext:'需求总数: ' + this.fbTotalCount,
+                        subtextStyle:{
+                            fontSize: 16
+                        }
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: ['学管端','其他']
+                    },
+                    series : [
+                        {
+                            name: '需求来源',
+                            type: 'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data:this.feedbackData,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
                         }
                     ]
                 });
@@ -1200,13 +1294,34 @@
               }
               this.feedbackMonthList = [];
               this.feedbackTotal = 0;
+                this.feedbackData = [];
               this.fetchEveryMonthFeedback();
+              this.fetchAnnualFeedback();
+            },
+            //查询年度需求
+            fetchAnnualFeedback(){
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/feedback-num',this.fbReqDTO,(res)=>{
+                        if (res){
+                            this.fbTotalCount = res.data.totalNum;
+                            this.fromCoach = res.data.fromCoachNum;
+                            this.other = res.data.otherNum;
+                            const fbData = {};
+                            fbData.value = this.fromCoach;
+                            fbData.name = '学管端';
+                            this.feedbackData.push(fbData)
+                            const fbData2 = {};
+                            fbData2.value = this.other;
+                            fbData2.name = '其他';
+                            this.feedbackData.push(fbData2)
+                            this.drawLine6()
+                        }
+                    })
+                }
             },
             //查询年度每个月的需求数
             fetchEveryMonthFeedback(){
-                console.log(111)
                 if (this.admin){
-                    console.log(1111111)
                     Http.zsyPostHttp('/data/annual/feedback/month',this.fbReqDTO,(res)=>{
                         if (res){
                             this.feedbackMonthList = res.data;
@@ -1214,81 +1329,113 @@
                                 this.feedbackTotal = this.feedbackTotal + feedbackNum
                             })
                             this.drawLine3()
+                            this.drawLine6()
                         }
                     })
                 }
             },
             //查询年度每月完成的任务数
             fetchEveryMonthTask(){
-                Http.zsyPostHttp('/data/annual/task/month',this.taskMonthReqDTO,(res)=>{
-                    if (res){
-                        this.taskMonthList = res.data;
-                        this.taskMonthList.forEach(taskNum=>{
-                            this.taskTotal = this.taskTotal + taskNum
-                        })
-                        // this.drawLine4()
-                    }
-                })
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/task/month',this.taskMonthReqDTO,(res)=>{
+                        if (res){
+                            this.taskMonthList = res.data;
+                            this.taskMonthList.forEach(taskNum=>{
+                                this.taskTotal = this.taskTotal + taskNum
+                            })
+                            this.drawLine4()
+                        }
+                    })
+                }
             },
             //年度 每月请假次数和时长集合
             fetchEveryMonthVacation(){
-                Http.zsyPostHttp('/data/annual/vacation/month',this.vacationReqDTO,(res)=>{
-                    if (res){
-                        this.vacationCountList = res.data.vacationCountList;
-                        this.vacationTimeList = res.data.vacationTimeList;
-                        // this.drawLine5()
-                    }
-                })
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/vacation/month',this.vacationReqDTO,(res)=>{
+                        if (res){
+                            this.vacationCountList = res.data.vacationCountList;
+                            this.vacationTimeList = res.data.vacationTimeList;
+                            this.drawLine5()
+                        }
+                    })
+                }
             },
             //年度请假总次数,总时长
             fetchAnnualVacation(){
-                Http.zsyPostHttp('/data/annual/vacation',this.vacationReqDTO,(res)=>{
-                    if (res){
-                        this.vacationData.totalCount = res.data.vacationCount;
-                        this.vacationData.totalTime = res.data.vacationTime;
-                    }
-                })
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/vacation',this.vacationReqDTO,(res)=>{
+                        if (res){
+                            this.vacationData.totalCount = res.data.vacationCount;
+                            this.vacationData.totalTime = res.data.vacationTime;
+                        }
+                    })
+                }
             },
             //查询年度各个项目对应的任务数
             fetchAnnualProjectTaskNum(){
-                Http.zsyPostHttp('/data/annual/task/project-task',this.taskReqDTO,(res) =>{
-                    if (res){
-                        this.projectTaskList = res.data
-                        this.projectTaskList.forEach(project =>{
-                            const tData = {};
-                            tData.value = project.taskNum;
-                            tData.name = project.projectName;
-                            this.taskData2.push(tData)
-                            this.taskLegend.push(project.projectName)
-                            this.projectTaskNum = this.projectTaskNum + project.taskNum
-                        })
-                        // this.drawLine2()
-
-                    }
-                })
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/task/project-task',this.taskReqDTO,(res) =>{
+                        if (res){
+                            this.projectTaskList = res.data
+                            this.projectTaskList.forEach(project =>{
+                                const tData = {};
+                                tData.value = project.taskNum;
+                                tData.name = project.projectName;
+                                this.taskData2.push(tData)
+                                this.taskLegend.push(project.projectName)
+                                this.projectTaskNum = this.projectTaskNum + project.taskNum
+                            })
+                            this.drawLine2()
+                        }
+                    })
+                }
             },
             //根据优先级查询年度任务完成数
             fetchAnnualTaskByPriority(){
-                Http.zsyPostHttp('data/annual/task/priority',this.taskReqDTO,(res)=>{
-                    if (res){
-                        this.priorityTask = res.data
+                if (this.admin){
+                    Http.zsyPostHttp('data/annual/task/priority',this.taskReqDTO,(res)=>{
+                        if (res){
+                            this.priorityTask = res.data
 
-                        const tData = {};
-                        tData.value = this.priorityTask.normalNum;
-                        tData.name = '普通';
-                        this.taskData1.push(tData);
-                        const tData2 = {};
-                        tData2.value = this.priorityTask.urgentNum;
-                        tData2.name = '紧急';
-                        this.taskData1.push(tData2);
-                        const tData3 = {};
-                        tData3.value = this.priorityTask.veryUrgentNum;
-                        tData3.name = '非常紧急';
-                        this.taskData1.push(tData3);
-                        this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum
-                        // this.drawLine1()
-                    }
-                })
+                            const tData = {};
+                            tData.value = this.priorityTask.normalNum;
+                            tData.name = '普通';
+                            this.taskData1.push(tData);
+                            const tData2 = {};
+                            tData2.value = this.priorityTask.urgentNum;
+                            tData2.name = '紧急';
+                            this.taskData1.push(tData2);
+                            const tData3 = {};
+                            tData3.value = this.priorityTask.veryUrgentNum;
+                            tData3.name = '非常紧急';
+                            this.taskData1.push(tData3);
+                            this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum
+                            this.drawLine1()
+                        }
+                    })
+                }
+            },
+
+            //查询个人请假情况
+            fetchPersonVacation(){
+              Http.zsyPostHttp('data/annual/person-vacation',this.personVacationReqDTO,(res)=>{
+                  if (res){
+                      this.personVacationData = res.data;
+                  }
+              })
+            },
+
+            //按条件查询个人请假情况
+            selectVacationByDate(){
+                this.personVacationReqDTO.beginTime = null;
+                this.personVacationReqDTO.endTime = null;
+                if (this.beginTime){
+                    this.personVacationReqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.endTime){
+                    this.personVacationReqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
+                }
+                this.fetchPersonVacation()
             }
             // -- sch
         }

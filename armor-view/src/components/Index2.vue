@@ -229,10 +229,10 @@
                         label: '通知',
                         name: 'notice'
                     },
-                    {
+                    /*{
                         label:'总结',
                         name:'summaryNav'
-                    }
+                    }*/
                 ],
                 showIndex: true,
                 showPerOpt: false,
@@ -332,6 +332,12 @@
                 this.tabs.push({
                     label: '组织',
                     name: 'organization'
+                });
+            }
+            if (Helper.decodeToken().userRole > 0){
+                this.tabs.push({
+                    label:'总结',
+                    name:'summaryNav'
                 });
             }
             if (Helper.decodeToken().departmentId == 0) {
