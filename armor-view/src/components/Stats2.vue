@@ -1,0 +1,1731 @@
+<template>
+    <div class="stats-con">
+        <el-tabs v-model="activeName" @tab-click="" style="position:relative;margin-bottom: 20px;">
+            <el-tab-pane label="任务统计" name="stat"  style="">
+                <el-table :data="statsData" >
+                    <el-table-column prop="name" label="成员" align="center" ></el-table-column>
+                    <el-table-column prop="inProcess" label="我的任务/进行中任务" align="center" >
+                        <template scope="sco">
+                            <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}} / {{sco.row.multiTask}}</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="hours" label="进行中任务耗时（小时）" align="center"></el-table-column>
+                    <el-table-column prop="delay" label="超时任务" align="center" >
+                        <template scope="scope">
+                            <span type="text" style="color: red;">{{scope.row.delay}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
+                </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="线上bug" name="bug"  style="">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="bugList.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="bugDaterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        unlink-panels
+                        @change="bugTimeChange"
+                        :picker-options="pickerOptions">
+                </el-date-picker></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getBugList()" class="search-btn"></div>
+                <el-button type="primary" style="margin-left: 300px;margin-bottom: 10px;" class="add-member-basic-msg fl" @click="createBugSolve" v-show="permit">创建bug处理</el-button>
+                <el-table :data="bugManage" border>
+                    <el-table-column prop="projectId" label="序号" align="center" width="100"></el-table-column>
+                    <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
+                    <el-table-column prop="projectName" label="问题项目" align="center" width="130"></el-table-column>
+                    <el-table-column prop="users" label="负责人" align="center" width="200"></el-table-column>
+                    <el-table-column prop="createTime" label="发现日期"  width="130"></el-table-column>
+                    <el-table-column prop="processTime" label="处理日期"  width="130"></el-table-column>
+                    <el-table-column label="操作" width="100">
+                        <template scope="scope">
+                            <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="handleCurrentChange"
+                            :current-page.sync="bugList.pageNum"
+                            :page-size="bugFormPage.pageSize"
+                            :layout="pageLayout"
+                            :total="bugFormPage.total">
+                    </el-pagination>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="个人任务" name="personal">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="persanalForm.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="daterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        range-separator=" 至 "
+                        @change="timeChange"
+                        :picker-options="pickerOptions">
+                </el-date-picker></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
+                <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
+                    <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="150">
+                        <template scope="sco">
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="taskDescription" label="任务描述" align="center" ></el-table-column>
+                    <el-table-column prop="description" label="工作内容" align="center"></el-table-column>
+                    <el-table-column prop="createTime" label="开始日期"  width="120"></el-table-column>
+                    <el-table-column prop="endTime" label="截止日期"  width="120"></el-table-column>
+                    <el-table-column prop="taskHours" label="工作量"  width="80"></el-table-column>
+                </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="周任务统计" name="week">
+                <div class="add-member-basic-msg fl" >
+                    <el-date-picker
+                            v-model="userWeekForm.date"
+                            :picker-options="pickerWeek"
+                            type="week"
+                            format="yyyy 第 WW 周"
+                            placeholder="选择周">
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
+                <el-table :data="userWeekData" border  >
+                    <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80" >
+                        <template scope="sco">
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonStats(sco.row.userId)">{{sco.row.userName}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center">
+                        <template scope="sco">
+                            <div style="white-space: pre-wrap;text-align: left">{{sco.row.taskName}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="hours" label="周工作量"  sortable  width="120">
+                        <template scope="scope">
+                            <span type="text" v-show="scope.row.hours<=40">{{scope.row.hours}}</span>
+                            <span type="text" style="color: red;" v-show="scope.row.hours>40">{{scope.row.hours}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
+                </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="请假统计" name="leave"  style="" v-if="admin" >
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="leaveDaterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        unlink-panels
+                        @change="leaveTimeChange"
+                        :picker-options="pickerOptions">
+                </el-date-picker></div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getLeaveList()" class="search-btn"></div>
+                <el-table :data="leaveManage" border>
+                    <el-table-column type="index" label="序号" width="80"></el-table-column>
+                    <el-table-column prop="description" label="请假原因" align="center"></el-table-column>
+                    <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
+                    <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
+                    <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
+                    <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="leaveHandleCurrentChange"
+                            :current-page.sync="leaveList.pageNum"
+                            :page-size="leaveFormPage.pageSize"
+                            :layout="leavePageLayout"
+                            :total="leaveFormPage.total">
+                    </el-pagination>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="年度总结" name="task"  style="" v-if="admin" >
+                <div class="stats-con">
+                    <div class="steps" style="width: 1000px">
+                        <div class="card-title-con" style="font-size: 20px;margin-top: -30px;">
+                            年度任务统计
+                            <el-date-picker
+                                    style="margin-left: 20px"
+                                    v-model="whichYear1"
+                                    align="right"
+                                    type="year"
+                                    placeholder="选择年">
+                            </el-date-picker>
+                            <el-button type="primary" @click="selectTaskByYear">查询</el-button>
+                        </div>
+                        <div class="steps-body">
+                            <div id="myChart1" :style="{width:'500px',height:'400px',left:'40px',float:'left'}"></div>
+                            <div id="myChart2" :style="{width:'500px',height:'400px',left:'40px',float:'left'}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-con">
+                    <div class="steps" style="width: 1000px">
+                        <div class="card-title-con" style="font-size: 20px;margin-top: -20px;">
+                            年度需求统计
+                            <el-date-picker
+                                    style="margin-left: 20px"
+                                    v-model="whichYear2"
+                                    align="right"
+                                    type="year"
+                                    placeholder="选择年">
+                            </el-date-picker>
+                            <el-button type="primary" @click="selectFeedbackByYear">查询</el-button>
+                        </div>
+                        <div class="steps-body">
+                            <div id="myChart3" :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <div id="myChart6" :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <!--<div v-else class="steps-body" style="height: 300px">
+                                <h1 style="text-align: center;width: 100%;font-size: 50px">暂无数据</h1>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-con">
+                    <div class="steps" style="width: 1000px">
+                        <div class="card-title-con" style="font-size: 20px;margin-top: -20px;">
+                            每月任务统计
+                            <el-date-picker
+                                    style="margin-left: 20px"
+                                    v-model="whichYear4"
+                                    align="right"
+                                    type="year"
+                                    placeholder="选择年">
+                            </el-date-picker>
+                            <el-button type="primary" @click="selectTaskByYear4">查询</el-button>
+                        </div>
+                        <div class="steps-body">
+                            <div id="myChart4" :style="{width:'600px',height:'400px',left:'230px',float:'left',marginTop:'50px'}"></div>
+                            <!--<div v-else class="steps-body" style="height: 300px">
+                                <h1 style="text-align: center;width: 100%;font-size: 50px">暂无数据</h1>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-con">
+                    <div class="steps" style="width: 1000px">
+                        <div class="card-title-con" style="font-size: 20px;margin-top: -20px;margin-left: 20px;">
+                            年度请假分析
+                            <el-date-picker
+                                    style="margin-left: 20px"
+                                    v-model="whichYear5"
+                                    align="right"
+                                    type="year"
+                                    placeholder="选择年">
+                            </el-date-picker>
+                            <el-button type="primary" @click="selectVacationByYear">查询</el-button>
+                        </div>
+                        <div class="steps-body" style="height: 600px;margin-left: 120px">
+                            <div id="myChart5" :style="{width:'600px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <div style="width: 300px;margin-left: 100px">
+                                <ol type="A" style="margin-left: -250px">
+                                    <li><span class="task-span">年度请假总数:</span><span style="margin-left: 71px">{{vacationData.totalCount}}次</span></li>
+                                    <li><span class="task-span">年度请假时长:</span><span style="margin-left: 71px">{{vacationData.totalTime}}小时</span></li>
+                                </ol>
+                            </div>
+                        </div>
+                        <!--<div v-else class="steps-body" style="height: 300px">
+                            <h1 style="text-align: center;width: 100%;font-size: 50px">暂无数据</h1>
+                        </div>-->
+                    </div>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="个人请假统计" name="personalLeave" v-if="admin">
+                <span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">请假时间:</span>
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="beginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择日期"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="endTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择日期"
+                    >
+                    </el-date-picker>
+                </div>
+                <el-button type="primary" @click="selectVacationByDate" style="margin-left: 10px" size="small">查询</el-button>
+                <el-table :data="personVacationData" border>
+                    <el-table-column type="index" label="序号" width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80">
+                        <template scope="scope">
+                            {{scope.row.userName}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="remark" label="备注" align="left">
+                        <template scope="scope">
+                            {{scope.row.remarkList}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="vacationNum" label="请假次数" align="center" width="120" sortable></el-table-column>
+                    <el-table-column prop="vacationTime" label="请假时长" align="center" width="120" sortable></el-table-column>
+                </el-table>
+            </el-tab-pane>
+        </el-tabs>
+        <el-dialog
+                title="创建Bug处理结果"
+                style="width:auto;"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="createBugSolvingVisible">
+                <div class="ctpc-con">
+                    <div  style="display: inline"><span class="star">*</span>问题项目</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="bugForm.projectId" placeholder="请选择">
+                            <el-option  v-for="item in projectForm" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                    <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
+                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="bugForm.description" :rows="3"></el-input>
+                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
+                        <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
+                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	处理日期</div>
+                        <el-date-picker v-model="bugForm.processTime" type="date" placeholder="选择处理日期" style="position: relative;margin-left: 100px"></el-date-picker>
+                </div>
+
+                <div class="ctpc-member-con">
+                    <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
+                        <span class="fl ctpc-member-head">{{item.userName}}</span>
+                        <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
+                        <span style="position: absolute;right: 10px;">
+                                <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
+                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
+                        </span>
+                    </div>
+                </div>
+                <div class="ctpc-add-member-detail" v-if="showAddDetail">
+                    <div class="add-member-basic">
+                        <div class="add-member-basic-list clearfix">
+                            <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
+                            <div class="add-member-basic-msg fl">
+                                <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
+                                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
+                            </div>
+                            <div class="add-member-basic-msg fl">
+                                <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ctpc-btns">
+                        <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
+                        <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
+                    </div>
+                </div>
+                <div class="add-member-opt" v-show="!showAddDetail" @click="showAddDetail = !showAddDetail;">
+                    <span class="add-member-icon">+</span>
+                    <span class="add-member-msg" style="">添加成员</span>
+                </div>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveBugForm('bugForm')" :loading="isSaving">立即创建</el-button>
+            <el-button @click="createBugSolvingVisible = false">取 消</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+                title="更新Bug处理"
+                style="width:auto;"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :visible.sync="updateBugSolvingVisible">
+            <div class="ctpc-con">
+                <div  style="display: inline"><span class="star">*</span>问题项目</div>
+                <div style="display: inline;margin-left: 30px">
+                    <el-select v-model="bugForm.projectId" placeholder="请选择">
+                        <el-option  v-for="item in projectForm" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
+                <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="bugForm.description" :rows="3"></el-input>
+                <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
+                <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
+                <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	处理日期</div>
+                <el-date-picker v-model="bugForm.processTime" type="date" placeholder="选择处理日期" style="position: relative;margin-left: 100px"></el-date-picker>
+            </div>
+
+            <div class="ctpc-member-con">
+                <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
+                    <span class="fl ctpc-member-head">{{item.userName}}</span>
+                    <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
+                    <span style="position: absolute;right: 10px;">
+                                <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
+                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
+                        </span>
+                </div>
+            </div>
+            <div class="ctpc-add-member-detail" v-if="showAddDetail">
+                <div class="add-member-basic">
+                    <div class="add-member-basic-list clearfix">
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
+                        <div class="add-member-basic-msg fl">
+                            <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
+                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
+                        </div>
+                    </div>
+                </div>
+                <div class="ctpc-btns">
+                    <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
+                    <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
+                </div>
+            </div>
+            <div class="add-member-opt" v-show="!showAddDetail" @click="showAddDetail = !showAddDetail;">
+                <span class="add-member-icon">+</span>
+                <span class="add-member-msg" style="">添加成员</span>
+            </div>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="editBugForm('bugForm')">立即更新</el-button>
+            <el-button @click="updateBugSolvingVisible = false">取 消</el-button>
+          </span>
+        </el-dialog>
+
+        <el-dialog title="Bug处理结果详情" size="tiny" :close-on-click-modal="false"
+            :close-on-press-escape="false"
+            :visible.sync="bugDetailVisible">
+            <el-form>
+                <el-form-item class="task-form" label="项目名称：">{{bugDetailForm.projectName}}</el-form-item>
+                <el-form-item class="task-form" label="问题描述：">{{bugDetailForm.description}}</el-form-item>
+                <div class="ctpc-member-list clearfix"  v-for="(item,index) in bugDetailForm.bugUsers">
+                    <span class="fl ctpc-member-head">{{item.userName}}</span>
+                    <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
+                </div>
+            </el-form>
+            <span slot="footer" class="dialog-footer" >
+                <div v-show="permit">
+                    <el-tooltip content="编辑该任务" placement="top">
+                     <el-button type="primary" icon="edit" @click="editBugDetail(bugDetailForm)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="删除该任务" placement="top">
+                          <el-button type="danger" icon="delete" @click="deleteBug()"></el-button>
+                    </el-tooltip>
+                </div>
+            </span>
+
+        </el-dialog>
+
+    </div>
+</template>
+<script>
+    import Http from '../lib/Http'
+    import Helper from '../lib/Helper'
+    import ElButton from "../../node_modules/element-ui/packages/button/src/button";
+    import ElDialog from "../../node_modules/element-ui/packages/dialog/src/component";
+    import moment from 'moment';
+    import helper from '../lib/Helper'
+    import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane";
+    import Task from "./Task"
+
+    export default {
+        components: {
+            ElButton,
+            ElTabPane},
+        name: 'IntegralHistory',
+        data() {
+            return {
+                isSaving:false,
+                activeName:'stat',
+                createBugSolvingVisible:false,
+                updateBugSolvingVisible:false,
+                statsData:[],
+                pesonalTaskData:[],
+                modifyId:'',
+                bugList:{
+                  userId:'',
+                  startTime:'',
+                  endTime:'',
+                  pageNum:1,
+                },
+                leaveList:{
+                    userId:'',
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1,
+                },
+                bugFormPage:{
+                    pageSize: 10,
+                    total: 0,
+                },
+                leaveFormPage:{
+                    pageSize: 10,
+                    total: 0,
+                },
+                bugForm:{
+                    projectId:'',
+                    description:'',
+                    createTime:'',
+                    processTime:''
+                },
+                persanalForm:{
+                    userId:'',
+                    startTime:'',
+                    endTime:'',
+                },
+                daterange:'',
+                bugDaterange:'',
+                leaveDaterange:'',
+                bugDetailForm:{},
+                bugManage:[],
+                leaveManage:[],
+                addMemberIndex:{
+                    index:'',
+                    userId:'',
+                    integral:'',
+                    userName:'',
+                },
+                stepTemp: {},
+                bugDetailVisible:false,
+                projectForm:[],
+                userList:[],
+                bugUsers:[],
+                showAddDetail:false,
+                statsPage: {
+                    layout: "total, pager",
+                    currentPage: 1,
+                    pageSize: 10,
+                    totals: 0,
+                    pageNum: 0
+                },
+                userWeekForm:{
+                    weekNumber:'',
+                    date:''
+                },
+                userWeekData:[],
+                currentWeek:moment().week(),
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '本周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('week').valueOf());
+                            end.setTime(moment().endOf('week').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('month').valueOf());
+                            end.setTime(moment().endOf('month').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本季度',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('quarter').valueOf());
+                            end.setTime(moment().endOf('quarter').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                pickerWeek:{
+                    firstDayOfWeek:1
+                },
+
+                // sch --
+                whichYear1:'2018',
+                whichYear2:'2018',
+                whichYear4:'2018',
+                whichYear5:'2018',
+                taskReqDTO:{
+                    whichYear:'2018'
+                },
+                fbReqDTO:{
+                    whichYear:'2018'
+                },
+                taskMonthReqDTO:{
+                    whichYear:'2018'
+                },
+                taskData1:[],
+                taskData2:[],
+                taskLegend:[],
+                projectTaskNum:0,
+                priorityTask:{
+                    totalNum:0,
+                    normalNum:0,
+                    urgentNum:0,
+                    veryUrgentNum:0
+                },
+                projectTaskList:[],
+                feedbackMonthList:[],
+                feedbackTotal:0,
+                fbTotalCount:0,
+                fromCoach:0,
+                other:0,
+                feedbackData:[],
+                taskMonthList:[],
+                taskTotal:0,
+
+                vacationReqDTO:{
+                    whichYear:'2018'
+                },
+                vacationData:{
+                    totalCount:0,
+                    totalTime:0
+                },
+                vacationCountList:[],
+                vacationTimeList:[],
+                beginTime:null,
+                endTime:null,
+                personVacationData:[],
+                personVacationReqDTO:{
+                    beginTime:null,
+                    endTime:null
+                }
+
+                // -- sch
+            }
+        },
+        beforeMount:function () {
+            this.getStats(this.statsPage.currentPage);
+            //选中任务tab
+            this.$root.eventBus.$emit("handleTabSelected", "stats");
+            this.fetchUserList();
+            this.fetchProjectList();
+            this.fetchProjectList();
+            this.getBugList();
+            this.getLeaveList();
+            this.fetchAnnualTaskByPriority();
+            this.fetchAnnualProjectTaskNum();
+            this.fetchEveryMonthFeedback();
+            this.fetchEveryMonthTask();
+            this.fetchEveryMonthVacation();
+            this.fetchAnnualVacation();
+            this.fetchAnnualFeedback();
+            this.fetchPersonVacation();
+        },
+        computed: {
+            permit() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole < 2;
+            },
+            admin() {
+                let userRole = helper.decodeToken().userRole;
+                return userRole < 1;
+            },
+            pageLayout() {
+                if (this.bugFormPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            leavePageLayout() {
+                if (this.leaveFormPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            }
+
+        },
+        filters: {
+            formatDate: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY年MM月DD日 HH:00:00');
+            },
+        },
+        methods: {
+            getStats(currentPage){
+                Http.zsyGetHttp(`/stats/list/`, {}, (resp) => {
+                    this.statsData =  resp.data;
+                });
+            },
+            getCurrentWeek(){
+                this.userWeekForm.date=moment().toDate()
+            },
+            getTask(index){
+                this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
+            },
+            getPesonTask(taskId){
+                this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
+            },
+            getBugList(){
+                Http.zsyGetHttp(`/bug/list/`, this.bugList, (resp) => {
+                    this.bugManage =  resp.data.list;
+                    this.bugFormPage.total = resp.data.total;
+                });
+            },
+            getLeaveList(){
+                Http.zsyPostHttp(`/userLeave/list/`, this.leaveList, (resp) => {
+                    this.leaveManage =  resp.data.list;
+                    this.leaveFormPage.total = resp.data.total;
+                });
+            },
+            bugTimeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.bugList.startTime = `${time[0]} 00:00:00`
+                    this.bugList.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.bugList.startTime = this.bugList.endTime = this.bugDaterange = ''
+                }
+            },
+            leaveTimeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.leaveList.beginTime = `${time[0]} 00:00:00`
+                    this.leaveList.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.leaveList.startTime = this.leaveList.endTime = this.leaveDaterange = ''
+                }
+            },
+            timeChange(time) {
+                // 选择结束时间
+                time = time.split(' 至 ')
+                if (time && time.length == 2) {
+                    this.persanalForm.startTime = `${time[0]} 00:00:00`
+                    this.persanalForm.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.persanalForm.startTime = this.persanalForm.endTime = this.daterange =  ''
+                }
+            },
+            getPersonalData(){
+                if(this.persanalForm.userId == null||this.persanalForm.userId===''){
+                    this.errorMsg("请选择你想查询的用户")
+                }
+                Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
+                    this.pesonalTaskData =  resp.data;
+                });
+            },
+            saveBugForm(){
+                this.isSaving = true
+                if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
+                    this.errorMsg('请将问题信息填写完整');
+                    return
+                }
+                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                let param = this.bugForm;
+                param.projectId = param.projectId.trim()
+                param.description = param.description.trim()
+                param['bugUsers'] = this.bugUsers;
+                Http.zsyPostHttp('/bug/add', param, (resp) => {
+                    this.$message({
+                        showClose: true,
+                        message: 'Bug处理结果创建成功',
+                        type: 'success'
+                    });
+                    this.bugForm.projectId = this.bugForm.description = '';
+                    this.bugForm.createTime = this.bugForm.processTime = '';
+                    this.createBugSolvingVisible = false
+                    this.bugUsers = [];
+                    this.getBugList();
+                    this.isSaving = false
+                })
+
+            },
+            editBugForm(id){
+                if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
+                    this.errorMsg('请将问题信息填写完整');
+                    return
+                }
+                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                let param = this.bugForm;
+                param.projectId = param.projectId.trim()
+                param.description = param.description.trim()
+                param['bugUsers'] = this.bugUsers;
+                Http.zsyPutHttp('/bug/update/'+this.modifyId, param, (resp) => {
+                    this.$message({
+                        showClose: true,
+                        message: 'Bug处理结果更新成功',
+                        type: 'success'
+                    });
+                    this.bugForm.projectId = this.bugForm.description = '';
+                    this.bugForm.createTime = this.bugForm.processTime = '';
+                    this.updateBugSolvingVisible = false
+                    this.bugUsers = [];
+                    this.getBugList();
+                })
+            },
+            createBugSolve(){
+                this.createBugSolvingVisible = true;
+                this.bugForm.description = this.bugForm.projectId = this.bugForm.createTime = this.bugForm.processTime = '';
+                this.bugUsers = [];
+                this.showAddDetail = false
+                this.addMemberIndex = {
+                    index: '',
+                    userId: '',
+                    userName: '',
+                    integral: '',
+                }
+            },
+            saveAddMember(){
+                if (this.addMemberIndex.userId == ''||this.addMemberIndex.integral == '') {
+                    this.errorMsg('请将积分信息填写完整');
+                    return
+                }
+                this.showAddDetail = !this.showAddDetail;
+                if (this.addMemberIndex.index === '') {
+                    let bugUser = {}
+                    bugUser.userId = this.addMemberIndex.userId
+                    bugUser.userName = this.addMemberIndex.userName
+                    bugUser.integral = this.addMemberIndex.integral
+                    this.bugUsers.push(bugUser)
+                } else {
+                    // 取消css
+                    this.bugUsers[this.addMemberIndex.index].cssClass = ''
+                }
+
+                this.addMemberIndex = {
+                    index: '',
+                    userId: '',
+                    userName: '',
+                    integral: '',
+                }
+                this.stepTemp = {}
+
+            },
+            modifyMember(index, stages) {
+                this.stepTemp = {
+                    userId: stages[index].userId,
+                    userName: stages[index].userName,
+                    integral: stages[index].integral,
+                }
+                this.bugUsers.forEach((item) => {
+                    item.cssClass = ''
+                })
+                this.bugUsers[index].cssClass = 'stepActive'
+                this.addMemberIndex = stages[index]
+                this.addMemberIndex.index = index
+                this.showAddDetail = true;
+            },
+            deleteMember(index) {
+                this.bugUsers.splice(index, 1);
+                if (this.bugUsers.length == 0) {
+                    this.showAddDetail = false
+                    this.addMemberIndex = {
+                        index: '',
+                        userId: '',
+                        userName: '',
+                        integral: '',
+                    }
+                }
+            },
+            cancelAddMember(){
+                this.showAddDetail = !this.showAddDetail;
+            },
+            editBugDetail(bugDetailForm){
+                this.updateBugSolvingVisible = true;
+                this.bugDetailVisible = false;
+                this.bugForm.projectId = bugDetailForm.projectId;
+                this.bugForm.createTime = bugDetailForm.createTime;
+                this.bugForm.processTime = bugDetailForm.processTime;
+                this.bugForm.description = bugDetailForm.description;
+                this.bugUsers = bugDetailForm.bugUsers;
+            },
+            deleteBug(){
+                this.$confirm('确认删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    Http.zsyDeleteHttp('/bug/'+this.modifyId, null, (resp) => {
+                        this.$message({
+                            showClose: true,
+                            message: 'Bug处理结果删除成功',
+                            type: 'success'
+                        });
+                    })
+                    this.bugDetailVisible = false;
+                    this.getBugList();
+                }).catch(() => {
+                });
+            },
+            fetchUserList() {
+                let vm = this
+                Http.zsyGetHttp('/user/effective', {}, (resp) => {
+                    vm.userList = resp.data
+                })
+            },
+            fetchProjectList() {
+                let vm = this
+                Http.zsyGetHttp('/project/list', {}, (resp) => {
+                    vm.projectForm = resp.data
+                })
+            },
+            stepUserChange(val) {
+                let vm = this;
+                this.userList.forEach((user) => {
+                    if (user.id === val) {
+                        vm.addMemberIndex.userName = user.name
+                    }
+                })
+            },
+            bugDetail(row){
+                this.bugDetailVisible = true;
+                Http.zsyGetHttp('/bug/'+row.id, null, (resp) => {
+                    this.bugDetailForm = resp.data
+                })
+                this.modifyId = row.id;
+            },
+            handleCurrentChange(currentPage){
+                this.bugList.pageNum = currentPage;
+                this.getBugList();
+            },
+            leaveHandleCurrentChange(currentPage){
+                this.leaveList.pageNum = currentPage;
+                this.getLeaveList();
+            },
+            isDecimal(str) {
+                var regu = /^[-]{0,1}[0-9]{1,}$/;
+                if (regu.test(str)) {
+                    return true;
+                }
+                var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
+                if (re.test(str)) {
+                    if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            errorMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'error'
+                });
+            },
+            getSummaries(param) {
+                const { columns, data } = param;
+                const sums = [];
+                columns.forEach((column, index) => {
+                    if (index === 0) {
+                        sums[index] = '总计';
+                        return;
+                    }
+                    if (index < 4) {
+                        sums[index] = '';
+                        return;
+                    }
+                    const values = data.map(item => Number(item[column.property]));
+                    if (!values.every(value => isNaN(value))) {
+                        sums[index] = values.reduce((prev, curr) => {
+                            const value = Number(curr);
+                            if (!isNaN(value)) {
+                                return prev + curr;
+                            } else {
+                                return prev;
+                            }
+                        }, 0);
+                    }
+                });
+
+                return sums;
+            },
+            getUserWeekStats(){
+                if(this.userWeekForm.date!=''){
+                    this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
+                    this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
+                    if(this.userWeekForm.date!=''){
+                        Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
+                            this.userWeekData = resp.data
+                        })
+                    }else{
+                        this.errorMsg('请选择统计信息')
+                    }
+                }else{
+                    this.errorMsg("请选择时间")
+                }
+
+
+            },
+            getPesonStats(id){
+                this.activeName='personal'
+                this.persanalForm.userId = id;
+                this.persanalForm.startTime = moment(this.userWeekForm.date).startOf('week').format("YYYY-MM-DD 00:00:00");
+                this.persanalForm.endTime =  moment(this.userWeekForm.date).endOf('week').format("YYYY-MM-DD 23:59:59");
+                Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
+                    this.pesonalTaskData =  resp.data;
+                });
+            },
+
+            // sch --
+            drawLine1(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart1'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '年度任务(优先级)',
+                        x:'center',
+                        subtext:'任务总数: '+this.priorityTask.totalNum ,
+                        subtextStyle:{
+                            fontSize:16
+                        }
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: ['普通','紧急','非常紧急']
+                    },
+                    series : [
+                        {
+                            name: '优先级',
+                            type: 'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data:this.taskData1,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                });
+            },
+            drawLine2(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart2'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '年度任务(项目)',
+                        x:'center',
+                        subtext: '任务总数: '+this.projectTaskNum,
+                        subtextStyle: {
+                            fontSize: 16
+                        }
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: this.taskLegend
+                    },
+                    series : [
+                        {
+                            name: '项目',
+                            type: 'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data:this.taskData2,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                });
+            },
+            drawLine3(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart3'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '每月需求',
+                        x:'center',
+                        subtext:'需求总数: ' + this.feedbackTotal,
+                        subtextStyle:{
+                            fontSize: 16
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        left: 'left',
+                        data: ['个数']
+                    },
+                    xAxis: {
+                        data: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            min: 0,
+                            splitLine:{
+                                show:false
+                            },
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '个数',
+                            type: 'bar',
+                            barGap: 0,
+                            data: this.feedbackMonthList
+                        }
+                    ]
+                });
+            },
+            drawLine6(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart6'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '年度需求 ',
+                        x:'center' ,
+                        subtext:'需求总数: ' + this.fbTotalCount,
+                        subtextStyle:{
+                            fontSize: 16
+                        }
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: ['学管端','其他']
+                    },
+                    series : [
+                        {
+                            name: '需求来源',
+                            type: 'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data:this.feedbackData,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                });
+            },
+            drawLine4(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart4'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '每月任务',
+                        x:'center',
+                        subtext:'任务总数: ' + this.taskTotal,
+                        subtextStyle:{
+                            fontSize: 16
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        left: 'left',
+                        data: ['个数']
+                    },
+                    xAxis: {
+                        data: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            min: 0,
+                            splitLine:{
+                                show:false
+                            },
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '个数',
+                            type: 'bar',
+                            barGap: 0,
+                            data: this.taskMonthList
+                        }
+                    ]
+                });
+            },
+            drawLine5(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart5'))
+                // 绘制图表
+                myChart.setOption({
+                    title: { text: '年度请假分布',x:'center' },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        left: 'left',
+                        data: ['次数', '时长']
+                    },
+                    xAxis: {
+                        data: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: '次数',
+                            min: 0,
+                            interval: 5,
+                            splitLine:{
+                                show:false
+                            },
+                        },
+                        {
+                            type: 'value',
+                            name: '时长',
+                            min: 0,
+                            interval: 50,
+                            axisLabel: {
+                                formatter: '{value} h'
+                            },
+                            splitLine:{
+                                show:false
+                            },
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '次数',
+                            type: 'bar',
+                            barGap: 0,
+                            data: this.vacationCountList
+                        },
+                        {
+                            name: '时长',
+                            type: 'bar',
+                            data: this.vacationTimeList,
+                            yAxisIndex:1
+                        }
+                    ]
+                });
+            },
+            selectTaskByYear(){
+                if(this.whichYear1){
+                    this.taskReqDTO.whichYear = moment(this.whichYear1).format("YYYY-MM-DD")
+                    this.taskReqDTO.whichYear = this.taskReqDTO.whichYear.substring(0,4)
+                }
+                // if (Number(this.taskReqDTO.whichYear) < )
+                this.taskData1 = [];
+                this.taskData2 = [];
+                this.projectTaskNum = 0;
+                this.fetchAnnualProjectTaskNum();
+                this.fetchAnnualTaskByPriority()
+            },
+            selectTaskByYear4(){
+                if(this.whichYear4){
+                    this.taskMonthReqDTO.whichYear = moment(this.whichYear4).format("YYYY-MM-DD")
+                    this.taskMonthReqDTO.whichYear = this.taskMonthReqDTO.whichYear.substring(0,4)
+                }
+                this.taskTotal = 0;
+                this.taskMonthList = [];
+                this.fetchEveryMonthTask()
+            },
+            selectVacationByYear(){
+                if (this.whichYear5){
+                    this.vacationReqDTO.whichYear = moment(this.whichYear5).format("YYYY-MM-DD")
+                    this.vacationReqDTO.whichYear = this.vacationReqDTO.whichYear.substring(0,4)
+                }
+                this.vacationCountList = [];
+                this.vacationTimeList = [];
+                this.fetchEveryMonthVacation();
+                this.fetchAnnualVacation();
+            },
+            selectFeedbackByYear(){
+              if (this.whichYear2){
+                  this.fbReqDTO.whichYear = moment(this.whichYear2).format("YYYY-MM-DD")
+                  this.fbReqDTO.whichYear = this.fbReqDTO.whichYear.substring(0,4)
+              }
+              this.feedbackMonthList = [];
+              this.feedbackTotal = 0;
+                this.feedbackData = [];
+              this.fetchEveryMonthFeedback();
+              this.fetchAnnualFeedback();
+            },
+            //查询年度需求
+            fetchAnnualFeedback(){
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/feedback-num',this.fbReqDTO,(res)=>{
+                        if (res){
+                            this.fbTotalCount = res.data.totalNum;
+                            this.fromCoach = res.data.fromCoachNum;
+                            this.other = res.data.otherNum;
+                            const fbData = {};
+                            fbData.value = this.fromCoach;
+                            fbData.name = '学管端';
+                            this.feedbackData.push(fbData)
+                            const fbData2 = {};
+                            fbData2.value = this.other;
+                            fbData2.name = '其他';
+                            this.feedbackData.push(fbData2)
+                            this.drawLine6()
+                        }
+                    })
+                }
+            },
+            //查询年度每个月的需求数
+            fetchEveryMonthFeedback(){
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/feedback/month',this.fbReqDTO,(res)=>{
+                        if (res){
+                            this.feedbackMonthList = res.data;
+                            this.feedbackMonthList.forEach(feedbackNum=>{
+                                this.feedbackTotal = this.feedbackTotal + feedbackNum
+                            })
+                            this.drawLine3()
+                            this.drawLine6()
+                        }
+                    })
+                }
+            },
+            //查询年度每月完成的任务数
+            fetchEveryMonthTask(){
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/task/month',this.taskMonthReqDTO,(res)=>{
+                        if (res){
+                            this.taskMonthList = res.data;
+                            this.taskMonthList.forEach(taskNum=>{
+                                this.taskTotal = this.taskTotal + taskNum
+                            })
+                            this.drawLine4()
+                        }
+                    })
+                }
+            },
+            //年度 每月请假次数和时长集合
+            fetchEveryMonthVacation(){
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/vacation/month',this.vacationReqDTO,(res)=>{
+                        if (res){
+                            this.vacationCountList = res.data.vacationCountList;
+                            this.vacationTimeList = res.data.vacationTimeList;
+                            this.drawLine5()
+                        }
+                    })
+                }
+            },
+            //年度请假总次数,总时长
+            fetchAnnualVacation(){
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/vacation',this.vacationReqDTO,(res)=>{
+                        if (res){
+                            this.vacationData.totalCount = res.data.vacationCount;
+                            this.vacationData.totalTime = res.data.vacationTime;
+                        }
+                    })
+                }
+            },
+            //查询年度各个项目对应的任务数
+            fetchAnnualProjectTaskNum(){
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/task/project-task',this.taskReqDTO,(res) =>{
+                        if (res){
+                            this.projectTaskList = res.data
+                            this.projectTaskList.forEach(project =>{
+                                const tData = {};
+                                tData.value = project.taskNum;
+                                tData.name = project.projectName;
+                                this.taskData2.push(tData)
+                                this.taskLegend.push(project.projectName)
+                                this.projectTaskNum = this.projectTaskNum + project.taskNum
+                            })
+                            this.drawLine2()
+                        }
+                    })
+                }
+            },
+            //根据优先级查询年度任务完成数
+            fetchAnnualTaskByPriority(){
+                if (this.admin){
+                    Http.zsyPostHttp('data/annual/task/priority',this.taskReqDTO,(res)=>{
+                        if (res){
+                            this.priorityTask = res.data
+
+                            const tData = {};
+                            tData.value = this.priorityTask.normalNum;
+                            tData.name = '普通';
+                            this.taskData1.push(tData);
+                            const tData2 = {};
+                            tData2.value = this.priorityTask.urgentNum;
+                            tData2.name = '紧急';
+                            this.taskData1.push(tData2);
+                            const tData3 = {};
+                            tData3.value = this.priorityTask.veryUrgentNum;
+                            tData3.name = '非常紧急';
+                            this.taskData1.push(tData3);
+                            this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum
+                            this.drawLine1()
+                        }
+                    })
+                }
+            },
+
+            //查询个人请假情况
+            fetchPersonVacation(){
+              Http.zsyPostHttp('data/annual/person-vacation',this.personVacationReqDTO,(res)=>{
+                  if (res){
+                      this.personVacationData = res.data;
+                  }
+              })
+            },
+
+            //按条件查询个人请假情况
+            selectVacationByDate(){
+                this.personVacationReqDTO.beginTime = null;
+                this.personVacationReqDTO.endTime = null;
+                if (this.beginTime){
+                    this.personVacationReqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.endTime){
+                    this.personVacationReqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
+                }
+                this.fetchPersonVacation()
+            }
+            // -- sch
+        }
+    }
+
+
+</script>
+<style scoped>
+
+    .stats-con {
+        width: 1100px;
+        font-size: 14px;
+        background: #fff;
+        padding: 30px 0;
+        box-shadow: 0 0 10px #ccc;
+        margin: auto;
+    }
+
+    .star {
+        color: red;
+        padding: 1px;
+    }
+
+    .ctpc-tags > li {
+        display: inline-block;
+        line-height: 30px;
+    }
+
+    .ctpc-tag-lis > span {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .ctpc-tag-lis .tag-lis-delete:hover {
+        text-shadow: 0 0 8px #ccc;
+        font-size: 18px !important;
+    }
+
+    .ctpc-member-list > span {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .add-member-opt {
+        cursor: pointer;
+        margin: 20px 10px;
+        width: 80px;
+    }
+
+    .add-member-opt > span {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .add-member-icon {
+        background: #36A8FF;
+        color: #fff;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        font-size: 20px;
+        line-height: 16px;
+        font-weight: bold;
+        border-radius: 50%;
+    }
+
+    .add-member-msg {
+        color: #36A8FF;
+        margin-left: 24px;
+        margin-top: -45px;
+    }
+
+    .ctpc-btns {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .ctpc-btns > input {
+        display: inline-block;
+        width: 80px;
+        height: 28px;
+        margin-left: 12px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .ctpc-cancel {
+        background: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .ctpc-cancel:hover {
+        background: #fff;
+        border: 1px solid #36A8FF;
+        color: #36A8FF;
+        font-weight: 700;
+    }
+
+    .ctpc-save {
+        background: #36A8FF;
+        color: #fff;
+    }
+
+    .add-member-basic {
+        background: #fff;
+        border: 1px solid #ccc;
+        margin-top: 10px;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .add-member-basic-menu {
+        width: 82px;
+        text-align: right;
+    }
+
+    .add-member-basic-list { /* border-bottom: 1px solid #ccc; */
+        padding: 5px 0;
+        line-height: 34px;
+    }
+
+    .add-member-basic-list:last-child {
+        border: none;
+    }
+
+    .add-member-basic-msg .el-select {
+        width: 140px;
+        margin-left: 10px;
+    }
+
+    .member-time-count {
+        width: 40px;
+        border: 1px solid #ccc;
+        height: 26px;
+        border-radius: 4px;
+        margin-right: 4px;
+        text-indent: 4px;
+    }
+
+    .add-member-basic-time {
+        margin-left: 40px;
+    }
+
+    .add-member-basic-msg .el-date-picker.el-input {
+        width: 300px;
+    }
+
+    .add-member-basic-msg {
+        margin-left: 10px;
+        margin-bottom: 10px;
+    }
+
+    .tag-add-sel .el-select {
+        width: 188px;
+    }
+
+    .ctpc-ins-edit .ctpc-btns {
+        margin-top: 0;
+    }
+
+    .ctpc-member-con {
+        padding-left: 10px; /* border-left: 1px solid #ccc; */
+        margin-left: 6px;
+        margin-top: 10px;
+        position: relative;
+    }
+
+    .ctpc-member-list {
+        height: 42px;
+        background: #fff;
+        border: 1px solid #ccc;
+        line-height: 42px;
+        color: #000;
+        padding: 0 4px;
+        position: relative;
+        margin-bottom: 10px;
+        box-shadow: 0 0 10px #ccc;
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+    }
+
+
+    .ctpc-member-list > span {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .ctpc-member-head {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #006699;
+        color: #fff;
+        font-size: 10px;
+        text-align: center;
+        line-height: 36px;
+        margin-top: 3px;
+        overflow: hidden;
+        margin-right: 10px;
+    }
+
+    .ctpc-member-job-time {
+        width: 110px;
+    }
+
+    .stepActive {
+        box-shadow: 0 0 10px #20A0FF !important;
+    }
+
+    .search-btn {
+        vertical-align: middle;
+        cursor: pointer;
+        margin-left: 100px;
+        margin-top: 5px;
+    }
+
+    .pagination .el-pagination {
+        text-align: right;
+        padding-right: 0;
+        margin-top: 20px;
+        margin-right: 10px;
+    }
+
+    .ctpc-con {
+        height: 240px;
+        overflow-y: scroll;
+        padding-right: 10px;
+    }
+
+    .ctpc-con::-webkit-scrollbar {
+        width: 10px;
+        background-color: #fff;
+    }
+
+    .ctpc-con::-webkit-scrollbar-thumb {
+        background-color: rgb(255, 255, 255);
+        background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(rgb(54, 168, 255)), color-stop(0.6, rgb(54, 229, 255)), to(rgb(54, 192, 255)));
+        border-radius: 10px;
+    }
+
+    .ctpc-con::-webkit-scrollbar-track {
+        /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1); */
+        background-color: #fff;
+        border-radius: 10px;
+    }
+
+    .steps {
+        display: inline;
+        flex-direction: column;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        background: #fff;
+    }
+
+    .card-title-con {
+        position: relative;
+        padding-left: 10px;
+        margin: 0 0 16px;
+        font-weight: normal;
+        line-height: 40px;
+        font-size: 16px;
+        border-bottom: 1px solid #eee;
+        color: #304156;
+    }
+
+    .task-span{
+        font-size: 18px;
+        width: 200px;
+        color: black;
+    }
+
+    .stats-con {
+        width: 1100px;
+        font-size: 14px;
+        background: #fff;
+        padding: 30px 0;
+        box-shadow: 0 0 10px #ccc;
+        margin: auto;
+        height: 500px;
+    }
+
+    .steps-body {
+        display: flex;
+        flex-direction: row;
+    }
+
+
+</style>
+

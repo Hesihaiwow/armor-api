@@ -9,7 +9,6 @@
                         <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
-                    <!--<span class="ttl-name">通知时间:</span>-->
                     <el-date-picker
                             v-model="beginTime"
                             align="right"
@@ -31,6 +30,7 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" size="small" @click="select">查询</el-button>
+                <el-button v-show="unreadNoticeNum > 0" type="primary" size="small" @click="readAll">标记全部已读</el-button>
                 <el-button v-show="userRole == 0" type="primary" size="small" @click="selectEveryoneNotice">查看所有人通知</el-button>
             </div>
         </div>
@@ -40,7 +40,6 @@
                     {{(reqDTO.pageNum-1)*10 + scope.$index + 1}}
                 </template>
             </el-table-column>
-            <!--<el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>-->
             <el-table-column property="content" label="内容" align="left">
                 <template scope="scope">
                         <span v-if="scope.row.status == 0" style="text-align: left">
@@ -171,8 +170,10 @@
         },
         created() {
             this.fetchUnreadNoticeNum()
-            this.fetchUnreadNotice()
             this.fetchAllNotice()
+        },
+        beforeMount(){
+            this.$root.eventBus.$emit("handleTabSelected", "notice");
         },
         methods:{
             showTaskDetails(taskId){
@@ -197,6 +198,7 @@
             fetchUnreadNoticeNum(){
                 Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
                     this.unreadNoticeNum = res.data.count
+                    window.localStorage.setItem("unreadNum",res.data.count)
                 })
             },
             //查询所有通知
@@ -239,6 +241,21 @@
                   this.reqDTO.readStatus = this.readStatus
               }
               this.fetchAllNotice()
+            },
+            //阅读全部
+            readAll(){
+                this.$confirm('此操作将标记全部已读?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    Http.zsyPutHttp(`/task/notification/read-all`, {}, (resp) => {
+                        this.$message({showClose: true, message: '标记成功', type: 'success'});
+                        this.fetchUnreadNoticeNum()
+                    })
+                    // window.history.go(0)
+                }).catch(() => {
+                });
             },
             selectEveryoneNotice(){
                 this.showEveryoneVisible = true

@@ -63,4 +63,11 @@ public interface IZSYNotificationMapper {
      * @return
      */
     Page<NotificationBO> selectEveryoneNotice(@Param("reqDTO")NoticeReqDTO reqDTO);
+
+    /**
+     * 阅读所有通知
+     * @param userId
+     * @return
+     */
+    int updateNoticeByUser(@Param("userId") Long userId,@Param("readTime") Date readTime);
 }

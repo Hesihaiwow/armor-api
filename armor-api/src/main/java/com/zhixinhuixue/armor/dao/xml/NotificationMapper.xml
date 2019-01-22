@@ -42,6 +42,11 @@
         UPDATE `notification` SET `status` = 1,`read_time` = #{readTime,jdbcType=TIMESTAMP} WHERE `nid` = #{nid}
     </update>
 
+    <!--读取所有通知-->
+    <update id="updateNoticeByUser">
+        UPDATE `notification` SET `status` = 1 ,`read_time` = #{readTime,jdbcType=TIMESTAMP} WHERE `user_id` = #{userId}
+    </update>
+
     <!--查询最近5条未读通知-->
     <select id="selectUnReadNotice" resultMap="basicMap">
         SELECT * FROM `notification` WHERE `user_id` = #{userId} and `status` = 0

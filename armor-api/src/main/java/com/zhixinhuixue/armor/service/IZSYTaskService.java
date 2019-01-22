@@ -270,5 +270,17 @@ public interface IZSYTaskService {
      */
     PageInfo<NoticeResDTO> getEveryoneNotice(NoticeReqDTO reqDTO);
 
+    /**
+     * 标记全部通知已读
+     */
+    void readAll();
+
+    /**
+     * 获取阶段下用户负责的任务
+     * @param stageId
+     * @return
+     */
+    List<TaskListResDTO> getMyTaskByStage(Long stageId);
+
     // -- sch
 }

@@ -18,12 +18,12 @@
         <div class="nav-top">
             <div class="el-tab-bar" style="width: 104px">
                 <el-tabs v-model="activeName" @tab-click="handleClick(activeName)" >
-                    <!--<el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">-->
-                        <!---->
-                        <!--<el-badge :value="12" class="item">111</el-badge>-->
-                        <!--</el-tab-pane>-->
+                    <!--<el-tab-pane :label="item.label" :name="item.name" :key="idx" v-for="(item,idx) in tabs">
+                        </el-tab-pane>-->
+
                     <el-tab-pane v-for="(item,idx) in tabs" :name="item.name" :key="idx">
-                        <span slot="label"><el-badge :value="item.value" class="item">{{item.label}}</el-badge></span>
+                        <span v-if="item.name == 'notice' && unreadNoticeNum > 0" slot="label">{{item.label}}<span style="color: red">({{unreadNoticeNum}})</span></span>
+                        <span v-else slot="label">{{item.label}}</span>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -187,13 +187,14 @@
     import Helper from "../lib/Helper";
     import Http from "../lib/Http";
     import IntegralHistory from './IntegralHistory'
-    import Stats from './Stats'
+    import Stats from './Stats2'
     import UploadAvatar from './UploadAvatar.vue'
     import Calculate from  './Calculate.vue'
     import Plan from './Plan.vue'
     import AlterInfo from './AlterInfo'
     import moment from 'moment';
     import Notice from './Notice'
+    import SummaryNav from './SummaryNav'
 
     export default {
         data() {
@@ -227,7 +228,11 @@
                     {
                         label: '通知',
                         name: 'notice'
-                    }
+                    },
+                    /*{
+                        label:'总结',
+                        name:'summaryNav'
+                    }*/
                 ],
                 showIndex: true,
                 showPerOpt: false,
@@ -285,19 +290,6 @@
                     {label: '较难', value: 4},
                     {label: '困难', value: 5},
                 ],
-
-                // unreadNoticeData:{
-                //     nid:'',
-                //     taskId:'',
-                //     userId:'',
-                //     content:'',
-                //     status:'',
-                //     createTime:'',
-                //     readTime:''
-                // },
-                // -- sch
-
-
             };
         },
         filters:{
@@ -313,12 +305,11 @@
         created() {
             this.fetchMyProfile();
             this.activeName = 'navIndex';
-            //this.$router.push(`/index/navIndex`);
             this.fetchUnreadNoticeNum()
-            // this.fetchUnreadNotice()
+            this.checkNotice()
         },
         mounted(){
-            // this.checkNotice()
+
         },
         beforeMount() {
             //监听子组件传过来的tab选中事件
@@ -341,6 +332,12 @@
                 this.tabs.push({
                     label: '组织',
                     name: 'organization'
+                });
+            }
+            if (Helper.decodeToken().userRole > 0){
+                this.tabs.push({
+                    label:'总结',
+                    name:'summaryNav'
                 });
             }
             if (Helper.decodeToken().departmentId == 0) {
@@ -367,6 +364,7 @@
                 /*tab切换*/
                 this.$router.push(`/index/${path}`);
                 this.fetchUnreadNoticeNum()
+                window.localStorage.removeItem("justMine")
             },
             showIndexEvent() {
                 // 显示首页
@@ -403,6 +401,7 @@
             fetchUnreadNoticeNum(){
                 Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
                     this.unreadNoticeNum = res.data.count
+                    window.localStorage.setItem("unreadNum",res.data.count)
                     this.tabs[6].value = this.unreadNoticeNum
 
                 })
@@ -478,9 +477,10 @@
             },
             //每5分钟定时检查当前用户是否由未读通知
             checkNotice(){
-              setInterval(() => {
-                  this.fetchUnreadNoticeNum()
-              },1000*5)
+                    setInterval(() => {
+                        this.unreadNoticeNum = window.localStorage.getItem("unreadNum")
+                        // console.log(this.unreadNoticeNum)
+                    },1000)
             },
             // -- sch
 
@@ -596,15 +596,16 @@
             Stats: Stats,
             UploadAvatar: UploadAvatar,
             AlterInfo:AlterInfo,
-            Notice:Notice
+            Notice:Notice,
+            SummaryNav:SummaryNav
         }
     }
 </script>
 <style>
-    .el-tabs__item{
+    /*.el-tabs__item{
         width: 100px;
         line-height: 32px;
-    }
+    }*/
 </style>
 <style scoped>
     .nav-top-bg {

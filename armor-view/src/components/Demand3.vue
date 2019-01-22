@@ -121,13 +121,6 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <!--<el-table-column label="状态" align="center" fixed="right">-->
-                        <!--<template scope="scope">-->
-                        <!--<div type="text" v-for="item in readStatuses" v-if="item.id == scope.row.readStatus">-->
-                        <!--{{item.name}}-->
-                        <!--</div>-->
-                        <!--</template>-->
-                        <!--</el-table-column>-->
                         <el-table-column label="操作" align="center" v-if="permit" width="150" fixed="right">
                             <template scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;"
@@ -1149,12 +1142,12 @@
             this.getDefaultSessionScreenData();
             this.fetchIntroducerList()
             this.fetchOriginList()
-            // this.fetchNewDemandList()
+            this.fetchNewDemandList()
             this.fetchUserList()
             this.fetchProjectList()
             this.fetchStageList()
             this.fetchTagList()
-            // this.$root.eventBus.$emit("handleTabSelected", "demand");
+            this.$root.eventBus.$emit("handleTabSelected", "demand");
 
         },
         computed: {
@@ -1181,10 +1174,7 @@
                 }
                 let screenData = JSON.parse(sessionStorage.screenData);
                 this.tabName = JSON.parse(sessionStorage.tabName);
-                // this.reqDTO = screenData;
-                // console.log(screenData.pageNum)
                 if (this.tabName == 'new') {
-                    // console.log(this.reqDTO,8888)
                     this.introducer = this.reqDTO.introducer;
                     this.pageNum0 = screenData.pageNum;
                     this.priority = this.reqDTO.priority;
@@ -1222,22 +1212,7 @@
                     this.origin2 = this.reqDTO.origin;
                     this.handleCurrentChange2();
                 }
-                // else if (this.tabName == 'joined') {
-                //     this.beginTime5 = this.reqDTO.beginTime2;
-                //     this.endTime5 = this.reqDTO.endTime2;
-                //     this.pageNum5 = screenData.pageNum;
-                //     this.chargeMan5 = this.reqDTO.chargeMan;
-                //     this.origin5 = this.reqDTO.origin;
-                //     this.handleCurrentChange5();
-                // }
             },
-            // setScreenData(type) {
-            //     this.priority = this.reqDTO.priority;
-            //     this.readStatus1 = this.reqDTO.readStatus;
-            //     this.type1 = this.reqDTO.type;
-            //     this.chargeMan1 = this.reqDTO.chargeMan;
-            //     this.origin1 = this.reqDTO.origin;
-            // },
 
             handleRemove1(file) {
                 this.demandForm.urlList.splice(this.demandForm.urlList.findIndex(item => item.indexOf(file.name) > -1), 1)
@@ -1361,16 +1336,6 @@
                     this.demandPage.total = res.data.total
                 })
             },
-
-            //查询我参与的需求
-            // fetchJoinedDemandList() {
-            //     console.log(this.pageNum5,89898)
-            //     this.reqDTO.pageNum = this.pageNum5
-            //     http.zsyPostHttp('/feedback/demand-joined/list', this.reqDTO, (res) => {
-            //         this.demandData = res.data.list;
-            //         this.demandPage.total = res.data.total
-            //     })
-            // },
 
             //取消添加任务
             cancelAddTask() {
@@ -1513,9 +1478,7 @@
                     return;
                 }
                 let param = this.feedbackPlanForm;
-                // if (this.project){
-                //     param.projectId = this.project
-                // }
+
                 param.expectOfficialTime = moment(param.expectOfficialTime).format('YYYY-MM-DD 23:59:59');
                 param.expectStartTime = moment(param.expectStartTime).format('YYYY-MM-DD 00:00:00');
                 param['planTask'] = this.planTask;
@@ -1693,12 +1656,6 @@
                 this.beginTime2 = null
                 this.endTime2 = null
             },
-            // clear5() {
-            //     this.introducer5 = null
-            //     this.chargeMan5 = null
-            //     this.beginTime5 = null
-            //     this.endTime5 = null
-            // },
 
             //导出新需求
             excel(){
@@ -1738,9 +1695,6 @@
                 if (this.priority != undefined && this.priority != null) {
                     this.reqDTO.priority = this.priority
                 }
-                // if (this.readStatus != undefined && this.priority != null) {
-                //     this.reqDTO.readStatus = this.readStatus
-                // }
                 if (this.origin) {
                     this.reqDTO.origin = this.origin
                 }
@@ -1846,28 +1800,6 @@
 
                 this.fetchCompletedDemandList()
             },
-
-            //查询我参与的需求
-            // select5() {
-            //     this.clearReqDTO()
-            //     this.reqDTO.pageNum = 1
-            //
-            //
-            //     if (this.origin5) {
-            //         this.reqDTO.origin = this.origin5
-            //     }
-            //     if (this.beginTime5) {
-            //         this.reqDTO.beginTime = moment(this.beginTime5).format('YYYY-MM-DD 00:00:00')
-            //     }
-            //     if (this.endTime5) {
-            //         this.reqDTO.endTime = moment(this.endTime5).format('YYYY-MM-DD 23:59:59')
-            //     }
-            //     if (this.chargeMan5) {
-            //         this.reqDTO.chargeMan = String(this.chargeMan5)
-            //     }
-            //
-            //     this.fetchJoinedDemandList()
-            // },
 
             //添加任务
             addTask() {
@@ -2031,11 +1963,6 @@
                 this.setSessionScreenData();
 
             },
-            // handleCurrentChange5(currentPage) {
-            //     console.log(this.pageNum5,4444)
-            //     this.fetchJoinedDemandList()
-            //     this.setSessionScreenData();
-            // },
 
             feedbackPageLayout() {
                 if (this.demandPage.total > 0) {
@@ -2066,11 +1993,6 @@
                     this.clearReqDTO()
                     this.fetchCompletedDemandList()
                 }
-                // else if (tab.name == 'joined') {
-                //     this.clear5()
-                //     this.clearReqDTO()
-                //     this.fetchJoinedDemandList()
-                // }
             },
         },
     }

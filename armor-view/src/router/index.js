@@ -9,12 +9,13 @@ import Intergral from '@/components/Intergral'
 import Organization from '@/components/Organization'
 import NavIndex from '@/components/NavIndex2'
 import IntegralHistory from '@/components/IntegralHistory'
-import Stats from '@/components/Stats'
+import Stats from '@/components/Stats2'
 import UserComments from '@/components/UserComments'
 import Calculate from '@/components/Calculate'
 import Plan from '@/components/Plan2'
 import demandDetail from '@/components/demandDetail'
 import Notice from '@/components/Notice'
+import SummaryNav from '@/components/SummaryNav'
 
 
 Vue.use(Router)
@@ -95,6 +96,10 @@ export default new Router({
                 {
                     path: 'notice',
                     component: Notice
+                },
+                {
+                    path:'summaryNav',
+                    component:SummaryNav
                 }
             ]
         }

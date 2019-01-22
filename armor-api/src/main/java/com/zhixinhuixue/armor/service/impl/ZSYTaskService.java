@@ -1268,12 +1268,11 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public List<TaskListResDTO> getTaskByStageId(Long stageId) {
         Stage stage = stageMapper.selectById(stageId);
-
         List<TaskListBO> taskListBOS = new ArrayList<>();
         if(stage.getName().equals("已发布")){
-            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
-        }else{
             taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+        }else{
+            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
         }
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
@@ -1299,9 +1298,6 @@ public class ZSYTaskService implements IZSYTaskService {
             }
 
         });
-        if (stageId.equals(212754785051344898L)){
-
-        }
         return list;
     }
 
@@ -1739,6 +1735,53 @@ public class ZSYTaskService implements IZSYTaskService {
         if (notificationMapper.updateNoticeById(nid,new Date()) == 0){
             throw new ZSYServiceException("读取通知失败");
         }
+    }
+
+    /**
+     * 标记全部通知已读
+     */
+    @Override
+    @Transactional
+    public void readAll() {
+        if(notificationMapper.updateNoticeByUser(ZSYTokenRequestContext.get().getUserId(),new Date()) == 0){
+
+        }
+    }
+
+    @Override
+    public List<TaskListResDTO> getMyTaskByStage(Long stageId) {
+        Stage stage = stageMapper.selectById(stageId);
+        List<TaskListBO> taskListBOS = new ArrayList<>();
+        if(stage.getName().equals("已发布")){
+            taskListBOS = taskMapper.selectMyTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getUserId());
+        }else{
+            taskListBOS = taskMapper.selectMyTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getUserId());
+        }
+        List<TaskListResDTO> list = new ArrayList<>();
+        BeanUtils.copyProperties(taskListBOS, list);
+        taskListBOS.stream().forEach(taskListBO -> {
+            if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stage.getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
+                TaskListResDTO taskListResDTO = new TaskListResDTO();
+                BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
+                List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
+                taskListBO.getTags().stream().forEach(tag -> {
+                    TaskTagResDTO taskTagResDTO = new TaskTagResDTO();
+                    taskTagResDTO.setColor(tag.getColor());
+                    taskTagResDTO.setName(tag.getName());
+                    taskTagResDTO.setColorValue(ZSYTagColor.getName(Integer.parseInt(tag.getColor())));
+                    taskTagResDTOS.add(taskTagResDTO);
+                });
+                if(stage.getName().indexOf("设计")!=-1 && taskListBO.getBeginTime()!=null){
+                    taskListResDTO.setEndTime(taskListBO.getBeginTime());
+                }else if(stage.getName().indexOf("开发")!=-1 && taskListBO.getTestTime()!=null){
+                    taskListResDTO.setEndTime(taskListBO.getTestTime());
+                }
+                taskListResDTO.setTags(taskTagResDTOS);
+                list.add(taskListResDTO);
+            }
+
+        });
+        return list;
     }
 
     /**

@@ -5,12 +5,14 @@ import App from './App'
 import router from './router'
 // element-ui
 import ElementUI from 'element-ui'
+import echarts  from 'echarts'
 import 'element-ui/lib/theme-default/index.css'
 // common css
 import './assets/css/base.css'
 import './assets/css/iconfont.css'
 
 Vue.use(ElementUI);
+Vue.prototype.$echarts = echarts;
 Vue.config.productionTip = false;
 
 import VueQuillEditor from 'vue-quill-editor'
