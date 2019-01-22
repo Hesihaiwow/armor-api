@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.dto.response.AnnualFeedbackInTypeResDTO;
 import com.zhixinhuixue.armor.model.dto.response.ProjectTaskResDTO;
@@ -117,4 +118,19 @@ public class ZSYDataController {
         PersonDataResDTO resDTO = zsyDataService.getPersonDataByUserId(reqDTO,userId);
         return ZSYResult.success().data(resDTO).build();
     }
+
+    @ApiOperation("查看个人请假情况")
+    @PostMapping("/annual/person-vacation")
+    public String getPersonVacation(@RequestBody PersonVacationReqDTO reqDTO){
+        List<PersonVacationResDTO> resDTO = zsyDataService.getPersonVacation(reqDTO);
+        return ZSYResult.success().data(resDTO).build();
+    }
+
+    @ApiOperation("个人年度每月请假情况")
+    @PostMapping("/annual/person-vacation/month")
+    public String getPersonEveryMonthVacation(@RequestBody YearReqDTO reqDTO){
+        EveryMonthVacationResDTO resDTO = zsyDataService.getPersonEveryMonthVacation(reqDTO);
+        return ZSYResult.success().data(resDTO).build();
+    }
+
 }

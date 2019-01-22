@@ -3,24 +3,30 @@ package com.zhixinhuixue.armor.service.impl;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDataMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.dto.response.AnnualFeedbackInTypeResDTO;
 import com.zhixinhuixue.armor.model.dto.response.ProjectTaskResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTotalHoursResDTO;
 import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
+import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import com.zhixinhuixue.armor.service.IZSYDataService;
 import com.zhixinhuixue.armor.source.enums.ZSYFeedbackType;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskPriority;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -38,6 +44,9 @@ public class ZSYDataService implements IZSYDataService {
 
     @Autowired
     private IZSYTaskMapper taskMapper;
+
+    @Autowired
+    private IZSYUserMapper userMapper;
 
     /**
      * 年度需求总数(学管端,其他)
@@ -266,6 +275,42 @@ public class ZSYDataService implements IZSYDataService {
 
 
     /**
+     * 个人年度每月请假情况
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public EveryMonthVacationResDTO getPersonEveryMonthVacation(YearReqDTO reqDTO) {
+        Date beginTime = getBeginTime(reqDTO);
+        Date endTime = getEndTime(reqDTO);
+        List<String> monthAndCountAndTimeList = dataMapper.getMonthAndCountAndTimeListByUser(beginTime,endTime,ZSYTokenRequestContext.get().getUserId());
+        Map<Integer,String> treeMap = new TreeMap<>();
+        List<Integer> counts = new ArrayList<>();
+        List<Float> times = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(monthAndCountAndTimeList)){
+            monthAndCountAndTimeList.stream().forEach(monthAndCountAndTime ->{
+                String[] split = monthAndCountAndTime.split("-");
+                treeMap.put(Integer.valueOf(split[0]),split[1]+"-"+split[2]);
+            });
+            for (int i = 1;i <= 12;i ++){
+                if (!treeMap.keySet().contains(i)){
+                    treeMap.put(i,0+"-"+0);
+                }
+            }
+            for (Map.Entry<Integer, String> entry : treeMap.entrySet()) {
+                String[] split = entry.getValue().split("-");
+                counts.add(Integer.valueOf(split[0]));
+                times.add(Float.valueOf(split[1]));
+            }
+        }
+        EveryMonthVacationResDTO resDTO = new EveryMonthVacationResDTO();
+        resDTO.setVacationCountList(counts);
+        resDTO.setVacationTimeList(times);
+        return resDTO;
+    }
+
+
+    /**
      * 年度每月需求总数
      * @param reqDTO
      * @return
@@ -322,6 +367,56 @@ public class ZSYDataService implements IZSYDataService {
         }
         return counts;
     }
+
+    /**
+     * 查看个人请假情况
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public List<PersonVacationResDTO> getPersonVacation(PersonVacationReqDTO reqDTO) {
+        Date beginTime = null;
+        Date endTime = null;
+        if (reqDTO.getBeginTime() != null){
+            beginTime = reqDTO.getBeginTime();
+        }
+        if (reqDTO.getEndTime() != null){
+            endTime = reqDTO.getEndTime();
+        }
+        List<Long> userIds = dataMapper.selectUserIds(beginTime,endTime);
+        List<PersonVacationResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userIds)){
+            for (Long userId : userIds) {
+                PersonVacationResDTO personVacationResDTO = new PersonVacationResDTO();
+                User user = userMapper.selectById(userId);
+                personVacationResDTO.setUserId(userId);
+                personVacationResDTO.setUserName(user.getName());
+                List<UserLeave> userLeaves = dataMapper.selectUserLeaveById(beginTime,endTime,userId);
+                List<String> remarkList = new ArrayList<>();
+                BigDecimal vacationTime = BigDecimal.ZERO;
+                if (!CollectionUtils.isEmpty(userLeaves)){
+                    for (UserLeave userLeave : userLeaves) {
+                        BigDecimal hours = userLeave.getHours();
+                        vacationTime = vacationTime.add(hours);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+                        String begin = sdf.format(userLeave.getBeginTime());
+                        String end = sdf.format(userLeave.getEndTime());
+                        String remark ="( " + begin + " 至 " + end + "; 原因: " + userLeave.getDescription() + "; 时长: " + userLeave.getHours() + " 小时 )";
+                        remarkList.add(remark);
+                    }
+                    String str1 = remarkList.toString().replace("[", "");
+                    String str2 = str1.replace("]", "");
+                    personVacationResDTO.setRemarkList(str2);
+                    personVacationResDTO.setVacationNum(userLeaves.size());
+                    personVacationResDTO.setVacationTime(vacationTime);
+                }
+                list.add(personVacationResDTO);
+            }
+
+        }
+        return list;
+    }
+
 
     /**
      * 年度个人数据

@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.service;
 
+import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.dto.response.AnnualFeedbackInTypeResDTO;
 import com.zhixinhuixue.armor.model.dto.response.ProjectTaskResDTO;
@@ -114,4 +115,18 @@ public interface IZSYDataService {
      * @return
      */
     List<Integer> getEveryMonthTask(YearReqDTO reqDTO);
+
+    /**
+     * 查看个人请假情况
+     * @param reqDTO
+     * @return
+     */
+    List<PersonVacationResDTO> getPersonVacation(PersonVacationReqDTO reqDTO);
+
+    /**
+     * 个人年度每月请假情况
+     * @param reqDTO
+     * @return
+     */
+    EveryMonthVacationResDTO getPersonEveryMonthVacation(YearReqDTO reqDTO);
 }

@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -217,4 +218,28 @@ public interface IZSYDataMapper {
      * @return
      */
     List<String> selectMonthAndTaskCountList(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
+     * 查询请假人员id
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<Long> selectUserIds(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
+     * 根据userId查询请假情况
+     * @param userId
+     * @return
+     */
+    List<UserLeave> selectUserLeaveById(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("userId") Long userId);
+
+    /**
+     * 查询个人年度每个月请假情况
+     * @param beginTime
+     * @param endTime
+     * @param userId
+     * @return
+     */
+    List<String> getMonthAndCountAndTimeListByUser(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("userId") Long userId);
 }

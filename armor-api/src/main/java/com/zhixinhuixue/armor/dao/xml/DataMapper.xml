@@ -2,6 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYDataMapper">
 
+    <resultMap id="UserLeaveMap" type="com.zhixinhuixue.armor.model.pojo.UserLeave">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="hours" jdbcType="DECIMAL" property="hours" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="review_status" jdbcType="INTEGER" property="reviewStatus" />
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+    </resultMap>
+    <sql id="Base_Column_List">
+      id, description, hours, type, review_status, begin_time, end_time, create_time, user_id
+    </sql>
+
     <resultMap id="maxOrMinMap" type="com.zhixinhuixue.armor.model.bo.FeedbackMonthBO">
         <result column="feedback_num" property="feedbackNum" jdbcType="INTEGER"></result>
         <result column="month" property="month" jdbcType="INTEGER"></result>
@@ -153,16 +168,16 @@
     <!--年度请假总时长-->
     <select id="selectVacationTime" resultType="java.lang.Float">
         select sum(hours) from `user_leave` where review_status = 3
-        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
-        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
 
     <!--查询请假 月份-次数-时长  集合-->
     <select id="getMonthAndCountAndTimeList" resultType="java.lang.String">
-        select concat(MONTH(create_time),'-',COUNT(id),'-',SUM(hours)) from `user_leave` where review_status = 3
-        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
-        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
-        group by MONTH(create_time)
+        select concat(MONTH(begin_time),'-',COUNT(id),'-',SUM(hours)) from `user_leave` where review_status = 3
+        <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by MONTH(begin_time)
     </select>
 
     <!--查询个人年度完成任务-->
@@ -241,5 +256,35 @@
         <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         group by MONTH(complete_time)
+    </select>
+
+    <!--查询请假人员id-->
+    <select id="selectUserIds" resultType="java.lang.Long">
+        select distinct `user_id` from `user_leave` where `review_status` = 3
+        <if test="beginTime != null">
+            <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+    </select>
+
+    <!--根据userId查询请假情况-->
+    <select id="selectUserLeaveById" resultMap="UserLeaveMap">
+        select <include refid="Base_Column_List"/> from `user_leave` where `user_id` = #{userId}
+        <if test="beginTime != null">
+            <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+    </select>
+
+    <!--查询个人年度每个月请假情况-->
+    <select id="getMonthAndCountAndTimeListByUser" resultType="java.lang.String">
+        select concat(MONTH(begin_time),'-',COUNT(id),'-',SUM(hours)) from `user_leave` where review_status = 3 and `user_id` = #{userId}
+        <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        group by MONTH(begin_time)
     </select>
 </mapper>
