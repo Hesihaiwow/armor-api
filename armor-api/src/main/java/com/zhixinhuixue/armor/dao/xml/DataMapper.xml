@@ -260,12 +260,14 @@
 
     <!--查询请假人员id-->
     <select id="selectUserIds" resultType="java.lang.Long">
-        select distinct `user_id` from `user_leave` where `review_status` = 3
+        select distinct `user_id` from `user_leave` ul
+        left join `user` u on ul.user_id = u.id
+        where ul.`review_status` = 3 and u.is_delete = 0 and u.status = 0
         <if test="beginTime != null">
-            <![CDATA[  and begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+            <![CDATA[  and ul.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         </if>
         <if test="endTime != null">
-            <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+            <![CDATA[  and ul.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         </if>
     </select>
 
