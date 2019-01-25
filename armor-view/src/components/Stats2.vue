@@ -82,7 +82,9 @@
                 </div>
                 <el-table :data="bugPage" border>
                     <el-table-column type="index" label="序号" align="center" width="80">
-
+                        <template scope="scope">
+                            {{(bugReqDTO.pageNum-1)*10 + scope.$index + 1}}
+                        </template>
                     </el-table-column>
                     <el-table-column prop="origin" label="反馈人" align="center"></el-table-column>
                     <el-table-column prop="createTime" label="反馈日期"  width="130">
