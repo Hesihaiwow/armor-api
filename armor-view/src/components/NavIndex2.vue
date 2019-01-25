@@ -1,7 +1,7 @@
 <template>
     <div class="nav-index-con">
         <div class="my-integral-con" v-show="userRole>0">
-            <a class="mic-title" @click="toMySummary" style="cursor: pointer">我得年度总结</a>
+            <!--<a class="mic-title" @click="toMySummary" style="cursor: pointer">我得年度总结</a>-->
             <div><p class="mic-title">我的积分</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 570px;font-size: 14px"
                      @click="integralBasicVisible=true">
