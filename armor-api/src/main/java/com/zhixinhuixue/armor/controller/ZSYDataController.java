@@ -133,4 +133,11 @@ public class ZSYDataController {
         return ZSYResult.success().data(resDTO).build();
     }
 
+    @ApiOperation("年度已完成任务总耗时(设计,产品,开发,测试)")
+    @PostMapping("/annual/diff-stage/task-time")
+    public String getDiffStageTaskTime(@RequestBody YearReqDTO reqDTO){
+        DiffStageTaskTimeResDTO resDTO = zsyDataService.getDiffStageTaskTime(reqDTO);
+        return ZSYResult.success().data(resDTO).build();
+    }
+
 }

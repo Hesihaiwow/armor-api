@@ -127,6 +127,15 @@
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
 
+    <!--查询年度完成任务总时长-->
+    <select id="selectTaskTotalTime" resultType="java.lang.Float">
+        select sum(tu.task_hours) from task_user tu
+        left join task t on tu.task_id = t.id
+        where t.is_delete = 0 and t.review_status = 3 and t.status in (2,3)
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
     <!--年度耗时最长任务id-->
     <select id="selectMostTimeTaskId" resultType="java.lang.Long">
         select tu.task_id from task_user tu
@@ -289,4 +298,13 @@
         <![CDATA[  and begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         group by MONTH(begin_time)
     </select>
+
+    <!--查询年度完成总任务数-->
+    <select id="selectTotalTaskNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `task` where is_delete = 0 and review_status = 3 and status in (2,3)
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+
 </mapper>

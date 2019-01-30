@@ -129,4 +129,11 @@ public interface IZSYDataService {
      * @return
      */
     EveryMonthVacationResDTO getPersonEveryMonthVacation(YearReqDTO reqDTO);
+
+    /**
+     * 年度已完成任务总耗时(设计,产品,开发,测试)
+     * @param reqDTO
+     * @return
+     */
+    DiffStageTaskTimeResDTO getDiffStageTaskTime(YearReqDTO reqDTO);
 }

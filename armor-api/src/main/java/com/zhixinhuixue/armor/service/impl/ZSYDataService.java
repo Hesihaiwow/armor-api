@@ -309,6 +309,20 @@ public class ZSYDataService implements IZSYDataService {
         return resDTO;
     }
 
+    /**
+     * 年度已完成任务总耗时(设计,产品,开发,测试)
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public DiffStageTaskTimeResDTO getDiffStageTaskTime(YearReqDTO reqDTO) {
+        Date beginTime = getBeginTime(reqDTO);
+        Date endTime = getEndTime(reqDTO);
+        Integer totalTaskNum = dataMapper.selectTotalTaskNum(beginTime,endTime);
+        Float taskTotalTime = dataMapper.selectTaskTotalTime(beginTime,endTime);
+        return null;
+    }
+
 
     /**
      * 年度每月需求总数

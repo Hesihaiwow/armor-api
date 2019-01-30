@@ -242,4 +242,20 @@ public interface IZSYDataMapper {
      * @return
      */
     List<String> getMonthAndCountAndTimeListByUser(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("userId") Long userId);
+
+    /**
+     * 查询年度完成总任务数
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    Integer selectTotalTaskNum(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
+     * 查询年度完成任务总时长
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    Float selectTaskTotalTime(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 }
