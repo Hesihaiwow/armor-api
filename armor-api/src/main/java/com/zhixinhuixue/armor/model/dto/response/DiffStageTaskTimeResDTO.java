@@ -38,6 +38,26 @@ public class DiffStageTaskTimeResDTO {
     private Float testTime;
 
     /**
+     * 参与设计的任务数
+     */
+    private Integer designTaskNum;
+
+    /**
+     * 参与产品的任务数
+     */
+    private Integer productTaskNum;
+
+    /**
+     * 参与开发的任务数
+     */
+    private Integer developTaskNum;
+
+    /**
+     * 参与测试的任务数
+     */
+    private Integer testTaskNum;
+
+    /**
      * 有设计阶段任务平均耗时
      */
     private Float avgDesignTime;
@@ -56,6 +76,38 @@ public class DiffStageTaskTimeResDTO {
      * 有测试阶段任务平均耗时
      */
     private Float avgTestTime;
+
+    public Integer getDesignTaskNum() {
+        return designTaskNum;
+    }
+
+    public void setDesignTaskNum(Integer designTaskNum) {
+        this.designTaskNum = designTaskNum;
+    }
+
+    public Integer getProductTaskNum() {
+        return productTaskNum;
+    }
+
+    public void setProductTaskNum(Integer productTaskNum) {
+        this.productTaskNum = productTaskNum;
+    }
+
+    public Integer getDevelopTaskNum() {
+        return developTaskNum;
+    }
+
+    public void setDevelopTaskNum(Integer developTaskNum) {
+        this.developTaskNum = developTaskNum;
+    }
+
+    public Integer getTestTaskNum() {
+        return testTaskNum;
+    }
+
+    public void setTestTaskNum(Integer testTaskNum) {
+        this.testTaskNum = testTaskNum;
+    }
 
     public Integer getTaskNum() {
         return taskNum;

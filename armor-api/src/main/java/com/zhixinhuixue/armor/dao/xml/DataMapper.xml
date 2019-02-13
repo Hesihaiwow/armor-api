@@ -38,6 +38,29 @@
         <result column="vacation_time" property="vacationTime" jdbcType="FLOAT"></result>
     </resultMap>
 
+    <resultMap id="taskMap" type="com.zhixinhuixue.armor.model.pojo.Task">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+        <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+        <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
+        <result column="test_time" jdbcType="TIMESTAMP" property="testTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="review_status" jdbcType="INTEGER" property="reviewStatus"/>
+        <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="facility" jdbcType="INTEGER" property="facility"/>
+        <result column="examine" jdbcType="INTEGER" property="examine"/>
+    </resultMap>
+
     <!--查询年度需求  来自学管端-->
     <select id="selectAnnualFeedbackFromCoach" resultType="java.lang.Integer">
         select count(1) from feedback where is_delete = 0 and coach_id > 0
@@ -131,7 +154,7 @@
     <select id="selectTaskTotalTime" resultType="java.lang.Float">
         select sum(tu.task_hours) from task_user tu
         left join task t on tu.task_id = t.id
-        where t.is_delete = 0 and t.review_status = 3 and t.status in (2,3)
+        where t.is_delete = 0 and t.review_status = 3 and t.status in (2,3) and t.type = 2
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
     </select>
@@ -301,9 +324,44 @@
 
     <!--查询年度完成总任务数-->
     <select id="selectTotalTaskNum" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM `task` where is_delete = 0 and review_status = 3 and status in (2,3)
+        SELECT COUNT(*) FROM `task` where is_delete = 0 and review_status = 3 and status in (2,3) and `type` = 2
         <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+    </select>
+
+    <!--阶段总耗时-->
+    <select id="selectDiffStageTime" resultType="java.lang.Float">
+        select ifnull(sum(task_hours),0) from `task_user` tu
+        left join `task` t on tu.task_id = t.id
+        where tu.`user_id` in
+        (select `id` from `user` where `job_role` = #{jobRole})
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        and t.is_delete = 0 and t.review_status = 3 and t.status in (2,3) and t.type = 2
+    </select>
+
+    <!--各阶段参与的任务数量-->
+    <select id="selectDiffStageTaskNum" resultType="java.lang.Integer">
+        SELECT ifnull(count(*),0) from (SELECT DISTINCT tu.task_id FROM task_user tu LEFT JOIN user u on tu.user_id = u.id
+        WHERE u.job_role = #{jobRole}
+        AND tu.task_id in (SELECT id FROM `task` where is_delete = 0 and review_status = 3 and status in (2,3) and `type` = 2
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]> )) tt
+    </select>
+
+    <!--年度已完成多人任务耗时最多的前10个-->
+    <select id="selectTop10Task" resultType="java.lang.Long">
+        SELECT tu.task_id FROM task_user tu
+        LEFT JOIN task t on tu.task_id = t.id
+        WHERE t.is_delete = 0 and t.review_status = 3 and t.status in (2,3) and t.`type` = 2
+        <![CDATA[  and t.create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and t.create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        GROUP BY tu.task_id ORDER BY sum(tu.task_hours) desc LIMIT 10
+    </select>
+
+    <!--单个任务总耗时-->
+    <select id="selectTaskHoursById" resultType="java.lang.Float">
+        select ifnull(sum(task_hours),0) from `task_user` where `task_id` = #{taskId}
     </select>
 
 

@@ -140,4 +140,18 @@ public class ZSYDataController {
         return ZSYResult.success().data(resDTO).build();
     }
 
+    @ApiOperation("年度已完成多人任务耗时最多的前10个")
+    @PostMapping("/annual/most-time-task/top10")
+    public String getTop10MostTimeTask(@RequestBody YearReqDTO reqDTO){
+        AnnualTop10Task resDTO = zsyDataService.getTop10MostTimeTask(reqDTO);
+        return ZSYResult.success().data(resDTO).build();
+    }
+
+    @ApiOperation("单个任务总耗时")
+    @GetMapping("/annual/task/time/{taskId}")
+    public String getTaskTime(@PathVariable("taskId")Long taskId){
+        TaskTimeResDTO resDTO = zsyDataService.getTaskTime(taskId);
+        return ZSYResult.success().data(resDTO).build();
+    }
+
 }

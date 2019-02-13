@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import org.apache.ibatis.annotations.Param;
 
@@ -244,7 +245,7 @@ public interface IZSYDataMapper {
     List<String> getMonthAndCountAndTimeListByUser(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("userId") Long userId);
 
     /**
-     * 查询年度完成总任务数
+     * 查询年度完成总多人任务数
      * @param beginTime
      * @param endTime
      * @return
@@ -252,10 +253,42 @@ public interface IZSYDataMapper {
     Integer selectTotalTaskNum(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     /**
-     * 查询年度完成任务总时长
+     * 查询年度完成多人任务总时长
      * @param beginTime
      * @param endTime
      * @return
      */
     Float selectTaskTotalTime(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
+     * 各阶段总耗时
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    Float selectDiffStageTime(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("jobRole")Integer jobRole);
+
+    /**
+     * 各阶段参与的任务数量
+     * @param beginTime
+     * @param endTime
+     * @param jobRole
+     * @return
+     */
+    Integer selectDiffStageTaskNum(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("jobRole")Integer jobRole);
+
+    /**
+     * 年度已完成多人任务耗时最多的前10个
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<Long> selectTop10Task(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
+     * 单个任务总耗时
+     * @param taskId
+     * @return
+     */
+    Float selectTaskHoursById(@Param("taskId") Long taskId);
 }

@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYJobRole {
 
-    TEST(0, "测试"), PROGRAMER(1, "开发"),DESIGN(2, "设计");
+    TEST(0, "测试"), PROGRAMER(1, "开发"),DESIGN(2, "设计"),PRODUCT(3,"产品"),OTHER(4,"其他");
 
     private int value;
     private String name;

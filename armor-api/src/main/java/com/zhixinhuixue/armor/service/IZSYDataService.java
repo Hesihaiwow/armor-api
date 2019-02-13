@@ -136,4 +136,18 @@ public interface IZSYDataService {
      * @return
      */
     DiffStageTaskTimeResDTO getDiffStageTaskTime(YearReqDTO reqDTO);
+
+    /**
+     * 年度已完成多人任务耗时最多的前10个
+     * @param reqDTO
+     * @return
+     */
+    AnnualTop10Task getTop10MostTimeTask(YearReqDTO reqDTO);
+
+    /**
+     * 单个任务总耗时
+     * @param taskId
+     * @return
+     */
+    TaskTimeResDTO getTaskTime(Long taskId);
 }

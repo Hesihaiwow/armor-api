@@ -17,7 +17,9 @@ import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import com.zhixinhuixue.armor.service.IZSYDataService;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYFeedbackType;
+import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskPriority;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import io.swagger.models.auth.In;
@@ -320,7 +322,89 @@ public class ZSYDataService implements IZSYDataService {
         Date endTime = getEndTime(reqDTO);
         Integer totalTaskNum = dataMapper.selectTotalTaskNum(beginTime,endTime);
         Float taskTotalTime = dataMapper.selectTaskTotalTime(beginTime,endTime);
-        return null;
+        //设计阶段总耗时
+        Float designTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.DESIGN.getValue());
+        //产品阶段总耗时
+        Float productTime = dataMapper.selectDiffStageTime(beginTime,endTime, ZSYJobRole.PRODUCT.getValue());
+        //开发阶段总耗时
+        Float developTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.PROGRAMER.getValue());
+        //测试阶段总耗时
+        Float testTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.TEST.getValue());
+
+        //参与设计的任务数量
+        Integer designTaskNum = dataMapper.selectDiffStageTaskNum(beginTime,endTime,ZSYJobRole.DESIGN.getValue());
+        //参与产品的任务数量
+        Integer productTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.PRODUCT.getValue());
+        //参与开发的任务数量
+        Integer developTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.PROGRAMER.getValue());
+        //参与测试的任务数量
+        Integer testTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.TEST.getValue());
+
+        DiffStageTaskTimeResDTO resDTO = new DiffStageTaskTimeResDTO();
+        resDTO.setTaskNum(totalTaskNum);
+        resDTO.setTotalTaskTime(taskTotalTime);
+        resDTO.setDesignTime(designTime);
+        resDTO.setProductTime(productTime);
+        resDTO.setDevelopTime(developTime);
+        resDTO.setTestTime(testTime);
+        resDTO.setDesignTaskNum(designTaskNum);
+        resDTO.setProductTaskNum(productTaskNum);
+        resDTO.setDevelopTaskNum(developTaskNum);
+        resDTO.setTestTaskNum(testTaskNum);
+        if (designTime != null && designTaskNum != null && designTime != 0 && designTaskNum != 0){
+            resDTO.setAvgDesignTime(new BigDecimal(designTime/designTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
+        }else {
+            resDTO.setAvgDesignTime(0f);
+        }
+        if (productTime != null && productTime != 0 && productTaskNum != null && productTaskNum != 0){
+            resDTO.setAvgProductTime(new BigDecimal(productTime/productTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
+        }else {
+            resDTO.setAvgProductTime(0f);
+        }
+        if (developTime != null && developTime != 0 && developTaskNum != null && developTaskNum != 0){
+            resDTO.setAvgDevelopTime(new BigDecimal(developTime/developTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
+        }else {
+            resDTO.setAvgDevelopTime(0f);
+        }
+        if (testTime != null && testTime != 0 && testTaskNum != null && testTaskNum != 0){
+            resDTO.setAvgTestTime(new BigDecimal(testTime/testTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
+        }else {
+            resDTO.setAvgTestTime(0f);
+        }
+        return resDTO;
+    }
+
+    /**
+     * 年度已完成多人任务耗时最多的前10个
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public AnnualTop10Task getTop10MostTimeTask(YearReqDTO reqDTO) {
+        Date beginTime = getBeginTime(reqDTO);
+        Date endTime = getEndTime(reqDTO);
+        List<Task> taskList = new ArrayList<>();
+        AnnualTop10Task annualTop10Task = new AnnualTop10Task();
+        List<Long> taskIds = dataMapper.selectTop10Task(beginTime,endTime);
+        taskIds.stream().forEach(taskId->{
+            Task task = taskMapper.selectByPrimaryKey(taskId);
+            taskList.add(task);
+        });
+        annualTop10Task.setTaskList(taskList);
+        return annualTop10Task;
+    }
+
+    /**
+     * 单个任务总耗时
+     * @param taskId
+     * @return
+     */
+    @Override
+    public TaskTimeResDTO getTaskTime(Long taskId) {
+        Float taskHours = dataMapper.selectTaskHoursById(taskId);
+        TaskTimeResDTO resDTO = new TaskTimeResDTO();
+        resDTO.setTaskHours(taskHours);
+        return resDTO;
     }
 
 
