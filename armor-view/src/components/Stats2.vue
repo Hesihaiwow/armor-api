@@ -254,6 +254,30 @@
                         </div>-->
                     </div>
                 </div>
+                <div class="stats-con">
+                    <div class="steps" style="width: 1000px">
+                        <div class="card-title-con" style="font-size: 20px;margin-top: -30px;">
+                            年度多人任务耗时统计
+                            <el-date-picker
+                                    style="margin-left: 20px"
+                                    v-model="whichYear7"
+                                    align="right"
+                                    type="year"
+                                    placeholder="选择年">
+                            </el-date-picker>
+                            <el-button type="primary" @click="selectTaskTimeByYear">查询</el-button>
+                        </div>
+                        <div class="steps-body">
+                            <div id="myChart7" :style="{width:'600px',height:'400px',left:'40px',float:'left',marginTop:'30px'}"></div>
+                            <div style="width: 300px;margin-top: 100px;margin-left: 100px">
+                                <div style="font-size: 16px;margin-bottom: 20px;color: black">最耗时的任务Top10</div>
+                                <ol v-for="task in top10TaskList">
+                                    <a style="cursor: pointer;text-decoration: underline" @click="fetchTaskDetail(task.id)"><li>{{task.name}}</li></a>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </el-tab-pane>
             <el-tab-pane label="个人请假统计" name="personalLeave" v-if="admin">
                 <span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">请假时间:</span>
@@ -445,6 +469,32 @@
 
         </el-dialog>
 
+        <el-dialog
+                title="任务详情"
+                top="10%"
+                :visible.sync="showTaskVisible"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                custom-class="myDialog"
+                size="tiny">
+            <el-form>
+                <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <!--<el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>-->
+                <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item class="task-form"  label="优先级："><span v-for="item in priorityList"
+                                                                    v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                </el-form-item>
+                <el-form-item class="task-form" label="开始时间：">{{taskDetail.createTime | formatDate2}}</el-form-item>
+                <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate2}}</el-form-item>
+                <el-form-item class="task-form" label="完成时间：">{{taskDetail.completeTime | formatDate2}}</el-form-item>
+                <el-form-item label="任务总时长" >{{taskTotalTime}}小时</el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="toTask(taskDetail.id)">跳转到任务</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
@@ -572,6 +622,7 @@
                 whichYear2:'2018',
                 whichYear4:'2018',
                 whichYear5:'2018',
+                whichYear7:'2018',
                 taskReqDTO:{
                     whichYear:'2018'
                 },
@@ -579,6 +630,9 @@
                     whichYear:'2018'
                 },
                 taskMonthReqDTO:{
+                    whichYear:'2018'
+                },
+                taskTimeReqDTO:{
                     whichYear:'2018'
                 },
                 taskData1:[],
@@ -616,7 +670,36 @@
                 personVacationReqDTO:{
                     beginTime:null,
                     endTime:null
-                }
+                },
+                taskTimeData:{
+                    taskNum:0,
+                    totalTaskTime:0,
+                    designTime:0,
+                    productTime:0,
+                    developTime:0,
+                    testTime:0,
+                    designTaskNum:0,
+                    productTaskNum:0,
+                    developTaskNum:0,
+                    testTaskNum:0,
+                    avgDesignTime:0,
+                    avgProductTime:0,
+                    avgDevelopTime:0,
+                    avgTestTime:0
+                },
+                diffStageTime:[],
+                diffStageAvgTime:[],
+                top10TaskList:[],
+                showTaskVisible:false,
+                taskDetail:{},
+                priorityList: [
+                    {label: '普通', value: 0},
+                    {label: '紧急', value: 1},
+                    {label: '非常紧急', value: 2},
+                ],
+                taskTotalTime:0
+
+
 
                 // -- sch
             }
@@ -638,6 +721,8 @@
             this.fetchAnnualVacation();
             this.fetchAnnualFeedback();
             this.fetchPersonVacation();
+            this.fetchDiffStageTaskTime();
+            this.fetchTop10MostTimeTask();
         },
         computed: {
             permit() {
@@ -666,6 +751,10 @@
             formatDate: function (value) {
                 if (!value) return '';
                 return moment(value).format('YYYY年MM月DD日 HH:00:00');
+            },
+            formatDate2: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY-MM-DD');
             },
         },
         methods: {
@@ -1256,6 +1345,70 @@
                     ]
                 });
             },
+            drawLine7(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart7'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '各个阶段任务时长',
+                        x:'center',
+                        subtext:'任务总耗时: ' + this.taskTimeData.totalTaskTime,
+                        subtextStyle:{
+                            fontSize: 16
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        left: 'left',
+                        data: ['总耗时', '平均耗时']
+                    },
+                    xAxis: {
+                        data: ["设计","产品","开发","测试"]
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: '总耗时',
+                            min: 0,
+                            splitLine:{
+                                show:false
+                            },
+                        },
+                        {
+                            type: 'value',
+                            name: '平均耗时',
+                            min: 0,
+                            interval: 5,
+                            axisLabel: {
+                                formatter: '{value} h'
+                            },
+                            splitLine:{
+                                show:false
+                            },
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '总耗时',
+                            type: 'bar',
+                            barGap: 0,
+                            data: this.diffStageTime
+                        },
+                        {
+                            name: '平均耗时',
+                            type: 'bar',
+                            data: this.diffStageAvgTime,
+                            yAxisIndex:1
+                        }
+                    ]
+                });
+            },
             selectTaskByYear(){
                 if(this.whichYear1){
                     this.taskReqDTO.whichYear = moment(this.whichYear1).format("YYYY-MM-DD")
@@ -1267,6 +1420,19 @@
                 this.projectTaskNum = 0;
                 this.fetchAnnualProjectTaskNum();
                 this.fetchAnnualTaskByPriority()
+            },
+            selectTaskTimeByYear(){
+              if (this.whichYear7){
+                  this.taskTimeReqDTO.whichYear = moment(this.whichYear7).format("YYYY-MM-DD")
+                  this.taskTimeReqDTO.whichYear = this.taskTimeReqDTO.whichYear.substring(0,4)
+                  // this.taskTimeData = {};
+                  this.taskTimeData.totalTaskTime = 0;
+                  this.diffStageTime = [];
+                  this.diffStageAvgTime = [];
+                  this.top10TaskList = [];
+                  this.fetchDiffStageTaskTime();
+                  this.fetchTop10MostTimeTask();
+              }
             },
             selectTaskByYear4(){
                 if(this.whichYear4){
@@ -1396,19 +1562,19 @@
                     Http.zsyPostHttp('data/annual/task/priority',this.taskReqDTO,(res)=>{
                         if (res){
                             this.priorityTask = res.data
-
-                            const tData = {};
-                            tData.value = this.priorityTask.normalNum;
-                            tData.name = '普通';
-                            this.taskData1.push(tData);
-                            const tData2 = {};
-                            tData2.value = this.priorityTask.urgentNum;
-                            tData2.name = '紧急';
-                            this.taskData1.push(tData2);
                             const tData3 = {};
                             tData3.value = this.priorityTask.veryUrgentNum;
                             tData3.name = '非常紧急';
                             this.taskData1.push(tData3);
+
+                            const tData2 = {};
+                            tData2.value = this.priorityTask.urgentNum;
+                            tData2.name = '紧急';
+                            this.taskData1.push(tData2);
+                            const tData = {};
+                            tData.value = this.priorityTask.normalNum;
+                            tData.name = '普通';
+                            this.taskData1.push(tData);
                             this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum
                             this.drawLine1()
                         }
@@ -1436,7 +1602,63 @@
                     this.personVacationReqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
                 }
                 this.fetchPersonVacation()
-            }
+            },
+
+            //查询年度已完成任务总耗时(设计,产品,开发,测试)
+            fetchDiffStageTaskTime(){
+                Http.zsyPostHttp('/data/annual/diff-stage/task-time',this.taskTimeReqDTO,(res)=>{
+                    if (res){
+                        this.taskTimeData = res.data;
+                        this.taskTimeData.totalTaskTime = res.data.totalTaskTime;
+                        this.diffStageTime.push(res.data.designTime);
+                        this.diffStageTime.push(res.data.productTime);
+                        this.diffStageTime.push(res.data.developTime);
+                        this.diffStageTime.push(res.data.testTime);
+
+                        this.diffStageAvgTime.push(res.data.avgDesignTime);
+                        this.diffStageAvgTime.push(res.data.avgProductTime);
+                        this.diffStageAvgTime.push(res.data.avgDevelopTime);
+                        this.diffStageAvgTime.push(res.data.avgTestTime);
+                        this.drawLine7()
+                    }
+                })
+            },
+
+            //查询耗时前十名的多人任务
+            fetchTop10MostTimeTask(){
+                Http.zsyPostHttp('/data/annual/most-time-task/top10',this.taskTimeReqDTO,(res)=>{
+                    if (res){
+                        this.top10TaskList = res.data.taskList;
+                    }
+                })
+            },
+
+            //查询任务总耗时
+            fetchTaskTotalTime(taskId){
+              Http.zsyGetHttp(`/data/annual/task/time/${taskId}`,{},(res)=>{
+                  if (res){
+                      this.taskTotalTime = res.data.taskHours;
+                  }
+              })
+            },
+
+            //跳转到任务
+            toTask(taskId){
+                if (taskId != null && taskId != '') {
+                    this.$router.push({name: 'taskListFormComments', params: {taskId: taskId}})
+                }
+            },
+
+            //查询任务详情
+            fetchTaskDetail(id){
+                Http.zsyGetHttp(`/task/detail/${id}`, {},(res)=>{
+                    if (res){
+                        this.taskDetail = res.data;
+                        this.fetchTaskTotalTime(id);
+                        this.showTaskVisible = true;
+                    }
+                })
+            },
             // -- sch
         }
     }
