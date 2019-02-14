@@ -240,12 +240,12 @@
                 <el-tooltip content="暂停任务" placement="top" >
                     <el-button type="danger"  @click="modifyStopVisible=true" v-show="userRole===0&&taskDetail.status!=0" style="text-align: left">暂停任务</el-button>
                 </el-tooltip>
-                <el-tooltip content="评审任务" placement="top" >
+                <!--<el-tooltip content="评审任务" placement="top" >
                     <el-button type="primary"  @click="examineTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.examine===0" style="text-align: left">已评审</el-button>
-                </el-tooltip>
-                <el-tooltip content="评审任务" placement="top" >
+                </el-tooltip>-->
+                <!--<el-tooltip content="评审任务" placement="top" >
                     <el-button type="danger"  @click="examineTask(taskDetail.id,0)" v-show="userRole===0&&taskDetail.examine===1" style="text-align: left">未评审</el-button>
-                </el-tooltip>
+                </el-tooltip>-->
                 <el-tooltip content="删除该任务" placement="top">
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
                 </el-tooltip>
@@ -264,9 +264,14 @@
                    :close-on-click-modal="false"
                    :close-on-press-escape="false"
                    custom-class="myDialog"
+                   @close="closeDialog"
                    size="tiny">
+            <el-button type="primary" @click="addRemark('design')">新增设计任务</el-button>
+            <el-button type="primary" @click="addRemark('product')" >新增产品任务</el-button>
+            <el-button type="primary" @click="addRemark('develop')">新增开发任务</el-button>
+            <el-button type="primary" @click="addRemark('test')">新增测试任务</el-button>
             <el-form >
-                <el-form-item label="备注">
+                <el-form-item label="其他">
                     <el-input type="textarea" placeholder="请填写本次修改备注" :maxlength="500" v-model="modifyTaskForm.modifyDescription" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -1358,6 +1363,24 @@
                     stageId: ''
                 };
             },
+
+            //快捷备注
+            addRemark(type){
+                if (type == 'design'){
+                    this.modifyTaskForm.modifyDescription = '新增设计任务'
+                } else if (type == 'product'){
+                    this.modifyTaskForm.modifyDescription = '新增产品任务'
+                } else if (type == 'develop'){
+                    this.modifyTaskForm.modifyDescription = '新增开发任务'
+                } else if (type == 'test'){
+                    this.modifyTaskForm.modifyDescription = '新增测试任务'
+                }
+            },
+            //关闭弹窗,清空备注
+            closeDialog(){
+                this.modifyTaskForm.modifyDescription = ''
+            },
+
             // 修改任务
             modifyTask(taskId) {
                 this.hideTaskDetail();
