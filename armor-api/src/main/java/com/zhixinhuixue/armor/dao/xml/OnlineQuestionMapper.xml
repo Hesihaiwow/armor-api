@@ -6,7 +6,7 @@
         <result column="name" property="name" jdbcType="VARCHAR"></result>
         <result column="description" property="description" jdbcType="VARCHAR"></result>
         <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
-        <result column="work_hour" property="workHour" jdbcType="INTEGER"></result>
+        <result column="work_hour" property="workHour" jdbcType="FLOAT"></result>
         <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
         <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
         <result column="status" property="status" jdbcType="INTEGER"></result>

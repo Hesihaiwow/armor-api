@@ -75,7 +75,7 @@ public class OnlineQuestionResDTO {
      * 工作时间
      * @return
      */
-    private Integer workHour;
+    private Float workHour;
 
     /**
      * 审核状态
@@ -105,11 +105,11 @@ public class OnlineQuestionResDTO {
         this.reviewStatus = reviewStatus;
     }
 
-    public Integer getWorkHour() {
+    public Float getWorkHour() {
         return workHour;
     }
 
-    public void setWorkHour(Integer workHour) {
+    public void setWorkHour(Float workHour) {
         this.workHour = workHour;
     }
 
