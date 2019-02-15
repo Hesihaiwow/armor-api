@@ -9,7 +9,10 @@ CREATE TABLE `extra_work` (
   `end_time` datetime NOT NULL COMMENT '结束时间',
   `work_hours` decimal(10,1) NOT NULL COMMENT '加班时长',
   `is_delete` int(1) NOT NULL COMMENT '是否删除(0:未删除,1:已删除)',
-  `cheak_time` datetime DEFAULT NULL COMMENT '审核通过时间',
+  `check_time` datetime DEFAULT NULL COMMENT '申请通过时间',
+  `review_status` int(1) DEFAULT NULL COMMENT '申请状态',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='加班申请表';
 
