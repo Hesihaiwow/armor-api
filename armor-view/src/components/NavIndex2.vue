@@ -22,6 +22,10 @@
 
         <div class="my-task-con">
             <div v-show="userRole>0">
+                <div class="add-task" style="margin-right: 220px" @click="createExtraWork">
+                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
+                    <span>加班申请</span>
+                </div>
                 <div class="add-task" @click="createQuestionClick">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>创建线上问题(数据)记录</span>
@@ -653,6 +657,72 @@
                     </el-tabs>
                 </div>
             </div>
+            <div>
+                <p class="mic-title">{{userRole!=0?'加班申请':'加班申请审核'}}</p>
+                <div class="my-task-detail">
+                    <el-tabs v-model="activeEWorkName" @tab-click="handleClick">
+                        <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
+                            <!--@click="reviewDetail(help)"-->
+                            <div class="task-lis" v-for="eWork in eWorkList.wait">
+                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>{{eWork.reason}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">{{eWork.createTime| formatDate }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-edit"></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="eWork.avatarUrl && eWork.avatarUrl!=''"
+                                         :src="eWork.avatarUrl">
+                                    <span v-else="">{{eWork.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.eWorkList.wait.length>0">
+                                <el-pagination
+                                        @current-change="handleEWorkWaitPage"
+                                        :current-page.sync="eWorkWaitPage.pageNum"
+                                        :page-size="eWorkWaitPage.pageSize"
+                                        :layout="eWorkWaitPageLayout"
+                                        :total="eWorkWaitPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="eWorkList.wait.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane :label="userRole!=0?'完成审核':'审核通过'" name="review">
+                            <div class="task-lis" v-for="eWork in eWorkList.pass">
+                                <div class="head-img"><img src="../assets/img/auditSuccess.png"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>{{eWork.reason}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">{{eWork.createTime| formatDate }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="eWork.avatarUrl && eWork.avatarUrl!=''"
+                                         :src="eWork.avatarUrl">
+                                    <span v-else="">{{eWork.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.eWorkList.pass.length>0">
+                                <el-pagination
+                                        @current-change="handleEWorkPassPage"
+                                        :current-page.sync="eWorkPassPage.pageNum"
+                                        :page-size="eWorkPassPage.pageSize"
+                                        :layout="eWorkPassPageLayout"
+                                        :total="eWorkPassPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="eWorkList.pass.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
         </div>
         <el-dialog title="创建个人任务"
                 size="tiny"
@@ -1123,6 +1193,58 @@
                         @click="editLeaveVisible = false,editLeaveDetailVisible = false,clearLeaveForm()">取 消</el-button>
               </span>
         </el-dialog>
+        <el-dialog title="加班申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
+                   :close-on-press-escape="false" :visible.sync="createExtraWorkVisible" :show-close="false"
+                    @close="closeAddExtraWork">
+            <el-form :model="extraWorkForm" ref="extraWorkForm" :rules="extraWorkRules" label-width="110px">
+                <el-form-item label="加班原因" prop="reason">
+                    <el-input type="textarea" v-model="extraWorkForm.reason" :rows="3"></el-input>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="加班开始时间" prop="beginTime">
+                    <el-date-picker
+                            v-model="extraWorkForm.beginTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:00:00"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="加班结束时间" prop="endTime">
+                    <el-date-picker
+                            v-model="extraWorkForm.endTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:00:00"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="加班时长" prop="hours">
+                    <el-input type="input" v-model="extraWorkForm.workHours" style="width:100px"></el-input>
+                    小时
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="关联任务" prop="taskIds">
+                    <el-select v-model="extraWorkForm.taskIds"
+                               multiple
+                               filterable
+                               allow-create
+                               default-first-option
+                               placeholder="请选关联任务">
+                        <el-option v-for="task in myRunningTasks"
+                                   :key="task.id"
+                                   :label="task.name"
+                                   :value="task.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveExtraWork('extraWorkForm')"
+                           :loading="isSaving">立即创建</el-button>
+                <el-button
+                        @click="createExtraWorkVisible = false">取 消</el-button>
+              </span>
+        </el-dialog>
         <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
             <el-form>
@@ -1189,6 +1311,7 @@
                 integralBasicVisible: false,
                 activeHelpName: 'wait',
                 activeLeaveName: 'wait',
+                activeEWorkName: 'wait',
                 auditTabsActiveName: 'wait',
                 auditHelpTabsActiveName: 'wait',
                 taskExpandTabsActiveName: 'wait',
@@ -1296,6 +1419,24 @@
                     hours: '',
                     typeName: ''
                 },
+                extraWorkForm:{
+                    reason:'',
+                    beginTime: '',
+                    endTime: '',
+                    workHours: '',
+                    taskIds:[]
+                },
+                eWorkWaitPage:{
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0
+                },
+                eWorkPassPage:{
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0
+                },
+                myRunningTasks:[],
                 leaveType: [
                     {id: 1, name: '事假'},
                     {id: 2, name: '病假'},
@@ -1374,6 +1515,9 @@
                 leaveRules: {
                     description: [{required: true, message: '请假原因不能为空并保证在6字以上', trigger: 'change', min: 6}],
                 },
+                extraWorkRules:{
+                    reason:[{required: true, message: '加班原因不能为空', trigger: 'change'}]
+                },
                 task: {
                     doing: [],
                     test: [],
@@ -1396,6 +1540,10 @@
                     wait: [],
                     pass: []
                 },
+                eWorkList:{
+                    wait:[],
+                    pass:[]
+                },
                 projectList: [],
                 stageList: [],
                 tagList: [],
@@ -1417,6 +1565,7 @@
 
                 // sch --
                 createQuestionVisible: false,
+                createExtraWorkVisible: false,
                 questionAble: false,
                 questionForm: {
                     name: '',
@@ -1542,6 +1691,12 @@
                 }
                 return 'total, pager'
             },
+            eWorkWaitPageLayout() {
+                if (this.eWorkWaitPage.total > 5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             reviewPageLayout() {
                 if (this.reviewPage.total > 5) {
                     return 'total, prev, pager, next'
@@ -1550,6 +1705,12 @@
             },
             leavePassPageLayout() {
                 if (this.leavePassPage.total > 5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            eWorkPassPageLayout() {
+                if (this.eWorkPassPage.total > 5) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -1607,6 +1768,11 @@
                 this.fetchQuestionAccepted();
                 this.fetchQuestionWait();
                 this.fetchUnreadNoticeNum();
+                this.fetchMyRunningTasks();
+                this.fetchMyRunningExtraWork();
+                this.fetchMyCheckedExtraWork();
+                this.fetchCheckingExtraWork();
+                this.fetchCheckedExtraWork();
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -2042,6 +2208,10 @@
                 this.leaveForm.id = this.leaveForm.endTime = this.leaveForm.beginTime = this.leaveForm.hours = this.leaveForm.type = this.leaveForm.description = ''
                 this.userWeeks = []
             },
+            clearExtraWorkForm(){
+                this.extraWorkForm.reason = this.extraWorkForm.beginTime = this.extraWorkForm.endTime = this.extraWorkForm.workHours = '';
+                this.extraWorkForm.taskIds = [];
+            },
             //待审核积分转移页
             handleWaitPage(currentPage) {
                 this.waitPage.pageNum = currentPage;
@@ -2059,12 +2229,24 @@
                     this.fetchUserLeaveList();
                 }
             },
+            handleEWorkWaitPage(currentPage) {
+                this.eWorkWaitPage.pageNum = currentPage;
+                if (this.userRole > 0) {
+                } else {
+                }
+            },
             handleLeavePassPage(currentPage) {
                 this.leavePassPage.pageNum = currentPage;
                 if (this.userRole > 0) {
                     this.fetchUserLeavePassList();
                 } else {
                     this.fetchUserLeavePassList();
+                }
+            },
+            handleEWorkPassPage(currentPage) {
+                this.eWorkPassPage.pageNum = currentPage;
+                if (this.userRole > 0) {
+                } else {
                 }
             },
             saveLeaveInfo(formName) {
@@ -2131,6 +2313,70 @@
                     }
 
                 })
+            },
+            saveExtraWork(formName) {
+                this.isSaving = true
+                if (this.extraWorkForm.reason == null || this.extraWorkForm.reason == ''){
+                    this.$message({showClose: true, message: '加班原因不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.beginTime == null || this.extraWorkForm.beginTime == ''){
+                    this.$message({showClose: true, message: '加班开始时间不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.endTime == null || this.extraWorkForm.endTime == ''){
+                    this.$message({showClose: true, message: '加班结束时间不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.workHours == null || this.extraWorkForm.workHours == ''){
+                    this.$message({showClose: true, message: '加班时长不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.taskIds.length == 0){
+                    this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.extraWorkForm.workHours);
+                        if (!ishours) {
+                            this.$message({showClose: true, message: '加班时长填写错误', type: 'error'});
+                            return false;
+                        }
+                        if (this.extraWorkForm.workHours > 99999.9 || this.extraWorkForm.workHours < 0) {
+                            this.$message({showClose: true, message: '加班时长正确值应为0~99999.9', type: 'error'});
+                            return false;
+                        }
+                        this.extraWorkForm.beginTime = moment(this.extraWorkForm.beginTime).toDate()
+                        this.extraWorkForm.endTime = moment(this.extraWorkForm.endTime).toDate()
+
+                        let form = this.extraWorkForm
+                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00')
+                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00')
+                            http.zsyPostHttp('/extra-work/add', form, (resp) => {
+                                this.$message({
+                                    showClose: true,
+                                    message: '新建加班申请成功',
+                                    type: 'success'
+                                });
+                                this.clearExtraWorkForm()
+                                this.createExtraWorkVisible = false
+                                this.isSaving = false
+                            }, err => {
+                                this.isSaving = false
+                            })
+                        }
+
+                })
+            },
+            closeAddExtraWork(){
+                this.clearExtraWorkForm()
+                this.isSaving = false
             },
             deleteLeave(id) {
                 http.zsyDeleteHttp('/userLeave/delete/' + id, null, (resp) => {
@@ -2339,7 +2585,6 @@
             },
             //创建线上问题记录
             createQuestionClick() {
-                this.clearQuestionForm()
                 this.createQuestionVisible = true
             },
             //完成线上问题
@@ -2618,6 +2863,58 @@
             toMySummary(){
                 this.$router.push({path:`/index/SummaryNav`})
             },
+            //创建加班申请
+            createExtraWork(){
+                this.createExtraWorkVisible = true
+            },
+            //查询我的未完成任务
+            fetchMyRunningTasks(){
+                http.zsyGetHttp('/extra-work/task-running',{},(res)=>{
+                    if (res){
+                        this.myRunningTasks = res.data
+                    }
+                })
+            },
+            //查询我的加班申请(待审核)
+            fetchMyRunningExtraWork(){
+                http.zsyGetHttp('/extra-work/page/wait/'+this.eWorkWaitPage.pageNum,{},(res)=>{
+                    if (res){
+                        this.eWorkList.wait = res.data.list;
+                        this.eWorkWaitPage.total = res.data.total;
+                        this.eWorkWaitPage.pageNum = res.data.pageNum;
+                    }
+                })
+            },
+            //查询我的加班申请(审核通过)
+            fetchMyCheckedExtraWork(){
+                http.zsyGetHttp('/extra-work/page/access/'+this.eWorkPassPage.pageNum,{},(res)=>{
+                    if (res){
+                        this.eWorkList.pass = res.data.list;
+                        this.eWorkPassPage.total = res.data.total;
+                        this.eWorkPassPage.pageNum = res.data.pageNum;
+                    }
+                })
+            },
+            //查询审核中的申请
+            fetchCheckingExtraWork(){
+                http.zsyGetHttp('/extra-work/page/checking/'+this.eWorkWaitPage.pageNum,{},(res)=>{
+                    if(res){
+                        this.eWorkList.wait = res.data.list;
+                        this.eWorkWaitPage.total = res.data.total;
+                        this.eWorkWaitPage.pageNum = res.data.pageNum;
+                    }
+                })
+            },
+            //查询审核通过的申请
+            fetchCheckedExtraWork(){
+                http.zsyGetHttp('/extra-work/page/checked/'+this.eWorkPassPage.pageNum,{},(res)=>{
+                    if (res){
+                        this.eWorkList.pass = res.data.list;
+                        this.eWorkPassPage.total = res.data.total;
+                        this.eWorkPassPage.pageNum = res.data.pageNum;
+                    }
+                })
+            }
             // -- sch
         },
         components: {

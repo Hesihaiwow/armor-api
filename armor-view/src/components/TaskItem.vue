@@ -266,10 +266,10 @@
                    custom-class="myDialog"
                    @close="closeDialog"
                    size="tiny">
-            <el-button type="primary" @click="addRemark('design')">新增设计任务</el-button>
-            <el-button type="primary" @click="addRemark('product')" >新增产品任务</el-button>
-            <el-button type="primary" @click="addRemark('develop')">新增开发任务</el-button>
-            <el-button type="primary" @click="addRemark('test')">新增测试任务</el-button>
+            <el-button type="primary" @click="addRemark('design',taskDetail.id)">新增设计任务</el-button>
+            <el-button type="primary" @click="addRemark('product',taskDetail.id)" >新增产品任务</el-button>
+            <el-button type="primary" @click="addRemark('develop',taskDetail.id)">新增开发任务</el-button>
+            <el-button type="primary" @click="addRemark('test',taskDetail.id)">新增测试任务</el-button>
             <el-form >
                 <el-form-item label="其他">
                     <el-input type="textarea" placeholder="请填写本次修改备注" :maxlength="500" v-model="modifyTaskForm.modifyDescription" auto-complete="off"></el-input>
@@ -1365,7 +1365,7 @@
             },
 
             //快捷备注
-            addRemark(type){
+            addRemark(type,taskId){
                 if (type == 'design'){
                     this.modifyTaskForm.modifyDescription = '新增设计任务'
                 } else if (type == 'product'){
@@ -1375,6 +1375,7 @@
                 } else if (type == 'test'){
                     this.modifyTaskForm.modifyDescription = '新增测试任务'
                 }
+                this.modifyTask(taskId)
             },
             //关闭弹窗,清空备注
             closeDialog(){
