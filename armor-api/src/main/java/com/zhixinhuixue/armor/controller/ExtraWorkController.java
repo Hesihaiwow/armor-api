@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.controller;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.AddExtraWorkReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.ExtraWorkDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExtraWorkResDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.service.IZSYExtraWorkService;
@@ -80,6 +81,13 @@ public class ExtraWorkController {
     public String getCheckedExtraWorkByPage(@PathVariable("pageNum")Integer pageNum){
         PageInfo<ExtraWorkResDTO> pageInfo = extraWorkService.getCheckedExtraWorkByPage(pageNum);
         return ZSYResult.success().data(pageInfo).build();
+    }
+
+    @ApiOperation("查询加班申请详情")
+    @GetMapping("/detail/{ewId}")
+    public String getEWorkDetail(@PathVariable("ewId")Long ewId){
+        ExtraWorkDetailResDTO resDTO = extraWorkService.getEWorkDetail(ewId);
+        return ZSYResult.success().data(resDTO).build();
     }
 
     @ApiOperation("查询我的未完成任务")

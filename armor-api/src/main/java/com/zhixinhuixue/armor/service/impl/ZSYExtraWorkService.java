@@ -10,6 +10,7 @@ import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.AddExtraWorkReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.ExtraWorkDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExtraWorkResDTO;
 import com.zhixinhuixue.armor.model.pojo.ExtraWork;
 import com.zhixinhuixue.armor.model.pojo.ExtraWorkTask;
@@ -289,5 +290,18 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
             });
         }
         return new PageInfo<>(list);
+    }
+
+    @Override
+    public ExtraWorkDetailResDTO getEWorkDetail(Long ewId) {
+        ExtraWork extraWork = extraWorkMapper.selectById(ewId);
+        if (extraWork == null){
+            throw new ZSYServiceException("该加班申请不存在");
+        }
+        List<Task> taskList = extraWorkMapper.selectTasksByEwId(ewId);
+        ExtraWorkDetailResDTO resDTO = new ExtraWorkDetailResDTO();
+        BeanUtils.copyProperties(extraWork,resDTO);
+        resDTO.setTasks(taskList);
+        return resDTO;
     }
 }

@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.AddExtraWorkReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.ExtraWorkDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExtraWorkResDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 
@@ -72,4 +73,10 @@ public interface IZSYExtraWorkService {
      */
     PageInfo<ExtraWorkResDTO> getCheckedExtraWorkByPage(Integer pageNum);
 
+    /**
+     * 查询加班申请详情
+     * @param ewId
+     * @return
+     */
+    ExtraWorkDetailResDTO getEWorkDetail(Long ewId);
 }
