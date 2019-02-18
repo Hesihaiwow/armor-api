@@ -663,13 +663,13 @@
                     <el-tabs v-model="activeEWorkName" @tab-click="handleClick">
                         <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
                             <!--@click="reviewDetail(help)"-->
-                            <div class="task-lis" v-for="eWork in eWorkList.wait">
+                            <div class="task-lis" v-for="eWork in eWorkList.wait" @click="showExtraWorkDetail(eWork.id)">
                                 <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
                                 <div class="main-task-detail">
                                     <div class="task-name"><span>{{eWork.reason}}</span></div>
                                     <div class="task-state">
                                         <span class="task-end blue">{{eWork.createTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-edit"></i></span>
+                                        <!--<span class="task-time-opt"><i class="el-icon-edit"></i></span>-->
                                     </div>
                                 </div>
                                 <div class="task-username">
@@ -1193,6 +1193,13 @@
                         @click="editLeaveVisible = false,editLeaveDetailVisible = false,clearLeaveForm()">取 消</el-button>
               </span>
         </el-dialog>
+
+        <el-dialog title="加班申请详情" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
+                   :close-on-press-escape="false" :visible.sync="showEWorkDetailVisible" :show-close="false">
+            <el-form>
+                <el-form-item>{{eWorkDetail}}</el-form-item>
+            </el-form>
+        </el-dialog>
         <el-dialog title="加班申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false" :visible.sync="createExtraWorkVisible" :show-close="false"
                     @close="closeAddExtraWork">
@@ -1245,6 +1252,7 @@
                         @click="createExtraWorkVisible = false">取 消</el-button>
               </span>
         </el-dialog>
+
         <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
             <el-form>
@@ -1615,7 +1623,9 @@
                 finishQuestionVisible:false,
                 fileList:[],
                 questionActiveName:'wait',
-                unreadNoticeNum:0
+                unreadNoticeNum:0,
+                showEWorkDetailVisible:false,
+                eWorkDetail:{},
                 // -- sch
             };
         },
@@ -2914,7 +2924,20 @@
                         this.eWorkPassPage.pageNum = res.data.pageNum;
                     }
                 })
-            }
+            },
+            //编辑加班申请
+            editExtraWorkForm(){
+
+            },
+            //打开加班申请详情卡片
+            showExtraWorkDetail(ewId){
+                this.showEWorkDetailVisible = true;
+                http.zsyGetHttp('/extra-work/detail/'+ewId,{},(res)=>{
+                    if (res){
+                        this.eWorkDetail = res.data;
+                    }
+                })
+            },
             // -- sch
         },
         components: {
