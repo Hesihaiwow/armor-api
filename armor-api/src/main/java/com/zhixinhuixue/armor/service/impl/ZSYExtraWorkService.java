@@ -172,7 +172,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
             throw new ZSYServiceException("该加班申请不存在");
         }
         extraWork.setReviewStatus(2);
-        extraWork.setCreateTime(new Date());
+        extraWork.setCheckTime(new Date());
         extraWork.setUpdateTime(new Date());
         if (extraWorkMapper.updateExtraWorkById(extraWork,ewId) == 0){
             throw new ZSYServiceException("通过加班申请失败");
@@ -184,8 +184,8 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
      * @return
      */
     @Override
-    public List<Task> getMyRunningTaskList() {
-        List<Task> list = taskMapper.selectMyRunningTask(ZSYTokenRequestContext.get().getUserId());
+    public List<Task> getMyRunningTaskList(Long userId) {
+        List<Task> list = taskMapper.selectMyRunningTask(userId);
         return list;
     }
 
@@ -199,8 +199,8 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectWaitExtraWorkByPage(ZSYTokenRequestContext.get().getUserId());
         Page<ExtraWorkResDTO> list = new Page<>();
+        BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            BeanUtils.copyProperties(page,list);
             page.stream().forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
@@ -221,8 +221,8 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectAccessExtraWorkByPage(ZSYTokenRequestContext.get().getUserId());
         Page<ExtraWorkResDTO> list = new Page<>();
+        BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            BeanUtils.copyProperties(page,list);
             page.stream().forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
@@ -248,8 +248,8 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectCheckingExtraWorkByPage();
         Page<ExtraWorkResDTO> list = new Page<>();
+        BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            BeanUtils.copyProperties(page,list);
             page.stream().forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
@@ -275,8 +275,8 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectCheckedExtraWorkByPage();
         Page<ExtraWorkResDTO> list = new Page<>();
+        BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            BeanUtils.copyProperties(page,list);
             page.stream().forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
@@ -298,8 +298,12 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         if (extraWork == null){
             throw new ZSYServiceException("该加班申请不存在");
         }
-        List<Task> taskList = extraWorkMapper.selectTasksByEwId(ewId);
         ExtraWorkDetailResDTO resDTO = new ExtraWorkDetailResDTO();
+        List<Task> taskList = extraWorkMapper.selectTasksByEwId(ewId);
+        User user = userMapper.selectByEwId(extraWork.getId());
+        resDTO.setUserId(user.getId());
+        resDTO.setAvatarUrl(user.getAvatarUrl());
+        resDTO.setUserName(user.getName());
         BeanUtils.copyProperties(extraWork,resDTO);
         resDTO.setTasks(taskList);
         return resDTO;

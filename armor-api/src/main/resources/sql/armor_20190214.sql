@@ -1,4 +1,4 @@
-ALTER table online_question_record MODIFY work_hour decimal(10,1) NOT NULL COMMENT '工作时长'
+ALTER table online_question_record MODIFY work_hour decimal(10,1) NOT NULL COMMENT '工作时长';
 
 DROP TABLE IF EXISTS `extra_work`;
 CREATE TABLE `extra_work` (

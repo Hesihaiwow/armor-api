@@ -102,7 +102,7 @@
 
     <!--查询我的加班申请(待审核)-->
     <select id="selectWaitExtraWorkByPage" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0 AND `user_id` = #{userId}
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0 AND `user_id` = #{userId} ORDER BY `create_time` DESC
     </select>
 
     <!--根据ewId  查询关联任务集合-->
@@ -114,17 +114,17 @@
 
     <!--查询我的加班申请(审核通过)-->
     <select id="selectAccessExtraWorkByPage" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 AND `user_id` = #{userId}
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 AND `user_id` = #{userId} ORDER BY `create_time` DESC
     </select>
 
     <!--查询审核中的加班申请-->
     <select id="selectCheckingExtraWorkByPage" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0 ORDER BY `create_time` DESC
     </select>
 
     <!--查询审核通过的加班申请-->
     <select id="selectCheckedExtraWorkByPage" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 ORDER BY `check_time` DESC
     </select>
 
     <!--根据id查加班申请-->

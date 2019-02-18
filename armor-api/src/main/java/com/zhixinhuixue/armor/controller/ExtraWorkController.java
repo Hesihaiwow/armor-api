@@ -91,9 +91,9 @@ public class ExtraWorkController {
     }
 
     @ApiOperation("查询我的未完成任务")
-    @GetMapping("/task-running")
-    public String getMyRunningTask(){
-        List<Task> list = extraWorkService.getMyRunningTaskList();
+    @GetMapping("/task-running/{userId}")
+    public String getMyRunningTask(@PathVariable("userId")Long userId){
+        List<Task> list = extraWorkService.getMyRunningTaskList(userId);
         return ZSYResult.success().data(list).build();
     }
 }

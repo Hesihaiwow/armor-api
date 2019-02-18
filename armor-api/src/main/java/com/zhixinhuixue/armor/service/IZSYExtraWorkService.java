@@ -43,7 +43,7 @@ public interface IZSYExtraWorkService {
      * 查询我的未完成任务
      * @return
      */
-    List<Task> getMyRunningTaskList();
+    List<Task> getMyRunningTaskList(Long userId);
 
     /**
      * 查询我的加班申请(待审核)
