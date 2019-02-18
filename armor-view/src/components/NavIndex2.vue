@@ -662,14 +662,12 @@
                 <div class="my-task-detail">
                     <el-tabs v-model="activeEWorkName" @tab-click="handleClick">
                         <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
-                            <!--@click="reviewDetail(help)"-->
                             <div class="task-lis" v-for="eWork in eWorkList.wait" @click="showExtraWorkDetail(eWork.id)">
                                 <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
                                 <div class="main-task-detail">
                                     <div class="task-name"><span>{{eWork.reason}}</span></div>
                                     <div class="task-state">
                                         <span class="task-end blue">{{eWork.createTime| formatDate }}</span>
-                                        <!--<span class="task-time-opt"><i class="el-icon-edit"></i></span>-->
                                     </div>
                                 </div>
                                 <div class="task-username">
@@ -692,7 +690,7 @@
                             </div>
                         </el-tab-pane>
                         <el-tab-pane :label="userRole!=0?'完成审核':'审核通过'" name="review">
-                            <div class="task-lis" v-for="eWork in eWorkList.pass">
+                            <div class="task-lis" v-for="eWork in eWorkList.pass" @click="showExtraWorkDetail(eWork.id),isEWorkEdit = false">
                                 <div class="head-img"><img src="../assets/img/auditSuccess.png"></div>
                                 <div class="main-task-detail">
                                     <div class="task-name"><span>{{eWork.reason}}</span></div>
@@ -1195,10 +1193,92 @@
         </el-dialog>
 
         <el-dialog title="加班申请详情" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
-                   :close-on-press-escape="false" :visible.sync="showEWorkDetailVisible" :show-close="false">
+                   :close-on-press-escape="false" :visible.sync="showEWorkDetailVisible" @close="closeEWorkDetail">
             <el-form>
-                <el-form-item>{{eWorkDetail}}</el-form-item>
+                <el-form-item label="加班理由">{{eWorkDetail.reason}}</el-form-item>
+                <el-form-item label="开始时间">{{eWorkDetail.beginTime | formatTime}}</el-form-item>
+                <el-form-item label="截止时间">{{eWorkDetail.endTime | formatTime}}</el-form-item>
+                <el-form-item label="加班时长">{{eWorkDetail.workHours}}小时</el-form-item>
+                <el-form-item label="关联任务">
+
+                </el-form-item>
+                <div class="ctpc-member-con">
+                    <div class="ctpc-member-list clearfix" v-for="(task,index) in eWorkDetail.tasks">
+                        <span class="fl ctpc-member-head">{{eWorkDetail.userName}}</span>
+                        <a class="fl ctpc-member-job-time" @click="toTask(task.id)"
+                           style="color:black; cursor: pointer;">{{task.name|StringExtract}}</a>
+                        <span class="fl ctpc-member-end-time">截止:{{task.endTime|formatDate}}</span>
+                    </div>
+                </div>
+                <div style="margin-left: 340px" v-show="isEWorkEdit">
+                    <el-tooltip content="编辑该申请" placement="top">
+                        <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="删除该申请" placement="top">
+                          <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="审核通过" placement="top">
+                          <el-button type="success" @click="accessEWork(eWorkDetail.id)">审核通过</el-button>
+                    </el-tooltip>
+                </div>
+                <div style="margin-left: 480px" v-show="!isEWorkEdit">
+                    <el-tooltip content="删除该申请" placement="top">
+                        <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
+                    </el-tooltip>
+                </div>
             </el-form>
+        </el-dialog>
+        <el-dialog title="编辑加班申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
+                   :close-on-press-escape="false" :visible.sync="editEWorkVisible"
+                    @close="closeAddExtraWork">
+            <el-form :model="extraWorkForm" ref="extraWorkForm" :rules="extraWorkRules" label-width="110px">
+                <el-form-item label="加班原因" prop="reason">
+                    <el-input type="textarea" v-model="extraWorkForm.reason" :rows="3"></el-input>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="加班开始时间" prop="beginTime">
+                    <el-date-picker
+                            v-model="extraWorkForm.beginTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:00"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="加班结束时间" prop="endTime">
+                    <el-date-picker
+                            v-model="extraWorkForm.endTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:00"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="加班时长" prop="hours">
+                    <el-input type="input" v-model="extraWorkForm.workHours" style="width:100px"></el-input>
+                    小时
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="关联任务" prop="taskIds">
+                    <el-select v-model="extraWorkForm.taskIds"
+                               multiple
+                               filterable
+                               allow-create
+                               default-first-option
+                               placeholder="请选关联任务">
+                        <el-option v-for="task in myRunningTasks"
+                                   :key="task.id"
+                                   :label="task.name"
+                                   :value="task.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveEditExtraWork('extraWorkForm',extraWorkForm.id)"
+                           :loading="isSaving">立即修改</el-button>
+                <el-button @click="editEWorkVisible = false">取 消</el-button>
+
+            </span>
         </el-dialog>
         <el-dialog title="加班申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false" :visible.sync="createExtraWorkVisible" :show-close="false"
@@ -1212,7 +1292,7 @@
                     <el-date-picker
                             v-model="extraWorkForm.beginTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:00:00"
+                            format="yyyy-MM-dd HH:mm:00"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1221,7 +1301,7 @@
                     <el-date-picker
                             v-model="extraWorkForm.endTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:00:00"
+                            format="yyyy-MM-dd HH:mm:00"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1428,6 +1508,7 @@
                     typeName: ''
                 },
                 extraWorkForm:{
+                    id:'',
                     reason:'',
                     beginTime: '',
                     endTime: '',
@@ -1625,6 +1706,8 @@
                 questionActiveName:'wait',
                 unreadNoticeNum:0,
                 showEWorkDetailVisible:false,
+                editEWorkVisible:false,
+                isEWorkEdit:true,
                 eWorkDetail:{},
                 // -- sch
             };
@@ -1646,6 +1729,10 @@
             userRole() {
                 let userRole = helper.decodeToken().userRole;
                 return userRole;
+            },
+            userId(){
+                let userId = helper.decodeToken().userId;
+                return userId;
             },
             finishedPageLayout() {
                 if (this.finishedPage.total > 0) {
@@ -1733,7 +1820,13 @@
             },
             formatTime: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY年MM月DD日 HH:00:00');
+                return moment(value).format('YYYY年MM月DD日 HH:mm:00');
+            },
+            StringExtract: function (name) {
+                if (name.length > 18) {
+                    return name.substring(0, 18) + '...';
+                }
+                return name;
             },
         },
         methods: {
@@ -1778,7 +1871,6 @@
                 this.fetchQuestionAccepted();
                 this.fetchQuestionWait();
                 this.fetchUnreadNoticeNum();
-                this.fetchMyRunningTasks();
                 this.fetchMyRunningExtraWork();
                 this.fetchMyCheckedExtraWork();
                 this.fetchCheckingExtraWork();
@@ -2221,6 +2313,7 @@
             clearExtraWorkForm(){
                 this.extraWorkForm.reason = this.extraWorkForm.beginTime = this.extraWorkForm.endTime = this.extraWorkForm.workHours = '';
                 this.extraWorkForm.taskIds = [];
+                this.extraWorkForm.id = ''
             },
             //待审核积分转移页
             handleWaitPage(currentPage) {
@@ -2242,7 +2335,9 @@
             handleEWorkWaitPage(currentPage) {
                 this.eWorkWaitPage.pageNum = currentPage;
                 if (this.userRole > 0) {
+                    this.fetchMyRunningExtraWork();
                 } else {
+                    this.fetchCheckingExtraWork();
                 }
             },
             handleLeavePassPage(currentPage) {
@@ -2256,7 +2351,9 @@
             handleEWorkPassPage(currentPage) {
                 this.eWorkPassPage.pageNum = currentPage;
                 if (this.userRole > 0) {
+                    this.fetchMyCheckedExtraWork();
                 } else {
+                    this.fetchCheckedExtraWork();
                 }
             },
             saveLeaveInfo(formName) {
@@ -2366,15 +2463,16 @@
                         this.extraWorkForm.endTime = moment(this.extraWorkForm.endTime).toDate()
 
                         let form = this.extraWorkForm
-                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00')
-                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00')
+                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:mm:00')
+                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:mm:00')
                             http.zsyPostHttp('/extra-work/add', form, (resp) => {
                                 this.$message({
                                     showClose: true,
                                     message: '新建加班申请成功',
                                     type: 'success'
                                 });
-                                this.clearExtraWorkForm()
+                                this.clearExtraWorkForm();
+                                this.fetchMyRunningExtraWork();
                                 this.createExtraWorkVisible = false
                                 this.isSaving = false
                             }, err => {
@@ -2384,6 +2482,69 @@
 
                 })
             },
+            saveEditExtraWork(formName,ewId) {
+                this.isSaving = true
+                if (this.extraWorkForm.reason == null || this.extraWorkForm.reason == ''){
+                    this.$message({showClose: true, message: '加班原因不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.beginTime == null || this.extraWorkForm.beginTime == ''){
+                    this.$message({showClose: true, message: '加班开始时间不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.endTime == null || this.extraWorkForm.endTime == ''){
+                    this.$message({showClose: true, message: '加班结束时间不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.workHours == null || this.extraWorkForm.workHours == ''){
+                    this.$message({showClose: true, message: '加班时长不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.extraWorkForm.taskIds.length == 0){
+                    this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.extraWorkForm.workHours);
+                        if (!ishours) {
+                            this.$message({showClose: true, message: '加班时长填写错误', type: 'error'});
+                            return false;
+                        }
+                        if (this.extraWorkForm.workHours > 99999.9 || this.extraWorkForm.workHours < 0) {
+                            this.$message({showClose: true, message: '加班时长正确值应为0~99999.9', type: 'error'});
+                            return false;
+                        }
+                        this.extraWorkForm.beginTime = moment(this.extraWorkForm.beginTime).toDate()
+                        this.extraWorkForm.endTime = moment(this.extraWorkForm.endTime).toDate()
+
+                        let form = this.extraWorkForm
+                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00')
+                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00')
+                            http.zsyPutHttp('/extra-work/update/'+ewId, form, (resp) => {
+                                this.$message({
+                                    showClose: true,
+                                    message: '修改加班申请成功',
+                                    type: 'success'
+                                });
+                                this.clearExtraWorkForm();
+                                this.fetchMyRunningExtraWork();
+                                this.fetchCheckingExtraWork();
+                                this.editEWorkVisible = false
+                                this.isSaving = false
+                            }, err => {
+                                this.isSaving = false
+                            })
+                        }
+
+                })
+            },
+
             closeAddExtraWork(){
                 this.clearExtraWorkForm()
                 this.isSaving = false
@@ -2875,11 +3036,13 @@
             },
             //创建加班申请
             createExtraWork(){
-                this.createExtraWorkVisible = true
+                this.createExtraWorkVisible = true;
+                this.fetchMyRunningTasks(this.userId)
             },
             //查询我的未完成任务
-            fetchMyRunningTasks(){
-                http.zsyGetHttp('/extra-work/task-running',{},(res)=>{
+            fetchMyRunningTasks(userId){
+                console.log(userId)
+                http.zsyGetHttp('/extra-work/task-running/'+userId,{},(res)=>{
                     if (res){
                         this.myRunningTasks = res.data
                     }
@@ -2887,47 +3050,47 @@
             },
             //查询我的加班申请(待审核)
             fetchMyRunningExtraWork(){
-                http.zsyGetHttp('/extra-work/page/wait/'+this.eWorkWaitPage.pageNum,{},(res)=>{
-                    if (res){
-                        this.eWorkList.wait = res.data.list;
-                        this.eWorkWaitPage.total = res.data.total;
-                        this.eWorkWaitPage.pageNum = res.data.pageNum;
-                    }
-                })
+                if (this.userRole > 0){
+                    http.zsyGetHttp('/extra-work/page/wait/'+this.eWorkWaitPage.pageNum,{},(res)=>{
+                        if (res){
+                            this.eWorkList.wait = res.data.list;
+                            this.eWorkWaitPage.total = res.data.total;
+                        }
+                    })
+                }
             },
             //查询我的加班申请(审核通过)
             fetchMyCheckedExtraWork(){
-                http.zsyGetHttp('/extra-work/page/access/'+this.eWorkPassPage.pageNum,{},(res)=>{
-                    if (res){
-                        this.eWorkList.pass = res.data.list;
-                        this.eWorkPassPage.total = res.data.total;
-                        this.eWorkPassPage.pageNum = res.data.pageNum;
-                    }
-                })
+                if (this.userRole > 0){
+                    http.zsyGetHttp('/extra-work/page/access/'+this.eWorkPassPage.pageNum,{},(res)=>{
+                        if (res){
+                            this.eWorkList.pass = res.data.list;
+                            this.eWorkPassPage.total = res.data.total;
+                        }
+                    })
+                }
             },
             //查询审核中的申请
             fetchCheckingExtraWork(){
-                http.zsyGetHttp('/extra-work/page/checking/'+this.eWorkWaitPage.pageNum,{},(res)=>{
-                    if(res){
-                        this.eWorkList.wait = res.data.list;
-                        this.eWorkWaitPage.total = res.data.total;
-                        this.eWorkWaitPage.pageNum = res.data.pageNum;
-                    }
-                })
+                if (this.userRole == 0){
+                    http.zsyGetHttp('/extra-work/page/checking/'+this.eWorkWaitPage.pageNum,{},(res)=>{
+                        if(res){
+                            this.eWorkList.wait = res.data.list;
+                            this.eWorkWaitPage.total = res.data.total;
+                        }
+                    })
+                }
             },
             //查询审核通过的申请
             fetchCheckedExtraWork(){
-                http.zsyGetHttp('/extra-work/page/checked/'+this.eWorkPassPage.pageNum,{},(res)=>{
-                    if (res){
-                        this.eWorkList.pass = res.data.list;
-                        this.eWorkPassPage.total = res.data.total;
-                        this.eWorkPassPage.pageNum = res.data.pageNum;
-                    }
-                })
-            },
-            //编辑加班申请
-            editExtraWorkForm(){
-
+                if (this.userRole == 0){
+                    http.zsyGetHttp('/extra-work/page/checked/'+this.eWorkPassPage.pageNum,{},(res)=>{
+                        if (res){
+                            this.eWorkList.pass = res.data.list;
+                            this.eWorkPassPage.total = res.data.total;
+                        }
+                    })
+                }
             },
             //打开加班申请详情卡片
             showExtraWorkDetail(ewId){
@@ -2938,6 +3101,73 @@
                     }
                 })
             },
+            //跳转到任务
+            toTask(taskId){
+                if (taskId != null && taskId != '') {
+                    this.$router.push({name: 'taskListFormComments', params: {taskId: taskId}})
+                }
+            },
+            //编辑加班申请
+            editEWorkForm(extraWorkDetail){
+                this.fetchMyRunningTasks(extraWorkDetail.userId)
+                this.showEWorkDetailVisible = false;
+                this.editEWorkVisible = true;
+                this.extraWorkForm.id = extraWorkDetail.id;
+                this.extraWorkForm.reason = extraWorkDetail.reason;
+                this.extraWorkForm.beginTime = extraWorkDetail.beginTime;
+                this.extraWorkForm.endTime = extraWorkDetail.endTime;
+                this.extraWorkForm.workHours = extraWorkDetail.workHours;
+                extraWorkDetail.tasks.forEach(task =>{
+                    this.extraWorkForm.taskIds.push(task.id)
+                })
+            },
+            //删除加班申请
+            deleteEWork(ewId){
+                this.$confirm('删除加班申请, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    http.zsyPutHttp('/extra-work/delete/'+ewId,{},(res)=>{
+                            this.$message({
+                                showClose: true,
+                                message: '删除加班申请成功',
+                                type: 'success'
+                            });
+                            this.showEWorkDetailVisible = false;
+                            if (this.userRole > 0){
+                                this.fetchMyRunningExtraWork();
+                            } else {
+                                this.fetchCheckingExtraWork();
+                                this.fetchCheckedExtraWork();
+                            }
+                    })
+                }).catch(() => {
+                });
+            },
+            //审核通过加班申请
+            accessEWork(ewId){
+                this.$confirm('审核通过加班申请, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    http.zsyPutHttp('/extra-work/check/'+ewId,{},(res)=>{
+                        this.$message({
+                            showClose: true,
+                            message: '审核通过加班申请成功',
+                            type: 'success'
+                        });
+                        this.showEWorkDetailVisible = false;
+                        this.fetchCheckingExtraWork();
+                        this.fetchCheckedExtraWork();
+                    })
+                }).catch(() => {
+                });
+            },
+            closeEWorkDetail(){
+                this.isEWorkEdit = true
+            }
             // -- sch
         },
         components: {
@@ -3216,5 +3446,45 @@
         line-height: 30px;
         padding: 0 10px;
         width: 300px;
+    }
+
+    .ctpc-member-con {
+        margin-left: 6px;
+        position: relative;
+    }
+
+    .ctpc-member-list {
+        height: 42px;
+        background: #fff;
+        border: 1px solid #ccc;
+        line-height: 42px;
+        color: #000;
+        padding: 0 4px;
+        position: relative;
+        margin-bottom: 10px;
+        box-shadow: 0 0 10px #ccc;
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+    }
+
+    .ctpc-member-head {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #006699;
+        color: #fff;
+        font-size: 10px;
+        text-align: center;
+        line-height: 36px;
+        margin-top: 3px;
+        overflow: hidden;
+        margin-right: 10px;
+    }
+
+    .ctpc-member-job-time {
+        width: 280px;
     }
 </style>
