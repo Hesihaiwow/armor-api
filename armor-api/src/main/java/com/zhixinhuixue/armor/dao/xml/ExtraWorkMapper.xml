@@ -114,7 +114,7 @@
 
     <!--查询我的加班申请(审核通过)-->
     <select id="selectAccessExtraWorkByPage" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 AND `user_id` = #{userId} ORDER BY `create_time` DESC
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 AND `user_id` = #{userId} ORDER BY `check_time` DESC
     </select>
 
     <!--查询审核中的加班申请-->
