@@ -1195,7 +1195,7 @@
         <el-dialog title="加班申请详情" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
                    :close-on-press-escape="false" :visible.sync="showEWorkDetailVisible" @close="closeEWorkDetail">
             <el-form>
-                <el-form-item label="加班理由">{{eWorkDetail.reason}}</el-form-item>
+                <el-form-item label="加班原因">{{eWorkDetail.reason}}</el-form-item>
                 <el-form-item label="开始时间">{{eWorkDetail.beginTime | formatTime}}</el-form-item>
                 <el-form-item label="截止时间">{{eWorkDetail.endTime | formatTime}}</el-form-item>
                 <el-form-item label="加班时长">{{eWorkDetail.workHours}}小时</el-form-item>
@@ -1210,18 +1210,26 @@
                         <span class="fl ctpc-member-end-time">截止:{{task.endTime|formatDate}}</span>
                     </div>
                 </div>
-                <div style="margin-left: 340px" v-show="isEWorkEdit">
+                <div style="margin-left: 430px" v-show="isEWorkEdit && !permit">
                     <el-tooltip content="编辑该申请" placement="top">
                         <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)"></el-button>
                     </el-tooltip>
                     <el-tooltip content="删除该申请" placement="top">
                           <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
                     </el-tooltip>
-                    <el-tooltip content="审核通过" placement="top">
-                          <el-button type="success" @click="accessEWork(eWorkDetail.id)">审核通过</el-button>
+                </div>
+                <div style="margin-left: 340px" v-show="isEWorkEdit && permit">
+                    <el-tooltip content="编辑该申请" placement="top">
+                        <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="删除该申请" placement="top">
+                        <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip content="审核通过" placement="top" v-show="permit">
+                        <el-button type="success" @click="accessEWork(eWorkDetail.id)">审核通过</el-button>
                     </el-tooltip>
                 </div>
-                <div style="margin-left: 480px" v-show="!isEWorkEdit">
+                <div style="margin-left: 480px" v-show="!isEWorkEdit && permit">
                     <el-tooltip content="删除该申请" placement="top">
                         <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
                     </el-tooltip>
