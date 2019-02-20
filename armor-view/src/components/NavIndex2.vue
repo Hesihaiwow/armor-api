@@ -3049,7 +3049,6 @@
             },
             //查询我的未完成任务
             fetchMyRunningTasks(userId){
-                console.log(userId)
                 http.zsyGetHttp('/extra-work/task-running/'+userId,{},(res)=>{
                     if (res){
                         this.myRunningTasks = res.data
