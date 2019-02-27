@@ -128,31 +128,8 @@ public class ZSYSignInService implements IZSYSignInService {
             }
             long time2 = System.currentTimeMillis();
             System.out.println("组装时间: "+ (time2 - time1) + "ms");
-            /*List<SignIn> copySignIns = null;
-            List<SignIn> newSignIns = null;
-            //查询上次更新后,最新的一条记录
-            SignIn signInLastRecord = signInMapper.selectSingInLastRecord();
-            //过滤掉本次导入数据中重复的数据,只保留最新记录之后的数据,再批量插入
-            // 1.筛选出最后导入记录之前的数据集合
-            copySignIns = signIns.stream().filter(signIn -> signIn.getCheckTime().before(signInLastRecord.getCheckTime())).collect(Collectors.toList());
-            newSignIns = signIns.stream().filter(signIn -> signIn.getCheckTime().after(signInLastRecord.getCheckTime())).collect(Collectors.toList());
-            // 2.筛选出已导入数据和新增数据不重复的数据
-            if (!CollectionUtils.isEmpty(copySignIns)){
-                List<SignIn> allSignIns = signInMapper.selectSignInList();
-                List<SignIn> differentSignIns = new ArrayList<>();
-                for (SignIn allSignIn : allSignIns) {
-                    for (SignIn copySignIn : copySignIns) {
-                        if (!(copySignIn.getCheckTime().equals(allSignIn.getCheckTime())) && !(copySignIn.getUserId().equals(allSignIn.getUserId()))){
-                            differentSignIns.add(copySignIn);
-                        }
-                    }
-                }
-                newSignIns.addAll(differentSignIns);
-                if (signInMapper.insertSignInBatch(newSignIns) == 0){
-                    throw new ZSYServiceException("批量导入考勤打卡记录失败");
-                }
-            }*/
-            if (signInMapper.insertSignInBatch(signIns) == 0){
+
+            if (!CollectionUtils.isEmpty(signIns) && signInMapper.insertSignInBatch(signIns) == 0){
                 throw new ZSYServiceException("批量导入考勤打卡记录失败");
             }
             System.out.println("插入时间: " + (System.currentTimeMillis() - time2) + "ms");
