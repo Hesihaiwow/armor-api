@@ -1650,7 +1650,8 @@
             </span>
         </el-dialog>
         <el-dialog title="导入考勤记录到数据库" :visible.sync="uploadToMysqlVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny">
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                    @close="closeSignInDialog">
             <el-upload
                     class="upload-demo"
                     ref="record"
@@ -1664,7 +1665,8 @@
             </el-upload>
         </el-dialog>
         <el-dialog title="导入花名册到数据库" :visible.sync="uploadUserSortToMysqlVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny">
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   @close="closeUserSortDialog">
             <el-upload
                     class="upload-demo"
                     ref="usersort"
@@ -3615,10 +3617,16 @@
 
             },
             uploadRecordToMysql(file){
+                this.uploadToMysqlVisible = false;
+                this.$message({
+                    showClose: true,
+                    message: '正在导入中,请稍后再进行操作',
+                    type: 'success'
+                });
                 var data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/sign-in/upload/sign-in/repository',data,(res)=>{
-                    this.uploadToMysqlVisible = false;
+
                     this.$refs.record.clearFiles();
                     if (res.errMsg == "执行成功"){
                         this.$message({
@@ -3626,8 +3634,13 @@
                             message: '导入成功',
                             type: 'success'
                         });
+                    }else {
+                        this.uploadToMysqlVisible = false;
                     }
                 })
+            },
+            closeSignInDialog(){
+                this.$refs.record.clearFiles();
             },
             uploadUserSortToMysql(file){
                 var data = new FormData();
@@ -3641,8 +3654,13 @@
                             message: '导入成功',
                             type: 'success'
                         });
+                    }else {
+                        this.uploadUserSortToMysqlVisible = false;
                     }
                 })
+            },
+            closeUserSortDialog(){
+                this.$refs.usersort.clearFiles();
             },
             beforeRecordUpload(file) {
                 var suffix = file.name.substring(file.name.lastIndexOf(".")+1)
