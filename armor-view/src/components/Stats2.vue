@@ -18,46 +18,6 @@
                     <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <!--<el-tab-pane label="线上bug" name="bug"  style="">-->
-                <!--<div class="add-member-basic-msg fl" >-->
-                    <!--<el-select v-model="bugList.userId" clearable filterable   placeholder="筛选用户">-->
-                        <!--<el-option v-for="item in userList" :key="item.id" :label="item.name"-->
-                                   <!--:value="item.id"></el-option>-->
-                    <!--</el-select>-->
-                <!--</div>-->
-                <!--<div class="add-member-basic-msg fl"><el-date-picker-->
-                        <!--v-model="bugDaterange"-->
-                        <!--type="daterange"-->
-                        <!--placeholder="选择日期范围"-->
-                        <!--unlink-panels-->
-                        <!--@change="bugTimeChange"-->
-                        <!--:picker-options="pickerOptions">-->
-                <!--</el-date-picker></div>-->
-                <!--<div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getBugList()" class="search-btn"></div>-->
-                <!--<el-button type="primary" style="margin-left: 300px;margin-bottom: 10px;" class="add-member-basic-msg fl" @click="openBugDialog" v-show="permit">创建bug处理</el-button>-->
-                <!--<el-table :data="bugManage" border>-->
-                    <!--<el-table-column prop="projectId" label="序号" align="center" width="100"></el-table-column>-->
-                    <!--<el-table-column prop="description" label="问题描述" align="center"></el-table-column>-->
-                    <!--<el-table-column prop="projectName" label="问题项目" align="center" width="130"></el-table-column>-->
-                    <!--<el-table-column prop="users" label="负责人" align="center" width="200"></el-table-column>-->
-                    <!--<el-table-column prop="createTime" label="发现日期"  width="130"></el-table-column>-->
-                    <!--<el-table-column prop="processTime" label="处理日期"  width="130"></el-table-column>-->
-                    <!--<el-table-column label="操作" width="100">-->
-                        <!--<template scope="scope">-->
-                            <!--<el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>-->
-                        <!--</template>-->
-                    <!--</el-table-column>-->
-                <!--</el-table>-->
-                <!--<div class="pagination">-->
-                    <!--<el-pagination-->
-                            <!--@current-change="handleCurrentChange"-->
-                            <!--:current-page.sync="bugList.pageNum"-->
-                            <!--:page-size="bugFormPage.pageSize"-->
-                            <!--:layout="pageLayout"-->
-                            <!--:total="bugFormPage.total">-->
-                    <!--</el-pagination>-->
-                <!--</div>-->
-            <!--</el-tab-pane>-->
             <el-tab-pane label="线上bug" name="bug"  style="">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="bugReqDTO.userId" clearable filterable   placeholder="筛选用户">
@@ -438,7 +398,7 @@
                 :visible.sync="createBugSolvingVisible1">
                 <div class="ctpc-con">
 
-                    <div style="margin-top: 10px">
+                    <div style="margin-top: 10px;float: left">
                         <div  style="display: inline"><span class="star">*</span>反馈人</div>
                         <div style="display: inline;margin-left: 44px">
                             <el-select v-model="onlineBugForm.origin" placeholder="请选择">
@@ -446,7 +406,7 @@
                             </el-select>
                         </div>
                     </div>
-                    <div style="margin-top: 10px">
+                    <div style="margin-top: 10px;float: left;margin-left: 10px">
                         <div  style="display: inline"><span class="star">*</span>问题类型</div>
                         <div style="display: inline;margin-left: 30px">
                             <el-select v-model="onlineBugForm.type" placeholder="请选择">
@@ -455,7 +415,7 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 10px">
+                    <div style="margin-top: 10px;float: left">
                         <div  style="display: inline"><span class="star">*</span>是否解决</div>
                         <div style="display: inline;margin-left: 30px">
                             <el-select v-model="onlineBugForm.isSolved" placeholder="请选择">
@@ -463,7 +423,7 @@
                             </el-select>
                         </div>
                     </div>
-                    <div style="margin-top: 10px">
+                    <div style="margin-top: 10px;float: left;margin-left: 10px">
                         <div  style="display: inline">反馈系统</div>
                         <div style="display: inline;margin-left: 40px">
                             <el-select v-model="onlineBugForm.demandSystem" placeholder="请选择">
@@ -471,8 +431,8 @@
                             </el-select>
                         </div>
                     </div>
-                    <div>
-                        <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
+                    <div style="margin-top: -10px;float: left">
+                        <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>发现日期</div>
                         <el-date-picker
                                 v-model="onlineBugForm.createTime"
                                 type="date"
@@ -480,7 +440,7 @@
                                 style="position: relative;margin-left: 100px">
                         </el-date-picker>
                     </div>
-                    <div>
+                    <div style="margin-top: -10px;float: left;margin-left: 33px">
                         <div style="margin-top: 20px;margin-bottom: -20px">	处理日期</div>
                         <el-date-picker
                                 v-model="onlineBugForm.processTime"
@@ -490,16 +450,16 @@
                         </el-date-picker>
                     </div>
                     <div>
-                        <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="3"></el-input>
+                        <div style="margin-top: 150px"><span class="star">*</span>问题描述</div>
+                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="2"></el-input>
                     </div>
                     <div>
-                        <div style="margin-top: 20px">账号信息</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.accountInfo" :rows="3"></el-input>
+                        <div style="margin-top: 10px">账号信息</div>
+                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.accountInfo" :rows="2"></el-input>
                     </div>
                     <div>
-                        <div style="margin-top: 20px">备注</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.remark" :rows="3"></el-input>
+                        <div style="margin-top: 10px">备注</div>
+                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.remark" :rows="2"></el-input>
                     </div>
                 </div>
 
@@ -613,7 +573,7 @@
                 :close-on-press-escape="false"
                 :visible.sync="updateBugSolvingVisible1">
             <div class="ctpc-con">
-                <div style="margin-top: 10px">
+                <div style="margin-top: 10px;float: left">
                     <div  style="display: inline"><span class="star">*</span>反馈人</div>
                     <div style="display: inline;margin-left: 44px">
                         <el-select v-model="onlineBugForm.origin" placeholder="请选择">
@@ -621,7 +581,7 @@
                         </el-select>
                     </div>
                 </div>
-                <div style="margin-top: 10px">
+                <div style="margin-top: 10px;float: left;margin-left: 10px">
                     <div  style="display: inline"><span class="star">*</span>问题类型</div>
                     <div style="display: inline;margin-left: 30px">
                         <el-select v-model="onlineBugForm.type" placeholder="请选择">
@@ -630,7 +590,7 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 10px">
+                <div style="margin-top: 10px;float: left">
                     <div  style="display: inline"><span class="star">*</span>是否解决</div>
                     <div style="display: inline;margin-left: 30px">
                         <el-select v-model="onlineBugForm.isSolved" placeholder="请选择">
@@ -638,7 +598,7 @@
                         </el-select>
                     </div>
                 </div>
-                <div style="margin-top: 10px">
+                <div style="margin-top: 10px;float: left;margin-left: 10px">
                     <div  style="display: inline">反馈系统</div>
                     <div style="display: inline;margin-left: 40px">
                         <el-select v-model="onlineBugForm.demandSystem" placeholder="请选择">
@@ -646,8 +606,8 @@
                         </el-select>
                     </div>
                 </div>
-                <div>
-                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
+                <div style="margin-top: -10px;float: left">
+                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>发现日期</div>
                     <el-date-picker
                             v-model="onlineBugForm.createTime"
                             type="date"
@@ -655,7 +615,7 @@
                             style="position: relative;margin-left: 100px">
                     </el-date-picker>
                 </div>
-                <div>
+                <div style="margin-top: -10px;float: left;margin-left: 33px">
                     <div style="margin-top: 20px;margin-bottom: -20px">	处理日期</div>
                     <el-date-picker
                             v-model="onlineBugForm.processTime"
@@ -665,16 +625,16 @@
                     </el-date-picker>
                 </div>
                 <div>
-                    <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
-                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="3"></el-input>
+                    <div style="margin-top: 150px"><span class="star">*</span>问题描述</div>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="2"></el-input>
                 </div>
                 <div>
-                    <div style="margin-top: 20px">账号信息</div>
-                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.accountInfo" :rows="3"></el-input>
+                    <div style="margin-top: 10px">账号信息</div>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.accountInfo" :rows="2"></el-input>
                 </div>
                 <div>
-                    <div style="margin-top: 20px">备注</div>
-                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.remark" :rows="3"></el-input>
+                    <div style="margin-top: 10px">备注</div>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.remark" :rows="2"></el-input>
                 </div>
             </div>
 
@@ -2200,7 +2160,7 @@
     }
 
     .ctpc-con {
-        height: 240px;
+        height: 340px;
         overflow-y: scroll;
         padding-right: 10px;
     }
