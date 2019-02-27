@@ -319,6 +319,73 @@
                     <el-table-column prop="vacationTime" label="请假时长" align="center" width="120" sortable></el-table-column>
                 </el-table>
             </el-tab-pane>
+            <el-tab-pane label="考勤统计" name="signIn" v-if="admin">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="signInReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="signInDaterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        unlink-panels
+                        @change="signInTimeChange"
+                        :picker-options="pickerOptions">
+                </el-date-picker></div>
+                <el-button type="primary" @click="fetchSignInData" style="margin-left: 10px" size="small">查询</el-button>
+                <el-table :data="signInData" border>
+                    <el-table-column prop="userName" label="用户" align="center" width="110">
+                        <template scope="scope">
+                            <span style="color: red" v-if="scope.row.isForget == 1">(漏)</span>{{scope.row.userName}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkTimeList" label="打卡记录" align="left">
+                        <template scope="scope">
+                            {{scope.row.checkTimeList}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkInTime" label="上班时间" align="center" width="240">
+                        <template scope="scope">
+                            <span style="color: red" v-if="scope.row.isRecheckIn == 1">(补)</span>
+                            {{scope.row.checkInTime | formatTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkOutTime" label="下班时间" align="center" width="240">
+                        <template scope="scope">
+                            <span style="color: red" v-if="scope.row.isRecheckOut == 1">(补)</span>
+                            <span style="color: green" v-if="scope.row.isWorkToNextDay == 1">(+1)</span>
+                            {{scope.row.checkOutTime | formatTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="workTime" label="上班时长" align="center" width="100">
+                        <template scope="scope">
+                            <span v-if="scope.row.lessThanNine == 1" style="color: red">{{scope.row.workTime}}</span>
+                            <span v-else>{{scope.row.workTime}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="100">
+                        <template scope="scope">
+                            {{scope.row.eWorkTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
+                        <template scope="scope">
+                            {{scope.row.leaveTime}}
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="signInHandleCurrentChange"
+                            :current-page.sync="signInReqDTO.pageNum"
+                            :page-size="signInPage.pageSize"
+                            :layout="signInPageLayout"
+                            :total="signInPage.total">
+                    </el-pagination>
+                </div>
+            </el-tab-pane>
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
@@ -697,7 +764,21 @@
                     {label: '紧急', value: 1},
                     {label: '非常紧急', value: 2},
                 ],
-                taskTotalTime:0
+                taskTotalTime:0,
+
+                //考勤
+                signInReqDTO:{
+                    userId:'',
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1,
+                },
+                signInDaterange:'',
+                signInData:[],
+                signInPage:{
+                    pageSize: 10,
+                    total: 0,
+                },
 
 
 
@@ -723,6 +804,7 @@
             this.fetchPersonVacation();
             this.fetchDiffStageTaskTime();
             this.fetchTop10MostTimeTask();
+            this.fetchSignInData();
         },
         computed: {
             permit() {
@@ -744,6 +826,12 @@
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
+            },
+            signInPageLayout() {
+                if (this.signInPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
             }
 
         },
@@ -755,6 +843,10 @@
             formatDate2: function (value) {
                 if (!value) return '';
                 return moment(value).format('YYYY-MM-DD');
+            },
+            formatTime: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY-MM-DD HH:mm:ss');
             },
         },
         methods: {
@@ -1606,22 +1698,24 @@
 
             //查询年度已完成任务总耗时(设计,产品,开发,测试)
             fetchDiffStageTaskTime(){
-                Http.zsyPostHttp('/data/annual/diff-stage/task-time',this.taskTimeReqDTO,(res)=>{
-                    if (res){
-                        this.taskTimeData = res.data;
-                        this.taskTimeData.totalTaskTime = res.data.totalTaskTime;
-                        this.diffStageTime.push(res.data.designTime);
-                        this.diffStageTime.push(res.data.productTime);
-                        this.diffStageTime.push(res.data.developTime);
-                        this.diffStageTime.push(res.data.testTime);
+                if (this.admin){
+                    Http.zsyPostHttp('/data/annual/diff-stage/task-time',this.taskTimeReqDTO,(res)=>{
+                        if (res){
+                            this.taskTimeData = res.data;
+                            this.taskTimeData.totalTaskTime = res.data.totalTaskTime;
+                            this.diffStageTime.push(res.data.designTime);
+                            this.diffStageTime.push(res.data.productTime);
+                            this.diffStageTime.push(res.data.developTime);
+                            this.diffStageTime.push(res.data.testTime);
 
-                        this.diffStageAvgTime.push(res.data.avgDesignTime);
-                        this.diffStageAvgTime.push(res.data.avgProductTime);
-                        this.diffStageAvgTime.push(res.data.avgDevelopTime);
-                        this.diffStageAvgTime.push(res.data.avgTestTime);
-                        this.drawLine7()
-                    }
-                })
+                            this.diffStageAvgTime.push(res.data.avgDesignTime);
+                            this.diffStageAvgTime.push(res.data.avgProductTime);
+                            this.diffStageAvgTime.push(res.data.avgDevelopTime);
+                            this.diffStageAvgTime.push(res.data.avgTestTime);
+                            this.drawLine7()
+                        }
+                    })
+                }
             },
 
             //查询耗时前十名的多人任务
@@ -1659,6 +1753,81 @@
                     }
                 })
             },
+
+            //考勤
+            signInTimeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.signInReqDTO.beginTime = `${time[0]} 00:00:00`
+                    this.signInReqDTO.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.signInReqDTO.beginTime = this.signInReqDTO.endTime = this.signInDaterange = ''
+                }
+            },
+
+            //查询考勤情况
+            fetchSignInData(){
+                if (this.admin){
+                    Http.zsyPostHttp('/sign-in/page',this.signInReqDTO,(res)=>{
+                        if (res){
+                            this.signInData = res.data.list;
+                            this.signInPage.total = res.data.total;
+                            this.signInData.forEach(signIn =>{
+                                if (signIn.workTime) {
+                                    signIn.workTime = this.getTime(signIn.workTime);
+                                }
+                                if(signIn.eWorkTime){
+                                    signIn.eWorkTime = this.getTime(signIn.eWorkTime);
+                                }
+                                var checkTimeStr = '';
+                                signIn.checkTimeList.forEach(checkTime => {
+                                    checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
+                                })
+                                signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
+                            })
+                        }
+                    })
+                } else {
+                    Http.zsyPostHttp('/sign-in/page/personal',this.signInReqDTO,(res)=>{
+                        if (res){
+                            this.signInData = res.data.list;
+                            this.signInPage.total = res.data.total;
+                            this.signInData.forEach(signIn =>{
+                                if (signIn.workTime) {
+                                    signIn.workTime = this.getTime(signIn.workTime);
+                                }
+                                if(signIn.eWorkTime){
+                                    signIn.eWorkTime = this.getTime(signIn.eWorkTime);
+                                }
+                                var checkTimeStr = '';
+                                signIn.checkTimeList.forEach(checkTime => {
+                                    checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
+                                })
+                                signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
+                            })
+                        }
+                    })
+                }
+            },
+            signInHandleCurrentChange(currentPage){
+                this.signInPage.pageNum = currentPage;
+                this.fetchSignInData();
+            },
+            //格式化时间
+            getTime(time){
+                const hours = this.addZero(parseInt(time/1000/60/60));
+                const mins = this.addZero(parseInt(time/1000/60%60));
+                const secs = this.addZero(parseInt(time/1000%60));
+                return hours+':'+mins+':'+secs
+            },
+            addZero(time){
+                if (time < 10){
+                    return "0"+time;
+                } else {
+                    return time+"";
+                }
+            }
             // -- sch
         }
     }
@@ -1934,7 +2103,7 @@
     }
 
     .stats-con {
-        width: 1100px;
+        width: 1200px;
         font-size: 14px;
         background: #fff;
         padding: 30px 0;

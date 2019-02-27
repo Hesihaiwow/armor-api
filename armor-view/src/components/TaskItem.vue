@@ -861,9 +861,9 @@
                     createBy:''
                 },
                 priorityList: [
-                    {label: '普通', value: 0},
-                    {label: '紧急', value: 1},
-                    {label: '非常紧急', value: 2},
+                    {label: '普通', value: 1},
+                    {label: '紧急', value: 2},
+                    {label: '非常紧急', value: 3},
                 ],
                 facilityList: [
                     {label: '容易', value: 1},

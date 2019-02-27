@@ -96,7 +96,12 @@
           }, {
               value: 2,
               label: '普通成员'
-        }],
+        },
+            {
+                value: 3,
+                label: '人事行政'
+            }
+        ],
           rolesList:[{
               roleId: 1,
               roleName: '开发'

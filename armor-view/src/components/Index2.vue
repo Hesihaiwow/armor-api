@@ -205,34 +205,7 @@
                         label: '主页',
                         name: 'navIndex'
                     },
-                    {
-                        label: '任务',
-                        name: 'task'
-                    },
-                    {
-                        label: '项目',
-                        name: 'project'
-                    },
-                    {
-                        label: '统计',
-                        name: 'stats'
-                    },
-                    {
-                        label: '需求',
-                        name: 'demand'
-                    },
-                    {
-                        label: '计划',
-                        name: 'plan'
-                    },
-                    {
-                        label: '通知',
-                        name: 'notice'
-                    },
-                    /*{
-                        label:'总结',
-                        name:'summaryNav'
-                    }*/
+
                 ],
                 showIndex: true,
                 showPerOpt: false,
@@ -316,6 +289,32 @@
             this.$root.eventBus.$on("handleTabSelected", (val) => {
                 this.activeName = val;
             });
+            if (Helper.decodeToken().userRole < 3) {
+                this.tabs.push({
+                    label: '任务',
+                    name: 'task'
+                },);
+                this.tabs.push({
+                    label: '项目',
+                    name: 'project'
+                },);
+                this.tabs.push({
+                    label: '统计',
+                    name: 'stats'
+                },);
+                this.tabs.push({
+                    label: '需求',
+                    name: 'demand'
+                },);
+                this.tabs.push({
+                    label: '计划',
+                    name: 'plan'
+                },);
+                this.tabs.push({
+                    label: '通知',
+                    name: 'notice'
+                },);
+            }
             if (Helper.decodeToken().userRole < 1) {
                 this.tabs.push({
                     label: '积分',
@@ -334,7 +333,7 @@
                     name: 'organization'
                 });
             }
-            if (Helper.decodeToken().userRole > 0){
+            if (Helper.decodeToken().userRole > 0 && Helper.decodeToken().userRole < 3){
                 this.tabs.push({
                     label:'总结',
                     name:'summaryNav'
@@ -399,12 +398,14 @@
             },
             //查询所有未读数量
             fetchUnreadNoticeNum(){
-                Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
-                    this.unreadNoticeNum = res.data.count
-                    window.localStorage.setItem("unreadNum",res.data.count)
-                    this.tabs[6].value = this.unreadNoticeNum
+                if (Helper.decodeToken().userRole < 3){
+                    Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
+                        this.unreadNoticeNum = res.data.count
+                        window.localStorage.setItem("unreadNum",res.data.count)
+                        this.tabs[6].value = this.unreadNoticeNum
 
-                })
+                    })
+                }
             },
             //查询所有通知
             fetchAllNotice(){
@@ -477,10 +478,12 @@
             },
             //每5分钟定时检查当前用户是否由未读通知
             checkNotice(){
+                if (Helper.decodeToken().userRole < 3){
                     setInterval(() => {
                         this.unreadNoticeNum = window.localStorage.getItem("unreadNum")
                         // console.log(this.unreadNoticeNum)
                     },1000)
+                }
             },
             // -- sch
 

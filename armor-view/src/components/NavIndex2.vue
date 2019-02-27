@@ -1,6 +1,6 @@
 <template>
     <div class="nav-index-con">
-        <div class="my-integral-con" v-show="userRole>0">
+        <div class="my-integral-con" v-show="userRole>0 && userRole < 3">
             <!--<a class="mic-title" @click="toMySummary" style="cursor: pointer">我得年度总结</a>-->
             <div><p class="mic-title">我的积分</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"
@@ -18,10 +18,84 @@
                 </div>
             </div>
         </div>
+        <div class="my-task-con" v-show="userRole == 3">
+            <div>
+                <el-button type="primary" @click="uploadUserSortToMysqlVisible=true">导入花名册</el-button>
+                <el-button type="primary" @click="uploadToMysqlVisible=true">导入考勤记录</el-button>
+            </div>
+            <p class="mic-title" style="margin-top: 20px">考勤记录</p>
+            <div class="my-task-detail" style="width: 1200px;">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="signInReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl"><el-date-picker
+                        v-model="signInDaterange"
+                        type="daterange"
+                        placeholder="选择日期范围"
+                        unlink-panels
+                        @change="signInTimeChange"
+                        :picker-options="pickerOptions">
+                </el-date-picker></div>
+                <el-button type="primary" @click="fetchSignInData" style="margin-left: 10px" size="small">查询</el-button>
+                <el-table :data="signInData" border>
+                    <el-table-column prop="userName" label="用户" align="center" width="110">
+                        <template scope="scope">
+                            <span style="color: red" v-if="scope.row.isForget == 1">(漏)</span>{{scope.row.userName}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkTimeList" label="打卡记录" align="left">
+                        <template scope="scope">
+                            {{scope.row.checkTimeList}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkInTime" label="上班时间" align="center" width="240" >
+                        <template scope="scope">
+                            <span style="color: red" v-if="scope.row.isRecheckIn == 1">(补)</span>
+                            {{scope.row.checkInTime | formatTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkOutTime" label="下班时间" align="center" width="240" >
+                        <template scope="scope">
+                            <span style="color: red" v-if="scope.row.isRecheckOut == 1">(补)</span>
+                            <span style="color: green" v-if="scope.row.isWorkToNextDay == 1">(+1)</span>
+                            {{scope.row.checkOutTime | formatTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="workTime" label="上班时长" align="center" width="100" >
+                        <template scope="scope">
+                            <span v-if="scope.row.lessThanNine == 1" style="color: red">{{scope.row.workTime}}</span>
+                            <span v-else>{{scope.row.workTime}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="100" >
+                        <template scope="scope">
+                            {{scope.row.eWorkTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
+                        <template scope="scope">
+                            {{scope.row.leaveTime}}
+                        </template>
+                    </el-table-column>
 
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="signInHandleCurrentChange"
+                            :current-page.sync="signInReqDTO.pageNum"
+                            :page-size="signInPage.pageSize"
+                            :layout="signInPageLayout"
+                            :total="signInPage.total">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
 
         <div class="my-task-con">
-            <div v-show="userRole>0">
+            <div v-show="userRole>0 && userRole < 3">
                 <div class="add-task" style="margin-right: 220px" @click="createExtraWork">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>加班申请</span>
@@ -100,6 +174,73 @@
                                        taskStatus="ApplyFail" @reload="reload"></task-item>
                         </el-tab-pane>-->
                     </el-tabs>
+                </div>
+                <p class="mic-title">我的考勤</p>
+                <div class="my-task-detail" style="width: 1200px">
+                    <div class="add-member-basic-msg fl"><el-date-picker
+                            v-model="mySignInDaterange"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            unlink-panels
+                            @change="mySignInTimeChange"
+                            :picker-options="pickerOptions">
+                    </el-date-picker></div>
+                    <el-button type="primary" @click="fetchMySignInData" style="margin-left: 10px" size="small">查询</el-button>
+                    <el-table :data="signInData" border>
+                        <el-table-column prop="userName" label="用户" align="center" width="110">
+                            <template scope="scope">
+                                <span style="color: red" v-if="scope.row.isForget == 1">(漏)</span>{{scope.row.userName}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="checkTimeList" label="打卡记录" align="left">
+                            <template scope="scope">
+                                {{scope.row.checkTimeList}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="checkInTime" label="上班时间" align="center" width="240" >
+                            <template scope="scope">
+                                <span style="color: red" v-if="scope.row.isRecheckIn == 1">(补)</span>
+                                {{scope.row.checkInTime | formatTime}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="checkOutTime" label="下班时间" align="center" width="240" >
+                            <template scope="scope">
+                                <span style="color: red" v-if="scope.row.isRecheckOut == 1">(补)</span>
+                                <span style="color: green" v-if="scope.row.isWorkToNextDay == 1">(+1)</span>
+                                {{scope.row.checkOutTime | formatTime}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="workTime" label="上班时长" align="center" width="100" >
+                            <template scope="scope">
+                                <span v-if="scope.row.lessThanNine == 1" style="color: red">{{scope.row.workTime}}</span>
+                                <span v-else>{{scope.row.workTime}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="eWorkTime" label="加班时长" align="center" width="100" >
+                            <template scope="scope">
+                                {{scope.row.eWorkTime}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
+                            <template scope="scope">
+                                {{scope.row.leaveTime}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" align="center" width="80">
+                            <template scope="scope">
+                                <a v-if="scope.row.isForget == 1" style="color: blue;cursor: pointer" @click="recheck(scope.row.userId)">补签到</a>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div class="pagination">
+                        <el-pagination
+                                @current-change="mySignInHandleCurrentChange"
+                                :current-page.sync="mySignInReqDTO.pageNum"
+                                :page-size="mySignInPage.pageSize"
+                                :layout="mySignInPageLayout"
+                                :total="mySignInPage.total">
+                        </el-pagination>
+                    </div>
                 </div>
                 <p class="mic-title">我的线上问题</p>
                 <div class="my-task-detail">
@@ -591,7 +732,7 @@
                     </el-tab-pane>
                 </el-tabs>
             </div>
-            <div>
+            <div v-show="userRole < 3">
                 <p class="mic-title">{{userRole!=0?'请假申请':'请假申请审核'}}</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeLeaveName" @tab-click="handleClick">
@@ -657,7 +798,7 @@
                     </el-tabs>
                 </div>
             </div>
-            <div>
+            <div v-show="userRole < 3">
                 <p class="mic-title">{{userRole!=0?'加班申请':'加班申请审核'}}</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeEWorkName" @tab-click="handleClick">
@@ -715,6 +856,70 @@
                                 </el-pagination>
                             </div>
                             <div v-show="eWorkList.pass.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+            <div v-show="userRole < 3">
+                <p class="mic-title">{{userRole!=0?'补打卡申请':'补打卡申请审核'}}</p>
+                <div class="my-task-detail">
+                    <el-tabs v-model="activeRecheckName" @tab-click="handleClick">
+                        <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
+                            <div class="task-lis" v-for="recheck in recheckList.wait" @click="editRecheck(recheck)">
+                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>补打卡原因: {{recheck.reason}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">补打卡时间: {{recheck.recheckTime| formatTime }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="recheck.avatarUrl && recheck.avatarUrl!=''"
+                                         :src="recheck.avatarUrl">
+                                    <span v-else="">{{recheck.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.recheckList.wait.length>0">
+                                <el-pagination
+                                        @current-change="handleRecheckWaitPage"
+                                        :current-page.sync="recheckWaitPage.pageNum"
+                                        :page-size="recheckWaitPage.pageSize"
+                                        :layout="recheckWaitPageLayout"
+                                        :total="recheckWaitPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="recheckList.wait.length==0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane :label="userRole!=0?'完成审核':'审核通过'" name="review">
+                            <div class="task-lis" v-for="recheck in recheckList.pass" @click="showRecheck(recheck)">
+                                <div class="head-img"><img src="../assets/img/auditSuccess.png"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name"><span>原因: {{recheck.reason}}</span></div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">补打卡时间: {{recheck.recheckTime| formatTime }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="recheck.avatarUrl && recheck.avatarUrl!=''"
+                                         :src="recheck.avatarUrl">
+                                    <span v-else="">{{recheck.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.recheckList.pass.length>0">
+                                <el-pagination
+                                        @current-change="handleRecheckPassPage"
+                                        :current-page.sync="recheckPassPage.pageNum"
+                                        :page-size="recheckPassPage.pageSize"
+                                        :layout="recheckPassPageLayout"
+                                        :total="recheckPassPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="recheckList.pass.length==0" class="empty">
                                 <h2>暂无数据</h2>
                             </div>
                         </el-tab-pane>
@@ -1341,6 +1546,77 @@
               </span>
         </el-dialog>
 
+        <el-dialog title="补打卡申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
+                   :close-on-press-escape="false" :visible.sync="reCheckVisible" :show-close="false"
+                    @close="closeRecheckForm">
+            <el-form :model="recheckForm" ref="recheckForm" :rules="recheckRules" label-width="110px">
+                <el-form-item label="补打卡原因" prop="reason">
+                    <el-input type="textarea" v-model="recheckForm.reason" :rows="3"></el-input>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="补打卡时间" prop="beginTime">
+                    <el-date-picker
+                            v-model="recheckForm.recheckTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:ss"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveRecheck('recheckForm')"
+                           :loading="isSaving">立即创建</el-button>
+                <el-button
+                        @click="reCheckVisible = false">取 消</el-button>
+              </span>
+        </el-dialog>
+        <el-dialog title="编辑补打卡申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
+                   :close-on-press-escape="false" :visible.sync="editRecheckVisible"
+                   @close="closeRecheckForm">
+            <el-form :model="recheckForm" ref="recheckForm" :rules="recheckRules" label-width="110px">
+                <el-form-item label="补打卡原因" prop="reason">
+                    <el-input type="textarea" v-model="recheckForm.reason" :rows="3"></el-input>
+                </el-form-item>
+                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="补打卡时间" prop="beginTime">
+                    <el-date-picker
+                            v-model="recheckForm.recheckTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:ss"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveEditRecheck('recheckForm',recheckForm.id)"
+                           :loading="isSaving">立即修改</el-button>
+                <el-button type="danger" @click="deleteRecheck(recheckForm.id)"
+                           :loading="isSaving">删除</el-button>
+                <el-button v-show="permit" type="success" @click="accessRecheck(recheckForm.id)"
+                           :loading="isSaving">审核</el-button>
+                <el-button @click="editRecheckVisible = false">取 消</el-button>
+
+            </span>
+        </el-dialog>
+        <el-dialog title="补打卡申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
+                   :close-on-press-escape="false" :visible.sync="showRecheckVisible"
+                   @close="closeRecheckForm">
+            <el-form>
+                <el-form-item label="补打卡原因" prop="reason">
+                    {{recheckForm.reason}}
+                </el-form-item>
+                <el-form-item label="补打卡时间" prop="reason">
+                    {{recheckForm.recheckTime | formatTime}}
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button v-show="permit" type="danger" @click="deleteRecheck(recheckForm.id)"
+                           :loading="isSaving">删除</el-button>
+                <el-button @click="showRecheckVisible = false">取 消</el-button>
+            </span>
+        </el-dialog>
+
+
         <el-dialog title="请假申请详情" :visible.sync="leaveDetailVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
             <el-form>
@@ -1372,6 +1648,34 @@
             <span slot="footer" class="dialog-footer">
                 <el-button type="success" @click="calculateIntegral" v-show="activeLeaveName=='wait'">计算基准积分</el-button>
             </span>
+        </el-dialog>
+        <el-dialog title="导入考勤记录到数据库" :visible.sync="uploadToMysqlVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny">
+            <el-upload
+                    class="upload-demo"
+                    ref="record"
+                    action=""
+                    :on-preview="handleRecordPreview"
+                    :on-remove="handleRecordRemove"
+                    :before-upload="beforeRecordUpload"
+                    :http-request="uploadRecordToMysql">
+                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传.dat文件，且不超过1MB</div>
+            </el-upload>
+        </el-dialog>
+        <el-dialog title="导入花名册到数据库" :visible.sync="uploadUserSortToMysqlVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny">
+            <el-upload
+                    class="upload-demo"
+                    ref="usersort"
+                    action=""
+                    :on-preview="handleRecordPreview2"
+                    :on-remove="handleRecordRemove2"
+                    :before-upload="beforeUserSortUpload"
+                    :http-request="uploadUserSortToMysql">
+                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传.xls文件，且不超过1MB</div>
+            </el-upload>
         </el-dialog>
 
     </div>
@@ -1408,6 +1712,7 @@
                 activeHelpName: 'wait',
                 activeLeaveName: 'wait',
                 activeEWorkName: 'wait',
+                activeRecheckName: 'wait',
                 auditTabsActiveName: 'wait',
                 auditHelpTabsActiveName: 'wait',
                 taskExpandTabsActiveName: 'wait',
@@ -1615,6 +1920,9 @@
                 extraWorkRules:{
                     reason:[{required: true, message: '加班原因不能为空', trigger: 'change'}]
                 },
+                recheckRules:{
+                    reason:[{required: true, message: '补打卡原因不能为空', trigger: 'change'}]
+                },
                 task: {
                     doing: [],
                     test: [],
@@ -1717,6 +2025,91 @@
                 editEWorkVisible:false,
                 isEWorkEdit:true,
                 eWorkDetail:{},
+                uploadToMysqlVisible: false,
+                uploadUserSortToMysqlVisible: false,
+                recordFileList:[],
+
+                //考勤
+                forgetSignIn:[],
+                signInPage:{
+                    pageNum:1,
+                    total:0,
+                    pageSize:10
+                },
+                mySignInPage:{
+                    pageNum:1,
+                    total:0,
+                    pageSize:5
+                },
+                signInReqDTO:{
+                    userId:'',
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1,
+                },
+                mySignInReqDTO:{
+                    userId:'',
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1,
+                },
+                signInDaterange:'',
+                mySignInDaterange:'',
+                signInData:[],
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '本周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('week').valueOf());
+                            end.setTime(moment().endOf('week').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('month').valueOf());
+                            end.setTime(moment().endOf('month').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本季度',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(moment().startOf('quarter').valueOf());
+                            end.setTime(moment().endOf('quarter').valueOf());
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                reCheckVisible:false,
+                recheckForm:{
+                    id:'',
+                    reason:'',
+                    recheckTime: '',
+                    userId:''
+                },
+                recheckWaitPage:{
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0
+                },
+                recheckPassPage:{
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0
+                },
+                recheckList:{
+                    wait:[],
+                    pass:[]
+                },
+                editRecheckVisible:false,
+                showRecheckVisible:false
+
                 // -- sch
             };
         },
@@ -1802,6 +2195,18 @@
                 }
                 return 'total, pager'
             },
+            recheckWaitPageLayout() {
+                if (this.eWorkWaitPage.total > 5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            recheckPassPageLayout() {
+                if (this.eWorkWaitPage.total > 5) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             reviewPageLayout() {
                 if (this.reviewPage.total > 5) {
                     return 'total, prev, pager, next'
@@ -1819,6 +2224,18 @@
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
+            },
+            signInPageLayout() {
+                if (this.signInPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            mySignInPageLayout() {
+                if (this.mySignInPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
             }
         },
         filters: {
@@ -1828,7 +2245,7 @@
             },
             formatTime: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY年MM月DD日 HH:mm:00');
+                return moment(value).format('YYYY年MM月DD日 HH:mm:ss');
             },
             StringExtract: function (name) {
                 if (name.length > 18) {
@@ -1883,6 +2300,11 @@
                 this.fetchMyCheckedExtraWork();
                 this.fetchCheckingExtraWork();
                 this.fetchCheckedExtraWork();
+                this.fetchMyRecheckWait();
+                this.fetchMyRecheckPass();
+                this.fetchRecheckWait();
+                this.fetchRecheckPass();
+                // this.fetchForgetSignIn();
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -2446,6 +2868,11 @@
                     this.isSaving = false;
                     return false;
                 }
+                if (this.extraWorkForm.endTime < this.extraWorkForm.beginTime){
+                    this.$message({showClose: true, message: '加班结束时间不能在开始时间之前', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
                 if (this.extraWorkForm.workHours == null || this.extraWorkForm.workHours == ''){
                     this.$message({showClose: true, message: '加班时长不能为空', type: 'error'});
                     this.isSaving = false;
@@ -2750,7 +3177,6 @@
                 }
                 this.expandWeekNumber = param
             },
-
             // sch --
             //清空数据
             clearQuestionForm(){
@@ -3174,7 +3600,369 @@
             },
             closeEWorkDetail(){
                 this.isEWorkEdit = true
+            },
+
+            handleRecordPreview(){
+
+            },
+            handleRecordRemove(){
+
+            },
+            handleRecordPreview2(){
+
+            },
+            handleRecordRemove2(){
+
+            },
+            uploadRecordToMysql(file){
+                var data = new FormData();
+                data.append('uploadFile', file.file);
+                http.zsyPostHttp('/sign-in/upload/sign-in/repository',data,(res)=>{
+                    this.uploadToMysqlVisible = false;
+                    this.$refs.record.clearFiles();
+                    if (res.errMsg == "执行成功"){
+                        this.$message({
+                            showClose: true,
+                            message: '导入成功',
+                            type: 'success'
+                        });
+                    }
+                })
+            },
+            uploadUserSortToMysql(file){
+                var data = new FormData();
+                data.append('uploadFile', file.file);
+                http.zsyPostHttp('/sign-in/upload/user-sort/repository',data,(res)=>{
+                    this.uploadUserSortToMysqlVisible = false;
+                    this.$refs.usersort.clearFiles();
+                    if (res.errMsg == "执行成功"){
+                        this.$message({
+                            showClose: true,
+                            message: '导入成功',
+                            type: 'success'
+                        });
+                    }
+                })
+            },
+            beforeRecordUpload(file) {
+                var suffix = file.name.substring(file.name.lastIndexOf(".")+1)
+                const isLt2M = file.size / 1024 / 1024 < 1;
+                const isDat = file.name.substring(file.name.lastIndexOf(".")+1) == "dat"
+                if (suffix != "dat"){
+                    this.$message.error('上传文件只能是".dat"格式!');
+                }
+                if (!isLt2M) {
+                    this.$message.error('上传文件大小不能超过 1MB!');
+                }
+                return isDat && isLt2M;
+            },
+            beforeUserSortUpload(file) {
+                var suffix = file.name.substring(file.name.lastIndexOf(".")+1)
+                const isXls = file.name.substring(file.name.lastIndexOf(".")+1) == "xls";
+                const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                const isLt2M = file.size / 1024 / 1024 < 1;
+                if ("xls" != suffix) {
+                    this.$message.error('上传文件只能是".xls"格式!');
+                }
+                if (!isExcel) {
+                    this.$message.error('上传文件只能是excel 格式!');
+                    return false
+                }
+                if (!isLt2M) {
+                    this.$message.error('上传文件大小不能超过 1MB!');
+                }
+                return isExcel && isLt2M && isXls;
+            },
+
+            //查询我的漏打卡考勤
+            fetchForgetSignIn(){
+                http.zsyGetHttp('/sign-in/page/personal/forget/'+this.signInPage.pageNum,{},(res) =>{
+                    if (res){
+                        this.forgetSignIn = res.data.list;
+                        this.signInPage.total = res.data.totalSize;
+                    }
+                })
+            },
+            signInTimeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.signInReqDTO.beginTime = `${time[0]} 00:00:00`
+                    this.signInReqDTO.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.signInReqDTO.beginTime = this.signInReqDTO.endTime = this.signInDaterange = ''
+                }
+            },
+            mySignInTimeChange(time) {
+                // 选择结束时间
+                time = time.split(' - ')
+                if (time && time.length == 2) {
+                    this.mySignInReqDTO.beginTime = `${time[0]} 00:00:00`
+                    this.mySignInReqDTO.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.mySignInReqDTO.beginTime = this.mySignInReqDTO.endTime = this.mySignInDaterange = ''
+                }
+            },
+            //查询考勤情况
+            fetchSignInData(){
+                console.log(222)
+                http.zsyPostHttp('/sign-in/page',this.signInReqDTO,(res)=>{
+                        if (res){
+                            this.signInData = res.data.list;
+                            this.signInPage.total = res.data.total;
+                            this.signInData.forEach(signIn =>{
+                                if (signIn.workTime) {
+                                    signIn.workTime = this.getTime(signIn.workTime);
+                                }
+                                if(signIn.eWorkTime){
+                                    signIn.eWorkTime = this.getTime(signIn.eWorkTime);
+                                }
+                                var checkTimeStr = '';
+                                signIn.checkTimeList.forEach(checkTime => {
+                                    checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
+                                })
+                                signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
+                            })
+                        }
+                    })
+
+            },
+            fetchMySignInData(){
+                console.log(111)
+                    http.zsyPostHttp('/sign-in/page/personal',this.mySignInReqDTO,(res)=>{
+                        if (res){
+                            this.signInData = res.data.list;
+                            this.mySignInPage.total = res.data.total;
+                            this.signInData.forEach(signIn =>{
+                                if (signIn.workTime) {
+                                    signIn.workTime = this.getTime(signIn.workTime);
+                                }
+                                if(signIn.eWorkTime){
+                                    signIn.eWorkTime = this.getTime(signIn.eWorkTime);
+                                }
+                                var checkTimeStr = '';
+                                signIn.checkTimeList.forEach(checkTime => {
+                                    checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
+                                })
+                                signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
+                            })
+                        }
+                    })
+
+            },
+            signInHandleCurrentChange(currentPage){
+                this.signInPage.pageNum = currentPage;
+                this.fetchSignInData();
+            },
+            mySignInHandleCurrentChange(currentPage){
+                this.mySignInPage.pageNum = currentPage;
+                this.fetchMySignInData();
+            },
+            //格式化时间
+            getTime(time){
+                const hours = this.addZero(parseInt(time/1000/60/60));
+                const mins = this.addZero(parseInt(time/1000/60%60));
+                const secs = this.addZero(parseInt(time/1000%60));
+                return hours+':'+mins+':'+secs
+            },
+            addZero(time){
+                if (time < 10){
+                    return "0"+time;
+                } else {
+                    return time+"";
+                }
+            },
+            recheck(userId){
+                this.recheckForm.userId = userId;
+                this.reCheckVisible = true;
+            },
+            saveEditRecheck(formName,id){
+                this.isSaving = true;
+                if (this.recheckForm.reason == null || this.recheckForm.reason == ''){
+                    this.$message({showClose: true, message: '补打卡原因不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.recheckForm.recheckTime == null || this.recheckForm.recheckTime == ''){
+                    this.$message({showClose: true, message: '补打卡时间不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let form = this.recheckForm
+                        form.recheckTime = moment(form.recheckTime).format('YYYY-MM-DD HH:mm:ss')
+                        http.zsyPostHttp('/sign-in/resign-in/update/'+id, form, (resp) => {
+                            this.$message({
+                                showClose: true,
+                                message: '补打卡申请修改成功',
+                                type: 'success'
+                            });
+                            this.clearRecheckForm();
+                            this.fetchMyRecheckWait();
+                            this.fetchRecheckWait();
+                            this.editRecheckVisible = false
+                            this.isSaving = false
+                        }, err => {
+                            this.isSaving = false
+                        })
+                    }
+                })
+            },
+            saveRecheck(formName){
+                this.isSaving = true;
+                if (this.recheckForm.reason == null || this.recheckForm.reason == ''){
+                    this.$message({showClose: true, message: '补打卡原因不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (this.recheckForm.recheckTime == null || this.recheckForm.recheckTime == ''){
+                    this.$message({showClose: true, message: '补打卡时间不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let form = this.recheckForm
+                        form.recheckTime = moment(form.recheckTime).format('YYYY-MM-DD HH:mm:ss')
+                        http.zsyPostHttp('/sign-in/resign-in/add', form, (resp) => {
+                            this.$message({
+                                showClose: true,
+                                message: '补打卡申请成功',
+                                type: 'success'
+                            });
+                            this.clearRecheckForm();
+                            this.fetchMyRecheckWait();
+                            this.reCheckVisible = false
+                            this.isSaving = false
+                        }, err => {
+                            this.isSaving = false
+                        })
+                    }
+                })
+            },
+            deleteRecheck(id){
+                this.$confirm('删除补打卡申请, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    http.zsyDeleteHttp('/sign-in/resign-in/delete/'+id,{},(res)=>{
+                        this.$message({
+                            showClose: true,
+                            message: '删除补打卡申请成功',
+                            type: 'success'
+                        });
+                        this.editRecheckVisible = false;
+                        this.showRecheckVisible = false;
+                        if (this.userRole > 0){
+                            this.fetchMyRecheckWait();
+                        } else {
+                            this.fetchRecheckWait();
+                            this.fetchRecheckPass();
+                        }
+                    })
+                }).catch(() => {
+                });
+            },
+            accessRecheck(id){
+                this.$confirm('同意补打卡申请, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    http.zsyPutHttp('/sign-in/resign-in/access/'+id,{},(res)=>{
+                        this.$message({
+                            showClose: true,
+                            message: '同意补打卡申请成功',
+                            type: 'success'
+                        });
+                        this.editRecheckVisible = false;
+                        this.fetchRecheckWait();
+                        this.fetchRecheckPass();
+                    })
+                }).catch(() => {
+                });
+            },
+            clearRecheckForm(){
+                this.recheckForm.reason = this.recheckForm.recheckTime = this.recheckForm.userId = this.recheckForm.id = ''
+            },
+            closeRecheckForm(){
+                this.clearRecheckForm()
+                this.isSaving = false
+            },
+            //查询我的补打卡申请(status=0 审核中  status=2 通过)
+            fetchMyRecheckWait(){
+                if (this.userRole > 0){
+                    http.zsyGetHttp('/sign-in/resign-in/page/personal/0/'+this.recheckWaitPage.pageNum,{},(res)=>{
+                        if (res){
+                            this.recheckList.wait = res.data.list;
+                            this.recheckWaitPage.total = res.data.total;
+                        }
+                    })
+                }
+            },
+            fetchMyRecheckPass(){
+                if(this.userRole > 0){
+                    http.zsyGetHttp('/sign-in/resign-in/page/personal/2/'+this.recheckPassPage.pageNum,{},(res)=>{
+                        if (res){
+                            this.recheckList.pass = res.data.list;
+                            this.recheckPassPage.total = res.data.total;
+                        }
+                    })
+                }
+            },
+            fetchRecheckWait(){
+                if(this.userRole == 0){
+                    http.zsyGetHttp('/sign-in/resign-in/page/0/'+this.recheckWaitPage.pageNum,{},(res)=>{
+                        if (res){
+                            this.recheckList.wait = res.data.list;
+                            this.recheckWaitPage.total = res.data.total;
+                        }
+                    })
+                }
+            },
+            fetchRecheckPass(){
+                if(this.userRole == 0){
+                    http.zsyGetHttp('/sign-in/resign-in/page/2/'+this.recheckPassPage.pageNum,{},(res)=>{
+                        if (res){
+                            this.recheckList.pass = res.data.list;
+                            this.recheckPassPage.total = res.data.total;
+                        }
+                    })
+                }
+            },
+            handleRecheckWaitPage(currentPage) {
+                this.recheckWaitPage.pageNum = currentPage;
+                if (this.userRole > 0) {
+                    this.fetchMyRecheckWait();
+                } else {
+                    this.fetchRecheckWait();
+                }
+            },
+            handleRecheckPassPage(currentPage) {
+                this.recheckPassPage.pageNum = currentPage;
+                if (this.userRole > 0) {
+                    this.fetchMyRecheckPass();
+                } else {
+                    this.fetchRecheckPass();
+                }
+            },
+            editRecheck(recheck){
+                this.editRecheckVisible = true;
+                this.recheckForm.id = recheck.id;
+                this.recheckForm.userId = recheck.userId;
+                this.recheckForm.recheckTime = recheck.recheckTime;
+                this.recheckForm.reason = recheck.reason;
+            },
+            showRecheck(recheck){
+                this.showRecheckVisible = true;
+                this.recheckForm.id = recheck.id;
+                this.recheckForm.userId = recheck.userId;
+                this.recheckForm.recheckTime = recheck.recheckTime;
+                this.recheckForm.reason = recheck.reason;
             }
+
             // -- sch
         },
         components: {
