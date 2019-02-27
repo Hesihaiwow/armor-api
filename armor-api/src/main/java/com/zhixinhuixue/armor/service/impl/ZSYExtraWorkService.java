@@ -164,7 +164,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
     @Override
     @Transactional
     public void checkExtraWork(Long ewId) {
-        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.EMPLOYEE.getValue()) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
         }
         ExtraWork extraWork = extraWorkMapper.selectById(ewId);
