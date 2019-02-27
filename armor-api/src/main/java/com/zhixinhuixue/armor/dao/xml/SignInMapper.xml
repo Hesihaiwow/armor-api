@@ -179,7 +179,7 @@
 
     <!--查询当前用户第二天7点前是否有打卡记录-->
     <select id="selectBefore7ByUserId" resultMap="BaseSignInMap">
-        SELECT * FROM `sign_in` WHERE `user_id` = #{userId}
+        SELECT * FROM `sign_in` WHERE `user_id` = #{userId} AND `type` != 2
         <![CDATA[  and  `check_time` >= #{zero} ]]>
         <![CDATA[  and  `check_time` <= #{seven} ]]>
     </select>
@@ -209,5 +209,13 @@
     <!--根据userId和checkTime查询考勤记录-->
     <select id="selectSignInByUserAndTime" resultMap="BaseSignInMap">
         SELECT * FROM `sign_in` WHERE `user_id` = #{userId} AND `check_time` = #{checkTime}
+    </select>
+
+    <!--根据userId和checkTime时间段查询考勤记录-->
+    <select id="selectSignInByUserAndTimeRange" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` WHERE `user_id` = #{userId}
+        <![CDATA[  and  `check_time` >= #{today0} ]]>
+        <![CDATA[  and  `check_time` <= #{today23} ]]>
+        limit 1
     </select>
 </mapper>

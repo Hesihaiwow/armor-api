@@ -144,4 +144,13 @@ public interface IZSYSignInMapper {
      * @return
      */
     SignIn selectSignInByUserAndTime(@Param("userId")Long userId,@Param("checkTime") Date checkTime);
+
+    /**
+     * 根据userId和checkTime时间段查询考勤记录
+     * @param userId
+     * @param today0
+     * @param today23
+     * @return
+     */
+    SignIn selectSignInByUserAndTimeRange(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
 }

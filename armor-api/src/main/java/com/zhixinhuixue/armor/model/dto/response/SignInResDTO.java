@@ -13,6 +13,11 @@ import java.util.List;
 public class SignInResDTO {
 
     /**
+     * 日期
+     */
+    private Date date;
+
+    /**
      * 用户id
      */
     private Long userId;
@@ -80,10 +85,45 @@ public class SignInResDTO {
     private Integer lessThanNine;
 
     /**
+     * 上班打卡是否晚于10点
+     */
+    private Integer isCheckInAfterTen;
+
+    /**
+     *下班打卡是否早于六点
+     */
+    private Integer isCheckOutBeforeSix;
+
+
+    /**
      * 请假时长
      * @return
      */
     private BigDecimal leaveTime;
+
+    public Integer getIsCheckInAfterTen() {
+        return isCheckInAfterTen;
+    }
+
+    public void setIsCheckInAfterTen(Integer isCheckInAfterTen) {
+        this.isCheckInAfterTen = isCheckInAfterTen;
+    }
+
+    public Integer getIsCheckOutBeforeSix() {
+        return isCheckOutBeforeSix;
+    }
+
+    public void setIsCheckOutBeforeSix(Integer isCheckOutBeforeSix) {
+        this.isCheckOutBeforeSix = isCheckOutBeforeSix;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public Integer getIsRecheckIn() {
         return isRecheckIn;

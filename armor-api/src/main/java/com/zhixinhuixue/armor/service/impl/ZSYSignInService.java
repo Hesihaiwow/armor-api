@@ -107,12 +107,14 @@ public class ZSYSignInService implements IZSYSignInService {
             String str;
             List<SignIn> signIns = new ArrayList<>();
             long time1 = System.currentTimeMillis();
+            Set<Long> users = new HashSet<>();
             while((str=br.readLine())!=null){//按行读取
                 String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
                 String time = str.substring(10, 29);
                 String trim = sort.trim();
                 User user = signInMapper.selectUserBySort(Integer.valueOf(trim));
                 if (user != null){
+                    users.add(user.getId());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date checkTime = sdf.parse(time);
                     SignIn existSignIn = signInMapper.selectSignInByUserAndTime(user.getId(),checkTime);
@@ -126,13 +128,48 @@ public class ZSYSignInService implements IZSYSignInService {
                     }
                 }
             }
+            System.out.println("signIns的长度: " + signIns.size());
             long time2 = System.currentTimeMillis();
             System.out.println("组装时间: "+ (time2 - time1) + "ms");
-
+            long time3 = System.currentTimeMillis();
             if (!CollectionUtils.isEmpty(signIns) && signInMapper.insertSignInBatch(signIns) == 0){
                 throw new ZSYServiceException("批量导入考勤打卡记录失败");
             }
-            System.out.println("插入时间: " + (System.currentTimeMillis() - time2) + "ms");
+            System.out.println("插入时间: " + (System.currentTimeMillis() - time3) + "ms");
+            long time4 = System.currentTimeMillis();
+            if (!CollectionUtils.isEmpty(signIns)){
+                List<String> daysBetweenTwoDate =
+                        DateHelper.getDaysBetweenTwoDate(signIns.get(0).getCheckTime(), signIns.get(signIns.size() - 1).getCheckTime());
+                Date firstDate = signIns.get(0).getCheckTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(firstDate);
+                calendar.add(Calendar.DATE,-1);
+                List<SignIn> signInList = new ArrayList<>();
+                for (int i=0;i < daysBetweenTwoDate.size();i ++){
+                    calendar.add(Calendar.DATE,1);
+                    String prefix = sdf.format(calendar.getTime());
+                    Date today0 = sdf2.parse(prefix + " 00:00:00");
+                    Date today23 = sdf2.parse(prefix + " 23:59:59");
+                    for (Long user : users) {
+                        SignIn existSignIn = signInMapper.selectSignInByUserAndTimeRange(user,today0,today23);
+                        if (existSignIn == null){
+                            SignIn signIn = new SignIn();
+                            signIn.setId(snowFlakeIDHelper.nextId());
+                            signIn.setUserId(user);
+                            signIn.setType(2);
+                            signIn.setCheckTime(today0);
+                            signInList.add(signIn);
+                        }
+                    }
+                }
+                System.out.println("时间段长度: "+daysBetweenTwoDate.size());
+                System.out.println("signInList的长度: "+signInList.size());
+                System.out.println("users的长度: "+users.size());
+                signInMapper.insertSignInBatch(signInList);
+            }
+            System.out.println("插入空数据时间: "+(System.currentTimeMillis()-time4)+"ms");
 
         } catch (IOException e) {
             throw new ZSYServiceException("上传考勤记录到数据库失败!");
@@ -211,14 +248,18 @@ public class ZSYSignInService implements IZSYSignInService {
                 String prefix = sdf2.format(dateList.get(0));
                 String nextPrefix = sdf2.format(calendar.getTime());
                 Date today0 = null;
+                Date today10 = null;
+                Date today18 = null;
                 Date today23 = null;
                 Date zero = null;
                 Date seven = null;
                 Date nextSeven = null;
                 Date fifteen = null;
                 try {
-                    today0 = sdf.parse(nextPrefix + " 00:00:00");
-                    today23 = sdf.parse(nextPrefix + " 23:59:59");
+                    today0 = sdf.parse(prefix + " 00:00:00");
+                    today10 = sdf.parse(prefix + " 10:00:00");
+                    today18 = sdf.parse(prefix + " 18:00:00");
+                    today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
                     nextSeven = sdf.parse(nextPrefix + " 07:00:00");
                     seven = sdf.parse(prefix + " 07:00:00");
@@ -246,6 +287,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(),nextSeven,zero);
                     if (!CollectionUtils.isEmpty(before7Clock)){
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         resDTO.setIsWorkToNextDay(1);
                     }else {
                         resDTO.setIsWorkToNextDay(0);
@@ -269,6 +315,11 @@ public class ZSYSignInService implements IZSYSignInService {
                                resDTO.setIsRecheckIn(0);
                             }
                             resDTO.setCheckInTime(dateList.get(0));
+                            if (resDTO.getCheckInTime().after(today10)){
+                                resDTO.setIsCheckInAfterTen(1);
+                            }else {
+                                resDTO.setIsCheckInAfterTen(0);
+                            }
                             resDTO.setCheckOutTime(null);
                             resDTO.setIsWorkToNextDay(0);
                         }else {
@@ -280,6 +331,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             }
                             resDTO.setCheckInTime(null);
                             resDTO.setCheckOutTime(dateList.get(0));
+                            if (resDTO.getCheckOutTime().before(today18)){
+                                resDTO.setIsCheckOutBeforeSix(1);
+                            }else {
+                                resDTO.setIsCheckOutBeforeSix(0);
+                            }
                             resDTO.setIsWorkToNextDay(0);
                         }
                     }
@@ -287,6 +343,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     else {
                         if (dateList.get(0).after(seven) && dateList.get(0).before(fifteen)){
                             resDTO.setCheckInTime(dateList.get(0));
+                            if (resDTO.getCheckInTime().after(today10)){
+                                resDTO.setIsCheckInAfterTen(1);
+                            }else {
+                                resDTO.setIsCheckInAfterTen(0);
+                            }
                             SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                             if (signIn1.getType() == 1){
                                 resDTO.setIsRecheckIn(1);
@@ -299,6 +360,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setIsForget(1);
                         }
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), before7Clock.get(before7Clock.size()-1).getCheckTime());
                         if (signIn1.getType() == 1){
                             resDTO.setIsRecheckOut(1);
@@ -326,6 +392,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     //第二天早于7点没有打卡记录
                     if (CollectionUtils.isEmpty(before7Clock)){
                         resDTO.setCheckInTime(dateList.get(0));
+                        if (resDTO.getCheckInTime().after(today10)){
+                            resDTO.setIsCheckInAfterTen(1);
+                        }else {
+                            resDTO.setIsCheckInAfterTen(0);
+                        }
                         SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                         if (signIn1.getType() == 1){
                             resDTO.setIsRecheckIn(1);
@@ -333,6 +404,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setIsRecheckIn(0);
                         }
                         resDTO.setCheckOutTime(dateList.get(dateList.size()-1));
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         SignIn signIn2 = signInMapper.selectSignInByUserAndTime(user.getId(),dateList.get(dateList.size()-1) );
                         if (signIn2.getType() == 1){
                             resDTO.setIsRecheckOut(1);
@@ -355,6 +431,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     //第二天早于7点有打卡记录
                     else {
                         resDTO.setCheckInTime(dateList.get(0));
+                        if (resDTO.getCheckInTime().after(today10)){
+                            resDTO.setIsCheckInAfterTen(1);
+                        }else {
+                            resDTO.setIsCheckInAfterTen(0);
+                        }
                         SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                         if (signIn1.getType() == 1){
                             resDTO.setIsRecheckIn(1);
@@ -362,6 +443,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setIsRecheckIn(0);
                         }
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         SignIn signIn2 = signInMapper.selectSignInByUserAndTime(user.getId(),before7Clock.get(before7Clock.size()-1).getCheckTime());
                         if (signIn2.getType() == 1){
                             resDTO.setIsRecheckOut(1);
@@ -395,9 +481,12 @@ public class ZSYSignInService implements IZSYSignInService {
                         resDTO.setLessThanNine(1);
                     }
                 }
+                resDTO.setDate(today0);
                 signInResDTOS.add(resDTO);
             });
         }
+//        List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(reqDTO.getBeginTime(), reqDTO.getEndTime());
+
         return new PageInfo<>(signInResDTOS);
     }
 
@@ -448,14 +537,18 @@ public class ZSYSignInService implements IZSYSignInService {
                 String prefix = sdf2.format(dateList.get(0));
                 String nextPrefix = sdf2.format(calendar.getTime());
                 Date zero = null;
+                Date today10 = null;
+                Date today18 = null;
                 Date seven = null;
                 Date nextSeven = null;
                 Date fifteen = null;
                 Date today0 = null;
                 Date today23 = null;
                 try {
-                    today0 = sdf.parse(nextPrefix + " 00:00:00");
-                    today23 = sdf.parse(nextPrefix + " 23:59:59");
+                    today0 = sdf.parse(prefix + " 00:00:00");
+                    today10 = sdf.parse(prefix + " 10:00:00");
+                    today18 = sdf.parse(prefix + " 18:00:00");
+                    today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
                     nextSeven = sdf.parse(nextPrefix + " 07:00:00");
                     seven = sdf.parse(prefix + " 07:00:00");
@@ -483,6 +576,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(),nextSeven,zero);
                     if (!CollectionUtils.isEmpty(before7Clock)){
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         resDTO.setIsWorkToNextDay(1);
                     }else {
                         resDTO.setIsWorkToNextDay(0);
@@ -500,6 +598,11 @@ public class ZSYSignInService implements IZSYSignInService {
                         //如果时间在7:00--15:00之间,即为上班打卡
                         if (dateList.get(0).after(seven) && dateList.get(0).before(fifteen)){
                             resDTO.setCheckInTime(dateList.get(0));
+                            if (resDTO.getCheckInTime().after(today10)){
+                                resDTO.setIsCheckInAfterTen(1);
+                            }else {
+                                resDTO.setIsCheckInAfterTen(0);
+                            }
                             SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                             if (signIn1.getType() == 1){
                                 resDTO.setIsRecheckIn(1);
@@ -511,6 +614,11 @@ public class ZSYSignInService implements IZSYSignInService {
                         }else {
                             resDTO.setCheckInTime(null);
                             resDTO.setCheckOutTime(dateList.get(0));
+                            if (resDTO.getCheckOutTime().before(today18)){
+                                resDTO.setIsCheckOutBeforeSix(1);
+                            }else {
+                                resDTO.setIsCheckOutBeforeSix(0);
+                            }
                             SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                             if (signIn1.getType() == 1){
                                 resDTO.setIsRecheckOut(1);
@@ -524,6 +632,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     else {
                         if (dateList.get(0).after(seven) && dateList.get(0).before(fifteen)){
                             resDTO.setCheckInTime(dateList.get(0));
+                            if (resDTO.getCheckInTime().after(today10)){
+                                resDTO.setIsCheckInAfterTen(1);
+                            }else {
+                                resDTO.setIsCheckInAfterTen(0);
+                            }
                             SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                             if (signIn1.getType() == 1){
                                 resDTO.setIsRecheckIn(1);
@@ -536,6 +649,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setIsForget(1);
                         }
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), before7Clock.get(before7Clock.size()-1).getCheckTime());
                         if (signIn1.getType() == 1){
                             resDTO.setIsRecheckOut(1);
@@ -563,6 +681,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     //第二天早于7点没有打卡记录
                     if (CollectionUtils.isEmpty(before7Clock)){
                         resDTO.setCheckInTime(dateList.get(0));
+                        if (resDTO.getCheckInTime().after(today10)){
+                            resDTO.setIsCheckInAfterTen(1);
+                        }else {
+                            resDTO.setIsCheckInAfterTen(0);
+                        }
                         SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                         if (signIn1.getType() == 1){
                             resDTO.setIsRecheckIn(1);
@@ -570,6 +693,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setIsRecheckIn(0);
                         }
                         resDTO.setCheckOutTime(dateList.get(dateList.size()-1));
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         SignIn signIn2 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(dateList.size()-1));
                         if (signIn2.getType() == 1){
                             resDTO.setIsRecheckOut(1);
@@ -592,6 +720,11 @@ public class ZSYSignInService implements IZSYSignInService {
                     //第二天早于7点有打卡记录
                     else {
                         resDTO.setCheckInTime(dateList.get(0));
+                        if (resDTO.getCheckInTime().after(today10)){
+                            resDTO.setIsCheckInAfterTen(1);
+                        }else {
+                            resDTO.setIsCheckInAfterTen(0);
+                        }
                         SignIn signIn1 = signInMapper.selectSignInByUserAndTime(user.getId(), dateList.get(0));
                         if (signIn1.getType() == 1){
                             resDTO.setIsRecheckIn(1);
@@ -599,6 +732,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setIsRecheckIn(0);
                         }
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
+                        if (resDTO.getCheckOutTime().before(today18)){
+                            resDTO.setIsCheckOutBeforeSix(1);
+                        }else {
+                            resDTO.setIsCheckOutBeforeSix(0);
+                        }
                         SignIn signIn2 = signInMapper.selectSignInByUserAndTime(user.getId(), before7Clock.get(before7Clock.size()-1).getCheckTime());
                         if (signIn2.getType() == 1){
                             resDTO.setIsRecheckOut(1);
@@ -632,6 +770,7 @@ public class ZSYSignInService implements IZSYSignInService {
                         resDTO.setLessThanNine(1);
                     }
                 }
+                resDTO.setDate(today0);
                 signInResDTOS.add(resDTO);
             });
         }

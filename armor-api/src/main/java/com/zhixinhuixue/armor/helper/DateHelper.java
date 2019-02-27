@@ -352,4 +352,24 @@ public class DateHelper {
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR);
     }
+
+    /**
+     * 查询两个日期间的天数
+     *
+     * @return
+     */
+    public static List<String> getDaysBetweenTwoDate(Date start, Date end) {
+        List<String> days = Lists.newArrayList();
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(start);
+
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(end);
+
+        while (startCal.getTimeInMillis() <= endCal.getTimeInMillis()) {
+            days.add(dateFormatter(startCal.getTime(), DATE_FORMAT));
+            startCal.add(Calendar.DATE, 1);
+        }
+        return days;
+    }
 }
