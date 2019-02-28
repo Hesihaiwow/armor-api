@@ -44,6 +44,7 @@
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template scope="scope">
                             {{scope.row.date | formatDate2}}
+                            <span v-show="scope.row.isWeekend == 1" style="color: #3da7f5">(周末)</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="110">
@@ -71,15 +72,20 @@
                             <span v-else>{{scope.row.checkOutTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="workTime" label="上班时长" align="center" width="100" >
+                    <el-table-column prop="workTime" label="上班时长" align="center" width="120" >
                         <template scope="scope">
                             <span v-if="scope.row.lessThanNine == 1" style="color: red">{{scope.row.workTime}}</span>
                             <span v-else>{{scope.row.workTime}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="100" >
+                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
                         <template scope="scope">
                             {{scope.row.eWorkTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
+                        <template scope="scope">
+                            {{scope.row.eWorkHours}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
@@ -197,6 +203,7 @@
                         <el-table-column prop="date" label="日期" align="center" width="120">
                             <template scope="scope">
                                 {{scope.row.date | formatDate2}}
+                                <span v-show="scope.row.isWeekend == 1" style="color: #3da7f5">(周末)</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="userName" label="用户" align="center" width="110">
@@ -224,15 +231,20 @@
                                 <span v-else>{{scope.row.checkOutTime | formatTime2}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="workTime" label="上班时长" align="center" width="100" >
+                        <el-table-column prop="workTime" label="上班时长" align="center" width="120" >
                             <template scope="scope">
                                 <span v-if="scope.row.lessThanNine == 1" style="color: red">{{scope.row.workTime}}</span>
                                 <span v-else>{{scope.row.workTime}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="eWorkTime" label="加班时长" align="center" width="100" >
+                        <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
                             <template scope="scope">
                                 {{scope.row.eWorkTime}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
+                            <template scope="scope">
+                                {{scope.row.eWorkHours}}
                             </template>
                         </el-table-column>
                         <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
@@ -242,7 +254,7 @@
                         </el-table-column>
                         <el-table-column label="操作" align="center" width="80">
                             <template scope="scope">
-                                <a  style="color: blue;cursor: pointer" @click="recheck(scope.row.userId)">补签到</a>
+                                <a v-show="scope.row.canReCheck == 1" style="color: blue;cursor: pointer" @click="recheck(scope.row.userId)">补签到</a>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -1567,10 +1579,19 @@
                 <el-form-item label="补打卡原因" prop="reason">
                     <el-input type="textarea" v-model="recheckForm.reason" :rows="3"></el-input>
                 </el-form-item>
-                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                <el-form-item label="补打卡时间" prop="beginTime">
+                <!--<span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>-->
+                <el-form-item label="补打上班时间" prop="beginTime">
                     <el-date-picker
-                            v-model="recheckForm.recheckTime"
+                            v-model="recheckForm.recheckInTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:ss"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <!--<span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>-->
+                <el-form-item label="补打下班时间" prop="beginTime">
+                    <el-date-picker
+                            v-model="recheckForm.recheckOutTime"
                             type="datetime"
                             format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
@@ -1591,10 +1612,19 @@
                 <el-form-item label="补打卡原因" prop="reason">
                     <el-input type="textarea" v-model="recheckForm.reason" :rows="3"></el-input>
                 </el-form-item>
-                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                <el-form-item label="补打卡时间" prop="beginTime">
+                <!--<span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>-->
+                <el-form-item label="补打上班时间" prop="beginTime" v-show="recheckForm.type == 0">
                     <el-date-picker
-                            v-model="recheckForm.recheckTime"
+                            v-model="recheckForm.recheckInTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:ss"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <!--<span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>-->
+                <el-form-item label="补打下班时间" prop="beginTime" v-show="recheckForm.type == 1">
+                    <el-date-picker
+                            v-model="recheckForm.recheckOutTime"
                             type="datetime"
                             format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
@@ -1619,7 +1649,10 @@
                 <el-form-item label="补打卡原因" prop="reason">
                     {{recheckForm.reason}}
                 </el-form-item>
-                <el-form-item label="补打卡时间" prop="reason">
+                <el-form-item label="补卡上班时间" prop="recheckTime" v-show="recheckForm.type == 0">
+                    {{recheckForm.recheckTime | formatTime}}
+                </el-form-item>
+                <el-form-item label="补卡下班时间" prop="recheckTime" v-show="recheckForm.type == 1">
                     {{recheckForm.recheckTime | formatTime}}
                 </el-form-item>
             </el-form>
@@ -2106,6 +2139,8 @@
                 recheckForm:{
                     id:'',
                     reason:'',
+                    recheckInTime: '',
+                    recheckOutTime: '',
                     recheckTime: '',
                     userId:''
                 },
@@ -3745,17 +3780,16 @@
             },
             //查询考勤情况
             fetchSignInData(){
-                console.log(222)
                 http.zsyPostHttp('/sign-in/page',this.signInReqDTO,(res)=>{
                         if (res){
                             this.signInData = res.data.list;
                             this.signInPage.total = res.data.total;
                             this.signInData.forEach(signIn =>{
                                 if (signIn.workTime) {
-                                    signIn.workTime = this.getTime(signIn.workTime);
+                                    signIn.workTime = this.getTime2(signIn.workTime);
                                 }
                                 if(signIn.eWorkTime){
-                                    signIn.eWorkTime = this.getTime(signIn.eWorkTime);
+                                    signIn.eWorkTime = this.getTime2(signIn.eWorkTime);
                                 }
                                 var checkTimeStr = '';
                                 signIn.checkTimeList.forEach(checkTime => {
@@ -3768,17 +3802,16 @@
 
             },
             fetchMySignInData(){
-                console.log(111)
                     http.zsyPostHttp('/sign-in/page/personal',this.mySignInReqDTO,(res)=>{
                         if (res){
                             this.signInData = res.data.list;
                             this.mySignInPage.total = res.data.total;
                             this.signInData.forEach(signIn =>{
                                 if (signIn.workTime) {
-                                    signIn.workTime = this.getTime(signIn.workTime);
+                                    signIn.workTime = this.getTime2(signIn.workTime);
                                 }
                                 if(signIn.eWorkTime){
-                                    signIn.eWorkTime = this.getTime(signIn.eWorkTime);
+                                    signIn.eWorkTime = this.getTime2(signIn.eWorkTime);
                                 }
                                 var checkTimeStr = '';
                                 signIn.checkTimeList.forEach(checkTime => {
@@ -3805,6 +3838,12 @@
                 const secs = this.addZero(parseInt(time/1000%60));
                 return hours+':'+mins+':'+secs
             },
+            getTime2(time){
+                const hours = this.addZero(parseInt(time/1000/60/60));
+                const mins = this.addZero(parseInt(time/1000/60%60));
+                const secs = this.addZero(parseInt(time/1000%60));
+                return hours+'h'+mins+'m'+secs+'s'
+            },
             addZero(time){
                 if (time < 10){
                     return "0"+time;
@@ -3823,15 +3862,22 @@
                     this.isSaving = false;
                     return false;
                 }
-                if (this.recheckForm.recheckTime == null || this.recheckForm.recheckTime == ''){
-                    this.$message({showClose: true, message: '补打卡时间不能为空', type: 'error'});
-                    this.isSaving = false;
-                    return false;
+                if (this.recheckForm.recheckInTime == null || this.recheckForm.recheckInTime == ''){
+                    if(this.recheckForm.recheckOutTime == null || this.recheckForm.recheckOutTime == ''){
+                        this.$message({showClose: true, message: '补打卡时间不能为空', type: 'error'});
+                        this.isSaving = false;
+                        return false;
+                    }
                 }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let form = this.recheckForm
-                        form.recheckTime = moment(form.recheckTime).format('YYYY-MM-DD HH:mm:ss')
+                        if (form.recheckInTime != null && form.recheckInTime != ''){
+                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss')
+                        }
+                        if(form.recheckOutTime != null && form.recheckOutTime != ''){
+                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss')
+                        }
                         http.zsyPostHttp('/sign-in/resign-in/update/'+id, form, (resp) => {
                             this.$message({
                                 showClose: true,
@@ -3856,15 +3902,23 @@
                     this.isSaving = false;
                     return false;
                 }
-                if (this.recheckForm.recheckTime == null || this.recheckForm.recheckTime == ''){
-                    this.$message({showClose: true, message: '补打卡时间不能为空', type: 'error'});
-                    this.isSaving = false;
-                    return false;
+                if (this.recheckForm.recheckInTime == null || this.recheckForm.recheckInTime == ''){
+                    if(this.recheckForm.recheckOutTime == null || this.recheckForm.recheckOutTime == ''){
+                        this.$message({showClose: true, message: '补打卡时间不能为空', type: 'error'});
+                        this.isSaving = false;
+                        return false;
+                    }
                 }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let form = this.recheckForm
-                        form.recheckTime = moment(form.recheckTime).format('YYYY-MM-DD HH:mm:ss')
+                        if (form.recheckInTime != null && form.recheckInTime != ''){
+                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss')
+                        }
+                        if(form.recheckOutTime != null && form.recheckOutTime != ''){
+                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss')
+                        }
+
                         http.zsyPostHttp('/sign-in/resign-in/add', form, (resp) => {
                             this.$message({
                                 showClose: true,
@@ -3925,7 +3979,8 @@
                 });
             },
             clearRecheckForm(){
-                this.recheckForm.reason = this.recheckForm.recheckTime = this.recheckForm.userId = this.recheckForm.id = ''
+                this.recheckForm.reason = this.recheckForm.recheckInTime = this.recheckForm.recheckOutTime
+                    = this.recheckForm.userId = this.recheckForm.id = ''
             },
             closeRecheckForm(){
                 this.clearRecheckForm()
@@ -3993,7 +4048,10 @@
                 this.recheckForm.id = recheck.id;
                 this.recheckForm.userId = recheck.userId;
                 this.recheckForm.recheckTime = recheck.recheckTime;
+                this.recheckForm.recheckInTime = recheck.recheckTime;
+                this.recheckForm.recheckOutTime = recheck.recheckTime;
                 this.recheckForm.reason = recheck.reason;
+                this.recheckForm.type = recheck.type;
             },
             showRecheck(recheck){
                 this.showRecheckVisible = true;
@@ -4001,6 +4059,7 @@
                 this.recheckForm.userId = recheck.userId;
                 this.recheckForm.recheckTime = recheck.recheckTime;
                 this.recheckForm.reason = recheck.reason;
+                this.recheckForm.type = recheck.type;
             }
 
             // -- sch

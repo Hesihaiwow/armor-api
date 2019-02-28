@@ -336,6 +336,12 @@
                 </el-date-picker></div>
                 <el-button type="primary" @click="fetchSignInData" style="margin-left: 10px" size="small">查询</el-button>
                 <el-table :data="signInData" border>
+                    <el-table-column prop="date" label="日期" align="center" width="120">
+                        <template scope="scope">
+                            {{scope.row.date | formatDate2}}
+                            <span v-show="scope.row.isWeekend == 1" style="color: #3da7f5">(周末)</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="110">
                         <template scope="scope">
                             <span style="color: red" v-if="scope.row.isForget == 1">(漏)</span>{{scope.row.userName}}
@@ -346,28 +352,35 @@
                             {{scope.row.checkTimeList}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="checkInTime" label="上班时间" align="center" width="240">
+                    <el-table-column prop="checkInTime" label="上班时间" align="center" width="120" >
                         <template scope="scope">
                             <span style="color: red" v-if="scope.row.isRecheckIn == 1">(补)</span>
-                            {{scope.row.checkInTime | formatTime}}
+                            <span v-if="scope.row.isCheckInAfterTen == 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
+                            <span v-else>{{scope.row.checkInTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="checkOutTime" label="下班时间" align="center" width="240">
+                    <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120" >
                         <template scope="scope">
                             <span style="color: red" v-if="scope.row.isRecheckOut == 1">(补)</span>
                             <span style="color: green" v-if="scope.row.isWorkToNextDay == 1">(+1)</span>
-                            {{scope.row.checkOutTime | formatTime}}
+                            <span v-if="scope.row.isCheckOutBeforeSix == 1" style="color: red">{{scope.row.checkOutTime | formatTime2}}</span>
+                            <span v-else>{{scope.row.checkOutTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="workTime" label="上班时长" align="center" width="100">
+                    <el-table-column prop="workTime" label="上班时长" align="center" width="120" >
                         <template scope="scope">
                             <span v-if="scope.row.lessThanNine == 1" style="color: red">{{scope.row.workTime}}</span>
                             <span v-else>{{scope.row.workTime}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="100">
+                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
                         <template scope="scope">
                             {{scope.row.eWorkTime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
+                        <template scope="scope">
+                            {{scope.row.eWorkHours}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
@@ -842,11 +855,15 @@
             },
             formatDate2: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY-MM-DD');
+                return moment(value).format('YYYY/MM/DD');
             },
             formatTime: function (value) {
                 if (!value) return '';
                 return moment(value).format('YYYY-MM-DD HH:mm:ss');
+            },
+            formatTime2: function (value) {
+                if (!value) return '';
+                return moment(value).format('HH:mm:ss');
             },
         },
         methods: {
@@ -1819,7 +1836,7 @@
                 const hours = this.addZero(parseInt(time/1000/60/60));
                 const mins = this.addZero(parseInt(time/1000/60%60));
                 const secs = this.addZero(parseInt(time/1000%60));
-                return hours+':'+mins+':'+secs
+                return hours+'h'+mins+'m'+secs+'s'
             },
             addZero(time){
                 if (time < 10){
