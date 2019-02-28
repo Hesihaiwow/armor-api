@@ -1076,8 +1076,7 @@
                     departmentId:null
                 },
                 bugPage:[],
-                BugNumData:{}
-                },
+                BugNumData:{},
                 taskTimeData:{
                     taskNum:0,
                     totalTaskTime:0,
@@ -1119,9 +1118,6 @@
                     pageSize: 10,
                     total: 0,
                 },
-
-
-
                 // -- sch
             }
         },
@@ -2208,7 +2204,6 @@
                 this.onlineBugForm.type = 0;
                 this.onlineBugForm.isSolved = 0;
                 this.isSaving = false;
-            },
             },
 
             //查询年度已完成任务总耗时(设计,产品,开发,测试)
