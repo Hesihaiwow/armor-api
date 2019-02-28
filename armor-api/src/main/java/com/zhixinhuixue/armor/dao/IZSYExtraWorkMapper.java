@@ -50,7 +50,7 @@ public interface IZSYExtraWorkMapper {
      * @param userId
      * @return
      */
-    Page<ExtraWork> selectAccessExtraWorkByPage(@Param("userId")Long userId);
+    Page<ExtraWork> selectAccessExtraWorkByPage(@Param("userId") Long userId);
 
     /**
      * 查询审核中的加班申请
@@ -76,7 +76,7 @@ public interface IZSYExtraWorkMapper {
      * @param ewId
      * @return
      */
-    int updateExtraWorkById(@Param("extraWork")ExtraWork extraWork,@Param("ewId")Long ewId);
+    int updateExtraWorkById(@Param("extraWork") ExtraWork extraWork, @Param("ewId") Long ewId);
 
     /**
      * 根据ewId删除加班关联任务
@@ -92,5 +92,14 @@ public interface IZSYExtraWorkMapper {
      * @param today23
      * @return
      */
-    ExtraWork selectByUserAndTimeRange(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
+    ExtraWork selectByUserAndTimeRange(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
+
+    /**
+     * 查询某天某人的加班申请时间
+     * @param userId
+     * @param today0
+     * @param today23
+     * @return
+     */
+    Float selectEWorkHours(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
 }

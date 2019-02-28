@@ -138,4 +138,11 @@
         <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
         <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
     </select>
+
+    <!--查询某天某人的加班申请时间-->
+    <select id="selectEWorkHours" resultType="java.lang.Float">
+        SELECT ifnull(SUM(`work_hours`),0) FROM `extra_work` WHERE `user_id` = #{userId} AND `review_status` = 2
+        <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
+        <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
+    </select>
 </mapper>

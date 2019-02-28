@@ -424,7 +424,7 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis > 10*60*60*1000){
+                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
                             Long eWorkTime = workTimeMillis - (1000*60*60*10);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
@@ -491,12 +491,8 @@ public class ZSYSignInService implements IZSYSignInService {
                 }else {
                     resDTO.setIsWeekend(0);
                 }
-                ExtraWork extraWork = extraWorkMapper.selectByUserAndTimeRange(user.getId(),today0,today23);
-                if (extraWork != null){
-                    resDTO.setEWorkHours(BigDecimal.valueOf(extraWork.getWorkHours()));
-                }else{
-                    resDTO.setEWorkHours(BigDecimal.ZERO);
-                }
+                Float eWorkHours = extraWorkMapper.selectEWorkHours(user.getId(),today0,today23);
+                resDTO.setEWorkHours(BigDecimal.valueOf(eWorkHours));
                 List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(new Date(), today0);
                 if (daysBetweenTwoDate.size()<=7){
                     resDTO.setCanReCheck(1);
@@ -685,7 +681,7 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis > 10*60*60*1000){
+                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
                             Long eWorkTime = workTimeMillis - (1000*60*60*10);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
@@ -728,7 +724,7 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis > 10*60*60*1000){
+                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
                             Long eWorkTime = workTimeMillis - (1000*60*60*10);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
@@ -767,7 +763,7 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis > 10*60*60*1000){
+                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
                             Long eWorkTime = workTimeMillis - (1000*60*60*10);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
@@ -795,12 +791,8 @@ public class ZSYSignInService implements IZSYSignInService {
                 }else {
                     resDTO.setIsWeekend(0);
                 }
-                ExtraWork extraWork = extraWorkMapper.selectByUserAndTimeRange(user.getId(),today0,today23);
-                if (extraWork != null){
-                    resDTO.setEWorkHours(BigDecimal.valueOf(extraWork.getWorkHours()));
-                }else{
-                    resDTO.setEWorkHours(BigDecimal.ZERO);
-                }
+                Float eWorkHours = extraWorkMapper.selectEWorkHours(user.getId(),today0,today23);
+                resDTO.setEWorkHours(BigDecimal.valueOf(eWorkHours));
                 List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(today0,new Date());
                 if (daysBetweenTwoDate.size()<=7){
                     resDTO.setCanReCheck(1);
