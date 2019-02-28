@@ -20,9 +20,30 @@ public class ResignInReqDTO {
     private Long userId;
 
     /**
-     * 补打卡时间
+     * 补下班打卡时间
      */
-    private Date recheckTime;
+    private Date recheckOutTime;
+
+    /**
+     * 补上班打卡时间
+     */
+    private Date recheckInTime;
+
+    public Date getRecheckOutTime() {
+        return recheckOutTime;
+    }
+
+    public void setRecheckOutTime(Date recheckOutTime) {
+        this.recheckOutTime = recheckOutTime;
+    }
+
+    public Date getRecheckInTime() {
+        return recheckInTime;
+    }
+
+    public void setRecheckInTime(Date recheckInTime) {
+        this.recheckInTime = recheckInTime;
+    }
 
     public String getReason() {
         return reason;
@@ -40,11 +61,4 @@ public class ResignInReqDTO {
         this.userId = userId;
     }
 
-    public Date getRecheckTime() {
-        return recheckTime;
-    }
-
-    public void setRecheckTime(Date recheckTime) {
-        this.recheckTime = recheckTime;
-    }
 }

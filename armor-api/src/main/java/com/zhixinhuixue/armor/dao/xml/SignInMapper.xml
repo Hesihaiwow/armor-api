@@ -97,10 +97,10 @@
     <!--新增补打卡申请-->
     <insert id="addResignIn" parameterType="com.zhixinhuixue.armor.model.pojo.ResignIn">
         INSERT INTO `resign_in`
-        (`id`,`user_id`,`recheck_time`,`reason`,`review_status`)
+        (`id`,`user_id`,`recheck_time`,`reason`,`review_status`,`type`)
         VALUES
         (#{resignIn.id,jdbcType=BIGINT},#{resignIn.userId,jdbcType=BIGINT},#{resignIn.recheckTime,jdbcType=TIMESTAMP}
-        ,#{resignIn.reason,jdbcType=VARCHAR},#{resignIn.reviewStatus,jdbcType=INTEGER})
+        ,#{resignIn.reason,jdbcType=VARCHAR},#{resignIn.reviewStatus,jdbcType=INTEGER},#{resignIn.type,jdbcType=INTEGER})
     </insert>
 
     <!--新增签到记录-->
@@ -140,6 +140,13 @@
     <!--删除指定signIn-->
     <delete id="deleteSignIn">
         DELETE FROM `sign_in` WHERE `user_id` = #{userId} AND `check_time` = #{recheckTime}
+    </delete>
+
+    <!--删除type=2 的多余记录-->
+    <delete id="deleteUselessSignIn">
+        DELETE FROM `sign_in` WHERE `type` = 2 AND `user_id` = #{userId}
+        <![CDATA[  and  `check_time` >= #{today0} ]]>
+        <![CDATA[  and  `check_time` <= #{today23} ]]>
     </delete>
 
     <!--根据 序号 查询user-->

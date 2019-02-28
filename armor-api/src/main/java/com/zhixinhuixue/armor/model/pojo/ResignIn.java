@@ -28,9 +28,22 @@ public class ResignIn {
     private String reason;
 
     /**
+     * 类型(0:上班,1:下班)
+     */
+    private Integer type;
+
+    /**
      * 审核状态(0:审核中,1:驳回,2:通过)
      */
     private Integer reviewStatus;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     public Long getId() {
         return id;

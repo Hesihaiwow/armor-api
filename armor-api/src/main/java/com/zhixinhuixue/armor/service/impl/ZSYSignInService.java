@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.dao.IZSYExtraWorkMapper;
 import com.zhixinhuixue.armor.dao.IZSYSignInMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserLeaveMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
@@ -57,6 +58,8 @@ public class ZSYSignInService implements IZSYSignInService {
     private IZSYUserMapper userMapper;
     @Autowired
     private IZSYUserLeaveMapper userLeaveMapper;
+    @Autowired
+    private IZSYExtraWorkMapper extraWorkMapper;
 
     /**
      * 上传 user-sort 文件到库
@@ -91,7 +94,7 @@ public class ZSYSignInService implements IZSYSignInService {
     }
 
     /**
-     * 上传.dat的花名册文件到库
+     * 上传.dat的打卡记录文件到库
      * @param uploadFile
      */
     @Override
@@ -482,10 +485,25 @@ public class ZSYSignInService implements IZSYSignInService {
                     }
                 }
                 resDTO.setDate(today0);
+                calendar.setTime(today0);
+                if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
+                    resDTO.setIsWeekend(1);
+                }else {
+                    resDTO.setIsWeekend(0);
+                }
+                ExtraWork extraWork = extraWorkMapper.selectByUserAndTimeRange(user.getId(),today0,today23);
+                if (extraWork != null){
+                    resDTO.setEWorkHours(BigDecimal.valueOf(extraWork.getWorkHours()));
+                }else{
+                    resDTO.setEWorkHours(BigDecimal.ZERO);
+                }
+                List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(new Date(), today0);
+                if (daysBetweenTwoDate.size()<=7){
+                    resDTO.setCanReCheck(1);
+                }
                 signInResDTOS.add(resDTO);
             });
         }
-//        List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(reqDTO.getBeginTime(), reqDTO.getEndTime());
 
         return new PageInfo<>(signInResDTOS);
     }
@@ -771,6 +789,22 @@ public class ZSYSignInService implements IZSYSignInService {
                     }
                 }
                 resDTO.setDate(today0);
+                calendar.setTime(today0);
+                if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
+                    resDTO.setIsWeekend(1);
+                }else {
+                    resDTO.setIsWeekend(0);
+                }
+                ExtraWork extraWork = extraWorkMapper.selectByUserAndTimeRange(user.getId(),today0,today23);
+                if (extraWork != null){
+                    resDTO.setEWorkHours(BigDecimal.valueOf(extraWork.getWorkHours()));
+                }else{
+                    resDTO.setEWorkHours(BigDecimal.ZERO);
+                }
+                List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(today0,new Date());
+                if (daysBetweenTwoDate.size()<=7){
+                    resDTO.setCanReCheck(1);
+                }
                 signInResDTOS.add(resDTO);
             });
         }
@@ -900,13 +934,29 @@ public class ZSYSignInService implements IZSYSignInService {
     @Override
     @Transactional
     public void addResignIn(ResignInReqDTO reqDTO) {
-        ResignIn resignIn = new ResignIn();
-        BeanUtils.copyProperties(reqDTO,resignIn);
-        resignIn.setId(snowFlakeIDHelper.nextId());
-        resignIn.setReviewStatus(0);
-        if (signInMapper.addResignIn(resignIn) == 0){
-            throw new ZSYServiceException("新增补打卡申请失败");
+        if (reqDTO.getRecheckInTime() != null){
+            ResignIn resignIn = new ResignIn();
+            BeanUtils.copyProperties(reqDTO,resignIn);
+            resignIn.setRecheckTime(reqDTO.getRecheckInTime());
+            resignIn.setType(0);
+            resignIn.setId(snowFlakeIDHelper.nextId());
+            resignIn.setReviewStatus(0);
+            if (signInMapper.addResignIn(resignIn) == 0){
+                throw new ZSYServiceException("新增上班补打卡申请失败");
+            }
         }
+        if (reqDTO.getRecheckOutTime() != null){
+            ResignIn resignIn = new ResignIn();
+            BeanUtils.copyProperties(reqDTO,resignIn);
+            resignIn.setRecheckTime(reqDTO.getRecheckOutTime());
+            resignIn.setType(1);
+            resignIn.setId(snowFlakeIDHelper.nextId());
+            resignIn.setReviewStatus(0);
+            if (signInMapper.addResignIn(resignIn) == 0){
+                throw new ZSYServiceException("新增下班补打卡申请失败");
+            }
+        }
+
     }
 
     /**
@@ -922,6 +972,11 @@ public class ZSYSignInService implements IZSYSignInService {
             throw new ZSYServiceException("该条补打卡申请不存在");
         }
         BeanUtils.copyProperties(reqDTO,resignIn);
+        if (resignIn.getType()==0){
+            resignIn.setRecheckTime(reqDTO.getRecheckInTime());
+        }else {
+            resignIn.setRecheckTime(reqDTO.getRecheckOutTime());
+        }
         if (signInMapper.updateResignIn(resignIn,id) == 0){
             throw new ZSYServiceException("修改补打卡申请失败");
         }
@@ -976,6 +1031,19 @@ public class ZSYSignInService implements IZSYSignInService {
         signIn.setType(ZSYSignInType.RE_SIGN.getValue());
         if (signInMapper.addSignIn(signIn) == 0){
             throw new ZSYServiceException("审核通过补打卡申请失败");
+        }
+        SignIn existSignIn = signInMapper.selectSignInByUserAndTime(signIn.getUserId(), signIn.getCheckTime());
+        if (existSignIn != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            String prefix = sdf2.format(existSignIn.getCheckTime());
+            try {
+                Date today0 = sdf2.parse(prefix + " 00:00:00");
+                Date today23 = sdf2.parse(prefix + " 23:59:59");
+                signInMapper.deleteUselessSignIn(existSignIn.getUserId(),today0,today23);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
     }
 

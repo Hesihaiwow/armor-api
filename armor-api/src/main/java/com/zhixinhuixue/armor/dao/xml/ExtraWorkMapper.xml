@@ -131,4 +131,11 @@
     <select id="selectById" resultMap="BaseExtraWork">
         SELECT * FROM `extra_work` WHERE `id` = #{ewId}
     </select>
+
+    <!--根据用户和时间段查询加班申请-->
+    <select id="selectByUserAndTimeRange" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `user_id` = #{userId} AND `review_status` = 2
+        <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
+        <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
+    </select>
 </mapper>

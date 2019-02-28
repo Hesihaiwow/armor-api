@@ -8,6 +8,7 @@ import com.zhixinhuixue.armor.model.pojo.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,4 +85,12 @@ public interface IZSYExtraWorkMapper {
      */
     int deleteExtraWorkTaskByEwId(@Param("ewId") Long ewId);
 
+    /**
+     * 根据用户和时间段查询加班申请
+     * @param userId
+     * @param today0
+     * @param today23
+     * @return
+     */
+    ExtraWork selectByUserAndTimeRange(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
 }

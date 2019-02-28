@@ -153,4 +153,10 @@ public interface IZSYSignInMapper {
      * @return
      */
     SignIn selectSignInByUserAndTimeRange(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
+
+    /**
+     * 删除type=2 的多余记录
+     * @return
+     */
+    int deleteUselessSignIn(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
 }

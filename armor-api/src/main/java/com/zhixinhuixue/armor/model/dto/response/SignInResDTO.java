@@ -18,6 +18,11 @@ public class SignInResDTO {
     private Date date;
 
     /**
+     * 是否周末
+     */
+    private Integer isWeekend;
+
+    /**
      * 用户id
      */
     private Long userId;
@@ -63,6 +68,11 @@ public class SignInResDTO {
     private Long eWorkTime;
 
     /**
+     * 申请加班时长
+     */
+    private BigDecimal eWorkHours;
+
+    /**
      * 是否加班到第二天凌晨
      */
     private Integer isWorkToNextDay;
@@ -100,6 +110,22 @@ public class SignInResDTO {
      * @return
      */
     private BigDecimal leaveTime;
+
+    public Integer getIsWeekend() {
+        return isWeekend;
+    }
+
+    public void setIsWeekend(Integer isWeekend) {
+        this.isWeekend = isWeekend;
+    }
+
+    public BigDecimal getEWorkHours() {
+        return eWorkHours;
+    }
+
+    public void setEWorkHours(BigDecimal eWorkHours) {
+        this.eWorkHours = eWorkHours;
+    }
 
     public Integer getIsCheckInAfterTen() {
         return isCheckInAfterTen;

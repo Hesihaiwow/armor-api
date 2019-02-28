@@ -23,6 +23,11 @@ public class ResignInResDTO {
     private Date recheckTime;
 
     /**
+     * 类型
+     */
+    private Integer type;
+
+    /**
      * 用户id
      */
     private Long userId;
@@ -36,6 +41,14 @@ public class ResignInResDTO {
      * 用户图片
      */
     private String avatarUrl;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     public Long getId() {
         return id;

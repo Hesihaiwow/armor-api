@@ -46,7 +46,7 @@ CREATE TABLE `resign_in` (
   `reason` text NOT NULL COMMENT '原因',
   `recheck_time` datetime DEFAULT NULL COMMENT '申请通过时间',
   `review_status` int(1) DEFAULT NULL COMMENT '申请状态',
-  `sign_id` bigint(20) NOT NULL COMMENT '签到id',
+  `type` int(1) DEFAULT NULL COMMENT '类型(0:上班,1:下班)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='补打卡申请表';
 
