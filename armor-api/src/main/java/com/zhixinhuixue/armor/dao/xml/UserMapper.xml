@@ -152,6 +152,12 @@
     where t.id = #{taskId}
     limit 1
   </select>
+
+
+  <select id="selectByEwId" resultMap="BaseResultMap">
+      select * from `user` u left join `extra_work` ew on u.id = ew.user_id
+      where ew.id = #{ewId}
+  </select>
   <!-- sch -->
 
 </mapper>

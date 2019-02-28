@@ -111,4 +111,19 @@ public class ZSYConstants {
      * 短信接口地址
      */
     public static final String URL = "http://fcsms.kaozhengbao.com/captcha/notify";
+
+    /**
+     * 研发部id
+     */
+    public static final Long DEVELOP_ID = 87526048211664896L;
+
+    /**
+     * 产品部id
+     */
+    public static final Long PRODUCT_ID = 87526255120875520L;
+
+    /**
+     * 测试部id
+     */
+    public static final Long TEST_ID = 87526088225325056L;
 }

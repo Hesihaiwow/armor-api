@@ -1,25 +1,25 @@
 package com.zhixinhuixue.armor.source.enums;
 
 /**
- * 用户角色
- * Created by Tate on 2017/8/7.
+ * @author SCH
+ * @date 2019/2/22 13:56
+ * 打卡签到类型
  */
-public enum ZSYJobRole {
+public enum ZSYSignInType {
 
-    TEST(0, "测试"), PROGRAMER(1, "开发"),DESIGN(2, "设计"),PRODUCT(3,"产品"),OTHER(4,"其他");
-
+    NORMAL_SIGN(0,"正常"),RE_SIGN(1,"补打卡");
     private int value;
     private String name;
 
-    ZSYJobRole(int value, String name) {
+    ZSYSignInType(int value, String name) {
         this.value = value;
         this.name = name;
     }
 
     public static String getName(int value) {
-        for (ZSYJobRole status : ZSYJobRole.values()) {
-            if (status.getValue() == value) {
-                return status.getName();
+        for (ZSYSignInType signInType : ZSYSignInType.values()) {
+            if (signInType.getValue() == value) {
+                return signInType.getName();
             }
         }
         return "";
@@ -32,5 +32,4 @@ public enum ZSYJobRole {
     public String getName() {
         return name;
     }
-
 }

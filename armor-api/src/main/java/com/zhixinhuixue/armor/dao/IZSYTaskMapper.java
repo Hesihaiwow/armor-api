@@ -226,4 +226,11 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<TaskListBO> selectMyTaskByEndStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId,@Param("userId") Long userId);
+
+    /**
+     * 查询我的未完成任务
+     * @param userId
+     * @return
+     */
+    List<Task> selectMyRunningTask(@Param("userId")Long userId);
 }

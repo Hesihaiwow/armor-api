@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYSignInMapper">
+    <resultMap id="BaseExtraWork" type="com.zhixinhuixue.armor.model.pojo.ExtraWork">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"></result>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
+        <result column="work_hours" property="workHours" jdbcType="FLOAT"></result>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"></result>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
+        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <resultMap id="BaseTaskMap" type="com.zhixinhuixue.armor.model.pojo.Task">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+        <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+        <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
+        <result column="test_time" jdbcType="TIMESTAMP" property="testTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="review_status" jdbcType="INTEGER" property="reviewStatus"/>
+        <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="facility" jdbcType="INTEGER" property="facility"/>
+        <result column="examine" jdbcType="INTEGER" property="examine"/>
+    </resultMap>
+
+    <resultMap id="BaseUserMap" type="com.zhixinhuixue.armor.model.pojo.User">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="account" jdbcType="VARCHAR" property="account" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="department_id" jdbcType="BIGINT" property="departmentId" />
+        <result column="job_name" jdbcType="VARCHAR" property="jobName" />
+        <result column="job_role" jdbcType="INTEGER" property="jobRole" />
+        <result column="integral" jdbcType="DECIMAL" property="integral" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+        <result column="user_role" jdbcType="INTEGER" property="userRole" />
+        <result column="last_login" jdbcType="TIMESTAMP" property="lastLogin" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+    </resultMap>
+
+    <resultMap id="BaseSignInMap" type="com.zhixinhuixue.armor.model.pojo.SignIn">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="SignInBoMap" type="com.zhixinhuixue.armor.model.bo.SignInBO" extends="BaseSignInMap">
+        <result column="check_time_str" property="checkTimeStr" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <resultMap id="BaseResignInMap" type="com.zhixinhuixue.armor.model.pojo.ResignIn">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="recheck_time" property="recheckTime" jdbcType="TIMESTAMP"></result>
+        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <!--批量新增userSort-->
+    <insert id="addUserSortBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserSort">
+        INSERT INTO `user_sort`
+        (`sort`,`user_name`) VALUES
+        <foreach collection="userSortList" item="userSort" separator=",">
+            (#{userSort.sort,jdbcType=INTEGER},#{userSort.userName,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!--批量导入考勤打卡记录-->
+    <insert id="insertSignInBatch" parameterType="com.zhixinhuixue.armor.model.pojo.SignIn">
+        INSERT INTO `sign_in`
+        (`id`,`user_id`,`check_time`,`type`) VALUES
+        <foreach collection="signIns" item="signIn" separator=",">
+            (#{signIn.id,jdbcType=BIGINT},#{signIn.userId,jdbcType=BIGINT},#{signIn.checkTime,jdbcType=TIMESTAMP},#{signIn.type,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!--新增补打卡申请-->
+    <insert id="addResignIn" parameterType="com.zhixinhuixue.armor.model.pojo.ResignIn">
+        INSERT INTO `resign_in`
+        (`id`,`user_id`,`recheck_time`,`reason`,`review_status`,`type`)
+        VALUES
+        (#{resignIn.id,jdbcType=BIGINT},#{resignIn.userId,jdbcType=BIGINT},#{resignIn.recheckTime,jdbcType=TIMESTAMP}
+        ,#{resignIn.reason,jdbcType=VARCHAR},#{resignIn.reviewStatus,jdbcType=INTEGER},#{resignIn.type,jdbcType=INTEGER})
+    </insert>
+
+    <!--新增签到记录-->
+    <insert id="addSignIn" parameterType="com.zhixinhuixue.armor.model.pojo.SignIn">
+        INSERT INTO `sign_in`
+        (`id`,`user_id`,`check_time`,`type`) VALUES
+        (#{signIn.id,jdbcType=BIGINT},#{signIn.userId,jdbcType=BIGINT},#{signIn.checkTime,jdbcType=TIMESTAMP},#{signIn.type,jdbcType=INTEGER})
+    </insert>
+
+    <!--修改补打卡申请-->
+    <update id="updateResignIn" parameterType="com.zhixinhuixue.armor.model.pojo.ResignIn">
+        UPDATE `resign_in`
+        <set>
+            <if test="resignIn.reason != null and resignIn.reason != '' ">
+                `reason` = #{resignIn.reason,jdbcType=VARCHAR},
+            </if>
+            <if test="resignIn.recheckTime != null">
+                `recheck_time` = #{resignIn.recheckTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="resignIn.reviewStatus != null">
+                `review_status` = #{resignIn.reviewStatus,jdbcType=INTEGER}
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--清空userSort-->
+    <delete id="deleteUserSort">
+        TRUNCATE TABLE `user_sort`
+    </delete>
+
+    <!--删除补打卡申请-->
+    <delete id="deleteResignInById">
+        DELETE FROM  `resign_in` WHERE `id` = #{id}
+    </delete>
+
+    <!--删除指定signIn-->
+    <delete id="deleteSignIn">
+        DELETE FROM `sign_in` WHERE `user_id` = #{userId} AND `check_time` = #{recheckTime}
+    </delete>
+
+    <!--删除type=2 的多余记录-->
+    <delete id="deleteUselessSignIn">
+        DELETE FROM `sign_in` WHERE `type` = 2 AND `user_id` = #{userId}
+        <![CDATA[  and  `check_time` >= #{today0} ]]>
+        <![CDATA[  and  `check_time` <= #{today23} ]]>
+    </delete>
+
+    <!--根据 序号 查询user-->
+    <select id="selectUserBySort" resultMap="BaseUserMap">
+        SELECT u.* from `user` u LEFT JOIN `user_sort` us ON u.name = us.user_name
+        WHERE us.sort = #{sort} limit 1
+    </select>
+
+    <!--查询全部考勤记录-->
+    <select id="selectSignInList" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in`
+    </select>
+
+    <!--导入记录的最后一条记录打卡时间-->
+    <select id="selectSingInLastRecord" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` ORDER BY `check_time` DESC LIMIT 1
+    </select>
+
+    <!--分页查询考勤记录-->
+    <select id="selectSignInPage" resultMap="SignInBoMap">
+        SELECT si.*,GROUP_CONCAT(`check_time`) check_time_str FROM `sign_in` si
+        LEFT JOIN `user` u on si.user_id = u.id
+        <where>
+            u.`is_delete` = 0 and u.`status` = 0
+            <if test="reqDTO.userId != null">
+                AND si.`user_id` = #{reqDTO.userId}
+            </if>
+            <if test="reqDTO.beginTime != null">
+                <![CDATA[  and  si.`check_time` >= #{reqDTO.beginTime} ]]>
+            </if>
+            <if test="reqDTO.endTime != null">
+                <![CDATA[  and  si.`check_time` <= #{reqDTO.endTime} ]]>
+            </if>
+        </where>
+        GROUP BY `user_id`,DATE(`check_time`) ORDER BY `check_time` DESC
+    </select>
+
+    <!--查询当前用户第二天7点前是否有打卡记录-->
+    <select id="selectBefore7ByUserId" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` WHERE `user_id` = #{userId} AND `type` != 2
+        <![CDATA[  and  `check_time` >= #{zero} ]]>
+        <![CDATA[  and  `check_time` <= #{seven} ]]>
+    </select>
+
+    <!--查询漏打卡考勤记录-->
+    <select id="selectForgetSignInList" resultMap="SignInBoMap">
+        SELECT *,GROUP_CONCAT(`check_time`) check_time_str FROM `sign_in`
+        WHERE `user_id` = #{userId}
+        GROUP BY `user_id`,DATE(`check_time`) ORDER BY `check_time` DESC
+    </select>
+
+    <!--根据主键查询补打卡申请-->
+    <select id="selectResignInById" resultMap="BaseResignInMap">
+        SELECT * FROM `resign_in` WHERE `id` = #{id}
+    </select>
+
+    <!--个人查询补打卡申请-->
+    <select id="selectPersonalResignInPage" resultMap="BaseResignInMap">
+        SELECT * FROM `resign_in` WHERE `user_id` = #{userId} AND `review_status` = #{status} ORDER BY `recheck_time` DESC
+    </select>
+
+    <!--管理员查询补打卡申请-->
+    <select id="selectResignInPage" resultMap="BaseResignInMap">
+        SELECT * FROM `resign_in` WHERE `review_status` = #{status} ORDER BY `recheck_time` DESC
+    </select>
+
+    <!--根据userId和checkTime查询考勤记录-->
+    <select id="selectSignInByUserAndTime" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` WHERE `user_id` = #{userId} AND `check_time` = #{checkTime}
+    </select>
+
+    <!--根据userId和checkTime时间段查询考勤记录-->
+    <select id="selectSignInByUserAndTimeRange" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` WHERE `user_id` = #{userId}
+        <![CDATA[  and  `check_time` >= #{today0} ]]>
+        <![CDATA[  and  `check_time` <= #{today23} ]]>
+        limit 1
+    </select>
+</mapper>

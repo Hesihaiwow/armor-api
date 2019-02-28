@@ -87,5 +87,12 @@ public interface IZSYUserMapper {
      * @return
      */
     User selectByTaskId(@Param("taskId") Long taskId);
+
+    /**
+     * 根据ewId查询用户
+     * @param ewId
+     * @return
+     */
+    User selectByEwId(@Param("ewId") Long ewId);
     // -- sch
 }
