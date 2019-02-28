@@ -1637,6 +1637,7 @@
                     vm.$emit('reload')
                     // 刷新看板
                     this.$root.eventBus.$emit('reloadBoard');
+                    this.fetchUnreadNoticeNum();
                 })
                 this.showCreateTask = false;
 
@@ -1775,7 +1776,8 @@
                         // 刷新看板
                         this.$root.eventBus.$emit('reloadBoard');
                         this.showTaskDetail = false;
-                        this.modifyStopVisible =false
+                        this.modifyStopVisible =false;
+                        this.fetchUnreadNoticeNum()
                     })
                 }).catch(() => {
                 });
@@ -1859,7 +1861,13 @@
                 this.expandTime.endTime= null
                 this.expandTime.taskId= ''
                 this.expandTime.hours = 0
-            }
+            },
+            //查询所有未读数量
+            fetchUnreadNoticeNum(){
+                http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
+                    window.localStorage.setItem("unreadNum",res.data.count)
+                })
+            },
 
         },
         created() {

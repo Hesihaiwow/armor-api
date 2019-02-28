@@ -251,7 +251,8 @@
                 }).then(() => {
                     Http.zsyPutHttp(`/task/notification/read-all`, {}, (resp) => {
                         this.$message({showClose: true, message: '标记成功', type: 'success'});
-                        this.fetchUnreadNoticeNum()
+                        this.fetchUnreadNoticeNum();
+                        this.fetchAllNotice()
                     })
                     // window.history.go(0)
                 }).catch(() => {
