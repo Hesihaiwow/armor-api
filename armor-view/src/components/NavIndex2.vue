@@ -2363,7 +2363,8 @@
                 this.fetchMyRecheckPass();
                 this.fetchRecheckWait();
                 this.fetchRecheckPass();
-                // this.fetchForgetSignIn();
+                this.fetchMySignInData();
+                this.fetchSignInData();
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -3780,7 +3781,8 @@
             },
             //查询考勤情况
             fetchSignInData(){
-                http.zsyPostHttp('/sign-in/page',this.signInReqDTO,(res)=>{
+                if (this.userRole == 3 ){
+                    http.zsyPostHttp('/sign-in/page',this.signInReqDTO,(res)=>{
                         if (res){
                             this.signInData = res.data.list;
                             this.signInPage.total = res.data.total;
@@ -3799,9 +3801,10 @@
                             })
                         }
                     })
-
+                }
             },
             fetchMySignInData(){
+                if (this.userRole < 3 && this.userRole > 0){
                     http.zsyPostHttp('/sign-in/page/personal',this.mySignInReqDTO,(res)=>{
                         if (res){
                             this.signInData = res.data.list;
@@ -3821,7 +3824,7 @@
                             })
                         }
                     })
-
+                }
             },
             signInHandleCurrentChange(currentPage){
                 this.signInPage.pageNum = currentPage;
