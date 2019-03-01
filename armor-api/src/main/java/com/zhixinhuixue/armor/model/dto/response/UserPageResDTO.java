@@ -34,6 +34,16 @@ public class UserPageResDTO {
 
     private Integer userRole;
 
+    private Integer checkSort;
+
+    public Integer getCheckSort() {
+        return checkSort;
+    }
+
+    public void setCheckSort(Integer checkSort) {
+        this.checkSort = checkSort;
+    }
+
     public String getName() {
         return name;
     }

@@ -151,8 +151,7 @@
 
     <!--根据 序号 查询user-->
     <select id="selectUserBySort" resultMap="BaseUserMap">
-        SELECT u.* from `user` u LEFT JOIN `user_sort` us ON u.name = us.user_name
-        WHERE us.sort = #{sort} limit 1
+        SELECT * FROM `user` where `check_sort` = #{sort}
     </select>
 
     <!--查询全部考勤记录-->
@@ -224,5 +223,15 @@
         <![CDATA[  and  `check_time` >= #{today0} ]]>
         <![CDATA[  and  `check_time` <= #{today23} ]]>
         limit 1
+    </select>
+
+    <!--导入记录的最先一条记录打卡时间-->
+    <select id="selectSingInFirstRecord" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` ORDER BY `check_time` ASC LIMIT 1
+    </select>
+
+    <!--查询打卡人员列表-->
+    <select id="selectCheckInUsers" resultMap="BaseUserMap">
+        select * from `user` where `is_delete` = 0  and `status` = 0 and `check_sort` > 0
     </select>
 </mapper>
