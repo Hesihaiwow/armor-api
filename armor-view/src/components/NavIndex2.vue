@@ -1,5 +1,12 @@
 <template>
     <div class="nav-index-con">
+        <div v-show="userRole == 3 || permit">
+            <el-button v-loading.fullscreen.lock="fullscreenLoading"
+                       element-loading-text="拼命导入中,请稍后"
+                       element-loading-spinner="el-icon-loading"
+                       element-loading-background="rgba(0, 0, 0, 0.8)"
+                       type="primary" @click="uploadToMysqlVisible=true">导入考勤记录</el-button>
+        </div>
         <div class="my-integral-con" v-show="userRole>0 && userRole < 3">
             <!--<a class="mic-title" @click="toMySummary" style="cursor: pointer">我得年度总结</a>-->
             <div><p class="mic-title">我的积分</p>
@@ -19,10 +26,7 @@
             </div>
         </div>
         <div class="my-task-con" v-show="userRole == 3">
-            <div>
-                <el-button type="primary" @click="uploadUserSortToMysqlVisible=true">导入花名册</el-button>
-                <el-button type="primary" @click="uploadToMysqlVisible=true">导入考勤记录</el-button>
-            </div>
+
             <p class="mic-title" style="margin-top: 20px">考勤记录</p>
             <div class="my-task-detail" style="width: 1200px;">
                 <div class="add-member-basic-msg fl" >
@@ -2075,6 +2079,7 @@
                 isEWorkEdit:true,
                 eWorkDetail:{},
                 uploadToMysqlVisible: false,
+                fullscreenLoading: false,
                 uploadUserSortToMysqlVisible: false,
                 recordFileList:[],
 
@@ -3675,18 +3680,14 @@
 
             },
             uploadRecordToMysql(file){
+                this.fullscreenLoading = true;
                 this.uploadToMysqlVisible = false;
-                this.$message({
-                    showClose: true,
-                    message: '正在导入中,请稍后再进行操作',
-                    type: 'success'
-                });
                 var data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/sign-in/upload/sign-in/repository',data,(res)=>{
-
                     this.$refs.record.clearFiles();
                     if (res.errMsg == "执行成功"){
+                        this.fullscreenLoading = false;
                         this.$message({
                             showClose: true,
                             message: '导入成功',
@@ -3694,6 +3695,7 @@
                         });
                     }else {
                         this.uploadToMysqlVisible = false;
+                        this.fullscreenLoading = true;
                     }
                 })
             },

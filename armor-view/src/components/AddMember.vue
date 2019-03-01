@@ -60,6 +60,12 @@
           </el-select>
         </div>
       </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">考勤序号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addForm.checkSort" placeholder="请输入考勤序号"></el-input>
+        </div>
+      </div>
       <!--<div class="am-warn">{{amWarn}}</div>-->
       <div class="ctpc-btns">
         <input type="button" class="ctpc-cancel" value="取消" @click="hide">
@@ -84,6 +90,7 @@
           userRole:'',
           jobRole:'',
           departmentId:'',
+          checkSort:'',
           email:''
         },
         //用户权限手
@@ -136,6 +143,7 @@
         this.addForm.userRole='';
         this.addForm.email='';
         this.addForm.jobRole='';
+        this.addForm.checkSort='';
       },
       //部门ID
       setDeptId(deptId){
@@ -167,6 +175,10 @@
             this.warnMsg("请选择用户角色");
             return;
         }
+          if (Helper.trim(this.addForm.checkSort)==''){
+              this.warnMsg("请选择用户考勤序号");
+              return;
+          }
         Http.zsyPostHttp('/user/add',this.addForm,(res)=>{
             this.hide();
             this.$message({
