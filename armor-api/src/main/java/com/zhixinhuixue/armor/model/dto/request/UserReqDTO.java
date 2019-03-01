@@ -35,6 +35,9 @@ public class UserReqDTO {
     @NotNull(message = "用户角色不能为空")
     private Integer userRole;
 
+    @NotNull(message = "用户考勤序号不能为空")
+    private Integer checkSort;
+
     @Size(min = 6,max = 16,message = "用户职位字符长度在{min}~{max}之间")
     private String password;
 
@@ -43,6 +46,14 @@ public class UserReqDTO {
     @Pattern(regexp = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}",message = "邮箱格式错误")
     @NotNull(message = "邮箱不能为空")
     private String email;
+
+    public Integer getCheckSort() {
+        return checkSort;
+    }
+
+    public void setCheckSort(Integer checkSort) {
+        this.checkSort = checkSort;
+    }
 
     public Long getUserId() {
         return userId;

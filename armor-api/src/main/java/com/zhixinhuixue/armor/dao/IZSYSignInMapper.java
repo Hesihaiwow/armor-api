@@ -52,12 +52,6 @@ public interface IZSYSignInMapper {
     List<SignIn> selectSignInList();
 
     /**
-     * 导入记录的最后一条记录打卡时间
-     * @return
-     */
-    SignIn selectSingInLastRecord();
-
-    /**
      * 分页查询考勤记录
      * @param reqDTO
      * @return
@@ -159,4 +153,23 @@ public interface IZSYSignInMapper {
      * @return
      */
     int deleteUselessSignIn(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
+
+
+    /**
+     * 导入记录的最后一条记录打卡时间
+     * @return
+     */
+    SignIn selectSingInLastRecord();
+
+    /**
+     * 导入记录的最先一条记录打卡时间
+     * @return
+     */
+    SignIn selectSingInFirstRecord();
+
+    /**
+     * 查询打卡人员列表
+     * @return
+     */
+    List<User> selectCheckInUsers();
 }

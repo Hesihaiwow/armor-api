@@ -98,6 +98,7 @@ public class ZSYSignInService implements IZSYSignInService {
      * @param uploadFile
      */
     @Override
+    @Transactional
     public void uploadToMysql(MultipartFile uploadFile) {
         String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
         if (!".dat".equals(suffix)){
@@ -110,18 +111,40 @@ public class ZSYSignInService implements IZSYSignInService {
             String str;
             List<SignIn> signIns = new ArrayList<>();
             long time1 = System.currentTimeMillis();
-            Set<Long> users = new HashSet<>();
-            while((str=br.readLine())!=null){//按行读取
-                String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
-                String time = str.substring(10, 29);
-                String trim = sort.trim();
-                User user = signInMapper.selectUserBySort(Integer.valueOf(trim));
-                if (user != null){
-                    users.add(user.getId());
+            List<User> users = signInMapper.selectCheckInUsers();
+            SignIn lastRecord = signInMapper.selectSingInLastRecord();
+            SignIn firstRecord = signInMapper.selectSingInFirstRecord();
+            //如果有最后一条记录,且当前这天的考勤时间是最后一条之后的
+            if (lastRecord != null && firstRecord != null){
+                while((str=br.readLine())!=null){//按行读取
+                    String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
+                    String time = str.substring(10, 29);
+                    String trim = sort.trim();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date checkTime = sdf.parse(time);
-                    SignIn existSignIn = signInMapper.selectSignInByUserAndTime(user.getId(),checkTime);
-                    if (existSignIn == null){
+                    if (checkTime.after(lastRecord.getCheckTime()) || checkTime.before(firstRecord.getCheckTime())){
+                        User user = signInMapper.selectUserBySort(Integer.valueOf(trim));
+                        if (user != null){
+                            SignIn signIn = new SignIn();
+                            signIn.setId(snowFlakeIDHelper.nextId());
+                            signIn.setUserId(user.getId());
+                            signIn.setCheckTime(checkTime);
+                            signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
+                            signIns.add(signIn);
+                        }
+                    }
+                }
+            }
+            //如果没有最后一条记录,则全部都是新的
+            else {
+                while((str=br.readLine())!=null){//按行读取
+                    String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
+                    String time = str.substring(10, 29);
+                    String trim = sort.trim();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date checkTime = sdf.parse(time);
+                    User user = signInMapper.selectUserBySort(Integer.valueOf(trim));
+                    if (user != null){
                         SignIn signIn = new SignIn();
                         signIn.setId(snowFlakeIDHelper.nextId());
                         signIn.setUserId(user.getId());
@@ -155,12 +178,12 @@ public class ZSYSignInService implements IZSYSignInService {
                     String prefix = sdf.format(calendar.getTime());
                     Date today0 = sdf2.parse(prefix + " 00:00:00");
                     Date today23 = sdf2.parse(prefix + " 23:59:59");
-                    for (Long user : users) {
-                        SignIn existSignIn = signInMapper.selectSignInByUserAndTimeRange(user,today0,today23);
+                    for (User user : users) {
+                        SignIn existSignIn = signInMapper.selectSignInByUserAndTimeRange(user.getId(),today0,today23);
                         if (existSignIn == null){
                             SignIn signIn = new SignIn();
                             signIn.setId(snowFlakeIDHelper.nextId());
-                            signIn.setUserId(user);
+                            signIn.setUserId(user.getId());
                             signIn.setType(2);
                             signIn.setCheckTime(today0);
                             signInList.add(signIn);
@@ -170,7 +193,9 @@ public class ZSYSignInService implements IZSYSignInService {
                 System.out.println("时间段长度: "+daysBetweenTwoDate.size());
                 System.out.println("signInList的长度: "+signInList.size());
                 System.out.println("users的长度: "+users.size());
-                signInMapper.insertSignInBatch(signInList);
+                if (!CollectionUtils.isEmpty(signInList)){
+                    signInMapper.insertSignInBatch(signInList);
+                }
             }
             System.out.println("插入空数据时间: "+(System.currentTimeMillis()-time4)+"ms");
 
@@ -212,12 +237,13 @@ public class ZSYSignInService implements IZSYSignInService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Calendar calendar = Calendar.getInstance();
+            String todayPrefix = sdf.format(today);
             calendar.setTime(today);
-            calendar.add(Calendar.DATE,-1);
+            calendar.add(Calendar.DATE,-6);
             String prefix = sdf.format(calendar.getTime());
             try {
                 Date beginTime = sdf2.parse(prefix + " 00:00:00");
-                Date endTime = sdf2.parse(prefix + " 23:59:59");
+                Date endTime = sdf2.parse(todayPrefix + " 23:59:59");
                 reqDTO.setBeginTime(beginTime);
                 reqDTO.setEndTime(endTime);
             } catch (ParseException e) {
@@ -514,12 +540,19 @@ public class ZSYSignInService implements IZSYSignInService {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         reqDTO.setUserId(ZSYTokenRequestContext.get().getUserId());
         if (reqDTO.getBeginTime() == null){
-            String thisMonthFirstDay = DateHelper.getThisMonthFirstDay();
-            String thisMonthLastDay = DateHelper.getThisMonthLastDay();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date today = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Calendar calendar = Calendar.getInstance();
+            String todayPrefix = sdf.format(today);
+            calendar.setTime(today);
+            calendar.add(Calendar.DATE,-6);
+            String prefix = sdf.format(calendar.getTime());
             try {
-                reqDTO.setBeginTime(sdf.parse(thisMonthFirstDay));
-                reqDTO.setEndTime(sdf.parse(thisMonthLastDay));
+                Date beginTime = sdf2.parse(prefix + " 00:00:00");
+                Date endTime = sdf2.parse(todayPrefix + " 23:59:59");
+                reqDTO.setBeginTime(beginTime);
+                reqDTO.setEndTime(endTime);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
