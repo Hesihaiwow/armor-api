@@ -376,7 +376,7 @@
                     >
                     </el-date-picker>
                 </div>
-                <el-button type="primary" @click="fetchSignInData" style="margin-left: 10px" size="small">查询</el-button>
+                <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
                 <el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
                 <el-table :data="signInData" border>
                     <el-table-column prop="date" label="日期" align="center" width="120">
@@ -2341,6 +2341,16 @@
                 this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
                 this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
 
+            },
+            selectSignInData(){
+                if (this.signInReqDTO.beginTime != null && this.signInReqDTO.beginTime != ''){
+                    this.signInReqDTO.beginTime = moment(this.signInReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
+                }
+                if (this.signInReqDTO.endTime != null && this.signInReqDTO.endTime != '') {
+                    this.signInReqDTO.endTime = moment(this.signInReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
+                }
+
+                this.fetchSignInData()
             },
 
             //查询考勤情况
