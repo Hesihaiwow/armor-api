@@ -234,4 +234,38 @@
     <select id="selectCheckInUsers" resultMap="BaseUserMap">
         select * from `user` where `is_delete` = 0  and `status` = 0 and `check_sort` > 0
     </select>
+
+    <!--根据用户id和起止时间查询考勤-->
+    <select id="selectPersonalSignInList" resultMap="SignInBoMap">
+        SELECT si.*,GROUP_CONCAT(`check_time`) check_time_str FROM `sign_in` si
+        LEFT JOIN `user` u on si.user_id = u.id
+        <where>
+            u.`is_delete` = 0 and u.`status` = 0
+            <if test="userId != null">
+                AND si.`user_id` = #{userId}
+            </if>
+            <if test="beginTime != null">
+                <![CDATA[  and  si.`check_time` >= #{beginTime} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[  and  si.`check_time` < #{endTime} ]]>
+            </if>
+        </where>
+        GROUP BY `user_id`,DATE(`check_time`) ORDER BY `check_time` DESC
+    </select>
+
+    <!--根据月份查询当月有记录的最早时间-->
+    <select id="selectMonthFirstTime" resultType="java.util.Date">
+        SELECT `check_time` FROM `sign_in` where MONTH(`check_time`) = #{month} ORDER BY `check_time` ASC LIMIT 1
+    </select>
+
+    <!--根据月份查询当月有记录的最晚时间-->
+    <select id="selectMonthLastTime" resultType="java.util.Date">
+        SELECT `check_time` FROM `sign_in` where MONTH(`check_time`) = #{month} ORDER BY `check_time` DESC LIMIT 1
+    </select>
+
+    <!--根据月份查询当月有记录的时间集合-->
+    <select id="selectDateList" resultType="java.util.Date">
+        SELECT check_time FROM sign_in WHERE month(check_time) = #{month} GROUP BY DATE(check_time) ORDER BY check_time ASC
+    </select>
 </mapper>

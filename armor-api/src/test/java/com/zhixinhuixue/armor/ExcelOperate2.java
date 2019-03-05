@@ -8,14 +8,12 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
+import sun.misc.Cleaner;
 
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author SCH
@@ -78,8 +76,12 @@ public class ExcelOperate2 {
 
     @Test
     public void getDate(){
-        String thisMonthLastDay = DateHelper.getThisMonthLastDay();
-        System.out.println(thisMonthLastDay);
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE,1);
+        int i = calendar.get(Calendar.DAY_OF_WEEK);
+        System.out.println(i);
     }
 
 }

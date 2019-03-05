@@ -18,6 +18,11 @@ public class SignInResDTO {
     private Date date;
 
     /**
+     * 星期
+     */
+    private String weekday;
+
+    /**
      * 是否周末
      */
     private Integer isWeekend;
@@ -111,6 +116,30 @@ public class SignInResDTO {
      */
     private BigDecimal leaveTime;
 
+    public String getWeekday() {
+        return weekday;
+    }
+
+    public void setWeekday(String weekday) {
+        this.weekday = weekday;
+    }
+
+    public Long geteWorkTime() {
+        return eWorkTime;
+    }
+
+    public void seteWorkTime(Long eWorkTime) {
+        this.eWorkTime = eWorkTime;
+    }
+
+    public BigDecimal geteWorkHours() {
+        return eWorkHours;
+    }
+
+    public void seteWorkHours(BigDecimal eWorkHours) {
+        this.eWorkHours = eWorkHours;
+    }
+
     public Integer getIsWeekend() {
         return isWeekend;
     }
@@ -173,14 +202,6 @@ public class SignInResDTO {
 
     public void setLessThanNine(Integer lessThanNine) {
         this.lessThanNine = lessThanNine;
-    }
-
-    public Long geteWorkTime() {
-        return eWorkTime;
-    }
-
-    public void seteWorkTime(Long eWorkTime) {
-        this.eWorkTime = eWorkTime;
     }
 
     public BigDecimal getLeaveTime() {

@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ResignInResDTO;
 import com.zhixinhuixue.armor.model.dto.response.SignInLastRecordResDTO;
 import com.zhixinhuixue.armor.model.dto.response.SignInResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TotalExtraHoursResDTO;
 import com.zhixinhuixue.armor.service.IZSYSignInService;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -16,6 +17,9 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author SCH
@@ -121,5 +125,26 @@ public class ZSYSignInController {
     public String getResignInByStatus(@PathVariable("status")Integer status,@PathVariable("pageNum")Integer pageNum){
         PageInfo<ResignInResDTO> resDTO = signInService.getResignInByStatus(status,pageNum);
         return ZSYResult.success().data(resDTO).build();
+    }
+
+    @ApiOperation("个人查看加班总时长")
+    @GetMapping("/extra-hours/total/personal/{month}")
+    public String getPersonalTotalExtraHours(@PathVariable Integer month){
+        TotalExtraHoursResDTO resDTO = signInService.getPersonalTotalExtraHours(month);
+        return ZSYResult.success().data(resDTO).build();
+    }
+
+    @ApiOperation("查看指定用户加班总时长")
+    @GetMapping("/extra-hours/total/{userId}/{month}")
+    public String getTotalExtraHoursByUserId(@PathVariable("userId")Long userId,@PathVariable("month")Integer month){
+        TotalExtraHoursResDTO resDTO = signInService.getTotalExtraHoursByUserId(userId,month);
+        return ZSYResult.success().data(resDTO).build();
+    }
+
+    @ApiOperation("按月导出考勤情况Excel")
+    @GetMapping("/excel/{month}")
+    public String excelSignInData(@PathVariable("month")Integer month){
+        String url = signInService.excelSignInData(month);
+        return ZSYResult.success().data(url).build();
     }
 }

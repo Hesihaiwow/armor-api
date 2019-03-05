@@ -29,21 +29,21 @@ public interface IZSYSignInMapper {
      * @param userSortList
      * @return
      */
-    int addUserSortBatch(@Param("userSortList")List<UserSort> userSortList);
+    int addUserSortBatch(@Param("userSortList") List<UserSort> userSortList);
 
     /**
      * 根据序号查用户信息
      * @param sort
      * @return
      */
-    User selectUserBySort(@Param("sort")Integer sort);
+    User selectUserBySort(@Param("sort") Integer sort);
 
     /**
      * 批量导入考勤打卡记录
      * @param signIns
      * @return
      */
-    int insertSignInBatch(@Param("signIns")List<SignIn> signIns);
+    int insertSignInBatch(@Param("signIns") List<SignIn> signIns);
 
     /**
      * 查询全部考勤记录
@@ -63,7 +63,7 @@ public interface IZSYSignInMapper {
      * @param userId
      * @return
      */
-    List<SignIn> selectBefore7ByUserId(@Param("userId") Long userId, @Param("seven")Date seven,@Param("zero")Date zero);
+    List<SignIn> selectBefore7ByUserId(@Param("userId") Long userId, @Param("seven") Date seven, @Param("zero") Date zero);
 
     /**
      * 查询漏打卡考勤记录
@@ -92,7 +92,7 @@ public interface IZSYSignInMapper {
      * @param id
      * @return
      */
-    int updateResignIn(@Param("resignIn")ResignIn resignIn,@Param("id") Long id);
+    int updateResignIn(@Param("resignIn") ResignIn resignIn, @Param("id") Long id);
 
     /**
      * 个人查询补打卡申请
@@ -100,21 +100,21 @@ public interface IZSYSignInMapper {
      * @param status
      * @return
      */
-    Page<ResignIn> selectPersonalResignInPage(@Param("userId")Long userId, @Param("status")Integer status);
+    Page<ResignIn> selectPersonalResignInPage(@Param("userId") Long userId, @Param("status") Integer status);
 
     /**
      * 管理员查询补打卡申请
      * @param status
      * @return
      */
-    Page<ResignIn> selectResignInPage(@Param("status")Integer status);
+    Page<ResignIn> selectResignInPage(@Param("status") Integer status);
 
     /**
      * 删除补打卡申请
      * @param id
      * @return
      */
-    int deleteResignInById(@Param("id")Long id);
+    int deleteResignInById(@Param("id") Long id);
 
     /**
      * 新增签到记录
@@ -129,7 +129,7 @@ public interface IZSYSignInMapper {
      * @param userId
      * @return
      */
-    int deleteSignIn(@Param("recheckTime") Date recheckTime,@Param("userId")  Long userId);
+    int deleteSignIn(@Param("recheckTime") Date recheckTime, @Param("userId") Long userId);
 
     /**
      * 根据userId和checkTime查询考勤记录
@@ -137,7 +137,7 @@ public interface IZSYSignInMapper {
      * @param checkTime
      * @return
      */
-    SignIn selectSignInByUserAndTime(@Param("userId")Long userId,@Param("checkTime") Date checkTime);
+    SignIn selectSignInByUserAndTime(@Param("userId") Long userId, @Param("checkTime") Date checkTime);
 
     /**
      * 根据userId和checkTime时间段查询考勤记录
@@ -146,13 +146,13 @@ public interface IZSYSignInMapper {
      * @param today23
      * @return
      */
-    SignIn selectSignInByUserAndTimeRange(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
+    SignIn selectSignInByUserAndTimeRange(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
 
     /**
      * 删除type=2 的多余记录
      * @return
      */
-    int deleteUselessSignIn(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
+    int deleteUselessSignIn(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
 
 
     /**
@@ -172,4 +172,34 @@ public interface IZSYSignInMapper {
      * @return
      */
     List<User> selectCheckInUsers();
+
+    /**
+     * 根据用户id和起止时间查询考勤
+     * @param userId
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<SignInBO> selectPersonalSignInList(@Param("userId") Long userId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
+     * 根据月份查询当月有记录的最早时间
+     * @param month
+     * @return
+     */
+    Date selectMonthFirstTime(@Param("month") Integer month);
+
+    /**
+     * 根据月份查询当月有记录的最晚时间
+     * @param month
+     * @return
+     */
+    Date selectMonthLastTime(@Param("month") Integer month);
+
+    /**
+     * 根据月份查询当月有记录的时间集合
+     * @param month
+     * @return
+     */
+    List<Date> selectDateList(@Param("month") Integer month);
 }

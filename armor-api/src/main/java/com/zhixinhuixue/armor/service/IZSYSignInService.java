@@ -6,8 +6,12 @@ import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ResignInResDTO;
 import com.zhixinhuixue.armor.model.dto.response.SignInLastRecordResDTO;
 import com.zhixinhuixue.armor.model.dto.response.SignInResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TotalExtraHoursResDTO;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author SCH
@@ -64,7 +68,7 @@ public interface IZSYSignInService {
      * 修改补打卡申请
      * @param reqDTO
      */
-    void updateResignIn(ResignInReqDTO reqDTO,Long id);
+    void updateResignIn(ResignInReqDTO reqDTO, Long id);
 
     /**
      * 个人查询补打卡申请
@@ -93,4 +97,26 @@ public interface IZSYSignInService {
      * @param id
      */
     void accessResignIn(Long id);
+
+    /**
+     * 个人查看加班总时长
+     * @param month
+     * @return
+     */
+    TotalExtraHoursResDTO getPersonalTotalExtraHours(Integer month);
+
+    /**
+     * 管理员查看用户的加班总时长
+     * @param userId
+     * @param month
+     * @return
+     */
+    TotalExtraHoursResDTO getTotalExtraHoursByUserId(Long userId, Integer month);
+
+    /**
+     * 按月导出考勤情况Excel
+     * @param month
+     * @return
+     */
+    String excelSignInData(Integer month);
 }
