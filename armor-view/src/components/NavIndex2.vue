@@ -35,19 +35,33 @@
                                    :value="item.id"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl"><el-date-picker
-                        v-model="signInDaterange"
-                        type="daterange"
-                        placeholder="选择日期范围"
-                        unlink-panels
-                        @change="signInTimeChange"
-                        :picker-options="pickerOptions">
-                </el-date-picker></div>
-                <el-button type="primary" @click="fetchSignInData" style="margin-left: 10px" size="small">查询</el-button>
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="signInReqDTO.beginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择开始时间"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="signInReqDTO.endTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择截止时间"
+                    >
+                    </el-date-picker>
+                </div>
+                <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
+                <el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
                 <el-table :data="signInData" border>
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template scope="scope">
-                            {{scope.row.date | formatDate2}}
+                            {{scope.row.date | formatDate2}}{{scope.row.weekday}}
                             <span v-show="scope.row.isWeekend == 1" style="color: #3da7f5">(周末)</span>
                         </template>
                     </el-table-column>
@@ -194,19 +208,33 @@
                 </div>
                 <p class="mic-title">我的考勤</p>
                 <div class="my-task-detail" style="width: 1200px">
-                    <div class="add-member-basic-msg fl"><el-date-picker
-                            v-model="mySignInDaterange"
-                            type="daterange"
-                            placeholder="选择日期范围"
-                            unlink-panels
-                            @change="mySignInTimeChange"
-                            :picker-options="pickerOptions">
-                    </el-date-picker></div>
-                    <el-button type="primary" @click="fetchMySignInData" style="margin-left: 10px" size="small">查询</el-button>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker
+                                v-model="mySignInReqDTO.beginTime"
+                                align="right"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                clearable
+                                placeholder="请选择开始时间"
+                        >
+                        </el-date-picker>
+                        <span style="font-size: 14px;color: #606266;">-</span>
+                        <el-date-picker
+                                v-model="mySignInReqDTO.endTime"
+                                align="right"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                clearable
+                                placeholder="请选择截止时间"
+                        >
+                        </el-date-picker>
+                    </div>
+                    <el-button type="primary" @click="selectMySignInData" style="margin-left: 10px" size="small">查询</el-button>
+                    <el-button type="primary" @click="showPersonalTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
                     <el-table :data="signInData" border>
                         <el-table-column prop="date" label="日期" align="center" width="120">
                             <template scope="scope">
-                                {{scope.row.date | formatDate2}}
+                                {{scope.row.date | formatDate2}}{{scope.row.weekday}}
                                 <span v-show="scope.row.isWeekend == 1" style="color: #3da7f5">(周末)</span>
                             </template>
                         </el-table-column>
@@ -1731,6 +1759,38 @@
             </el-upload>
         </el-dialog>
 
+        <el-dialog title="计算加班总时长" :visible.sync="showPersonalTotalEWrokTime" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+        @close="closeMyEWorkCounter">
+            <el-select clearable filterable no-match-text=" " v-model="workMonth1" placeholder="不选择及查询本年度"
+                       size="small" style="width:200px">
+                <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
+                           :value="item.id"></el-option>
+            </el-select>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">加班总时长：<span>{{myTotalEWorkTime}}</span></div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="success" @click="fetchMyTotalEWorkTime">查询</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog title="计算加班总时长" :visible.sync="showTotalEWrokTime" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+        @close="closeEWorkCounter">
+            <el-select clearable filterable no-match-text=" " v-model="workMonth2" placeholder="不选择及查询本年度"
+                        style="width:200px">
+                <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
+                           :value="item.id"></el-option>
+            </el-select>
+                <el-select v-model="eWorkTimeUserId" clearable filterable   placeholder="筛选用户">
+                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                               :value="item.id"></el-option>
+                </el-select>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{eWorkTimeUserName}}</span></div>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">加班总时长：<span>{{totalEWorkTime}}</span></div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="success" @click="fetchTotalEWorkTime">查询</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
@@ -2088,12 +2148,12 @@
                 signInPage:{
                     pageNum:1,
                     total:0,
-                    pageSize:10
+                    pageSize:20
                 },
                 mySignInPage:{
                     pageNum:1,
                     total:0,
-                    pageSize:5
+                    pageSize:7
                 },
                 signInReqDTO:{
                     userId:'',
@@ -2164,7 +2224,30 @@
                     pass:[]
                 },
                 editRecheckVisible:false,
-                showRecheckVisible:false
+                showRecheckVisible:false,
+                showPersonalTotalEWrokTime: false,
+                showTotalEWrokTime: false,
+                workMonth1:'',
+                workMonth2:'',
+                eWorkTimeUserId:'',
+                eWorkTimeUserName:'',
+                workMonths:[
+                    {id:1,name:'一月'},
+                    {id:2,name:'二月'},
+                    {id:3,name:'三月'},
+                    {id:4,name:'四月'},
+                    {id:5,name:'五月'},
+                    {id:6,name:'六月'},
+                    {id:7,name:'七月'},
+                    {id:8,name:'八月'},
+                    {id:9,name:'九月'},
+                    {id:10,name:'十月'},
+                    {id:11,name:'十一月'},
+                    {id:12,name:'十二月'}
+                ],
+                myTotalEWorkTime:'',
+                totalEWorkTime:'',
+
 
                 // -- sch
             };
@@ -2330,6 +2413,7 @@
                 this.createTaskVisible = true
             },
             reload() {
+                this.initSignInTime()
                 this.fetchIntegral()
                 this.fetchTaskDoing()
                 this.fetchTaskFinished()
@@ -3805,6 +3889,94 @@
                     })
                 }
             },
+            initSignInTime(){
+                var date1 = new Date();
+                var time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
+                var date2 = new Date(date1);
+                var date3 = new Date(date1);
+                date3.setDate(date1.getDate() - 1);
+                date2.setDate(date1.getDate() - 7);
+                var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
+                var time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
+                if (this.userRole == 3){
+                    this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
+                    this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                }
+                if(this.userRole > 0 && this.userRole < 3){
+                    this.mySignInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
+                    this.mySignInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                }
+            },
+            selectMySignInData(){
+                if (this.mySignInReqDTO.beginTime != null && this.mySignInReqDTO.beginTime != ''){
+                    this.mySignInReqDTO.beginTime = moment(this.mySignInReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
+                }
+                if (this.mySignInReqDTO.endTime != null && this.mySignInReqDTO.endTime != '') {
+                    this.mySignInReqDTO.endTime = moment(this.mySignInReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
+                }
+                this.fetchMySignInData()
+            },
+            selectSignInData(){
+                if (this.signInReqDTO.beginTime != null && this.signInReqDTO.beginTime != ''){
+                    this.signInReqDTO.beginTime = moment(this.signInReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
+                }
+                if (this.signInReqDTO.endTime != null && this.signInReqDTO.endTime != '') {
+                    this.signInReqDTO.endTime = moment(this.signInReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
+                }
+
+                this.fetchSignInData()
+            },
+            fetchMyTotalEWorkTime(){
+                if (this.workMonth1 == null || this.workMonth1 == ''){
+                    http.zsyGetHttp('/sign-in/extra-hours/total/personal/'+0,{},(res)=>{
+                        if (res) {
+                            this.myTotalEWorkTime = this.getTime(res.data.extraTime);
+                        }
+                    })
+                }else {
+                    http.zsyGetHttp('/sign-in/extra-hours/total/personal/'+this.workMonth1,{},(res)=>{
+                        if (res) {
+                            this.myTotalEWorkTime = this.getTime(res.data.extraTime);
+                        }
+                    })
+                }
+            },
+            fetchTotalEWorkTime(){
+                if (this.eWorkTimeUserId == null || this.eWorkTimeUserId == ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请选择查询的用户',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+                if (this.workMonth2 == null || this.workMonth2 == ''){
+                    http.zsyGetHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId+'/'+0,{},(res)=>{
+                        if (res) {
+                            this.totalEWorkTime = this.getTime(res.data.extraTime);
+                            this.eWorkTimeUserName = res.data.userName;
+                        }
+                    })
+                }else {
+                    http.zsyGetHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId+'/'+this.workMonth2,{},(res)=>{
+                        if (res) {
+                            this.totalEWorkTime = this.getTime(res.data.extraTime);
+                            this.eWorkTimeUserName = res.data.userName;
+                        }
+                    })
+                }
+            },
+            closeMyEWorkCounter(){
+                this.workMonth1 = '';
+                this.myTotalEWorkTime = '';
+            },
+            closeEWorkCounter(){
+                this.workMonth2 = '';
+                this.totalEWorkTime = '';
+                this.eWorkTimeUserId = '';
+                this.eWorkTimeUserName = '';
+
+            },
             fetchMySignInData(){
                 if (this.userRole < 3 && this.userRole > 0){
                     http.zsyPostHttp('/sign-in/page/personal',this.mySignInReqDTO,(res)=>{
@@ -3841,7 +4013,7 @@
                 const hours = this.addZero(parseInt(time/1000/60/60));
                 const mins = this.addZero(parseInt(time/1000/60%60));
                 const secs = this.addZero(parseInt(time/1000%60));
-                return hours+':'+mins+':'+secs
+                return hours+'小时'+mins+'分钟'+secs+'秒'
             },
             getTime2(time){
                 const hours = this.addZero(parseInt(time/1000/60/60));
