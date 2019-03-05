@@ -381,7 +381,7 @@
                 <el-table :data="signInData" border>
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template scope="scope">
-                            {{scope.row.date | formatDate2}}
+                            {{scope.row.date | formatDate2}}{{scope.row.weekday}}
                             <span v-show="scope.row.isWeekend == 1" style="color: #3da7f5">(周末)</span>
                         </template>
                     </el-table-column>
