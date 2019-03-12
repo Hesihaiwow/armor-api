@@ -3,10 +3,7 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.ResignInResDTO;
-import com.zhixinhuixue.armor.model.dto.response.SignInLastRecordResDTO;
-import com.zhixinhuixue.armor.model.dto.response.SignInResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TotalExtraHoursResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -119,4 +116,10 @@ public interface IZSYSignInService {
      * @return
      */
     String excelSignInData(Integer month);
+
+    /**
+     * 考勤人员列表
+     * @return
+     */
+    List<SignInUser> getSignInUsers();
 }

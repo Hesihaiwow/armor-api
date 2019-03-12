@@ -15,10 +15,7 @@ import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.SignInBO;
 import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.ResignInResDTO;
-import com.zhixinhuixue.armor.model.dto.response.SignInLastRecordResDTO;
-import com.zhixinhuixue.armor.model.dto.response.SignInResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TotalExtraHoursResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYSignInService;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
@@ -2108,6 +2105,26 @@ public class ZSYSignInService implements IZSYSignInService {
         }
         String url = getSignInExcel(dates, map, userList,month);
         return url;
+    }
+
+    /**
+     * 考勤人员列表
+     * @return
+     */
+    @Override
+    public List<SignInUser> getSignInUsers() {
+        List<User> userList = signInMapper.selectCheckInUsers();
+        List<SignInUser> signInUsers = new ArrayList<>();
+        BeanUtils.copyProperties(userList,signInUsers);
+        if (!CollectionUtils.isEmpty(userList)){
+            userList.stream().forEach(user->{
+                SignInUser signInUser = new SignInUser();
+                signInUser.setUserId(user.getId());
+                signInUser.setUserName(user.getName());
+                signInUsers.add(signInUser);
+            });
+        }
+        return signInUsers;
     }
 
     /**

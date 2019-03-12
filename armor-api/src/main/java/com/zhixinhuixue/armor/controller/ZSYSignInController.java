@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ResignInResDTO;
@@ -146,5 +147,11 @@ public class ZSYSignInController {
     public String excelSignInData(@PathVariable("month")Integer month){
         String url = signInService.excelSignInData(month);
         return ZSYResult.success().data(url).build();
+    }
+
+    @ApiOperation("考勤人员列表")
+    @GetMapping("/users")
+    public String getSignInUsers(){
+        return ZSYResult.success().data(signInService.getSignInUsers()).build();
     }
 }
