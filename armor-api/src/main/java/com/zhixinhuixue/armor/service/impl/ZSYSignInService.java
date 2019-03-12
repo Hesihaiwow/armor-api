@@ -31,8 +31,11 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -594,6 +597,15 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setWeekday("");
                             break;
                 }
+                if (resDTO.getIsWeekend() == 1){
+                    Date checkInTime = resDTO.getCheckInTime();
+                    Date checkOutTime = resDTO.getCheckOutTime();
+                    if (checkInTime != null && checkOutTime != null){
+                        Long eWorkTime = checkOutTime.getTime() - checkInTime.getTime();
+                        resDTO.setLessThanNine(0);
+                        resDTO.setEWorkTime(eWorkTime);
+                    }
+                }
                 signInResDTOS.add(resDTO);
             });
         }
@@ -965,6 +977,15 @@ public class ZSYSignInService implements IZSYSignInService {
                     default:
                         resDTO.setWeekday("");
                         break;
+                }
+                if (resDTO.getIsWeekend() == 1){
+                    Date checkInTime = resDTO.getCheckInTime();
+                    Date checkOutTime = resDTO.getCheckOutTime();
+                    if (checkInTime != null && checkOutTime != null){
+                        Long eWorkTime = checkOutTime.getTime() - checkInTime.getTime();
+                        resDTO.setLessThanNine(0);
+                        resDTO.setEWorkTime(eWorkTime);
+                    }
                 }
                 signInResDTOS.add(resDTO);
             });
@@ -1796,10 +1817,7 @@ public class ZSYSignInService implements IZSYSignInService {
         Date endTime = signInMapper.selectMonthLastTime(month);
         List<Date> dates = signInMapper.selectDateList(month);
         List<User> userList = signInMapper.selectCheckInUsers();
-        System.out.println("userList的长度: "+userList.size());
-        System.out.println("dates的长度: "+dates.size());
         Map<Long,List<SignInResDTO>> map = new HashMap<>();
-        long time1 = System.currentTimeMillis();
         if (!CollectionUtils.isEmpty(userList)){
             for (User user : userList) {
                 List<SignInBO> signInBOS = signInMapper.selectPersonalSignInList(user.getId(), beginTime, endTime);
@@ -1827,12 +1845,16 @@ public class ZSYSignInService implements IZSYSignInService {
                         String prefix = sdf2.format(dateList.get(0));
                         String nextPrefix = sdf2.format(calendar.getTime());
                         Date zero = null;
+                        Date today0 = null;
                         Date today10 = null;
+                        Date today23 = null;
                         Date today18 = null;
                         Date seven = null;
                         Date nextSeven = null;
                         Date fifteen = null;
                         try {
+                            today0 = sdf.parse(prefix + " 00:00:00");
+                            today23 = sdf.parse(prefix + " 23:59:59");
                             today10 = sdf.parse(prefix + " 10:00:00");
                             today18 = sdf.parse(prefix + " 18:00:00");
                             zero = sdf.parse(nextPrefix + " 00:00:00");
@@ -1995,16 +2017,96 @@ public class ZSYSignInService implements IZSYSignInService {
                                 }
                             }
                         }
+                        UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23);
+                        if (userLeave != null){
+                            // 1.先判断请假持续几天
+                            List<String> leaveDays = DateHelper.getDaysBetweenTwoDate(userLeave.getBeginTime(), userLeave.getEndTime());
+                            //此条请假记录只有一天,则请假时长即为当天的请假时长
+                            if (leaveDays.size() == 1){
+                                resDTO.setLeaveTime(userLeave.getHours());
+                            }else {
+                                // 2.当请假持续天数超过一天时,再判断今天是第几天
+                                List<String> firstDayToToday = DateHelper.getDaysBetweenTwoDate(userLeave.getBeginTime(), today23);
+                                //当请假开始时间早于10:00时,则第一天请假为8h
+                                if (userLeave.getBeginTime().getHours() <= 10){
+                                    if (firstDayToToday.size() < leaveDays.size()){
+                                        //当今天不是最后一天,请假时长为8h
+                                        resDTO.setLeaveTime(BigDecimal.valueOf(8));
+                                    }else {
+                                        //当今天是最后一天,请假时长为 总时长减去之前的时长
+                                        BigDecimal firstLeaveHours = BigDecimal.valueOf(8);
+                                        BigDecimal otherDaysLeaveHours = BigDecimal.valueOf(8).multiply(BigDecimal.valueOf(leaveDays.size() - 2));
+                                        resDTO.setLeaveTime(userLeave.getHours().
+                                                subtract(firstLeaveHours).subtract(otherDaysLeaveHours));
+                                    }
+                                }else {
+                                    if (firstDayToToday.size() < leaveDays.size()){
+                                        //当今天不是最后一天,请假时长为4h
+                                        if (firstDayToToday.size() == 1){
+                                            resDTO.setLeaveTime(BigDecimal.valueOf(5));
+                                        }else {
+                                            resDTO.setLeaveTime(BigDecimal.valueOf(8));
+                                        }
+                                    }else {
+                                        //当今天是最后一天,请假时长为 总时长减去之前的时长
+                                        BigDecimal firstLeaveHours = BigDecimal.valueOf(5);
+                                        BigDecimal otherDaysLeaveHours = BigDecimal.valueOf(8).multiply(BigDecimal.valueOf(leaveDays.size() - 2));
+                                        resDTO.setLeaveTime(userLeave.getHours().
+                                                subtract(firstLeaveHours).subtract(otherDaysLeaveHours));
+                                    }
+                                }
+                            }
+                        }else {
+                            resDTO.setLeaveTime(BigDecimal.ZERO);
+                        }
+                        if (resDTO.getWorkTime() != null){
+                            if (resDTO.getWorkTime() > 8.5*60*60*1000){
+                                resDTO.setLessThanNine(0);
+                            }else {
+                                resDTO.setLessThanNine(1);
+                            }
+                        }
+                        resDTO.setDate(today0);
+                        calendar.setTime(today0);
+                        if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
+                            resDTO.setIsWeekend(1);
+                        }else {
+                            resDTO.setIsWeekend(0);
+                        }
+                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                        switch (dayOfWeek){
+                            case 1:
+                                resDTO.setWeekday("星期日");
+                                break;
+                            case 2:
+                                resDTO.setWeekday("星期一");
+                                break;
+                            case 3:
+                                resDTO.setWeekday("星期二");
+                                break;
+                            case 4:
+                                resDTO.setWeekday("星期三");
+                                break;
+                            case 5:
+                                resDTO.setWeekday("星期四");
+                                break;
+                            case 6:
+                                resDTO.setWeekday("星期五");
+                                break;
+                            case 7:
+                                resDTO.setWeekday("星期六");
+                                break;
+                            default:
+                                resDTO.setWeekday("");
+                                break;
+                        }
                         signInResDTOS.add(resDTO);
                     }
                 }
                 map.put(user.getId(),signInResDTOS);
             }
         }
-        System.out.println("组装数据耗时: "+(System.currentTimeMillis()-time1)+"ms");
-        long time2 = System.currentTimeMillis();
-        String url = getSignInExcel(dates, map, userList);
-        System.out.println("导出Excel耗时: "+(System.currentTimeMillis()-time2)+"ms");
+        String url = getSignInExcel(dates, map, userList,month);
         return url;
     }
 
@@ -2014,15 +2116,49 @@ public class ZSYSignInService implements IZSYSignInService {
      * @param map
      * @return
      */
-    private String getSignInExcel(List<Date> dates,Map<Long,List<SignInResDTO>> map,List<User> userList){
+    private String getSignInExcel(List<Date> dates,Map<Long,List<SignInResDTO>> map,List<User> userList,Integer month){
         if (!CollectionUtils.isEmpty(dates) && !CollectionUtils.isEmpty(map.values())){
             //设置表头
             List<String> headers = new ArrayList<>();
-            headers.add("姓名");
-            headers.add("上班类型");
+            List<String> weekdays = new ArrayList<>();
+            weekdays.add("姓名");
+            weekdays.add("上班类型");
+            headers.add("求和项");
+            headers.add("日期");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat fileNameSdf = new SimpleDateFormat("yyyy年MM月");
             for (Date date : dates) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                String weekday = "";
+                switch (dayOfWeek){
+                    case 1:
+                        weekday = "星期日";
+                        break;
+                    case 2:
+                        weekday = "星期一";
+                        break;
+                    case 3:
+                        weekday = "星期二";
+                        break;
+                    case 4:
+                        weekday = "星期三";
+                        break;
+                    case 5:
+                        weekday = "星期四";
+                        break;
+                    case 6:
+                        weekday = "星期五";
+                        break;
+                    case 7:
+                        weekday = "星期六";
+                        break;
+                    default:
+                        weekday = "";
+                        break;
+                }
+                weekdays.add(weekday);
                 headers.add(sdf.format(date));
             }
 
@@ -2034,70 +2170,281 @@ public class ZSYSignInService implements IZSYSignInService {
                 //创建sheet
                 HSSFSheet sheet = workbook.createSheet("考勤记录");
                 //设置列宽
-                sheet.setDefaultColumnWidth(25);
+                sheet.setDefaultColumnWidth(13);
                 //创建行
                 HSSFRow row1 = sheet.createRow(0);
-                HSSFRow row2;
-                HSSFRow row3;
-                HSSFRow row4;
+                HSSFRow row2 = sheet.createRow(1);
+                HSSFRow row3 = sheet.createRow(2);
+                HSSFRow row4 = sheet.createRow(3);
                 HSSFRow row5;
                 //创建样式
-                HSSFCellStyle style = workbook.createCellStyle();
+                HSSFCellStyle titleStyle = workbook.createCellStyle();
                 //设置样式
-                style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
-                style.setAlignment(HorizontalAlignment.CENTER_SELECTION);
-                style.setVerticalAlignment(VerticalAlignment.CENTER);
+                titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                titleStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+                titleStyle.setAlignment(HorizontalAlignment.LEFT);
                 //创建字体
                 HSSFFont font = workbook.createFont();
                 //设置字体
-                font.setFontHeightInPoints((short) 15);
+                font.setFontHeightInPoints((short) 12);
                 font.setBold(true);
-                font.setFontName("微软雅黑");
-                style.setFont(font);
+                font.setFontName("宋体");
+                titleStyle.setFont(font);
+
+                //创建样式
+                HSSFCellStyle titleStyle2 = workbook.createCellStyle();
+                //设置样式
+                titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                titleStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+                titleStyle.setAlignment(HorizontalAlignment.LEFT);
+                //创建字体
+                HSSFFont titleFont = workbook.createFont();
+                //设置字体
+                titleFont.setFontHeightInPoints((short) 12);
+                titleFont.setBold(true);
+                titleFont.setColor(IndexedColors.RED.index);
+                titleFont.setFontName("宋体");
+                titleStyle2.setFont(titleFont);
+
                 HSSFCell cell = null;
+                HSSFCell cell2 = null;
                 //创建标题
+                cell = row1.createCell(0);
+                cell2 = row2.createCell(0);
+                cell.setCellValue("上海互教信息技术中心2019年"+month+"月考勤记录明细");
+                cell.setCellStyle(titleStyle);
+                cell2.setCellValue("（黄色填充单元格标识代表上/下班未打卡（包括漏打卡，调休/请假等情况以请假单为准），粉色填充单元格标识代表加班（工作时长超过10h（含10h算加班）），绿色填充单元格标识代表有请小时假/半天假）");
+                cell2.setCellStyle(titleStyle2);
+                CellRangeAddress region = new CellRangeAddress(0, 0, 0, dates.size()+1);
+                CellRangeAddress region2 = new CellRangeAddress(1, 1, 0, dates.size()+1);
+                sheet.addMergedRegion(region);
+                sheet.addMergedRegion(region2);
+                //创建样式(第二三行样式)
+                HSSFCellStyle style1 = workbook.createCellStyle();
+                //设置样式
+                style1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                style1.setFillForegroundColor(HSSFColor.HSSFColorPredefined.ROYAL_BLUE.getIndex());
+                style1.setAlignment(HorizontalAlignment.RIGHT);
+                //创建字体
+                HSSFFont font1 = workbook.createFont();
+                //设置字体
+                font1.setFontHeightInPoints((short) 11);
+                font1.setFontName("宋体");
+                style1.setFont(font1);
+
+
+                //创建样式
+                HSSFCellStyle style5 = workbook.createCellStyle();
+                //设置样式
+                style5.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                style5.setFillForegroundColor(HSSFColor.HSSFColorPredefined.LIME.getIndex());
+                style5.setAlignment(HorizontalAlignment.RIGHT);
+                //创建字体
+                HSSFFont font5 = workbook.createFont();
+                //设置字体
+                font5.setFontHeightInPoints((short) 11);
+                font5.setFontName("宋体");
+                style5.setFont(font5);
+
                 for (int i = 0; i < headers.size(); i++) {
-                    cell = row1.createCell(i);
-                    cell.setCellValue(headers.get(i));
-                    cell.setCellStyle(style);
+                    HSSFCell row3Cell = row3.createCell(i);
+                    row3Cell.setCellValue(headers.get(i));
+                    row3Cell.setCellStyle(style1);
+                    HSSFCell row4Cell = row4.createCell(i);
+                    row4Cell.setCellValue(weekdays.get(i));
+                    row4Cell.setCellStyle(style1);
+                    if (weekdays.get(i).contains("星期六") || weekdays.get(i).contains("星期日")){
+                        row3Cell.setCellStyle(style5);
+                        row4Cell.setCellStyle(style5);
+                    }
                 }
                 int num = 0;
+                //创建样式
+                HSSFCellStyle style2 = workbook.createCellStyle();
+                //设置样式
+                style2.setFillForegroundColor(HSSFColor.HSSFColorPredefined.PALE_BLUE.getIndex());
+                style2.setAlignment(HorizontalAlignment.RIGHT);
+                //创建字体
+                HSSFFont font2 = workbook.createFont();
+                //设置字体
+                font2.setFontHeightInPoints((short) 11);
+                font2.setFontName("宋体");
+                style2.setFont(font2);
+
+                //创建样式
+                HSSFCellStyle style3 = workbook.createCellStyle();
+                //设置样式
+                style3.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                style3.setFillForegroundColor(HSSFColor.HSSFColorPredefined.CORNFLOWER_BLUE.getIndex());
+                style3.setAlignment(HorizontalAlignment.RIGHT);
+                //创建字体
+                HSSFFont font3 = workbook.createFont();
+                //设置字体
+                font3.setFontHeightInPoints((short) 11);
+                font3.setFontName("宋体");
+                style3.setFont(font3);
+
+                //创建样式
+                HSSFCellStyle style4 = workbook.createCellStyle();
+                //设置样式
+                style4.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                style4.setFillForegroundColor(HSSFColor.HSSFColorPredefined.YELLOW.getIndex());
+                style4.setAlignment(HorizontalAlignment.RIGHT);
+                //创建字体
+                HSSFFont font4 = workbook.createFont();
+                //设置字体
+                font4.setFontHeightInPoints((short) 11);
+                font4.setFontName("宋体");
+                style4.setFont(font4);
+
+                //创建样式
+                HSSFCellStyle style6 = workbook.createCellStyle();
+                //设置样式
+                style6.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                style6.setFillForegroundColor(HSSFColor.HSSFColorPredefined.CORAL.getIndex());
+                style6.setAlignment(HorizontalAlignment.RIGHT);
+                //创建字体
+                HSSFFont font6 = workbook.createFont();
+                //设置字体
+                font6.setFontHeightInPoints((short) 11);
+                font6.setFontName("宋体");
+                style6.setFont(font6);
+
+                //创建样式
+                HSSFCellStyle style7 = workbook.createCellStyle();
+                //设置样式
+                style7.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                style7.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+                style7.setAlignment(HorizontalAlignment.RIGHT);
+                //创建字体
+                HSSFFont font7 = workbook.createFont();
+                //设置字体
+                font7.setFontHeightInPoints((short) 11);
+                font7.setFontName("宋体");
+                style7.setFont(font7);
+
                 for (User user : userList) {
                     List<SignInResDTO> signInResDTOS = map.get(user.getId());
-                    row1 = sheet.createRow(num + 1);
-                    row2 = sheet.createRow(num + 2);
-                    row3 = sheet.createRow(num + 3);
-                    row4 = sheet.createRow(num + 4);
-                    row5 = sheet.createRow(num + 5);
-                    row1.setRowStyle(style);
-                    row2.setRowStyle(style);
-                    row3.setRowStyle(style);
-                    row4.setRowStyle(style);
-                    row5.setRowStyle(style);
-                    row1.createCell(0).setCellValue(user.getName());
-                    row2.createCell(0).setCellValue(user.getName());
-                    row3.createCell(0).setCellValue(user.getName());
-                    row4.createCell(0).setCellValue(user.getName());
-                    row5.createCell(0).setCellValue(user.getName());
-                    row1.createCell(1).setCellValue("上班");
-                    row2.createCell(1).setCellValue("下班");
-                    row3.createCell(1).setCellValue("上班时长");
-                    row4.createCell(1).setCellValue("加班时长");
-                    row5.createCell(1).setCellValue("打卡记录");
-                    for (int i = 0;i < dates.size();i ++){
-                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-                        row1.createCell(i+2).setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckInTime() == null ? "" : timeFormat.format(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckInTime()));
-                        row2.createCell(i+2).setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckOutTime() == null ? "" : timeFormat.format(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckOutTime()));
-                        row3.createCell(i+2).setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getWorkTime() == null ? "" : getTime(signInResDTOS.get(signInResDTOS.size()-1-i).getWorkTime()));
-                        row4.createCell(i+2).setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getEWorkTime() == null ? "" : getTime(signInResDTOS.get(signInResDTOS.size()-1-i).getEWorkTime()));
-                        String dateStr = "";
-                        for (Date date : signInResDTOS.get(signInResDTOS.size() - 1 - i).getCheckTimeList()) {
-                            dateStr =dateStr+","+ timeFormat.format(date);
-                            dateStr = dateStr.substring(1);
-                        }
-                        row5.createCell(i+2).setCellValue(dateStr);
-                    }
+                    row1 = sheet.createRow(num + 4);
+                    row2 = sheet.createRow(num + 5);
+                    row3 = sheet.createRow(num + 6);
+                    row4 = sheet.createRow(num + 7);
+                    row5 = sheet.createRow(num + 8);
+                    HSSFCell row1Cell0 = row1.createCell(0);
+                    HSSFCell row2Cell0 = row2.createCell(0);
+                    HSSFCell row3Cell0 = row3.createCell(0);
+                    HSSFCell row4Cell0 = row4.createCell(0);
+                    HSSFCell row5Cell0 = row5.createCell(0);
+                    row1Cell0.setCellValue(user.getName());
+                    row1Cell0.setCellStyle(style2);
+                    row2Cell0.setCellValue("");
+                    row2Cell0.setCellStyle(style2);
+                    row3Cell0.setCellValue(user.getName());
+                    row3Cell0.setCellStyle(style3);
+                    row4Cell0.setCellValue(user.getName());
+                    row4Cell0.setCellStyle(style7);
+                    row5Cell0.setCellValue("");
+                    row5Cell0.setCellStyle(style7);
 
+                    HSSFCell row1Cell1 = row1.createCell(1);
+                    HSSFCell row2Cell1 = row2.createCell(1);
+                    HSSFCell row3Cell1 = row3.createCell(1);
+                    HSSFCell row4Cell1 = row4.createCell(1);
+                    HSSFCell row5Cell1 = row5.createCell(1);
+                    row1Cell1.setCellValue("上班");
+                    row1Cell1.setCellStyle(style7);
+                    row2Cell1.setCellValue("下班");
+                    row2Cell1.setCellStyle(style7);
+                    row3Cell1.setCellValue("上班时长");
+                    row3Cell1.setCellStyle(style3);
+                    row4Cell1.setCellValue("加班时长");
+                    row4Cell1.setCellStyle(style7);
+                    row5Cell1.setCellValue("");
+                    row5Cell1.setCellStyle(style7);
+
+                    for (int i = 0;i < dates.size();i ++){
+                        HSSFCell row1Celli = row1.createCell(i+2);
+                        HSSFCell row2Celli = row2.createCell(i+2);
+                        HSSFCell row3Celli = row3.createCell(i+2);
+                        HSSFCell row4Celli = row4.createCell(i+2);
+                        HSSFCell row5Celli = row5.createCell(i+2);
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                        row1Celli.setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckInTime() == null ? "" : timeFormat.format(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckInTime()));
+                        row1Celli.setCellStyle(style7);
+                        row2Celli.setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckOutTime() == null ? "" : timeFormat.format(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckOutTime()));
+                        row2Celli.setCellStyle(style7);
+                        row3Celli.setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getWorkTime() == null ? "" : getTime(signInResDTOS.get(signInResDTOS.size()-1-i).getWorkTime()));
+                        row3Celli.setCellStyle(style3);
+                        Long eWorkTime = signInResDTOS.get(signInResDTOS.size() - 1 - i).getEWorkTime();
+                        double eWorkHour = 0;
+                        if (eWorkTime != null){
+                            eWorkTime = eWorkTime + 30*60*1000;
+                            Long hour = eWorkTime /1000/60/60;
+                            Long mins = eWorkTime/1000/60%60;
+                            Double afterPoint = 0.0;
+                            if (mins>= 25 && mins < 55){
+                                afterPoint = 0.5;
+                            }
+                            if (mins>=55 && mins <= 60){
+                                afterPoint = 1.0;
+                            }
+                            eWorkHour = hour+afterPoint;
+                            row3Celli.setCellStyle(style6);
+                            row4Celli.setCellValue(eWorkHour);
+                            row4Celli.setCellStyle(style6);
+                        }else {
+                            row4Celli.setCellValue("");
+                            row4Celli.setCellStyle(style7);
+                        }
+//                        String dateStr = "";
+//                        for (Date date : signInResDTOS.get(signInResDTOS.size() - 1 - i).getCheckTimeList()) {
+//                            dateStr =dateStr+","+ timeFormat.format(date);
+//                        }
+//                        dateStr = dateStr.substring(1);
+                        row5Celli.setCellValue("");
+                        row5Celli.setCellStyle(style7);
+                        if (signInResDTOS.get(signInResDTOS.size()-1-i).getIsWeekend() == 1){
+                            row1Celli.setCellStyle(style5);
+                            row2Celli.setCellStyle(style5);
+                            row3Celli.setCellStyle(style5);
+                            row4Celli.setCellStyle(style5);
+                            row5Celli.setCellStyle(style5);
+                            Long workTime = 0L;
+                            Date checkInTime = signInResDTOS.get(signInResDTOS.size() - 1 - i).getCheckInTime();
+                            Date checkOutTime = signInResDTOS.get(signInResDTOS.size() - 1 - i).getCheckOutTime();
+                            if (checkInTime != null && checkOutTime != null){
+                                workTime = checkOutTime.getTime()-checkInTime.getTime();
+                                Long hour = workTime /1000/60/60;
+                                Long mins = workTime/1000/60%60;
+                                Double afterPoint = 0.0;
+                                if (mins>= 25 && mins < 55){
+                                    afterPoint = 0.5;
+                                }
+                                if (mins>=55 && mins <= 60){
+                                    afterPoint = 1.0;
+                                }
+                                eWorkHour = hour+afterPoint;
+                                row4Celli.setCellValue(eWorkHour);
+                            }else {
+                                row3Celli.setCellValue("00:00:00");
+                            }
+                        }else {
+                            if (signInResDTOS.get(signInResDTOS.size()-1-i).getLeaveTime() != null && signInResDTOS.get(signInResDTOS.size()-1-i).getLeaveTime() != BigDecimal.ZERO){
+                                row1Celli.setCellStyle(style4);
+                                row2Celli.setCellStyle(style4);
+                            }else {
+                                if (signInResDTOS.get(signInResDTOS.size()-1-i).getCheckInTime() == null){
+                                    row1Celli.setCellValue("漏打卡");
+                                    row1Celli.setCellStyle(style4);
+                                }
+
+                                if (signInResDTOS.get(signInResDTOS.size()-1-i).getCheckOutTime() == null){
+                                    row2Celli.setCellValue("漏打卡");
+                                    row2Celli.setCellStyle(style4);
+                                }
+                            }
+                        }
+                    }
                     num += 5;
                 }
                 workbook.write(os);

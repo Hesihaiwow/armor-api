@@ -124,14 +124,6 @@ public class SignInResDTO {
         this.weekday = weekday;
     }
 
-    public Long geteWorkTime() {
-        return eWorkTime;
-    }
-
-    public void seteWorkTime(Long eWorkTime) {
-        this.eWorkTime = eWorkTime;
-    }
-
     public BigDecimal geteWorkHours() {
         return eWorkHours;
     }
