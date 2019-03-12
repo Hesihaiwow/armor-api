@@ -356,8 +356,8 @@
             <el-tab-pane label="考勤统计" name="signIn" v-if="admin">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="signInReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <div class="add-member-basic-msg fl">
@@ -862,8 +862,8 @@
                            :value="item.id"></el-option>
             </el-select>
             <el-select v-model="eWorkTimeUserId" clearable filterable   placeholder="筛选用户">
-                <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                           :value="item.id"></el-option>
+                <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                           :value="item.userId"></el-option>
             </el-select>
             <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{eWorkTimeUserName}}</span></div>
             <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">加班总时长：<span>{{totalEWorkTime}}</span></div>
@@ -947,6 +947,7 @@
                 bugDetailVisible:false,
                 projectForm:[],
                 userList:[],
+                checkInUsers:[],
                 bugUsers:[],
                 showAddDetail:false,
                 statsPage: {
@@ -1184,6 +1185,7 @@
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "stats");
             this.fetchUserList();
+            this.fetchSignInUser();
             this.fetchProjectList();
             this.fetchProjectList();
             // this.getBugList();
@@ -2452,6 +2454,14 @@
                     })
                 }
             },
+            //获取考勤人员列表
+            fetchSignInUser(){
+                Http.zsyGetHttp('/sign-in/users',{},(res)=>{
+                    if (res){
+                        this.checkInUsers = res.data
+                    }
+                })
+            }
             // -- sch
         }
     }
