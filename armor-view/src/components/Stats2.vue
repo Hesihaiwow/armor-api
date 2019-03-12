@@ -52,9 +52,14 @@
                             <span>{{scope.row.createTime | formatDate1}}</span>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="processTime" label="解决日期"  width="130">
+                        <template scope="scope">
+                            <span>{{scope.row.processTime | formatDate1}}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="demandSystem" label="反馈系统"  width="130"></el-table-column>
                     <el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>
-                    <el-table-column prop="description" label="问题描述" align="center" width="300"></el-table-column>
+                    <el-table-column prop="description" label="问题描述" align="center" width="200"></el-table-column>
                     <el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>
                     <el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>
                     <el-table-column prop="type" label="问题类型" align="center" width="110">
@@ -70,7 +75,7 @@
                             <span v-if="scope.row.isSolved == 1">已解决</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="remark" label="备注" align="center" width="300"></el-table-column>
+                    <el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>
                     <el-table-column label="操作" width="100" fixed="right">
                         <template scope="scope">
                             <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>

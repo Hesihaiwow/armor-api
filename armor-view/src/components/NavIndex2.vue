@@ -1,14 +1,21 @@
 <template>
     <div class="nav-index-con">
-        <div v-show="userRole == 3 || permit">
+        <div v-show="userRole == 3 || permit" style="float: left">
             <el-button v-loading.fullscreen.lock="fullscreenLoading"
                        element-loading-text="拼命导入中,请稍后"
                        element-loading-spinner="el-icon-loading"
                        element-loading-background="rgba(0, 0, 0, 0.8)"
                        type="primary" @click="uploadToMysqlVisible=true">导入考勤记录</el-button>
         </div>
+        <div v-show="userRole == 3 || permit">
+            <el-button v-loading.fullscreen.lock="fullscreenLoading"
+                       element-loading-text="拼命导出中,请稍后"
+                       element-loading-spinner="el-icon-loading"
+                       element-loading-background="rgba(0, 0, 0, 0.8)"
+                       type="primary" @click="excelSignInVisible=true"
+                       style="margin-left: 20px">导出考勤记录</el-button>
+        </div>
         <div class="my-integral-con" v-show="userRole>0 && userRole < 3">
-            <!--<a class="mic-title" @click="toMySummary" style="cursor: pointer">我得年度总结</a>-->
             <div><p class="mic-title">我的积分</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"
                      @click="integralBasicVisible=true">
@@ -1743,6 +1750,20 @@
                 <div slot="tip" class="el-upload__tip">只能上传.dat文件，且不超过1MB</div>
             </el-upload>
         </el-dialog>
+
+        <el-dialog title="导出考勤记录Excel" :visible.sync="excelSignInVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                    @close="closeExcelDialog">
+            <el-select clearable filterable no-match-text=" " v-model="workMonth3" placeholder="请选择月份"
+                       size="small" style="width:200px">
+                <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
+                           :value="item.id"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="success" @click="signInExcel">导出</el-button>
+            </span>
+        </el-dialog>
+
         <el-dialog title="导入花名册到数据库" :visible.sync="uploadUserSortToMysqlVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
                    @close="closeUserSortDialog">
@@ -2139,6 +2160,7 @@
                 isEWorkEdit:true,
                 eWorkDetail:{},
                 uploadToMysqlVisible: false,
+                excelSignInVisible: false,
                 fullscreenLoading: false,
                 uploadUserSortToMysqlVisible: false,
                 recordFileList:[],
@@ -2229,6 +2251,7 @@
                 showTotalEWrokTime: false,
                 workMonth1:'',
                 workMonth2:'',
+                workMonth3:'',
                 eWorkTimeUserId:'',
                 eWorkTimeUserName:'',
                 workMonths:[
@@ -3940,6 +3963,38 @@
                         }
                     })
                 }
+            },
+            closeExcelDialog(){
+                this.workMonth3 = '';
+            },
+            //导出考勤记录Excel
+            signInExcel(){
+              if (this.workMonth3 == null || this.workMonth3 == ''){
+                  this.$message({
+                      showClose: true,
+                      message: '请选择月份',
+                      type: 'warning'
+                  });
+                  return false;
+              }else {
+                  this.fullscreenLoading = true;
+                  http.zsyGetHttp('/sign-in/excel/'+this.workMonth3,{},(res)=>{
+                      if (res.errCode == "00") {
+                          window.open(res.data)
+                          this.$message({
+                              showClose: true,
+                              message: '导出成功',
+                              type: 'success'
+                          });
+                          this.workMonth3 = '';
+                          this.fullscreenLoading = false;
+                          this.excelSignInVisible = false;
+                      }else {
+                          this.fullscreenLoading = false;
+                          this.excelSignInVisible = false;
+                      }
+                  })
+              }
             },
             fetchTotalEWorkTime(){
                 if (this.eWorkTimeUserId == null || this.eWorkTimeUserId == ''){
