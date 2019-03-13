@@ -120,7 +120,6 @@ public class ZSYSignInService implements IZSYSignInService {
             br = new BufferedReader(inputStreamReader);
             String str;
             List<SignIn> signIns = new ArrayList<>();
-            long time1 = System.currentTimeMillis();
             SignIn lastRecord = signInMapper.selectSingInLastRecord();
             SignIn firstRecord = signInMapper.selectSingInFirstRecord();
             //如果有最后一条记录,且当前这天的考勤时间是最后一条之后的
@@ -163,15 +162,9 @@ public class ZSYSignInService implements IZSYSignInService {
                     }
                 }
             }
-            System.out.println("signIns的长度: " + signIns.size());
-            long time2 = System.currentTimeMillis();
-            System.out.println("组装时间: "+ (time2 - time1) + "ms");
-            long time3 = System.currentTimeMillis();
             if (!CollectionUtils.isEmpty(signIns) && signInMapper.insertSignInBatch(signIns) == 0){
                 throw new ZSYServiceException("批量导入考勤打卡记录失败");
             }
-            System.out.println("插入时间: " + (System.currentTimeMillis() - time3) + "ms");
-            long time4 = System.currentTimeMillis();
             List<User> users = signInMapper.selectEffectUsers();
             if (!CollectionUtils.isEmpty(signIns)){
                 List<String> daysBetweenTwoDate =
@@ -200,15 +193,10 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                     }
                 }
-                System.out.println("时间段长度: "+daysBetweenTwoDate.size());
-                System.out.println("signInList的长度: "+signInList.size());
-                System.out.println("users的长度: "+users.size());
                 if (!CollectionUtils.isEmpty(signInList)){
                     signInMapper.insertSignInBatch(signInList);
                 }
             }
-            System.out.println("插入空数据时间: "+(System.currentTimeMillis()-time4)+"ms");
-
         } catch (IOException e) {
             throw new ZSYServiceException("上传考勤记录到数据库失败!");
         } catch (ParseException e) {
