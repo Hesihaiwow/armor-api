@@ -121,7 +121,6 @@ public class ZSYSignInService implements IZSYSignInService {
             String str;
             List<SignIn> signIns = new ArrayList<>();
             long time1 = System.currentTimeMillis();
-            List<User> users = signInMapper.selectCheckInUsers();
             SignIn lastRecord = signInMapper.selectSingInLastRecord();
             SignIn firstRecord = signInMapper.selectSingInFirstRecord();
             //如果有最后一条记录,且当前这天的考勤时间是最后一条之后的
@@ -173,6 +172,7 @@ public class ZSYSignInService implements IZSYSignInService {
             }
             System.out.println("插入时间: " + (System.currentTimeMillis() - time3) + "ms");
             long time4 = System.currentTimeMillis();
+            List<User> users = signInMapper.selectEffectUsers();
             if (!CollectionUtils.isEmpty(signIns)){
                 List<String> daysBetweenTwoDate =
                         DateHelper.getDaysBetweenTwoDate(signIns.get(0).getCheckTime(), signIns.get(signIns.size() - 1).getCheckTime());
@@ -1813,7 +1813,7 @@ public class ZSYSignInService implements IZSYSignInService {
         Date beginTime = signInMapper.selectMonthFirstTime(month);
         Date endTime = signInMapper.selectMonthLastTime(month);
         List<Date> dates = signInMapper.selectDateList(month);
-        List<User> userList = signInMapper.selectCheckInUsers();
+        List<User> userList = signInMapper.selectCheckInUsers(beginTime,endTime);
         Map<Long,List<SignInResDTO>> map = new HashMap<>();
         if (!CollectionUtils.isEmpty(userList)){
             for (User user : userList) {
@@ -2100,10 +2100,75 @@ public class ZSYSignInService implements IZSYSignInService {
                         signInResDTOS.add(resDTO);
                     }
                 }
+                if (signInResDTOS.size() < dates.size()){
+                    int size = dates.size()-signInResDTOS.size();
+                    for (int a = 0;a < size;a ++){
+                        Calendar calendar = Calendar.getInstance();
+
+                        SignInResDTO resDTO = new SignInResDTO();
+                        resDTO.setLessThanNine(0);
+                        resDTO.setEWorkTime(null);
+                        resDTO.setIsForget(1);
+                        calendar.setTime(dates.get(size-a-1));
+                        if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
+                            resDTO.setIsWeekend(1);
+                        }else {
+                            resDTO.setIsWeekend(0);
+                        }
+                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                        switch (dayOfWeek){
+                            case 1:
+                                resDTO.setWeekday("星期日");
+                                break;
+                            case 2:
+                                resDTO.setWeekday("星期一");
+                                break;
+                            case 3:
+                                resDTO.setWeekday("星期二");
+                                break;
+                            case 4:
+                                resDTO.setWeekday("星期三");
+                                break;
+                            case 5:
+                                resDTO.setWeekday("星期四");
+                                break;
+                            case 6:
+                                resDTO.setWeekday("星期五");
+                                break;
+                            case 7:
+                                resDTO.setWeekday("星期六");
+                                break;
+                            default:
+                                resDTO.setWeekday("");
+                                break;
+                        }
+                        resDTO.setLeaveTime(null);
+                        resDTO.setEWorkHours(null);
+                        resDTO.setCanReCheck(null);
+                        resDTO.setDate(dates.get(size-a-1));
+                        resDTO.setIsCheckInAfterTen(null);
+                        resDTO.setIsCheckOutBeforeSix(null);
+                        resDTO.setIsRecheckOut(null);
+                        resDTO.setIsRecheckIn(null);
+                        resDTO.setWorkTime(null);
+                        resDTO.setIsWorkToNextDay(null);
+                        resDTO.setCheckOutTime(null);
+                        resDTO.setCheckInTime(null);
+                        resDTO.setUserName(user.getName());
+                        resDTO.setUserId(user.getId());
+                        List<Date> checkTimes = new ArrayList<>();
+                        checkTimes.add(dates.get(size-a-1));
+                        resDTO.setCheckTimeList(checkTimes);
+                        signInResDTOS.add(resDTO);
+                    }
+                }
                 map.put(user.getId(),signInResDTOS);
             }
         }
         String url = getSignInExcel(dates, map, userList,month);
+        if (url == null){
+            throw new ZSYServiceException("当前月份无数据,请选择正确月份");
+        }
         return url;
     }
 
@@ -2113,7 +2178,7 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     public List<SignInUser> getSignInUsers() {
-        List<User> userList = signInMapper.selectCheckInUsers();
+        List<User> userList = signInMapper.selectEffectUsers();
         List<SignInUser> signInUsers = new ArrayList<>();
         BeanUtils.copyProperties(userList,signInUsers);
         if (!CollectionUtils.isEmpty(userList)){
@@ -2471,7 +2536,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 throw new ZSYServiceException("导出表失败");
             }
         }
-        throw new ZSYServiceException("数据有误,无法导出");
+        return null;
     }
 
     public String  getTime(Long timeMillis){

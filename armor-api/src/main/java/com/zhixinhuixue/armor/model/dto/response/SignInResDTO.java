@@ -124,14 +124,6 @@ public class SignInResDTO {
         this.weekday = weekday;
     }
 
-    public BigDecimal geteWorkHours() {
-        return eWorkHours;
-    }
-
-    public void seteWorkHours(BigDecimal eWorkHours) {
-        this.eWorkHours = eWorkHours;
-    }
-
     public Integer getIsWeekend() {
         return isWeekend;
     }

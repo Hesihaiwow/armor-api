@@ -171,7 +171,7 @@ public interface IZSYSignInMapper {
      * 查询打卡人员列表
      * @return
      */
-    List<User> selectCheckInUsers();
+    List<User> selectCheckInUsers(@Param("beginTime") Date beginTime,@Param("endTime")Date endTime);
 
     /**
      * 根据用户id和起止时间查询考勤
@@ -202,4 +202,10 @@ public interface IZSYSignInMapper {
      * @return
      */
     List<Date> selectDateList(@Param("month") Integer month);
+
+    /**
+     * 查询有效打卡人员
+     * @return
+     */
+    List<User> selectEffectUsers();
 }
