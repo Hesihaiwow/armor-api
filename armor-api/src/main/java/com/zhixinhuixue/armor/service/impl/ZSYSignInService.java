@@ -1853,14 +1853,8 @@ public class ZSYSignInService implements IZSYSignInService {
                             List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(),nextSeven,zero);
                             if (!CollectionUtils.isEmpty(before7Clock)){
                                 resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
-                                if (resDTO.getCheckOutTime().before(today18)){
-                                    resDTO.setIsCheckOutBeforeSix(1);
-                                }else {
-                                    resDTO.setIsCheckOutBeforeSix(0);
-                                }
-                                resDTO.setIsWorkToNextDay(1);
+
                             }else {
-                                resDTO.setIsWorkToNextDay(0);
                                 resDTO.setCheckOutTime(null);
                             }
                         }
@@ -1875,45 +1869,26 @@ public class ZSYSignInService implements IZSYSignInService {
                                 //如果时间在7:00--15:00之间,即为上班打卡
                                 if (dateList.get(0).after(seven) && dateList.get(0).before(fifteen)){
                                     resDTO.setCheckInTime(dateList.get(0));
-                                    if (resDTO.getCheckInTime().after(today10)){
-                                        resDTO.setIsCheckInAfterTen(1);
-                                    }else {
-                                        resDTO.setIsCheckInAfterTen(0);
-                                    }
+
                                     resDTO.setCheckOutTime(null);
-                                    resDTO.setIsWorkToNextDay(0);
                                 }else {
                                     resDTO.setCheckInTime(null);
                                     resDTO.setCheckOutTime(dateList.get(0));
-                                    if (resDTO.getCheckOutTime().before(today18)){
-                                        resDTO.setIsCheckOutBeforeSix(1);
-                                    }else {
-                                        resDTO.setIsCheckOutBeforeSix(0);
-                                    }
-                                    resDTO.setIsWorkToNextDay(0);
+
                                 }
                             }
                             //第二天有7点前的打卡记录,取最后时间作为下班时间
                             else {
                                 if (dateList.get(0).after(seven) && dateList.get(0).before(fifteen)){
                                     resDTO.setCheckInTime(dateList.get(0));
-                                    if (resDTO.getCheckInTime().after(today10)){
-                                        resDTO.setIsCheckInAfterTen(1);
-                                    }else {
-                                        resDTO.setIsCheckInAfterTen(0);
-                                    }
+
                                     resDTO.setIsForget(0);
                                 }else {
                                     resDTO.setCheckInTime(null);
                                     resDTO.setIsForget(1);
                                 }
                                 resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
-                                if (resDTO.getCheckOutTime().before(today18)){
-                                    resDTO.setIsCheckOutBeforeSix(1);
-                                }else {
-                                    resDTO.setIsCheckOutBeforeSix(0);
-                                }
-                                resDTO.setIsWorkToNextDay(1);
+
                                 Long workTimeMillis = null;
                                 if (resDTO.getIsForget() == 0){
                                     workTimeMillis = resDTO.getCheckOutTime().getTime()-resDTO.getCheckInTime().getTime();
@@ -1934,19 +1909,8 @@ public class ZSYSignInService implements IZSYSignInService {
                             //第二天早于7点没有打卡记录
                             if (CollectionUtils.isEmpty(before7Clock)){
                                 resDTO.setCheckInTime(dateList.get(0));
-                                if (resDTO.getCheckInTime().after(today10)){
-                                    resDTO.setIsCheckInAfterTen(1);
-                                }else {
-                                    resDTO.setIsCheckInAfterTen(0);
-                                }
                                 resDTO.setCheckOutTime(dateList.get(dateList.size()-1));
-                                if (resDTO.getCheckOutTime().before(today18)){
-                                    resDTO.setIsCheckOutBeforeSix(1);
-                                }else {
-                                    resDTO.setIsCheckOutBeforeSix(0);
-                                }
                                 resDTO.setIsForget(0);
-                                resDTO.setIsWorkToNextDay(0);
                                 Long workTimeMillis = dateList.get(dateList.size()-1).getTime()
                                         - dateList.get(0).getTime();
                                 resDTO.setWorkTime(workTimeMillis);
@@ -1961,19 +1925,9 @@ public class ZSYSignInService implements IZSYSignInService {
                             //第二天早于7点有打卡记录
                             else {
                                 resDTO.setCheckInTime(dateList.get(0));
-                                if (resDTO.getCheckInTime().after(today10)){
-                                    resDTO.setIsCheckInAfterTen(1);
-                                }else {
-                                    resDTO.setIsCheckInAfterTen(0);
-                                }
                                 resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
-                                if (resDTO.getCheckOutTime().before(today18)){
-                                    resDTO.setIsCheckOutBeforeSix(1);
-                                }else {
-                                    resDTO.setIsCheckOutBeforeSix(0);
-                                }
+
                                 resDTO.setIsForget(0);
-                                resDTO.setIsWorkToNextDay(1);
                                 Long workTimeMillis = before7Clock.get(before7Clock.size()-1).getCheckTime().getTime()
                                         - dateList.get(0).getTime();
                                 resDTO.setWorkTime(workTimeMillis);
@@ -1986,7 +1940,7 @@ public class ZSYSignInService implements IZSYSignInService {
                                 }
                             }
                         }
-                        UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23);
+                        /*UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23);
                         if (userLeave != null){
                             // 1.先判断请假持续几天
                             List<String> leaveDays = DateHelper.getDaysBetweenTwoDate(userLeave.getBeginTime(), userLeave.getEndTime());
@@ -2027,14 +1981,8 @@ public class ZSYSignInService implements IZSYSignInService {
                             }
                         }else {
                             resDTO.setLeaveTime(BigDecimal.ZERO);
-                        }
-                        if (resDTO.getWorkTime() != null){
-                            if (resDTO.getWorkTime() > 8.5*60*60*1000){
-                                resDTO.setLessThanNine(0);
-                            }else {
-                                resDTO.setLessThanNine(1);
-                            }
-                        }
+                        }*/
+
                         resDTO.setDate(today0);
                         calendar.setTime(today0);
                         if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
