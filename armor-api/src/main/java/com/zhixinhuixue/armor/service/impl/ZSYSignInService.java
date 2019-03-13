@@ -594,15 +594,7 @@ public class ZSYSignInService implements IZSYSignInService {
                             resDTO.setWeekday("");
                             break;
                 }
-                if (resDTO.getIsWeekend() == 1){
-                    Date checkInTime = resDTO.getCheckInTime();
-                    Date checkOutTime = resDTO.getCheckOutTime();
-                    if (checkInTime != null && checkOutTime != null){
-                        Long eWorkTime = checkOutTime.getTime() - checkInTime.getTime();
-                        resDTO.setLessThanNine(0);
-                        resDTO.setEWorkTime(eWorkTime);
-                    }
-                }
+
                 signInResDTOS.add(resDTO);
             });
         }
@@ -975,15 +967,7 @@ public class ZSYSignInService implements IZSYSignInService {
                         resDTO.setWeekday("");
                         break;
                 }
-                if (resDTO.getIsWeekend() == 1){
-                    Date checkInTime = resDTO.getCheckInTime();
-                    Date checkOutTime = resDTO.getCheckOutTime();
-                    if (checkInTime != null && checkOutTime != null){
-                        Long eWorkTime = checkOutTime.getTime() - checkInTime.getTime();
-                        resDTO.setLessThanNine(0);
-                        resDTO.setEWorkTime(eWorkTime);
-                    }
-                }
+
                 signInResDTOS.add(resDTO);
             });
         }
