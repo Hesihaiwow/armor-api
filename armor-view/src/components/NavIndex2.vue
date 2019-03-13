@@ -3981,7 +3981,7 @@
               }else {
                   this.fullscreenLoading = true;
                   http.zsyGetHttp('/sign-in/excel/'+this.workMonth3,{},(res)=>{
-                      if (res.errCode == "00") {
+                      if (res.data) {
                           window.open(res.data)
                           this.$message({
                               showClose: true,
@@ -3991,10 +3991,17 @@
                           this.workMonth3 = '';
                           this.fullscreenLoading = false;
                           this.excelSignInVisible = false;
-                      }else {
-                          this.fullscreenLoading = false;
-                          this.excelSignInVisible = false;
                       }
+
+                  },(fail)=>{
+                      this.$message({
+                          showClose: true,
+                          message: fail.errMsg,
+                          type: 'error'
+                      });
+                      this.workMonth3 = '';
+                      this.fullscreenLoading = false;
+                      this.excelSignInVisible = false;
                   })
               }
             },
