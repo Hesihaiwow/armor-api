@@ -1780,324 +1780,297 @@ public class ZSYSignInService implements IZSYSignInService {
 
     /**
      * 按月导出考勤情况Excel
-     * @param month
+     * @param yearAndMonth
      * @return
      */
     @Override
-    public String excelSignInData(Integer month) {
-        Date beginTime = signInMapper.selectMonthFirstTime(month);
-        Date endTime = signInMapper.selectMonthLastTime(month);
-        List<Date> dates = signInMapper.selectDateList(month);
-        List<User> userList = signInMapper.selectCheckInUsers(beginTime,endTime);
+    public String excelSignInData(String yearAndMonth){
         long time1 = System.currentTimeMillis();
-        Map<Long,List<SignInResDTO>> map = new HashMap<>();
-        if (!CollectionUtils.isEmpty(userList)){
-            for (User user : userList) {
-                List<SignInBO> signInBOS = signInMapper.selectPersonalSignInList(user.getId(), beginTime, endTime);
-                List<SignInResDTO> signInResDTOS = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(signInBOS)){
-                    for (SignInBO signIn : signInBOS) {
-                        SignInResDTO resDTO = new SignInResDTO();
-                        BeanUtils.copyProperties(signIn,resDTO);
-                        resDTO.setUserName(user.getName());
-                        List<String> list = Arrays.asList(signIn.getCheckTimeStr().split(","));
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        List<Date> dateList = list.stream().map(str -> {
-                            try {
-                                return sdf.parse(str);
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                            throw new ZSYServiceException("解析当天考勤时间集合失败");
-                        }).sorted().collect(Collectors.toList());
-                        resDTO.setCheckTimeList(dateList);
-                        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(dateList.get(0));
-                        calendar.add(Calendar.DATE,1);
-                        String prefix = sdf2.format(dateList.get(0));
-                        String nextPrefix = sdf2.format(calendar.getTime());
-                        Date zero = null;
-                        Date today0 = null;
-                        Date today10 = null;
-                        Date today23 = null;
-                        Date today18 = null;
-                        Date seven = null;
-                        Date nextSeven = null;
-                        Date fifteen = null;
+        //查询给定年月的所有考勤记录
+        List<SignInBO> signInBOS = signInMapper.selectAllSignInByMonth(yearAndMonth);
+        //查询给定年月的所有考勤人员
+        List<User> signInUsers = signInMapper.selectCheckInUsers(yearAndMonth);
+        //查询给定年月每天0点到7点之间的考勤记录
+        List<SignIn> before7Clock = signInMapper.selectAllBetween0And7(yearAndMonth);
+        List<Date> dates = signInMapper.selectDatesByYearAndMonth(yearAndMonth);
+        //根据用户id  获取对应的  userId--List<SignInBO>   的map
+        Map<Long, List<SignInBO>> map = signInBOS.stream().collect(Collectors.groupingBy(SignInBO::getUserId));
+        Map<Long,List<SignInResDTO>> resultMap = new HashMap<>();
+        map.keySet().stream().forEach(userId->{
+            List<SignInResDTO> signInResDTOS = new ArrayList<>();
+            List<SignInBO> personalSignIns = map.get(userId);
+            if (!CollectionUtils.isEmpty(personalSignIns)){
+                personalSignIns.stream().forEach(personalSignInBo->{
+                    SignInResDTO resDTO = new SignInResDTO();
+                    BeanUtils.copyProperties(personalSignInBo,resDTO);
+                    List<User> users = signInUsers.stream().filter(user ->
+                            user.getId().equals(userId)
+                    ).distinct().collect(Collectors.toList());
+                    resDTO.setUserName(users.get(0).getName());
+                    List<String> list = Arrays.asList(personalSignInBo.getCheckTimeStr().split(","));
+                    SimpleDateFormat timeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    List<Date> dateList = list.stream().map(str -> {
                         try {
-                            today0 = sdf.parse(prefix + " 00:00:00");
-                            today23 = sdf.parse(prefix + " 23:59:59");
-                            today10 = sdf.parse(prefix + " 10:00:00");
-                            today18 = sdf.parse(prefix + " 18:00:00");
-                            zero = sdf.parse(nextPrefix + " 00:00:00");
-                            nextSeven = sdf.parse(nextPrefix + " 07:00:00");
-                            seven = sdf.parse(prefix + " 07:00:00");
-                            fifteen = sdf.parse(prefix + " 15:00:00");
+                            return timeSdf.parse(str);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
+                        throw new ZSYServiceException("解析当天考勤时间集合失败");
+                    }).sorted().collect(Collectors.toList());
+                    resDTO.setCheckTimeList(dateList);
+                    SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(dateList.get(0));
+                    calendar.add(Calendar.DATE,1);
+                    String prefix = dateSdf.format(dateList.get(0));
+                    String nextPrefix = dateSdf.format(calendar.getTime());
+                    Date today7clock = null;
+                    Date today15clock = null;
+                    Date tomorrow0clock = null;
+                    Date tomorrow7clock = null;
+                    try {
+                        today7clock = timeSdf.parse(prefix + " 07:00:00");
+                        today15clock = timeSdf.parse(prefix + " 15:00:00");
+                        tomorrow0clock = timeSdf.parse(nextPrefix + " 00:00:00");
+                        tomorrow7clock = timeSdf.parse(nextPrefix + " 07:00:00");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
 
-                        //过滤当天上午7点之前的打卡记录
-                        dateList = dateList.stream().filter(time-> {
-                            try {
-                                return time.after(sdf.parse(prefix + " 07:00:00"));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
+                    //过滤当天上午7点之前的打卡记录
+                    dateList = dateList.stream().filter(time-> {
+                    try {
+                        return time.after(timeSdf.parse(prefix + " 07:00:00"));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    throw new ZSYServiceException("解析当天考勤时间集合失败");
+                    }).collect(Collectors.toList());
+                    //过滤之后,打卡记录为0,则视为漏打卡
+                    if (CollectionUtils.isEmpty(dateList)){
+                        resDTO.setIsForget(1);
+                        resDTO.setWorkTime(null);
+                        resDTO.setEWorkTime(null);
+                        resDTO.setCheckInTime(null);
+                        //查询当前用户第二天7点前是否有打卡记录,有的话取最后一个作为下班打卡时间
+                        List<Date> personalBefore7Clock = new ArrayList<>();
+                        for (SignIn signIn : before7Clock) {
+                            if ((signIn.getCheckTime().after(tomorrow0clock))
+                                    && (signIn.getCheckTime().before(tomorrow7clock))
+                                    && (signIn.getUserId().equals(userId))){
+                                personalBefore7Clock.add(signIn.getCheckTime());
                             }
-                            return false;
-                        }).collect(Collectors.toList());
-                        //过滤之后,打卡记录为0,则视为漏打卡
-                        if (CollectionUtils.isEmpty(dateList)){
+                        }
+                        if (!CollectionUtils.isEmpty(personalBefore7Clock)){
+                            resDTO.setCheckOutTime(personalBefore7Clock.get(personalBefore7Clock.size()-1));
+
+                        }else {
+                            resDTO.setCheckOutTime(null);
+                        }
+                    }
+                    //只有一条打卡记录
+                    else if (dateList.size() == 1){
+                        List<Date> personalBefore7Clock = new ArrayList<>();
+                        for (SignIn signIn : before7Clock) {
+                            if ((signIn.getCheckTime().after(tomorrow0clock))
+                                    && (signIn.getCheckTime().before(tomorrow7clock))
+                                    && (signIn.getUserId().equals(userId))){
+                                personalBefore7Clock.add(signIn.getCheckTime());
+                            }
+                        }
+                        //第二天没有7点前的打卡记录,则当天漏打卡
+                        if (CollectionUtils.isEmpty(personalBefore7Clock)){
                             resDTO.setIsForget(1);
                             resDTO.setWorkTime(null);
                             resDTO.setEWorkTime(null);
-                            resDTO.setCheckInTime(null);
-                            //查询当前用户第二天7点前是否有打卡记录,有的话取最后一个作为下班打卡时间
-                            List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(),nextSeven,zero);
-                            if (!CollectionUtils.isEmpty(before7Clock)){
-                                resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
-
-                            }else {
+                            //如果时间在7:00--15:00之间,即为上班打卡
+                            if (dateList.get(0).after(today7clock) && dateList.get(0).before(today15clock)){
+                                resDTO.setCheckInTime(dateList.get(0));
                                 resDTO.setCheckOutTime(null);
-                            }
-                        }
-                        //只有一条打卡记录
-                        else if (dateList.size() == 1){
-                            List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven,zero);
-                            //第二天没有7点前的打卡记录,则当天漏打卡
-                            if (CollectionUtils.isEmpty(before7Clock)){
-                                resDTO.setIsForget(1);
-                                resDTO.setWorkTime(null);
-                                resDTO.setEWorkTime(null);
-                                //如果时间在7:00--15:00之间,即为上班打卡
-                                if (dateList.get(0).after(seven) && dateList.get(0).before(fifteen)){
-                                    resDTO.setCheckInTime(dateList.get(0));
-
-                                    resDTO.setCheckOutTime(null);
-                                }else {
-                                    resDTO.setCheckInTime(null);
-                                    resDTO.setCheckOutTime(dateList.get(0));
-
-                                }
-                            }
-                            //第二天有7点前的打卡记录,取最后时间作为下班时间
-                            else {
-                                if (dateList.get(0).after(seven) && dateList.get(0).before(fifteen)){
-                                    resDTO.setCheckInTime(dateList.get(0));
-
-                                    resDTO.setIsForget(0);
-                                }else {
-                                    resDTO.setCheckInTime(null);
-                                    resDTO.setIsForget(1);
-                                }
-                                resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
-
-                                Long workTimeMillis = null;
-                                if (resDTO.getIsForget() == 0){
-                                    workTimeMillis = resDTO.getCheckOutTime().getTime()-resDTO.getCheckInTime().getTime();
-                                }
-                                resDTO.setWorkTime(workTimeMillis);
-                                //当工作时长大于10小时,计算为加班时间
-                                if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
-                                    Long eWorkTime = workTimeMillis - (1000*60*60*10);
-                                    resDTO.setEWorkTime(eWorkTime);
-                                }else {
-                                    resDTO.setEWorkTime(null);
-                                }
-                            }
-                        }
-                        //2条或以上
-                        else {
-                            List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven,zero);
-                            //第二天早于7点没有打卡记录
-                            if (CollectionUtils.isEmpty(before7Clock)){
-                                resDTO.setCheckInTime(dateList.get(0));
-                                resDTO.setCheckOutTime(dateList.get(dateList.size()-1));
-                                resDTO.setIsForget(0);
-                                Long workTimeMillis = dateList.get(dateList.size()-1).getTime()
-                                        - dateList.get(0).getTime();
-                                resDTO.setWorkTime(workTimeMillis);
-                                //当工作时长大于10小时,计算为加班时间
-                                if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
-                                    Long eWorkTime = workTimeMillis - (1000*60*60*10);
-                                    resDTO.setEWorkTime(eWorkTime);
-                                }else {
-                                    resDTO.setEWorkTime(null);
-                                }
-                            }
-                            //第二天早于7点有打卡记录
-                            else {
-                                resDTO.setCheckInTime(dateList.get(0));
-                                resDTO.setCheckOutTime(before7Clock.get(before7Clock.size()-1).getCheckTime());
-
-                                resDTO.setIsForget(0);
-                                Long workTimeMillis = before7Clock.get(before7Clock.size()-1).getCheckTime().getTime()
-                                        - dateList.get(0).getTime();
-                                resDTO.setWorkTime(workTimeMillis);
-                                //当工作时长大于10小时,计算为加班时间
-                                if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
-                                    Long eWorkTime = workTimeMillis - (1000*60*60*10);
-                                    resDTO.setEWorkTime(eWorkTime);
-                                }else {
-                                    resDTO.setEWorkTime(null);
-                                }
-                            }
-                        }
-                        /*UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23);
-                        if (userLeave != null){
-                            // 1.先判断请假持续几天
-                            List<String> leaveDays = DateHelper.getDaysBetweenTwoDate(userLeave.getBeginTime(), userLeave.getEndTime());
-                            //此条请假记录只有一天,则请假时长即为当天的请假时长
-                            if (leaveDays.size() == 1){
-                                resDTO.setLeaveTime(userLeave.getHours());
                             }else {
-                                // 2.当请假持续天数超过一天时,再判断今天是第几天
-                                List<String> firstDayToToday = DateHelper.getDaysBetweenTwoDate(userLeave.getBeginTime(), today23);
-                                //当请假开始时间早于10:00时,则第一天请假为8h
-                                if (userLeave.getBeginTime().getHours() <= 10){
-                                    if (firstDayToToday.size() < leaveDays.size()){
-                                        //当今天不是最后一天,请假时长为8h
-                                        resDTO.setLeaveTime(BigDecimal.valueOf(8));
-                                    }else {
-                                        //当今天是最后一天,请假时长为 总时长减去之前的时长
-                                        BigDecimal firstLeaveHours = BigDecimal.valueOf(8);
-                                        BigDecimal otherDaysLeaveHours = BigDecimal.valueOf(8).multiply(BigDecimal.valueOf(leaveDays.size() - 2));
-                                        resDTO.setLeaveTime(userLeave.getHours().
-                                                subtract(firstLeaveHours).subtract(otherDaysLeaveHours));
-                                    }
-                                }else {
-                                    if (firstDayToToday.size() < leaveDays.size()){
-                                        //当今天不是最后一天,请假时长为4h
-                                        if (firstDayToToday.size() == 1){
-                                            resDTO.setLeaveTime(BigDecimal.valueOf(5));
-                                        }else {
-                                            resDTO.setLeaveTime(BigDecimal.valueOf(8));
-                                        }
-                                    }else {
-                                        //当今天是最后一天,请假时长为 总时长减去之前的时长
-                                        BigDecimal firstLeaveHours = BigDecimal.valueOf(5);
-                                        BigDecimal otherDaysLeaveHours = BigDecimal.valueOf(8).multiply(BigDecimal.valueOf(leaveDays.size() - 2));
-                                        resDTO.setLeaveTime(userLeave.getHours().
-                                                subtract(firstLeaveHours).subtract(otherDaysLeaveHours));
-                                    }
-                                }
+                                resDTO.setCheckInTime(null);
+                                resDTO.setCheckOutTime(dateList.get(0));
+
                             }
-                        }else {
-                            resDTO.setLeaveTime(BigDecimal.ZERO);
-                        }*/
-
-                        resDTO.setDate(today0);
-                        calendar.setTime(today0);
-                        if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
-                            resDTO.setIsWeekend(1);
-                        }else {
-                            resDTO.setIsWeekend(0);
                         }
-                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                        switch (dayOfWeek){
-                            case 1:
-                                resDTO.setWeekday("星期日");
-                                break;
-                            case 2:
-                                resDTO.setWeekday("星期一");
-                                break;
-                            case 3:
-                                resDTO.setWeekday("星期二");
-                                break;
-                            case 4:
-                                resDTO.setWeekday("星期三");
-                                break;
-                            case 5:
-                                resDTO.setWeekday("星期四");
-                                break;
-                            case 6:
-                                resDTO.setWeekday("星期五");
-                                break;
-                            case 7:
-                                resDTO.setWeekday("星期六");
-                                break;
-                            default:
-                                resDTO.setWeekday("");
-                                break;
+                        //第二天有7点前的打卡记录,取最后时间作为下班时间
+                        else {
+                            if (dateList.get(0).after(today7clock) && dateList.get(0).before(today15clock)){
+                                resDTO.setCheckInTime(dateList.get(0));
+                                resDTO.setIsForget(0);
+                            }else {
+                                resDTO.setCheckInTime(null);
+                                resDTO.setIsForget(1);
+                            }
+                            resDTO.setCheckOutTime(personalBefore7Clock.get(personalBefore7Clock.size()-1));
+                            Long workTimeMillis = null;
+                            if (resDTO.getIsForget() == 0){
+                                workTimeMillis = resDTO.getCheckOutTime().getTime()-resDTO.getCheckInTime().getTime();
+                            }
+                            resDTO.setWorkTime(workTimeMillis);
+                            //当工作时长大于10小时,计算为加班时间
+                            if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
+                                Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                                resDTO.setEWorkTime(eWorkTime);
+                            }else {
+                                resDTO.setEWorkTime(null);
+                            }
                         }
-                        signInResDTOS.add(resDTO);
                     }
-                }
-                if (signInResDTOS.size() < dates.size()){
-                    int size = dates.size()-signInResDTOS.size();
-                    for (int a = 0;a < size;a ++){
-                        Calendar calendar = Calendar.getInstance();
+                    //2条或以上
+                    else {
+                        List<Date> personalBefore7Clock = new ArrayList<>();
+                        for (SignIn signIn : before7Clock) {
+                            if ((signIn.getCheckTime().after(tomorrow0clock))
+                                    && (signIn.getCheckTime().before(tomorrow7clock))
+                                    && (signIn.getUserId().equals(userId))){
+                                personalBefore7Clock.add(signIn.getCheckTime());
+                            }
+                        }
+                        //第二天早于7点没有打卡记录
+                        if (CollectionUtils.isEmpty(personalBefore7Clock)){
+                            resDTO.setCheckInTime(dateList.get(0));
+                            resDTO.setCheckOutTime(dateList.get(dateList.size()-1));
+                            resDTO.setIsForget(0);
+                            Long workTimeMillis = dateList.get(dateList.size()-1).getTime()
+                                    - dateList.get(0).getTime();
+                            resDTO.setWorkTime(workTimeMillis);
+                            //当工作时长大于10小时,计算为加班时间
+                            if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
+                                Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                                resDTO.setEWorkTime(eWorkTime);
+                            }else {
+                                resDTO.setEWorkTime(null);
+                            }
+                        }
+                        //第二天早于7点有打卡记录
+                        else {
+                            resDTO.setCheckInTime(dateList.get(0));
+                            resDTO.setCheckOutTime(personalBefore7Clock.get(personalBefore7Clock.size()-1));
 
-                        SignInResDTO resDTO = new SignInResDTO();
-                        resDTO.setLessThanNine(0);
-                        resDTO.setEWorkTime(null);
-                        resDTO.setIsForget(1);
-                        calendar.setTime(dates.get(size-a-1));
-                        if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
-                            resDTO.setIsWeekend(1);
-                        }else {
-                            resDTO.setIsWeekend(0);
+                            resDTO.setIsForget(0);
+                            Long workTimeMillis = personalBefore7Clock.get(personalBefore7Clock.size()-1).getTime()
+                                    - dateList.get(0).getTime();
+                            resDTO.setWorkTime(workTimeMillis);
+                            //当工作时长大于10小时,计算为加班时间
+                            if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
+                                Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                                resDTO.setEWorkTime(eWorkTime);
+                            }else {
+                                resDTO.setEWorkTime(null);
+                            }
                         }
-                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                        switch (dayOfWeek){
-                            case 1:
-                                resDTO.setWeekday("星期日");
-                                break;
-                            case 2:
-                                resDTO.setWeekday("星期一");
-                                break;
-                            case 3:
-                                resDTO.setWeekday("星期二");
-                                break;
-                            case 4:
-                                resDTO.setWeekday("星期三");
-                                break;
-                            case 5:
-                                resDTO.setWeekday("星期四");
-                                break;
-                            case 6:
-                                resDTO.setWeekday("星期五");
-                                break;
-                            case 7:
-                                resDTO.setWeekday("星期六");
-                                break;
-                            default:
-                                resDTO.setWeekday("");
-                                break;
-                        }
-                        resDTO.setLeaveTime(null);
-                        resDTO.setEWorkHours(null);
-                        resDTO.setCanReCheck(null);
-                        resDTO.setDate(dates.get(size-a-1));
-                        resDTO.setIsCheckInAfterTen(null);
-                        resDTO.setIsCheckOutBeforeSix(null);
-                        resDTO.setIsRecheckOut(null);
-                        resDTO.setIsRecheckIn(null);
-                        resDTO.setWorkTime(null);
-                        resDTO.setIsWorkToNextDay(null);
-                        resDTO.setCheckOutTime(null);
-                        resDTO.setCheckInTime(null);
-                        resDTO.setUserName(user.getName());
-                        resDTO.setUserId(user.getId());
-                        List<Date> checkTimes = new ArrayList<>();
-                        checkTimes.add(dates.get(size-a-1));
-                        resDTO.setCheckTimeList(checkTimes);
-                        signInResDTOS.add(resDTO);
                     }
-                }
-                map.put(user.getId(),signInResDTOS);
+                    resDTO.setDate(today7clock);
+                    calendar.setTime(today7clock);
+                    if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
+                        resDTO.setIsWeekend(1);
+                    }else {
+                        resDTO.setIsWeekend(0);
+                    }
+                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                    switch (dayOfWeek){
+                        case 1:
+                            resDTO.setWeekday("星期日");
+                            break;
+                        case 2:
+                            resDTO.setWeekday("星期一");
+                            break;
+                        case 3:
+                            resDTO.setWeekday("星期二");
+                            break;
+                        case 4:
+                            resDTO.setWeekday("星期三");
+                            break;
+                        case 5:
+                            resDTO.setWeekday("星期四");
+                            break;
+                        case 6:
+                            resDTO.setWeekday("星期五");
+                            break;
+                        case 7:
+                            resDTO.setWeekday("星期六");
+                            break;
+                        default:
+                            resDTO.setWeekday("");
+                            break;
+                    }
+                    signInResDTOS.add(resDTO);
+                });
             }
-        }
+            if (signInResDTOS.size() < dates.size()){
+                int size = dates.size()-signInResDTOS.size();
+                for (int a = 0;a < size;a ++){
+                    Calendar calendar = Calendar.getInstance();
+
+                    SignInResDTO resDTO = new SignInResDTO();
+                    resDTO.setLessThanNine(0);
+                    resDTO.setEWorkTime(null);
+                    resDTO.setIsForget(1);
+                    calendar.setTime(dates.get(size-a-1));
+                    if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
+                        resDTO.setIsWeekend(1);
+                    }else {
+                        resDTO.setIsWeekend(0);
+                    }
+                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                    switch (dayOfWeek){
+                        case 1:
+                            resDTO.setWeekday("星期日");
+                            break;
+                        case 2:
+                            resDTO.setWeekday("星期一");
+                            break;
+                        case 3:
+                            resDTO.setWeekday("星期二");
+                            break;
+                        case 4:
+                            resDTO.setWeekday("星期三");
+                            break;
+                        case 5:
+                            resDTO.setWeekday("星期四");
+                            break;
+                        case 6:
+                            resDTO.setWeekday("星期五");
+                            break;
+                        case 7:
+                            resDTO.setWeekday("星期六");
+                            break;
+                        default:
+                            resDTO.setWeekday("");
+                            break;
+                    }
+                    resDTO.setLeaveTime(null);
+                    resDTO.setEWorkHours(null);
+                    resDTO.setCanReCheck(null);
+                    resDTO.setDate(dates.get(size-a-1));
+                    resDTO.setIsCheckInAfterTen(null);
+                    resDTO.setIsCheckOutBeforeSix(null);
+                    resDTO.setIsRecheckOut(null);
+                    resDTO.setIsRecheckIn(null);
+                    resDTO.setWorkTime(null);
+                    resDTO.setIsWorkToNextDay(null);
+                    resDTO.setCheckOutTime(null);
+                    resDTO.setCheckInTime(null);
+                    resDTO.setUserName("");
+                    resDTO.setUserId(userId);
+                    List<Date> checkTimes = new ArrayList<>();
+                    checkTimes.add(dates.get(size-a-1));
+                    resDTO.setCheckTimeList(checkTimes);
+                    signInResDTOS.add(resDTO);
+                }
+            }
+            resultMap.put(userId,signInResDTOS);
+        });
         long time2 = System.currentTimeMillis();
         System.out.println("查询时间: "+(time2-time1)+"ms");
-        String url = getSignInExcel(dates, map, userList,month);
-        logger.error("查询数据耗时: "+(time2-time1)+"ms");
+        String url = getSignInExcel(dates, resultMap, signInUsers,yearAndMonth);
+        logger.info("查询数据耗时: "+(time2-time1)+"ms");
         if (url == null){
             throw new ZSYServiceException("当前月份无数据,请选择正确月份");
         }
         System.out.println("导出时间: "+(System.currentTimeMillis()-time2)+"ms");
-        logger.error("导出时间: "+(System.currentTimeMillis()-time2)+"ms");
+        logger.info("导出时间: "+(System.currentTimeMillis()-time2)+"ms");
         return url;
     }
 
@@ -2127,7 +2100,7 @@ public class ZSYSignInService implements IZSYSignInService {
      * @param map
      * @return
      */
-    private String getSignInExcel(List<Date> dates,Map<Long,List<SignInResDTO>> map,List<User> userList,Integer month){
+    private String getSignInExcel(List<Date> dates,Map<Long,List<SignInResDTO>> map,List<User> userList,String yearAndMonth){
         if (!CollectionUtils.isEmpty(dates) && !CollectionUtils.isEmpty(map.values())){
             //设置表头
             List<String> headers = new ArrayList<>();
@@ -2222,7 +2195,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 //创建标题
                 cell = row1.createCell(0);
                 cell2 = row2.createCell(0);
-                cell.setCellValue("上海互教信息技术中心2019年"+month+"月考勤记录明细");
+                cell.setCellValue("上海互教信息技术中心"+yearAndMonth+"月考勤记录明细");
                 cell.setCellStyle(titleStyle);
                 cell2.setCellValue("（黄色填充单元格标识代表上/下班未打卡（包括漏打卡，调休/请假等情况以请假单为准），粉色填充单元格标识代表加班（工作时长超过10h（含10h算加班）），绿色填充单元格标识代表有请小时假/半天假）");
                 cell2.setCellStyle(titleStyle2);

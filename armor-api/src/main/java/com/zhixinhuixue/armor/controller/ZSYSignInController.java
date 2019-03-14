@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.YearAndMonthReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ResignInResDTO;
 import com.zhixinhuixue.armor.model.dto.response.SignInLastRecordResDTO;
 import com.zhixinhuixue.armor.model.dto.response.SignInResDTO;
@@ -143,9 +144,9 @@ public class ZSYSignInController {
     }
 
     @ApiOperation("按月导出考勤情况Excel")
-    @GetMapping("/excel/{month}")
-    public String excelSignInData(@PathVariable("month")Integer month){
-        String url = signInService.excelSignInData(month);
+    @PostMapping("/excel")
+    public String excelSignInData(@RequestBody YearAndMonthReqDTO reqDTO){
+        String url = signInService.excelSignInData(reqDTO.getYearAndMonth());
         return ZSYResult.success().data(url).build();
     }
 
