@@ -33,6 +33,8 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,6 +72,7 @@ public class ZSYSignInService implements IZSYSignInService {
     private IZSYExtraWorkMapper extraWorkMapper;
     @Autowired
     private ZSYQinuOssProperty qinuOssProperty;
+    private static final Logger logger = LoggerFactory.getLogger(ZSYSignInService.class);
 
     /**
      * 上传 user-sort 文件到库
@@ -1798,6 +1801,7 @@ public class ZSYSignInService implements IZSYSignInService {
         Date endTime = signInMapper.selectMonthLastTime(month);
         List<Date> dates = signInMapper.selectDateList(month);
         List<User> userList = signInMapper.selectCheckInUsers(beginTime,endTime);
+        long time1 = System.currentTimeMillis();
         Map<Long,List<SignInResDTO>> map = new HashMap<>();
         if (!CollectionUtils.isEmpty(userList)){
             for (User user : userList) {
@@ -2097,10 +2101,15 @@ public class ZSYSignInService implements IZSYSignInService {
                 map.put(user.getId(),signInResDTOS);
             }
         }
+        long time2 = System.currentTimeMillis();
+        System.out.println("查询时间: "+(time2-time1)+"ms");
         String url = getSignInExcel(dates, map, userList,month);
+        logger.error("查询数据耗时: "+(time2-time1)+"ms");
         if (url == null){
             throw new ZSYServiceException("当前月份无数据,请选择正确月份");
         }
+        System.out.println("导出时间: "+(System.currentTimeMillis()-time2)+"ms");
+        logger.error("导出时间: "+(System.currentTimeMillis()-time2)+"ms");
         return url;
     }
 
@@ -2465,7 +2474,8 @@ public class ZSYSignInService implements IZSYSignInService {
                 return ZSYQinuHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel", qinuOssProperty);
             }catch (Exception e){
                 e.printStackTrace();
-                throw new ZSYServiceException("导出表失败");
+                logger.error("导出表失败: "+e);
+                throw new ZSYServiceException("导出表失败"+e);
             }
         }
         return null;
