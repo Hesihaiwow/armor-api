@@ -233,15 +233,8 @@
     <!--查询打卡人员列表-->
     <select id="selectCheckInUsers" resultMap="BaseUserMap">
         SELECT * FROM `user` WHERE id in (
-        SELECT DISTINCT(user_id) FROM sign_in
-        <where>
-        <if test="beginTime != null">
-            <![CDATA[  and  `check_time` >= #{beginTime} ]]>
-        </if>
-        <if test="endTime != null">
-            <![CDATA[  and  `check_time` < #{endTime} ]]>
-        </if>
-        </where>
+        SELECT DISTINCT(user_id) FROM sign_in where
+        check_time like "%"#{yearAndMonth}"%"
         )
     </select>
 
@@ -282,5 +275,27 @@
     <!--查询有效打卡人员-->
     <select id="selectEffectUsers" resultMap="BaseUserMap">
         select * from `user` where `is_delete` = 0  and `status` = 0 and `check_sort` > 0
+    </select>
+
+    <!--查询当月所有人的考勤记录-->
+    <select id="selectAllSignInByMonth" resultMap="SignInBoMap">
+        SELECT si.*,GROUP_CONCAT(`check_time`) check_time_str FROM `sign_in` si
+        LEFT JOIN `user` u on si.user_id = u.id
+        where u.`is_delete` = 0 and si.check_time like "%"#{yearAndMonth}"%"
+        GROUP BY si.`user_id`,DATE(si.`check_time`) ORDER BY si.`check_time` DESC
+    </select>
+
+    <!--查询给定年月每天0点到7点之间的考勤记录-->
+    <select id="selectAllBetween0And7" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` WHERE  `type` != 2
+        <![CDATA[  and  time(check_time) >= '00:00:00' ]]>
+        <![CDATA[  and  time(check_time) <= '07:00:00' ]]>
+        and check_time like "%"#{yearAndMonth}"%"
+    </select>
+
+    <!--给定年月  查询打卡日期集合-->
+    <select id="selectDatesByYearAndMonth" resultType="java.util.Date">
+        SELECT check_time FROM sign_in WHERE check_time like "%"#{yearAndMonth}"%"
+        GROUP BY date(check_time)
     </select>
 </mapper>

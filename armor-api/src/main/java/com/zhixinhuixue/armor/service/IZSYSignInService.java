@@ -112,10 +112,10 @@ public interface IZSYSignInService {
 
     /**
      * 按月导出考勤情况Excel
-     * @param month
+     * @param yearAndMonth
      * @return
      */
-    String excelSignInData(Integer month);
+    String excelSignInData(String yearAndMonth);
 
     /**
      * 考勤人员列表

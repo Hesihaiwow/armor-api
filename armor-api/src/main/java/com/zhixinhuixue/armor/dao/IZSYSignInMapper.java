@@ -171,7 +171,7 @@ public interface IZSYSignInMapper {
      * 查询打卡人员列表
      * @return
      */
-    List<User> selectCheckInUsers(@Param("beginTime") Date beginTime,@Param("endTime")Date endTime);
+    List<User> selectCheckInUsers(@Param("yearAndMonth") String yearAndMonth);
 
     /**
      * 根据用户id和起止时间查询考勤
@@ -208,4 +208,24 @@ public interface IZSYSignInMapper {
      * @return
      */
     List<User> selectEffectUsers();
+
+    /**
+     * 查询当月所有人的考勤记录
+     * @param yearAndMonth
+     * @return
+     */
+    List<SignInBO> selectAllSignInByMonth(@Param("yearAndMonth") String yearAndMonth);
+
+    /**
+     * 查询给定年月每天0点到7点之间的考勤记录
+     * @return
+     */
+    List<SignIn> selectAllBetween0And7(@Param("yearAndMonth") String yearAndMonth);
+
+    /**
+     * 给定年月  查询打卡日期集合
+     * @param yearAndMonth
+     * @return
+     */
+    List<Date> selectDatesByYearAndMonth(@Param("yearAndMonth")String yearAndMonth);
 }
