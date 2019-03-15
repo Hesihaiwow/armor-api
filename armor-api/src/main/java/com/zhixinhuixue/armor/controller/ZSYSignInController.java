@@ -130,16 +130,16 @@ public class ZSYSignInController {
     }
 
     @ApiOperation("个人查看加班总时长")
-    @GetMapping("/extra-hours/total/personal/{month}")
-    public String getPersonalTotalExtraHours(@PathVariable Integer month){
-        TotalExtraHoursResDTO resDTO = signInService.getPersonalTotalExtraHours(month);
+    @PostMapping("/extra-hours/total/personal")
+    public String getPersonalTotalExtraHours(@RequestBody YearAndMonthReqDTO reqDTO){
+        TotalExtraHoursResDTO resDTO = signInService.getPersonalTotalExtraHours(reqDTO.getYearAndMonth());
         return ZSYResult.success().data(resDTO).build();
     }
 
     @ApiOperation("查看指定用户加班总时长")
-    @GetMapping("/extra-hours/total/{userId}/{month}")
-    public String getTotalExtraHoursByUserId(@PathVariable("userId")Long userId,@PathVariable("month")Integer month){
-        TotalExtraHoursResDTO resDTO = signInService.getTotalExtraHoursByUserId(userId,month);
+    @PostMapping("/extra-hours/total/{userId}")
+    public String getTotalExtraHoursByUserId(@PathVariable("userId")Long userId,@RequestBody YearAndMonthReqDTO reqDTO){
+        TotalExtraHoursResDTO resDTO = signInService.getTotalExtraHoursByUserId(userId,reqDTO.getYearAndMonth());
         return ZSYResult.success().data(resDTO).build();
     }
 

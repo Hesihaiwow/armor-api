@@ -174,13 +174,12 @@ public interface IZSYSignInMapper {
     List<User> selectCheckInUsers(@Param("yearAndMonth") String yearAndMonth);
 
     /**
-     * 根据用户id和起止时间查询考勤
+     * 根据用户id和给定年月查询考勤
      * @param userId
-     * @param beginTime
-     * @param endTime
+     * @param yearAndMonth
      * @return
      */
-    List<SignInBO> selectPersonalSignInList(@Param("userId") Long userId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+    List<SignInBO> selectPersonalSignInList(@Param("userId") Long userId, @Param("yearAndMonth") String yearAndMonth);
 
     /**
      * 根据月份查询当月有记录的最早时间
@@ -228,4 +227,12 @@ public interface IZSYSignInMapper {
      * @return
      */
     List<Date> selectDatesByYearAndMonth(@Param("yearAndMonth")String yearAndMonth);
+
+    /**
+     * 根据userId和给定月份查询每天0点到7点之间的数据
+     * @param yearAndMonth
+     * @param userId
+     * @return
+     */
+    List<SignIn> selectAllBetween0And7AndUserId(@Param("yearAndMonth")String yearAndMonth, @Param("userId")Long userId);
 }

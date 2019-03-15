@@ -97,18 +97,18 @@ public interface IZSYSignInService {
 
     /**
      * 个人查看加班总时长
-     * @param month
+     * @param yearAndMonth
      * @return
      */
-    TotalExtraHoursResDTO getPersonalTotalExtraHours(Integer month);
+    TotalExtraHoursResDTO getPersonalTotalExtraHours(String yearAndMonth);
 
     /**
      * 管理员查看用户的加班总时长
      * @param userId
-     * @param month
+     * @param yearAndMonth
      * @return
      */
-    TotalExtraHoursResDTO getTotalExtraHoursByUserId(Long userId, Integer month);
+    TotalExtraHoursResDTO getTotalExtraHoursByUserId(Long userId, String yearAndMonth);
 
     /**
      * 按月导出考勤情况Excel
