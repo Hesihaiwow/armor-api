@@ -973,7 +973,6 @@ public class ZSYSignInService implements IZSYSignInService {
     @Override
     public ArmorPageInfo<SignInResDTO> getForgetSignInPage(Integer pageNum) {
 
-        System.out.println(ZSYTokenRequestContext.get().getUserName());
         List<SignInBO> signInPage = signInMapper.selectForgetSignInList(ZSYTokenRequestContext.get().getUserId());
         List<SignInResDTO> signInResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(signInPage,signInResDTOS);
@@ -1568,7 +1567,6 @@ public class ZSYSignInService implements IZSYSignInService {
                 }
                 if (resDTO.getEWorkTime() != null){
                     extraWorkTime += resDTO.getEWorkTime();
-                    System.out.println(today10+"---"+extraWorkTime);
                 }else {
                     extraWorkTime += 0L;
                 }
