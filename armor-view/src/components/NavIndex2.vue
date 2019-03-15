@@ -2251,6 +2251,15 @@
                 showPersonalTotalEWrokTime: false,
                 showTotalEWrokTime: false,
                 workMonth1:'',
+                eWorkTimeReqDTO1:{
+                    yearAndMonth:''
+                },
+                eWorkTimeReqDTO2:{
+                    yearAndMonth:''
+                },
+                excelReqDTO:{
+                    yearAndMonth:''
+                },
                 workMonth2:'',
                 workMonth3:'',
                 eWorkTimeUserId:'',
@@ -3952,14 +3961,20 @@
                 this.fetchSignInData()
             },
             fetchMyTotalEWorkTime(){
-                if (this.workMonth1 == null || this.workMonth1 == ''){
-                    http.zsyGetHttp('/sign-in/extra-hours/total/personal/'+0,{},(res)=>{
+                if (this.workMonth1 != null && this.workMonth1 != ''){
+                    const month = this.workMonth1;
+                    const year = moment(new Date()).format('YYYY');
+                    const yearAndMonth = year+"-"+this.addZero(month);
+                    this.eWorkTimeReqDTO1.yearAndMonth = yearAndMonth;
+                    http.zsyPostHttp('/sign-in/extra-hours/total/personal',this.eWorkTimeReqDTO1,(res)=>{
                         if (res) {
                             this.myTotalEWorkTime = this.getTime(res.data.extraTime);
                         }
                     })
                 }else {
-                    http.zsyGetHttp('/sign-in/extra-hours/total/personal/'+this.workMonth1,{},(res)=>{
+                    const year = moment(new Date()).format('YYYY');
+                    this.eWorkTimeReqDTO1.yearAndMonth = year;
+                    http.zsyPostHttp('/sign-in/extra-hours/total/personal',this.eWorkTimeReqDTO1,(res)=>{
                         if (res) {
                             this.myTotalEWorkTime = this.getTime(res.data.extraTime);
                         }
@@ -3968,6 +3983,7 @@
             },
             closeExcelDialog(){
                 this.workMonth3 = '';
+                this.excelReqDTO.yearAndMonth = '';
             },
             //导出考勤记录Excel
             signInExcel(){
@@ -3979,8 +3995,12 @@
                   });
                   return false;
               }else {
+                  const month = this.workMonth3;
+                  const year = moment(new Date()).format('YYYY');
+                  const yearAndMonth = year+"-"+this.addZero(month);
+                  this.excelReqDTO.yearAndMonth = yearAndMonth;
                   this.fullscreenLoading = true;
-                  http.zsyGetHttp('/sign-in/excel/'+this.workMonth3,{},(res)=>{
+                  http.zsyPostHttp('/sign-in/excel',this.excelReqDTO,(res)=>{
                       if (res.data) {
                           window.open(res.data)
                           this.$message({
@@ -3989,6 +4009,7 @@
                               type: 'success'
                           });
                           this.workMonth3 = '';
+                          this.excelReqDTO.yearAndMonth = '';
                           this.fullscreenLoading = false;
                           this.excelSignInVisible = false;
                       }
@@ -4000,6 +4021,7 @@
                           type: 'error'
                       });
                       this.workMonth3 = '';
+                      this.excelReqDTO.yearAndMonth = '';
                       this.fullscreenLoading = false;
                       this.excelSignInVisible = false;
                   })
@@ -4014,15 +4036,23 @@
                     });
                     return false;
                 }
-                if (this.workMonth2 == null || this.workMonth2 == ''){
-                    http.zsyGetHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId+'/'+0,{},(res)=>{
+                if (this.workMonth2 != null && this.workMonth2 != ''){
+                    const month = this.workMonth2;
+                    const year = moment(new Date()).format('YYYY');
+                    const yearAndMonth = year+"-"+this.addZero(month);
+                    this.eWorkTimeReqDTO2.yearAndMonth = yearAndMonth;
+                    console.log(this.eWorkTimeReqDTO2.yearAndMonth);
+                    http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO2,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
                             this.eWorkTimeUserName = res.data.userName;
                         }
                     })
                 }else {
-                    http.zsyGetHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId+'/'+this.workMonth2,{},(res)=>{
+                    const year = moment(new Date()).format('YYYY');
+                    this.eWorkTimeReqDTO2.yearAndMonth = year;
+                    console.log(this.eWorkTimeReqDTO2.yearAndMonth);
+                    http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO2,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
                             this.eWorkTimeUserName = res.data.userName;
@@ -4033,12 +4063,14 @@
             closeMyEWorkCounter(){
                 this.workMonth1 = '';
                 this.myTotalEWorkTime = '';
+                this.eWorkTimeReqDTO1.yearAndMonth = '';
             },
             closeEWorkCounter(){
                 this.workMonth2 = '';
                 this.totalEWorkTime = '';
                 this.eWorkTimeUserId = '';
                 this.eWorkTimeUserName = '';
+                this.eWorkTimeReqDTO2.yearAndMonth = '';
 
             },
             fetchMySignInData(){

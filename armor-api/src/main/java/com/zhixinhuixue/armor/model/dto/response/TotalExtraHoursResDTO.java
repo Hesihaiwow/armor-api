@@ -18,9 +18,9 @@ public class TotalExtraHoursResDTO {
     private String userName;
 
     /**
-     * 月份
+     * 年月
      */
-    private Integer month;
+    private String yearAndMonth;
 
     /**
      * 总时长
@@ -43,12 +43,12 @@ public class TotalExtraHoursResDTO {
         this.userId = userId;
     }
 
-    public Integer getMonth() {
-        return month;
+    public String getYearAndMonth() {
+        return yearAndMonth;
     }
 
-    public void setMonth(Integer month) {
-        this.month = month;
+    public void setYearAndMonth(String yearAndMonth) {
+        this.yearAndMonth = yearAndMonth;
     }
 
     public Long getExtraTime() {

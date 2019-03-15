@@ -238,7 +238,7 @@
         )
     </select>
 
-    <!--根据用户id和起止时间查询考勤-->
+    <!--根据用户id和给定年月查询考勤-->
     <select id="selectPersonalSignInList" resultMap="SignInBoMap">
         SELECT si.*,GROUP_CONCAT(`check_time`) check_time_str FROM `sign_in` si
         LEFT JOIN `user` u on si.user_id = u.id
@@ -247,11 +247,8 @@
             <if test="userId != null">
                 AND si.`user_id` = #{userId}
             </if>
-            <if test="beginTime != null">
-                <![CDATA[  and  si.`check_time` >= #{beginTime} ]]>
-            </if>
-            <if test="endTime != null">
-                <![CDATA[  and  si.`check_time` < #{endTime} ]]>
+            <if test="yearAndMonth != null and yearAndMonth != '' ">
+                AND si.`check_time` like "%"#{yearAndMonth}"%"
             </if>
         </where>
         GROUP BY `user_id`,DATE(`check_time`) ORDER BY `check_time` DESC
@@ -297,5 +294,13 @@
     <select id="selectDatesByYearAndMonth" resultType="java.util.Date">
         SELECT check_time FROM sign_in WHERE check_time like "%"#{yearAndMonth}"%"
         GROUP BY date(check_time)
+    </select>
+
+    <!--根据userId和给定月份查询每天0点到7点之间的数据-->
+    <select id="selectAllBetween0And7AndUserId" resultMap="BaseSignInMap">
+        SELECT * FROM `sign_in` WHERE  `type` != 2 AND `user_id` = #{userId}
+        <![CDATA[  and  time(check_time) >= '00:00:00' ]]>
+        <![CDATA[  and  time(check_time) <= '07:00:00' ]]>
+        and check_time like "%"#{yearAndMonth}"%"
     </select>
 </mapper>

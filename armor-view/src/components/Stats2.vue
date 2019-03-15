@@ -856,7 +856,7 @@
         <el-dialog title="计算加班总时长" :visible.sync="showTotalEWrokTime" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
                    @close="closeEWorkCounter">
-            <el-select clearable filterable no-match-text=" " v-model="workMonth2" placeholder="不选择及查询本年度"
+            <el-select clearable filterable no-match-text=" " v-model="workMonth1" placeholder="不选择及查询本年度"
                        style="width:200px">
                 <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
                            :value="item.id"></el-option>
@@ -1158,7 +1158,10 @@
                     total: 0,
                 },
                 showTotalEWrokTime: false,
-                workMonth2:'',
+                workMonth1:'',
+                eWorkTimeReqDTO1:{
+                    yearAndMonth:''
+                },
                 eWorkTimeUserId:'',
                 eWorkTimeUserName:'',
                 workMonths:[
@@ -2423,11 +2426,11 @@
                 }
             },
             closeEWorkCounter(){
-                this.workMonth2 = '';
+                this.workMonth1 = '';
                 this.totalEWorkTime = '';
                 this.eWorkTimeUserId = '';
                 this.eWorkTimeUserName = '';
-
+                this.eWorkTimeReqDTO1.yearAndMonth = '';
             },
             fetchTotalEWorkTime(){
                 if (this.eWorkTimeUserId == null || this.eWorkTimeUserId == ''){
@@ -2438,15 +2441,21 @@
                     });
                     return false;
                 }
-                if (this.workMonth2 == null || this.workMonth2 == ''){
-                    Http.zsyGetHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId+'/'+0,{},(res)=>{
+                if (this.workMonth1 != null && this.workMonth1 != ''){
+                    const month = this.workMonth1;
+                    const year = moment(new Date()).format('YYYY');
+                    const yearAndMonth = year+"-"+this.addZero(month);
+                    this.eWorkTimeReqDTO1.yearAndMonth = yearAndMonth;
+                    Http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO1,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
                             this.eWorkTimeUserName = res.data.userName;
                         }
                     })
                 }else {
-                    Http.zsyGetHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId+'/'+this.workMonth2,{},(res)=>{
+                    const year = moment(new Date()).format('YYYY');
+                    this.eWorkTimeReqDTO1.yearAndMonth = year;
+                    Http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO1,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
                             this.eWorkTimeUserName = res.data.userName;
