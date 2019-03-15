@@ -242,7 +242,8 @@ public class ZSYBugService implements IZSYBugService {
 
         OnlineBugManage bugManage = new OnlineBugManage();
         bugManage.setId(snowFlakeIDHelper.nextId());
-        bugManage.setCreateTime(reqDTO.getCreateTime());
+        bugManage.setCreateTime(new Date());
+        bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
         bugManage.setProcessTime(reqDTO.getProcessTime());
         bugManage.setDescription(reqDTO.getDescription());
         bugManage.setProjectId(reqDTO.getProjectId());
@@ -409,7 +410,8 @@ public class ZSYBugService implements IZSYBugService {
 
         OnlineBugManage bugManage = new OnlineBugManage();
         bugManage.setId(id);
-        bugManage.setCreateTime(reqDTO.getCreateTime());
+        bugManage.setCreateTime(bugManageBO.getCreateTime());
+        bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
         bugManage.setProcessTime(reqDTO.getProcessTime());
         bugManage.setDescription(reqDTO.getDescription());
         bugManage.setProjectId(reqDTO.getProjectId());

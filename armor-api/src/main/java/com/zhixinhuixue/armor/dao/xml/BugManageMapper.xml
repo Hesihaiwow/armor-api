@@ -14,6 +14,7 @@
         <result column="description" jdbcType="VARCHAR" property="description" />
         <result column="project_id" jdbcType="BIGINT" property="projectId" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="discover_time" jdbcType="TIMESTAMP" property="discoverTime" />
         <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
         <result column="origin" property="origin" jdbcType="VARCHAR"></result>
         <result column="account_info" property="accountInfo" jdbcType="VARCHAR"></result>
@@ -54,9 +55,9 @@
     <!--插入线上bug-->
     <insert id="insertBugManager" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineBugManage">
         INSERT INTO `bug_manage`
-        (`id`,`description`,`project_id`,`create_time`,`process_time`,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`)
+        (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`)
         VALUES
-        (#{id,jdbcType=BIGINT},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{processTime,jdbcType=TIMESTAMP},
+        (#{id,jdbcType=BIGINT},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{discoverTime,jdbcType=TIMESTAMP},#{processTime,jdbcType=TIMESTAMP},
         #{origin,jdbcType=VARCHAR},#{accountInfo,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{isSolved,jdbcType=INTEGER},#{remark,jdbcType=VARCHAR},#{demandSystem,jdbcType=VARCHAR})
     </insert>
 
@@ -150,6 +151,7 @@
         `description` = #{description,jdbcType=VARCHAR},
         `project_id` = #{projectId,jdbcType=BIGINT},
         `create_time` = #{createTime,jdbcType=TIMESTAMP},
+        `discover_time` = #{discoverTime,jdbcType=TIMESTAMP},
         `process_time` = #{processTime,jdbcType=TIMESTAMP},
         `origin` = #{origin,jdbcType=VARCHAR},
         `account_info` = #{accountInfo,jdbcType=VARCHAR},

@@ -19,9 +19,14 @@ public class OnlineBugResDTO {
     private String origin;
 
     /**
-     * 反馈时间(创建时间)
+     * 创建时间
      */
     private Date createTime;
+
+    /**
+     * 反馈时间(发现时间)
+     */
+    private Date discoverTime;
 
     /**
      * 处理时间
@@ -68,6 +73,14 @@ public class OnlineBugResDTO {
      * @return
      */
     private String demandSystem;
+
+    public Date getDiscoverTime() {
+        return discoverTime;
+    }
+
+    public void setDiscoverTime(Date discoverTime) {
+        this.discoverTime = discoverTime;
+    }
 
     public String getDemandSystem() {
         return demandSystem;

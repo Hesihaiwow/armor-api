@@ -25,6 +25,11 @@ public class OnlineBugManage {
     private Date createTime;
 
     /**
+     * 发现时间
+     */
+    private Date discoverTime;
+
+    /**
      * 项目id
      */
     private Long projectId;
@@ -69,6 +74,14 @@ public class OnlineBugManage {
      * @return
      */
     private String remark;
+
+    public Date getDiscoverTime() {
+        return discoverTime;
+    }
+
+    public void setDiscoverTime(Date discoverTime) {
+        this.discoverTime = discoverTime;
+    }
 
     public Long getId() {
         return id;
