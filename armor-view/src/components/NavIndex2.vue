@@ -4041,7 +4041,6 @@
                     const year = moment(new Date()).format('YYYY');
                     const yearAndMonth = year+"-"+this.addZero(month);
                     this.eWorkTimeReqDTO2.yearAndMonth = yearAndMonth;
-                    console.log(this.eWorkTimeReqDTO2.yearAndMonth);
                     http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO2,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
@@ -4051,7 +4050,6 @@
                 }else {
                     const year = moment(new Date()).format('YYYY');
                     this.eWorkTimeReqDTO2.yearAndMonth = year;
-                    console.log(this.eWorkTimeReqDTO2.yearAndMonth);
                     http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO2,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
