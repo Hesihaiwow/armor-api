@@ -32,7 +32,7 @@ public class BugManageAddReqDTO {
      * 发现时间
      */
     @NotNull(message = "发现时间不能为空")
-    private Date createTime;
+    private Date discoverTime;
 
     /**
      * 处理时间
@@ -96,12 +96,12 @@ public class BugManageAddReqDTO {
         this.description = description;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getDiscoverTime() {
+        return discoverTime;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setDiscoverTime(Date discoverTime) {
+        this.discoverTime = discoverTime;
     }
 
     public Date getProcessTime() {
