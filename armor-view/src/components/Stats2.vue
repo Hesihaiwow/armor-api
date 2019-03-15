@@ -49,7 +49,7 @@
                     <el-table-column prop="origin" label="反馈人" align="center"></el-table-column>
                     <el-table-column prop="createTime" label="反馈日期"  width="130">
                         <template scope="scope">
-                            <span>{{scope.row.createTime | formatDate1}}</span>
+                            <span>{{scope.row.discoverTime | formatDate1}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="processTime" label="解决日期"  width="130">
@@ -557,7 +557,7 @@
                     <div style="margin-top: -10px;float: left">
                         <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>发现日期</div>
                         <el-date-picker
-                                v-model="onlineBugForm.createTime"
+                                v-model="onlineBugForm.discoverTime"
                                 type="date"
                                 placeholder="选择发现日期"
                                 style="position: relative;margin-left: 100px">
@@ -690,6 +690,7 @@
           </span>
         </el-dialog>
         <el-dialog
+                @close="closeDialog()"
                 title="更新Bug处理"
                 style="width:auto;"
                 :close-on-click-modal="false"
@@ -732,7 +733,7 @@
                 <div style="margin-top: -10px;float: left">
                     <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>发现日期</div>
                     <el-date-picker
-                            v-model="onlineBugForm.createTime"
+                            v-model="onlineBugForm.discoverTime"
                             type="date"
                             placeholder="选择发现日期"
                             style="position: relative;margin-left: 100px">
@@ -1097,8 +1098,8 @@
                 ],
                 onlineBugForm:{
                     projectId:'',
-                    createTime:'',
-                    processTime:null,
+                    discoverTime:'',
+                    processTime:'',
                     description:'',
                     origin:'',
                     accountInfo:'',
@@ -1467,6 +1468,7 @@
                 this.bugDetailVisible = false;
                 this.onlineBugForm.projectId = bugDetailForm.projectId;
                 this.onlineBugForm.createTime = bugDetailForm.createTime;
+                this.onlineBugForm.discoverTime = bugDetailForm.discoverTime;
                 this.onlineBugForm.processTime = bugDetailForm.processTime;
                 this.onlineBugForm.description = bugDetailForm.description;
                 this.onlineBugForm.origin = bugDetailForm.origin;
@@ -2170,22 +2172,14 @@
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.createTime == null || this.onlineBugForm.createTime == ''){
+                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime == ''){
                     this.errorMsg("反馈时间不能为空");
                     this.isSaving = false;
                     return
                 }
-                /*if (this.onlineBugForm.isSolved == null || this.onlineBugForm.isSolved == ''){
-                    this.errorMsg("是否解决不能为空");
-                    return
-                }
-                if (this.onlineBugForm.type == null || this.onlineBugForm.type == ''){
-                    this.errorMsg("问题类型不能为空");
-                    return
-                }*/
-                this.onlineBugForm.createTime  = moment(this.onlineBugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss')
                 if (this.onlineBugForm.processTime) {
-                    this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD 23:59:59')
+                    this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
                 }
                 let param = this.onlineBugForm;
                 param.projectId = param.projectId.trim()
@@ -2198,12 +2192,20 @@
                         type: 'success'
                     });
                     this.onlineBugForm.projectId = this.onlineBugForm.description = '';
-                    this.onlineBugForm.createTime = this.onlineBugForm.processTime = null;
+                    this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
                     this.createBugSolvingVisible1 = false
                     this.bugUsers = [];
                     this.fetchBugPage();
                     this.fetchDiffTypeBugNum();
                     this.isSaving = false
+                },(fail)=>{
+                    this.$message({
+                        showClose: true,
+                        message: fail.errMsg,
+                        type: 'error'
+                    });
+                    this.isSaving = false;
+                    this.bugUsers = [];
                 })
             },
             editBugForm1(){
@@ -2215,14 +2217,13 @@
                     this.errorMsg("问题描述不能为空");
                     return
                 }
-                if (this.onlineBugForm.createTime == null || this.onlineBugForm.createTime == ''){
+                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime == ''){
                     this.errorMsg("反馈时间不能为空");
                     return
                 }
-                this.onlineBugForm.createTime  = moment(this.onlineBugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss')
                 this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
                 let param = this.onlineBugForm;
-                console.log(param)
                 param.description = param.description.trim()
                 param['bugUsers'] = this.bugUsers;
                 Http.zsyPutHttp('/bug/update-bug/'+this.modifyId, param, (resp) => {
@@ -2232,10 +2233,18 @@
                         type: 'success'
                     });
                     this.onlineBugForm.projectId = this.onlineBugForm.description = '';
-                    this.onlineBugForm.createTime = this.onlineBugForm.processTime = null;
+                    this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
                     this.updateBugSolvingVisible1 = false
                     this.bugUsers = [];
                     this.fetchBugPage();
+                },(fail)=>{
+                    this.$message({
+                        showClose: true,
+                        message: fail.errMsg,
+                        type: 'error'
+                    });
+                    this.isSaving = false;
+                    this.bugUsers = [];
                 })
             },
             //查询各个分类bug数量
@@ -2259,7 +2268,7 @@
             closeDialog(){
                 this.onlineBugForm.projectId = null;
                 this.onlineBugForm.origin = null;
-                this.onlineBugForm.createTime = null;
+                this.onlineBugForm.discoverTime = null;
                 this.onlineBugForm.processTime = null;
                 this.onlineBugForm.description = null;
                 this.onlineBugForm.accountInfo = null;
