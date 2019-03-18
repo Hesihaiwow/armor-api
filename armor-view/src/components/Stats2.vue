@@ -2357,8 +2357,10 @@
                 date2.setDate(date1.getDate() - 7);
                 var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
                 var time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
-                this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
-                this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                // this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
+                // this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                this.signInReqDTO.beginTime = time2 + ' 00:00:00';
+                this.signInReqDTO.endTime = time3 + ' 23:59:59';
 
             },
             selectSignInData(){
