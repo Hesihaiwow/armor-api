@@ -3933,12 +3933,16 @@
                 var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
                 var time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
                 if (this.userRole == 3){
-                    this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
-                    this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                    // this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
+                    // this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                    this.signInReqDTO.beginTime = time2 + ' 00:00:00';
+                    this.signInReqDTO.endTime = time3 + ' 23:59:59';
                 }
                 if(this.userRole > 0 && this.userRole < 3){
-                    this.mySignInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
-                    this.mySignInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                    // this.mySignInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
+                    // this.mySignInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                    this.mySignInReqDTO.beginTime = time2 + ' 00:00:00';
+                    this.mySignInReqDTO.endTime = time3 + ' 23:59:59';
                 }
             },
             selectMySignInData(){
