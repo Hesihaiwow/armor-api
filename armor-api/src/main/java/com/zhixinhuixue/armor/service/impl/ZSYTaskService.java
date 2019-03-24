@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.swing.plaf.synth.SynthEditorPaneUI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -1142,8 +1143,10 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public ZSYResult<List<TaskDetailBO>> getAllWaitComment(Long userId) {
+        long time1 = System.currentTimeMillis();
         List<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
-
+        long time2 = System.currentTimeMillis();
+        System.out.println("查询待评价任务耗时: "+(time2-time1)+"ms");
         List<TaskDetailBO> waitCommentList = new ArrayList<>();
         for (TaskDetailBO taskBO : taskBOS) {
             // 只要有1个评价就说明该任务已经评价过了
@@ -1184,7 +1187,10 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public ZSYResult<List<TaskDetailBO>> getCommented(Long userId,Integer page) {
         PageHelper.startPage(page, ZSYConstants.PAGE_SIZE_WAIT);
-        Page<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
+        long time1 = System.currentTimeMillis();
+        Page<TaskDetailBO> taskBOS = taskMapper.selectCommented(userId);
+        long time2 = System.currentTimeMillis();
+        System.out.println("查询已评价任务耗时: "+(time2-time1)+"ms");
         Page<TaskDetailBO> commentEndList = new Page<>();
         BeanUtils.copyProperties(taskBOS,commentEndList);
         for (TaskDetailBO taskBO : taskBOS) {
