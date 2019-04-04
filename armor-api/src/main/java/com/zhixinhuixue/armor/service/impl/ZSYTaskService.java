@@ -1104,6 +1104,28 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     /**
+     * 获取所有待审核的任务
+     * @author sch
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public PageInfo<TaskResDTO> getPendingTaskPage(Integer pageNum) {
+        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE_WAIT);
+        Page<TaskBO> taskBOS = taskMapper.selectPendingTaskPage(ZSYTokenRequestContext.get().getDepartmentId());
+        Page<TaskResDTO> taskResDTOPage = new Page<>();
+        BeanUtils.copyProperties(taskBOS,taskResDTOPage);
+        if (!CollectionUtils.isEmpty(taskBOS)){
+            taskBOS.stream().forEach(taskBO -> {
+                TaskResDTO taskResDTO = new TaskResDTO();
+                BeanUtils.copyProperties(taskBO,taskResDTO);
+                taskResDTOPage.add(taskResDTO);
+            });
+        }
+        return new PageInfo<>(taskResDTOPage);
+    }
+
+    /**
      * 获取所有审核通过的任务
      *
      * @return
@@ -1420,7 +1442,7 @@ public class ZSYTaskService implements IZSYTaskService {
 
     // sch --
     //阶段变化,新增通知
-    private void stageChange(Task originTask,Long oldStageId,Long newStageId){
+    public void stageChange(Task originTask,Long oldStageId,Long newStageId){
         Stage oldStage = stageMapper.selectById(oldStageId);
         Stage newStage = stageMapper.selectById(newStageId);
         //任务参与者,包括负责人和开发人员
@@ -1451,7 +1473,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //暂停或启动,新增通知
-    private void pauseOrStart(Integer status,Long taskId,String desc){
+    public void pauseOrStart(Integer status,Long taskId,String desc){
         Task task = taskMapper.selectByPrimaryKey(taskId);
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
@@ -1495,7 +1517,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //主任务完成,新增通知
-    private void missionCompleted(Long taskId){
+    public void missionCompleted(Long taskId){
         Task task = taskMapper.selectByPrimaryKey(taskId);
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
@@ -1524,7 +1546,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //任务修改了,新增通知
-    private void missionModified(TaskDetailBO taskTemp,TaskReqDTO taskReqDTO){
+    public void missionModified(TaskDetailBO taskTemp, TaskReqDTO taskReqDTO){
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
         //1.添加负责人
@@ -1651,7 +1673,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //多人任务完成子任务,新增通知
-    private void sonMissionCompleted(TaskCompleteReqDTO taskCompleteReqDTO){
+    public void sonMissionCompleted(TaskCompleteReqDTO taskCompleteReqDTO){
         Task task = taskMapper.selectByPrimaryKey(taskCompleteReqDTO.getTaskId());
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
@@ -1788,6 +1810,25 @@ public class ZSYTaskService implements IZSYTaskService {
 
         });
         return list;
+    }
+
+    /**
+     * 所有进行中的多人任务
+     * @return
+     */
+    @Override
+    public List<TaskBaseResDTO> getAllMultipleTask() {
+        List<Task> tasks = taskMapper.selectAllTaskBase();
+        List<TaskBaseResDTO> taskBaseResDTOList = new ArrayList<>();
+        BeanUtils.copyProperties(tasks,taskBaseResDTOList);
+        if (!CollectionUtils.isEmpty(tasks)){
+            tasks.stream().forEach(task->{
+                TaskBaseResDTO taskBaseResDTO = new TaskBaseResDTO();
+                BeanUtils.copyProperties(task,taskBaseResDTO);
+                taskBaseResDTOList.add(taskBaseResDTO);
+            });
+        }
+        return taskBaseResDTOList;
     }
 
     /**

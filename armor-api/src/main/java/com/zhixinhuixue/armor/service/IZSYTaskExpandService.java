@@ -5,6 +5,7 @@ import com.zhixinhuixue.armor.model.dto.request.TaskExpandListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.TaskExpandReviewReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskExpandResDTO;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -23,10 +24,17 @@ public interface IZSYTaskExpandService {
 
     PageInfo<TaskExpandResDTO> getExpandList(TaskExpandListReqDTO reqDTO);
 
-    List<TaskExpandResDTO> getExpandDoing(Integer reqDTO);
+    PageInfo<TaskExpandResDTO> getExpandDoing(Integer status, Integer pageNum);
 
     void passExpand(TaskExpandReviewReqDTO reviewReqDTO);
 
     void deleteExpand(Long id);
 
+    /**
+     * 管理员分页查看延长申请
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<TaskExpandResDTO> getExpandPage(TaskExpandListReqDTO reqDTO);
 }

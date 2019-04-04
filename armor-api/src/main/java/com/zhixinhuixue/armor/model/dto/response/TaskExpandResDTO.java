@@ -9,22 +9,63 @@ import java.util.List;
  */
 public class TaskExpandResDTO {
 
+    /**
+     * 延长申请id
+     */
     private Long teId;
 
+    /**
+     * 任务id
+     */
     private Long taskId;
 
+    /**
+     * 任务名称
+     */
     private String taskName;
 
+    /**
+     * 延长的时长
+     */
     private BigDecimal hours;
 
+    /**
+     * 用户id
+     */
     private Long userId;
 
+    /**
+     * 用户姓名
+     */
     private String userName;
 
+    /**
+     * 延长原因
+     */
     private String reason;
 
+    /**
+     * 任务开始时间
+     */
     private Date beginTime;
+
+    /**
+     * 新的截止时间
+     */
     private Date endTime;
+
+    /**
+     * 延时申请创建时间
+     */
+    private Date createTime;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public Long getTeId() {
         return teId;

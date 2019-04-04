@@ -80,6 +80,9 @@
         <if test="reqDTO.readStatus != null">
             and n.`status` = #{reqDTO.readStatus}
         </if>
+        <if test="reqDTO.userId != null">
+            and n.`user_id` = #{reqDTO.userId}
+        </if>
         <if test="reqDTO.beginTime != null">
             <![CDATA[  and n.create_time > #{reqDTO.beginTime} ]]>
         </if>

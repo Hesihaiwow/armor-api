@@ -556,5 +556,20 @@
         and user_id =#{userId}
         order by t1.create_time desc
     </select>
+
+    <!--分页查询管理员页面  待审核任务-->
+    <select id="selectPendingTaskPage" resultMap="WaitAuditResultMap">
+        select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t3.image_url as projectImage, t4.`name` as userName,t2.user_id,t4.avatar_url from task t1
+        join task_user t2 on t1.id = t2.task_id
+        left join project t3 on t1.project_id = t3.id
+        left join `user` t4 on t1.create_by = t4.id
+        left join department t5 on t4.department_id = t5.id
+        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0  and t5.parent_id = #{departmentId}  order by t1.create_time desc
+    </select>
+
+    <!--所有进行中的多人任务-->
+    <select id="selectAllTaskBase" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `is_delete` = 0 order by create_time desc
+    </select>
     <!-- sch -->
 </mapper>

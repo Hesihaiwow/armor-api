@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTempMapper">
+
+    <resultMap id="BaseTaskTempMap" type="com.zhixinhuixue.armor.model.pojo.TaskTemp">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="work_hours" property="workHours" jdbcType="DECIMAL"></result>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
+        <result column="description" property="description" jdbcType="VARCHAR"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <resultMap id="TaskTempBO" type="com.zhixinhuixue.armor.model.bo.TaskTempBO" extends="BaseTaskTempMap">
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"></result>
+        <result column="project_image" property="projectImage" jdbcType="VARCHAR"></result>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"></result>
+        <collection property="userWeekTempList" column="{userId=user_id,taskId=task_id}"
+                ofType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp"
+                select="selectUserWeekTempByUserAndTask"></collection>
+    </resultMap>
+
+    <resultMap id="BaseUserWeekTempMap" type="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="week_number" property="weekNumber" jdbcType="INTEGER"></result>
+        <result column="hours" property="hours" jdbcType="DECIMAL"></result>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="year" property="year" jdbcType="INTEGER"></result>
+        <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <!--新增任务-->
+    <insert id="insertTaskTemp" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTemp">
+        INSERT INTO `task_temp`
+        (`id`,`task_id`,`user_id`,`begin_time`,`end_time`,`work_hours`,`description`,`type`,`status`,`review_status`,`create_time`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP}
+        ,#{workHours,jdbcType=DECIMAL},#{description,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{status,jdbcType=INTEGER},#{reviewStatus,jdbcType=INTEGER}
+        ,#{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!--批量插入周工作量(临时)-->
+    <insert id="insertUserWeekTempBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
+        INSERT INTO `user_week_temp`
+        (`id`,`week_number`,`hours`,`user_id`,`task_id`,`year`,`status`,`create_time`)
+        VALUES
+        <foreach collection="userWeekList" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.weekNumber,jdbcType=INTEGER},#{item.hours,jdbcType=DECIMAL},#{item.userId,jdbcType=BIGINT}
+            ,#{item.taskId,jdbcType=BIGINT},#{item.year,jdbcType=INTEGER},#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--修改任务(临时)-->
+    <update id="updateTaskTemp" parameterType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
+        UPDATE `task_temp`
+        <set>
+            <if test="workHours != null">
+                `work_hours` = #{workHours,jdbcType=DECIMAL},
+            </if>
+            <if test="beginTime != null">
+                `begin_time` = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                `end_time` = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="description != null and description != ''">
+                `description` = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="reviewStatus != null">
+                `review_status` = #{reviewStatus,jdbcType=INTEGER},
+            </if>
+        </set>
+        WHERE `id` = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!--删除周工作量-->
+    <update id="updateUserWeekTempBatch" parameterType="java.util.List">
+        UPDATE `user_week_temp`
+        set `status` = 3
+        where `id` in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!--审核userWeekTemp-->
+    <update id="checkUserWeekTempBatch" parameterType="java.util.List">
+        UPDATE `user_week_temp`
+        set `status` = 2
+        where `id` in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!--删除原有的userWeekTemp-->
+    <delete id="deleteUserWeekTempByUserAndTask">
+        DELETE FROM `user_week_temp` WHERE `user_id` = #{userId} AND `task_id` = #{taskId}
+    </delete>
+
+    <!--根据任务id和userId查询 临时任务-->
+    <select id="selectByUserAndTask" resultMap="BaseTaskTempMap">
+        SELECT * FROM `task_temp` WHERE `user_id` = #{userId} AND `task_id` = #{taskId} AND `review_status` != 3
+    </select>
+
+    <!--根据主键查询-->
+    <select id="selectById" resultMap="BaseTaskTempMap">
+        SELECT * FROM `task_temp` WHERE `id` = #{id} AND `review_status` != 3
+    </select>
+
+    <!--根据userId和taskId查询周工作量-->
+    <select id="selectUserWeekTempByUserAndTask" resultMap="BaseUserWeekTempMap">
+        SELECT * FROM `user_week_temp` WHERE `user_id` = #{userId} AND `task_id` = #{taskId} AND `status` != 3
+    </select>
+
+    <!--个人分页查看任务-->
+    <select id="selectPersonalTaskTempPage" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image,p.name project_name
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE  tt.`review_status` = #{reviewStatus} AND tt.`user_id` = #{userId}
+        ORDER BY tt.`create_time` DESC
+    </select>
+
+    <!--管理员分页查看任务-->
+    <select id="selectTaskTempPage" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image, p.name project_name
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE  tt.`review_status` = #{reviewStatus}
+        ORDER BY tt.`create_time` DESC
+    </select>
+</mapper>

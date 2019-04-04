@@ -112,9 +112,9 @@ public class ZSYBugController extends ZSYController{
     }
 
     @ApiOperation("查询各个分类的线上bug数量")
-    @GetMapping(value = "/num/type")
-    public String getDiffTypeBugNum(){
-        OnlineBugNumResDTO resDTO = bugService.getDiffTypeBugNum();
+    @PostMapping(value = "/num/type")
+    public String getDiffTypeBugNum(@RequestBody BugListReqDTO bugListReqDTO){
+        OnlineBugNumResDTO resDTO = bugService.getDiffTypeBugNum(bugListReqDTO);
         return ZSYResult.success().data(resDTO).build();
     }
     // -- sch
