@@ -891,7 +891,7 @@
                 },
                 otherStep:{
                     description: '',
-                    status:'',
+                    status:1,
                     taskHours:''
                 },
                 testing:{
@@ -1860,6 +1860,8 @@
                 this.expandTime.beginTime= task.taskUsers[0].beginTime
                 this.expandTime.endTime= task.taskUsers[0].endTime
                 this.expandTime.taskId= task.id
+                this.expandTime.reason = null
+                this.expandTime.hours = 0
                 this.expandTimeVisible = true
                 this.showFinishedTask = false
             },

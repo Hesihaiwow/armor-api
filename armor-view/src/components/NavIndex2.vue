@@ -1,13 +1,13 @@
 <template>
     <div class="nav-index-con">
-        <div v-show="userRole == 3 || permit" style="float: left">
+        <div v-show="userRole == 3 || userRole == 0" style="float: left">
             <el-button v-loading.fullscreen.lock="fullscreenLoading"
                        element-loading-text="拼命导入中,请稍后"
                        element-loading-spinner="el-icon-loading"
                        element-loading-background="rgba(0, 0, 0, 0.8)"
                        type="primary" @click="uploadToMysqlVisible=true">导入考勤记录</el-button>
         </div>
-        <div v-show="userRole == 3 || permit">
+        <div v-show="userRole == 3 || userRole == 0">
             <el-button v-loading.fullscreen.lock="fullscreenLoading"
                        element-loading-text="拼命导出中,请稍后"
                        element-loading-spinner="el-icon-loading"
@@ -134,6 +134,10 @@
 
         <div class="my-task-con">
             <div v-show="userRole>0 && userRole < 3">
+                <div class="add-task" style="margin-right: 320px" @click="createMultipleTask">
+                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
+                    <span>创建多人任务</span>
+                </div>
                 <div class="add-task" style="margin-right: 220px" @click="createExtraWork">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>加班申请</span>
@@ -211,6 +215,88 @@
                             <task-item :taskItems="task.applyFail" :isPrivate="true"
                                        taskStatus="ApplyFail" @reload="reload"></task-item>
                         </el-tab-pane>-->
+                    </el-tabs>
+                </div>
+                <p class="mic-title">多人任务申请</p>
+                <div class="my-task-detail">
+                    <el-tabs v-model="taskTempActiveName" @tab-click="handleClick">
+                        <el-tab-pane label="待审核" name="wait">
+                            <div class="task-lis" v-for="item in taskTemp.waitAssess" @click="getTaskTempDetail(item)">
+                                <div class="head-img"><img src="../assets/img/doing.png"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name" style="width: 700px;">
+                                        <span>{{item.taskName}}:({{item.description}})</span>
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-mark" style="position:relative; left:-10px">
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <span  class="mark-msg">{{item.projectName}}</span>
+                                </div>
+                                <div class="task-data-show">
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
+                                         :src="item.avatarUrl" :alt="item.userName">
+                                    <span v-else="">{{item.userName}}</span>
+                                </div>
+                            </div>
+                            <div v-show="taskTemp.waitAssess.length==0 || taskTemp.waitAssess == null" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                            <div class="pagination" v-show="this.taskTemp.waitAssess.length>0">
+                            <el-pagination
+                            @current-change="handleWaitAuditTaskTempPage"
+                            :current-page.sync="taskTempPage.pageNum"
+                            :page-size="taskTempPage.pageSize"
+                            :layout="taskTempWaitAuditPageLayout"
+                            :total="taskTempPage.total">
+                            </el-pagination>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="审核通过" name="accessed">
+                            <div class="task-lis" v-for="item in taskTemp.auditSuccess" @click="getTaskTempDetail(item)">
+                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name" style="width: 700px;">
+                                        <span>{{item.taskName}}:({{item.description}})</span>
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-mark" style="position:relative; left:-10px">
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <!--<img src="../assets/img/u431.png" alt="">-->
+                                    <span  class="mark-msg">{{item.projectName}}</span>
+                                </div>
+                                <div class="task-data-show">
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
+                                         :src="item.avatarUrl" :alt="item.userName">
+                                    <span v-else="">{{item.userName}}</span>
+                                </div>
+                            </div>
+                            <div v-show="taskTemp.auditSuccess.length==0 || taskTemp.auditSuccess == null" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                            <div class="pagination" v-show="this.taskTemp.auditSuccess.length>0">
+                                <el-pagination
+                                        @current-change="handleAuditSuccessTaskTempPage"
+                                        :current-page.sync="taskTempPage2.pageNum"
+                                        :page-size="taskTempPage2.pageSize"
+                                        :layout="taskTempAuditSuccessPageLayout"
+                                        :total="taskTempPage2.total">
+                                </el-pagination>
+                            </div>
+                        </el-tab-pane>
                     </el-tabs>
                 </div>
                 <p class="mic-title">我的考勤</p>
@@ -310,7 +396,7 @@
                 <p class="mic-title">我的线上问题</p>
                 <div class="my-task-detail">
                     <el-tabs v-model="activeQuestionName" @tab-click="handleClick">
-                        <el-tab-pane label="进行中" name="running">
+                        <el-tab-pane label="待审核" name="wait">
                             <div class="task-lis" v-for="item in question.running" @click="item.reviewStatus == 1 ? editQuestion(item) : finishQuestion(item)">
                                 <div class="head-img"><img src="../assets/img/doing.png"></div>
                                 <div class="main-task-detail">
@@ -552,6 +638,85 @@
                 </div>
             </div>
             <div v-show="userRole===0">
+                <p class="mic-title">多人任务审核</p>
+                <el-tabs v-model="taskTempActiveName2" @tab-click="handleClick">
+                    <el-tab-pane label="待审核" name="wait">
+                        <div class="task-lis" v-for="item in taskTemp.waitAssess2" @click="getTaskTempDetail(item)">
+                            <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
+                            <div class="main-task-detail">
+                                <div class="task-name" style="width: 700px"><span>{{item.taskName}}:({{item.description}})</span></div>
+                                <div class="task-state">
+                                    <span class="task-end blue">申请人：{{item.userName}}</span>
+                                    <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
+                                </div>
+                            </div>
+                            <div class="task-mark" style="position:relative; left:-10px">
+                                <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                <img v-else="" src="../assets/img/u431.png" alt="" >
+                                <!--<img src="../assets/img/u431.png" alt="">-->
+                                <span  class="mark-msg">{{item.projectName}}</span>
+                            </div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
+                                     :src="item.avatarUrl" :alt="item.userName">
+                                <span v-else="">{{item.userName}}</span>
+                            </div>
+                        </div>
+                        <div class="pagination" v-show="this.taskTemp.waitAssess2.length>0">
+                            <el-pagination
+                                    @current-change="handleWaitAuditTaskTempPage2"
+                                    :current-page.sync="taskTempPage3.pageNum"
+                                    :page-size="taskTempPage3.pageSize"
+                                    :layout="taskTempWaitAuditPageLayout2"
+                                    :total="taskTempPage3.total">
+                            </el-pagination>
+                        </div>
+                        <div v-show="this.taskTemp.waitAssess2.length==0" class="empty">
+                            <h2>暂无数据</h2>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="审核通过" name="access">
+                        <div class="task-lis" v-for="item in taskTemp.auditSuccess2" @click="getTaskTempDetail(item)">
+                            <div class="head-img"><img src="../assets/img/finished.jpg"></div>
+                            <div class="main-task-detail">
+                                <div class="task-name" style="width: 700px;">
+                                    <span>{{item.taskName}}:({{item.description}})</span>
+                                </div>
+                                <div class="task-state">
+                                    <span class="task-end blue">申请人：{{item.userName}}</span>
+                                    <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
+                                    <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
+                                    <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
+                                </div>
+                            </div>
+                            <div class="task-mark" style="position:relative; left:-10px">
+                                <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                <img v-else="" src="../assets/img/u431.png" alt="" >
+                                <!--<img src="../assets/img/u431.png" alt="">-->
+                                <span  class="mark-msg">{{item.projectName}}</span>
+                            </div>
+                            <div class="task-data-show">
+                            </div>
+                            <div class="task-username">
+                                <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
+                                     :src="item.avatarUrl" :alt="item.userName">
+                                <span v-else="">{{item.userName}}</span>
+                            </div>
+                        </div>
+                        <div class="pagination" v-show="this.taskTemp.auditSuccess2.length>0">
+                            <el-pagination
+                                    @current-change="handleAuditSuccessTaskTempPage2"
+                                    :current-page.sync="taskTempPage4.pageNum"
+                                    :page-size="taskTempPage4.pageSize"
+                                    :layout="taskTempAuditSuccessPageLayout2"
+                                    :total="taskTempPage4.total">
+                            </el-pagination>
+                        </div>
+                        <div v-show="this.taskTemp.auditSuccess2.length==0" class="empty">
+                            <h2>暂无数据</h2>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
                 <p class="mic-title">个人任务审核</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 400px;font-size: 14px"
                      @click="integralBasicVisible=true">
@@ -566,6 +731,15 @@
                                    :stageList="stageList"
                                    :viewType="1"
                                    :tagList="tagList"></task-item>
+                        <div class="pagination" v-show="this.task.waitAudit.length>0">
+                            <el-pagination
+                                    @current-change="handleWaitAuditPage"
+                                    :current-page.sync="waitAuditPage.pageNum"
+                                    :page-size="waitAuditPage.pageSize"
+                                    :layout="waitAuditPageLayout"
+                                    :total="waitAuditPage.total">
+                            </el-pagination>
+                        </div>
                     </el-tab-pane>
                     <el-tab-pane label="审核通过" name="completed">
                         <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"
@@ -595,9 +769,12 @@
                                 <div class="task-name"><span>{{expand.taskName}}:{{expand.reason}}</span></div>
                                 <div class="task-state">
                                     <span class="task-end blue">申请人：{{expand.userName}}</span>
-                                    <span class="task-end blue">{{expand.endTime| formatDate }}</span>
+                                    <span class="task-end blue">截止时间: {{expand.endTime| formatDate }}</span>
                                     <span class="task-time-opt"><i class="el-icon-edit" ></i></span>
                                 </div>
+                                <!--<div style="margin-top: 8px">-->
+                                    <!--<span class="task-end green">创建时间: {{expand.createTime| formatDate }}</span>-->
+                                <!--</div>-->
                             </div>
                             <div class="task-data-show">
                                 <span class="task-score">延长时间：{{expand.hours}} 小时</span>
@@ -607,6 +784,15 @@
                                      :src="expand.avatarUrl">
                                 <span v-else="">{{expand.userName}}</span>
                             </div>
+                        </div>
+                        <div class="pagination" v-show="this.taskExpand.doing.length>0">
+                            <el-pagination
+                                    @current-change="handleExpandDoingPage"
+                                    :current-page.sync="expandDoingPage.pageNum"
+                                    :page-size="expandDoingPage.pageSize"
+                                    :layout="expandDoingPageLayout"
+                                    :total="expandDoingPage.total">
+                            </el-pagination>
                         </div>
                         <div v-show="taskExpand.doing.length==0" class="empty">
                             <h2>暂无数据</h2>
@@ -622,6 +808,9 @@
                                     <span class="task-end blue">截止时间：{{expand.endTime| formatDate }}</span>
                                     <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
                                 </div>
+                                <!--<div style="margin-top: 8px">-->
+                                    <!--<span class="task-end green">创建时间: {{expand.createTime| formatDate }}</span>-->
+                                <!--</div>-->
                             </div>
                             <div class="task-data-show">
                                 <span class="task-score">延长时间：{{expand.hours}} 小时</span>
@@ -995,6 +1184,7 @@
         <el-dialog title="创建个人任务"
                 size="tiny"
                 custom-class="myDialog"
+                   @close="clearPrivateTask"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="createTaskVisible">
@@ -1495,7 +1685,7 @@
                     <el-tooltip content="删除该申请" placement="top">
                         <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
                     </el-tooltip>
-                    <el-tooltip content="审核通过" placement="top" v-show="permit">
+                    <el-tooltip content="审核通过" placement="top" v-show="userRole==0">
                         <el-button type="success" @click="accessEWork(eWorkDetail.id)">审核通过</el-button>
                     </el-tooltip>
                 </div>
@@ -1812,6 +2002,118 @@
             </span>
         </el-dialog>
 
+        <el-dialog title="新增多人任务" :visible.sync="createMultipleTaskVisible" custom-class="myDialog"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                    @close="clearMultipleTask">
+            <el-form :model="taskTempForm"  ref="taskTempForm" label-width="80px">
+                <el-form-item label="关联任务" prop="taskId">
+                    <el-select v-model="taskTempForm.taskId" placeholder="请选择" filterable>
+                        <el-option
+                                v-for="item in taskList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="任务描述" prop="description">
+                    <el-input type="textarea" v-model="description" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="开始日期" prop="beginTime">
+                    <el-date-picker
+                            v-model="taskTempForm.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="截止日期" prop="endTime">
+                    <el-date-picker
+                            v-model="taskTempForm.endTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="工作量" prop="workHours">
+                    <el-input style="width:100px" v-model="taskTempForm.workHours" :maxlength="6"></el-input>
+                    小时
+                </el-form-item>
+                <div v-for="(item,index) in sortWeekNumber">
+                    <div class="add-member-basic-list clearfix">
+                        <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                        <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
+                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) > 40" style="color:red;display:inline">
+                            {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
+                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) <=40" style="display:inline">
+                            {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
+                    </div>
+                </div>
+
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveMultipleTask('taskTempForm')" :disabled="taskAble">立即创建</el-button>
+                <el-button @click="createMultipleTaskVisible = false">取 消</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog title="多人任务申请详情" custom-class="myDialog" :visible.sync="taskTempDetailVisible"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+            <el-form v-if="userRole != 0" :model="taskTempDetail"  ref="editTaskTempForm">
+                <el-form-item class="task-form" label="任务名称：">{{taskTempDetail.taskName}}</el-form-item>
+                <el-form-item class="task-form" label="申请人：">{{taskTempDetail.userName}}</el-form-item>
+                <el-form-item class="task-form" label="描述：">{{taskTempDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="开始时间：">{{taskTempDetail.beginTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="截止时间：">{{taskTempDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" label="任务时长：">{{taskTempDetail.workHours}}小时</el-form-item>
+            </el-form>
+            <el-form v-if="userRole == 0" :model="taskTempDetail"  ref="editTaskTempForm">
+                <el-form-item class="task-form" label="任务名称：">{{taskTempDetail.taskName}}
+                </el-form-item>
+                <el-form-item class="task-form" label="申请人：">{{taskTempDetail.userName}}</el-form-item>
+                <el-form-item class="task-form" label="描述：">{{taskTempDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="开始时间：">
+                    <el-date-picker @change="changeTaskTempWeek"
+                                    v-model="taskTempDetail.beginTime"
+                                    type="date"
+                                    format="yyyy-MM-dd"
+                                    placeholder="选择日期时间"
+                                    :disabled="taskTempAble">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item class="task-form" label="截止时间：">
+                    <el-date-picker @change="changeTaskTempWeek"
+                                    v-model="taskTempDetail.endTime"
+                                    type="date"
+                                    format="yyyy-MM-dd"
+                                    placeholder="选择日期时间"
+                                    :disabled="taskTempAble">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item class="task-form" label="任务时长：">
+                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 30%"></el-input>
+                    小时
+                </el-form-item>
+                    <div v-for="item in taskTempWeekNumber">
+                        <div class="add-member-basic-list add-member-basic-end clearfix">
+                            <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：
+                            </div>
+                            <input class="member-time-week" :disabled="taskTempAble" v-model="item.hours" :maxlength="6" style="width:80px">
+                        </div>
+                    </div>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <div>
+                    <el-button type="danger" v-show="userRole==0" @click="deleteMultipleTask(taskTempDetail.id)">删除申请</el-button>
+                    <el-button type="success" v-show="userRole==0&&taskTempActiveName2 == 'wait'" @click="editMultipleTask('editTaskTempForm')">修改申请</el-button>
+                    <el-button type="success" v-show="userRole==0&&taskTempActiveName2 == 'wait'" @click="acceptMultipleTask(taskTempDetail.id)">申请通过</el-button>
+                    <!--<el-button type="success" @click="acceptTaskExpand()">申请驳回</el-button>-->
+                </div>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
@@ -1858,6 +2160,7 @@
                 helpDetailVisible: false,
                 expandDetailVisible: false,
                 createTaskVisible: false,
+                createMultipleTaskVisible: false,
                 editLeaveDetailVisible: false,
                 developVisible: false,
                 basicIntegral: {
@@ -1894,7 +2197,17 @@
                     pageSize: 5,
                     total: 0,
                 },
+                waitAuditPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
                 expandPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
+                expandDoingPage: {
                     pageNum: 1,
                     pageSize: 5,
                     total: 0,
@@ -2281,9 +2594,150 @@
                 myTotalEWorkTime:'',
                 totalEWorkTime:'',
 
-
+                //个人新建多人任务
+                description:null,
+                taskTempForm:{
+                    id:null,
+                    userId:null,
+                    taskId:null,
+                    workHours:null,
+                    beginTime:null,
+                    endTime:null,
+                    description:null,
+                    createTime:null,
+                    userWeeks:[],
+                },
+                taskTempActiveName: 'wait',
+                taskTempActiveName2: 'wait',
+                taskTempPage:{
+                  pageNum:1,
+                  total:0,
+                  pageSize:5
+                },
+                taskTempPage2:{
+                    pageNum:1,
+                    total:0,
+                    pageSize:5
+                },
+                taskTempPage3:{
+                    pageNum:1,
+                    total:0,
+                    pageSize:5
+                },
+                taskTempPage4:{
+                    pageNum:1,
+                    total:0,
+                    pageSize:5
+                },
+                taskList:[],
+                weekNumber:[],
+                weekNumberTemp:[],
+                step: {
+                    index: '',
+                    stageId: '',
+                    stageName: '',
+                    userId: '',
+                    userName: '',
+                    beginTime: '',
+                    endTime: '',
+                    taskHours: '',
+                    completeHours: '',
+                    completeTime: '',
+                    description: '',
+                    status: ''
+                },
+                weekTime:{
+                    beginWeek:'',
+                    endWeek:''
+                },
+                otherStep:{
+                    description: '',
+                    status:1,
+                    taskHours:''
+                },
+                taskTempDetailVisible:false,
+                taskTempAble:false,
+                taskTempWeekNumber:[],
+                taskTempDetail:{
+                    id:null,
+                    taskId:null,
+                    taskName:null,
+                    userId:null,
+                    userName:null,
+                    description:null,
+                    beginTime:null,
+                    endTime:null,
+                    createTime:null,
+                    reviewStatus:null,
+                    workHours:null,
+                    beginWeek:null,
+                    endWeek:null,
+                    userWeeks:[]
+                },
+                taskTemp:{
+                    waitAssess: [],
+                    waitAssess2: [],
+                    auditSuccess: [],
+                    auditSuccess2: [],
+                },
                 // -- sch
             };
+        },
+        watch:{
+            taskTempForm:{
+                deep:true,
+                handler:function (val, oldVal) {
+                    this.weekNumber = [];
+                    let weekData='';
+                    let param = this.weekNumber;
+                    if (this.userId != null && this.taskTempForm.taskId != null && this.taskTempForm.workHours != null && this.taskTempForm.beginTime != null
+                        && this.taskTempForm.endTime != null && (moment(this.taskTempForm.beginTime).isBefore(this.taskTempForm.endTime)
+                            || moment(this.taskTempForm.beginTime).isSame(this.taskTempForm.endTime))) {
+                        this.weekTime.beginWeek = moment(this.taskTempForm.beginTime).week()
+                        this.weekTime.endWeek = moment(this.taskTempForm.endTime).week()
+                        let beginYear = moment(this.taskTempForm.beginTime).year();
+                        let endYear = moment(this.taskTempForm.endTime).year();
+                        if(beginYear!=endYear){
+                            for(let i=this.weekTime.beginWeek;i<moment(this.taskTempForm.beginTime).weeksInYear()+1;i++){
+                                http.zsyGetHttp('/userWeek/'+ this.taskTempForm.taskId +'/' + this.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                    weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,
+                                        'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                                    param.push(weekData)
+                                })
+                            }
+                            for(let i=1;i<this.weekTime.endWeek+1;i++){
+                                http.zsyGetHttp('/userWeek/'+ this.taskTempForm.taskId +'/' + this.userId + '/' + endYear + '/' + i, {}, (resp) => {
+                                    weekData = {'weekNumber':i, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
+                                    param.push(weekData)
+                                })
+
+                            }
+                        }
+                        if(this.weekTime.beginWeek == this.weekTime.endWeek){
+                            http.zsyGetHttp('/userWeek/'+ this.taskTempForm.taskId +'/' +  this.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                                weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.taskTempForm.workHours ,'weekHours': resp.data,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
+                                param.push(weekData)
+                            })
+                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek >1){
+                            for(let i=this.weekTime.beginWeek;i<this.weekTime.endWeek+1;i++){
+                                http.zsyGetHttp('/userWeek/'+ this.taskTempForm.taskId +'/' +  this.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                    weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().week(i).year(beginYear).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD')  };
+                                    param.push(weekData)
+                                })
+                            }
+                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek == 1){
+                            http.zsyGetHttp('/userWeek/'+ this.taskTempForm.taskId +'/' +  this.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                                param.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear  ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
+                            })
+                            http.zsyGetHttp('/userWeek/'+ this.taskTempForm.taskId +'/' + this.userId + '/' + endYear + '/' + this.weekTime.endWeek, {}, (resp) => {
+                                param.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')})
+
+                            })
+                        }
+                        this.weekNumber = param
+                    }
+                }
+            },
         },
         created() {
             this.reload();
@@ -2295,6 +2749,20 @@
             _this.$root.eventBus.$emit("handleTabSelected", "navIndex");
         },
         computed: {
+            sortWeekNumber(){
+                if (this.weekNumber.length != null) {
+                    for (let i = 0; i < this.weekNumber.length; i++) {
+                        for (let x = 0; x < this.weekNumberTemp.length; x++) {
+                            if (this.weekNumber[i] != null) {
+                                if (this.weekNumber[i].weekNumber == this.weekNumberTemp[x].weekNumber) {
+                                    this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
+                                }
+                            }
+                        }
+                    }
+                }
+                return _.orderBy(this.weekNumber, 'weekNumber')
+            },
             permit() {
                 let userRole = helper.decodeToken().userRole;
                 return userRole <= 1;
@@ -2343,8 +2811,44 @@
                 }
                 return 'total, pager'
             },
+            waitAuditPageLayout() {
+                if (this.waitAuditPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            taskTempWaitAuditPageLayout() {
+                if (this.taskTempPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            taskTempWaitAuditPageLayout2() {
+                if (this.taskTempPage3.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            taskTempAuditSuccessPageLayout() {
+                if (this.taskTempPage2.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            taskTempAuditSuccessPageLayout2() {
+                if (this.taskTempPage4.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             expandPageLayout() {
                 if (this.expandPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            expandDoingPageLayout() {
+                if (this.expandDoingPage.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -2443,9 +2947,16 @@
             },
             createTaskClick() {
                 // 建个人任务
+                this.clearPrivateTask()
                 this.createTaskVisible = true
             },
+            //创建多人任务
+            createMultipleTask(){
+                this.clearMultipleTask();
+                this.createMultipleTaskVisible = true;
+            },
             reload() {
+                this.fetchAllMultipleTasks()
                 this.initSignInTime()
                 this.fetchIntegral()
                 this.fetchTaskDoing()
@@ -2488,6 +2999,24 @@
                 this.fetchRecheckPass();
                 this.fetchMySignInData();
                 this.fetchSignInData();
+                this.fetchPersonalMultipleWait();
+                this.fetchPersonalMultipleAccess();
+                this.fetchMultipleAccess();
+                this.fetchMultipleWait();
+            },
+            errorMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'error'
+                });
+            },
+            //清空新建个人任务
+            clearPrivateTask(){
+              this.taskForm.taskName = this.taskForm.description = this.taskForm.beginTime = this.taskForm.endTime
+               = this.taskForm.priority = this.taskForm.projectId = this.taskForm.stageId = this.taskForm.taskType
+                = this.taskForm.taskHours = null
+                this.taskForm.tags = []
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -2529,10 +3058,190 @@
                             vm.reload()
                         });
                     } else {
+                        this.taskAble = false
                         return false;
                     }
                 }, err => {
                     this.taskAble = false
+                });
+            },
+            saveMultipleTask(formName) {
+                var sumHours=0;
+                for(var i=0;i<this.weekNumber.length;i++){
+                    if(this.weekNumber[i].hours==''|| this.weekNumber[i].hours=== undefined){
+                        if(this.weekNumber[i].hoursTemp !== undefined &&this.weekNumber[i].hoursTemp!=''){
+                            this.weekNumber[i].hours = this.weekNumber[i].hoursTemp
+                        }else{
+                            this.weekNumber[i].hours = 0
+                        }
+                    }
+                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
+                    if(!ishours &&ishours!=0){
+                        this.errorMsg('工作量填写错误');
+                        return false;
+                    }
+                    if(this.weekNumber[i].hours>99999.9||this.weekNumber[i].hours<0){
+                        this.errorMsg('工作量正确值应为0~99999.9');
+                        return false;
+                    }
+                    sumHours +=  parseFloat(this.weekNumber[i].hours)
+                }
+                if(sumHours!=this.taskTempForm.workHours){
+                    this.errorMsg('周工作量与总工作量不符，请检查');
+                    return
+                }
+                this.taskTempForm.userWeeks = this.weekNumber
+
+
+                let vm = this;
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // this.taskAble = true;
+                        var param = this.taskTempForm;
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00')
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
+                        if (param.taskId == null || param.taskId == ''){
+                            this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (this.description == null || this.description.trim() == ''){
+                            this.$message({showClose: true, message: '任务描述不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (param.beginTime == null || param.beginTime == ''){
+                            this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (param.endTime == null || param.endTime == ''){
+                            this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (param.workHours.length != parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                            this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            return false;
+                        }
+                        if (param.workHours.trim() < 0.1) {
+                            this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            return false;
+                        }
+                        // param.workHours = Number(param.workHours)
+                        param.description = this.description
+                        http.zsyPostHttp('/task-temp/add', param, (resp) => {
+                            this.$message({showClose: true, message: '任务创建成功', type: 'success'});
+                            this.$refs[formName].resetFields();
+                            this.description = null;
+                            this.createMultipleTaskVisible = false;
+                            this.taskAble = false;
+                            vm.reload()
+                        });
+                    } else {
+                        return false;
+                    }
+                }, err => {
+                    this.taskAble = false
+                });
+            },
+            editMultipleTask(formName) {
+                var sumHours=0;
+                for(var i=0;i<this.taskTempWeekNumber.length;i++){
+                    if(this.taskTempWeekNumber[i].hours==''|| this.taskTempWeekNumber[i].hours=== undefined){
+                        if(this.taskTempWeekNumber[i].hoursTemp !== undefined &&this.taskTempWeekNumber[i].hoursTemp!=''){
+                            this.taskTempWeekNumber[i].hours = this.taskTempWeekNumber[i].hoursTemp
+                        }else{
+                            this.taskTempWeekNumber[i].hours = 0
+                        }
+                    }
+                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.taskTempWeekNumber[i].hours);
+                    if(!ishours &&ishours!=0){
+                        this.errorMsg('工作量填写错误');
+                        return false;
+                    }
+                    if(this.taskTempWeekNumber[i].hours>99999.9||this.taskTempWeekNumber[i].hours<0){
+                        this.errorMsg('工作量正确值应为0~99999.9');
+                        return false;
+                    }
+                    sumHours +=  parseFloat(this.taskTempWeekNumber[i].hours)
+                }
+                if(sumHours!=this.taskTempDetail.workHours){
+                    this.errorMsg('周工作量与总工作量不符，请检查');
+                    return
+                }
+                this.taskTempDetail.userWeeks = this.taskTempWeekNumber
+
+
+                let vm = this;
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // this.taskAble = true;
+                        var param = this.taskTempDetail;
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00')
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59')
+                        if (param.taskId == null || param.taskId == ''){
+                            this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (this.taskTempDetail.description == null || this.taskTempDetail.description.trim() == ''){
+                            this.$message({showClose: true, message: '任务描述不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (param.beginTime == null || param.beginTime == ''){
+                            this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (param.endTime == null || param.endTime == ''){
+                            this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            return false;
+                        }
+                        param.workHours = String(param.workHours)
+                        if (param.workHours.length != parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                            this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            return false;
+                        }
+                        if (param.workHours < 0.1) {
+                            this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            return false;
+                        }
+                        // param.workHours = Number(param.workHours)
+                        http.zsyPutHttp('/task-temp/update', param, (resp) => {
+                            this.$message({showClose: true, message: '任务修改成功', type: 'success'});
+                            this.$refs[formName].resetFields();
+                            this.taskTempDetailVisible = false;
+                            this.taskAble = false;
+                            vm.reload()
+                        });
+                    } else {
+                        return false;
+                    }
+                }, err => {
+                    this.taskAble = false
+                });
+            },
+            deleteMultipleTask(id){
+                this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyDeleteHttp(`/task-temp/delete/` + id, {}, (resp) => {
+                        this.$message({showClose: true, message: '删除成功', type: 'success'});
+                        this.reload();
+                        this.taskTempDetailVisible = false;
+                    })
+                }).catch(() => {
+                });
+            },
+            acceptMultipleTask(id){
+                this.$confirm('此操作将审核该任务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyPutHttp(`/task-temp/access/` + id, {}, (resp) => {
+                        this.$message({showClose: true, message: '审核成功', type: 'success'});
+                        this.reload();
+                        this.taskTempDetailVisible = false;
+                    })
+                }).catch(() => {
                 });
             },
             makeUpItems(items) {
@@ -2637,14 +3346,18 @@
             // 获取所有待审核的任务
             fetchTaskWaitAudit() {
                 let vm = this
-                http.zsyGetHttp('/task/pending/all', {}, (resp) => {
-                    vm.task.waitAudit = this.makeUpItems(resp.data)
+                http.zsyGetHttp(`/task/pending/all/`+this.waitAuditPage.pageNum, {}, (resp) => {
+                    vm.task.waitAudit = this.makeUpItems(resp.data.list);
+                    vm.waitAuditPage.pageNum = resp.data.pageNum;
+                    vm.waitAuditPage.total = resp.data.total;
                 })
             },
             fetchTaskExpandDoing() {
                 let vm = this
-                http.zsyGetHttp(`/task-expand/doing/0`, {}, (resp) => {
-                    vm.taskExpand.doing = resp.data
+                http.zsyGetHttp(`/task-expand/doing/0/`+this.expandDoingPage.pageNum, {}, (resp) => {
+                    vm.taskExpand.doing = resp.data.list;
+                    // vm.expandDoingPage.pageNum = resp.data.pageNum;
+                    vm.expandDoingPage.total = resp.data.total;
                 })
             },
             // 获取所有审核通过的任务
@@ -2857,6 +3570,27 @@
                 this.expandDetail.endTime = expand.endTime
                 this.expandDetail.beginTime = expand.beginTime
                 this.changeExpandWeek()
+            },
+            getTaskTempDetail(taskTemp){
+              this.taskTempDetailVisible = true;
+              if (this.taskTempActiveName2 == 'access') {
+                  this.taskTempAble = true
+              }else {
+                  this.taskTempAble = false
+              }
+              this.taskTempDetail.id = taskTemp.id;
+              this.taskTempDetail.taskId = taskTemp.taskId;
+              this.taskTempDetail.taskName = taskTemp.taskName;
+              this.taskTempDetail.userName = taskTemp.userName;
+              this.taskTempDetail.userId = taskTemp.userId;
+              this.taskTempDetail.beginTime = taskTemp.beginTime;
+              this.taskTempDetail.endTime = taskTemp.endTime;
+              this.taskTempDetail.createTime = taskTemp.createTime;
+              this.taskTempDetail.description = taskTemp.description;
+              // this.taskTempDetail.reviewStatus = taskTemp.reviewStatus;
+              this.taskTempDetail.workHours = taskTemp.workHours;
+              this.taskTempDetail.userWeeks = taskTemp.userWeekTempList;
+              this.changeTaskTempWeek()
             },
             //积分转移详情
             reviewDetail(help) {
@@ -3248,9 +3982,33 @@
                 this.auditSuccessPage.pageNum = currentPage
                 this.fetchTaskAuditSuccess()
             },
+            handleWaitAuditPage(currentPage) {
+                this.waitAuditPage.pageNum = currentPage
+                this.fetchTaskWaitAudit()
+            },
+            handleWaitAuditTaskTempPage(currentPage) {
+                this.taskTempPage.pageNum = currentPage
+                this.fetchPersonalMultipleWait()
+            },
+            handleWaitAuditTaskTempPage2(currentPage) {
+                this.taskTempPage3.pageNum = currentPage
+                this.fetchMultipleWait()
+            },
+            handleAuditSuccessTaskTempPage(currentPage) {
+                this.taskTempPage2.pageNum = currentPage
+                this.fetchPersonalMultipleAccess()
+            },
+            handleAuditSuccessTaskTempPage2(currentPage) {
+                this.taskTempPage4.pageNum = currentPage
+                this.fetchMultipleAccess()
+            },
             handleExpandPage(currentPage) {
                 this.expandPage.pageNum = currentPage
-//                this.fetchTaskExpandSuccess()
+               this.fetchTaskExpandSuccess()
+            },
+            handleExpandDoingPage(currentPage) {
+                this.expandDoingPage.pageNum = currentPage
+                this.fetchTaskExpandDoing()
             },
             isDecimal(str) {
                 var regu = /^[-]{0,1}[0-9]{1,}$/;
@@ -3360,6 +4118,74 @@
                 }
                 this.expandWeekNumber = param
             },
+
+
+            changeTaskTempWeek(){
+                if (this.taskTempDetail.beginTime == null || this.taskTempDetail.endTime == null) {
+                    return
+                }
+                this.taskTempWeekNumber = [];
+                let weekData = '';
+                let param = this.taskTempWeekNumber;
+                this.taskTempDetail.beginWeek = moment(this.taskTempDetail.beginTime).week()
+                this.taskTempDetail.endWeek = moment(this.taskTempDetail.endTime).week()
+                let beginYear = moment(this.taskTempDetail.beginTime).year();
+                let endYear = moment(this.taskTempDetail.endTime).year();
+                let userWeeks = this.taskTempDetail.userWeeks
+                if (beginYear != endYear) {
+                    for (let i = this.taskTempDetail.beginWeek; i < moment(this.taskTempDetail.beginTime).weeksInYear() + 1; i++) {
+                        weekData = {
+                            'weekNumber': i,
+                            'hours': userWeeks[i-this.taskTempDetail.beginWeek].hours,
+                            'year': beginYear,
+                            'range': moment().year(beginYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                        };
+                        param.push(weekData)
+                    }
+                    for (let i = 1; i < this.taskTempDetail.endWeek + 1; i++) {
+                        weekData = {
+                            'weekNumber': i,
+                            'hours': userWeeks[i-1].hours,
+                            'year': endYear,
+                            'range': moment().year(endYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(endYear).week(i).endOf('week').format('MM-DD')
+                        };
+                        param.push(weekData)
+                    }
+                }
+                if (this.taskTempDetail.beginWeek == this.taskTempDetail.endWeek) {
+                    weekData = {
+                        'weekNumber': this.taskTempDetail.beginWeek,
+                        'hours': this.taskTempDetail.workHours,
+                        'year': beginYear,
+                        'range': moment().year(beginYear).week(this.taskTempDetail.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskTempDetail.beginWeek).endOf('week').format('MM-DD')
+                    };
+                    param.push(weekData)
+                } else if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek > 1) {
+                    for (let i = this.taskTempDetail.beginWeek; i < this.taskTempDetail.endWeek + 1; i++) {
+                        weekData = {
+                            'weekNumber': i,
+                            'hours': userWeeks[i-this.taskTempDetail.beginWeek].hours,
+                            'year': beginYear,
+                            'range': moment().week(i).year(beginYear).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                        };
+                        param.push(weekData)
+                    }
+                } else if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek == 1) {
+                    param.push({
+                        'weekNumber': this.taskTempDetail.beginWeek,
+                        'hours': userWeeks[0].hours,
+                        'year': beginYear,
+                        'range': moment().year(beginYear).week(this.taskTempDetail.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskTempDetail.beginWeek).endOf('week').format('MM-DD')
+                    })
+                    param.push({
+                        'weekNumber': this.taskTempDetail.endWeek,
+                        'hours': userWeeks[1].hours,
+                        'year': beginYear,
+                        'range': moment().year(beginYear).week(this.taskTempDetail.endWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskTempDetail.endWeek).endOf('week').format('MM-DD')
+                    })
+                }
+                this.taskTempWeekNumber = param
+            },
             // sch --
             //清空数据
             clearQuestionForm(){
@@ -3373,6 +4199,7 @@
             },
             //创建线上问题记录
             createQuestionClick() {
+                this.clearQuestionForm();
                 this.createQuestionVisible = true
             },
             //完成线上问题
@@ -3653,6 +4480,7 @@
             },
             //创建加班申请
             createExtraWork(){
+                this.clearExtraWorkForm()
                 this.createExtraWorkVisible = true;
                 this.fetchMyRunningTasks(this.userId)
             },
@@ -3923,6 +4751,14 @@
                     })
                 }
             },
+            //查询任务
+            fetchAllMultipleTasks(){
+              http.zsyGetHttp('task/multiple/all',{},(res=>{
+                  if (res){
+                      this.taskList = res.data;
+                  }
+              }))
+            },
             initSignInTime(){
                 var date1 = new Date();
                 var time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
@@ -4045,7 +4881,6 @@
                     const year = moment(new Date()).format('YYYY');
                     const yearAndMonth = year+"-"+this.addZero(month);
                     this.eWorkTimeReqDTO2.yearAndMonth = yearAndMonth;
-                    console.log(this.eWorkTimeReqDTO2.yearAndMonth);
                     http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO2,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
@@ -4055,7 +4890,6 @@
                 }else {
                     const year = moment(new Date()).format('YYYY');
                     this.eWorkTimeReqDTO2.yearAndMonth = year;
-                    console.log(this.eWorkTimeReqDTO2.yearAndMonth);
                     http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO2,(res)=>{
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
@@ -4345,6 +5179,39 @@
                         this.checkInUsers = res.data
                     }
                 })
+            },
+            //查询多人任务列表
+            fetchPersonalMultipleWait(){
+                    http.zsyGetHttp('/task-temp/personal/page/'+this.taskTempPage.pageNum+'/1',{},(res=>{
+                        this.taskTemp.waitAssess = res.data.list;
+                        this.taskTempPage.total = res.data.total;
+                    }))
+
+            },
+            fetchPersonalMultipleAccess(){
+                http.zsyGetHttp('/task-temp/personal/page/'+this.taskTempPage2.pageNum+'/2',{},(res=>{
+                    this.taskTemp.auditSuccess = res.data.list;
+                    this.taskTempPage2.total = res.data.total;
+                }))
+            },
+            fetchMultipleWait(){
+                http.zsyGetHttp('/task-temp/page/'+this.taskTempPage3.pageNum+'/1',{},(res=>{
+                    this.taskTemp.waitAssess2 = res.data.list;
+                    this.taskTempPage3.total = res.data.total;
+                }))
+            },
+            fetchMultipleAccess(){
+                http.zsyGetHttp('/task-temp/page/'+this.taskTempPage4.pageNum+'/2',{},(res=>{
+                    this.taskTemp.auditSuccess2 = res.data.list;
+                    this.taskTempPage4.total = res.data.total;
+                }))
+            },
+            clearMultipleTask(){
+                this.taskTempForm.taskId = this.taskTempForm.description = this.taskTempForm.beginTime
+                = this.taskTempForm.endTime = this.taskTempForm.workHours = this.taskTempForm.createTime
+                = this.taskTempForm.id = this.taskTempForm.userId = null
+                this.taskTempForm.userWeeks = [];
+                this.description = null;
             }
 
             // -- sch
