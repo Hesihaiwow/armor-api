@@ -2947,7 +2947,7 @@
             },
             createTaskClick() {
                 // 建个人任务
-                this.clearPrivateTask()
+                // this.clearPrivateTask()
                 this.createTaskVisible = true
             },
             //创建多人任务
@@ -3231,6 +3231,7 @@
                 });
             },
             acceptMultipleTask(id){
+                this.taskTempDetailVisible = false;
                 this.$confirm('此操作将审核该任务, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
