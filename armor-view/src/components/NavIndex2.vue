@@ -3013,9 +3013,12 @@
             },
             //清空新建个人任务
             clearPrivateTask(){
+                this.taskAble = false;
+                this.taskForm.taskType = 1;
+                this.taskForm.priority = 1;
+                this.taskForm.stageId = '';
               this.taskForm.taskName = this.taskForm.description = this.taskForm.beginTime = this.taskForm.endTime
-               = this.taskForm.priority = this.taskForm.projectId = this.taskForm.stageId = this.taskForm.taskType
-                = this.taskForm.taskHours = null
+                = this.taskForm.projectId = this.taskForm.taskHours = null
                 this.taskForm.tags = []
             },
             saveTaskInfo(formName) {
