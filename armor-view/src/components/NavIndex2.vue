@@ -1199,19 +1199,19 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="开始日期" prop="beginTime">
+                <el-form-item label="开始日期">
                     <el-date-picker
                             v-model="taskForm.beginTime"
                             type="date"
-                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="截止日期" prop="endTime">
+                <el-form-item label="截止日期">
                     <el-date-picker
                             v-model="taskForm.endTime"
                             type="date"
-                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -3018,31 +3018,40 @@
                 this.taskForm.priority = 1;
                 this.taskForm.stageId = '';
               this.taskForm.taskName = this.taskForm.description = this.taskForm.beginTime = this.taskForm.endTime
-                = this.taskForm.projectId = this.taskForm.taskHours = null
+                = this.taskForm.projectId = this.taskForm.taskHours = ''
                 this.taskForm.tags = []
             },
             saveTaskInfo(formName) {
                 let vm = this;
                 this.taskAble = true
-                this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
-                this.taskForm.beginTime = moment(this.taskForm.beginTime).toDate()
+
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let userId = helper.decodeToken().userId;
+                        this.taskForm.endTime = moment(this.taskForm.endTime).toDate()
+                        this.taskForm.beginTime = moment(this.taskForm.beginTime).toDate()
                         var param = this.taskForm;
                         param.taskName = param.taskName.trim();
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00')
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD HH:00:00')
+                        if ((moment(this.taskForm.endTime)).isBefore((moment(this.taskForm.beginTime)))){
+                            this.$message({showClose: true, message: '开始时间不能再截止时间后面', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
                         if (param.taskHours.length != parseFloat(param.taskHours).toString().length || parseFloat(param.taskHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (param.taskHours.trim() > 8 || param.taskHours.trim() < 0.1) {
                             this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (moment(param.endTime).millisecond() < moment(param.beginTime).millisecond() || moment(param.endTime).week() != moment(param.beginTime).week()) {
                             this.$message({showClose: true, message: '请检查日期，个人任务请勿跨周进行', type: 'warning'});
+                            this.taskAble = false;
                             return false;
                         }
                         var taskUsers = [{
@@ -3062,7 +3071,6 @@
                         });
                     } else {
                         this.taskAble = false
-                        return false;
                     }
                 }, err => {
                     this.taskAble = false
