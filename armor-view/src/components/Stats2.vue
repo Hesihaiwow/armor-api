@@ -1175,7 +1175,7 @@
                 signInDaterange:'',
                 signInData:[],
                 signInPage:{
-                    pageSize: 10,
+                    pageSize: 20,
                     total: 0,
                 },
                 showTotalEWrokTime: false,
