@@ -15,6 +15,11 @@ public class TaskTempResDTO {
     private Long id;
 
     /**
+     * 审核状态
+     */
+    private Integer reviewStatus;
+
+    /**
      * 任务
      */
     private Long taskId;
@@ -58,6 +63,14 @@ public class TaskTempResDTO {
      * 用户-周工作量
      */
     private List<UserWeekTempResDTO> userWeekTempList;
+
+    public Integer getReviewStatus() {
+        return reviewStatus;
+    }
+
+    public void setReviewStatus(Integer reviewStatus) {
+        this.reviewStatus = reviewStatus;
+    }
 
     public String getProjectName() {
         return projectName;
