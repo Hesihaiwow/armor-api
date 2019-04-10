@@ -15,6 +15,7 @@ import com.zhixinhuixue.armor.model.dto.request.TaskExpandReviewReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskExpandResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskExpandService;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskExpandStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Lang on 2017/12/7 0007.
@@ -57,6 +59,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
 
         TaskExpand taskExpand  = new TaskExpand();
         taskExpand.setTeId(snowFlakeIDHelper.nextId());
+        taskExpand.setCreateTime(new Date());
         taskExpand.setUserId(ZSYTokenRequestContext.get().getUserId());
         BeanUtils.copyProperties(expandReqDTO,taskExpand);
         taskExpand.setStatus(ZSYTaskExpandStatus.PENDING.getValue());
@@ -76,14 +79,14 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
 
     @Override
     public PageInfo<TaskExpandResDTO> getExpandList(TaskExpandListReqDTO reqDTO) {
-        PageHelper.startPage(reqDTO.getPageNum(), 5);
+
         User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
 
         Long userId = ZSYTokenRequestContext.get().getUserId();
         if(user.getUserRole() == ZSYUserRole.ADMINISTRATOR.getValue()){
             userId = null;
         }
-
+        PageHelper.startPage(reqDTO.getPageNum(), 5);
         Page<TaskExpandBO> expandList = taskExpandMapper.getExpandList(reqDTO.getStatus(),userId);
 
         Page<TaskExpandResDTO> resDTOS = new Page<>();
@@ -97,24 +100,40 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
         return new PageInfo<>(resDTOS);
     }
 
+    /**
+     * 管理员分页查看延长申请
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
     @Override
-    public List<TaskExpandResDTO> getExpandDoing(Integer status) {
+    public PageInfo<TaskExpandResDTO> getExpandPage(TaskExpandListReqDTO reqDTO) {
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
+
+        return null;
+    }
+
+    @Override
+    public PageInfo<TaskExpandResDTO> getExpandDoing(Integer status,Integer pageNum) {
             User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
-            List<TaskExpandBO> expandList = Lists.newArrayList();
+            PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE_WAIT);
+            Page<TaskExpandBO> expandList = new Page<>();
+//            List<TaskExpandBO> expandList = Lists.newArrayList();
             if(user.getUserRole() == ZSYUserRole.ADMINISTRATOR.getValue()){
                 expandList = taskExpandMapper.getExpandList(status,null);
             }else{
                 expandList = taskExpandMapper.getExpandList(status,ZSYTokenRequestContext.get().getUserId());
             }
 
-            List<TaskExpandResDTO> resDTOS =Lists.newArrayList();
+            Page<TaskExpandResDTO> resDTOS =new Page<>();
+            BeanUtils.copyProperties(expandList,resDTOS);
             expandList.forEach(taskExpandBO -> {
                 TaskExpandResDTO resDTO = new TaskExpandResDTO();
                 BeanUtils.copyProperties(taskExpandBO,resDTO);
                 resDTOS.add(resDTO);
             });
 
-            return resDTOS;
+            return new PageInfo<>(resDTOS);
     }
 
     @Override
@@ -181,5 +200,6 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
         taskExpandMapper.reviewStatus(id,ZSYTaskExpandStatus.REJECT.getValue());
         weekMapper.deleteByTaskId(id);
     }
+
 }
 

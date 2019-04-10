@@ -26,6 +26,11 @@ public class TaskExpand {
     private String reason;
 
     /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
      * 新的截止日期
      */
     private Date endTime;
@@ -34,6 +39,14 @@ public class TaskExpand {
      * 0审核中，1审核通过,2审核驳回
      */
     private Integer status;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public Long getTeId() {
         return teId;

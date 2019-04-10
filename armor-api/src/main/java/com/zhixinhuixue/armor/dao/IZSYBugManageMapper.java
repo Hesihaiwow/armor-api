@@ -85,7 +85,7 @@ public interface IZSYBugManageMapper {
      * @param type
      * @return
      */
-    Integer selectCountByType(@Param("type") int type);
+    Integer selectCountByType(@Param("type") int type,@Param("bugListReqDTO")BugListReqDTO bugListReqDTO);
 
     /**
      * 查询总数

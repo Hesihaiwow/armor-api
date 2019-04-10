@@ -83,6 +83,12 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().data(taskService.getAuditSuccessAll(pageNum)).build();
     }
 
+    @ApiOperation("获取所有待审核的任务")
+    @GetMapping("/pending/all/{pageNum}")
+    public String getPendingTaskPage(@PathVariable("pageNum")Integer pageNum){
+        return ZSYResult.success().data(taskService.getPendingTaskPage(pageNum)).build();
+    }
+
 
     @ApiOperation("获取所有待审核的任务")
     @GetMapping(value = "/pending/all")
@@ -305,6 +311,12 @@ public class ZSYTaskController extends ZSYController {
     public String getMyTaskByStage(@PathVariable("stageId") Long stageId){
         List<TaskListResDTO> list = taskService.getMyTaskByStage(stageId);
         return ZSYResult.success().data(list).build();
+    }
+
+    @ApiOperation("所有进行中的多人任务")
+    @GetMapping("/multiple/all")
+    public String getAllMultipleTask(){
+        return ZSYResult.success().data(taskService.getAllMultipleTask()).build();
     }
     // -- sch
 }

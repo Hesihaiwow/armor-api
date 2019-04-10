@@ -108,7 +108,7 @@ public interface IZSYTaskMapper {
      * @param userId
      * @return
      */
-    Page<TaskDetailBO> selectAllNotClosed(Long userId);
+    List<TaskDetailBO> selectAllNotClosed(Long userId);
 
 
     /**
@@ -233,4 +233,26 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<Task> selectMyRunningTask(@Param("userId")Long userId);
+
+    /**
+     * 分页查询已评价的任务
+     * @param userId
+     * @return
+     */
+    Page<TaskDetailBO> selectCommented(@Param("userId") Long userId);
+
+    /**
+     * 获取所有待审核的任务
+     * @author sch
+     * @param departmentId
+     * @return
+     */
+    Page<TaskBO> selectPendingTaskPage(@Param("departmentId")Long departmentId);
+
+    /**
+     * 所有进行中的多人任务
+     * @author sch
+     * @return
+     */
+    List<Task> selectAllTaskBase();
 }

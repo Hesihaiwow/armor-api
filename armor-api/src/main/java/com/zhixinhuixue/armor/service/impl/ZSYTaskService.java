@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.swing.plaf.synth.SynthEditorPaneUI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -1103,6 +1104,28 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     /**
+     * 获取所有待审核的任务
+     * @author sch
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public PageInfo<TaskResDTO> getPendingTaskPage(Integer pageNum) {
+        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE_WAIT);
+        Page<TaskBO> taskBOS = taskMapper.selectPendingTaskPage(ZSYTokenRequestContext.get().getDepartmentId());
+        Page<TaskResDTO> taskResDTOPage = new Page<>();
+        BeanUtils.copyProperties(taskBOS,taskResDTOPage);
+        if (!CollectionUtils.isEmpty(taskBOS)){
+            taskBOS.stream().forEach(taskBO -> {
+                TaskResDTO taskResDTO = new TaskResDTO();
+                BeanUtils.copyProperties(taskBO,taskResDTO);
+                taskResDTOPage.add(taskResDTO);
+            });
+        }
+        return new PageInfo<>(taskResDTOPage);
+    }
+
+    /**
      * 获取所有审核通过的任务
      *
      * @return
@@ -1142,8 +1165,10 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public ZSYResult<List<TaskDetailBO>> getAllWaitComment(Long userId) {
+        long time1 = System.currentTimeMillis();
         List<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
-
+        long time2 = System.currentTimeMillis();
+        System.out.println("查询待评价任务耗时: "+(time2-time1)+"ms");
         List<TaskDetailBO> waitCommentList = new ArrayList<>();
         for (TaskDetailBO taskBO : taskBOS) {
             // 只要有1个评价就说明该任务已经评价过了
@@ -1184,7 +1209,10 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public ZSYResult<List<TaskDetailBO>> getCommented(Long userId,Integer page) {
         PageHelper.startPage(page, ZSYConstants.PAGE_SIZE_WAIT);
-        Page<TaskDetailBO> taskBOS = taskMapper.selectAllNotClosed(userId);
+        long time1 = System.currentTimeMillis();
+        Page<TaskDetailBO> taskBOS = taskMapper.selectCommented(userId);
+        long time2 = System.currentTimeMillis();
+        System.out.println("查询已评价任务耗时: "+(time2-time1)+"ms");
         Page<TaskDetailBO> commentEndList = new Page<>();
         BeanUtils.copyProperties(taskBOS,commentEndList);
         for (TaskDetailBO taskBO : taskBOS) {
@@ -1414,7 +1442,7 @@ public class ZSYTaskService implements IZSYTaskService {
 
     // sch --
     //阶段变化,新增通知
-    private void stageChange(Task originTask,Long oldStageId,Long newStageId){
+    public void stageChange(Task originTask,Long oldStageId,Long newStageId){
         Stage oldStage = stageMapper.selectById(oldStageId);
         Stage newStage = stageMapper.selectById(newStageId);
         //任务参与者,包括负责人和开发人员
@@ -1445,7 +1473,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //暂停或启动,新增通知
-    private void pauseOrStart(Integer status,Long taskId,String desc){
+    public void pauseOrStart(Integer status,Long taskId,String desc){
         Task task = taskMapper.selectByPrimaryKey(taskId);
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
@@ -1489,7 +1517,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //主任务完成,新增通知
-    private void missionCompleted(Long taskId){
+    public void missionCompleted(Long taskId){
         Task task = taskMapper.selectByPrimaryKey(taskId);
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
@@ -1518,7 +1546,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //任务修改了,新增通知
-    private void missionModified(TaskDetailBO taskTemp,TaskReqDTO taskReqDTO){
+    public void missionModified(TaskDetailBO taskTemp, TaskReqDTO taskReqDTO){
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
         //1.添加负责人
@@ -1645,7 +1673,7 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     //多人任务完成子任务,新增通知
-    private void sonMissionCompleted(TaskCompleteReqDTO taskCompleteReqDTO){
+    public void sonMissionCompleted(TaskCompleteReqDTO taskCompleteReqDTO){
         Task task = taskMapper.selectByPrimaryKey(taskCompleteReqDTO.getTaskId());
         //任务参与者,包括负责人和开发人员
         Set<Long> joiners = new HashSet<>();
@@ -1782,6 +1810,25 @@ public class ZSYTaskService implements IZSYTaskService {
 
         });
         return list;
+    }
+
+    /**
+     * 所有进行中的多人任务
+     * @return
+     */
+    @Override
+    public List<TaskBaseResDTO> getAllMultipleTask() {
+        List<Task> tasks = taskMapper.selectAllTaskBase();
+        List<TaskBaseResDTO> taskBaseResDTOList = new ArrayList<>();
+        BeanUtils.copyProperties(tasks,taskBaseResDTOList);
+        if (!CollectionUtils.isEmpty(tasks)){
+            tasks.stream().forEach(task->{
+                TaskBaseResDTO taskBaseResDTO = new TaskBaseResDTO();
+                BeanUtils.copyProperties(task,taskBaseResDTO);
+                taskBaseResDTOList.add(taskBaseResDTO);
+            });
+        }
+        return taskBaseResDTOList;
     }
 
     /**

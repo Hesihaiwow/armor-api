@@ -76,6 +76,10 @@
     delete from task_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
+    <delete id="deleteByTaskIdAndUserId">
+        delete from task_user where task_id = #{taskId} and user_id = #{userId}
+    </delete>
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskUser">
    insert into task_user (id, task_id,
       user_id, task_hours, begin_time,

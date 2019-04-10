@@ -46,7 +46,7 @@
                             {{(bugReqDTO.pageNum-1)*10 + scope.$index + 1}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="origin" label="反馈人" align="center"></el-table-column>
+                    <el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>
                     <el-table-column prop="createTime" label="反馈日期"  width="130">
                         <template scope="scope">
                             <span>{{scope.row.discoverTime | formatDate1}}</span>
@@ -58,10 +58,10 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="demandSystem" label="反馈系统"  width="130"></el-table-column>
-                    <el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>
-                    <el-table-column prop="description" label="问题描述" align="center" width="200"></el-table-column>
-                    <el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>
-                    <el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>
+                    <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
+                    <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
+                    <!--<el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>-->
+                    <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
                     <el-table-column prop="type" label="问题类型" align="center" width="110">
                         <template scope="scope">
                             <span v-if="scope.row.type == 0">bug</span>
@@ -75,7 +75,7 @@
                             <span v-if="scope.row.isSolved == 1">已解决</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>
+                    <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
                     <el-table-column label="操作" width="100" fixed="right">
                         <template scope="scope">
                             <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
@@ -808,8 +808,28 @@
             :close-on-press-escape="false"
             :visible.sync="bugDetailVisible">
             <el-form>
+                <el-form-item class="task-form" label="反馈人：">{{bugDetailForm.origin}}</el-form-item>
+                <el-form-item class="task-form" label="反馈日期：">{{bugDetailForm.discoverTime | formatDate1}}</el-form-item>
+                <el-form-item class="task-form" label="解决日期：">{{bugDetailForm.processTime | formatDate1}}</el-form-item>
                 <el-form-item class="task-form" label="反馈系统：">{{bugDetailForm.demandSystem}}</el-form-item>
+                <el-form-item class="task-form" label="账号信息：">{{bugDetailForm.accountInfo}}</el-form-item>
                 <el-form-item class="task-form" label="问题描述：">{{bugDetailForm.description}}</el-form-item>
+                <el-form-item class="task-form" label="问题类型：">
+                    <template scope="scope">
+                        <span v-if="bugDetailForm.type == 0">bug</span>
+                        <span v-if="bugDetailForm.type == 1">优化</span>
+                        <span v-if="bugDetailForm.type == 2">协助</span>
+                    </template>
+                </el-form-item>
+                <el-form-item class="task-form" label="是否解决：">
+                    <template scope="scope">
+                        <span v-if="bugDetailForm.isSolved == 0">未解决</span>
+                        <span v-if="bugDetailForm.isSolved == 1">已解决</span>
+                    </template>
+                </el-form-item>
+                <el-form-item class="task-form" label="备注：">
+                    {{bugDetailForm.remark}}
+                </el-form-item>
                 <div class="ctpc-member-list clearfix"  v-for="(item,index) in bugDetailForm.bugUsers">
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
@@ -1155,7 +1175,7 @@
                 signInDaterange:'',
                 signInData:[],
                 signInPage:{
-                    pageSize: 10,
+                    pageSize: 20,
                     total: 0,
                 },
                 showTotalEWrokTime: false,
@@ -1357,6 +1377,7 @@
                     this.bugForm.createTime = this.bugForm.processTime = '';
                     this.createBugSolvingVisible = false
                     this.bugUsers = [];
+                    this.fetchDiffTypeBugNum();
                     this.getBugList();
                     this.isSaving = false
                 })
@@ -1384,6 +1405,7 @@
                     this.updateBugSolvingVisible = false
                     this.bugUsers = [];
                     this.getBugList();
+                    this.fetchDiffTypeBugNum();
                 })
             },
 
@@ -2249,7 +2271,7 @@
             },
             //查询各个分类bug数量
             fetchDiffTypeBugNum(){
-                Http.zsyGetHttp('/bug/num/type',{},(res)=>{
+                Http.zsyPostHttp('/bug/num/type',this.bugReqDTO,(res)=>{
                     if (res){
                         this.BugNumData = res.data;
                     }
@@ -2263,6 +2285,7 @@
                       this.bugFormPage.total = res.data.total
                   }
               })
+                this.fetchDiffTypeBugNum()
             },
 
             closeDialog(){
@@ -2357,8 +2380,10 @@
                 date2.setDate(date1.getDate() - 7);
                 var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
                 var time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
-                this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
-                this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                // this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
+                // this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
+                this.signInReqDTO.beginTime = time2 + ' 00:00:00';
+                this.signInReqDTO.endTime = time3 + ' 23:59:59';
 
             },
             selectSignInData(){
@@ -2767,6 +2792,10 @@
     .steps-body {
         display: flex;
         flex-direction: row;
+    }
+
+    .task-form {
+        margin-bottom: 0;
     }
 
 

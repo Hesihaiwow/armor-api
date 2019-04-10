@@ -84,10 +84,15 @@ public class ZSYTaskExpandController extends ZSYController {
      * @return
      */
     @ApiOperation("获取进行中延长任务时间列表")
-    @GetMapping(value = "/doing/{status}")
-    public String getExpandDoing(@PathVariable Integer status){
-        return ZSYResult.success().data(expandService.getExpandDoing(status)).build();
+    @GetMapping(value = "/doing/{status}/{pageNum}")
+    public String getExpandDoing(@PathVariable("status") Integer status,@PathVariable("pageNum") Integer pageNum){
+        return ZSYResult.success().data(expandService.getExpandDoing(status,pageNum)).build();
     }
 
+    @ApiOperation("管理员分页查看延长申请")
+    @PostMapping("/page")
+    public String getExpandPage(@RequestBody TaskExpandListReqDTO reqDTO){
+        return ZSYResult.success().data(expandService.getExpandPage(reqDTO)).build();
+    }
 
 }

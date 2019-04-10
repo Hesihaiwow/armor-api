@@ -34,4 +34,13 @@ public interface IZSYUserWeekMapper {
     UserWeek getSameWeek(@Param("taskId") Long taskId, @Param("userId") Long userId,@Param("weekNumber") int weekNumber,@Param("year") int year);
 
     int updateHours(@Param("id") Long id, @Param("hours") Double hours);
+
+    /**
+     * 删除userWeek
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    int deleteByTaskIdAndUserId(@Param("taskId") Long taskId, @Param("userId") Long userId);
 }

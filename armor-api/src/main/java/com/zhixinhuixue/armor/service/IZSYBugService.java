@@ -82,5 +82,5 @@ public interface IZSYBugService {
      * @author sch
      * @return
      */
-    OnlineBugNumResDTO getDiffTypeBugNum();
+    OnlineBugNumResDTO getDiffTypeBugNum(BugListReqDTO bugListReqDTO);
 }

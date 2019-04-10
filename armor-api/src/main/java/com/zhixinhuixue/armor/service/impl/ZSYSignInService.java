@@ -1946,6 +1946,10 @@ public class ZSYSignInService implements IZSYSignInService {
                 weekdays.add(weekday);
                 headers.add(sdf.format(date));
             }
+            headers.add("加班总时长");
+            headers.add("加班天数");
+            weekdays.add("");
+            weekdays.add("");
 
             //设置文件名
             String fileName =fileNameSdf.format(dates.get(0))+ "考勤记录" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
@@ -2060,7 +2064,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 HSSFCellStyle style3 = workbook.createCellStyle();
                 //设置样式
                 style3.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                style3.setFillForegroundColor(HSSFColor.HSSFColorPredefined.CORNFLOWER_BLUE.getIndex());
+                style3.setFillForegroundColor(HSSFColor.HSSFColorPredefined.LIGHT_CORNFLOWER_BLUE.getIndex());
                 style3.setAlignment(HorizontalAlignment.RIGHT);
                 //创建字体
                 HSSFFont font3 = workbook.createFont();
@@ -2147,6 +2151,8 @@ public class ZSYSignInService implements IZSYSignInService {
                     row5Cell1.setCellValue("");
                     row5Cell1.setCellStyle(style7);
 
+                    double totalEWorkHours = 0;
+                    int eWorkDays = 0;
                     for (int i = 0;i < dates.size();i ++){
                         HSSFCell row1Celli = row1.createCell(i+2);
                         HSSFCell row2Celli = row2.createCell(i+2);
@@ -2174,6 +2180,10 @@ public class ZSYSignInService implements IZSYSignInService {
                                 afterPoint = 1.0;
                             }
                             eWorkHour = hour+afterPoint;
+                            totalEWorkHours = totalEWorkHours + eWorkHour;
+                            if (eWorkHour>=0.5){
+                                eWorkDays += 1;
+                            }
                             row3Celli.setCellStyle(style6);
                             row4Celli.setCellValue(eWorkHour);
                             row4Celli.setCellStyle(style6);
@@ -2230,6 +2240,10 @@ public class ZSYSignInService implements IZSYSignInService {
                             }
                         }
                     }
+                    HSSFCell totalEWorkHoursRow = row4.createCell(dates.size()+2);
+                    HSSFCell totalEWorkDaysRow = row4.createCell(dates.size()+3);
+                    totalEWorkHoursRow.setCellValue(totalEWorkHours);
+                    totalEWorkDaysRow.setCellValue(eWorkDays);
                     num += 5;
                 }
                 workbook.write(os);

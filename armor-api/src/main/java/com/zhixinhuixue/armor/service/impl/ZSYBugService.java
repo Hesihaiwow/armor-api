@@ -480,11 +480,11 @@ public class ZSYBugService implements IZSYBugService {
      * @return
      */
     @Override
-    public OnlineBugNumResDTO getDiffTypeBugNum() {
-        Integer optimizationNum = bugManageMapper.selectCountByType(1);
-        Integer assistanceNum = bugManageMapper.selectCountByType(2);
+    public OnlineBugNumResDTO getDiffTypeBugNum(BugListReqDTO bugListReqDTO) {
+        Integer optimizationNum = bugManageMapper.selectCountByType(1,bugListReqDTO);
+        Integer assistanceNum = bugManageMapper.selectCountByType(2,bugListReqDTO);
+        Integer bugNum = bugManageMapper.selectCountByType(0,bugListReqDTO);
         Integer totalNum = bugManageMapper.selectCountTotal();
-        Integer bugNum = totalNum - optimizationNum - assistanceNum;
         OnlineBugNumResDTO resDTO = new OnlineBugNumResDTO();
         resDTO.setAssistanceNum(assistanceNum);
         resDTO.setBugNum(bugNum);
