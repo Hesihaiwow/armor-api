@@ -47,7 +47,7 @@ public interface IZSYTaskTempService {
 
     /**
      * 管理员审核任务
-     * @param id
+     * @param
      */
-    void accessTaskTemp(Long id);
+    void accessTaskTemp(EditTaskTempReqDTO editTaskTempReqDTO);
 }
