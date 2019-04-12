@@ -26,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +52,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
     @Autowired
     private IZSYTaskLogMapper taskLogMapper;
+
+    @Autowired
+    private IZSYUserMapper userMapper;
 
     @Autowired
     private ZSYTaskService taskService;
@@ -207,14 +207,16 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 List<UserWeekTempResDTO> userWeekTempResDTOList = new ArrayList<>();
                 BeanUtils.copyProperties(userWeekTempList,userWeekTempResDTOList);
                 if (!CollectionUtils.isEmpty(userWeekTempList)){
-                    userWeekTempList.stream().forEach(userWeekTemp -> {
+                    for (UserWeekTemp userWeekTemp : userWeekTempList) {
                         UserWeekTempResDTO userWeekTempResDTO = new UserWeekTempResDTO();
                         userWeekTempResDTO.setId(userWeekTemp.getId());
                         userWeekTempResDTO.setHours(userWeekTemp.getHours());
                         userWeekTempResDTO.setYear(userWeekTemp.getYear());
                         userWeekTempResDTO.setWeekNumber(userWeekTemp.getWeekNumber());
                         userWeekTempResDTOList.add(userWeekTempResDTO);
-                    });
+                    }
+                    userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+
                 }
                 taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
                 taskTempResDTOPage.add(taskTempResDTO);
@@ -243,14 +245,16 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 List<UserWeekTempResDTO> userWeekTempResDTOList = new ArrayList<>();
                 BeanUtils.copyProperties(userWeekTempList,userWeekTempResDTOList);
                 if (!CollectionUtils.isEmpty(userWeekTempList)){
-                    userWeekTempList.stream().forEach(userWeekTemp -> {
+                    for (UserWeekTemp userWeekTemp : userWeekTempList) {
                         UserWeekTempResDTO userWeekTempResDTO = new UserWeekTempResDTO();
                         userWeekTempResDTO.setId(userWeekTemp.getId());
                         userWeekTempResDTO.setHours(userWeekTemp.getHours());
                         userWeekTempResDTO.setYear(userWeekTemp.getYear());
                         userWeekTempResDTO.setWeekNumber(userWeekTemp.getWeekNumber());
                         userWeekTempResDTOList.add(userWeekTempResDTO);
-                    });
+                    }
+                    userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+
                 }
                 taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
                 taskTempResDTOPage.add(taskTempResDTO);
@@ -261,16 +265,47 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
     /**
      * 管理员审核任务
-     * @param id
+     * @param editTaskTempReqDTO
      */
     @Override
-    public void accessTaskTemp(Long id) {
-        TaskTemp existTaskTemp = taskTempMapper.selectById(id);
+    public void accessTaskTemp(EditTaskTempReqDTO editTaskTempReqDTO) {
+        Long taskId = editTaskTempReqDTO.getTaskId();
+        Long userId = editTaskTempReqDTO.getUserId();
+        TaskTemp existTaskTemp = taskTempMapper.selectById(editTaskTempReqDTO.getId());
         if (existTaskTemp == null){
             throw new ZSYServiceException("当前任务(临时)不存在");
         }
-        Long taskId = existTaskTemp.getTaskId();
-        Long userId = existTaskTemp.getUserId();
+        BeanUtils.copyProperties(editTaskTempReqDTO,existTaskTemp);
+        if (taskTempMapper.updateTaskTemp(existTaskTemp) == 0){
+            throw new ZSYServiceException("修改任务(临时)失败");
+        }
+
+        List<UserWeekReqDTO> userWeeks = editTaskTempReqDTO.getUserWeeks();
+        List<UserWeekTemp> userWeekTempList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userWeeks)){
+            userWeeks.stream().forEach(week ->{
+                UserWeekTemp userWeekTemp = new UserWeekTemp();
+                userWeekTemp.setId(snowFlakeIDHelper.nextId());
+                userWeekTemp.setCreateTime(new Date());
+                userWeekTemp.setStatus(1);
+                userWeekTemp.setHours(BigDecimal.valueOf(week.getHours()));
+                userWeekTemp.setTaskId(taskId);
+                userWeekTemp.setUserId(userId);
+                userWeekTemp.setWeekNumber(week.getWeekNumber());
+                userWeekTemp.setYear(week.getYear());
+                userWeekTempList.add(userWeekTemp);
+            });
+
+        }
+        if (!CollectionUtils.isEmpty(userWeekTempList)){
+            //删除原有的userWeekTemp
+            taskTempMapper.deleteUserWeekTempByUserAndTask(userId,taskId);
+            if (taskTempMapper.insertUserWeekTempBatch(userWeekTempList) == 0){
+                throw new ZSYServiceException("批量修改周工作量(临时)失败");
+            }
+        }
+
+        User user = userMapper.selectById(userId);
         TaskDetailBO taskTemp = taskMapper.selectTaskDetailByTaskId(taskId);
         if (taskTemp == null) {
             throw new ZSYServiceException("无法找到任务,id:" + taskId);
@@ -308,10 +343,10 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
             List<UserWeekTemp> userWeekTemps = taskTempMapper.selectUserWeekTempByUserAndTask(userId, taskId);
             List<UserWeek> userWeekList = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(userWeekTemps)){
-                List<Long> uwtIds = userWeekTemps.stream().map(UserWeekTemp::getId).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(userWeekTempList)){
+                List<Long> uwtIds = userWeekTempList.stream().map(UserWeekTemp::getId).collect(Collectors.toList());
                 taskTempMapper.checkUserWeekTempBatch(uwtIds);
-                userWeekTemps.stream().forEach(userWeekTemp -> {
+                userWeekTempList.stream().forEach(userWeekTemp -> {
                     UserWeek userWeek = new UserWeek();
                     userWeek.setId(snowFlakeIDHelper.nextId());
                     userWeek.setUserId(userId);
@@ -328,7 +363,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 }
             }
 
-            taskLogMapper.insert(taskService.buildLog(ZSYTokenRequestContext.get().getUserName() + "修改了任务", taskTemp.getDescription(), taskId));
+            taskLogMapper.insert(taskService.buildLog(ZSYTokenRequestContext.get().getUserName() + "通过了"+user.getName()+"的多人任务审核", existTaskTemp.getDescription(), taskId));
 
             TaskReqDTO taskReqDTO = new TaskReqDTO();
             taskReqDTO.setProjectId(taskTemp.getProjectId());

@@ -57,9 +57,9 @@ public class ZSYTaskTempController {
     }
 
     @ApiOperation("审核通过")
-    @PutMapping("/access/{id}")
-    public String accessTaskTemp(@PathVariable("id")Long id){
-        taskTempService.accessTaskTemp(id);
+    @PutMapping("/access")
+    public String accessTaskTemp(@Valid @RequestBody EditTaskTempReqDTO editTaskTempReqDTO){
+        taskTempService.accessTaskTemp(editTaskTempReqDTO);
         return ZSYResult.success().build();
     }
 }
