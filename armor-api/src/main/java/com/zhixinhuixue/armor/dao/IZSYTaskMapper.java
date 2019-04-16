@@ -255,4 +255,12 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<Task> selectAllTaskBase();
+
+    /**
+     * 根据阶段查询可用的多人任务
+     * @param stageId
+     * @param departmentId
+     * @return
+     */
+    List<TaskListBO> selectTaskInfoByStageId(@Param("stageId")Long stageId, @Param("departmentId")Long departmentId);
 }

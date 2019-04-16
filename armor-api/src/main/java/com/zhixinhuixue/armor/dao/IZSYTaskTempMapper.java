@@ -95,4 +95,17 @@ public interface IZSYTaskTempMapper {
      * @return
      */
     int checkUserWeekTempBatch(List<Long> uwtIds);
+
+    /**
+     * 个人查看待审核任务
+     * @return
+     */
+    List<TaskTempBO> selectPersonalTaskTempList(@Param("userId") Long userId);
+
+    /**
+     * 根据主键查看任务
+     * @param ttId
+     * @return
+     */
+    TaskTempBO selectTaskTempBOById(@Param("ttId") Long ttId);
 }

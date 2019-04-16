@@ -51,9 +51,22 @@ public class TaskResDTO {
     private boolean isExpand;
 
     /**
+     * 临时任务id
+     */
+    private Long ttId;
+
+    /**
      * 任务用户
      */
     private List<TaskUserResDTO> taskUsers;
+
+    public Long getTtId() {
+        return ttId;
+    }
+
+    public void setTtId(Long ttId) {
+        this.ttId = ttId;
+    }
 
     public Long getId() {
         return id;

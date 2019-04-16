@@ -50,6 +50,12 @@ public class ZSYTaskTempController {
         return ZSYResult.success().data(taskTempService.getPersonalTaskTempPage(pageNum,reviewStatus)).build();
     }
 
+    @ApiOperation("个人查看待审核任务")
+    @GetMapping("personal/pending")
+    public String getPersonalTaskTempList(){
+        return ZSYResult.success().data(taskTempService.getPersonalTaskTempList()).build();
+    }
+
     @ApiOperation("管理员分页查看任务")
     @GetMapping("/page/{pageNum}/{reviewStatus}")
     public String getTaskTempPage(@PathVariable("pageNum")Integer pageNum,@PathVariable("reviewStatus")Integer reviewStatus){
@@ -61,5 +67,17 @@ public class ZSYTaskTempController {
     public String accessTaskTemp(@Valid @RequestBody EditTaskTempReqDTO editTaskTempReqDTO){
         taskTempService.accessTaskTemp(editTaskTempReqDTO);
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("查看任务")
+    @GetMapping("/personal/{ttId}")
+    public String getTaskTempById(@PathVariable("ttId")Long ttId){
+        return ZSYResult.success().data(taskTempService.getTaskTempById(ttId)).build();
+    }
+
+    @ApiOperation("根据阶段查询可用的多人任务")
+    @GetMapping("/task/{stageId}")
+    public String getMultipleTaskByStage(@PathVariable("stageId")Long stageId){
+        return ZSYResult.success().data(taskTempService.getMultipleTaskByStage(stageId)).build();
     }
 }
