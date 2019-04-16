@@ -3,20 +3,22 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.bo.TaskTempBO;
 import com.zhixinhuixue.armor.model.bo.TaskUserBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
-import com.zhixinhuixue.armor.model.dto.response.TaskTempResDTO;
-import com.zhixinhuixue.armor.model.dto.response.UserWeekTempResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.service.IZSYTaskTempService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.enums.ZSYTagColor;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskType;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +60,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
     @Autowired
     private ZSYTaskService taskService;
+
+    @Autowired
+    private IZSYStageMapper stageMapper;
 
     /**
      * 新增任务(临时)
@@ -223,6 +228,105 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             });
         }
         return new PageInfo<>(taskTempResDTOPage);
+    }
+
+    /**
+     * 个人查看待审核任务
+     * @return
+     */
+    @Override
+    public List<TaskResDTO> getPersonalTaskTempList() {
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        List<TaskTempBO> taskTempBOList = taskTempMapper.selectPersonalTaskTempList(userId);
+        List<TaskResDTO> taskResDTOList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskTempBOList)){
+            taskTempBOList.stream().forEach(taskTempBO -> {
+                TaskResDTO taskResDTO = new TaskResDTO();
+                taskResDTO.setTtId(taskTempBO.getId());
+                taskResDTO.setExpand(false);
+                taskResDTO.setAvatarUrl(taskTempBO.getAvatarUrl());
+                taskResDTO.setCreateBy(taskTempBO.getUserId());
+                taskResDTO.setCreateTime(taskTempBO.getCreateTime());
+                taskResDTO.setDescription(taskTempBO.getDescription());
+                taskResDTO.setEndTime(taskTempBO.getEndTime());
+                taskResDTO.setId(taskTempBO.getTaskId());
+                taskResDTO.setName(taskTempBO.getTaskName());
+                taskResDTO.setPriority(taskTempBO.getPriority());
+                taskResDTO.setProjectId(taskTempBO.getProjectId());
+                taskResDTO.setProjectImage(taskTempBO.getProjectImage());
+                taskResDTO.setProjectName(taskTempBO.getProjectName());
+                taskResDTO.setReviewStatus(1);
+                taskResDTO.setStatus(1);
+                taskResDTO.setType(2);
+                taskResDTO.setUserName(taskTempBO.getUserName());
+
+                List<TaskUserResDTO> taskUserResDTOS = Lists.newArrayList();
+                TaskUserResDTO taskUserResDTO = new TaskUserResDTO();
+                taskUserResDTO.setBeginTime(taskTempBO.getBeginTime());
+                taskUserResDTO.setEndTime(taskTempBO.getEndTime());
+                taskUserResDTO.setCreateTime(taskTempBO.getCreateTime());
+                taskUserResDTO.setDescription(taskTempBO.getDescription());
+                taskUserResDTO.setStatus(1);
+                taskUserResDTO.setTaskId(taskTempBO.getTaskId());
+                taskUserResDTO.setUserId(taskTempBO.getUserId());
+                taskUserResDTO.setTaskHours(taskTempBO.getWorkHours().doubleValue());
+                taskUserResDTOS.add(taskUserResDTO);
+
+                taskResDTO.setTaskUsers(taskUserResDTOS);
+
+                taskResDTOList.add(taskResDTO);
+            });
+        }
+        return taskResDTOList;
+    }
+
+    /**
+     * 根据主键查看任务
+     * @param ttId
+     * @return
+     */
+    @Override
+    public TaskTempResDTO getTaskTempById(Long ttId) {
+        TaskTempBO taskTempBO = taskTempMapper.selectTaskTempBOById(ttId);
+        TaskTempResDTO taskTempResDTO = new TaskTempResDTO();
+        BeanUtils.copyProperties(taskTempBO,taskTempResDTO);
+        List<UserWeekTemp> userWeekTempList = taskTempBO.getUserWeekTempList();
+        List<UserWeekTempResDTO> userWeekTempResDTOList = new ArrayList<>();
+        BeanUtils.copyProperties(userWeekTempList,userWeekTempResDTOList);
+        if (!CollectionUtils.isEmpty(userWeekTempList)){
+            for (UserWeekTemp userWeekTemp : userWeekTempList) {
+                UserWeekTempResDTO userWeekTempResDTO = new UserWeekTempResDTO();
+                userWeekTempResDTO.setId(userWeekTemp.getId());
+                userWeekTempResDTO.setHours(userWeekTemp.getHours());
+                userWeekTempResDTO.setYear(userWeekTemp.getYear());
+                userWeekTempResDTO.setWeekNumber(userWeekTemp.getWeekNumber());
+                userWeekTempResDTOList.add(userWeekTempResDTO);
+            }
+            userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+
+        }
+        taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
+        return taskTempResDTO;
+    }
+
+    /**
+     * 根据阶段查询可用的多人任务
+     * @param stageId
+     * @return
+     */
+    @Override
+    public List<TaskBaseResDTO> getMultipleTaskByStage(Long stageId) {
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskInfoByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+
+        List<TaskBaseResDTO> list = new ArrayList<>();
+        BeanUtils.copyProperties(taskListBOS, list);
+        taskListBOS.stream().forEach(taskListBO -> {
+            TaskBaseResDTO taskBaseResDTO = new TaskBaseResDTO();
+            taskBaseResDTO.setId(taskListBO.getId());
+            taskBaseResDTO.setName(taskListBO.getName());
+            list.add(taskBaseResDTO);
+        });
+        return list;
     }
 
     /**

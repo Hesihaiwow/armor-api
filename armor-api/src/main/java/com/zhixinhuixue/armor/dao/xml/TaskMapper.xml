@@ -571,5 +571,19 @@
     <select id="selectAllTaskBase" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `is_delete` = 0 order by create_time desc
     </select>
+
+    <!--根据阶段查询可用的多人任务-->
+    <select id="selectTaskInfoByStageId" resultMap="PageResultMap">
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
+        left join project t4 on t1.project_id = t4.id
+        left JOIN stage t5 on t1.stage_id = t5.id
+        left join `user` t6 on t1.create_by = t6.id
+        left join department t7 on t6.department_id = t7.id
+        where t1.review_status = 3 and t1.is_delete = 0
+        and t1.`type` = 2 and t1.stage_id = #{stageId}
+        and t1.status = 1
+        and t7.parent_id =#{departmentId}
+        order by t1.sort ASC
+    </select>
     <!-- sch -->
 </mapper>

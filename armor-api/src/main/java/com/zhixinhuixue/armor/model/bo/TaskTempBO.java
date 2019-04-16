@@ -14,8 +14,10 @@ public class TaskTempBO extends TaskTemp {
      *任务
      */
     private String taskName;
+    private Long projectId;
     private String projectName;
     private String projectImage;
+    private Integer priority;
 
     /**
      * 用户
@@ -28,6 +30,22 @@ public class TaskTempBO extends TaskTemp {
      * @return
      */
     private List<UserWeekTemp> userWeekTempList;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
 
     public String getProjectName() {
         return projectName;

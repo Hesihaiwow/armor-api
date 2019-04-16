@@ -3,7 +3,9 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.AddTaskTempReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTaskTempReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskTempResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
+
+import java.util.List;
 
 /**
  * @author sch
@@ -50,4 +52,25 @@ public interface IZSYTaskTempService {
      * @param
      */
     void accessTaskTemp(EditTaskTempReqDTO editTaskTempReqDTO);
+
+    /**
+     * 个人查看待审核任务
+     * @return
+     */
+    List<TaskResDTO> getPersonalTaskTempList();
+
+    /**
+     * 根据主键查看任务
+     * @param ttId
+     * @return
+     */
+    TaskTempResDTO getTaskTempById(Long ttId);
+
+
+    /**
+     * 根据阶段查询可用的多人任务
+     * @param stageId
+     * @return
+     */
+    List<TaskBaseResDTO> getMultipleTaskByStage(Long stageId);
 }

@@ -15,23 +15,23 @@
                        type="primary" @click="excelSignInVisible=true"
                        style="margin-left: 20px">导出考勤记录</el-button>
         </div>
-        <div class="my-integral-con" v-show="userRole>0 && userRole < 3">
-            <div><p class="mic-title">我的积分</p>
-                <div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"
-                     @click="integralBasicVisible=true">
-                    <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分
-                </div>
-            </div>
-            <div class="mic-main clearfix">
-                <div class="mic-item fl" v-for="(item,key) in integralItem" style="margin-left: 75px;">
-                    <div class="mic-item-title"><img :src="`${require(`../assets/img/icon_${key+1}.png`)}`"
-                                                     class="icon-score">{{item.label}}
-                    </div>
-                    <div class="mic-item-title" style="font-size: 12px">{{item.time}}</div>
-                    <div class="mic-item-integral">{{item.score}}</div>
-                </div>
-            </div>
-        </div>
+        <!--<div class="my-integral-con" v-show="userRole>0 && userRole < 3">-->
+            <!--<div><p class="mic-title">我的积分</p>-->
+                <!--<div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"-->
+                     <!--@click="integralBasicVisible=true">-->
+                    <!--<span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="mic-main clearfix">-->
+                <!--<div class="mic-item fl" v-for="(item,key) in integralItem" style="margin-left: 75px;">-->
+                    <!--<div class="mic-item-title"><img :src="`${require(`../assets/img/icon_${key+1}.png`)}`"-->
+                                                     <!--class="icon-score">{{item.label}}-->
+                    <!--</div>-->
+                    <!--<div class="mic-item-title" style="font-size: 12px">{{item.time}}</div>-->
+                    <!--<div class="mic-item-integral">{{item.score}}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
         <div class="my-task-con" v-show="userRole == 3">
 
             <p class="mic-title" style="margin-top: 20px">考勤记录</p>
@@ -134,10 +134,10 @@
 
         <div class="my-task-con">
             <div v-show="userRole>0 && userRole < 3">
-                <div class="add-task" style="margin-right: 320px" @click="createMultipleTask">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建多人任务</span>
-                </div>
+                <!--<div class="add-task" style="margin-right: 320px" @click="createMultipleTask">-->
+                    <!--<span class="add-task-icon"><i class="el-icon-plus"></i></span>-->
+                    <!--<span>创建多人任务</span>-->
+                <!--</div>-->
                 <div class="add-task" style="margin-right: 220px" @click="createExtraWork">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>加班申请</span>
@@ -146,14 +146,18 @@
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
                     <span>创建线上问题(数据)记录</span>
                 </div>
-                <div class="add-task  question" @click="createTaskClick">
+                <!--<div class="add-task  question" style="margin-right: -153px" @click="createTaskClick">-->
+                    <!--<span class="add-task-icon"><i class="el-icon-plus"></i></span>-->
+                    <!--<span>创建个人任务</span>-->
+                <!--</div>-->
+                <div class="add-task  question" style="margin-right: -153px" @click="createTaskClick">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建个人任务</span>
+                    <span>创建任务</span>
                 </div>
-                <div class="add-task help" @click="editHelpVisible=true">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建积分转移</span>
-                </div>
+                <!--<div class="add-task help" @click="editHelpVisible=true">-->
+                    <!--<span class="add-task-icon"><i class="el-icon-plus"></i></span>-->
+                    <!--<span>创建积分转移</span>-->
+                <!--</div>-->
 
                 <div class="add-task leave" @click="editLeaveVisible=true,clearLeaveForm()">
                     <span class="add-task-icon"><i class="el-icon-plus"></i></span>
@@ -217,88 +221,88 @@
                         </el-tab-pane>-->
                     </el-tabs>
                 </div>
-                <p class="mic-title">多人任务申请</p>
-                <div class="my-task-detail">
-                    <el-tabs v-model="taskTempActiveName" @tab-click="handleClick">
-                        <el-tab-pane label="待审核" name="wait">
-                            <div class="task-lis" v-for="item in taskTemp.waitAssess" @click="getTaskTempDetail(item)">
-                                <div class="head-img"><img src="../assets/img/doing.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
-                                    <span  class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="taskTemp.waitAssess.length==0 || taskTemp.waitAssess == null" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                            <div class="pagination" v-show="this.taskTemp.waitAssess.length>0">
-                            <el-pagination
-                            @current-change="handleWaitAuditTaskTempPage"
-                            :current-page.sync="taskTempPage.pageNum"
-                            :page-size="taskTempPage.pageSize"
-                            :layout="taskTempWaitAuditPageLayout"
-                            :total="taskTempPage.total">
-                            </el-pagination>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="审核通过" name="access">
-                            <div class="task-lis" v-for="item in taskTemp.auditSuccess" @click="getTaskTempDetail(item)">
-                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span  class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="taskTemp.auditSuccess.length==0 || taskTemp.auditSuccess == null" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                            <div class="pagination" v-show="this.taskTemp.auditSuccess.length>0">
-                                <el-pagination
-                                        @current-change="handleAuditSuccessTaskTempPage"
-                                        :current-page.sync="taskTempPage2.pageNum"
-                                        :page-size="taskTempPage2.pageSize"
-                                        :layout="taskTempAuditSuccessPageLayout"
-                                        :total="taskTempPage2.total">
-                                </el-pagination>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
+                <!--<p class="mic-title">多人任务申请</p>-->
+                <!--<div class="my-task-detail">-->
+                    <!--<el-tabs v-model="taskTempActiveName" @tab-click="handleClick">-->
+                        <!--<el-tab-pane label="待审核" name="wait">-->
+                            <!--<div class="task-lis" v-for="item in taskTemp.waitAssess" @click="getTaskTempDetail(item)">-->
+                                <!--<div class="head-img"><img src="../assets/img/doing.png"></div>-->
+                                <!--<div class="main-task-detail">-->
+                                    <!--<div class="task-name" style="width: 700px;">-->
+                                        <!--<span>{{item.taskName}}:({{item.description}})</span>-->
+                                    <!--</div>-->
+                                    <!--<div class="task-state">-->
+                                        <!--<span class="task-end blue">申请人：{{item.userName}}</span>-->
+                                        <!--<span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="task-mark" style="position:relative; left:-10px">-->
+                                    <!--<img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">-->
+                                    <!--<img v-else="" src="../assets/img/u431.png" alt="" >-->
+                                    <!--<span  class="mark-msg">{{item.projectName}}</span>-->
+                                <!--</div>-->
+                                <!--<div class="task-data-show">-->
+                                <!--</div>-->
+                                <!--<div class="task-username">-->
+                                    <!--<img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"-->
+                                         <!--:src="item.avatarUrl" :alt="item.userName">-->
+                                    <!--<span v-else="">{{item.userName}}</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div v-show="taskTemp.waitAssess.length==0 || taskTemp.waitAssess == null" class="empty">-->
+                                <!--<h2>暂无数据</h2>-->
+                            <!--</div>-->
+                            <!--<div class="pagination" v-show="this.taskTemp.waitAssess.length>0">-->
+                            <!--<el-pagination-->
+                            <!--@current-change="handleWaitAuditTaskTempPage"-->
+                            <!--:current-page.sync="taskTempPage.pageNum"-->
+                            <!--:page-size="taskTempPage.pageSize"-->
+                            <!--:layout="taskTempWaitAuditPageLayout"-->
+                            <!--:total="taskTempPage.total">-->
+                            <!--</el-pagination>-->
+                            <!--</div>-->
+                        <!--</el-tab-pane>-->
+                        <!--<el-tab-pane label="审核通过" name="access">-->
+                            <!--<div class="task-lis" v-for="item in taskTemp.auditSuccess" @click="getTaskTempDetail(item)">-->
+                                <!--<div class="head-img"><img src="../assets/img/finished.jpg"></div>-->
+                                <!--<div class="main-task-detail">-->
+                                    <!--<div class="task-name" style="width: 700px;">-->
+                                        <!--<span>{{item.taskName}}:({{item.description}})</span>-->
+                                    <!--</div>-->
+                                    <!--<div class="task-state">-->
+                                        <!--<span class="task-end blue">申请人：{{item.userName}}</span>-->
+                                        <!--<span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="task-mark" style="position:relative; left:-10px">-->
+                                    <!--<img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">-->
+                                    <!--<img v-else="" src="../assets/img/u431.png" alt="" >-->
+                                    <!--&lt;!&ndash;<img src="../assets/img/u431.png" alt="">&ndash;&gt;-->
+                                    <!--<span  class="mark-msg">{{item.projectName}}</span>-->
+                                <!--</div>-->
+                                <!--<div class="task-data-show">-->
+                                <!--</div>-->
+                                <!--<div class="task-username">-->
+                                    <!--<img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"-->
+                                         <!--:src="item.avatarUrl" :alt="item.userName">-->
+                                    <!--<span v-else="">{{item.userName}}</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div v-show="taskTemp.auditSuccess.length==0 || taskTemp.auditSuccess == null" class="empty">-->
+                                <!--<h2>暂无数据</h2>-->
+                            <!--</div>-->
+                            <!--<div class="pagination" v-show="this.taskTemp.auditSuccess.length>0">-->
+                                <!--<el-pagination-->
+                                        <!--@current-change="handleAuditSuccessTaskTempPage"-->
+                                        <!--:current-page.sync="taskTempPage2.pageNum"-->
+                                        <!--:page-size="taskTempPage2.pageSize"-->
+                                        <!--:layout="taskTempAuditSuccessPageLayout"-->
+                                        <!--:total="taskTempPage2.total">-->
+                                <!--</el-pagination>-->
+                            <!--</div>-->
+                        <!--</el-tab-pane>-->
+                    <!--</el-tabs>-->
+                <!--</div>-->
                 <p class="mic-title">我的考勤</p>
                 <div class="my-task-detail" style="width: 1200px">
                     <div class="add-member-basic-msg fl">
@@ -561,81 +565,81 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
-                <div>
-                    <p class="mic-title">我的积分转移</p>
-                    <div class="my-task-detail">
-                        <el-tabs v-model="activeHelpName" @tab-click="handleClick">
-                            <el-tab-pane label="审核中" name="wait">
-                                <!--@click="reviewDetail(help)"-->
-                                <div class="task-lis" v-for="help in review.wait">
-                                    <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                    <div class="main-task-detail">
-                                        <div class="task-name"><span>{{help.description}}</span></div>
-                                        <div class="task-state">
-                                            <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
-                                            <span class="task-end blue">{{help.time| formatDate }}</span>
-                                            <span class="task-time-opt"><i class="el-icon-edit"
-                                                                           @click="editHelpDetail(help)"></i></span>
-                                        </div>
-                                    </div>
-                                    <div class="task-data-show">
-                                        <span class="task-score">求助转移：{{help.integral}} 分</span>
-                                    </div>
-                                    <div class="task-username">
-                                        <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"
-                                             :src="help.avatarUrl">
-                                        <span v-else="">{{help.name.split(",")[1]}}</span>
-                                    </div>
-                                </div>
-                                <div class="pagination" v-show="this.review.wait.length>0">
-                                    <el-pagination
-                                            @current-change="handleWaitPage"
-                                            :current-page.sync="waitPage.pageNum"
-                                            :page-size="waitPage.pageSize"
-                                            :layout="waitPageLayout"
-                                            :total="waitPage.total">
-                                    </el-pagination>
-                                </div>
-                                <div v-show="review.wait.length==0" class="empty">
-                                    <h2>暂无数据</h2>
-                                </div>
-                            </el-tab-pane>
-                            <el-tab-pane label="完成审核" name="review">
-                                <div class="task-lis" v-for="help in review.review" @click="reviewDetail(help)">
-                                    <div class="head-img"><img src="../assets/img/auditSuccess.png"></div>
-                                    <div class="main-task-detail">
-                                        <div class="task-name"><span>{{help.description}}</span></div>
-                                        <div class="task-state">
-                                            <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
-                                            <span class="task-end blue">{{help.time| formatDate }}</span>
-                                            <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                        </div>
-                                    </div>
-                                    <div class="task-data-show">
-                                        <span class="task-score">转移完成：-{{help.integral}} 分</span>
-                                    </div>
-                                    <div class="task-username">
-                                        <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"
-                                             :src="help.avatarUrl">
-                                        <span v-else="">{{help.name.split(",")[1]}}</span>
-                                    </div>
-                                </div>
-                                <div class="pagination" v-show="this.review.review.length>0">
-                                    <el-pagination
-                                            @current-change="handleReviewPage"
-                                            :current-page.sync="reviewPage.pageNum"
-                                            :page-size="reviewPage.pageSize"
-                                            :layout="reviewPageLayout"
-                                            :total="reviewPage.total">
-                                    </el-pagination>
-                                </div>
-                                <div v-show="review.review.length==0" class="empty">
-                                    <h2>暂无数据</h2>
-                                </div>
-                            </el-tab-pane>
-                        </el-tabs>
-                    </div>
-                </div>
+                <!--<div>-->
+                    <!--<p class="mic-title">我的积分转移</p>-->
+                    <!--<div class="my-task-detail">-->
+                        <!--<el-tabs v-model="activeHelpName" @tab-click="handleClick">-->
+                            <!--<el-tab-pane label="审核中" name="wait">-->
+                                <!--&lt;!&ndash;@click="reviewDetail(help)"&ndash;&gt;-->
+                                <!--<div class="task-lis" v-for="help in review.wait">-->
+                                    <!--<div class="head-img"><img src="../assets/img/waitAudit.png"></div>-->
+                                    <!--<div class="main-task-detail">-->
+                                        <!--<div class="task-name"><span>{{help.description}}</span></div>-->
+                                        <!--<div class="task-state">-->
+                                            <!--<span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>-->
+                                            <!--<span class="task-end blue">{{help.time| formatDate }}</span>-->
+                                            <!--<span class="task-time-opt"><i class="el-icon-edit"-->
+                                                                           <!--@click="editHelpDetail(help)"></i></span>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="task-data-show">-->
+                                        <!--<span class="task-score">求助转移：{{help.integral}} 分</span>-->
+                                    <!--</div>-->
+                                    <!--<div class="task-username">-->
+                                        <!--<img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"-->
+                                             <!--:src="help.avatarUrl">-->
+                                        <!--<span v-else="">{{help.name.split(",")[1]}}</span>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="pagination" v-show="this.review.wait.length>0">-->
+                                    <!--<el-pagination-->
+                                            <!--@current-change="handleWaitPage"-->
+                                            <!--:current-page.sync="waitPage.pageNum"-->
+                                            <!--:page-size="waitPage.pageSize"-->
+                                            <!--:layout="waitPageLayout"-->
+                                            <!--:total="waitPage.total">-->
+                                    <!--</el-pagination>-->
+                                <!--</div>-->
+                                <!--<div v-show="review.wait.length==0" class="empty">-->
+                                    <!--<h2>暂无数据</h2>-->
+                                <!--</div>-->
+                            <!--</el-tab-pane>-->
+                            <!--<el-tab-pane label="完成审核" name="review">-->
+                                <!--<div class="task-lis" v-for="help in review.review" @click="reviewDetail(help)">-->
+                                    <!--<div class="head-img"><img src="../assets/img/auditSuccess.png"></div>-->
+                                    <!--<div class="main-task-detail">-->
+                                        <!--<div class="task-name"><span>{{help.description}}</span></div>-->
+                                        <!--<div class="task-state">-->
+                                            <!--<span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>-->
+                                            <!--<span class="task-end blue">{{help.time| formatDate }}</span>-->
+                                            <!--<span class="task-time-opt"><i class="el-icon-circle-check"></i></span>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="task-data-show">-->
+                                        <!--<span class="task-score">转移完成：-{{help.integral}} 分</span>-->
+                                    <!--</div>-->
+                                    <!--<div class="task-username">-->
+                                        <!--<img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"-->
+                                             <!--:src="help.avatarUrl">-->
+                                        <!--<span v-else="">{{help.name.split(",")[1]}}</span>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="pagination" v-show="this.review.review.length>0">-->
+                                    <!--<el-pagination-->
+                                            <!--@current-change="handleReviewPage"-->
+                                            <!--:current-page.sync="reviewPage.pageNum"-->
+                                            <!--:page-size="reviewPage.pageSize"-->
+                                            <!--:layout="reviewPageLayout"-->
+                                            <!--:total="reviewPage.total">-->
+                                    <!--</el-pagination>-->
+                                <!--</div>-->
+                                <!--<div v-show="review.review.length==0" class="empty">-->
+                                    <!--<h2>暂无数据</h2>-->
+                                <!--</div>-->
+                            <!--</el-tab-pane>-->
+                        <!--</el-tabs>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
             <div v-show="userRole===0">
                 <p class="mic-title">多人任务审核</p>
@@ -720,7 +724,7 @@
                 <p class="mic-title">个人任务审核</p>
                 <div class="add-task" style="float: left;margin-top: -22px;margin-right: 400px;font-size: 14px"
                      @click="integralBasicVisible=true">
-                    <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分
+                    <!--<span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分-->
                 </div>
                 <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
                     <el-tab-pane label="待审核" name="wait">
@@ -1187,7 +1191,7 @@
                    @close="clearPrivateTask"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
-                :visible.sync="createTaskVisible">
+                :visible.sync="createPrivateTaskVisible">
             <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="80px">
                 <el-form-item label="项目" prop="projectId">
                     <el-select v-model="taskForm.projectId" placeholder="请选择">
@@ -1243,7 +1247,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="saveTaskInfo('taskForm')" :disabled="taskAble">立即创建</el-button>
-            <el-button @click="createTaskVisible = false">取 消</el-button>
+            <el-button @click="createPrivateTaskVisible = false">取 消</el-button>
           </span>
         </el-dialog>
         <el-dialog title="创建线上问题(数据)记录"
@@ -2028,15 +2032,15 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -35px" label="项目: ">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -35px" label="阶段: ">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -21px" label="优先级: ">
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -35px;float: left" label="项目: ">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="设计完成时间: " label-width="100px" style="margin-left: 250px">{{taskDetail.beginTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -35px;float: left;" label="阶段: ">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="开发完成时间: " label-width="100px" style="margin-left: 250px">{{taskDetail.testTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -21px;float: left" label="优先级: ">
                     <span v-for="item in priorityList"
                           v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="设计完成时间: " label-width="100px">{{taskDetail.beginTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="开发完成时间: " label-width="100px">{{taskDetail.testTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -8px" label="截止时间: ">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: 242px" label="截止时间: ">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -37px" label="标签: ">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
@@ -2119,7 +2123,7 @@
                     {{taskTempDetail.beginTime | formatDate}}
                 </el-form-item>
                 <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：">
-                    <el-date-picker @change="changeTaskTempWeek"
+                    <el-date-picker @change="changeTime"
                                     v-model="taskTempDetail.beginTime"
                                     type="date"
                                     format="yyyy-MM-dd"
@@ -2128,11 +2132,11 @@
                     </el-date-picker>
                 </el-form-item>
 
-                <el-form-item v-show="taskTempAble" class="task-form" label="截止时间：" label-width="82px" style="float: left">
+                <el-form-item v-show="taskTempAble" class="task-form" label="截止时间：" label-width="82px" style="float: left;margin-left: 10px">
                     {{taskTempDetail.endTime | formatDate}}
                 </el-form-item>
                 <el-form-item v-show="!taskTempAble" class="task-form" label="截止时间：">
-                    <el-date-picker @change="changeTaskTempWeek"
+                    <el-date-picker @change="changeTime"
                                     v-model="taskTempDetail.endTime"
                                     type="date"
                                     format="yyyy-MM-dd"
@@ -2151,7 +2155,7 @@
 
                 <div v-for="(item,index) in sortWeekTempNumber" v-show="taskTempDetail.reviewStatus == 1">
                         <div class="add-member-basic-list clearfix">
-                            <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                            <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
                             <input class="member-time-week" :disabled="taskTempAble" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
                             <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) > 40" style="color:red;display:inline">
                                 {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
@@ -2161,7 +2165,7 @@
                     </div>
                 <div v-for="(item,index) in sortWeekTempNumber" v-show="taskTempDetail.reviewStatus == 2">
                     <div class="add-member-basic-list clearfix">
-                        <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
+                        <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
                         <input class="member-time-week" :disabled="taskTempAble" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
                         <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) > 40" style="color:red;display:inline">
                             {{parseFloat(item.weekHours==''?0:item.weekHours)}}</div>
@@ -2178,6 +2182,17 @@
                     <!--<el-button type="success" @click="acceptTaskExpand()">申请驳回</el-button>-->
                 </div>
             </span>
+        </el-dialog>
+
+        <el-dialog title="创建任务" :visible.sync="createTaskVisible"
+                   :close-on-click-modal="false" :close-on-press-escape="false"
+                   top="10%"  width="20%" center="true">
+            <span>请选择任务类型</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="createPrivateTask">个人任务</el-button>
+                <el-button type="primary" @click="createMultipleTask">多人任务</el-button>
+            </span>
+
         </el-dialog>
 
     </div>
@@ -2226,6 +2241,7 @@
                 helpDetailVisible: false,
                 expandDetailVisible: false,
                 createTaskVisible: false,
+                createPrivateTaskVisible: false,
                 createMultipleTaskVisible: false,
                 editLeaveDetailVisible: false,
                 developVisible: false,
@@ -3045,14 +3061,21 @@
                 }
             },
             createTaskClick() {
-                // 建个人任务
+                // 建任务
                 // this.clearPrivateTask()
                 this.createTaskVisible = true
             },
             //创建多人任务
             createMultipleTask(){
+                this.createTaskVisible = false;
                 this.clearMultipleTask();
                 this.createMultipleTaskVisible = true;
+            },
+            //创建个人任务
+            createPrivateTask(){
+                // this.clearMultipleTask();
+                this.createTaskVisible = false;
+                this.createPrivateTaskVisible = true;
             },
             reload() {
                 this.fetchAllMultipleTasks()
@@ -3164,7 +3187,7 @@
                         http.zsyPostHttp('/task/create', param, (resp) => {
                             this.$message({showClose: true, message: '任务创建成功', type: 'success'});
                             this.$refs[formName].resetFields();
-                            this.createTaskVisible = false
+                            this.createPrivateTaskVisible = false
                             this.taskAble = false
                             vm.reload()
                         });
@@ -3385,114 +3408,101 @@
                 });
             },
             acceptMultipleTask(id,formName){
-
-
-
                 this.taskTempDetailVisible = false;
-                this.$confirm('此操作将审核该任务, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-
-                    var sumHours=0;
-                    for(var i=0;i<this.taskTempWeekNumber.length;i++){
-                        if(this.taskTempWeekNumber[i].hours==''|| this.taskTempWeekNumber[i].hours=== undefined){
-                            if(this.taskTempWeekNumber[i].hoursTemp !== undefined &&this.taskTempWeekNumber[i].hoursTemp!=''){
-                                this.taskTempWeekNumber[i].hours = this.taskTempWeekNumber[i].hoursTemp
-                            }else{
-                                this.taskTempWeekNumber[i].hours = 0
-                            }
+                var sumHours=0;
+                for(var i=0;i<this.taskTempWeekNumber.length;i++){
+                    if(this.taskTempWeekNumber[i].hours==''|| this.taskTempWeekNumber[i].hours=== undefined){
+                        if(this.taskTempWeekNumber[i].hoursTemp !== undefined &&this.taskTempWeekNumber[i].hoursTemp!=''){
+                            this.taskTempWeekNumber[i].hours = this.taskTempWeekNumber[i].hoursTemp
+                        }else{
+                            this.taskTempWeekNumber[i].hours = 0
                         }
-                        var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.taskTempWeekNumber[i].hours);
-                        if(!ishours &&ishours!=0){
-                            this.errorMsg('工作量填写错误');
-                            return false;
-                        }
-                        if(this.taskTempWeekNumber[i].hours>99999.9||this.taskTempWeekNumber[i].hours<0){
-                            this.errorMsg('工作量正确值应为0~99999.9');
-                            return false;
-                        }
-                        sumHours +=  parseFloat(this.taskTempWeekNumber[i].hours)
                     }
-                    if(sumHours!=this.taskTempDetail.workHours){
-                        this.errorMsg('周工作量与总工作量不符，请检查');
-                        return
+                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.taskTempWeekNumber[i].hours);
+                    if(!ishours &&ishours!=0){
+                        this.errorMsg('工作量填写错误');
+                        return false;
                     }
-                    this.taskTempDetail.userWeeks = this.taskTempWeekNumber
-
-
-                    let vm = this;
-                    this.$refs[formName].validate((valid) => {
-                        if (valid) {
-                            // this.taskAble = true;
-                            var param = this.taskTempDetail;
-                            param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00')
-                            param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50')
-                            if (param.taskId == null || param.taskId == ''){
-                                this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
-                                return false;
-                            }
-                            if (this.description == null || this.description.trim() == ''){
-                                this.$message({showClose: true, message: '任务描述不能为空', type: 'error'});
-                                return false;
-                            }
-                            if (param.beginTime == null || param.beginTime == ''){
-                                this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
-                                return false;
-                            }
-                            if (param.endTime == null || param.endTime == ''){
-                                this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
-                                return false;
-                            }
-                            //任务是设计相关阶段时
-                            if (this.taskDetail.stageId == '212754785051344891' || this.taskDetail.stageId == '212754785051344892'){
-                                if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
-                                    this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
-                                    return false;
-                                }
-                            }
-                            //任务是开发相关阶段时
-                            if (this.taskDetail.stageId == '212754785051344890' || this.taskDetail.stageId == '212754785051344894'){
-                                if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
-                                    this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
-                                    return false;
-                                }
-                            }
-                            //任务是测试相关阶段时
-                            if (this.taskDetail.stageId == '212754785051344895' || this.taskDetail.stageId == '212754785051344896'){
-                                if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
-                                    this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
-                                    return false;
-                                }
-                            }
-                            param.workHours = String(param.workHours)
-                            if (param.workHours.length != parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
-                                this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
-                                return false;
-                            }
-                            if (param.workHours < 0.1) {
-                                this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
-                                return false;
-                            }
-                            param.description = this.description
-
-                            http.zsyPutHttp(`/task-temp/access`, param, (resp) => {
-                                this.$message({showClose: true, message: '审核成功', type: 'success'});
-                                this.$refs[formName].resetFields();
-                                this.description = ''
-                                this.taskAble = false;
-                                this.reload();
-                            })
-                        } else {
+                    if(this.taskTempWeekNumber[i].hours>99999.9||this.taskTempWeekNumber[i].hours<0){
+                        this.errorMsg('工作量正确值应为0~99999.9');
+                        return false;
+                    }
+                    sumHours +=  parseFloat(this.taskTempWeekNumber[i].hours)
+                }
+                if(sumHours!=this.taskTempDetail.workHours){
+                    this.errorMsg('周工作量与总工作量不符，请检查');
+                    return
+                }
+                this.taskTempDetail.userWeeks = this.taskTempWeekNumber
+                let vm = this;
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // this.taskAble = true;
+                        var param = this.taskTempDetail;
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00')
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50')
+                        if (param.taskId == null || param.taskId == ''){
+                            this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
                             return false;
                         }
-                    }, err => {
-                        this.taskAble = false
-                    });
+                        if (this.description == null || this.description.trim() == ''){
+                            this.$message({showClose: true, message: '任务描述不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (param.beginTime == null || param.beginTime == ''){
+                            this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            return false;
+                        }
+                        if (param.endTime == null || param.endTime == ''){
+                            this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            return false;
+                        }
+                        //任务是设计相关阶段时
+                        if (this.taskDetail.stageId == '212754785051344891' || this.taskDetail.stageId == '212754785051344892'){
+                            if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
+                                this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
+                                return false;
+                            }
+                        }
+                        //任务是开发相关阶段时
+                        if (this.taskDetail.stageId == '212754785051344890' || this.taskDetail.stageId == '212754785051344894'){
+                            if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
+                                this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
+                                return false;
+                            }
+                        }
+                        //任务是测试相关阶段时
+                        if (this.taskDetail.stageId == '212754785051344895' || this.taskDetail.stageId == '212754785051344896'){
+                            if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
+                                this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
+                                return false;
+                            }
+                        }
+                        param.workHours = String(param.workHours)
+                        if (param.workHours.length != parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                            this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            return false;
+                        }
+                        if (param.workHours < 0.1) {
+                            this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            return false;
+                        }
+                        param.description = this.description
 
-                }).catch(() => {
+                        http.zsyPutHttp(`/task-temp/access`, param, (resp) => {
+                            this.$message({showClose: true, message: '审核成功', type: 'success'});
+                            this.$refs[formName].resetFields();
+                            this.description = ''
+                            this.taskAble = false;
+                            this.reload();
+                        })
+                    } else {
+                        return false;
+                    }
+                }, err => {
+                    this.taskAble = false
                 });
+
             },
             //获取任务详情
             getTaskDetail(id){
@@ -3509,7 +3519,7 @@
             //按阶段查询任务
             getTaskByStage(stageId){
                 if (stageId != null && stageId != '') {
-                    http.zsyGetHttp('task/tasksByStage/'+stageId,{},(res=>{
+                    http.zsyGetHttp('task-temp/task/'+stageId,{},(res=>{
                         this.taskList = res.data;
                     }))
                 }else {
@@ -3517,6 +3527,47 @@
                 }
             },
             makeUpItems(items) {
+                const list = items;
+                list.forEach((el) => {
+                    let endTime = '', today = moment().format('YYYY-MM-DD')
+                    if (el.status >= 2) {
+                        endTime = el.completeTime
+                    } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
+                        endTime = el.taskUsers[0].endTime
+                    } else {
+                        endTime = el.taskUsers[0].completeTime
+                    }
+                    endTime = moment(endTime).format('YYYY-MM-DD')
+                    const diffDays = moment(today).diff(moment(endTime), 'days')
+                    //const diffDays = Math.round(moment().diff(moment(endTime), 'days', true))
+                    let endColor = '', endText = ''
+                    endText = moment(endTime).calendar(null, {
+                        sameDay: '[今天]',
+                        nextDay: '[明天]',
+                        nextWeek: 'L',
+                        lastDay: '[昨天]',
+                        lastWeek: 'L',
+                        sameElse: 'L'
+                    })
+                    if (el.status < 3 && el.taskUsers[0].status == 1) {
+                        if (diffDays == 0) {
+                            endColor = 'orange'
+                        } else if (diffDays > 0) {
+                            endColor = 'red'
+                        } else if (diffDays < 0) {
+                            endColor = 'blue'
+                        }
+                        endText += ' 截止'
+                    } else {
+                        endColor = 'green'
+                        endText += ' 完成'
+                    }
+                    el['endColor'] = endColor
+                    el['endText'] = endText
+                })
+                return list
+            },
+            makeUpItems2(items) {
                 const list = items;
                 list.forEach((el) => {
                     let endTime = '', today = moment().format('YYYY-MM-DD')
@@ -3655,7 +3706,7 @@
                 let vm = this
                 http.zsyGetHttp('/task/pending', {}, (resp) => {
                     resp.data.forEach((task) => {
-                        task.name += '(待审核)'
+                        task.name += '(待审核 个人任务)'
                     })
                     vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data))
                 })
@@ -4395,6 +4446,39 @@
                 this.expandWeekNumber = param
             },
 
+            changeTime(){
+                if(this.taskTempDetail.beginTime != null && this.taskTempDetail.beginTime != ''
+                    && this.taskTempDetail.endTime != null&& this.taskTempDetail.endTime != ''){
+                    let userWeeks = [];
+                    let beginYear = moment(this.taskTempDetail.beginTime).year();
+                    let endYear = moment(this.taskTempDetail.endTime).year();
+                    this.taskTempDetail.beginWeek = moment(this.taskTempDetail.beginTime).week();
+                    this.taskTempDetail.endWeek = moment(this.taskTempDetail.endTime).week();
+
+                    if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek + 1 != this.taskTempDetail.userWeeks.length){
+                        if ((endYear >= beginYear) && (this.taskTempDetail.endWeek >= this.taskTempDetail.beginWeek)){
+                            for(var i = 0;i<=this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek;i++){
+                                let weekData = {
+                                    'weekHours':0,
+                                    'weekNumber': i + this.taskTempDetail.beginWeek,
+                                    'hours': 0,
+                                    'year': beginYear,
+                                    'range': moment().year(beginYear).week(i + this.taskTempDetail.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i + this.taskTempDetail.beginWeek).endOf('week').format('MM-DD')
+                                };
+                                userWeeks.push(weekData)
+
+                            }
+                        }
+                        this.taskTempDetail.userWeeks = userWeeks;
+                        this.changeTaskTempWeek();
+                    }
+                    if (this.taskTempDetail.endWeek < this.taskTempDetail.beginWeek){
+                        this.$message({ showClose: true,message: '开始时间不可在截止时间后面',type: 'error'});
+                    }
+                }
+
+
+            },
             changeTaskTempWeek(){
                 if (this.taskTempDetail.beginTime == null || this.taskTempDetail.endTime == null) {
                     return
@@ -5545,11 +5629,21 @@
                 })
             },
             //查询多人任务列表
+            // fetchPersonalMultipleWait(){
+            //         http.zsyGetHttp('/task-temp/personal/page/'+this.taskTempPage.pageNum+'/1',{},(res=>{
+            //             this.taskTemp.waitAssess = res.data.list;
+            //             this.taskTempPage.total = res.data.total;
+            //         }))
+            //
+            // },
             fetchPersonalMultipleWait(){
-                    http.zsyGetHttp('/task-temp/personal/page/'+this.taskTempPage.pageNum+'/1',{},(res=>{
-                        this.taskTemp.waitAssess = res.data.list;
-                        this.taskTempPage.total = res.data.total;
-                    }))
+                http.zsyGetHttp('/task-temp/personal/pending',{},(res=>{
+                    res.data.forEach((task) => {
+                        task.name += '(待审核 多人任务)'
+                    })
+                    this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
+
+                }))
 
             },
             fetchPersonalMultipleAccess(){
@@ -5594,6 +5688,10 @@
 <style>
     .el-dialog__wrapper .myDialog {
         width: 600px !important;
+    }
+
+    .el-dialog--small {
+        width: 20%;
     }
 </style>
 <style scoped>
@@ -5687,7 +5785,7 @@
 
     .add-task {
         position: absolute;
-        right: 430px;
+        right: 240px;
         font-size: 16px;
         cursor: pointer;
         color: #36A8FF;

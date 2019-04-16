@@ -22,6 +22,8 @@
         <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"></result>
         <result column="project_image" property="projectImage" jdbcType="VARCHAR"></result>
         <result column="project_name" property="projectName" jdbcType="VARCHAR"></result>
+        <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+        <result column="priority" property="priority" jdbcType="INTEGER"></result>
         <collection property="userWeekTempList" column="{userId=user_id,taskId=task_id}"
                 ofType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp"
                 select="selectUserWeekTempByUserAndTask"></collection>
@@ -144,6 +146,29 @@
         LEFT JOIN `task` t ON tt.task_id = t.id
         LEFT JOIN `project` p ON p.id = t.project_id
         WHERE  tt.`review_status` = #{reviewStatus}
+        ORDER BY tt.`create_time` DESC
+    </select>
+
+    <!--个人查看待审核任务-->
+    <select id="selectPersonalTaskTempList" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image,
+        p.name project_name,p.id project_id,t.priority priority
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE  tt.`review_status` = 1 AND tt.`user_id` = #{userId}
+        ORDER BY tt.`create_time` DESC
+    </select>
+
+    <!--根据主键查看任务-->
+    <select id="selectTaskTempBOById" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image,p.name project_name
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE tt.`id` = #{ttId}
         ORDER BY tt.`create_time` DESC
     </select>
 </mapper>
