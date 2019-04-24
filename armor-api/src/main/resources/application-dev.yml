@@ -4,9 +4,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://192.168.1.251:3307/zsy_armor_prod?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
-      username: printer
-      password: HnTqLszULNvNRR5b
+      url: jdbc:mysql://192.168.1.210:3307/armor_dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+      username: zsy
+      password: lc12345
       filters: stat
       validation-query: SELECT 1
       web-stat-filter:
