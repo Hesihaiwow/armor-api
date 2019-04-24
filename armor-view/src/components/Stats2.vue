@@ -18,7 +18,7 @@
                     <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="线上bug" name="bug"  style="">
+            <el-tab-pane label="线上问题统计" name="bug"  style="">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="bugReqDTO.userId" clearable filterable   placeholder="筛选用户">
                         <el-option v-for="item in userList" :key="item.id" :label="item.name"
@@ -57,7 +57,7 @@
                             <span>{{scope.row.processTime | formatDate1}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="demandSystem" label="反馈系统"  width="130"></el-table-column>
+                    <el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>
                     <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
                     <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
                     <!--<el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>-->
@@ -76,7 +76,7 @@
                         </template>
                     </el-table-column>
                     <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
-                    <el-table-column label="操作" width="100" fixed="right">
+                    <el-table-column label="操作" width="110" fixed="right" align="center">
                         <template scope="scope">
                             <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
                         </template>
@@ -90,6 +90,122 @@
                             :layout="pageLayout"
                             :total="bugFormPage.total">
                     </el-pagination>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="测试问题统计" name="mantisBug"  style="">
+                <div class="bug-stats-con">
+                    <div class="add-member-basic-msg fl"><el-date-picker
+                            v-model="yearMonth3"
+                            type="month"
+                            placeholder="选择月份"
+                            @change="changeMonth3"
+                    size="medium">
+                    </el-date-picker></div>
+                    <el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="importBugInfo">导入bug信息</el-button>
+                    <el-table :data="taskBugStatsList" border>
+                        <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
+                        <el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>
+                        <el-table-column label="测试提交数量"  width="200">
+                            <template scope="scope">
+                                <div v-for="testerData in scope.row.mantisBugTesterNumResDTOList">
+                                    <span>{{testerData.userName}} {{testerData.bugNum}}个</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="开发解决数量" width="200">
+                            <template scope="scope">
+                                <div v-for="developerData in scope.row.mantisBugDeveloperNumResDTOList">
+                                    <span>{{developerData.userName}} {{developerData.bugNum}}个</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="按严重程度划分" width="200">
+                            <template scope="scope">
+                                <div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">
+                                    <span>{{severity.severityName}} {{severity.bugNum}}个</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div class="pagination">
+                        <el-pagination
+                                @current-change="handleTaskBugChange"
+                                :current-page.sync="mantisBugReqDTO4.pageNum"
+                                :page-size="taskBugPage.pageSize"
+                                :layout="taskPageLayout"
+                                :total="taskBugPage.total">
+                        </el-pagination>
+                    </div>
+                </div>
+                <div class="bug-stats-con">
+                    <div class="add-member-basic-msg fl"><el-date-picker
+                            v-model="yearMonth1"
+                            type="month"
+                            placeholder="选择月份"
+                            @change="changeMonth1"
+                    size="medium">
+                    </el-date-picker></div>
+                    <el-table :data="mantisUserBugStatsList" border>
+                        <el-table-column prop="realName" label="负责人" align="center" width="100"></el-table-column>
+                        <el-table-column label="负责平台"  width="240">
+                            <template scope="scope">
+                                <div v-for="category in scope.row.categoryResDTOList">
+                                    <span>{{category.name}}</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="mantisBugTotalNum" label="bug数量" width="100"></el-table-column>
+                        <el-table-column label="按严重程度划分" width="140">
+                            <template scope="scope">
+                                <div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">
+                                    <span>{{severity.severityName}} {{severity.bugNum}}个</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="按状态划分" width="130">
+                            <template scope="scope">
+                                <div v-for="status in scope.row.mantisBugStatusNumResDTOList">
+                                    <span>{{status.statusName}} {{status.bugNum}}个</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="按分类划分">
+                            <template scope="scope">
+                                <div v-for="category in scope.row.mantisBugCategoryNumResDTOList">
+                                    <span v-if="category.isInCharge == 1" style="color: red">{{category.categoryName}} {{category.bugNum}}个</span>
+                                    <span v-else>{{category.categoryName}} {{category.bugNum}}个</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="线上bug统计">
+                            <template scope="scope">
+                                <div v-for="demandSystem in scope.row.onlineBugCategoryNumResDTOList">
+                                    <span v-if="demandSystem.isInCharge == 1" style="color: red">{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>
+                                    <span v-else>{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>
+                                </div>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <div class="bug-stats-con" style="height: 500px;">
+                    <div class="add-member-basic-msg fl"><el-date-picker
+                            v-model="yearMonth4"
+                            type="month"
+                            placeholder="选择月份"
+                            @change="changeMonth4"
+                    >
+                    </el-date-picker></div>
+                    <div id="myChart8" :style="{width:'1000px',height:'400px',left:'40px',float:'left',marginTop:'20px'}"></div>
+                </div>
+                <div class="bug-stats-con" style="height: 500px;">
+                    <div class="add-member-basic-msg fl"><el-date-picker
+                            v-model="yearMonth2"
+                            type="month"
+                            placeholder="选择月份"
+                            @change="changeMonth2"
+                            size="medium">
+                    </el-date-picker></div>
+                    <div id="myChart9" :style="{width:'1000px',height:'400px',left:'40px',float:'left',marginTop:'20px'}"></div>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="个人任务" name="personal">
@@ -549,8 +665,8 @@
                     <div style="margin-top: 10px;float: left;margin-left: 10px">
                         <div  style="display: inline">反馈系统</div>
                         <div style="display: inline;margin-left: 40px">
-                            <el-select v-model="onlineBugForm.demandSystem" placeholder="请选择">
-                                <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.name"></el-option>
+                            <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择">
+                                <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -725,8 +841,8 @@
                 <div style="margin-top: 10px;float: left;margin-left: 10px">
                     <div  style="display: inline">反馈系统</div>
                     <div style="display: inline;margin-left: 40px">
-                        <el-select v-model="onlineBugForm.demandSystem" placeholder="请选择">
-                            <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.name"></el-option>
+                        <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择">
+                            <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
@@ -811,7 +927,7 @@
                 <el-form-item class="task-form" label="反馈人：">{{bugDetailForm.origin}}</el-form-item>
                 <el-form-item class="task-form" label="反馈日期：">{{bugDetailForm.discoverTime | formatDate1}}</el-form-item>
                 <el-form-item class="task-form" label="解决日期：">{{bugDetailForm.processTime | formatDate1}}</el-form-item>
-                <el-form-item class="task-form" label="反馈系统：">{{bugDetailForm.demandSystem}}</el-form-item>
+                <el-form-item class="task-form" label="反馈系统：">{{bugDetailForm.demandSystemName}}</el-form-item>
                 <el-form-item class="task-form" label="账号信息：">{{bugDetailForm.accountInfo}}</el-form-item>
                 <el-form-item class="task-form" label="问题描述：">{{bugDetailForm.description}}</el-form-item>
                 <el-form-item class="task-form" label="问题类型：">
@@ -1093,28 +1209,28 @@
                     {id:1,name:'已解决'}
                 ],
                 demandSystemList:[
-                    {id:1,name:'知心慧学'},
-                    {id:2,name:'教师端'},
-                    {id:3,name:'安卓教师端'},
-                    {id:4,name:'IOS教师端'},
-                    {id:5,name:'公众号教师端'},
-                    {id:6,name:'助教端'},
-                    {id:7,name:'客户端'},
-                    {id:8,name:'产品'},
-                    {id:9,name:'数学题库'},
-                    {id:10,name:'英语题库'},
-                    {id:11,name:'学生端'},
-                    {id:12,name:'公众号学生端'},
-                    {id:13,name:'安卓学生端'},
-                    {id:14,name:'IOS学生端'},
-                    {id:15,name:'IMS'},
-                    {id:16,name:'IMS安卓端'},
-                    {id:17,name:'直播课'},
-                    {id:18,name:'联考'},
-                    {id:19,name:'家长端'},
-                    {id:10,name:'安卓家长端'},
-                    {id:21,name:'IOS家长端'},
-                    {id:22,name:'校长端'},
+                    // {id:1,name:'知心慧学'},
+                    // {id:2,name:'教师端'},
+                    // {id:3,name:'安卓教师端'},
+                    // {id:4,name:'IOS教师端'},
+                    // {id:5,name:'公众号教师端'},
+                    // {id:6,name:'助教端'},
+                    // {id:7,name:'客户端'},
+                    // {id:8,name:'产品'},
+                    // {id:9,name:'数学题库'},
+                    // {id:10,name:'英语题库'},
+                    // {id:11,name:'学生端'},
+                    // {id:12,name:'公众号学生端'},
+                    // {id:13,name:'安卓学生端'},
+                    // {id:14,name:'IOS学生端'},
+                    // {id:15,name:'IMS'},
+                    // {id:16,name:'IMS安卓端'},
+                    // {id:17,name:'直播课'},
+                    // {id:18,name:'联考'},
+                    // {id:19,name:'家长端'},
+                    // {id:10,name:'安卓家长端'},
+                    // {id:21,name:'IOS家长端'},
+                    // {id:22,name:'校长端'},
                 ],
                 onlineBugForm:{
                     projectId:'',
@@ -1124,7 +1240,8 @@
                     origin:'',
                     accountInfo:'',
                     type:0,
-                    demandSystem:'',
+                    demandSystemId:'',
+                    demandSystemName:'',
                     remark:'',
                     isSolved:0
                 },
@@ -1201,6 +1318,44 @@
                 ],
                 totalEWorkTime:'',
 
+                //mantis-bug统计
+                mantisBugReqDTO1:{
+                    beginTime:'',
+                    endTime:'',
+                },
+                mantisBugReqDTO2:{
+                    beginTime:'',
+                    endTime:'',
+                },
+                mantisBugReqDTO3:{
+                    beginTime:'',
+                    endTime:'',
+                },
+                mantisBugReqDTO4:{
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1
+                },
+                mantisUserBugStatsList:[],
+                taskBugStatsList:[],
+                mantisUserBugWeekList:[],
+                mantisUserBugMonthList:[],
+                onlineBugUserList:[],
+                seriesDataList:[],
+                seriesDataList2:[],
+                onlineBugTotalNum:0,
+                dateList:[],
+                weekdayList:[],
+                userNameList:[],
+                yearMonth1:'',
+                yearMonth2:'',
+                yearMonth3:'',
+                yearMonth4:'',
+                yearWeek:'',
+                taskBugPage:{
+                    pageSize: 10,
+                    total: 0,
+                },
                 // -- sch
             }
         },
@@ -1228,6 +1383,11 @@
             this.initSignInTime();
             this.fetchSignInData();
             this.fetchDiffTypeBugNum();
+            this.fetchDemandSystem();
+            this.fetchMantisBugStatsGroupByUser();
+            this.fetchBugWeekGroupByUser();
+            this.fetchOnlineBugGroupByUser();
+            this.fetchBugStatsGroupByTask();
         },
         computed: {
             permit() {
@@ -1240,6 +1400,12 @@
             },
             pageLayout() {
                 if (this.bugFormPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            taskPageLayout() {
+                if (this.taskBugPage.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -1494,7 +1660,8 @@
                 this.onlineBugForm.processTime = bugDetailForm.processTime;
                 this.onlineBugForm.description = bugDetailForm.description;
                 this.onlineBugForm.origin = bugDetailForm.origin;
-                this.onlineBugForm.demandSystem = bugDetailForm.demandSystem;
+                this.onlineBugForm.demandSystemId = bugDetailForm.demandSystemId;
+                this.onlineBugForm.demandSystemName = bugDetailForm.demandSystemName;
                 this.onlineBugForm.type = bugDetailForm.type;
                 this.onlineBugForm.remark = bugDetailForm.remark;
                 this.onlineBugForm.isSolved = bugDetailForm.isSolved;
@@ -1550,6 +1717,10 @@
             handleCurrentChange(currentPage){
                 this.bugList.pageNum = currentPage;
                 this.fetchBugPage();
+            },
+            handleTaskBugChange(currentPage){
+                this.mantisBugReqDTO4.pageNum = currentPage;
+                this.fetchBugStatsGroupByTask();
             },
             leaveHandleCurrentChange(currentPage){
                 this.leaveList.pageNum = currentPage;
@@ -1962,6 +2133,75 @@
                     ]
                 });
             },
+            drawLine8(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart8'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '测试bug周统计折线图',
+                        x:'left'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        x:'right',
+                        data: this.userNameList
+                    },
+                    xAxis: {
+                        data: this.dateList
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: '数量',
+                            min: 0,
+                            splitLine:{
+                                show:false
+                            },
+                        }
+                    ],
+                    series: this.seriesDataList
+                });
+            },
+            drawLine9(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart9'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '线上bug统计图',
+                        x:'center',
+                        subtext:'总计: '+this.onlineBugTotalNum+ ' 个'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: this.onlineBugUserList
+                    },
+                    series: [
+                        {
+                            name: '线上bug',
+                            type: 'pie',
+                            radius : '80%',
+                            center: ['50%', '60%'],
+                            data:this.seriesDataList2,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                });
+            },
             selectTaskByYear(){
                 if(this.whichYear1){
                     this.taskReqDTO.whichYear = moment(this.whichYear1).format("YYYY-MM-DD")
@@ -2204,16 +2444,22 @@
                     this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
                 }
                 let param = this.onlineBugForm;
+                if (param.demandSystemId != null && param.demandSystemId != ''){
+                    var demandSystems = this.demandSystemList.filter(demandSystem1=>
+                        demandSystem1.id === param.demandSystemId
+                    )
+                    param.demandSystemName = demandSystems[0].name
+                }
                 param.projectId = param.projectId.trim()
                 param.description = param.description.trim()
                 param['bugUsers'] = this.bugUsers;
                 Http.zsyPostHttp('/bug/add-bug', param, (resp) => {
                     this.$message({
                         showClose: true,
-                        message: 'Bug处理结果创建成功',
+                        message: 'Bug处理创建成功',
                         type: 'success'
                     });
-                    this.onlineBugForm.projectId = this.onlineBugForm.description = '';
+                    this.onlineBugForm.projectId = this.onlineBugForm.description = this.onlineBugForm.demandSystemId = this.onlineBugForm.demandSystemName = '';
                     this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
                     this.createBugSolvingVisible1 = false
                     this.bugUsers = [];
@@ -2248,13 +2494,19 @@
                 let param = this.onlineBugForm;
                 param.description = param.description.trim()
                 param['bugUsers'] = this.bugUsers;
+                if (param.demandSystemId != null && param.demandSystemId != ''){
+                    var demandSystems = this.demandSystemList.filter(demandSystem1=>
+                        demandSystem1.id === param.demandSystemId
+                    )
+                    param.demandSystemName = demandSystems[0].name
+                }
                 Http.zsyPutHttp('/bug/update-bug/'+this.modifyId, param, (resp) => {
                     this.$message({
                         showClose: true,
-                        message: 'Bug处理结果更新成功',
+                        message: 'Bug处理更新成功',
                         type: 'success'
                     });
-                    this.onlineBugForm.projectId = this.onlineBugForm.description = '';
+                    this.onlineBugForm.projectId = this.onlineBugForm.description = this.onlineBugForm.demandSystemId = this.onlineBugForm.demandSystemName = '';
                     this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
                     this.updateBugSolvingVisible1 = false
                     this.bugUsers = [];
@@ -2504,6 +2756,182 @@
                         this.checkInUsers = res.data
                     }
                 })
+            },
+
+            //查询反馈系统
+            fetchDemandSystem(){
+                Http.zsyGetHttp('/mantis-bug/category/list',{},(res=>{
+                    this.demandSystemList = res.data;
+                }))
+            },
+            //按年月查询测试人员bug统计情况
+            fetchMantisBugStatsGroupByUser(){
+                Http.zsyPostHttp('/mantis-bug/stats/user',this.mantisBugReqDTO1,(res=>{
+                    this.mantisUserBugStatsList = res.data
+                }))
+            },
+            changeMonth1(){
+                if (this.yearMonth1 != null && this.yearMonth1 != ''){
+                    let today = new Date(this.yearMonth1)
+                    var month=today.getMonth();
+                    var nextMonth=++month;
+                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    var oneDay=1000*60*60*24;
+                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
+                    let beginTime = moment(this.yearMonth1).format("YYYY-MM-DD 00:00:00");
+                    let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
+                    this.mantisBugReqDTO1.beginTime = beginTime;
+                    this.mantisBugReqDTO1.endTime = endTime;
+                    this.fetchMantisBugStatsGroupByUser();
+                }else {
+                    this.mantisBugReqDTO1.beginTime = '';
+                    this.mantisBugReqDTO1.endTime = '';
+                    this.fetchMantisBugStatsGroupByUser();
+                }
+            },
+            changeMonth2(){
+                if (this.yearMonth2 != null && this.yearMonth2 != ''){
+                    let today = new Date(this.yearMonth2)
+                    var month=today.getMonth();
+                    var nextMonth=++month;
+                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    var oneDay=1000*60*60*24;
+                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                    //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
+                    let beginTime = moment(this.yearMonth2).format("YYYY-MM-DD 00:00:00");
+                    let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
+                    this.mantisBugReqDTO3.beginTime = beginTime;
+                    this.mantisBugReqDTO3.endTime = endTime;
+                    this.mantisUserBugMonthList = [];
+                    this.seriesDataList2 = [];
+                    this.onlineBugUserList = [];
+                    this.fetchOnlineBugGroupByUser();
+                }else {
+                    this.mantisUserBugMonthList = [];
+                    this.seriesDataList2 = [];
+                    this.onlineBugUserList = [];
+                    this.mantisBugReqDTO3.beginTime = '';
+                    this.mantisBugReqDTO3.endTime = '';
+                    this.fetchOnlineBugGroupByUser();
+                }
+            },
+            changeMonth3(){
+                if (this.yearMonth3 != null && this.yearMonth3 != ''){
+                    let today = new Date(this.yearMonth3)
+                    var month=today.getMonth();
+                    var nextMonth=++month;
+                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    var oneDay=1000*60*60*24;
+                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                    //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
+                    let beginTime = moment(this.yearMonth3).format("YYYY-MM-DD 00:00:00");
+                    let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
+                    this.mantisBugReqDTO4.beginTime = beginTime;
+                    this.mantisBugReqDTO4.endTime = endTime;
+                    this.fetchBugStatsGroupByTask();
+                }else {
+                    this.mantisBugReqDTO4.beginTime = '';
+                    this.mantisBugReqDTO4.endTime = '';
+                    this.fetchBugStatsGroupByTask();
+                }
+            },
+            changeMonth4(){
+                if (this.yearMonth4 != null && this.yearMonth4 != ''){
+                    let today = new Date(this.yearMonth4)
+                    var month=today.getMonth();
+                    var nextMonth=++month;
+                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    var oneDay=1000*60*60*24;
+                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                    //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
+                    let beginTime = moment(this.yearMonth4).format("YYYY-MM-DD 00:00:00");
+                    let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
+                    this.mantisUserBugWeekList = [];
+                    this.seriesDataList = [];
+                    this.mantisBugReqDTO2.beginTime = beginTime;
+                    this.mantisBugReqDTO2.endTime = endTime;
+                    this.fetchBugWeekGroupByUser();
+                }else {
+                    this.mantisUserBugWeekList = [];
+                    this.seriesDataList = [];
+                    this.mantisBugReqDTO2.beginTime = '';
+                    this.mantisBugReqDTO2.endTime = '';
+                    this.fetchBugWeekGroupByUser();
+                }
+            },
+            changeWeek(){
+              if (this.yearWeek != null && this.yearWeek != ''){
+                  var weekFisrt = new Date(this.yearWeek);
+                  var time1=weekFisrt.getFullYear()+"-"+(weekFisrt.getMonth()+1)+"-"+weekFisrt.getDate();//time1表示当前时间
+                  var date2 = new Date(weekFisrt);
+                  date2.setDate(weekFisrt.getDate() + 6);
+                  var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
+                  var beginTime = time1+' 00:00:00';
+                  var endTime = time2+' 23:59:59';
+                  this.mantisUserBugWeekList = [];
+                  this.seriesDataList = [];
+                  this.mantisBugReqDTO2.beginTime = beginTime;
+                  this.mantisBugReqDTO2.endTime = endTime;
+                  this.fetchBugWeekGroupByUser();
+              }else {
+                  this.mantisUserBugWeekList = [];
+                  this.seriesDataList = [];
+                  this.mantisBugReqDTO2.beginTime = beginTime;
+                  this.mantisBugReqDTO2.endTime = endTime;
+                  this.fetchBugWeekGroupByUser();
+              }
+            },
+            importBugInfo(){
+                Http.zsyPostHttp('/mantis-bug/import/53',{},(res=>{
+                    if (res.errMsg == '执行成功'){
+                        this.$message({
+                            showClose: true,
+                            message: '导入成功',
+                            type: 'success'
+                        });
+                    }
+                }))
+            },
+            fetchBugWeekGroupByUser(){
+                Http.zsyPostHttp('/mantis-bug/bug-week/user',this.mantisBugReqDTO2,(res=>{
+                    this.mantisUserBugWeekList = res.data;
+
+                    this.mantisUserBugWeekList.forEach(bugWeek=>{
+                        this.dateList = bugWeek.dateStrList;
+                        this.weekdayList = bugWeek.weekdayList;
+                        this.userNameList.push(bugWeek.userName)
+                        var seriesData = {
+                            'name':bugWeek.userName,
+                            'type':'line',
+                            'data':bugWeek.bugNumList
+                        }
+                        this.seriesDataList.push(seriesData)
+                    })
+                    this.drawLine8()
+                }))
+            },
+            fetchOnlineBugGroupByUser(){
+                Http.zsyPostHttp('/mantis-bug/online-bug/user',this.mantisBugReqDTO3,(res=>{
+                    this.mantisUserBugMonthList = res.data;
+
+                    this.mantisUserBugMonthList.forEach(bugUserMonth=>{
+                        var bugUserMonthData = {
+                            'name': bugUserMonth.userName,
+                            'value': bugUserMonth.bugNum
+                        }
+                        this.onlineBugUserList.push(bugUserMonth.userName);
+                        this.seriesDataList2.push(bugUserMonthData);
+                        this.onlineBugTotalNum += bugUserMonth.bugNum;
+                    })
+                    this.drawLine9()
+                }))
+            },
+            fetchBugStatsGroupByTask(){
+                Http.zsyPostHttp('/mantis-bug/stats/task',this.mantisBugReqDTO4,(res=>{
+                    this.taskBugStatsList = res.data.list;
+                    this.taskBugPage.total = res.data.total;
+                }))
             }
             // -- sch
         }
@@ -2787,6 +3215,14 @@
         box-shadow: 0 0 10px #ccc;
         margin: auto;
         height: 500px;
+    }
+    .bug-stats-con {
+        width: 1200px;
+        font-size: 14px;
+        background: #fff;
+        padding: 30px 0;
+        box-shadow: 0 0 10px #ccc;
+        margin: auto;
     }
 
     .steps-body {
