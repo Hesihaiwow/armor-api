@@ -92,7 +92,7 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="测试问题统计" name="mantisBug"  style="">
+            <el-tab-pane label="测试问题统计" name="mantisBug" v-if="permit" style="">
                 <div class="bug-stats-con">
                     <div class="add-member-basic-msg fl"><el-date-picker
                             v-model="yearMonth3"
@@ -2908,7 +2908,10 @@
                         }
                         this.seriesDataList.push(seriesData)
                     })
-                    this.drawLine8()
+                    if (this.permit){
+                        this.drawLine8()
+                    }
+
                 }))
             },
             fetchOnlineBugGroupByUser(){
@@ -2924,7 +2927,9 @@
                         this.seriesDataList2.push(bugUserMonthData);
                         this.onlineBugTotalNum += bugUserMonth.bugNum;
                     })
-                    this.drawLine9()
+                    if (this.permit){
+                        this.drawLine9()
+                    }
                 }))
             },
             fetchBugStatsGroupByTask(){
