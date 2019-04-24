@@ -118,7 +118,7 @@ public class ZSYBugService implements IZSYBugService {
                 onlineBugResDTO.setDevelopers(developers);
                 onlineBugResDTO.setTesters(testers);
                 if (onlineBugBO.getProjectId() != null){
-                    onlineBugResDTO.setDemandSystem("知心慧学");
+                    onlineBugResDTO.setDemandSystemName("知心慧学");
                 }
                 if (onlineBugBO.getProcessTime() != null && onlineBugBO.getProjectId() != null){
                     onlineBugResDTO.setIsSolved(1);
@@ -146,8 +146,8 @@ public class ZSYBugService implements IZSYBugService {
             throw new ZSYServiceException("无法找到Bug处理结果,id:" + id);
         }
         BeanUtils.copyProperties(onlineBugBO,resDTO);
-        if (resDTO.getDemandSystem() == null){
-            resDTO.setDemandSystem("知心慧学");
+        if (resDTO.getDemandSystemName() == null){
+            resDTO.setDemandSystemName("知心慧学");
         }
         return resDTO;
     }
@@ -250,7 +250,8 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setOrigin(reqDTO.getOrigin());
         bugManage.setAccountInfo(reqDTO.getAccountInfo());
         bugManage.setType(reqDTO.getType());
-        bugManage.setDemandSystem(reqDTO.getDemandSystem());
+        bugManage.setDemandSystemId(reqDTO.getDemandSystemId());
+        bugManage.setDemandSystemName(reqDTO.getDemandSystemName());
         bugManage.setIsSolved(reqDTO.getIsSolved());
         bugManage.setRemark(reqDTO.getRemark());
         bugManageMapper.insertBugManager(bugManage);
@@ -418,7 +419,8 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setOrigin(reqDTO.getOrigin());
         bugManage.setAccountInfo(reqDTO.getAccountInfo());
         bugManage.setType(reqDTO.getType());
-        bugManage.setDemandSystem(reqDTO.getDemandSystem());
+        bugManage.setDemandSystemName(reqDTO.getDemandSystemName());
+        bugManage.setDemandSystemId(reqDTO.getDemandSystemId());
         bugManage.setIsSolved(reqDTO.getIsSolved());
         bugManage.setRemark(reqDTO.getRemark());
         bugManageMapper.updateBugManager(bugManage);

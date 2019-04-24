@@ -72,7 +72,8 @@ public class OnlineBugResDTO {
      * 反馈系统
      * @return
      */
-    private String demandSystem;
+    private Integer demandSystemId;
+    private String demandSystemName;
 
     public Date getDiscoverTime() {
         return discoverTime;
@@ -82,12 +83,20 @@ public class OnlineBugResDTO {
         this.discoverTime = discoverTime;
     }
 
-    public String getDemandSystem() {
-        return demandSystem;
+    public Integer getDemandSystemId() {
+        return demandSystemId;
     }
 
-    public void setDemandSystem(String demandSystem) {
-        this.demandSystem = demandSystem;
+    public void setDemandSystemId(Integer demandSystemId) {
+        this.demandSystemId = demandSystemId;
+    }
+
+    public String getDemandSystemName() {
+        return demandSystemName;
+    }
+
+    public void setDemandSystemName(String demandSystemName) {
+        this.demandSystemName = demandSystemName;
     }
 
     public Date getProcessTime() {
