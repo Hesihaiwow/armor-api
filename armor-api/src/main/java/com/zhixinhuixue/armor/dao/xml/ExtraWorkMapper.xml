@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYExtraWorkMapper">
+    <resultMap id="BaseExtraWork" type="com.zhixinhuixue.armor.model.pojo.ExtraWork">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"></result>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
+        <result column="work_hours" property="workHours" jdbcType="FLOAT"></result>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"></result>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
+        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <resultMap id="BaseTaskMap" type="com.zhixinhuixue.armor.model.pojo.Task">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+        <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+        <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
+        <result column="test_time" jdbcType="TIMESTAMP" property="testTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="review_status" jdbcType="INTEGER" property="reviewStatus"/>
+        <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="facility" jdbcType="INTEGER" property="facility"/>
+        <result column="examine" jdbcType="INTEGER" property="examine"/>
+    </resultMap>
+
+    <insert id="addExtraWork" parameterType="com.zhixinhuixue.armor.model.pojo.ExtraWork">
+        INSERT INTO `extra_work`
+        (`id`,`user_id`,`reason`,`begin_time`,`end_time`,`work_hours`,`is_delete`,`review_status`,`check_time`,`create_time`,`update_time`)
+        VALUES
+        (#{extraWork.id,jdbcType=BIGINT},#{extraWork.userId,jdbcType=BIGINT},#{extraWork.reason,jdbcType=VARCHAR}
+        ,#{extraWork.beginTime,jdbcType=TIMESTAMP},#{extraWork.endTime,jdbcType=TIMESTAMP},#{extraWork.workHours,jdbcType=FLOAT}
+        ,#{extraWork.isDelete,jdbcType=INTEGER},#{extraWork.reviewStatus,jdbcType=INTEGER},#{extraWork.checkTime,jdbcType=TIMESTAMP}
+        ,#{extraWork.createTime,jdbcType=TIMESTAMP},#{extraWork.updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="addExtraWorkTaskByList" parameterType="com.zhixinhuixue.armor.model.pojo.ExtraWorkTask">
+        INSERT INTO `extra_work_task`
+        (`id`,`ew_id`,`task_id`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.ewId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+    <!--更新加班申请-->
+    <update id="updateExtraWorkById" parameterType="com.zhixinhuixue.armor.model.pojo.ExtraWork">
+        UPDATE `extra_work`
+        <set>
+            <if test="extraWork.userId != null">
+                `user_id` = #{extraWork.userId,jdbcType=BIGINT},
+            </if>
+            <if test="extraWork.reason != null and extraWork.reason != '' ">
+                `reason` = #{extraWork.reason,},
+            </if>
+            <if test="extraWork.createTime != null">
+                `create_time` = #{extraWork.createTime,},
+            </if>
+            <if test="extraWork.updateTime != null">
+                `update_time` = #{extraWork.updateTime,},
+            </if>
+            <if test="extraWork.beginTime != null">
+                `begin_time` = #{extraWork.beginTime,},
+            </if>
+            <if test="extraWork.endTime != null">
+                `end_time` = #{extraWork.endTime,},
+            </if>
+            <if test="extraWork.workHours != null">
+                `work_hours` = #{extraWork.workHours,},
+            </if>
+            <if test="extraWork.isDelete != null">
+                `is_delete` = #{extraWork.isDelete,},
+            </if>
+            <if test="extraWork.reviewStatus != null">
+                `review_status` = #{extraWork.reviewStatus,},
+            </if>
+            <if test="extraWork.checkTime != null">
+                `check_time` = #{extraWork.checkTime,},
+            </if>
+        </set>
+        where `id` = #{ewId}
+    </update>
+
+    <!--根据ewId删除加班关联任务-->
+    <delete id="deleteExtraWorkTaskByEwId">
+        DELETE FROM `extra_work_task` WHERE `ew_id` = #{ewId}
+    </delete>
+
+    <!--查询我的加班申请(待审核)-->
+    <select id="selectWaitExtraWorkByPage" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0 AND `user_id` = #{userId} ORDER BY `create_time` DESC
+    </select>
+
+    <!--根据ewId  查询关联任务集合-->
+    <select id="selectTasksByEwId" resultMap="BaseTaskMap">
+        SELECT t.* FROM task t LEFT JOIN extra_work_task ewt on t.id = ewt.task_id
+        LEFT JOIN extra_work ew on ewt.ew_id = ew.id
+        WHERE ew.id = #{ewId}
+    </select>
+
+    <!--查询我的加班申请(审核通过)-->
+    <select id="selectAccessExtraWorkByPage" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 AND `user_id` = #{userId} ORDER BY `check_time` DESC
+    </select>
+
+    <!--查询审核中的加班申请-->
+    <select id="selectCheckingExtraWorkByPage" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0 ORDER BY `create_time` DESC
+    </select>
+
+    <!--查询审核通过的加班申请-->
+    <select id="selectCheckedExtraWorkByPage" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 ORDER BY `check_time` DESC
+    </select>
+
+    <!--根据id查加班申请-->
+    <select id="selectById" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `id` = #{ewId}
+    </select>
+
+    <!--根据用户和时间段查询加班申请-->
+    <select id="selectByUserAndTimeRange" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `user_id` = #{userId} AND `review_status` = 2
+        <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
+        <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
+    </select>
+
+    <!--查询某天某人的加班申请时间-->
+    <select id="selectEWorkHours" resultType="java.lang.Float">
+        SELECT ifnull(SUM(`work_hours`),0) FROM `extra_work` WHERE `user_id` = #{userId} AND `review_status` = 2
+        <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
+        <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
+    </select>
+</mapper>

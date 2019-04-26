@@ -99,8 +99,15 @@
                         li.parentNode.insertBefore(dom, li);
                     }
                     vm.getData2();
+                    this.fetchUnreadNoticeNum();
                 });
 
+            },
+            //查询所有未读数量
+            fetchUnreadNoticeNum(){
+                this.http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
+                    window.localStorage.setItem("unreadNum",res.data.count)
+                })
             },
             allowDrop: function (event) {
                 event.preventDefault();

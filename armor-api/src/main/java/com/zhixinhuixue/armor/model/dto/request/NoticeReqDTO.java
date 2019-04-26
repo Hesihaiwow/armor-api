@@ -18,6 +18,11 @@ public class NoticeReqDTO {
     private Integer readStatus;
 
     /**
+     * 用户id
+     */
+    private Long userId;
+
+    /**
      * 通知创建时间开始
      * @return
      */
@@ -28,6 +33,14 @@ public class NoticeReqDTO {
      * @return
      */
     private Date endTime;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public Integer getReadStatus() {
         return readStatus;

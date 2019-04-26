@@ -8,6 +8,7 @@
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="hours" jdbcType="DECIMAL" property="hours" />
     <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
   </resultMap>
 
@@ -19,9 +20,9 @@
   </resultMap>
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskExpand">
-    insert into task_expand (te_id, task_id, user_id, status, hours, reason, end_time)
+    insert into task_expand (te_id, task_id, user_id, status, hours, reason, end_time,create_time)
     values (#{teId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER},
-     #{hours,jdbcType=DECIMAL} , #{reason,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP})
+     #{hours,jdbcType=DECIMAL} , #{reason,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
 
   <!--延长任务时间-->
@@ -51,6 +52,7 @@
     <if test="userId != null">
       AND te.user_id = #{userId}
     </if>
+    ORDER BY te.create_time DESC,te.te_id DESC
   </select>
 
   <update id="reviewStatus" parameterType="java.util.Map" >

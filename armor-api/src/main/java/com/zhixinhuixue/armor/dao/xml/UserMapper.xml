@@ -19,6 +19,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
     <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="check_sort" property="checkSort" jdbcType="INTEGER"></result>
   </resultMap>
 
   <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.UserBo" extends="BaseResultMap">
@@ -31,13 +32,13 @@
     insert into `user` (id, `name`, account,
     password, phone, last_login,
     department_id, job_name,job_role, integral,
-    status, create_time, is_delete,user_role,email
+    status, create_time, is_delete,user_role,email,check_sort
     )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
     #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP},
     #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{jobRole,jdbcType=INTEGER}, #{integral,jdbcType=DECIMAL},
     #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER},
-    #{userRole,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR})
+    #{userRole,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR},#{checkSort,jdbcType=INTEGER})
   </insert>
 
   <!-- 根据账号查询用户 -->
@@ -122,6 +123,9 @@
       <if test="email != null and email!=''">
         email = #{email,jdbcType=VARCHAR},
       </if>
+      <if test="checkSort != null and checkSort != ''">
+        check_sort = #{checkSort,jdbcType=INTEGER}
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -151,6 +155,12 @@
     LEFT JOIN `task` t ON t.create_by = u.id
     where t.id = #{taskId}
     limit 1
+  </select>
+
+
+  <select id="selectByEwId" resultMap="BaseResultMap">
+      select * from `user` u left join `extra_work` ew on u.id = ew.user_id
+      where ew.id = #{ewId}
   </select>
   <!-- sch -->
 

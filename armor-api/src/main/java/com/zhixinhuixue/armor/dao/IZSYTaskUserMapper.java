@@ -68,5 +68,13 @@ public interface IZSYTaskUserMapper {
      */
     List<Long> selectUserByTaskId(@Param("id") Long id);
 
+    /**
+     * 删除taskUser
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    int deleteByTaskIdAndUserId(@Param("taskId")Long taskId, @Param("userId")Long userId);
+
     // -- sch
 }

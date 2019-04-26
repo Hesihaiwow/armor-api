@@ -65,7 +65,14 @@
     ORDER BY user_leave.begin_time DESC
   </select>
 
-  <update id="updateLeave">
+  <!--根据用户和起止时间查询请假-->
+    <select id="selectByUserAndTime" resultMap="BaseResultMap">
+        SELECT * FROM `user_leave` WHERE `user_id` = #{userId} and `review_status` = 3
+        <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
+        <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
+    </select>
+
+    <update id="updateLeave">
     UPDATE user_leave
         <set>
          description= #{description,jdbcType=BIGINT}, hours= #{hours,jdbcType=DECIMAL},

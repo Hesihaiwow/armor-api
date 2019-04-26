@@ -1139,10 +1139,10 @@
 
         },
         beforeMount: function () {
+            this.fetchNewDemandList()
             this.getDefaultSessionScreenData();
             this.fetchIntroducerList()
             this.fetchOriginList()
-            this.fetchNewDemandList()
             this.fetchUserList()
             this.fetchProjectList()
             this.fetchStageList()

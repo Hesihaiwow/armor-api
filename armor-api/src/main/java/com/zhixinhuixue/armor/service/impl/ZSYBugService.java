@@ -14,11 +14,12 @@ import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.BugManageBO;
 import com.zhixinhuixue.armor.model.bo.BugManageListBO;
+import com.zhixinhuixue.armor.model.bo.OnlineBugBO;
 import com.zhixinhuixue.armor.model.dto.request.BugListReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.BugManageAddReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.BugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.BugUserReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.BugDetailResDTO;
-import com.zhixinhuixue.armor.model.dto.response.BugPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
@@ -28,6 +29,7 @@ import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -81,6 +83,75 @@ public class ZSYBugService implements IZSYBugService {
 
         return new PageInfo<>(bugPageResDTOS);
     }
+
+
+    /**
+     * 分页查询线上bug
+     * @author sch
+     * @param bugListReqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<OnlineBugResDTO> getBugManagePage(BugListReqDTO bugListReqDTO) {
+        PageHelper.startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
+        Page<OnlineBugBO> onlineBugBOS = bugManageMapper.selectOnlineBugPage(bugListReqDTO);
+        Page<OnlineBugResDTO> page = new Page<>();
+        if (!CollectionUtils.isEmpty(onlineBugBOS)){
+            BeanUtils.copyProperties(onlineBugBOS,page);
+            onlineBugBOS.stream().forEach(onlineBugBO -> {
+                OnlineBugResDTO onlineBugResDTO = new OnlineBugResDTO();
+                BeanUtils.copyProperties(onlineBugBO,onlineBugResDTO);
+                String developers = "";
+                String testers = "";
+                if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())){
+                    for (Long userId : onlineBugBO.getUserIds()) {
+                        User user = userMapper.selectById(userId);
+                        if (user.getDepartmentId().equals(87526048211664896L)){
+                            developers = developers  + user.getName()+ " ";
+                        }
+                        if (user.getDepartmentId().equals(87526088225325056L)){
+                            testers = testers  + user.getName()+ " ";
+                        }
+                    }
+                }
+                onlineBugResDTO.setDevelopers(developers);
+                onlineBugResDTO.setTesters(testers);
+                if (onlineBugBO.getProjectId() != null){
+                    onlineBugResDTO.setDemandSystem("知心慧学");
+                }
+                if (onlineBugBO.getProcessTime() != null && onlineBugBO.getProjectId() != null){
+                    onlineBugResDTO.setIsSolved(1);
+                }
+                if (onlineBugBO.getType() == null){
+                    onlineBugResDTO.setType(0);
+                }
+                page.add(onlineBugResDTO);
+            });
+        }
+        return new PageInfo<>(page);
+    }
+
+    /**
+     * 线上bug详情
+     * @author sch
+     * @param id
+     * @return
+     */
+    @Override
+    public OnlineBugDetailResDTO getOnlineBugDetail(Long id) {
+        OnlineBugDetailResDTO resDTO = new OnlineBugDetailResDTO();
+        OnlineBugBO onlineBugBO = bugManageMapper.selectOnlineBugDetailById(id);
+        if (onlineBugBO == null){
+            throw new ZSYServiceException("无法找到Bug处理结果,id:" + id);
+        }
+        BeanUtils.copyProperties(onlineBugBO,resDTO);
+        if (resDTO.getDemandSystem() == null){
+            resDTO.setDemandSystem("知心慧学");
+        }
+        return resDTO;
+    }
+
 
     /**
      * 添加bug处理结果
@@ -145,6 +216,79 @@ public class ZSYBugService implements IZSYBugService {
         });
 
     }
+
+
+    /**
+     * 添加新bug
+     * @author sch
+     * @param reqDTO
+     */
+    @Override
+    public void addNewBug(BugManageAddReqDTO reqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.EMPLOYEE.getValue()) {
+            throw new ZSYServiceException("当前账号无权限");
+        }
+        User userTemp = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
+        if (userTemp == null || userTemp.getIsDelete() == 1) {
+            throw new ZSYServiceException("用户不存在");
+        }
+        // 判断含有重复的负责人
+        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+            List<Long> users = reqDTO.getBugUsers().stream().map(BugUserReqDTO::getUserId).distinct().collect(Collectors.toList());
+            if (users.size() < reqDTO.getBugUsers().size()) {
+                throw new ZSYServiceException("负责人重复");
+            }
+        }
+
+        OnlineBugManage bugManage = new OnlineBugManage();
+        bugManage.setId(snowFlakeIDHelper.nextId());
+        bugManage.setCreateTime(new Date());
+        bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
+        bugManage.setProcessTime(reqDTO.getProcessTime());
+        bugManage.setDescription(reqDTO.getDescription());
+        bugManage.setProjectId(reqDTO.getProjectId());
+        bugManage.setOrigin(reqDTO.getOrigin());
+        bugManage.setAccountInfo(reqDTO.getAccountInfo());
+        bugManage.setType(reqDTO.getType());
+        bugManage.setDemandSystem(reqDTO.getDemandSystem());
+        bugManage.setIsSolved(reqDTO.getIsSolved());
+        bugManage.setRemark(reqDTO.getRemark());
+        bugManageMapper.insertBugManager(bugManage);
+
+        // 插入Bug处理用户
+        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+            List<BugUser> bugUsers = Lists.newArrayList();
+            reqDTO.getBugUsers().forEach(user -> {
+                BugUser bugUser = new BugUser();
+                bugUser.setBugId(bugManage.getId());
+                bugUser.setId(snowFlakeIDHelper.nextId());
+                bugUser.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+                bugUser.setUserId(user.getUserId());
+                bugUsers.add(bugUser);
+            });
+            bugUserMapper.insertList(bugUsers);
+        }
+
+        reqDTO.getBugUsers().forEach(user -> {
+            UserIntegral userIntegral = new UserIntegral();
+            userIntegral.setId(snowFlakeIDHelper.nextId());
+            userIntegral.setUserId(user.getUserId());
+            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
+            userIntegral.setTaskId(bugManage.getId());
+            userIntegral.setDescription("线上Bug处理");
+            userIntegral.setCreateTime(new Date());
+            userIntegralMapper.insert(userIntegral);
+            // 修改用户积分
+            User userBug = userMapper.selectById(user.getUserId());
+            BigDecimal currentIntegral = userBug.getIntegral();
+            User userBO = new User();
+            userBO.setId(user.getUserId());
+            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
+            userMapper.updateSelectiveById(userBO);
+        });
+    }
+
 
     /**
      * 更新Bug处理
@@ -234,6 +378,121 @@ public class ZSYBugService implements IZSYBugService {
         });
     }
 
+
+    /**
+     * 更新线上bug
+     * @author sch
+     * @param reqDTO
+     * @param id
+     */
+    @Override
+    public void updateOnlineBug(BugManageAddReqDTO reqDTO, Long id) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.EMPLOYEE.getValue()) {
+            throw new ZSYServiceException("当前账号无权限");
+        }
+        User userTemp = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
+        if (userTemp == null || userTemp.getIsDelete() == 1) {
+            throw new ZSYServiceException("用户不存在");
+        }
+
+        OnlineBugBO bugManageBO = bugManageMapper.selectOnlineBugDetailById(id);
+        if (bugManageBO == null) {
+            throw new ZSYServiceException("无法找到Bug信息,id:" + id);
+        }
+
+        // 判断含有重复的负责人
+        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+            List<Long> users = reqDTO.getBugUsers().stream().map(BugUserReqDTO::getUserId).distinct().collect(Collectors.toList());
+            if (users.size() < reqDTO.getBugUsers().size()) {
+                throw new ZSYServiceException("负责人重复");
+            }
+        }
+
+        OnlineBugManage bugManage = new OnlineBugManage();
+        bugManage.setId(id);
+        bugManage.setCreateTime(bugManageBO.getCreateTime());
+        bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
+        bugManage.setProcessTime(reqDTO.getProcessTime());
+        bugManage.setDescription(reqDTO.getDescription());
+        bugManage.setProjectId(reqDTO.getProjectId());
+        bugManage.setOrigin(reqDTO.getOrigin());
+        bugManage.setAccountInfo(reqDTO.getAccountInfo());
+        bugManage.setType(reqDTO.getType());
+        bugManage.setDemandSystem(reqDTO.getDemandSystem());
+        bugManage.setIsSolved(reqDTO.getIsSolved());
+        bugManage.setRemark(reqDTO.getRemark());
+        bugManageMapper.updateBugManager(bugManage);
+
+        if (bugUserMapper.deleteById(id) == 0) {
+            throw new ZSYServiceException("删除Bug用户失败");
+        }
+
+        // 插入Bug处理用户
+        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+            List<BugUser> bugUsers = Lists.newArrayList();
+            reqDTO.getBugUsers().forEach(user -> {
+                BugUser bugUser = new BugUser();
+                bugUser.setBugId(bugManage.getId());
+                bugUser.setId(snowFlakeIDHelper.nextId());
+                bugUser.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+                bugUser.setUserId(user.getUserId());
+                bugUsers.add(bugUser);
+            });
+            bugUserMapper.insertList(bugUsers);
+        }
+
+        //将旧的Bug处理积分还原
+        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
+        userIntegrals.forEach(userIntegral -> {
+            // 修改用户积分
+            User userBug = userMapper.selectById(userIntegral.getUserId());
+            BigDecimal currentIntegral = userBug.getIntegral();
+            User userBO = new User();
+            userBO.setId(userBug.getId());
+            userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
+            userMapper.updateSelectiveById(userBO);
+            userIntegralMapper.deleteUserIntegral(id,userIntegral.getUserId());
+        });
+
+        reqDTO.getBugUsers().forEach(user -> {
+            UserIntegral userIntegral = new UserIntegral();
+            userIntegral.setId(snowFlakeIDHelper.nextId());
+            userIntegral.setUserId(user.getUserId());
+            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
+            userIntegral.setTaskId(bugManage.getId());
+            userIntegral.setDescription("线上Bug处理");
+            userIntegral.setCreateTime(new Date());
+            userIntegralMapper.insert(userIntegral);
+            // 修改用户积分
+            User userBug = userMapper.selectById(user.getUserId());
+            BigDecimal currentIntegral = userBug.getIntegral();
+            User userBO = new User();
+            userBO.setId(user.getUserId());
+            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
+            userMapper.updateSelectiveById(userBO);
+        });
+    }
+
+    /**
+     * 查询各个分类的线上bug数量
+     * @author sch
+     * @return
+     */
+    @Override
+    public OnlineBugNumResDTO getDiffTypeBugNum(BugListReqDTO bugListReqDTO) {
+        Integer optimizationNum = bugManageMapper.selectCountByType(1,bugListReqDTO);
+        Integer assistanceNum = bugManageMapper.selectCountByType(2,bugListReqDTO);
+        Integer bugNum = bugManageMapper.selectCountByType(0,bugListReqDTO);
+        Integer totalNum = bugManageMapper.selectCountTotal();
+        OnlineBugNumResDTO resDTO = new OnlineBugNumResDTO();
+        resDTO.setAssistanceNum(assistanceNum);
+        resDTO.setBugNum(bugNum);
+        resDTO.setOptimizationNum(optimizationNum);
+        resDTO.setTotalNum(totalNum);
+        return resDTO;
+    }
+
     /**
      * 获取bug处理详情
      * @param id
@@ -277,4 +536,5 @@ public class ZSYBugService implements IZSYBugService {
             throw new ZSYServiceException("删除Bug用户处理记录失败");
         }
     }
+
 }

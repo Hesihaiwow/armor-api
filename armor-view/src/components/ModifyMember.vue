@@ -74,6 +74,12 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">考勤序号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="modifyForm.checkSort" placeholder="请输入考勤序号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">用户状态</div>
         <div class="ftp-msg fl">
           <el-select class="w280" v-model="modifyForm.status" placeholder="请选择状态">
@@ -111,6 +117,7 @@
           jobRole:'',
           phone:'',
           userRole:'',
+          checkSort:'',
           departmentId:'',
           status:'',
           email:''
@@ -141,6 +148,9 @@
           }, {
               value: 2,
               label: '普通成员'
+        },{
+            value:3,
+            label:'人事行政'
         }],
         statusOptions:[{
               value:0,
@@ -167,6 +177,7 @@
             this.modifyForm.status=res.data.status;
             this.modifyForm.email=res.data.email;
             this.modifyForm.departmentId=res.data.departmentId;
+            this.modifyForm.checkSort=res.data.checkSort;
             this.showAddPop = true;
         });
           Http.zsyGetHttp(`/dept/tree`,null,(res)=>{
@@ -185,6 +196,7 @@
         this.modifyForm.userRole='';
         this.modifyForm.email='';
         this.modifyForm.jobRole='';
+        this.modifyForm.checkSort='';
       },
       //部门ID
       setUserId(userId){
@@ -220,6 +232,10 @@
             this.warnMsg("请选择用户角色");
             return;
         }
+          if (Helper.trim(this.modifyForm.checkSort)==''){
+              this.warnMsg("请选择用户考勤序号");
+              return;
+          }
         Http.zsyPutHttp(`/user/${this.modifyForm.userId}`,this.modifyForm,(res)=>{
             this.hide();
             this.$message({

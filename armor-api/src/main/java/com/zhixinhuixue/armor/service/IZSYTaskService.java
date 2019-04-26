@@ -123,6 +123,14 @@ public interface IZSYTaskService {
     ZSYResult<List<TaskResDTO>> getAllWaitAudit();
 
     /**
+     * 获取所有待审核的任务
+     * @author sch
+     * @param pageNum
+     * @return
+     */
+    PageInfo<TaskResDTO> getPendingTaskPage(Integer pageNum);
+
+    /**
      * 获取所有审核通过的任务
      *
      * @return
@@ -281,6 +289,14 @@ public interface IZSYTaskService {
      * @return
      */
     List<TaskListResDTO> getMyTaskByStage(Long stageId);
+
+    /**
+     * 所有进行中的多人任务
+     * @author sch
+     * @return
+     */
+    List<TaskBaseResDTO> getAllMultipleTask();
+
 
     // -- sch
 }

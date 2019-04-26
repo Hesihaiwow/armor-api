@@ -45,14 +45,18 @@
     delete from user_week where task_id = #{taskId}
   </delete>
 
-  <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Double">
+    <!--删除userWeek-->
+    <delete id="deleteByTaskIdAndUserId">
+        delete from user_week where task_id = #{taskId} and user_id =#{userId}
+    </delete>
+
+    <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Double">
     SELECT IFNULL(sum(user_week.hours),0) FROM user_week
-    left join task on user_week.task_id = task.id  AND  task.review_status = 3
-    LEFT JOIN user_leave ul on ul.id = user_week.task_id
+    join task on user_week.task_id = task.id
       <if test="taskId!=0">
         and task.id != #{taskId}
       </if>
-      where  ul.id is null and user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year}
+      where user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year}
   </select>
 
   <!-- 周任务统计 -->

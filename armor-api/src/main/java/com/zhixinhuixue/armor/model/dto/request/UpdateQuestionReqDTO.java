@@ -34,7 +34,7 @@ public class UpdateQuestionReqDTO {
     private Date endTime;
 
     @NotNull(message = "工作时间不能为空")
-    private Integer workHour;
+    private Float workHour;
 
     private List<String> urlList;
 
@@ -86,11 +86,11 @@ public class UpdateQuestionReqDTO {
         this.endTime = endTime;
     }
 
-    public Integer getWorkHour() {
+    public Float getWorkHour() {
         return workHour;
     }
 
-    public void setWorkHour(Integer workHour) {
+    public void setWorkHour(Float workHour) {
         this.workHour = workHour;
     }
 

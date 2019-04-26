@@ -3,10 +3,14 @@
         <div class="notice-top clearfix">
             <div class="clearfix">
                 <div class="notice-top-list fl">
-                    <span class="ttl-name">读取状态:</span>
-                    <el-select clearable filterable no-match-text=" " v-model="readStatus" placeholder="请选择"
+                    <span class="ttl-name"  v-show="!showEveryoneVisible">读取状态:</span>
+                    <el-select  v-show="!showEveryoneVisible" clearable filterable no-match-text=" " v-model="readStatus" placeholder="请选择"
                                size="small" style="width:100px;margin-left: -50px">
                         <el-option v-for="item in readStatuses" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                    <el-select v-show="showEveryoneVisible" v-model="userId" clearable filterable  filterable no-match-text=" " placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
                     <el-date-picker
@@ -30,8 +34,9 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" size="small" @click="select">查询</el-button>
-                <el-button v-show="unreadNoticeNum > 0" type="primary" size="small" @click="readAll">标记全部已读</el-button>
-                <el-button v-show="userRole == 0" type="primary" size="small" @click="selectEveryoneNotice">查看所有人通知</el-button>
+                <el-button v-show="unreadNoticeNum > 0 && !showEveryoneVisible" type="primary" size="small" @click="readAll">标记全部已读</el-button>
+                <el-button v-show="userRole == 0 && !showEveryoneVisible" type="primary" size="small" @click="selectEveryoneNotice">查看所有人通知</el-button>
+                <el-button v-show="userRole == 0 && showEveryoneVisible" type="primary" size="small" @click="selectMyNotice">查看个人通知</el-button>
             </div>
         </div>
         <el-table :data="noticeData" border width="1200px" v-show="!showEveryoneVisible">
@@ -118,6 +123,7 @@
         name: "Notice",
         data(){
             return{
+                userList:[],
                 taskDetail:{},
                 taskLog: {
                     list: [],
@@ -133,16 +139,23 @@
                 pageNum:1,
                 pageNum1:1,
                 reqDTO:{
-                    pageNum:1
+                    pageNum:1,
+                    beginTime:'',
+                    endTime:'',
+                    readStatus:''
                 },
                 reqDTO1:{
-                    pageNum:1
+                    pageNum:1,
+                    beginTime:'',
+                    endTime:'',
+                    userId:''
                 },
                 noticePage:{
                     pageSize:10,
                     total:0
                 },
-                readStatus:'',
+                readStatus:null,
+                userId:null,
                 readStatuses: [
                     {id: 0, name: '未读'},
                     {id: 1, name: '已读'},
@@ -169,13 +182,20 @@
             }
         },
         created() {
-            this.fetchUnreadNoticeNum()
-            this.fetchAllNotice()
+            this.fetchUserList();
+            this.fetchUnreadNoticeNum();
+            this.fetchAllNotice();
         },
         beforeMount(){
             this.$root.eventBus.$emit("handleTabSelected", "notice");
         },
         methods:{
+            fetchUserList() {
+                let vm = this
+                Http.zsyGetHttp('/user/effective', {}, (resp) => {
+                    vm.userList = resp.data
+                })
+            },
             showTaskDetails(taskId){
                 Http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data
@@ -203,7 +223,7 @@
             },
             //查询所有通知
             fetchAllNotice(){
-                this.allShow = true
+                // this.allShow = true
                 Http.zsyPostHttp('/task/notification/all',this.reqDTO,(res)=>{
                     this.noticeData = res.data.list;
                     this.noticePage.total = res.data.total
@@ -226,21 +246,44 @@
                 this.reqDTO1.readStatus = null;
                 this.reqDTO1.beginTime = null;
                 this.reqDTO1.endTime = null;
+                this.reqDTO1.userId = null;
+            },
+            clearCondition(){
+                this.pageNum = 1
+                this.pageNum1 = 1
+                this.beginTime = null;
+                this.endTime = null;
+                this.readStatus = null;
+                this.userId = null;
             },
             select(){
-                this.showEveryoneVisible = false
-                this.pageNum = 1
-              this.clearReqDTO()
-              if (this.beginTime){
-                  this.reqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
-              }
-              if (this.endTime){
-                  this.reqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
-              }
-              if (this.readStatus != undefined && this.readStatus != null){
-                  this.reqDTO.readStatus = this.readStatus
-              }
-              this.fetchAllNotice()
+                //查询我的通知
+                if (this.showEveryoneVisible == false){
+                    this.clearReqDTO()
+                    if (this.beginTime){
+                        this.reqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                    }
+                    if (this.endTime){
+                        this.reqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
+                    }
+                    if (this.readStatus != undefined && this.readStatus != null){
+                        this.reqDTO.readStatus = this.readStatus
+                    }
+                    this.fetchAllNotice()
+                } else {
+                    this.clearReqDTO1();
+                    if (this.beginTime){
+                        this.reqDTO1.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                    }
+                    if (this.endTime){
+                        this.reqDTO1.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
+                    }
+                    if (this.userId != undefined && this.userId != null){
+                        this.reqDTO1.userId = this.userId;
+                    }
+                    this.fetchEveryoneNotice()
+                }
+
             },
             //阅读全部
             readAll(){
@@ -251,23 +294,36 @@
                 }).then(() => {
                     Http.zsyPutHttp(`/task/notification/read-all`, {}, (resp) => {
                         this.$message({showClose: true, message: '标记成功', type: 'success'});
-                        this.fetchUnreadNoticeNum()
+                        this.fetchUnreadNoticeNum();
+                        this.fetchAllNotice();
                     })
                     // window.history.go(0)
                 }).catch(() => {
                 });
             },
             selectEveryoneNotice(){
-                this.showEveryoneVisible = true
-                this.pageNum1 = 1
-                this.clearReqDTO1()
-                if (this.beginTime){
-                    this.reqDTO1.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
-                }
-                if (this.endTime){
-                    this.reqDTO1.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
-                }
+                this.showEveryoneVisible = true;
+                this.clearCondition();
+                this.clearReqDTO1();
+                // if (this.beginTime){
+                //     this.reqDTO1.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                // }
+                // if (this.endTime){
+                //     this.reqDTO1.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
+                // }
                 this.fetchEveryoneNotice()
+            },
+            selectMyNotice(){
+                this.showEveryoneVisible = false;
+                this.clearCondition();
+                this.clearReqDTO();
+                // if (this.beginTime){
+                //     this.reqDTO1.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
+                // }
+                // if (this.endTime){
+                //     this.reqDTO1.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
+                // }
+                this.fetchAllNotice()
             },
             fetchEveryoneNotice(){
                 Http.zsyPostHttp('/task/notification/everyone/all',this.reqDTO1,(res)=>{
