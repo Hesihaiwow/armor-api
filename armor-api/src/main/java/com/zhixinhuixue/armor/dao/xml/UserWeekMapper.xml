@@ -52,7 +52,7 @@
 
     <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Double">
     SELECT IFNULL(sum(user_week.hours),0) FROM user_week
-    join task on user_week.task_id = task.id and task.review_status = 3
+    join task on user_week.task_id = task.id
       <if test="taskId!=0">
         and task.id != #{taskId}
       </if>
