@@ -3731,7 +3731,6 @@
             },
             //保存用户转移积分
             saveHelpInfo(helpForm) {
-                this.isSaving = true
                 var param = this.helpForm;
                 var help = {
                     userId: param.userId,
@@ -3749,6 +3748,7 @@
                             this.$message({showClose: true, message: '求助目标不能是自己，请重试', type: 'error'});
                             return false;
                         }
+                        this.isSaving = true
                         if (this.helpForm.id != '') {
                             http.zsyPostHttp('/integral/editHelpDetail/' + this.helpForm.id, help, (res) => {
                                 this.$message({showClose: true, message: '转移积分更新成功，请等待审核', type: 'success'});
@@ -4031,7 +4031,6 @@
                 }
             },
             saveLeaveInfo(formName) {
-                this.isSaving = true
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if (this.leaveForm.type == '' || this.leaveForm.type == null) {
@@ -4060,6 +4059,7 @@
                             return false;
                         }
                         form['userWeeks'] = this.userWeeks
+                        this.isSaving = true
                         if (form.id != '') {
                             http.zsyPostHttp('/userLeave/editLeaveDetail/' + form.id, form, (resp) => {
                                 this.$message({
