@@ -2188,7 +2188,7 @@
             </span>
         </el-dialog>
 
-        <el-dialog class="el-dialog--small" title="创建任务" :visible.sync="createTaskVisible"
+        <el-dialog class="el-dialog--small" style="margin-left: 570px" title="创建任务" :visible.sync="createTaskVisible"
                    :close-on-click-modal="false" :close-on-press-escape="false"
                    top="10%" center="true">
             <span>请选择任务类型</span>
@@ -5698,7 +5698,7 @@
 </style>
 <style scoped>
     .el-dialog--small {
-        width: 20%;
+        width: 40%;
     }
     .pagination {
         margin: 20px 0;

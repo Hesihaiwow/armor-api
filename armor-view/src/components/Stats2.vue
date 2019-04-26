@@ -94,6 +94,7 @@
             </el-tab-pane>
             <el-tab-pane label="测试问题统计" name="mantisBug" v-if="permit" style="">
                 <div class="bug-stats-con">
+                    <h1 style="font-size: 20px;margin-left: 10px;margin-top: -35px;margin-bottom: 10px;font-weight: bold;">任务bug统计</h1>
                     <div class="add-member-basic-msg fl"><el-date-picker
                             v-model="yearMonth3"
                             type="month"
@@ -101,7 +102,7 @@
                             @change="changeMonth3"
                     size="medium">
                     </el-date-picker></div>
-                    <el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="importBugInfo">导入bug信息</el-button>
+                    <el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="selectMantisProject">导入bug信息</el-button>
                     <el-table :data="taskBugStatsList" border>
                         <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
                         <el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>
@@ -138,6 +139,7 @@
                     </div>
                 </div>
                 <div class="bug-stats-con">
+                    <h1 style="font-size: 20px;margin-left: 10px;margin-top: -25px;margin-bottom: 10px;font-weight: bold;">测试bug统计</h1>
                     <div class="add-member-basic-msg fl"><el-date-picker
                             v-model="yearMonth1"
                             type="month"
@@ -1009,6 +1011,19 @@
             </span>
         </el-dialog>
 
+        <el-dialog title="选择mantis系统项目" :visible.sync="selectMantisProjectVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   @close="closeMantisVisible">
+            <el-select clearable filterable no-match-text=" " v-model="mantisProject" placeholder="请选择"
+                       style="width:200px">
+                <el-option v-for="item in mantisProjectList" :key="item.id" :label="item.name"
+                           :value="item.id"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="success" @click="importBugInfo">导入</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
@@ -1356,6 +1371,12 @@
                     pageSize: 10,
                     total: 0,
                 },
+                mantisProjectList:[
+                    {id:53,name:'知心慧学2018'},
+                    {id:57,name:'知心慧学2019'}
+                ],
+                selectMantisProjectVisible:false,
+                mantisProject:''
                 // -- sch
             }
         },
@@ -2139,7 +2160,7 @@
                 // 绘制图表
                 myChart.setOption({
                     title: {
-                        text: '测试bug周统计折线图',
+                        text: '测试bug月统计折线图',
                         x:'left'
                     },
                     tooltip: {
@@ -2806,8 +2827,10 @@
                     this.mantisUserBugMonthList = [];
                     this.seriesDataList2 = [];
                     this.onlineBugUserList = [];
+                    this.onlineBugTotalNum = 0;
                     this.fetchOnlineBugGroupByUser();
                 }else {
+                    this.onlineBugTotalNum = 0;
                     this.mantisUserBugMonthList = [];
                     this.seriesDataList2 = [];
                     this.onlineBugUserList = [];
@@ -2882,16 +2905,51 @@
                   this.fetchBugWeekGroupByUser();
               }
             },
+            selectMantisProject(){
+                this.selectMantisProjectVisible = true;
+            },
+            closeMantisVisible(){
+                this.selectMantisProjectVisible = false;
+                this.mantisProject = '';
+            },
             importBugInfo(){
-                Http.zsyPostHttp('/mantis-bug/import/53',{},(res=>{
-                    if (res.errMsg == '执行成功'){
-                        this.$message({
-                            showClose: true,
-                            message: '导入成功',
-                            type: 'success'
-                        });
-                    }
-                }))
+                if (this.mantisProject != null &&  this.mantisProject != ''){
+                    var project = this.mantisProjectList.filter(mantisProject=>(mantisProject.id === this.mantisProject))[0]
+                    this.$confirm('确认导入 <'+project.name+'> 的bug信息?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.selectMantisProjectVisible = false;
+                        Http.zsyPostHttp('/mantis-bug/import/'+this.mantisProject,{},(res=>{
+                            if (res.errMsg == '执行成功'){
+                                this.$message({
+                                    showClose: true,
+                                    message: '导入成功',
+                                    type: 'success'
+                                });
+                                this.mantisUserBugWeekList = [];
+                                this.seriesDataList = [];
+                                this.fetchBugWeekGroupByUser();
+                                this.mantisUserBugMonthList = [];
+                                this.seriesDataList2 = [];
+                                this.onlineBugUserList = [];
+                                this.onlineBugTotalNum = 0;
+                                this.fetchOnlineBugGroupByUser();
+                                this.fetchBugStatsGroupByTask();
+                                this.fetchMantisBugStatsGroupByUser();
+
+                            }
+                        }))
+                    }).catch(() => {
+                    });
+                } else {
+                    this.$message({
+                        showClose: true,
+                        message: '请选择项目',
+                        type: 'warning'
+                    });
+                }
             },
             fetchBugWeekGroupByUser(){
                 Http.zsyPostHttp('/mantis-bug/bug-week/user',this.mantisBugReqDTO2,(res=>{
