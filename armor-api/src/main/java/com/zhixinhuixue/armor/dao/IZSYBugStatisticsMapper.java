@@ -104,4 +104,9 @@ public interface IZSYBugStatisticsMapper {
      * @return
      */
     Page<MantisBugGroupByTaskBO> selectBugStatsGroupByTask(@Param("beginTime")Long beginTime, @Param("endTime")Long endTime);
+
+    /**
+     * 清空原来的bug数据
+     */
+    void deleteAllBugStats();
 }

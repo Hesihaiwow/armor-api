@@ -70,7 +70,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
     @Override
     @Transactional
     public void importMantisBug(Integer projectId) {
-        List<Integer> bugIdList = bugStatisticsMapper.selectBugIdList();
+//        List<Integer> bugIdList = bugStatisticsMapper.selectBugIdList();
         List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
         Map<String,Long> userMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(users)){
@@ -175,9 +175,13 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                     throw new ZSYServiceException("批量插入分类失败");
                 }
             }
-            mantisBugStatisticsList = mantisBugStatisticsList.stream().sorted(Comparator.comparing(MantisBugStatistics::getBugId)).distinct()
-                    .filter(mantisBugStatistics -> (!bugIdList.contains(mantisBugStatistics.getBugId())))
-                    .collect(Collectors.toList());
+
+            //清空原来的数据
+            bugStatisticsMapper.deleteAllBugStats();
+            mantisBugStatisticsList = mantisBugStatisticsList.stream().sorted(Comparator.comparing(MantisBugStatistics::getBugId))
+                    .collect(Collectors.collectingAndThen(Collectors.toCollection(
+                            () -> new TreeSet<>(Comparator.comparing(MantisBugStatistics::getBugId))
+                            ),ArrayList::new));
             if (!CollectionUtils.isEmpty(mantisBugStatisticsList)){
                 if (bugStatisticsMapper.insertBatch(mantisBugStatisticsList) == 0){
                     throw new ZSYServiceException("导入bug信息失败");
@@ -186,9 +190,6 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 System.out.println("批量插入耗时: "+(time3-time2)+"ms");
                 logger.info("批量插入耗时: "+(time3-time2)+"ms");
             }
-//            else {
-//                throw new ZSYServiceException("暂无新数据需要导入,请检查");
-//            }
         }else {
             throw new ZSYServiceException("暂无数据需要导入,请检查");
         }

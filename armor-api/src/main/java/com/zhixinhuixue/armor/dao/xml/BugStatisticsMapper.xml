@@ -171,6 +171,11 @@
         TRUNCATE TABLE `mantis_category`
     </delete>
 
+    <!--清空原来的bug数据-->
+    <delete id="deleteAllBugStats">
+        TRUNCATE TABLE `mantis_bug_statistics`
+    </delete>
+
     <!--查询上次导入时最后一天记录的bugId-->
     <select id="selectLastImportBugId" resultType="java.lang.Integer">
         SELECT IFNULL(`bug_id`,0) FROM `mantis_bug_statistics` ORDER BY `bug_id` DESC LIMIT 1
