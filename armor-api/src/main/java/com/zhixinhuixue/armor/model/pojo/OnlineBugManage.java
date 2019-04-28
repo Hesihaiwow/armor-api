@@ -61,7 +61,8 @@ public class OnlineBugManage {
      * 反馈系统
      * @return
      */
-    private String demandSystem;
+    private Integer demandSystemId;
+    private String demandSystemName;
 
     /**
      * 是否解决
@@ -147,12 +148,20 @@ public class OnlineBugManage {
         this.type = type;
     }
 
-    public String getDemandSystem() {
-        return demandSystem;
+    public Integer getDemandSystemId() {
+        return demandSystemId;
     }
 
-    public void setDemandSystem(String demandSystem) {
-        this.demandSystem = demandSystem;
+    public void setDemandSystemId(Integer demandSystemId) {
+        this.demandSystemId = demandSystemId;
+    }
+
+    public String getDemandSystemName() {
+        return demandSystemName;
+    }
+
+    public void setDemandSystemName(String demandSystemName) {
+        this.demandSystemName = demandSystemName;
     }
 
     public Integer getIsSolved() {

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYBugStatisticsMapper">
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.MantisBugStatistics">
+        <id column="bs_id" property="bsId" jdbcType="BIGINT"></id>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="bug_id" property="bugId" jdbcType="INTEGER"></result>
+        <result column="reporter_id" property="reporterId" jdbcType="INTEGER"></result>
+        <result column="handler_id" property="handlerId" jdbcType="INTEGER"></result>
+        <result column="reporter_name" property="reporterName" jdbcType="VARCHAR"></result>
+        <result column="handler_name" property="handlerName" jdbcType="VARCHAR"></result>
+        <result column="severity" property="severity" jdbcType="INTEGER"></result>
+        <result column="priority" property="priority" jdbcType="INTEGER"></result>
+        <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="category_id" property="categoryId" jdbcType="INTEGER"></result>
+        <result column="category_name" property="categoryName" jdbcType="VARCHAR"></result>
+        <result column="import_time" property="importTime" jdbcType="TIMESTAMP"></result>
+        <result column="date_submitted" property="dateSubmitted" jdbcType="INTEGER"></result>
+        <result column="last_updated" property="lastUpdated" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="BaseCategoryMap" type="com.zhixinhuixue.armor.model.pojo.MantisCategory">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="category_id" property="categoryId" jdbcType="INTEGER"></result>
+        <result column="category_name" property="categoryName" jdbcType="VARCHAR"></result>
+        <result column="user_id" property="userId" jdbcType="INTEGER"></result>
+        <result column="project_id" property="projectId" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="MantisBugSeverityMap" type="com.zhixinhuixue.armor.model.bo.MantisBugSeverityNumBO">
+        <result column="severity" property="severity" jdbcType="INTEGER"></result>
+        <result column="bug_num" property="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="MantisBugStatusMap" type="com.zhixinhuixue.armor.model.bo.MantisBugStatusNumBO">
+        <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="bug_num" property="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="MantisBugCategoryMap" type="com.zhixinhuixue.armor.model.bo.MantisBugCategoryNumBO">
+        <result column="category_id" property="category" jdbcType="INTEGER"></result>
+        <result column="category_name" property="categoryName" jdbcType="VARCHAR"></result>
+        <result column="user_id" property="userId" jdbcType="INTEGER"></result>
+        <result column="user_name" property="realName" jdbcType="VARCHAR"></result>
+        <result column="bug_num" property="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="OnlineBugCategoryMap" type="com.zhixinhuixue.armor.model.bo.OnlineBugCategoryNumBO">
+        <result column="demand_system_id" property="demandSystemId" jdbcType="INTEGER"></result>
+        <result column="demand_system_name" property="demandSystemName" jdbcType="VARCHAR"></result>
+        <result column="bug_num" property="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="BugStatsBO" type="com.zhixinhuixue.armor.model.bo.MantisBugStatisticsBO">
+        <result column="user_id" property="userId" jdbcType="INTEGER"></result>
+        <result column="sys_user_id" property="sysUserId" jdbcType="BIGINT"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="mantis_bug_total" property="mantisBugTotalNum" jdbcType="INTEGER"></result>
+        <association property="mantisBugTotalNum" column="{userId=user_id,beginTime=begin_time,endTime=end_time}"
+                     select="selectMantisTotalNumByUser"/>
+        <collection property="categoryList" column="{userId=user_id,beginTime=begin_time,endTime=end_time}"
+                    select="selectCategoryByUserId"
+                    ofType="com.zhixinhuixue.armor.model.pojo.MantisCategory"/>
+        <collection property="bugSeverityNumBOS" column="{userId=user_id,beginTime=begin_time,endTime=end_time}"
+                    select="selectMantisSeverityNum"
+                    ofType="com.zhixinhuixue.armor.model.bo.MantisBugSeverityNumBO"/>
+        <collection property="bugStatusNumBOS" column="{userId=user_id,beginTime=begin_time,endTime=end_time}"
+                    select="selectMantisStatusNum"
+                    ofType="com.zhixinhuixue.armor.model.bo.MantisBugStatusNumBO"/>
+        <collection property="bugCategoryNumBOS" column="{userId=user_id,beginTime=begin_time,endTime=end_time}"
+                    select="selectMantisCategoryNum"
+                    ofType="com.zhixinhuixue.armor.model.bo.MantisBugCategoryNumBO"/>
+    </resultMap>
+
+    <resultMap id="BugUserWeekMap" type="com.zhixinhuixue.armor.model.bo.MantisBugUserWeekBO">
+        <result property="userId" column="user_id" jdbcType="INTEGER"></result>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"></result>
+        <collection property="mantisBugWeekNumBOS" column="{userId=user_id,beginTime=begin_time,endTime=end_time}"
+                    select="selectBugWeekNum"
+                    ofType="com.zhixinhuixue.armor.model.bo.MantisBugWeekNumBO"></collection>
+    </resultMap>
+
+    <resultMap id="BugWeekNumMap" type="com.zhixinhuixue.armor.model.bo.MantisBugWeekNumBO">
+        <result property="date" column="date" jdbcType="VARCHAR"></result>
+        <result property="bugNum" column="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="OnlineBugMonthMap" type="com.zhixinhuixue.armor.model.bo.OnlineBugUserMonthBO">
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="bug_num" property="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="BugNumGroupByTaskMap" type="com.zhixinhuixue.armor.model.bo.MantisBugGroupByTaskBO">
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
+        <result column="total_bug_num" property="totalBugNum" jdbcType="INTEGER"></result>
+        <collection property="mantisBugTesterNumBOS"
+                    column="{taskId=task_id}"
+                    select="selectTesterBugNumByTask"
+                    ofType="com.zhixinhuixue.armor.model.bo.MantisBugTesterNumBO"></collection>
+        <collection property="mantisBugDeveloperNumBOS"
+                    column="{taskId=task_id}"
+                    select="selectDeveloperBugNumByTask"
+                    ofType="com.zhixinhuixue.armor.model.bo.MantisBugDeveloperNumBO"></collection>
+        <collection property="mantisBugSeverityNumBOS"
+                    column="{taskId=task_id}"
+                    select="selectSeverityBugNumByTask"
+                    ofType="com.zhixinhuixue.armor.model.bo.MantisBugSeverityNumBO"></collection>
+    </resultMap>
+
+    <resultMap id="TesterBugNumMap" type="com.zhixinhuixue.armor.model.bo.MantisBugTesterNumBO">
+        <result column="user_id" property="userId" jdbcType="INTEGER"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="bug_num" property="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <resultMap id="DeveloperBugNumMap" type="com.zhixinhuixue.armor.model.bo.MantisBugDeveloperNumBO">
+        <result column="user_id" property="userId" jdbcType="INTEGER"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="bug_num" property="bugNum" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <!--批量导入-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.MantisBugStatistics">
+        INSERT INTO `mantis_bug_statistics`
+        (`bs_id`,`task_id`,`bug_id`,`reporter_id`,`reporter_name`,`handler_id`,`handler_name`
+        ,`severity`,`priority`,`status`,`category_id`,`category_name`,`date_submitted`,`last_updated`,`import_time`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.bsId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.bugId,jdbcType=INTEGER}
+            ,#{item.reporterId,jdbcType=INTEGER},#{item.reporterName,jdbcType=VARCHAR}
+            ,#{item.handlerId,jdbcType=INTEGER},#{item.handlerName,jdbcType=VARCHAR},#{item.severity,jdbcType=INTEGER}
+            ,#{item.priority,jdbcType=INTEGER},#{item.status,jdbcType=INTEGER}
+            ,#{item.categoryId,jdbcType=INTEGER},#{item.categoryName,jdbcType=VARCHAR},#{item.dateSubmitted,jdbcType=INTEGER}
+            ,#{item.lastUpdated,jdbcType=INTEGER},#{item.importTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--批量导入用户-->
+    <insert id="insertUserBatch" parameterType="com.zhixinhuixue.armor.model.pojo.MantisUser">
+        INSERT INTO `mantis_user`
+        (`id`,`user_id`,`user_name`,`real_name`)
+        VALUES
+        <foreach collection="userList" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=INTEGER}
+            ,#{item.userName,jdbcType=VARCHAR},#{item.realName,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!--批量导入分类-->
+    <insert id="insertCategoryBatch" parameterType="com.zhixinhuixue.armor.model.pojo.MantisCategory">
+        INSERT INTO `mantis_category`
+        (`id`,`category_id`,`category_name`,`user_id`,`project_id`,`sys_user_id`,`user_name`)
+        VALUES
+          <foreach collection="categoryList" item="item" separator=",">
+              (#{item.id,jdbcType=BIGINT},#{item.categoryId,jdbcType=INTEGER},#{item.categoryName,jdbcType=VARCHAR}
+              ,#{item.userId,jdbcType=INTEGER},#{item.projectId,jdbcType=INTEGER},#{item.sysUserId,jdbcType=BIGINT}
+              ,#{item.userName,jdbcType=VARCHAR})
+          </foreach>
+    </insert>
+
+    <!--清空原来的mantis_user-->
+    <delete id="deleteAllUsers">
+        TRUNCATE TABLE `mantis_user`
+    </delete>
+
+    <!--清空原来的mantis_category-->
+    <delete id="deleteAllCategory">
+        TRUNCATE TABLE `mantis_category`
+    </delete>
+
+    <!--清空原来的bug数据-->
+    <delete id="deleteAllBugStats">
+        TRUNCATE TABLE `mantis_bug_statistics`
+    </delete>
+
+    <!--查询上次导入时最后一天记录的bugId-->
+    <select id="selectLastImportBugId" resultType="java.lang.Integer">
+        SELECT IFNULL(`bug_id`,0) FROM `mantis_bug_statistics` ORDER BY `bug_id` DESC LIMIT 1
+    </select>
+
+    <!--查询已存在的bugId集合-->
+    <select id="selectBugIdList" resultType="java.lang.Integer">
+        SELECT `bug_id` FROM `mantis_bug_statistics` ORDER BY `bug_id` DESC
+    </select>
+
+    <!--查询反馈系统(分类)-->
+    <select id="selectCategoryList" resultMap="BaseCategoryMap">
+        SELECT * FROM  `mantis_category`
+    </select>
+
+    <!--按年月查询测试人员bug统计情况-->
+    <select id="selectBugStatsGroupByUser" resultMap="BugStatsBO">
+        SELECT
+        #{beginTime,jdbcType=INTEGER} as begin_time,
+        #{endTime,jdbcType=INTEGER} as end_time,
+        mu.user_id,mu.real_name user_name,mc.sys_user_id
+        FROM `mantis_category` mc
+        LEFT JOIN `mantis_user` mu ON mc.user_id = mu.user_id
+        GROUP BY mc.user_id
+    </select>
+
+    <!--根据userId查询mantis bug总数量-->
+    <select id="selectMantisTotalNumByUser" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(*),0) FROM `mantis_bug_statistics` WHERE `reporter_id` = #{userId}
+        <if test="beginTime != null and beginTime != 0">
+            <![CDATA[ AND  date_submitted >= #{beginTime,jdbcType=INTEGER} ]]>
+        </if>
+        <if test="endTime != null and endTime != 0">
+            <![CDATA[ AND  date_submitted <= #{endTime,jdbcType=INTEGER} ]]>
+        </if>
+    </select>
+
+    <!--根据userId查询负责的平台-->
+    <select id="selectCategoryByUserId" resultMap="BaseCategoryMap">
+        SELECT * FROM `mantis_category` WHERE `user_id` = #{userId}
+    </select>
+
+    <!--根据userId查询不同严重程度bug数量-->
+    <select id="selectMantisSeverityNum" resultMap="MantisBugSeverityMap">
+        SELECT `severity`,IFNULL(COUNT(1),0) bug_num FROM mantis_bug_statistics WHERE reporter_id = #{userId}
+        <if test="beginTime != null and beginTime != 0">
+            <![CDATA[ AND  date_submitted >= #{beginTime,jdbcType=INTEGER} ]]>
+        </if>
+        <if test="endTime != null and endTime != 0">
+            <![CDATA[ AND  date_submitted <= #{endTime,jdbcType=INTEGER} ]]>
+        </if>
+        GROUP BY severity
+
+    </select>
+
+    <!--根据userId查询不同状态bug数量-->
+    <select id="selectMantisStatusNum" resultMap="MantisBugStatusMap">
+        SELECT `status`,IFNULL(COUNT(1),0) bug_num FROM mantis_bug_statistics WHERE reporter_id = #{userId}
+        <if test="beginTime != null and beginTime != 0">
+            <![CDATA[ AND  date_submitted >= #{beginTime,jdbcType=INTEGER} ]]>
+        </if>
+        <if test="endTime != null and endTime != 0">
+            <![CDATA[ AND  date_submitted <= #{endTime,jdbcType=INTEGER} ]]>
+        </if>
+        GROUP BY status
+
+    </select>
+
+    <!--根据userId查询不同分类bug数量-->
+    <select id="selectMantisCategoryNum" resultMap="MantisBugCategoryMap">
+        SELECT `category_id`,IFNULL(COUNT(1),0) bug_num,`category_name` category_name,
+        `reporter_id` user_id,`reporter_name` user_name
+        FROM mantis_bug_statistics WHERE reporter_id = #{userId}
+        <if test="beginTime != null and beginTime != 0">
+            <![CDATA[ AND  date_submitted >= #{beginTime,jdbcType=INTEGER} ]]>
+        </if>
+        <if test="endTime != null and endTime != 0">
+            <![CDATA[ AND  date_submitted <= #{endTime,jdbcType=INTEGER} ]]>
+        </if>
+        GROUP BY category_id
+
+    </select>
+
+    <!--查询测试人员周bug数量图表-->
+    <select id="selectBugWeekGroupByUser" resultMap="BugUserWeekMap">
+        SELECT user_id,user_name,
+        #{beginTime,jdbcType=INTEGER} as begin_time,
+        #{endTime,jdbcType=INTEGER} as end_time
+        FROM `mantis_category` GROUP BY `user_id`
+    </select>
+
+    <select id="selectBugWeekNum" resultMap="BugWeekNumMap">
+        SELECT IFNULL(COUNT(*),0) bugNum,date(FROM_UNIXTIME(date_submitted)) `date` FROM mantis_bug_statistics
+        WHERE reporter_id = #{userId}
+        <if test="beginTime != null and beginTime != 0">
+            <![CDATA[ AND  date_submitted >= #{beginTime,jdbcType=INTEGER} ]]>
+        </if>
+        <if test="endTime != null and endTime != 0">
+            <![CDATA[ AND  date_submitted <= #{endTime,jdbcType=INTEGER} ]]>
+        </if>
+        GROUP BY date(FROM_UNIXTIME(date_submitted))
+    </select>
+
+    <!--查询线上bug分类数量-->
+    <select id="selectBugCategoryNum" resultMap="OnlineBugCategoryMap">
+        SELECT bm.demand_system demand_system_name,bm.demand_system_id,ifnull(count(bm.id),0) bug_num
+        FROM bug_manage bm LEFT JOIN bug_user bu ON bm.id = bu.bug_id
+        WHERE bu.user_id = #{sysUserId}
+        <if test="beginTime != null">
+            <![CDATA[ AND  bm.discover_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ AND  bm.discover_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        and bm.demand_system_id is not NULL
+        GROUP BY bm.demand_system
+    </select>
+
+    <!--查询测试人员线上bug月数量图表-->
+    <select id="selectBugMonthGroupByUser" resultMap="OnlineBugMonthMap">
+        SELECT bu.user_id,u.name user_name,ifnull(count(bm.id),0) bug_num
+        FROM bug_manage bm
+        LEFT JOIN bug_user bu ON bm.id = bu.bug_id
+        LEFT JOIN user u ON u.id = bu.user_id
+        WHERE bm.demand_system_id IS NOT NULL
+        and bu.user_id in
+        (SELECT DISTINCT sys_user_id FROM mantis_category)
+        <if test="beginTime != null">
+            <![CDATA[ AND  bm.discover_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ AND  bm.discover_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        GROUP BY bu.user_id
+    </select>
+
+    <!--按任务统计bug-->
+    <select id="selectBugStatsGroupByTask" resultMap="BugNumGroupByTaskMap">
+        SELECT mbs.task_id,t.name task_name,IFNULL(COUNT(mbs.bs_id),0) total_bug_num
+        FROM mantis_bug_statistics mbs
+        LEFT JOIN task t ON t.id = mbs.task_id
+        WHERE mbs.task_id is not NULL
+        <if test="beginTime != null and beginTime != 0">
+            <![CDATA[ AND  mbs.date_submitted >= #{beginTime,jdbcType=INTEGER} ]]>
+        </if>
+        <if test="endTime != null and endTime != 0">
+            <![CDATA[ AND  mbs.date_submitted <= #{endTime,jdbcType=INTEGER} ]]>
+        </if>
+        GROUP BY task_id
+    </select>
+
+    <!--按任务查询测试人员bug数量-->
+    <select id="selectTesterBugNumByTask" resultMap="TesterBugNumMap">
+        SELECT reporter_id user_id,reporter_name user_name,IFNULL(count(bs_id),0) bug_num
+        FROM mantis_bug_statistics WHERE task_id = #{taskId}
+        GROUP BY reporter_id
+    </select>
+
+    <!--按任务查询开发人员bug数量-->
+    <select id="selectDeveloperBugNumByTask" resultMap="DeveloperBugNumMap">
+        SELECT handler_id user_id,handler_name user_name,IFNULL(count(bs_id),0) bug_num
+        FROM mantis_bug_statistics WHERE task_id = #{taskId}
+        GROUP BY handler_id
+    </select>
+
+    <!--按任务查询不同严重程度bug数量-->
+    <select id="selectSeverityBugNumByTask" resultMap="MantisBugSeverityMap">
+        SELECT severity,IFNULL(count(bs_id),0) bug_num
+        FROM mantis_bug_statistics WHERE task_id = #{taskId}
+        GROUP BY severity
+    </select>
+
+    <!--按任务查询不同分类bug数量-->
+    <select id="selectCategoryBugNumByTask" resultMap="MantisBugCategoryMap">
+        SELECT category_id,category_name,IFNULL(count(bs_id),0) bug_num
+        FROM mantis_bug_statistics WHERE task_id = #{taskId}
+        GROUP BY category_id
+    </select>
+    <!--根据userId查询-->
+</mapper>

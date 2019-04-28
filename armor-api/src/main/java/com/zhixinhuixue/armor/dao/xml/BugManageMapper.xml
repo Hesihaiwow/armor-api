@@ -20,7 +20,8 @@
         <result column="account_info" property="accountInfo" jdbcType="VARCHAR"></result>
         <result column="type" property="type" jdbcType="INTEGER"></result>
         <result column="is_solved" property="isSolved" jdbcType="INTEGER"></result>
-        <result column="demand_system" property="demandSystem" jdbcType="VARCHAR"></result>
+        <result column="demand_system_id" property="demandSystemId" jdbcType="INTEGER"></result>
+        <result column="demand_system" property="demandSystemName" jdbcType="VARCHAR"></result>
         <result column="remark" property="remark" jdbcType="VARCHAR"></result>
     </resultMap>
 
@@ -55,10 +56,12 @@
     <!--插入线上bug-->
     <insert id="insertBugManager" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineBugManage">
         INSERT INTO `bug_manage`
-        (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`)
+        (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`
+        ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{discoverTime,jdbcType=TIMESTAMP},#{processTime,jdbcType=TIMESTAMP},
-        #{origin,jdbcType=VARCHAR},#{accountInfo,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{isSolved,jdbcType=INTEGER},#{remark,jdbcType=VARCHAR},#{demandSystem,jdbcType=VARCHAR})
+        #{origin,jdbcType=VARCHAR},#{accountInfo,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{isSolved,jdbcType=INTEGER}
+        ,#{remark,jdbcType=VARCHAR},#{demandSystemName,jdbcType=VARCHAR},#{demandSystemId,jdbcType=INTEGER})
     </insert>
 
 
@@ -164,7 +167,8 @@
         `type` = #{type,jdbcType=INTEGER},
         `is_solved` = #{isSolved,jdbcType=INTEGER},
         `remark` = #{remark,jdbcType=VARCHAR},
-        `demand_system` = #{demandSystem,jdbcType=VARCHAR}
+        `demand_system` = #{demandSystemName,jdbcType=VARCHAR},
+        `demand_system_id` = #{demandSystemId,jdbcType=INTEGER}
         WHERE id=#{id,jdbcType=BIGINT};
     </update>
 

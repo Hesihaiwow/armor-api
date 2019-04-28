@@ -19,6 +19,8 @@
             <div class="main-task-detail">
                 <div class="task-name">
                     <span v-if="isPrivate">
+                        <span v-show="task.reviewStatus == 1 && task.type == 2" style="color: red">(待审核 多人任务)</span>
+                        <span v-show="task.reviewStatus == 1 && task.type == 1" style="color: red">(待审核 个人任务)</span>
                         {{task.name}}
                         <span v-for="(item,index) in task.taskUsers" v-if="task.type==2">
                           <span v-if="item.userId == loginUserId && item.description!=''">({{item.description}})</span>
@@ -90,11 +92,12 @@
                 :before-close="hideFinishedPop">
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item class="task-form" label="任务ID：">{{taskDetail.id}}</el-form-item>
                 <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item class="task-form"  label="优先级："><span v-for="item in priorityList"
-                                                                   v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                <el-form-item class="task-form" label="优先级：">
+                    <span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
                 <el-form-item class="task-form" label="截止时间：" style="float: left;">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
@@ -784,7 +787,7 @@
                 <el-form-item v-show="taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -10px" label-width="90px">
                     {{taskTempDetail.beginTime | formatDate}}
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：">
+                <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
                     <el-date-picker @change="changeTime()"
                                     v-model="taskTempDetail.beginTime"
                                     type="date"
@@ -797,7 +800,7 @@
                 <el-form-item v-show="taskTempAble" class="task-form" label="截止时间：" label-width="82px" style="float: left">
                     {{taskTempDetail.endTime | formatDate}}
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" class="task-form" label="截止时间：">
+                <el-form-item v-show="!taskTempAble" class="task-form" label="截止时间：" style="margin-left: 285px">
                     <el-date-picker @change="changeTime()"
                                     v-model="taskTempDetail.endTime"
                                     type="date"
@@ -811,7 +814,7 @@
                     {{taskTempDetail.workHours}} 小时
                 </el-form-item>
                 <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：">
-                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 30%"></el-input>
+                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 20%"></el-input>
                     小时
                 </el-form-item>
 

@@ -648,7 +648,10 @@
                         <div class="task-lis" v-for="item in taskTemp.waitAssess2" @click="getTaskTempDetail(item)">
                             <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
                             <div class="main-task-detail">
-                                <div class="task-name" style="width: 700px"><span>{{item.taskName}}:({{item.description}})</span></div>
+                                <div class="task-name" style="width: 700px">
+                                    <span style="color: red">(待审核 多人任务)</span>
+                                    <span>{{item.taskName}}:({{item.description}})</span>
+                                </div>
                                 <div class="task-state">
                                     <span class="task-end blue">申请人：{{item.userName}}</span>
                                     <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
@@ -2012,7 +2015,8 @@
                     @close="clearMultipleTask">
             <el-form :model="taskTempForm"  ref="taskTempForm" label-width="80px">
                 <el-form-item label="任务阶段" prop="stageId">
-                    <el-select v-model="taskTempForm.stageId" placeholder="请选择阶段" clearable filterable @change="getTaskByStage(taskTempForm.stageId)">
+                    <el-select v-model="taskTempForm.stageId" placeholder="请选择阶段" clearable filterable
+                               style="margin-left: 7px" @change="getTaskByStage(taskTempForm.stageId)">
                         <el-option
                                 v-for="item in taskTempStageList"
                                 :key="item.id"
@@ -2032,16 +2036,16 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -35px;float: left" label="项目: ">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="设计完成时间: " label-width="100px" style="margin-left: 250px">{{taskDetail.beginTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -35px;float: left;" label="阶段: ">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="开发完成时间: " label-width="100px" style="margin-left: 250px">{{taskDetail.testTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -21px;float: left" label="优先级: ">
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="项目: " style="float: left;margin-left: 10px" label-width="44px">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="阶段: " style="float: left;margin-left: 25px" label-width="44px">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="优先级: " style="margin-left: 270px;">
                     <span v-for="item in priorityList"
                           v-if="item.value == taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: 242px" label="截止时间: ">{{taskDetail.endTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -37px" label="标签: ">
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="设计完成时间: " label-width="100px" style="float: left;margin-left: 10px">{{taskDetail.beginTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="开发完成时间: " label-width="100px" style="margin-left: 270px;">{{taskDetail.testTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="截止时间: " style="margin-left: 2px">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -27px" label="标签: ">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
@@ -2050,8 +2054,8 @@
                 <el-form-item class="task-form" label="任务描述" prop="description">
                     <el-input type="textarea" v-model="description" :rows="3" size="mini"></el-input>
                 </el-form-item>
-                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                <el-form-item class="task-form" label="开始日期" prop="beginTime">
+                <span class="star" style="float: left;margin-top: 17px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item class="task-form" label="开始日期" prop="beginTime" style="float: left;margin-left: -8px;margin-top: 10px" label-width="90px">
                     <el-date-picker
                             v-model="taskTempForm.beginTime"
                             type="date"
@@ -2059,8 +2063,8 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                <el-form-item class="task-form" label="截止日期" prop="endTime">
+                <span class="star" style="float: left;margin-top: 17px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item class="task-form" label="截止日期" prop="endTime" style="margin-left: 285px;margin-top: 10px" label-width="75px">
                     <el-date-picker
                             v-model="taskTempForm.endTime"
                             type="date"
@@ -2068,8 +2072,8 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                <el-form-item class="task-form" label="工作量" prop="workHours">
+                <span class="star" style="float: left;margin-top: 17px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item class="task-form" label="工作量" prop="workHours" style="margin-top: 10px">
                     <el-input style="width:100px" v-model="taskTempForm.workHours" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
@@ -2122,7 +2126,7 @@
                 <el-form-item v-show="taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -10px" label-width="90px">
                     {{taskTempDetail.beginTime | formatDate}}
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：">
+                <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
                     <el-date-picker @change="changeTime"
                                     v-model="taskTempDetail.beginTime"
                                     type="date"
@@ -2135,7 +2139,7 @@
                 <el-form-item v-show="taskTempAble" class="task-form" label="截止时间：" label-width="82px" style="float: left;margin-left: 10px">
                     {{taskTempDetail.endTime | formatDate}}
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" class="task-form" label="截止时间：">
+                <el-form-item v-show="!taskTempAble" class="task-form" label="截止时间：" style="margin-left: 285px">
                     <el-date-picker @change="changeTime"
                                     v-model="taskTempDetail.endTime"
                                     type="date"
@@ -2149,7 +2153,7 @@
                     {{taskTempDetail.workHours}} 小时
                 </el-form-item>
                 <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：">
-                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 30%"></el-input>
+                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 20%"></el-input>
                     小时
                 </el-form-item>
 
@@ -2184,9 +2188,9 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="创建任务" :visible.sync="createTaskVisible"
+        <el-dialog class="el-dialog--small" style="margin-left: 570px" title="创建任务" :visible.sync="createTaskVisible"
                    :close-on-click-modal="false" :close-on-press-escape="false"
-                   top="10%"  width="20%" center="true">
+                   top="10%" center="true">
             <span>请选择任务类型</span>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="createPrivateTask">个人任务</el-button>
@@ -3408,7 +3412,7 @@
                 });
             },
             acceptMultipleTask(id,formName){
-                this.taskTempDetailVisible = false;
+
                 var sumHours=0;
                 for(var i=0;i<this.taskTempWeekNumber.length;i++){
                     if(this.taskTempWeekNumber[i].hours==''|| this.taskTempWeekNumber[i].hours=== undefined){
@@ -3491,6 +3495,7 @@
 
                         http.zsyPutHttp(`/task-temp/access`, param, (resp) => {
                             this.$message({showClose: true, message: '审核成功', type: 'success'});
+                            this.taskTempDetailVisible = false;
                             this.$refs[formName].resetFields();
                             this.description = ''
                             this.taskAble = false;
@@ -3706,7 +3711,7 @@
                 let vm = this
                 http.zsyGetHttp('/task/pending', {}, (resp) => {
                     resp.data.forEach((task) => {
-                        task.name += '(待审核 个人任务)'
+                        // task.name = '(待审核 个人任务)' + task.name;
                     })
                     vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data))
                 })
@@ -5639,7 +5644,7 @@
             fetchPersonalMultipleWait(){
                 http.zsyGetHttp('/task-temp/personal/pending',{},(res=>{
                     res.data.forEach((task) => {
-                        task.name += '(待审核 多人任务)'
+                        // task.name = '(待审核 多人任务)' + task.name;
                     })
                     this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
 
@@ -5690,12 +5695,11 @@
         width: 600px !important;
     }
 
-    .el-dialog--small {
-        width: 20%;
-    }
 </style>
 <style scoped>
-
+    .el-dialog--small {
+        width: 40%;
+    }
     .pagination {
         margin: 20px 0;
         text-align: right;
