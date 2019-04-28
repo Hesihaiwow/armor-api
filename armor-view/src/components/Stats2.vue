@@ -1020,7 +1020,12 @@
                            :value="item.id"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
-                <el-button type="success" @click="importBugInfo">导入</el-button>
+                <!--<el-button type="success" @click="importBugInfo">导入</el-button>-->
+                <el-button v-loading.fullscreen.lock="fullscreenLoading"
+                           element-loading-text="拼命导入中,请稍后"
+                           element-loading-spinner="el-icon-loading"
+                           element-loading-background="rgba(0, 0, 0, 0.8)"
+                           type="primary" @click="importBugInfo">导入</el-button>
             </span>
         </el-dialog>
 
@@ -1376,7 +1381,8 @@
                     {id:57,name:'知心慧学2019'}
                 ],
                 selectMantisProjectVisible:false,
-                mantisProject:''
+                mantisProject:'',
+                fullscreenLoading:false
                 // -- sch
             }
         },
@@ -2907,20 +2913,21 @@
             },
             selectMantisProject(){
                 this.selectMantisProjectVisible = true;
+                this.mantisProject = '';
             },
             closeMantisVisible(){
                 this.selectMantisProjectVisible = false;
-                this.mantisProject = '';
             },
             importBugInfo(){
                 if (this.mantisProject != null &&  this.mantisProject != ''){
+                    this.selectMantisProjectVisible = false;
                     var project = this.mantisProjectList.filter(mantisProject=>(mantisProject.id === this.mantisProject))[0]
                     this.$confirm('确认导入 <'+project.name+'> 的bug信息?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.selectMantisProjectVisible = false;
+                        this.fullscreenLoading = true;
                         Http.zsyPostHttp('/mantis-bug/import/'+this.mantisProject,{},(res=>{
                             if (res.errMsg == '执行成功'){
                                 this.$message({
@@ -2928,6 +2935,7 @@
                                     message: '导入成功',
                                     type: 'success'
                                 });
+                                this.fullscreenLoading = false;
                                 this.mantisUserBugWeekList = [];
                                 this.seriesDataList = [];
                                 this.fetchBugWeekGroupByUser();
@@ -2949,6 +2957,7 @@
                         message: '请选择项目',
                         type: 'warning'
                     });
+                    this.fullscreenLoading = false;
                 }
             },
             fetchBugWeekGroupByUser(){
