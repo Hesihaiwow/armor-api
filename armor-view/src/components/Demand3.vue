@@ -658,7 +658,7 @@
                         <i class="el-icon-plus"></i>
                     </el-upload>
                 </el-form-item>
-                <div class="el-dialog__footer" style=" margin-top: 30px;margin-right: 20px; text-align: center">
+                <div class="el-dialog__footer fr" style=" margin-top: 30px;margin-right: 20px; text-align: center">
                     <el-button @click="saveDemand('demandForm')" type="primary" :loading="isSaving">保存</el-button>
                 </div>
             </el-form>
@@ -1908,6 +1908,8 @@
                             this.fetchNewDemandList();
                             this.isSaving = false
                         });
+                    }else {
+                        this.isSaving = false
                     }
                 })
 
@@ -1934,10 +1936,10 @@
                             }else if (param.status == 4){
                                 this.fetchQueueDemandList()
                             }
-
-
                             this.isSaving = false
                         })
+                    }else {
+                        this.isSaving = false
                     }
                 })
             },
