@@ -538,7 +538,7 @@
                     <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
                 </div>
             </div>
-            <div class="add-member-opt" v-show="!showAddDetail" @click="addMember">
+            <div class="add-member-opt" v-show="!showAddDetail && userRole == 0" @click="addMember">
                 <span class="add-member-icon">+</span>
                 <span class="add-member-msg">添加成员</span>
             </div>
