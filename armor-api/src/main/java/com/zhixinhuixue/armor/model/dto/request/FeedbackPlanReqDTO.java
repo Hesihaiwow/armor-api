@@ -17,10 +17,10 @@ public class FeedbackPlanReqDTO {
     //planTask中的项目ID暂存储已存在的任务ID
     private Long projectId;
 
-    @NotNull(message = "预计上线时间不能为空")
+    @NotNull(message = "预计开始时间不能为空")
     private Date  expectStartTime;
 
-    @NotNull(message = "计划开始时间不能为空")
+    @NotNull(message = "计划上线时间不能为空")
     private Date  expectOfficialTime;
 
     /**
