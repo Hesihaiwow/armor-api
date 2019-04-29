@@ -593,7 +593,7 @@
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
-                <el-form-item label="类型" style="margin-top: -15px">
+                <el-form-item label="类型">
                     <el-select v-model="demandForm.type" placeholder="请选择类型">
                         <el-option
                                 v-for="item in types"
@@ -618,17 +618,17 @@
                 <el-form-item label="提出人" prop="origin" style="margin-top: -35px">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="问题:" prop="question" style="margin-top: -15px">
+                <el-form-item label="问题:" prop="question">
                     <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
                               resize="horizontal" size="large"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="目标:" prop="target" style="margin-top: -35px">
+                <el-form-item label="目标:" prop="target" style="margin-top: -20px">
                     <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="提出日期:" prop="feedbackTime" style="margin-top: -35px">
+                <el-form-item label="提出日期:" prop="feedbackTime" style="margin-top: -20px">
                     <el-date-picker
                             v-model="demandForm.feedbackTime"
                             type="date"
@@ -670,7 +670,7 @@
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="类型" style="margin-top: -35px">
+                <el-form-item label="类型" style="margin-top: -20px">
                     <el-select v-model.number="demandForm.type" placeholder="请选择类型">
                         <el-option
                                 v-for="item in types"
@@ -695,17 +695,17 @@
                 <el-form-item label="提出人" prop="origin" style="margin-top: -35px">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="问题:" prop="question" style="margin-top: -15px">
+                <el-form-item label="问题:" prop="question">
                     <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
                               resize="horizontal" size="large"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="目标:" prop="target" style="margin-top: -35px">
+                <el-form-item label="目标:" prop="target" style="margin-top: -20px">
                     <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="期待上线日期:" prop="releaseTime" style="margin-top: -35px">
+                <el-form-item label="期待上线日期:" prop="releaseTime" style="margin-top: -20px">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
                             type="date"
