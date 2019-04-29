@@ -355,12 +355,12 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" align="center" width="130" fixed="right">
+                        <el-table-column label="操作" align="center" width="130" fixed="right" v-show="permit">
                             <template scope="scope">
-                                <el-button @click="feedbackPlan(scope.row)" type="text" size="small"
+                                <a style="color:#20a0ff;cursor: pointer;" @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!=0">计划
-                                </el-button>
-                                <a style="color:#20a0ff;cursor: pointer;"
+                                </a>
+                                <a style="color:#20a0ff;cursor: pointer;" v-show="permit"
                                    @click="editDemandVisible=true,editDemand(scope.row)">编辑</a>
                                 <a style="color:#20a0ff;cursor: pointer;" v-show="permit"
                                    @click="deleteDemand(scope.row.id,scope.row.status)">删除</a>
@@ -593,7 +593,7 @@
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
-                <el-form-item label="类型">
+                <el-form-item label="类型" style="margin-top: -15px">
                     <el-select v-model="demandForm.type" placeholder="请选择类型">
                         <el-option
                                 v-for="item in types"
@@ -604,7 +604,7 @@
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="优先级">
+                <el-form-item label="优先级" style="margin-top: -35px">
                     <el-select v-model="demandForm.priority" placeholder="请选择优先级">
                         <el-option
                                 v-for="item in prioritys"
@@ -615,20 +615,20 @@
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="提出人" prop="origin">
+                <el-form-item label="提出人" prop="origin" style="margin-top: -35px">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="问题:" prop="question">
+                <el-form-item label="问题:" prop="question" style="margin-top: -15px">
                     <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
                               resize="horizontal" size="large"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="目标:" prop="target">
+                <el-form-item label="目标:" prop="target" style="margin-top: -35px">
                     <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="提出日期:" prop="feedbackTime">
+                <el-form-item label="提出日期:" prop="feedbackTime" style="margin-top: -35px">
                     <el-date-picker
                             v-model="demandForm.feedbackTime"
                             type="date"
@@ -637,7 +637,7 @@
                             placeholder="选择提出日期">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="期待上线日期:" prop="releaseTime">
+                <el-form-item label="期待上线日期:" prop="releaseTime" style="margin-top: -15px">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
                             type="date"
@@ -670,7 +670,7 @@
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="类型">
+                <el-form-item label="类型" style="margin-top: -35px">
                     <el-select v-model.number="demandForm.type" placeholder="请选择类型">
                         <el-option
                                 v-for="item in types"
@@ -681,7 +681,7 @@
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="优先级">
+                <el-form-item label="优先级" style="margin-top: -35px">
                     <el-select v-model="demandForm.priority" placeholder="请选择优先级">
                         <el-option
                                 v-for="item in prioritys"
@@ -692,20 +692,20 @@
                     </el-select>
                 </el-form-item>
                 <br>
-                <el-form-item label="提出人" prop="origin">
+                <el-form-item label="提出人" prop="origin" style="margin-top: -35px">
                     <el-input type="text" v-model="demandForm.origin" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="问题:" prop="question">
+                <el-form-item label="问题:" prop="question" style="margin-top: -15px">
                     <el-input type="textarea" v-model="demandForm.question" placeholder="请简单描述提出该需求要解决什么问题" clearable
                               resize="horizontal" size="large"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="目标:" prop="target">
+                <el-form-item label="目标:" prop="target" style="margin-top: -35px">
                     <el-input type="textarea" v-model="demandForm.target" placeholder="请简单描述怎么做，你认为能解决问题" clearable
                               resize="horizontal"></el-input>
                 </el-form-item>
                 <br>
-                <el-form-item label="期待上线日期:" prop="releaseTime">
+                <el-form-item label="期待上线日期:" prop="releaseTime" style="margin-top: -35px">
                     <el-date-picker
                             v-model="demandForm.releaseTime"
                             type="date"
@@ -725,7 +725,7 @@
                 <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
                 <div class="demand-top-list fl">
                     <el-select clearable filterable v-model="project" placeholder="请选择" size="small"
-                               style="width:100px;margin-left: -50px">
+                               style="width:150px;margin-left: -50px">
                         <el-option v-for="item in projectList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
@@ -738,13 +738,13 @@
                     {{item.name}}
                 </div>
             </div>
-            <div class="ctpc-list clearfix">
+            <div class="ctpc-list clearfix" style="margin-top: -15px">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>优先级</div>
                 <div class="ctpc-list-con fl" v-for="item in prioritys" v-if="item.id == demandForm.priority">
                     {{item.name}}
                 </div>
             </div>
-            <div class="ctpc-list clearfix">
+            <div class="ctpc-list clearfix" style="margin-top: -15px">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>预计开始时间:</div>
                 <div class="ctpc-list-con fl">
                     <div v-if="!permit || demandForm.status==2">{{feedbackPlanForm.expectStartTime|formatDate}}</div>
@@ -753,13 +753,12 @@
                                     placeholder="选择日期"></el-date-picker>
                 </div>
             </div>
-            <div class="ctpc-list clearfix">
+            <div class="ctpc-list clearfix" style="margin-top: -15px">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>预计上线时间:</div>
                 <div class="ctpc-list-con fl">
                     <div v-if="!permit || demandForm.status==2">{{feedbackPlanForm.expectOfficialTime|formatDate}}</div>
                     <el-date-picker v-model="feedbackPlanForm.expectOfficialTime" type="date" format="yyyy-MM-dd"
-                                    v-else=""
-                                    placeholder="选择日期"></el-date-picker>
+                                    v-else placeholder="选择日期"></el-date-picker>
                 </div>
             </div>
             <div class="ctpc-member-con">
@@ -784,13 +783,15 @@
                         <div class="add-member-basic-msg">
                             <input class="member-time-count" v-model="taskStep.taskName" @change="" style="width:300px">
                         </div>
+
                         <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务描述：
                         </div>
                         <div class="add-member-basic-msg ">
                             <el-input type="textarea" placeholder="添加任务描述" v-model="taskStep.description"
                                       :rows="2" style="width: 300px"></el-input>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>负责人：
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>负责人：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.createBy" clearable placeholder="请选择">
@@ -798,13 +799,35 @@
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>截止日期：
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 60px"><span class="star">*</span>设计截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskStep.endTime" type="date" format="yyyy-MM-dd"
+                            <el-date-picker v-model="taskStep.beginTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>难易度：
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>优先级：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <el-select v-model="taskStep.priority" clearable placeholder="请选择">
+                                <el-option
+                                        v-for="item in priorityList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 60px"><span class="star">*</span>开发截止日期：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <el-date-picker v-model="taskStep.testTime" type="date" format="yyyy-MM-dd"
+                                            placeholder="选择日期"></el-date-picker>
+                        </div>
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>难易度：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.facility" clearable placeholder="请选择">
@@ -816,22 +839,30 @@
                                 </el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>阶段：
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width:110px;margin-left: 60px"><span class="star">*</span>任务截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
+                            <el-date-picker v-model="taskStep.endTime" type="date" format="yyyy-MM-dd"
+                                            placeholder="选择日期"></el-date-picker>
+                        </div>
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 0px"><span class="star">*</span>阶段：
+                        </div>
+                        <div class="add-member-basic-msg fl" style="margin-left: 15px">
                             <el-select v-model="taskStep.stageId" :multiple-limit="1"
                                        placeholder="请选择">
                                 <el-option v-for="item in stageList" :key="item.id"
                                            :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>标签：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 31px"><span class="star">*</span>标签：
                         </div>
-                        <div class="add-member-basic-msg fl">
+                        <div class="add-member-basic-msg fl" style="margin-left: 17px">
                             <ul class="ctpc-tags">
                                 <li class="tag-lis-add">
                                     <div class="tag-add-sel">
-                                        <el-select v-model="taskStep.tags" multiple placeholder="添加标签">
+                                        <el-select v-model="taskStep.tags" multiple placeholder="添加标签" size="small">
                                             <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                                        :value="item.id"></el-option>
                                         </el-select>
@@ -960,12 +991,19 @@
                     description: '',
                     projectId: '',
                     createBy: '',
+                    beginTime: '',
+                    testTime: '',
                     endTime: '',
                     stageId: '',
                     priority: '',
                     facility: '',
                     tags: []
                 },
+                priorityList:[
+                    {label: '普通', value: 1},
+                    {label: '紧急', value: 2},
+                    {label: '非常紧急', value: 3}
+                ],
                 facilityList: [
                     {label: '容易', value: 1},
                     {label: '简单', value: 2},
@@ -1383,12 +1421,24 @@
                     this.warnMsg("请填写任务负责人");
                     return;
                 }
+                if (this.taskStep.beginTime == '') {
+                    this.warnMsg("请选择设计结束时间");
+                    return;
+                }
+                if (this.taskStep.testTime == '') {
+                    this.warnMsg("请选择开发结束时间");
+                    return;
+                }
                 if (this.taskStep.endTime == '') {
                     this.warnMsg("请选择结束时间");
                     return;
                 }
                 if (this.taskStep.stageId === '') {
                     this.warnMsg("请选择项目阶段");
+                    return;
+                }
+                if (this.taskStep.priority === '') {
+                    this.warnMsg("请选择任务优先级");
                     return;
                 }
                 if (this.taskStep.facility === '') {
@@ -1411,10 +1461,12 @@
                     task.taskName = this.taskStep.taskName.trim()
                     task.description = this.taskStep.description.trim()
                     task.createBy = this.taskStep.createBy
+                    task.beginTime = moment(this.taskStep.beginTime).format('YYYY-MM-DD 23:59:59')
+                    task.testTime = moment(this.taskStep.testTime).format('YYYY-MM-DD 23:59:59')
                     task.endTime = moment(this.taskStep.endTime).format('YYYY-MM-DD 23:59:59')
                     task.taskType = this.taskStep.taskType
                     task.projectId = 0
-                    task.priority = this.demandForm.priority
+                    task.priority = this.taskStep.priority
                     task.facility = this.taskStep.facility
                     task.stageId = this.taskStep.stageId
                     task.tags = this.taskStep.tags
@@ -1552,13 +1604,21 @@
 
             //查询需求计划
             feedbackPlan(feedback) {
+                this.showTaskDetail = false;
                 this.clearPlan();
                 http.zsyGetHttp('/feedback/demand/project/' + feedback.id, {}, (res) => {
                     if (res.data.projectId == 0 || res.data.projectId == null) {
                         //此时没有添加项目
-                        this.projectVisible = true
+                        if (this.permit){
+                            this.projectVisible = true
+                        }
                     } else {
-                        this.feedbackPlanForm.projectId = res.data.projectId
+                        if (this.permit){
+                            this.projectVisible = true
+                        }
+                        // this.projectVisible = false;
+                        this.feedbackPlanForm.projectId = res.data.projectId;
+                        this.project = res.data.projectId;
                     }
                 })
                 this.feedbackPlanForm.feedbackId = feedback.id
