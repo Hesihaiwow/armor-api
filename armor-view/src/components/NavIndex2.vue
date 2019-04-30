@@ -923,75 +923,75 @@
                         </div>
                     </el-tab-pane>
                 </el-tabs>
-                <p class="mic-title">积分求助转移</p>
-                <el-tabs v-model="auditHelpTabsActiveName" @tab-click="handleClick">
-                    <el-tab-pane label="待审核" name="wait">
-                        <div class="task-lis" v-for="help in review.wait" @click="reviewDetail(help)">
-                            <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                            <div class="main-task-detail">
-                                <div class="task-name"><span>{{help.description}}</span></div>
-                                <div class="task-state">
-                                    <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
-                                    <span class="task-end blue">{{help.time| formatDate }}</span>
-                                    <span class="task-time-opt"><i class="el-icon-edit"></i></span>
-                                </div>
-                            </div>
-                            <div class="task-data-show">
-                                <span class="task-score">求助转移：{{help.integral}} 分</span>
-                            </div>
-                            <div class="task-username">
-                                <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"
-                                     :src="help.avatarUrl">
-                                <span v-else="">{{help.name.split(",")[1]}}</span>
-                            </div>
-                        </div>
-                        <div class="pagination" v-show="this.review.wait.length>0">
-                            <el-pagination
-                                    @current-change="handleWaitPage"
-                                    :current-page.sync="waitPage.pageNum"
-                                    :page-size="waitPage.pageSize"
-                                    :layout="waitPageLayout"
-                                    :total="waitPage.total">
-                            </el-pagination>
-                        </div>
-                        <div v-show="review.wait.length==0" class="empty">
-                            <h2>暂无数据</h2>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="审核通过" name="completed">
-                        <div class="task-lis" v-for="help in review.review" @click="reviewDetail(help)">
-                            <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                            <div class="main-task-detail">
-                                <div class="task-name"><span>{{help.description}}</span></div>
-                                <div class="task-state">
-                                    <span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>
-                                    <span class="task-end blue">{{help.time| formatDate }}</span>
-                                    <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                </div>
-                            </div>
-                            <div class="task-data-show">
-                                <span class="task-score">转移完成：-{{help.integral}} 分</span>
-                            </div>
-                            <div class="task-username">
-                                <img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"
-                                     :src="help.avatarUrl">
-                                <span v-else="">{{help.name.split(",")[1]}}</span>
-                            </div>
-                        </div>
-                        <div class="pagination" v-show="this.review.review.length>0">
-                            <el-pagination
-                                    @current-change="handleReviewPage"
-                                    :current-page.sync="reviewPage.pageNum"
-                                    :page-size="reviewPage.pageSize"
-                                    :layout="waitPageLayout"
-                                    :total="reviewPage.total">
-                            </el-pagination>
-                        </div>
-                        <div v-show="review.review.length==0" class="empty">
-                            <h2>暂无数据</h2>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
+                <!--<p class="mic-title">积分求助转移</p>-->
+                <!--<el-tabs v-model="auditHelpTabsActiveName" @tab-click="handleClick">-->
+                    <!--<el-tab-pane label="待审核" name="wait">-->
+                        <!--<div class="task-lis" v-for="help in review.wait" @click="reviewDetail(help)">-->
+                            <!--<div class="head-img"><img src="../assets/img/waitAudit.png"></div>-->
+                            <!--<div class="main-task-detail">-->
+                                <!--<div class="task-name"><span>{{help.description}}</span></div>-->
+                                <!--<div class="task-state">-->
+                                    <!--<span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>-->
+                                    <!--<span class="task-end blue">{{help.time| formatDate }}</span>-->
+                                    <!--<span class="task-time-opt"><i class="el-icon-edit"></i></span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="task-data-show">-->
+                                <!--<span class="task-score">求助转移：{{help.integral}} 分</span>-->
+                            <!--</div>-->
+                            <!--<div class="task-username">-->
+                                <!--<img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"-->
+                                     <!--:src="help.avatarUrl">-->
+                                <!--<span v-else="">{{help.name.split(",")[1]}}</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="pagination" v-show="this.review.wait.length>0">-->
+                            <!--<el-pagination-->
+                                    <!--@current-change="handleWaitPage"-->
+                                    <!--:current-page.sync="waitPage.pageNum"-->
+                                    <!--:page-size="waitPage.pageSize"-->
+                                    <!--:layout="waitPageLayout"-->
+                                    <!--:total="waitPage.total">-->
+                            <!--</el-pagination>-->
+                        <!--</div>-->
+                        <!--<div v-show="review.wait.length==0" class="empty">-->
+                            <!--<h2>暂无数据</h2>-->
+                        <!--</div>-->
+                    <!--</el-tab-pane>-->
+                    <!--<el-tab-pane label="审核通过" name="completed">-->
+                        <!--<div class="task-lis" v-for="help in review.review" @click="reviewDetail(help)">-->
+                            <!--<div class="head-img"><img src="../assets/img/waitAudit.png"></div>-->
+                            <!--<div class="main-task-detail">-->
+                                <!--<div class="task-name"><span>{{help.description}}</span></div>-->
+                                <!--<div class="task-state">-->
+                                    <!--<span class="task-end blue">求助目标：{{help.name.split(",")[0]}}</span>-->
+                                    <!--<span class="task-end blue">{{help.time| formatDate }}</span>-->
+                                    <!--<span class="task-time-opt"><i class="el-icon-circle-check"></i></span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="task-data-show">-->
+                                <!--<span class="task-score">转移完成：-{{help.integral}} 分</span>-->
+                            <!--</div>-->
+                            <!--<div class="task-username">-->
+                                <!--<img class="task-avatar" v-if="help.avatarUrl && help.avatarUrl!=''"-->
+                                     <!--:src="help.avatarUrl">-->
+                                <!--<span v-else="">{{help.name.split(",")[1]}}</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="pagination" v-show="this.review.review.length>0">-->
+                            <!--<el-pagination-->
+                                    <!--@current-change="handleReviewPage"-->
+                                    <!--:current-page.sync="reviewPage.pageNum"-->
+                                    <!--:page-size="reviewPage.pageSize"-->
+                                    <!--:layout="waitPageLayout"-->
+                                    <!--:total="reviewPage.total">-->
+                            <!--</el-pagination>-->
+                        <!--</div>-->
+                        <!--<div v-show="review.review.length==0" class="empty">-->
+                            <!--<h2>暂无数据</h2>-->
+                        <!--</div>-->
+                    <!--</el-tab-pane>-->
+                <!--</el-tabs>-->
             </div>
             <div v-show="userRole < 3">
                 <p class="mic-title">{{userRole!=0?'请假申请':'请假申请审核'}}</p>
@@ -1004,6 +1004,7 @@
                                 <div class="main-task-detail">
                                     <div class="task-name"><span>{{leave.description}}</span></div>
                                     <div class="task-state">
+                                        <span class="task-end blue">申请人: {{leave.userName}}</span>
                                         <span class="task-end blue">{{leave.createTime| formatDate }}</span>
                                         <span class="task-time-opt"><i class="el-icon-edit"></i></span>
                                     </div>
@@ -1069,6 +1070,7 @@
                                 <div class="main-task-detail">
                                     <div class="task-name"><span>{{eWork.reason}}</span></div>
                                     <div class="task-state">
+                                        <span class="task-end blue">申请人: {{eWork.userName}}</span>
                                         <span class="task-end blue">{{eWork.createTime| formatDate }}</span>
                                     </div>
                                 </div>
@@ -1133,6 +1135,7 @@
                                 <div class="main-task-detail">
                                     <div class="task-name"><span>补打卡原因: {{recheck.reason}}</span></div>
                                     <div class="task-state">
+                                        <span class="task-end blue">申请人: {{recheck.userName}}</span>
                                         <span class="task-end blue">补打卡时间: {{recheck.recheckTime| formatTime }}</span>
                                     </div>
                                 </div>
@@ -1663,10 +1666,11 @@
                    :close-on-press-escape="false" :visible.sync="showEWorkDetailVisible" @close="closeEWorkDetail">
             <el-form>
                 <el-form-item label="加班原因">{{eWorkDetail.reason}}</el-form-item>
-                <el-form-item label="开始时间">{{eWorkDetail.beginTime | formatTime}}</el-form-item>
-                <el-form-item label="截止时间">{{eWorkDetail.endTime | formatTime}}</el-form-item>
-                <el-form-item label="加班时长">{{eWorkDetail.workHours}}小时</el-form-item>
-                <el-form-item label="关联任务">
+                <el-form-item style="margin-top: -20px" label="申请人">{{eWorkDetail.userName}}</el-form-item>
+                <el-form-item style="margin-top: -20px" label="开始时间">{{eWorkDetail.beginTime | formatTime}}</el-form-item>
+                <el-form-item style="margin-top: -20px" label="截止时间">{{eWorkDetail.endTime | formatTime}}</el-form-item>
+                <el-form-item style="margin-top: -20px" label="加班时长">{{eWorkDetail.workHours}}小时</el-form-item>
+                <el-form-item style="margin-top: -20px" label="关联任务">
 
                 </el-form-item>
                 <div class="ctpc-member-con">
@@ -1845,11 +1849,13 @@
                    :close-on-press-escape="false" :visible.sync="editRecheckVisible"
                    @close="closeRecheckForm">
             <el-form :model="recheckForm" ref="recheckForm" :rules="recheckRules" label-width="110px">
-                <el-form-item label="补打卡原因" prop="reason">
-                    <el-input type="textarea" v-model="recheckForm.reason" :rows="3"></el-input>
-                </el-form-item>
                 <!--<span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>-->
-                <el-form-item label="补打上班时间" prop="beginTime" v-show="recheckForm.type == 0">
+                <el-form-item label="申请人:">{{recheckForm.userName}}</el-form-item>
+                <el-form-item label="补打卡原因:" prop="reason">
+                    <el-input type="textarea" v-model="recheckForm.reason" :rows="2"></el-input>
+                </el-form-item>
+                <span class="star" v-show="recheckForm.type == 0" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
+                <el-form-item label="补打上班时间:" prop="beginTime" v-show="recheckForm.type == 0">
                     <el-date-picker
                             v-model="recheckForm.recheckInTime"
                             type="datetime"
@@ -1857,7 +1863,7 @@
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <!--<span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>-->
+                <span class="star" v-show="recheckForm.type == 1" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                 <el-form-item label="补打下班时间" prop="beginTime" v-show="recheckForm.type == 1">
                     <el-date-picker
                             v-model="recheckForm.recheckOutTime"
@@ -1868,14 +1874,12 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="saveEditRecheck('recheckForm',recheckForm.id)"
+                <el-button type="primary" v-show="userRole != 0" @click="saveEditRecheck('recheckForm',recheckForm.id)"
                            :loading="isSaving">立即修改</el-button>
                 <el-button type="danger" @click="deleteRecheck(recheckForm.id)"
                            :loading="isSaving">删除</el-button>
-                <el-button v-show="permit" type="success" @click="accessRecheck(recheckForm.id)"
+                <el-button v-show="permit" type="success" @click="accessRecheck('recheckForm',recheckForm.id)"
                            :loading="isSaving">审核</el-button>
-                <el-button @click="editRecheckVisible = false">取 消</el-button>
-
             </span>
         </el-dialog>
         <el-dialog title="补打卡申请" size="tiny" custom-class="myDialog" :close-on-click-modal="false"
@@ -1895,7 +1899,6 @@
             <span slot="footer" class="dialog-footer">
                 <el-button v-show="permit" type="danger" @click="deleteRecheck(recheckForm.id)"
                            :loading="isSaving">删除</el-button>
-                <el-button @click="showRecheckVisible = false">取 消</el-button>
             </span>
         </el-dialog>
 
@@ -1904,6 +1907,7 @@
                    :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
             <el-form>
                 <el-form-item class="task-form" label="请假原因：">{{leaveForm.description}}</el-form-item>
+                <el-form-item class="task-form" label="请假人：">{{leaveForm.userName}}</el-form-item>
                 <el-form-item class="task-form" label="请假开始时间：">{{leaveForm.beginTime | formatTime}}</el-form-item>
                 <el-form-item class="task-form" label="请假结束时间：">{{leaveForm.endTime | formatTime}}</el-form-item>
                 <el-form-item class="task-form" label="类型：">{{leaveForm.typeName }}</el-form-item>
@@ -2346,6 +2350,8 @@
                 },
                 leaveForm: {
                     id: '',
+                    userId: '',
+                    userName: '',
                     description: '',
                     beginTime: '',
                     endTime: '',
@@ -2629,7 +2635,9 @@
                     recheckInTime: '',
                     recheckOutTime: '',
                     recheckTime: '',
-                    userId:''
+                    userId:'',
+                    userName:'',
+                    type:'',
                 },
                 recheckWaitPage:{
                     pageNum: 1,
@@ -3950,6 +3958,8 @@
             leaveDetail(leave) {
                 this.leaveDetailVisible = true
                 this.leaveForm.id = leave.id
+                this.leaveForm.userId = leave.userId;
+                this.leaveForm.userName = leave.userName;
                 this.leaveForm.description = leave.description
                 this.leaveForm.beginTime = moment(leave.beginTime).toDate();
                 this.leaveForm.endTime = moment(leave.endTime).toDate();
@@ -3965,8 +3975,10 @@
                     this.editLeaveDetailVisible = true;
                     this.leaveDetailVisible = false;
                     this.editLeaveVisible = true
-                    this.leaveForm.id = leave.id
-                    this.leaveForm.description = leave.description
+                    this.leaveForm.id = leave.id;
+                    this.leaveForm.userId = leave.userId;
+                    this.leaveForm.userName = leave.userName;
+                    this.leaveForm.description = leave.description;
                     this.leaveForm.beginTime = moment(leave.beginTime).toDate();
                     this.leaveForm.endTime = moment(leave.endTime).toDate();
                     this.leaveForm.type = leave.type
@@ -4117,8 +4129,15 @@
                     this.isSaving = false;
                     return false;
                 }
-                if (this.extraWorkForm.endTime < this.extraWorkForm.beginTime){
+                if (moment(this.extraWorkForm.endTime).isBefore(moment(this.extraWorkForm.beginTime))){
                     this.$message({showClose: true, message: '加班结束时间不能在开始时间之前', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                var day1 = new Date(this.extraWorkForm.beginTime).getDay();
+                var day2 = new Date(this.extraWorkForm.endTime).getDay();
+                if (day2 - day1 > 0){
+                    this.$message({showClose: true, message: '加班申请不能跨天', type: 'error'});
                     this.isSaving = false;
                     return false;
                 }
@@ -4180,6 +4199,18 @@
                 }
                 if (this.extraWorkForm.endTime == null || this.extraWorkForm.endTime == ''){
                     this.$message({showClose: true, message: '加班结束时间不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                if (moment(this.extraWorkForm.endTime).isBefore(moment(this.extraWorkForm.beginTime))){
+                    this.$message({showClose: true, message: '加班结束时间不能在开始时间之前', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                var day1 = new Date(this.extraWorkForm.beginTime).getDay();
+                var day2 = new Date(this.extraWorkForm.endTime).getDay();
+                if (day2 - day1 > 0){
+                    this.$message({showClose: true, message: '加班申请不能跨天', type: 'error'});
                     this.isSaving = false;
                     return false;
                 }
@@ -5426,9 +5457,18 @@
                     this.isSaving = false;
                     return false;
                 }
-                if (this.recheckForm.recheckInTime == null || this.recheckForm.recheckInTime == ''){
+                //上班打卡
+                if (this.recheckForm.type == 0){
+                    if(this.recheckForm.recheckInTime == null || this.recheckForm.recheckInTime == ''){
+                        this.$message({showClose: true, message: '补打上班卡时间不能为空', type: 'error'});
+                        this.isSaving = false;
+                        return false;
+                    }
+                }
+                //下班打卡
+                else {
                     if(this.recheckForm.recheckOutTime == null || this.recheckForm.recheckOutTime == ''){
-                        this.$message({showClose: true, message: '补打卡时间不能为空', type: 'error'});
+                        this.$message({showClose: true, message: '补打下班卡时间不能为空', type: 'error'});
                         this.isSaving = false;
                         return false;
                     }
@@ -5523,24 +5563,54 @@
                 }).catch(() => {
                 });
             },
-            accessRecheck(id){
-                this.$confirm('同意补打卡申请, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(()=>{
-                    http.zsyPutHttp('/sign-in/resign-in/access/'+id,{},(res)=>{
-                        this.$message({
-                            showClose: true,
-                            message: '同意补打卡申请成功',
-                            type: 'success'
-                        });
-                        this.editRecheckVisible = false;
-                        this.fetchRecheckWait();
-                        this.fetchRecheckPass();
-                    })
-                }).catch(() => {
-                });
+            accessRecheck(formName,id){
+                this.isSaving = true;
+                if (this.recheckForm.reason == null || this.recheckForm.reason == ''){
+                    this.$message({showClose: true, message: '补打卡原因不能为空', type: 'error'});
+                    this.isSaving = false;
+                    return false;
+                }
+                //上班打卡
+                if (this.recheckForm.type == 0){
+                    if(this.recheckForm.recheckInTime == null || this.recheckForm.recheckInTime == ''){
+                        this.$message({showClose: true, message: '补打上班卡时间不能为空', type: 'error'});
+                        this.isSaving = false;
+                        return false;
+                    }
+                }
+                //下班打卡
+                else {
+                    if(this.recheckForm.recheckOutTime == null || this.recheckForm.recheckOutTime == ''){
+                        this.$message({showClose: true, message: '补打下班卡时间不能为空', type: 'error'});
+                        this.isSaving = false;
+                        return false;
+                    }
+                }
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let form = this.recheckForm
+                        if (form.recheckInTime != null && form.recheckInTime != ''){
+                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss')
+                        }
+                        if(form.recheckOutTime != null && form.recheckOutTime != ''){
+                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss')
+                        }
+                        http.zsyPutHttp('/sign-in/resign-in/access/'+id, form, (resp) => {
+                            this.$message({
+                                showClose: true,
+                                message: '审核通过',
+                                type: 'success'
+                            });
+                            this.clearRecheckForm();
+                            this.fetchMyRecheckWait();
+                            this.fetchRecheckWait();
+                            this.editRecheckVisible = false
+                            this.isSaving = false
+                        }, err => {
+                            this.isSaving = false
+                        })
+                    }
+                })
             },
             clearRecheckForm(){
                 this.recheckForm.reason = this.recheckForm.recheckInTime = this.recheckForm.recheckOutTime
@@ -5608,14 +5678,16 @@
                 }
             },
             editRecheck(recheck){
-                this.editRecheckVisible = true;
+
                 this.recheckForm.id = recheck.id;
                 this.recheckForm.userId = recheck.userId;
+                this.recheckForm.userName = recheck.userName;
                 this.recheckForm.recheckTime = recheck.recheckTime;
                 this.recheckForm.recheckInTime = recheck.recheckTime;
                 this.recheckForm.recheckOutTime = recheck.recheckTime;
                 this.recheckForm.reason = recheck.reason;
                 this.recheckForm.type = recheck.type;
+                this.editRecheckVisible = true;
             },
             showRecheck(recheck){
                 this.showRecheckVisible = true;
