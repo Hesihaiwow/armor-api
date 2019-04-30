@@ -1165,7 +1165,7 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     @Transactional
-    public void accessResignIn(Long id) {
+    public void accessResignIn(ResignInReqDTO reqDTO,Long id) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.ADMINISTRATOR.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
         }
@@ -1174,6 +1174,12 @@ public class ZSYSignInService implements IZSYSignInService {
             throw new ZSYServiceException("该条补打卡申请不存在");
         }
         resignIn.setReviewStatus(2);
+        if (resignIn.getType() == 0){
+            resignIn.setRecheckTime(reqDTO.getRecheckInTime());
+        }else {
+            resignIn.setRecheckTime(reqDTO.getRecheckOutTime());
+        }
+        resignIn.setReason(reqDTO.getReason());
         if (signInMapper.updateResignIn(resignIn,id) == 0){
             throw new ZSYServiceException("审核通过补打卡申请失败");
         }

@@ -109,8 +109,8 @@ public class ZSYSignInController {
 
     @ApiOperation("审核通过补打卡申请")
     @PutMapping("/resign-in/access/{id}")
-    public String accessResignIn(@PathVariable("id")Long id){
-        signInService.accessResignIn(id);
+    public String accessResignIn(@RequestBody ResignInReqDTO reqDTO ,@PathVariable("id")Long id){
+        signInService.accessResignIn(reqDTO,id);
         return ZSYResult.success().build();
     }
 

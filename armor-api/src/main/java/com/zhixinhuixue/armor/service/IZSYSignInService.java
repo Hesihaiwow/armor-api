@@ -93,7 +93,7 @@ public interface IZSYSignInService {
      * 审核通过补打卡申请
      * @param id
      */
-    void accessResignIn(Long id);
+    void accessResignIn(ResignInReqDTO reqDTO,Long id);
 
     /**
      * 个人查看加班总时长
