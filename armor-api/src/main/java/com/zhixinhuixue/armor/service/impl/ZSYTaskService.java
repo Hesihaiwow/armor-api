@@ -838,7 +838,7 @@ public class ZSYTaskService implements IZSYTaskService {
         }
 
         // 插入日志
-        taskLogMapper.insert(buildLog("阶段全部完成", "将全部阶段标记为已完成", taskId));
+        taskLogMapper.insert(buildLog("阶段全部完成", ZSYTokenRequestContext.get().getUserName()+"将全部阶段标记为已完成", taskId));
         return ZSYResult.success();
     }
 

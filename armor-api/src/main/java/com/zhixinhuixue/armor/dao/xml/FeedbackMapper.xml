@@ -1025,7 +1025,7 @@
     SELECT t.task_id FROM feedback_plan_task t
     JOIN feedback_plan p on p.id = t.feedback_plan_id
     JOIN task ts ON t.task_id = ts.id
-    WHERE p.feedback_id = #{id}
+    WHERE p.feedback_id = #{id} and ts.is_delete = 0 and ts.review_status = 3
     ORDER BY ts.create_time ASC
   </select>
 

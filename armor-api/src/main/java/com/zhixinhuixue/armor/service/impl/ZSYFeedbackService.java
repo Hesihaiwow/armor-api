@@ -1491,14 +1491,15 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             feedbackPlanBOS.stream().forEach(feedbackPlanBO -> {
                 BeanUtils.copyProperties(feedbackPlanBO, feedbackPlanResDTO);
                 FeedbackTaskDetailResDTO feedbackTaskDetailResDTO = new FeedbackTaskDetailResDTO();
-                BeanUtils.copyProperties(feedbackPlanBO.getPlanTask(), feedbackTaskDetailResDTO);
-
-                feedbackTaskDetailResDTO.setTaskName(feedbackPlanBO.getPlanTask().getName());
-                feedbackTaskDetailResDTO.setProjectId(feedbackPlanBO.getId());//将已存在的任务ID存储为项目ID
-                User user = userMapper.selectById(feedbackPlanBO.getPlanTask().getCreateBy());//在上一条查询中未查出
-                feedbackTaskDetailResDTO.setUserName(user.getName());
-                feedbackTaskDetailResDTO.setTaskType(ZSYTaskType.PUBLIC_TASK.getValue());
-                taskDetailResDTOS.add(feedbackTaskDetailResDTO);
+                if (feedbackPlanBO.getPlanTask() != null){
+                    BeanUtils.copyProperties(feedbackPlanBO.getPlanTask(), feedbackTaskDetailResDTO);
+                    feedbackTaskDetailResDTO.setTaskName(feedbackPlanBO.getPlanTask().getName());
+                    feedbackTaskDetailResDTO.setProjectId(feedbackPlanBO.getId());//将已存在的任务ID存储为项目ID
+                    User user = userMapper.selectById(feedbackPlanBO.getPlanTask().getCreateBy());//在上一条查询中未查出
+                    feedbackTaskDetailResDTO.setUserName(user.getName());
+                    feedbackTaskDetailResDTO.setTaskType(ZSYTaskType.PUBLIC_TASK.getValue());
+                    taskDetailResDTOS.add(feedbackTaskDetailResDTO);
+                }
             });
             feedbackPlanResDTO.setPlanTask(taskDetailResDTOS);
         }else{
