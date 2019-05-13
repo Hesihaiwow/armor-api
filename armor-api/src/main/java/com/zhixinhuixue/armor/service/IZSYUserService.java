@@ -120,9 +120,18 @@ public interface IZSYUserService {
     // sch --
     /**
      *  用户修改个人基本信息
+     *  @author sch
      * @param userInfoReqDTO
      */
     void modifyBasicInfo(UserInfoReqDTO userInfoReqDTO);
+
+    /**
+     * 查看当前用户管制下的用户
+     * @author sch
+     * @param checkUserId
+     * @return
+     */
+    List<EffectUserResDTO> getControlledPeopleList(Long checkUserId);
 
     // -- sch
 }

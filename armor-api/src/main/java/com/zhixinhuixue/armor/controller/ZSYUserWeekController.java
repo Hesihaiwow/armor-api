@@ -42,6 +42,12 @@ public class ZSYUserWeekController extends ZSYController {
         return ZSYResult.success().data(userWeekService.getTaskUserHours(taskId, userId)).build();
     }
 
+    @ApiOperation("获取去除某个任务后的周工时分配")
+    @GetMapping("/without/{taskId}/{userId}/{year}/{weekNumber}")
+    public String getUserWeekHoursWithoutTask(@PathVariable("taskId") Long taskId,@PathVariable("userId") Long userId,
+                                              @PathVariable("year") int year , @PathVariable("weekNumber") int weekNumber){
+        return ZSYResult.success().data(userWeekService.getUserWeekHoursWithoutTask(taskId,userId,year,weekNumber)).build();
+    }
 
 
 }

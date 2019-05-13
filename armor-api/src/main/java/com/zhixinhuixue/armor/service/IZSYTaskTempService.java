@@ -57,6 +57,7 @@ public interface IZSYTaskTempService {
      * 个人查看待审核任务
      * @return
      */
+//    List<PendingTaskTempResDTO> getPersonalTaskTempList();
     List<TaskResDTO> getPersonalTaskTempList();
 
     /**
@@ -73,4 +74,18 @@ public interface IZSYTaskTempService {
      * @return
      */
     List<TaskBaseResDTO> getMultipleTaskByStage(Long stageId);
+
+    /**
+     * 查询待审核多人任务
+     * @param checkUserId
+     * @return
+     */
+    List<TaskTempResDTO> getPendingTaskTempListByCheckUser(Long checkUserId);
+
+    /**
+     * 查询审核通过多人任务
+     * @param checkUserId
+     * @return
+     */
+    PageInfo<TaskTempResDTO> getAccessedTaskTempListByCheckUser(Integer pageNum,Long checkUserId);
 }

@@ -26,10 +26,23 @@ public class TaskTempBO extends TaskTemp {
     private String avatarUrl;
 
     /**
+     * 审核日志
+     */
+    private List<TaskReviewLogBO> taskReviewLogBOS;
+
+    /**
      * 用户周工作量
      * @return
      */
     private List<UserWeekTemp> userWeekTempList;
+
+    public List<TaskReviewLogBO> getTaskReviewLogBOS() {
+        return taskReviewLogBOS;
+    }
+
+    public void setTaskReviewLogBOS(List<TaskReviewLogBO> taskReviewLogBOS) {
+        this.taskReviewLogBOS = taskReviewLogBOS;
+    }
 
     public Long getProjectId() {
         return projectId;

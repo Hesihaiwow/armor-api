@@ -149,5 +149,10 @@
     <select id="selectUserByTaskId" resultType="java.lang.Long">
         SELECT DISTINCT `user_id` FROM `task_user` WHERE `task_id` = #{id}
     </select>
+
+    <!--根据任务id和用户id查询taskUser-->
+    <select id="selectByTaskAndUser" resultMap="BaseResultMap">
+        SELECT * FROM `task_user` WHERE `task_id` = #{taskId} AND `user_id` = #{userId}
+    </select>
     <!--  sch  -->
 </mapper>

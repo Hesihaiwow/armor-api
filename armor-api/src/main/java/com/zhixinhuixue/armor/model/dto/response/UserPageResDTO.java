@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Akuma on 2017/8/9.
@@ -35,6 +36,19 @@ public class UserPageResDTO {
     private Integer userRole;
 
     private Integer checkSort;
+
+    /**
+     * 用户的创建任务审核人集合
+     */
+    private List<UserCheckPeopleResDTO> checkUsers;
+
+    public List<UserCheckPeopleResDTO> getCheckUsers() {
+        return checkUsers;
+    }
+
+    public void setCheckUsers(List<UserCheckPeopleResDTO> checkUsers) {
+        this.checkUsers = checkUsers;
+    }
 
     public Integer getCheckSort() {
         return checkSort;

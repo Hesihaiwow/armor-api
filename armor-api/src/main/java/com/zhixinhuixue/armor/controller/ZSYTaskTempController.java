@@ -51,7 +51,7 @@ public class ZSYTaskTempController {
     }
 
     @ApiOperation("个人查看待审核任务")
-    @GetMapping("personal/pending")
+    @GetMapping("/personal/pending")
     public String getPersonalTaskTempList(){
         return ZSYResult.success().data(taskTempService.getPersonalTaskTempList()).build();
     }
@@ -60,6 +60,19 @@ public class ZSYTaskTempController {
     @GetMapping("/page/{pageNum}/{reviewStatus}")
     public String getTaskTempPage(@PathVariable("pageNum")Integer pageNum,@PathVariable("reviewStatus")Integer reviewStatus){
         return ZSYResult.success().data(taskTempService.getTaskTempPage(pageNum,reviewStatus)).build();
+    }
+
+
+    @ApiOperation("查询待审核多人任务")
+    @GetMapping("/pending/list/{checkUserId}")
+    public String getPendingTaskTempListByCheckUser(@PathVariable("checkUserId")Long checkUserId){
+        return ZSYResult.success().data(taskTempService.getPendingTaskTempListByCheckUser(checkUserId)).build();
+    }
+
+    @ApiOperation("查询审核通过多人任务")
+    @GetMapping("/accessed/page/{pageNum}/{checkUserId}")
+    public String getAccessedTaskTempListByCheckUser(@PathVariable("pageNum")Integer pageNum,@PathVariable("checkUserId")Long checkUserId){
+        return ZSYResult.success().data(taskTempService.getAccessedTaskTempListByCheckUser(pageNum,checkUserId)).build();
     }
 
     @ApiOperation("审核通过")

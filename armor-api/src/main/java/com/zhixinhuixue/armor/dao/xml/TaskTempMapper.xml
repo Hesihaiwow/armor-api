@@ -27,6 +27,24 @@
         <collection property="userWeekTempList" column="{userId=user_id,taskId=task_id}"
                 ofType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp"
                 select="selectUserWeekTempByUserAndTask"></collection>
+        <collection property="taskReviewLogBOS" column="id"
+                    ofType="com.zhixinhuixue.armor.model.bo.TaskReviewLogBO"
+                    select="selectTaskReviewLogByTaskTemp"/>
+    </resultMap>
+
+    <resultMap id="BaseTaskReviewLogMap" type="com.zhixinhuixue.armor.model.pojo.TaskReviewLog">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="task_temp_id" property="taskTempId" jdbcType="BIGINT"></result>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="check_user_id" property="checkUserId" jdbcType="BIGINT"></result>
+        <result column="check_user_name" property="checkUserName" jdbcType="VARCHAR"></result>
+        <result column="level" property="level" jdbcType="INTEGER"></result>
+        <result column="suggest" property="suggest" jdbcType="VARCHAR"></result>
+        <result column="review_time" property="reviewTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <resultMap id="TaskReviewLogBOMap" type="com.zhixinhuixue.armor.model.bo.TaskReviewLogBO" extends="BaseTaskReviewLogMap">
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
     </resultMap>
 
     <resultMap id="BaseUserWeekTempMap" type="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
@@ -43,11 +61,12 @@
     <!--新增任务-->
     <insert id="insertTaskTemp" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTemp">
         INSERT INTO `task_temp`
-        (`id`,`task_id`,`user_id`,`begin_time`,`end_time`,`work_hours`,`description`,`type`,`status`,`review_status`,`create_time`)
+        (`id`,`task_id`,`user_id`,`begin_time`,`end_time`,`work_hours`,`description`,`type`
+        ,`status`,`review_status`,`create_time`,`level`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP}
         ,#{workHours,jdbcType=DECIMAL},#{description,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{status,jdbcType=INTEGER},#{reviewStatus,jdbcType=INTEGER}
-        ,#{createTime,jdbcType=TIMESTAMP})
+        ,#{createTime,jdbcType=TIMESTAMP},#{level,jdbcType=INTEGER})
     </insert>
 
     <!--批量插入周工作量(临时)-->
@@ -59,6 +78,14 @@
             (#{item.id,jdbcType=BIGINT},#{item.weekNumber,jdbcType=INTEGER},#{item.hours,jdbcType=DECIMAL},#{item.userId,jdbcType=BIGINT}
             ,#{item.taskId,jdbcType=BIGINT},#{item.year,jdbcType=INTEGER},#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
+    </insert>
+
+    <!--插入临时任务审核日志-->
+    <insert id="insertTaskReviewLog" parameterType="com.zhixinhuixue.armor.model.pojo.TaskReviewLog">
+        INSERT INTO `task_review_log` (`id`,`task_id`,`task_temp_id`,`check_user_id`,`check_user_name`,`level`,`suggest`,`review_time`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{taskTempId,jdbcType=BIGINT},#{checkUserId,jdbcType=BIGINT}
+        ,#{checkUserName,jdbcType=VARCHAR},#{level,jdbcType=INTEGER},#{suggest,jdbcType=VARCHAR},#{reviewTime,jdbcType=TIMESTAMP})
     </insert>
 
     <!--修改任务(临时)-->
@@ -82,6 +109,9 @@
             </if>
             <if test="reviewStatus != null">
                 `review_status` = #{reviewStatus,jdbcType=INTEGER},
+            </if>
+            <if test="level != null">
+                `level` = #{level,jdbcType=INTEGER}
             </if>
         </set>
         WHERE `id` = #{id,jdbcType=BIGINT}
@@ -110,6 +140,16 @@
     <!--删除原有的userWeekTemp-->
     <delete id="deleteUserWeekTempByUserAndTask">
         DELETE FROM `user_week_temp` WHERE `user_id` = #{userId} AND `task_id` = #{taskId}
+    </delete>
+
+    <!--根据临时任务id   删除审核日志-->
+    <delete id="deleteTaskReviewLog">
+        DELETE FROM `task_review_log` WHERE `task_temp_id` = #{id}
+    </delete>
+
+    <!--根据任务和用户删除临时任务-->
+    <delete id="deleteByUserAndTask">
+        DELETE FROM `task_temp` WHERE `user_id` = #{userId} AND `task_id` = #{taskId}
     </delete>
 
     <!--根据任务id和userId查询 临时任务-->
@@ -169,6 +209,50 @@
         LEFT JOIN `task` t ON tt.task_id = t.id
         LEFT JOIN `project` p ON p.id = t.project_id
         WHERE tt.`id` = #{ttId}
+        ORDER BY tt.`create_time` DESC
+    </select>
+
+    <!--查看临时任务审核日志-->
+    <select id="selectTaskReviewLogByTaskTemp" resultMap="TaskReviewLogBOMap">
+        SELECT trl.*,t.name task_name FROM `task_review_log` trl
+        LEFT JOIN `task` t ON t.id = trl.task_id
+        WHERE trl.task_temp_id = #{id}
+    </select>
+
+    <!--一级待审核临时任务-->
+    <select id="selectTaskTempLevelOne" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image, p.name project_name
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE  tt.`review_status` = 1 and tt.user_id in
+        (SELECT user_id FROM user_check_people WHERE check_user_id = #{userId} and `level` = 1)
+        ORDER BY tt.`create_time` DESC
+    </select>
+
+    <!--二级待审核临时任务-->
+    <select id="selectTaskTempLevelTwo" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image, p.name project_name
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE  tt.`review_status` = 1 and tt.user_id in
+        (SELECT user_id FROM user_check_people WHERE check_user_id = #{userId} and `level` = 2)
+        AND tt.level > 1
+        ORDER BY tt.`create_time` DESC
+    </select>
+
+    <!--根据审核人id 查询审核通过多人任务-->
+    <select id="selectAccessedByCheckUser" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image, p.name project_name
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE  tt.`review_status` = 2 and tt.user_id in
+        (SELECT user_id FROM user_check_people WHERE check_user_id = #{checkUserId})
         ORDER BY tt.`create_time` DESC
     </select>
 </mapper>

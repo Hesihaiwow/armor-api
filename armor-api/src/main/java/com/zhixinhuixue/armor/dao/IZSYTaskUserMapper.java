@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskUserBO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import org.apache.ibatis.annotations.Param;
@@ -75,6 +76,16 @@ public interface IZSYTaskUserMapper {
      * @return
      */
     int deleteByTaskIdAndUserId(@Param("taskId")Long taskId, @Param("userId")Long userId);
+
+    /**
+     * 根据任务id和用户id查询taskUser
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    TaskUser selectByTaskAndUser(@Param("taskId")Long taskId, @Param("userId")Long userId);
+
 
     // -- sch
 }

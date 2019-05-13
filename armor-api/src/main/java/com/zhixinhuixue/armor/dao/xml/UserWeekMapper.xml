@@ -74,6 +74,9 @@
         LEFT JOIN task_test tt ON  u.id = tt.user_id AND w.task_id = tt.tt_id
         LEFT JOIN task t1 ON t1.id = tt.task_id
         WHERE u.user_role>0  AND u.status =0 AND u.is_delete = 0 AND d.parent_id = #{departmentId}
+      <if test="jobRole != null">
+          AND u.job_role = #{jobRole}
+      </if>
     GROUP BY u.id
   </select>
 
@@ -89,6 +92,19 @@
         and task_id = #{taskId}
         and week_number = #{weekNumber}
         and year = #{year}
+    </select>
+
+    <!--查询userWeek-->
+    <select id="selectByTaskAndUser" resultMap="BaseResultMap">
+        SELECT * FROM  user_week
+        WHERE user_id = #{userId}
+        and task_id = #{taskId}
+    </select>
+
+    <!--查询用户某个任务的周工时-->
+    <select id="selectHoursByTaskAndUser" resultType="java.lang.Double">
+        SELECT IFNULL(sum(user_week.hours),0) FROM user_week WHERE task_id = #{taskId}
+        and user_id = #{userId} and `year` = #{year} and week_number = #{weekNumber}
     </select>
 
     <update id="updateHours" parameterType="java.util.Map" >

@@ -5,18 +5,17 @@ import java.util.Date;
 
 /**
  * @author sch
- * @DATE 2019/4/2 9:47
- *
- * 任务临时表
+ * @DATE 2019/5/9 10:18
+ * 任务修改
  */
-public class TaskTemp {
+public class TaskModify {
     /**
      * 主键
      */
     private Long id;
 
     /**
-     * 关联任务id
+     * 任务id
      */
     private Long taskId;
 
@@ -31,53 +30,49 @@ public class TaskTemp {
     private BigDecimal workHours;
 
     /**
-     * 个人子任务开始时间
+     * 开始时间
      */
     private Date beginTime;
 
     /**
-     * 个人子任务截止时间
+     * 截止时间
      */
     private Date endTime;
 
     /**
-     * 任务类型  1:个人任务  2:多人任务
+     * 任务类型
      */
     private Integer type;
 
     /**
-     * 审核等级
-     */
-    private Integer level;
-
-    /**
-     * 状态  1:进行中 2:已完成(待评价) 3: 已结束
+     * 状态(0:待审核,1:审核通过)
      */
     private Integer status;
 
     /**
-     * '审核状态   1:待审核 2:审核通过 3:删除 '
+     * 审核状态
      */
     private Integer reviewStatus;
-
-    /**
-     * 任务描述
-     * @return
-     */
-    private String description;
 
     /**
      * 创建时间
      */
     private Date createTime;
 
-    public Integer getLevel() {
-        return level;
-    }
+    /**
+     * 审核时间
+     */
+    private Date reviewTime;
 
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
+    /**
+     * 任务描述
+     */
+    private String description;
+
+    /**
+     * 原因
+     */
+    private String reason;
 
     public String getDescription() {
         return description;
@@ -165,5 +160,21 @@ public class TaskTemp {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Date getReviewTime() {
+        return reviewTime;
+    }
+
+    public void setReviewTime(Date reviewTime) {
+        this.reviewTime = reviewTime;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

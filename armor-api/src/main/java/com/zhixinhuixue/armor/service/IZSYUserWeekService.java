@@ -25,4 +25,16 @@ public interface IZSYUserWeekService {
      * @return
      */
     List<UserWeekResDTO> getTaskUserHours(Long taskId, Long id);
+
+    /**
+     * 获取去除某个任务后的周工时
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @param year
+     * @param weekNumber
+     * @return
+     */
+    Double getUserWeekHoursWithoutTask(Long taskId, Long userId, int year, int weekNumber);
+
 }

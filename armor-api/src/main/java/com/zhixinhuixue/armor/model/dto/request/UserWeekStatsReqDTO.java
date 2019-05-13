@@ -8,9 +8,29 @@ import java.util.Date;
 
 public class UserWeekStatsReqDTO {
 
+    /**
+     * 日期
+     */
     private Date date;
 
+    /**
+     * 周数
+     */
     private Integer weekNumber;
+
+    /**
+     * 角色
+     * @return
+     */
+    private Integer jobRole;
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
+    }
 
     public Integer getWeekNumber() {
         return weekNumber;

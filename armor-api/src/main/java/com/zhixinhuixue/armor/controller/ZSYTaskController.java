@@ -318,6 +318,12 @@ public class ZSYTaskController extends ZSYController {
     public String getAllMultipleTask(){
         return ZSYResult.success().data(taskService.getAllMultipleTask()).build();
     }
+
+    @ApiOperation("根据任务id和用户id查询taskUser")
+    @GetMapping("/task-user/{taskId}/{userId}")
+    public String getTaskUserByTaskAndUsr(@PathVariable("taskId")Long taskId,@PathVariable("userId")Long userId){
+        return ZSYResult.success().data(taskService.getTaskUserByTaskAndUsr(taskId,userId)).build();
+    }
     // -- sch
 }
 

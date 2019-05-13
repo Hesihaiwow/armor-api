@@ -4,6 +4,7 @@ package com.zhixinhuixue.armor.model.dto.request;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * Created by Akuma on 2017/8/8.
@@ -43,9 +44,20 @@ public class UserReqDTO {
 
     private Integer status;
 
+    @NotNull(message = "用户创建任务审核人不能为空")
+    private List<UserCheckPeopleReqDTO> checkUserList;
+
     @Pattern(regexp = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}",message = "邮箱格式错误")
     @NotNull(message = "邮箱不能为空")
     private String email;
+
+    public List<UserCheckPeopleReqDTO> getCheckUserList() {
+        return checkUserList;
+    }
+
+    public void setCheckUserList(List<UserCheckPeopleReqDTO> checkUserList) {
+        this.checkUserList = checkUserList;
+    }
 
     public Integer getCheckSort() {
         return checkSort;

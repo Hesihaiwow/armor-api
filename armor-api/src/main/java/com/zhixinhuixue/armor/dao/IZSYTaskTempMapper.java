@@ -1,7 +1,9 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.TaskReviewLogBO;
 import com.zhixinhuixue.armor.model.bo.TaskTempBO;
+import com.zhixinhuixue.armor.model.pojo.TaskReviewLog;
 import com.zhixinhuixue.armor.model.pojo.TaskTemp;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import com.zhixinhuixue.armor.model.pojo.UserWeekTemp;
@@ -108,4 +110,55 @@ public interface IZSYTaskTempMapper {
      * @return
      */
     TaskTempBO selectTaskTempBOById(@Param("ttId") Long ttId);
+
+    /**
+     * 一级待审核临时任务
+     * @return
+     */
+    List<TaskTempBO> selectTaskTempLevelOne(@Param("userId")Long userId);
+
+    /**
+     * 二级待审核临时任务
+     * @param userId
+     * @return
+     */
+    List<TaskTempBO> selectTaskTempLevelTwo(@Param("userId")Long userId);
+
+    /**
+     * 查询申请人,当前临时任务审核日志
+     * @param id
+     * @return
+     */
+    List<TaskReviewLogBO> selectTaskReviewLogByTaskTemp(@Param("id")Long id);
+
+    /**
+     * 插入审核日志
+     * @param taskReviewLog
+     * @return
+     */
+    int insertTaskReviewLog(TaskReviewLog taskReviewLog);
+
+    /**
+     * 根据审核人id 查询审核通过多人任务
+     * @param checkUserId
+     * @return
+     */
+    Page<TaskTempBO> selectAccessedByCheckUser(@Param("checkUserId") Long checkUserId);
+
+    /**
+     * 根据临时任务id   删除审核日志
+     * @param id
+     * @return
+     */
+    int deleteTaskReviewLog(@Param("id") Long id);
+
+    /**
+     * 根据任务和用户删除临时任务
+     * @author sch
+     * @param userId
+     * @param taskId
+     * @return
+     */
+    int deleteByUserAndTask(@Param("userId")Long userId, @Param("taskId")Long taskId);
+
 }

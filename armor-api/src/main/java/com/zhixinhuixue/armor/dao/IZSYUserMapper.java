@@ -2,7 +2,9 @@ package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.UserBo;
+import com.zhixinhuixue.armor.model.bo.UserCheckPeopleBO;
 import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -94,5 +96,37 @@ public interface IZSYUserMapper {
      * @return
      */
     User selectByEwId(@Param("ewId") Long ewId);
+
+    /**
+     * 批量插入用户创建任务审核人
+     * @author sch
+     * @param list
+     * @return
+     */
+    int insertUserCheckPeopleBatch(@Param("list")List<UserCheckPeople> list);
+
+    /**
+     * 根据userId查询  任务审核人集合
+     * @author sch
+     * @param userId
+     * @return
+     */
+    List<UserCheckPeopleBO> selectUserCheckPeopleByUserId(@Param("userId")Long userId);
+
+    /**
+     * 删除用户  任务审核人集合
+     * @author sch
+     * @param userId
+     * @return
+     */
+    int deleteUserCheckPeople(@Param("userId")Long userId);
+
+    /**
+     * 查看当前用户管制下的用户
+     * @author sch
+     * @param checkUserId
+     * @return
+     */
+    List<UserCheckPeopleBO> selectUserByCheckUserId(@Param("checkUserId")Long checkUserId);
     // -- sch
 }

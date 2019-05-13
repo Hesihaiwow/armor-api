@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskModifyMapper">
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskModify">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="work_hours" property="workHours" jdbcType="DECIMAL"></result>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+        <result column="review_time" property="reviewTime" jdbcType="TIMESTAMP"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
+        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
+        <result column="description" property="description" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <resultMap id="TaskModifyBOMap" type="com.zhixinhuixue.armor.model.bo.TaskModifyBO" extends="BaseMap">
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <resultMap id="TaskModifyDetailMap" type="com.zhixinhuixue.armor.model.bo.TaskModifyDetailBO" extends="BaseMap">
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <collection property="taskModifyUserWeeks" column="tmId = id"
+                    select="com.zhixinhuixue.armor.dao.IZSYTaskModifyUserWeekMapper.selectByTmId"
+                    ofType="com.zhixinhuixue.armor.model.pojo.TaskModifyUserWeek"/>
+    </resultMap>
+
+    <!--新增任务修改申请-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskModify">
+        INSERT INTO `task_modify_table`
+        (`id`,`task_id`,`user_id`,`work_hours`,`type`,`status`,`reason`,`review_status`
+        ,`begin_time`,`end_time`,`create_time`,`review_time`,`description`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{workHours,jdbcType=DECIMAL}
+        ,#{type,jdbcType=INTEGER},#{status,jdbcType=INTEGER},#{reason,jdbcType=VARCHAR},#{reviewStatus,jdbcType=INTEGER}
+        ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{reviewTime,jdbcType=TIMESTAMP}
+        ,#{description,jdbcType=VARCHAR})
+    </insert>
+
+    <!--更新任务修改申请-->
+    <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.TaskModify">
+        UPDATE `task_modify_table`
+        <set>
+            <if test="reason != null and reason !=''">
+                `reason` = #{reason,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description !=''">
+                `description` = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="beginTime != null">
+                `begin_time` = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                `end_time` = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="workHours != null">
+                `work_hours` = #{workHours,jdbcType=DECIMAL},
+            </if>
+            <if test="reviewStatus != null">
+                `review_status` = #{reviewStatus,jdbcType=INTEGER},
+            </if>
+            <if test="reviewTime != null">
+                `review_time` = #{reviewTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--删除申请-->
+    <delete id="deleteById">
+        DELETE FROM `task_modify_table` WHERE `id` = #{id}
+    </delete>
+
+    <!--新增任务修改申请-->
+    <select id="selectById" resultMap="BaseMap">
+        SELECT * FROM `task_modify_table` WHERE `id` = #{id}
+    </select>
+
+    <!--根据任务和用户查询是否存在审核中的任务修改申请-->
+    <select id="selectTaskAndUser" resultMap="BaseMap">
+        SELECT * FROM `task_modify_table` WHERE `task_id` = #{taskId} AND `user_id` = #{userId} AND `review_status` = 1
+    </select>
+
+    <!--根据task和user查看任务修改申请-->
+    <select id="selectByTaskAndUser" resultMap="BaseMap">
+        SELECT * FROM `task_modify_table` WHERE `task_id` = #{taskId} AND `user_id` = #{userId}
+    </select>
+    <!--个人查看待审核任务修改申请-->
+    <select id="selectListByUser" resultMap="TaskModifyBOMap">
+        SELECT tmt.*,t.name task_name,u.name user_name,u.avatar_url avatar_url FROM `task_modify_table` tmt
+        LEFT JOIN `task` t ON t.id = tmt.task_id
+        LEFT JOIN `user` u ON u.id = tmt.user_id
+        WHERE tmt.review_status = 1 AND tmt.user_id = #{userId}
+        ORDER BY tmt.create_time DESC
+    </select>
+
+    <!--个人分页查看审核通过的任务修改申请-->
+    <select id="selectPageByUser" resultMap="TaskModifyBOMap">
+        SELECT tmt.*,t.name task_name,u.name user_name,u.avatar_url avatar_url FROM `task_modify_table` tmt
+        LEFT JOIN `task` t ON t.id = tmt.task_id
+        LEFT JOIN `user` u ON u.id = tmt.user_id
+        WHERE tmt.review_status = 2 AND tmt.user_id = #{userId}
+        ORDER BY tmt.create_time DESC
+    </select>
+
+    <!--管理员查看待审核任务修改申请-->
+    <select id="selectList" resultMap="TaskModifyBOMap">
+        SELECT tmt.*,t.name task_name,u.name user_name,u.avatar_url avatar_url FROM `task_modify_table` tmt
+        LEFT JOIN `task` t ON t.id = tmt.task_id
+        LEFT JOIN `user` u ON u.id = tmt.user_id
+        WHERE tmt.review_status = 1
+        ORDER BY tmt.create_time DESC
+    </select>
+
+    <!--管理员分页查看审核通过任务修改申请-->
+    <select id="selectPage" resultMap="TaskModifyBOMap">
+        SELECT tmt.*,t.name task_name,u.name user_name,u.avatar_url avatar_url FROM `task_modify_table` tmt
+        LEFT JOIN `task` t ON t.id = tmt.task_id
+        LEFT JOIN `user` u ON u.id = tmt.user_id
+        WHERE tmt.review_status = 2
+        ORDER BY tmt.create_time DESC
+    </select>
+
+    <!--查看申请详情-->
+    <select id="selectDetailById" resultMap="TaskModifyDetailMap">
+        SELECT tmt.*,t.name task_name,u.name user_name FROM `task_modify_table` tmt
+        LEFT JOIN `task` t ON t.id = tmt.task_id
+        LEFT JOIN `user` u ON u.id = tmt.user_id
+        WHERE tmt.id = #{id}
+    </select>
+
+</mapper>

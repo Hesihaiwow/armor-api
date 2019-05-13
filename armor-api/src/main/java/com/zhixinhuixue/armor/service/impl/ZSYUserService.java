@@ -1,15 +1,10 @@
 package com.zhixinhuixue.armor.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
@@ -19,11 +14,15 @@ import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.*;
 import com.zhixinhuixue.armor.model.bo.DeptBo;
 import com.zhixinhuixue.armor.model.bo.UserBo;
+import com.zhixinhuixue.armor.model.bo.UserCheckPeopleBO;
+import com.zhixinhuixue.armor.model.dto.request.UserCheckPeopleReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserCheckPeopleResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
 import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
 import com.zhixinhuixue.armor.service.IZSYUserService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -39,11 +38,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Created by Akuma on 2017/8/8.
@@ -209,6 +210,18 @@ public class ZSYUserService implements IZSYUserService {
             UserPageResDTO userPageResDTO = new UserPageResDTO();
             BeanUtils.copyProperties(userBo, userPageResDTO);
             userPageResDTO.setDeptName(userBo.getDepartment().getName());
+            List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserCheckPeopleByUserId(userBo.getId());
+            List<UserCheckPeopleResDTO> checkPeopleResDTOS = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(userCheckPeopleBOS)){
+                userCheckPeopleBOS.stream().forEach(userCheckPeopleBO -> {
+                    UserCheckPeopleResDTO resDTO = new UserCheckPeopleResDTO();
+                    resDTO.setId(userCheckPeopleBO.getCheckUserId());
+                    resDTO.setName(userCheckPeopleBO.getCheckUserName());
+                    resDTO.setLevel(userCheckPeopleBO.getLevel());
+                    checkPeopleResDTOS.add(resDTO);
+                });
+            }
+            userPageResDTO.setCheckUsers(checkPeopleResDTOS);
             page.add(userPageResDTO);
         });
         PageInfo<UserPageResDTO> pageInfo = new PageInfo<>(page);
@@ -217,6 +230,7 @@ public class ZSYUserService implements IZSYUserService {
 
 
     @Override
+    @Transactional
     public void addUser(UserReqDTO userReqDTO) {
         if(userReqDTO.getDepartmentId()==0){
             userReqDTO.setUserRole(ZSYUserRole.EMPLOYEE.getValue());
@@ -250,9 +264,33 @@ public class ZSYUserService implements IZSYUserService {
                             ZSYConstants.HINT_PASSWORD_KEY), 32, false));
         }
         userMapper.insertUser(user);
+
+        List<UserCheckPeopleReqDTO> checkUsers = userReqDTO.getCheckUserList();
+        List<Long> checkUserIds = checkUsers.stream().map(UserCheckPeopleReqDTO::getId).distinct().collect(Collectors.toList());
+        if (checkUserIds.size() != checkUsers.size()){
+            throw new ZSYServiceException("多级审核人重复,请检查");
+        }
+        List<UserCheckPeople> userCheckPeopleList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(checkUsers)){
+            checkUsers.stream().forEach(checkUser->{
+                UserCheckPeople userCheckPeople = new UserCheckPeople();
+                userCheckPeople.setId(snowFlakeIDHelper.nextId());
+                userCheckPeople.setUserId(user.getId());
+                userCheckPeople.setCheckUserId(checkUser.getId());
+                userCheckPeople.setLevel(checkUser.getLevel());
+                userCheckPeople.setStatus(0);
+                userCheckPeopleList.add(userCheckPeople);
+            });
+            if (!CollectionUtils.isEmpty(userCheckPeopleList)){
+                userMapper.insertUserCheckPeopleBatch(userCheckPeopleList);
+            }
+        }else {
+            throw new ZSYServiceException("用户创建任务审核人不能为空");
+        }
     }
 
     @Override
+    @Transactional
     public void modifyUser(UserReqDTO userReqDTO) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYAuthException("没有权限执行此操作");
@@ -264,6 +302,53 @@ public class ZSYUserService implements IZSYUserService {
         if (userMapper.updateSelectiveById(user) == 0) {
             throw new ZSYServiceException("更新用户失败");
         }
+        List<UserCheckPeopleReqDTO> checkUsers = userReqDTO.getCheckUserList();
+        List<Long> checkUserIds = checkUsers.stream().map(UserCheckPeopleReqDTO::getId).distinct().collect(Collectors.toList());
+        if (checkUserIds.size() != checkUsers.size()){
+            throw new ZSYServiceException("多级审核人重复,请检查");
+        }
+        List<UserCheckPeople> userCheckPeopleList = new ArrayList<>();
+        //当账户冻结时  设置userCheckPeople的状态为1
+        if (user.getStatus() == 1){
+            if (!CollectionUtils.isEmpty(checkUsers)){
+                //删除原来的任务审核人
+                userMapper.deleteUserCheckPeople(user.getId());
+                checkUsers.stream().forEach(checkUser->{
+                    UserCheckPeople userCheckPeople = new UserCheckPeople();
+                    userCheckPeople.setId(snowFlakeIDHelper.nextId());
+                    userCheckPeople.setUserId(user.getId());
+                    userCheckPeople.setCheckUserId(checkUser.getId());
+                    userCheckPeople.setLevel(checkUser.getLevel());
+                    userCheckPeople.setStatus(1);
+                    userCheckPeopleList.add(userCheckPeople);
+                });
+                if (!CollectionUtils.isEmpty(userCheckPeopleList)){
+                    userMapper.insertUserCheckPeopleBatch(userCheckPeopleList);
+                }
+            }else {
+                throw new ZSYServiceException("用户的创建任务审核人不能为空");
+            }
+        }else {
+            if (!CollectionUtils.isEmpty(checkUsers)){
+                //删除原来的任务审核人
+                userMapper.deleteUserCheckPeople(user.getId());
+                checkUsers.stream().forEach(checkUser->{
+                    UserCheckPeople userCheckPeople = new UserCheckPeople();
+                    userCheckPeople.setId(snowFlakeIDHelper.nextId());
+                    userCheckPeople.setUserId(user.getId());
+                    userCheckPeople.setCheckUserId(checkUser.getId());
+                    userCheckPeople.setLevel(checkUser.getLevel());
+                    userCheckPeople.setStatus(0);
+                    userCheckPeopleList.add(userCheckPeople);
+                });
+                if (!CollectionUtils.isEmpty(userCheckPeopleList)){
+                    userMapper.insertUserCheckPeopleBatch(userCheckPeopleList);
+                }
+            }else {
+                throw new ZSYServiceException("用户的创建任务审核人不能为空");
+            }
+        }
+
     }
 
     /**
@@ -351,6 +436,7 @@ public class ZSYUserService implements IZSYUserService {
     }
 
     @Override
+    @Transactional
     public void deleteUserById(Long userId) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYAuthException("没有权限执行此操作");
@@ -358,6 +444,7 @@ public class ZSYUserService implements IZSYUserService {
         if (userMapper.deleteById(userId) == 0) {
             throw new ZSYServiceException("删除用户失败");
         }
+        userMapper.deleteUserCheckPeople(userId);
     }
 
     @Override
@@ -416,7 +503,20 @@ public class ZSYUserService implements IZSYUserService {
         if (user == null) {
             throw new ZSYServiceException(String.format("用户(%s)不存在", userId));
         }
+        List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserCheckPeopleByUserId(userId);
+        List<UserCheckPeopleResDTO> checkPeopleResDTOS = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userCheckPeopleBOS)){
+            userCheckPeopleBOS.stream().forEach(userCheckPeopleBO -> {
+                UserCheckPeopleResDTO resDTO = new UserCheckPeopleResDTO();
+                resDTO.setId(userCheckPeopleBO.getCheckUserId());
+                resDTO.setName(userCheckPeopleBO.getCheckUserName());
+                resDTO.setLevel(userCheckPeopleBO.getLevel());
+                checkPeopleResDTOS.add(resDTO);
+            });
+
+        }
         BeanUtils.copyProperties(user, userResDTO);
+        userResDTO.setCheckUsers(checkPeopleResDTOS);
         return userResDTO;
     }
 
@@ -476,6 +576,27 @@ public class ZSYUserService implements IZSYUserService {
         if (userMapper.updateSelectiveById(user) == 0){
             throw new ZSYServiceException("更新个人基本信息失败");
         }
+    }
+
+    /**
+     * 查看当前用户管制下的用户
+     * @author sch
+     * @param checkUserId
+     * @return
+     */
+    @Override
+    public List<EffectUserResDTO> getControlledPeopleList(Long checkUserId) {
+        List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserByCheckUserId(checkUserId);
+        List<EffectUserResDTO> controlledPeoples = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userCheckPeopleBOS)){
+            userCheckPeopleBOS.stream().forEach(userCheckPeopleBO -> {
+                EffectUserResDTO res = new EffectUserResDTO();
+                res.setId(userCheckPeopleBO.getUserId());
+                res.setName(userCheckPeopleBO.getCheckUserName());
+                controlledPeoples.add(res);
+            });
+        }
+        return controlledPeoples;
     }
 
     // -- sch

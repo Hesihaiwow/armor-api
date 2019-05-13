@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -60,9 +62,35 @@ public class TaskTempResDTO {
     private BigDecimal workHours;
 
     /**
+     * 审核日志
+     */
+    private List<TaskReviewLogResDTO> taskReviewLogResDTOList;
+
+    /**
+     * 是否已审核
+     */
+    private Integer isChecked;
+
+    /**
      * 用户-周工作量
      */
     private List<UserWeekTempResDTO> userWeekTempList;
+
+    public Integer getIsChecked() {
+        return isChecked;
+    }
+
+    public void setIsChecked(Integer isChecked) {
+        this.isChecked = isChecked;
+    }
+
+    public List<TaskReviewLogResDTO> getTaskReviewLogResDTOList() {
+        return taskReviewLogResDTOList;
+    }
+
+    public void setTaskReviewLogResDTOList(List<TaskReviewLogResDTO> taskReviewLogResDTOList) {
+        this.taskReviewLogResDTOList = taskReviewLogResDTOList;
+    }
 
     public Integer getReviewStatus() {
         return reviewStatus;

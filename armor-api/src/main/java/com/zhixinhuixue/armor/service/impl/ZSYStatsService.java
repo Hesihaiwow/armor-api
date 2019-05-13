@@ -111,13 +111,14 @@ public class ZSYStatsService implements IZSYStatsService {
 
     /**
      * 周工作量统计
-     * @param date
+     * @param reqDTO
      * @return
      */
     @Override
-    public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO date){
+    public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO reqDTO){
         Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
-        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(date.getWeekNumber(),DateHelper.getYears(date.getDate()),departmentId);
+        Integer jobRole = reqDTO.getJobRole();
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(reqDTO.getWeekNumber(),DateHelper.getYears(reqDTO.getDate()),departmentId,jobRole);
 
         List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
@@ -131,7 +132,7 @@ public class ZSYStatsService implements IZSYStatsService {
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
 
             statsWeekResDTO.setLeaveHours(userWeekBO.getLeaveHours()==null?0:userWeekBO.getLeaveHours());
-            statsWeekResDTO.setHours(userWeekMapper.getUserWeekHours(ZSYConstants.NO_DEPT_ID,userWeekBO.getUserId(),date.getWeekNumber(),DateHelper.getYears(date.getDate())));
+            statsWeekResDTO.setHours(userWeekMapper.getUserWeekHours(ZSYConstants.NO_DEPT_ID,userWeekBO.getUserId(),reqDTO.getWeekNumber(),DateHelper.getYears(reqDTO.getDate())));
 
             statsWeekResDTOS.add(statsWeekResDTO);
         });

@@ -12,90 +12,41 @@ import java.util.List;
 
 /**
  * @author sch
- * @DATE 2019/4/2 14:11
+ * @DATE 2019/5/9 17:09
  */
-public class EditTaskTempReqDTO {
-    /**
-     * ID
-     */
-    @NotNull(message = "主键不能为空")
+public class EditTaskModifyReqDTO {
+
+    @NotNull(message = "任务修改申请id不能为空")
     private Long id;
 
-    /**
-     * 关联任务id
-     */
-    @NotNull(message = "关联任务不能为空")
-    private Long taskId;
-
-    /**
-     * 用户id
-     */
-    @NotNull(message = "用户id不能为空")
-    private Long userId;
-
-    /**
-     * 工作量
-     */
     @NotNull(message = "工作量不能为空")
     @Min(value = 0,message = "工时不能小于0.1")
     @Max(value = 99999,message = "工时不能大于{value}")
     private BigDecimal workHours;
 
-    /**
-     * 开始时间
-     */
-    @NotNull(message = "个人子任务开始时间不能为空")
+    @NotNull(message = "修改任务开始时间不能为空")
     private Date beginTime;
 
-    /**
-     * 截止时间
-     */
-    @NotNull(message = "个人子任务截止时间不能为空")
+    @NotNull(message = "修改任务截止时间不能为空")
     private Date endTime;
 
-    /**
-     * 任务描述
-     * @return
-     */
     @NotBlank(message = "任务描述不能为空")
     @Size(min = 1,max = 255,message = "任务描述必须在{min}~{max}之间")
     private String description;
 
-    /**
-     * 任务周工时
-     */
+    @NotBlank(message = "修改原因不能为空")
+    @Size(min = 1,max = 255,message = "修改原因必须在{min}~{max}之间")
+    private String reason;
+
     @NotNull(message = "任务周工时不能为空")
     private List<UserWeekReqDTO> userWeeks;
 
-    /**
-     * 审核意见
-     * @return
-     */
-    private String suggest;
-
-    public String getSuggest() {
-        return suggest;
+    public String getDescription() {
+        return description;
     }
 
-    public void setSuggest(String suggest) {
-        this.suggest = suggest;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Long getId() {
@@ -130,12 +81,12 @@ public class EditTaskTempReqDTO {
         this.endTime = endTime;
     }
 
-    public String getDescription() {
-        return description;
+    public String getReason() {
+        return reason;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     public List<UserWeekReqDTO> getUserWeeks() {

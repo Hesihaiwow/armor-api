@@ -46,4 +46,22 @@ public class ZSYUserWeekSevice implements IZSYUserWeekService{
 
         return resDTOS;
     }
+
+    /**
+     * 获取去除某个任务后的周工时
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @param year
+     * @param weekNumber
+     * @return
+     */
+    @Override
+    public Double getUserWeekHoursWithoutTask(Long taskId, Long userId, int year, int weekNumber) {
+        Double userWeekHours = userWeekMapper.getUserWeekHours(taskId, userId, weekNumber, year);
+        Double userWeekHoursByTask = userWeekMapper.selectHoursByTaskAndUser(taskId,userId,weekNumber,year);
+        Double userWeekHoursWithoutTask = userWeekHours - userWeekHoursByTask;
+
+        return userWeekHoursWithoutTask;
+    }
 }

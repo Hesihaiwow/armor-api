@@ -95,6 +95,12 @@ public class ZSYTaskService implements IZSYTaskService {
 
     @Autowired
     private ZSYSmsConfig smsConfig;
+    @Autowired
+    private IZSYTaskTempMapper taskTempMapper;
+    @Autowired
+    private IZSYTaskModifyMapper taskModifyMapper;
+    @Autowired
+    private IZSYTaskModifyUserWeekMapper taskModifyUserWeekMapper;
     // -- sch
 
 
@@ -287,7 +293,8 @@ public class ZSYTaskService implements IZSYTaskService {
                 });
             });
         }
-
+        //查询taskUser
+        List<Long> oldTaskUserIds = taskUserMapper.selectUserByTaskId(taskId);
 
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
@@ -369,6 +376,24 @@ public class ZSYTaskService implements IZSYTaskService {
                 userWeekMaper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
+            List<Long> newTaskUserIds = taskUsers.stream().map(TaskUser::getUserId).collect(Collectors.toList());
+            List<Long> deleteTaskUserIds = new ArrayList<>();
+            List<Long> existTaskUserIds = new ArrayList<>();
+            deleteTaskUserIds = oldTaskUserIds.stream().filter(item->!newTaskUserIds.contains(item)).collect(Collectors.toList());
+            deleteTaskUserIds.stream().forEach(deleteTaskUserId ->{
+                TaskTemp existTaskTemp = taskTempMapper.selectByUserAndTask(deleteTaskUserId, taskId);
+                TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskId, deleteTaskUserId);
+                if (existTaskTemp != null){
+                    taskTempMapper.deleteByUserAndTask(deleteTaskUserId,taskId);
+                    taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
+                    taskTempMapper.deleteUserWeekTempByUserAndTask(deleteTaskUserId,taskId);
+                }
+                if (taskModify != null){
+                    taskModifyMapper.deleteById(taskModify.getId());
+                    taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
+                }
+            });
+
         }
         // 插入任务标签
         if (taskReqDTO.getTags() != null && taskReqDTO.getTags().size() > 0) {
@@ -706,11 +731,18 @@ public class ZSYTaskService implements IZSYTaskService {
             taskBOS.stream().forEach(taskBO -> {
                 TaskResDTO taskResDTO = new TaskResDTO();
                 BeanUtils.copyProperties(taskBO, taskResDTO);
-                if(expandMapper.findIsExpand(taskBO.getId(),ZSYTokenRequestContext.get().getUserId())>0){
-                    taskResDTO.setExpand(true);
-                }else {
+//                if(expandMapper.findIsExpand(taskBO.getId(),ZSYTokenRequestContext.get().getUserId())>0){
+//                    taskResDTO.setExpand(true);
+//                }else {
+//                    taskResDTO.setExpand(false);
+//                }
+                TaskModify taskModify = taskModifyMapper.selectTaskAndUser(taskBO.getId(),ZSYTokenRequestContext.get().getUserId());
+                if (taskModify == null){
                     taskResDTO.setExpand(false);
+                }else{
+                    taskResDTO.setExpand(true);
                 }
+
                 taskList.add(taskResDTO);
             });
         }
@@ -1261,9 +1293,26 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
+        //查询taskUser
+        List<Long> taskUserIds = taskUserMapper.selectUserByTaskId(taskId);
         userWeekMaper.deleteByTaskId(taskId);
         feedbackPlanTaskMapper.deleteByTaskId(taskId);
         taskMapper.updateByPrimaryKeySelective(task);
+        taskUserMapper.deleteByTaskId(taskId);
+
+        taskUserIds.stream().forEach(userId->{
+            TaskTemp existTaskTemp = taskTempMapper.selectByUserAndTask(userId, taskId);
+            if (existTaskTemp != null){
+                taskTempMapper.deleteByUserAndTask(userId,taskId);
+                taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
+                taskTempMapper.deleteUserWeekTempByUserAndTask(userId,taskId);
+            }
+            TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskId, userId);
+            if (taskModify != null){
+                taskModifyMapper.deleteById(taskModify.getId());
+                taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
+            }
+        });
         return ZSYResult.success();
     }
 
@@ -1829,6 +1878,42 @@ public class ZSYTaskService implements IZSYTaskService {
             });
         }
         return taskBaseResDTOList;
+    }
+
+    /**
+     * 根据任务id和用户id查询taskUser
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    @Override
+    public TaskUserBaseInfoResDTO getTaskUserByTaskAndUsr(Long taskId, Long userId) {
+        TaskUser taskUser = taskUserMapper.selectByTaskAndUser(taskId,userId);
+        User user = userMapper.selectById(userId);
+        TaskUserBaseInfoResDTO resDTO = new TaskUserBaseInfoResDTO();
+        resDTO.setId(taskUser.getId());
+        resDTO.setTaskId(taskUser.getTaskId());
+        resDTO.setUserId(taskUser.getUserId());
+        resDTO.setUserName(user.getName());
+        resDTO.setBeginTime(taskUser.getBeginTime());
+        resDTO.setEndTime(taskUser.getEndTime());
+        resDTO.setTaskHours(taskUser.getTaskHours());
+        resDTO.setDescription(taskUser.getDescription());
+        List<UserWeek> userWeeks = userWeekMaper.selectByTaskAndUser(taskId,userId);
+        List<UserWeekResDTO> userWeekResDTOList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userWeeks)){
+            for (UserWeek userWeek : userWeeks) {
+                UserWeekResDTO userWeekResDTO = new UserWeekResDTO();
+                userWeekResDTO.setHours(userWeek.getHours());
+                userWeekResDTO.setWeekNumber(userWeek.getWeekNumber());
+                userWeekResDTO.setYear(userWeek.getYear());
+                userWeekResDTOList.add(userWeekResDTO);
+            }
+            userWeekResDTOList = userWeekResDTOList.stream().sorted(Comparator.comparing(UserWeekResDTO::getWeekNumber)).collect(Collectors.toList());
+        }
+        resDTO.setUserWeeks(userWeekResDTOList);
+        return resDTO;
     }
 
     /**

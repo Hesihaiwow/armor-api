@@ -177,5 +177,12 @@ public class ZSYUserController extends ZSYController {
         userService.modifyBasicInfo(userInfoReqDTO);
         return ZSYResult.success().build();
     }
+
+
+    @ApiOperation("查询当前用户是否其他用户的审核人")
+    @GetMapping("/controlled-people/{checkUserId}")
+    public String getControlledPeopleList(@PathVariable("checkUserId")Long checkUserId){
+        return ZSYResult.success().data(userService.getControlledPeopleList(checkUserId)).build();
+    }
     // -- sch
 }

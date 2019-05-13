@@ -27,6 +27,18 @@
                  select="com.zhixinhuixue.armor.dao.IZSYDepartmentMapper.selectById"/>
   </resultMap>
 
+  <resultMap id="UserCheckPeopleMap" type="com.zhixinhuixue.armor.model.pojo.UserCheckPeople">
+      <id column="id" property="id" jdbcType="BIGINT"></id>
+      <id column="user_id" property="userId" jdbcType="BIGINT"></id>
+      <id column="check_user_id" property="checkUserId" jdbcType="BIGINT"></id>
+      <id column="status" property="status" jdbcType="INTEGER"></id>
+      <id column="level" property="level" jdbcType="INTEGER"></id>
+  </resultMap>
+
+  <resultMap id="UserCheckPeopleBOMap" type="com.zhixinhuixue.armor.model.bo.UserCheckPeopleBO" extends="UserCheckPeopleMap">
+      <result column="user_name" property="checkUserName"></result>
+  </resultMap>
+
   <!-- 添加用户 -->
   <insert id="insertUser" parameterType="com.zhixinhuixue.armor.model.pojo.User">
     insert into `user` (id, `name`, account,
@@ -41,7 +53,16 @@
     #{userRole,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR},#{checkSort,jdbcType=INTEGER})
   </insert>
 
-  <!-- 根据账号查询用户 -->
+  <!--批量插入用户创建任务审核人-->
+    <insert id="insertUserCheckPeopleBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserCheckPeople">
+      INSERT INTO `user_check_people` (`id`,`user_id`,`check_user_id`,`status`,`level`) VALUES
+      <foreach collection="list" item="item" separator=",">
+        (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.checkUserId,jdbcType=BIGINT}
+        ,#{item.status,jdbcType=INTEGER},#{item.level,jdbcType=INTEGER})
+      </foreach>
+    </insert>
+
+    <!-- 根据账号查询用户 -->
   <select id="selectByAccount" parameterType="java.lang.String" resultMap="BaseResultMap">
     select * from `user` where is_delete=0 and account = #{account}
   </select>
@@ -72,6 +93,11 @@
   <!-- 删除用户 -->
   <delete id="deleteById" parameterType="java.lang.Long">
     UPDATE `user` SET is_delete = 1 where id = #{id}
+  </delete>
+
+  <!--删除用户  任务审核人集合-->
+  <delete id="deleteUserCheckPeople">
+    DELETE FROM `user_check_people` WHERE `user_id` = #{userId}
   </delete>
 
   <!-- 更新用户 -->
@@ -161,6 +187,20 @@
   <select id="selectByEwId" resultMap="BaseResultMap">
       select * from `user` u left join `extra_work` ew on u.id = ew.user_id
       where ew.id = #{ewId}
+  </select>
+
+  <!--根据userId查询  任务审核人集合-->
+  <select id="selectUserCheckPeopleByUserId" resultMap="UserCheckPeopleBOMap">
+      SELECT ucp.*,u.name user_name FROM `user_check_people` ucp
+      LEFT JOIN `user` u ON u.id = ucp.check_user_id
+      WHERE ucp.`user_id` = #{userId}
+  </select>
+
+  <!--查看当前用户管制下的用户-->
+  <select id="selectUserByCheckUserId" resultMap="UserCheckPeopleBOMap">
+      SELECT ucp.*,u.name user_name FROM `user_check_people` ucp
+      LEFT JOIN `user` u ON u.id = ucp.user_id
+      WHERE ucp.`check_user_id` = #{checkUserId}
   </select>
   <!-- sch -->
 

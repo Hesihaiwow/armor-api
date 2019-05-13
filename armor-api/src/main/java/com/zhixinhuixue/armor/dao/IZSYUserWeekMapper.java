@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
+import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +22,8 @@ public interface IZSYUserWeekMapper {
      * @param weeekNumber
      * @return
      */
-    List<StatsUserWeekBO> getUserWeekStats(@Param("weekNumber") int weeekNumber, @Param("year") int year,@Param("departmentId") Long departmentId);
+    List<StatsUserWeekBO> getUserWeekStats(@Param("weekNumber") int weeekNumber, @Param("year") int year
+            ,@Param("departmentId") Long departmentId,@Param("jobRole")Integer jobRole);
 
     Double getUserWeekHours(@Param("taskId") Long taskId, @Param("userId") Long userId,@Param("weekNumber") int weekNumber,@Param("year") int year);
 
@@ -43,4 +45,25 @@ public interface IZSYUserWeekMapper {
      * @return
      */
     int deleteByTaskIdAndUserId(@Param("taskId") Long taskId, @Param("userId") Long userId);
+
+    /**
+     * 查询userWeek
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    List<UserWeek> selectByTaskAndUser(@Param("taskId") Long taskId, @Param("userId") Long userId);
+
+    /**
+     * 查询用户某个任务的周工时
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @param weekNumber
+     * @param year
+     * @return
+     */
+    Double selectHoursByTaskAndUser(@Param("taskId") Long taskId, @Param("userId") Long userId,
+                                    @Param("weekNumber") int weekNumber,@Param("year") int year);
 }

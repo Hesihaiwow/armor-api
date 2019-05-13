@@ -4,34 +4,85 @@ package com.zhixinhuixue.armor.model.dto.response;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
 
+import java.util.List;
+
 /**
  * Created by Akuma on 2017/8/9.
  */
 public class UserResDTO {
 
+    /**
+     * id
+     */
     private Long id;
 
+    /**
+     * 姓名
+     */
     private String name;
 
+    /**
+     * 账户
+     */
     private String account;
 
+    /**
+     * 手机
+     */
     private String phone;
 
+    /**
+     * 部门
+     */
     private Long departmentId;
 
+    /**
+     * 用户职位
+     */
     private String jobName;
 
+    /**
+     * 状态
+     */
     private Integer status;
 
+    /**
+     * 用户权限
+     */
     private Integer userRole;
 
+    /**
+     * 角色
+     */
     private Integer jobRole;
 
+    /**
+     * 头像
+     */
     private String avatarUrl;
 
+    /**
+     * 邮箱
+     */
     private String email;
 
+    /**
+     * 考勤序号
+     */
     private Integer checkSort;
+
+    /**
+     * 创建任务审核人集合
+     */
+    private List<UserCheckPeopleResDTO> checkUsers;
+
+    public List<UserCheckPeopleResDTO> getCheckUsers() {
+        return checkUsers;
+    }
+
+    public void setCheckUsers(List<UserCheckPeopleResDTO> checkUsers) {
+        this.checkUsers = checkUsers;
+    }
 
     public Integer getCheckSort() {
         return checkSort;

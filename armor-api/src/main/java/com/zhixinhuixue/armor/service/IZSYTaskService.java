@@ -297,6 +297,15 @@ public interface IZSYTaskService {
      */
     List<TaskBaseResDTO> getAllMultipleTask();
 
+    /**
+     * 根据任务id和用户id查询taskUser
+     * @author sch
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    TaskUserBaseInfoResDTO getTaskUserByTaskAndUsr(Long taskId, Long userId);
+
 
     // -- sch
 }
