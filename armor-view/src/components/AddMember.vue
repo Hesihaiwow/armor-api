@@ -66,6 +66,24 @@
           <el-input class="w280" v-model="addForm.checkSort" placeholder="请输入考勤序号"></el-input>
         </div>
       </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">审核人</div>
+        <div class="ftp-msg fl">
+          <div v-for="i in num"><span style="margin-right: 20px">{{i}}</span>
+            <el-select placeholder="请选择审核人" @change="addCheckUser(i)" v-model="checkUserIdList[i-1]" clearable>
+              <el-option
+                      v-for="item in userList"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+              </el-option>
+            </el-select>
+          </div>
+          <i style="margin-left: 325px" class="el-icon-plus" v-show="num>=1 && num < 3" @click="plus"></i>
+          <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+        </div>
+      </div>
+
       <!--<div class="am-warn">{{amWarn}}</div>-->
       <div class="ctpc-btns">
         <input type="button" class="ctpc-cancel" value="取消" @click="hide">
@@ -91,7 +109,8 @@
           jobRole:'',
           departmentId:'',
           checkSort:'',
-          email:''
+          email:'',
+            checkUserList:[]
         },
         //用户权限手
         options: [{
@@ -125,9 +144,16 @@
               roleId: 4,
               roleName: '其他'
           }],
-        showAddPop: false
+        showAddPop: false,
+          checkUserIdList:[],
+          num:1,
+          userList:[],
+          
       };
     },
+      created(){
+        this.fetchUserList()
+      },
     methods: {
       //显示弹框
       show () {
@@ -144,6 +170,8 @@
         this.addForm.email='';
         this.addForm.jobRole='';
         this.addForm.checkSort='';
+        this.num = 1;
+        this.checkUserIdList = [];
       },
       //部门ID
       setDeptId(deptId){
@@ -179,6 +207,24 @@
               this.warnMsg("请选择用户考勤序号");
               return;
           }
+          var checkUsers = this.addForm.checkUserList;
+          var checkUserIds = [];
+          checkUsers.forEach(checkUser =>{
+              if (checkUser.id != null && checkUser.id != ''){
+                  checkUserIds.push(checkUser.id)
+              }
+          })
+          if (checkUserIds == null || checkUserIds == [] || checkUserIds.length == 0 || checkUserIds.length != checkUsers.length){
+              this.warnMsg("请选择审核人");
+              return;
+          }
+          var nary = checkUserIds.sort();
+          for (var i = 0; i < checkUserIds.length; i++) {
+              if (nary[i] == nary[i + 1]) {
+                  this.warnMsg("多级审核人重复,请检查");
+                  return;
+              }
+          }
         Http.zsyPostHttp('/user/add',this.addForm,(res)=>{
             this.hide();
             this.$message({
@@ -196,6 +242,38 @@
               type: 'warning'
           });
       },
+        fetchUserList() {
+            let vm = this
+            Http.zsyGetHttp('/user/effective', {}, (resp) => {
+                vm.userList = resp.data
+            })
+        },
+        addCheckUser(i){
+            var checkUsers = this.addForm.checkUserList;
+            var flag = true;
+            checkUsers.forEach(user=>{
+                if(user.level === i){
+                    user.id = this.checkUserIdList[i-1];
+                    flag = false;
+                }
+            })
+            this.addForm.checkUserList = checkUsers;
+            if (flag){
+                let checkUser={
+                    'level':i,
+                    'id':this.checkUserIdList[i-1]
+                }
+                this.addForm.checkUserList.push(checkUser);
+            }
+        },
+        plus(){
+            this.num = this.num+1;
+        },
+        minus(i){
+            this.num = this.num-1;
+            this.checkUserIdList.splice(i);
+            this.addForm.checkUserList.splice(i);
+        },
     }
   }
 </script>

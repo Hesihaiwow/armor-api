@@ -92,6 +92,24 @@
           </el-select>
         </div>
       </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">审核人</div>
+        <div class="ftp-msg fl">
+          <i class="el-icon-plus" v-show="num>=1 && num < 3" @click="plus"></i>
+          <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+          <div v-for="i in num"><span style="margin-right: 20px">{{i}}</span>
+            <el-select placeholder="请选择审核人" @change="addCheckUser(i)" v-model="checkUserIdList[i-1]" clearable>
+              <el-option
+              v-for="item in userList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+              </el-option>
+            </el-select>
+          </div>
+
+        </div>
+      </div>
       <!--<div class="am-warn">{{amWarn}}</div>-->
       <div class="ctpc-btns">
         <input type="button" class="ctpc-cancel" value="取消" @click="hide">
@@ -120,7 +138,8 @@
           checkSort:'',
           departmentId:'',
           status:'',
-          email:''
+          email:'',
+            checkUserList:[],
         },
         rolesList:[{
             roleId: 1,
@@ -160,9 +179,15 @@
               label:'冻结使用'
         }],
           deptOptions:[],
-          showAddPop: false
+          showAddPop: false,
+          checkUserIdList:[],
+          num:1,
+          userList:[]
       };
     },
+      created(){
+        this.fetchUserList()
+      },
     methods: {
       //显示弹框
       show () {
@@ -178,6 +203,13 @@
             this.modifyForm.email=res.data.email;
             this.modifyForm.departmentId=res.data.departmentId;
             this.modifyForm.checkSort=res.data.checkSort;
+            this.modifyForm.checkUserList = res.data.checkUsers;
+            if(this.modifyForm.checkUserList != null && this.modifyForm.checkUserList != [] && this.modifyForm.checkUserList.length > 0){
+                this.num = this.modifyForm.checkUserList.length
+                this.modifyForm.checkUserList.forEach(checkUser=>{
+                    this.checkUserIdList.push(checkUser.id)
+                })
+            }
             this.showAddPop = true;
         });
           Http.zsyGetHttp(`/dept/tree`,null,(res)=>{
@@ -197,6 +229,8 @@
         this.modifyForm.email='';
         this.modifyForm.jobRole='';
         this.modifyForm.checkSort='';
+        this.num = 1;
+        this.checkUserIdList = [];
       },
       //部门ID
       setUserId(userId){
@@ -236,6 +270,25 @@
               this.warnMsg("请选择用户考勤序号");
               return;
           }
+          var checkUsers = this.modifyForm.checkUserList;
+          var checkUserIds = [];
+          checkUsers.forEach(checkUser =>{
+              if (checkUser.id != null && checkUser.id != ''){
+                  checkUserIds.push(checkUser.id)
+              }
+          })
+          if (checkUserIds == null || checkUserIds == [] || checkUserIds.length == 0 || checkUserIds.length != checkUsers.length){
+              this.warnMsg("请选择审核人");
+              return;
+          }
+          var nary = checkUserIds.sort();
+          for (var i = 0; i < checkUserIds.length; i++) {
+              if (nary[i] == nary[i + 1]) {
+                  this.warnMsg("多级审核人重复,请检查");
+                  return;
+              }
+          }
+
         Http.zsyPutHttp(`/user/${this.modifyForm.userId}`,this.modifyForm,(res)=>{
             this.hide();
             this.$message({
@@ -253,6 +306,38 @@
               type: 'warning'
           });
       },
+        addCheckUser(i){
+          var checkUsers = this.modifyForm.checkUserList;
+          var flag = true;
+          checkUsers.forEach(user=>{
+              if(user.level === i){
+                  user.id = this.checkUserIdList[i-1];
+                  flag = false;
+              }
+          })
+          this.modifyForm.checkUserList = checkUsers;
+          if (flag){
+              let checkUser={
+                  'level':i,
+                  'id':this.checkUserIdList[i-1]
+              }
+              this.modifyForm.checkUserList.push(checkUser);
+          }
+        },
+        plus(){
+            this.num = this.num+1;
+        },
+        minus(i){
+            this.num = this.num-1;
+            this.checkUserIdList.splice(i);
+            this.modifyForm.checkUserList.splice(i);
+        },
+        fetchUserList() {
+            let vm = this
+            Http.zsyGetHttp('/user/effective', {}, (resp) => {
+                vm.userList = resp.data
+            })
+        },
     }
   }
 </script>

@@ -251,6 +251,12 @@
                     </el-date-picker>
                 </div>
                 <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="userWeekForm.jobRole" clearable filterable   placeholder="筛选角色">
+                        <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
+                                   :value="item.roleId"></el-option>
+                    </el-select>
+                </div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
                 <el-table :data="userWeekData" border  >
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
@@ -1116,7 +1122,8 @@
                 },
                 userWeekForm:{
                     weekNumber:'',
-                    date:''
+                    date:'',
+                    jobRole:''
                 },
                 userWeekData:[],
                 currentWeek:moment().week(),
@@ -1382,7 +1389,29 @@
                 ],
                 selectMantisProjectVisible:false,
                 mantisProject:'',
-                fullscreenLoading:false
+                fullscreenLoading:false,
+                rolesList:[
+                    {
+                        roleId: 1,
+                        roleName: '开发'
+                    },
+                    {
+                        roleId: 0,
+                        roleName: '测试'
+                    },
+                    {
+                        roleId: 2,
+                        roleName: '设计'
+                    },
+                    {
+                        roleId: 3,
+                        roleName: '产品'
+                    },
+                    {
+                        roleId: 4,
+                        roleName: '其他'
+                    }
+                ],
                 // -- sch
             }
         },
@@ -1806,7 +1835,7 @@
                     this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
                     if(this.userWeekForm.date!=''){
                         Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
-                            this.userWeekData = resp.data
+                            this.userWeekData = resp.data;
                         })
                     }else{
                         this.errorMsg('请选择统计信息')
