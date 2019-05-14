@@ -315,7 +315,12 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 taskReviewLogResDTO.setCheckUserName(taskReviewLogBO.getCheckUserName());
                 taskReviewLogResDTO.setReviewTime(taskReviewLogBO.getReviewTime());
                 taskReviewLogResDTO.setLevel(taskReviewLogBO.getLevel());
-                taskReviewLogResDTO.setSuggest(taskReviewLogBO.getSuggest());
+                String suggest = taskReviewLogBO.getSuggest();
+                if (suggest != null && !suggest.trim().equals("")){
+                    taskReviewLogResDTO.setSuggest(taskReviewLogBO.getSuggest());
+                }else {
+                    taskReviewLogResDTO.setSuggest("无");
+                }
                 taskReviewLogResDTOList.add(taskReviewLogResDTO);
             });
         }else {
