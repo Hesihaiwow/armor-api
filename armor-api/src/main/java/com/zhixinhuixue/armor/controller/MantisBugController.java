@@ -69,4 +69,11 @@ public class MantisBugController {
     public String getBugStatsGroupByTask(@RequestBody MantisBugQueryReqDTO reqDTO){
         return ZSYResult.success().data(mantisBugService.getBugStatsGroupByTask(reqDTO)).build();
     }
+
+    @ApiOperation("导出数据到Excel")
+    @GetMapping("/export/{projectId}")
+    public String exportMantisBug(@PathVariable("projectId")Integer projectId){
+        mantisBugService.exportMantisBug(projectId);
+        return ZSYResult.success().build();
+    }
 }

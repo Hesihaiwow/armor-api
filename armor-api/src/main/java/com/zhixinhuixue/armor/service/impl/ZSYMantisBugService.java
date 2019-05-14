@@ -197,6 +197,16 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
     }
 
     /**
+     * 查询mantis中的bug信息导出Excel
+     * @author sch
+     * @param projectId
+     */
+    @Override
+    public void exportMantisBug(Integer projectId) {
+
+    }
+
+    /**
      * @author sch
      * 查询mantis用户信息
      * @return
