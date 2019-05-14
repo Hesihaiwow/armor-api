@@ -304,6 +304,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             throw new ZSYServiceException("周工时分配不能为空,请检查");
         }else {
             taskModify.setReason(editTaskModifyReqDTO.getReason());
+            taskModify.setDescription(editTaskModifyReqDTO.getDescription());
             taskModify.setBeginTime(editTaskModifyReqDTO.getBeginTime());
             taskModify.setEndTime(editTaskModifyReqDTO.getEndTime());
             taskModify.setWorkHours(editTaskModifyReqDTO.getWorkHours());
