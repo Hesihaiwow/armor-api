@@ -762,7 +762,8 @@
                     @close="closeMultipleTask">
             <el-form  :model="taskTempDetail"  ref="editTaskTempForm">
                 <div v-for="(item,index) in taskTempDetail.taskReviewLogResDTOList">
-                    审核阶段: {{item.level}};  审核人: {{item.checkUserName}};  审核时间: {{item.reviewTime | formatTime}}
+                    <div>审核阶段: {{item.level}};  审核人: {{item.checkUserName}};  审核时间: {{item.reviewTime | formatTime}}</div>
+                    <div>审核意见: {{item.suggest}}</div>
                 </div>
                 <el-form-item v-show="taskTempDetail.taskReviewLogResDTOList.length > 0"><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <div style="margin-top: -10px">申请人: {{taskTempDetail.userName}}</div>
