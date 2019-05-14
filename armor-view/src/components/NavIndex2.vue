@@ -3580,6 +3580,7 @@
                 this.createPrivateTaskVisible = true;
             },
             reload() {
+                this.task.doing = []
                 this.initSignInTime()
                 this.fetchIntegral()
                 this.fetchTaskWaitAudit()
@@ -6160,7 +6161,6 @@
                         // task.name = '(待审核 多人任务)' + task.name;
                     })
                     this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
-
                 }))
 
             },
@@ -6208,7 +6208,7 @@
             },
             cancelEdit() {
                 this.addSuggestVisible = false;
-                this.taskForm.description = '';
+                this.taskTempDetail.suggest = '';
             },
             saveEdit() {
                 this.addSuggestVisible = false;
@@ -6488,7 +6488,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(()=>{
-                    http.zsyDeleteHttp('/task-modify//delete/'+id,{},(res)=>{
+                    http.zsyDeleteHttp('/task-modify/delete/'+id,{},(res)=>{
                         this.showTaskModifyDetailVisible = false;
                         this.$message({
                             showClose: true,
@@ -6496,8 +6496,11 @@
                             type: 'success'
                         });
                         if (this.userRole > 0){
-                            this.fetchPersonalTaskModifyWait();
-                            this.fetchTaskDoing()
+                            this.reload();
+                            // this.fetchPersonalTaskModifyWait();
+                            // this.fetchTaskDoing();
+                            // this.fetchPersonalMultipleWait();
+                            // window.history.go(0)
                         } else {
                             this.fetchTaskModifyWait();
                             this.fetchTaskModifyAccessed();

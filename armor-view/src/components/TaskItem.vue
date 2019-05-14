@@ -2621,14 +2621,14 @@
                             this.$message({showClose: true, message: '添加任务修改申请成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.clearModifyMyTaskForm()
-                            this.taskAble = false;
+                            // this.taskAble = false;
                             vm.$emit('reload')
                         });
                     } else {
                         return false;
                     }
                 }, err => {
-                    this.taskAble = false
+                    // this.taskAble = false
                 });
             },
             clearModifyMyTaskForm(){
