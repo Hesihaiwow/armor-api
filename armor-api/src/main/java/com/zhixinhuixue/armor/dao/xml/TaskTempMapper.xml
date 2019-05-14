@@ -255,4 +255,17 @@
         (SELECT user_id FROM user_check_people WHERE check_user_id = #{checkUserId})
         ORDER BY tt.`create_time` DESC
     </select>
+
+    <!--三级待审核临时任务-->
+    <select id="selectTaskTempLevelThree" resultMap="TaskTempBO">
+        SELECT tt.*,u.name user_name,u.avatar_url avatar_url,t.name task_name,p.image_url project_image, p.name project_name
+        FROM `task_temp` tt
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN `task` t ON tt.task_id = t.id
+        LEFT JOIN `project` p ON p.id = t.project_id
+        WHERE  tt.`review_status` = 1 and tt.user_id in
+        (SELECT user_id FROM user_check_people WHERE check_user_id = #{userId} and `level` = 3)
+        AND tt.level > 2
+        ORDER BY tt.`create_time` DESC
+    </select>
 </mapper>

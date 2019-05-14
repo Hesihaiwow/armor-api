@@ -402,9 +402,12 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         List<TaskTempBO> levelOne = taskTempMapper.selectTaskTempLevelOne(userId);
         //二级待审核临时任务
         List<TaskTempBO> levelTwo = taskTempMapper.selectTaskTempLevelTwo(userId);
+        //三级待审核临时任务
+        List<TaskTempBO> levelThree = taskTempMapper.selectTaskTempLevelThree(userId);
         List<TaskTempBO> taskTempBOList = new ArrayList<>();
         taskTempBOList.addAll(levelOne);
         taskTempBOList.addAll(levelTwo);
+        taskTempBOList.addAll(levelThree);
         List<TaskTempResDTO> taskTempResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskTempBOList)) {
             taskTempBOList.stream().forEach(taskTempBO -> {

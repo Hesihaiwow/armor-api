@@ -161,4 +161,11 @@ public interface IZSYTaskTempMapper {
      */
     int deleteByUserAndTask(@Param("userId")Long userId, @Param("taskId")Long taskId);
 
+    /**
+     * 三级待审核临时任务
+     * @author sch
+     * @param userId
+     * @return
+     */
+    List<TaskTempBO> selectTaskTempLevelThree(@Param("userId")Long userId);
 }
