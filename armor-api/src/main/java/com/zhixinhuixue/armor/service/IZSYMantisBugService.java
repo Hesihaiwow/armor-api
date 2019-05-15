@@ -24,7 +24,7 @@ public interface IZSYMantisBugService {
      * @author sch
      * @param projectId
      */
-    void exportMantisBug(Integer projectId);
+    List<String> exportMantisBug(Integer projectId);
 
     /**
      * @author sch

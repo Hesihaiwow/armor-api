@@ -9,6 +9,8 @@ import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.helper.UFileHelper;
+import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugWeekQueryReqDTO;
@@ -19,8 +21,13 @@ import com.zhixinhuixue.armor.model.pojo.MantisUser;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.service.IZSYMantisBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import com.zhixinhuixue.armor.source.enums.MantisBugSeverity;
 import com.zhixinhuixue.armor.source.enums.MantisBugStatus;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -61,6 +69,9 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     @Autowired
     private IZSYUserMapper userMapper;
+
+    @Autowired
+    private ZSYUFileProperties uFileProperties;
 
 
     /**
@@ -202,8 +213,349 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
      * @param projectId
      */
     @Override
-    public void exportMantisBug(Integer projectId) {
+    public List<String> exportMantisBug(Integer projectId) {
+        List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
+        Map<String,Long> userMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(users)){
+            for (User user : users) {
+                userMap.put(user.getName(),user.getId());
+            }
+        }
+        Set<String> userNameSet = userMap.keySet();
+        String bugSql =
+                "SELECT mcfst.value taskId,mbt.id bugId,mbt.reporter_id reporterId,mbt.handler_id handlerId,mut1.realname reporterName,\n" +
+                        "mut2.realname handlerName,mbt.severity severity,mbt.priority priority,mbt.status status,mbt.category_id categoryId,\n" +
+                        "mct.name categoryName,mbt.date_submitted dateSubmitted,mbt.last_updated lastUpdated\n" +
+                        "FROM mantis_custom_field_string_table mcfst\n" +
+                        "LEFT JOIN mantis_bug_table mbt on mcfst.`bug_id` = mbt.id\n" +
+                        "LEFT JOIN mantis_user_table mut1 on mut1.id = mbt.reporter_id\n" +
+                        "LEFT JOIN mantis_user_table mut2 ON mut2.id = mbt.handler_id\n" +
+                        "LEFT JOIN mantis_category_table mct ON mct.id = mbt.category_id";
+        String bugSql2 =
+                "SELECT mcfst.value taskId,mbt.id bugId,mbt.reporter_id reporterId,mbt.handler_id handlerId,mut1.realname reporterName,\n" +
+                        "mut2.realname handlerName,mbt.severity severity,mbt.priority priority,mbt.status status,mbt.category_id categoryId,\n" +
+                        "mct.name categoryName,mbt.date_submitted dateSubmitted,mbt.last_updated lastUpdated\n" +
+                        "FROM mantis_bug_table mbt\n" +
+                        "LEFT JOIN mantis_custom_field_string_table mcfst on mcfst.`bug_id` = mbt.id\n" +
+                        "LEFT JOIN mantis_user_table mut1 on mut1.id = mbt.reporter_id\n" +
+                        "LEFT JOIN mantis_user_table mut2 ON mut2.id = mbt.handler_id\n" +
+                        "LEFT JOIN mantis_category_table mct ON mct.id = mbt.category_id\n" +
+                        "WHERE mbt.project_id = " + projectId;
 
+        String userSql = "SELECT id,username,realname FROM mantis_user_table";
+        String categorySql =
+                "SELECT mct.id categoryId,mct.name categoryName,mct.user_id userId,mct.project_id projectId,mut.realName userName FROM mantis_category_table mct \n" +
+                        "LEFT JOIN mantis_user_table mut on mut.id = mct.user_id\n" +
+                        "WHERE mct.project_id = 57";
+        long time1 = System.currentTimeMillis();
+        List<MantisBugStatistics> list = jdbcTemplate.query(bugSql, new MyRowMapper());
+        List<MantisBugStatistics> list2 = jdbcTemplate.query(bugSql2, new MyRowMapper());
+        List<MantisUser> userList = jdbcTemplate.query(userSql, new RowMapper<MantisUser>() {
+            @Override
+            public MantisUser mapRow(ResultSet resultSet, int i) throws SQLException {
+                String id = resultSet.getString("id");
+                String username = resultSet.getString("username");
+                String realname = resultSet.getString("realname");
+                if (id == null || username == null || realname == null) {
+                    throw new ZSYServiceException("请检查mantis_user_table中数据是否有空值");
+                }
+                MantisUser mantisUser = new MantisUser();
+                mantisUser.setId(snowFlakeIDHelper.nextId());
+                mantisUser.setUserId(Integer.valueOf(id));
+                mantisUser.setUserName(username);
+                mantisUser.setRealName(realname);
+                return mantisUser;
+            }
+        });
+        List<MantisCategory> categoryList = jdbcTemplate.query(categorySql, new RowMapper<MantisCategory>() {
+            @Override
+            public MantisCategory mapRow(ResultSet resultSet, int i) throws SQLException {
+                String id = resultSet.getString("categoryId");
+                String name = resultSet.getString("categoryName");
+                String userId = resultSet.getString("userId");
+                String projectId1 = resultSet.getString("projectId");
+                String userName = resultSet.getString("userName");
+                if (id == null || name == null || userId == null || projectId1 == null || userName == null) {
+                    throw new ZSYServiceException("请检查mantis_category_table中数据是否有空值");
+                }
+                MantisCategory mantisCategory = new MantisCategory();
+                mantisCategory.setId(snowFlakeIDHelper.nextId());
+                mantisCategory.setCategoryId(Integer.valueOf(id));
+                mantisCategory.setCategoryName(name);
+                mantisCategory.setUserId(Integer.valueOf(userId));
+                mantisCategory.setProjectId(Integer.valueOf(projectId1));
+                if (userNameSet.contains(userName)){
+                    mantisCategory.setSysUserId(userMap.get(userName));
+                }else {
+                    throw new ZSYServiceException("姓名为: "+userName+" 的用户在积分系统中没有找到,请检查");
+                }
+                mantisCategory.setUserName(userName);
+                return mantisCategory;
+            }
+        });
+        List<MantisBugStatistics> mantisBugStatisticsList = new ArrayList<>();
+        mantisBugStatisticsList.addAll(list);
+        mantisBugStatisticsList.addAll(list2);
+        String bugExcel = exportBugExcel(mantisBugStatisticsList);
+        String userExcel = exportUserExcel(userList);
+        String categoryExcel = exportCategoryExcel(categoryList);
+        List<String> urls = new ArrayList<>();
+        urls.add(bugExcel);
+        urls.add(userExcel);
+        urls.add(categoryExcel);
+        return urls;
+    }
+
+    /**
+     * 导出category表
+     * @param categoryList
+     * @return
+     */
+    private String exportCategoryExcel(List<MantisCategory> categoryList) {
+
+        if (CollectionUtils.isEmpty(categoryList)){
+            throw new ZSYServiceException("mantisCategory数据为空,无法导出,请检查");
+        }
+
+        //1,导出bug信息Excel
+        //设置表头
+        List<String> headers = new ArrayList<>();
+        headers.add("主键");
+        headers.add("分类id");
+        headers.add("分类名称");
+        headers.add("负责人id");
+        headers.add("项目id");
+        headers.add("系统用户id");
+        headers.add("用户姓名");
+        //设置文件名
+        String fileName = "mantisCategory信息" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+             HSSFWorkbook workbook = new HSSFWorkbook()){
+            //创建sheet
+            HSSFSheet sheet = workbook.createSheet("mantisCategory信息");
+            //设置列宽
+            sheet.setDefaultColumnWidth(25);
+            //创建行
+            HSSFRow row = sheet.createRow(0);
+            //创建样式
+            HSSFCellStyle style = workbook.createCellStyle();
+            //设置样式
+            style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+            style.setAlignment(HorizontalAlignment.CENTER_SELECTION);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            //创建字体
+            HSSFFont font = workbook.createFont();
+            //设置字体
+            font.setFontHeightInPoints((short) 15);
+            font.setBold(true);
+            font.setFontName("微软雅黑");
+            style.setFont(font);
+            HSSFCell cell = null;
+            //创建标题
+            for (int i = 0; i < headers.size(); i++) {
+                cell = row.createCell(i);
+                cell.setCellValue(headers.get(i));
+                cell.setCellStyle(style);
+            }
+            int num = 0;
+            //创建内容
+            for (int i = 0; i < categoryList.size(); i++) {
+                row = sheet.createRow(num + 1);
+                row.setRowStyle(style);
+                //主键
+                row.createCell(0).setCellValue(categoryList.get(i).getId());
+                //分类id
+                row.createCell(1).setCellValue(categoryList.get(i).getCategoryId());
+                //分类名称
+                row.createCell(2).setCellValue(categoryList.get(i).getCategoryName());
+                //用户id
+                row.createCell(3).setCellValue(categoryList.get(i).getUserId());
+                //项目id
+                row.createCell(4).setCellValue(categoryList.get(i).getProjectId());
+                //系统用户id
+                row.createCell(5).setCellValue(categoryList.get(i).getSysUserId());
+                //真实姓名
+                row.createCell(6).setCellValue(categoryList.get(i).getUserName());
+                num++;
+            }
+            workbook.write(os);
+            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel",uFileProperties);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new ZSYServiceException("导出category表失败");
+        }
+    }
+
+    /**
+     * 导出user表
+     * @param userList
+     * @return
+     */
+    private String exportUserExcel(List<MantisUser> userList) {
+        if (CollectionUtils.isEmpty(userList)){
+            throw new ZSYServiceException("mantisUser数据为空,无法导出,请检查");
+        }
+        List<String> headers = new ArrayList<>();
+        headers.add("主键");
+        headers.add("用户id");
+        headers.add("账户名");
+        headers.add("真实姓名");
+        //设置文件名
+        String fileName = "mantisUser信息" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+             HSSFWorkbook workbook = new HSSFWorkbook()){
+            //创建sheet
+            HSSFSheet sheet = workbook.createSheet("mantisUser信息");
+            //设置列宽
+            sheet.setDefaultColumnWidth(25);
+            //创建行
+            HSSFRow row = sheet.createRow(0);
+            //创建样式
+            HSSFCellStyle style = workbook.createCellStyle();
+            //设置样式
+            style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+            style.setAlignment(HorizontalAlignment.CENTER_SELECTION);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            //创建字体
+            HSSFFont font = workbook.createFont();
+            //设置字体
+            font.setFontHeightInPoints((short) 15);
+            font.setBold(true);
+            font.setFontName("微软雅黑");
+            style.setFont(font);
+            HSSFCell cell = null;
+            //创建标题
+            for (int i = 0; i < headers.size(); i++) {
+                cell = row.createCell(i);
+                cell.setCellValue(headers.get(i));
+                cell.setCellStyle(style);
+            }
+            int num = 0;
+            //创建内容
+            for (int i = 0; i < userList.size(); i++) {
+                row = sheet.createRow(num + 1);
+                row.setRowStyle(style);
+                //主键
+                row.createCell(0).setCellValue(userList.get(i).getId());
+                //用户id
+                row.createCell(1).setCellValue(userList.get(i).getUserId());
+                //账户名
+                row.createCell(2).setCellValue(userList.get(i).getUserName());
+                //真实姓名
+                row.createCell(3).setCellValue(userList.get(i).getRealName());
+                num++;
+            }
+            workbook.write(os);
+            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel",uFileProperties);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new ZSYServiceException("导出user表失败");
+        }
+    }
+
+    /**
+     * 导出bug表
+     * @param mantisBugStatisticsList
+     * @return
+     */
+    private String exportBugExcel(List<MantisBugStatistics> mantisBugStatisticsList) {
+        if(CollectionUtils.isEmpty(mantisBugStatisticsList)){
+            throw new ZSYServiceException("mantisBug数据为空,无法导出,请检查");
+        }
+
+        //1,导出bug信息Excel
+        //设置表头
+        List<String> headers = new ArrayList<>();
+        headers.add("主键");
+        headers.add("任务id");
+        headers.add("bugId");
+        headers.add("提交人id");
+        headers.add("处理人id");
+        headers.add("提交人姓名");
+        headers.add("处理人姓名");
+        headers.add("严重程度");
+        headers.add("优先级");
+        headers.add("状态");
+        headers.add("分类id");
+        headers.add("分类名称");
+        headers.add("提出时间");
+        headers.add("最后更新时间");
+
+        //设置文件名
+        String fileName = "mantisBug信息" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+             HSSFWorkbook workbook = new HSSFWorkbook()){
+            //创建sheet
+            HSSFSheet sheet = workbook.createSheet("mantisBug信息");
+            //设置列宽
+            sheet.setDefaultColumnWidth(25);
+            //创建行
+            HSSFRow row = sheet.createRow(0);
+            //创建样式
+            HSSFCellStyle style = workbook.createCellStyle();
+            //设置样式
+            style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+            style.setAlignment(HorizontalAlignment.CENTER_SELECTION);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            //创建字体
+            HSSFFont font = workbook.createFont();
+            //设置字体
+            font.setFontHeightInPoints((short) 15);
+            font.setBold(true);
+            font.setFontName("微软雅黑");
+            style.setFont(font);
+            HSSFCell cell = null;
+            //创建标题
+            for (int i = 0; i < headers.size(); i++) {
+                cell = row.createCell(i);
+                cell.setCellValue(headers.get(i));
+                cell.setCellStyle(style);
+            }
+            int num = 0;
+            //创建内容
+            for (int i = 0; i < mantisBugStatisticsList.size(); i++) {
+                row = sheet.createRow(num + 1);
+                row.setRowStyle(style);
+                //主键
+                row.createCell(0).setCellValue(mantisBugStatisticsList.get(i).getBsId());
+                //任务id
+                if (mantisBugStatisticsList.get(i).getTaskId() != null){
+                    row.createCell(1).setCellValue(mantisBugStatisticsList.get(i).getTaskId());
+                }else {
+                    row.createCell(1).setCellValue("");
+                }
+                //bugId
+                row.createCell(2).setCellValue(mantisBugStatisticsList.get(i).getBugId());
+                //提交人id
+                row.createCell(3).setCellValue(mantisBugStatisticsList.get(i).getReporterId());
+                //处理人id
+                row.createCell(4).setCellValue(mantisBugStatisticsList.get(i).getHandlerId());
+                //提交人姓名
+                row.createCell(5).setCellValue(mantisBugStatisticsList.get(i).getReporterName());
+                //处理人姓名
+                row.createCell(6).setCellValue(mantisBugStatisticsList.get(i).getHandlerName());
+                //严重程度
+                row.createCell(7).setCellValue(mantisBugStatisticsList.get(i).getSeverity());
+                //优先级
+                row.createCell(8).setCellValue(mantisBugStatisticsList.get(i).getSeverity());
+                //状态
+                row.createCell(9).setCellValue(mantisBugStatisticsList.get(i).getSeverity());
+                //分类id
+                row.createCell(10).setCellValue(mantisBugStatisticsList.get(i).getSeverity());
+                //分类名称
+                row.createCell(11).setCellValue(mantisBugStatisticsList.get(i).getSeverity());
+                //提出时间
+                row.createCell(12).setCellValue(mantisBugStatisticsList.get(i).getSeverity());
+                //最后更新时间
+                row.createCell(13).setCellValue(mantisBugStatisticsList.get(i).getSeverity());
+                num++;
+            }
+            workbook.write(os);
+            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel",uFileProperties);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new ZSYServiceException("导出bug表失败");
+        }
     }
 
     /**

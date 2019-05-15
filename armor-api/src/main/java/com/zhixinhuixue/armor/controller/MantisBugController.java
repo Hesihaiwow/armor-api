@@ -73,7 +73,6 @@ public class MantisBugController {
     @ApiOperation("导出数据到Excel")
     @GetMapping("/export/{projectId}")
     public String exportMantisBug(@PathVariable("projectId")Integer projectId){
-        mantisBugService.exportMantisBug(projectId);
-        return ZSYResult.success().build();
+        return ZSYResult.success().data(mantisBugService.exportMantisBug(projectId)).build();
     }
 }
