@@ -102,7 +102,8 @@
                             @change="changeMonth3"
                     size="medium">
                     </el-date-picker></div>
-                    <el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="selectMantisProject">导入bug信息</el-button>
+                    <!--<el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="selectMantisProject">导入bug信息</el-button>-->
+                    <el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="selectMantisProject">导出bug信息</el-button>
                     <el-table :data="taskBugStatsList" border>
                         <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
                         <el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>
@@ -1011,6 +1012,22 @@
             </span>
         </el-dialog>
 
+        <!--<el-dialog title="选择mantis系统项目" :visible.sync="selectMantisProjectVisible" custom-class="myDialog"-->
+                   <!--:close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"-->
+                   <!--@close="closeMantisVisible">-->
+            <!--<el-select clearable filterable no-match-text=" " v-model="mantisProject" placeholder="请选择"-->
+                       <!--style="width:200px">-->
+                <!--<el-option v-for="item in mantisProjectList" :key="item.id" :label="item.name"-->
+                           <!--:value="item.id"></el-option>-->
+            <!--</el-select>-->
+            <!--<span slot="footer" class="dialog-footer">-->
+                <!--<el-button v-loading.fullscreen.lock="fullscreenLoading"-->
+                           <!--element-loading-text="拼命导入中,请稍后"-->
+                           <!--element-loading-spinner="el-icon-loading"-->
+                           <!--element-loading-background="rgba(0, 0, 0, 0.8)"-->
+                           <!--type="primary" @click="importBugInfo">导入</el-button>-->
+            <!--</span>-->
+        <!--</el-dialog>-->
         <el-dialog title="选择mantis系统项目" :visible.sync="selectMantisProjectVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
                    @close="closeMantisVisible">
@@ -1020,7 +1037,6 @@
                            :value="item.id"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
-                <!--<el-button type="success" @click="importBugInfo">导入</el-button>-->
                 <el-button v-loading.fullscreen.lock="fullscreenLoading"
                            element-loading-text="拼命导入中,请稍后"
                            element-loading-spinner="el-icon-loading"
