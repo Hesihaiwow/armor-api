@@ -36,7 +36,7 @@
                     <span v-if="task.status==1&&task.delayNo!=0&&task.delayNo!=null" class="task-end orange">超时人数:{{task.delayNo}}</span>
                     <span class="task-time-opt">
                     <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check"
-                       @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type)"></i>
+                       @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type,task.expand)"></i>
                         <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus==1 "
                            @click="modifyPrivateTask(task.id)" class="el-icon-edit"></i>
                         <i v-show="taskStatus=='TaskDoing' && task.type==2 && task.reviewStatus==1 "
@@ -780,51 +780,49 @@
                     </el-tag>
                 </div>
                 <el-form-item><span>-------------------------------------------------------------------------------------------</span></el-form-item>
-                <el-form-item v-show="taskTempAble" label="任务描述: " prop="description">
+                <el-form-item v-show="taskTempDetail.isChecked == 1" label="任务描述: " prop="description">
                     {{taskTempDetail.description}}
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" label="任务描述: " prop="description" style="margin-top: -40px">
-                    <el-input type="textarea" :disabled="taskTempAble" v-model="description" :rows="3"></el-input>
+                <el-form-item v-show="taskTempDetail.isChecked == 0" label="任务描述: " prop="description" style="margin-top: -40px">
+                    <el-input type="textarea"  v-model="description" :rows="3"></el-input>
                 </el-form-item>
 
-                <el-form-item v-show="taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -10px" label-width="90px">
+                <el-form-item v-show="taskTempDetail.isChecked == 1" class="task-form" label="开始时间：" style="float: left;margin-left: -10px" label-width="90px">
                     {{taskTempDetail.beginTime | formatDate}}
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
+                <el-form-item v-show="taskTempDetail.isChecked == 0" class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
                     <el-date-picker @change="changeTime()"
                                     v-model="taskTempDetail.beginTime"
                                     type="date"
                                     format="yyyy-MM-dd"
-                                    placeholder="选择日期时间"
-                                    :disabled="taskTempAble">
+                                    placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
 
-                <el-form-item v-show="taskTempAble" class="task-form" label="截止时间：" label-width="82px" style="float: left">
+                <el-form-item v-show="taskTempDetail.isChecked == 1" class="task-form" label="截止时间：" label-width="82px" style="float: left;margin-left: 30px">
                     {{taskTempDetail.endTime | formatDate}}
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" class="task-form" label="截止时间：" style="margin-left: 285px">
+                <el-form-item v-show="taskTempDetail.isChecked == 0" class="task-form" label="截止时间：" style="margin-left: 285px">
                     <el-date-picker @change="changeTime()"
                                     v-model="taskTempDetail.endTime"
                                     type="date"
                                     format="yyyy-MM-dd"
-                                    placeholder="选择日期时间"
-                                    :disabled="taskTempAble">
+                                    placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
 
-                <el-form-item v-show="taskTempAble" class="task-form" label="任务时长：" style="margin-left: 405px">
+                <el-form-item v-show="taskTempDetail.isChecked == 1" class="task-form" label="任务时长：" style="margin-left: 405px">
                     {{taskTempDetail.workHours}} 小时
                 </el-form-item>
-                <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：">
-                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 20%"></el-input>
+                <el-form-item v-show="taskTempDetail.isChecked == 0" class="task-form" label="任务时长：">
+                    <el-input v-model="taskTempDetail.workHours" style="width: 20%"></el-input>
                     小时
                 </el-form-item>
 
                 <div v-for="(item,index) in sortWeekTempNumber" v-show="taskTempDetail.reviewStatus == 1">
                     <div class="add-member-basic-list clearfix">
                         <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
-                        <input class="member-time-week" :disabled="taskTempAble" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
+                        <input class="member-time-week" :disabled="taskTempDetail.isChecked == 1" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
                         <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) > 40" style="color:red;display:inline">
                             {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
                         <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) <=40" style="display:inline">
@@ -924,7 +922,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <div>
-                    <el-button type="primary" v-show="taskTempDetail.isChecked == 0" @click="saveApplyModifyMyTask('modifyMyTaskForm')">确认修改</el-button>
+                    <el-button type="primary" @click="saveApplyModifyMyTask('modifyMyTaskForm')">确认修改</el-button>
                 </div>
             </span>
         </el-dialog>
@@ -2143,6 +2141,7 @@
                 this.modifyMyTaskForm.taskId = taskId;
                 this.getTaskDetail(taskId)
                 http.zsyGetHttp('/task/task-user/'+taskId+'/'+userId,{},(res=>{
+                    console.log(111)
                     this.taskUser = res.data;
                     this.changeTaskUserWeek()
                     this.showFinishedTask = false;
@@ -2428,6 +2427,10 @@
             },
             editMultipleTask(formName) {
                 var sumHours=0;
+                if((moment(this.taskTempDetail.beginTime).isAfter(moment(this.taskTempDetail.endTime)))){
+                    this.$message({showClose: true, message: '开始时间不能在截止时间后面', type: 'error'});
+                    return false;
+                }
                 for(var i=0;i<this.taskTempWeekNumber.length;i++){
                     if(this.taskTempWeekNumber[i].hours==''|| this.taskTempWeekNumber[i].hours=== undefined){
                         if(this.taskTempWeekNumber[i].hoursTemp !== undefined &&this.taskTempWeekNumber[i].hoursTemp!=''){
@@ -2519,7 +2522,8 @@
                             this.$refs[formName].resetFields();
                             this.description = ''
                             this.taskAble = false;
-                            vm.$emit('reload')
+                            vm.$emit('reload');
+                            // window.history.go(0)
                         });
                     } else {
                         return false;
@@ -2530,6 +2534,10 @@
             },
             saveApplyModifyMyTask(formName) {
                 var sumHours=0;
+                if((moment(this.modifyMyTaskForm.beginTime).isAfter(moment(this.modifyMyTaskForm.endTime)))){
+                    this.$message({showClose: true, message: '开始时间不能在截止时间后面', type: 'error'});
+                    return false;
+                }
                 for(var i=0;i<this.taskModifyWeekNumber.length;i++){
                     if(this.taskModifyWeekNumber[i].hours==''|| this.taskModifyWeekNumber[i].hours=== undefined){
                         if(this.taskModifyWeekNumber[i].hoursTemp !== undefined &&this.taskModifyWeekNumber[i].hoursTemp!=''){
@@ -2623,6 +2631,7 @@
                             this.clearModifyMyTaskForm()
                             // this.taskAble = false;
                             vm.$emit('reload')
+                            // window.history.go(0)
                         });
                     } else {
                         return false;
@@ -2636,6 +2645,7 @@
                 this.modifyMyTaskDescription = '';
                 this.taskModifyWeekNumber = [];
                 this.modifyMyTaskForm.reason = '';
+                this.modifyMyTaskForm.workHours = '';
                 this.modifyMyTaskForm.description = '';
                 this.modifyMyTaskForm.taskId = null;
                 this.modifyMyTaskForm.userId = null;

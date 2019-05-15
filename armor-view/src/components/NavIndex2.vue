@@ -2398,8 +2398,8 @@
                 </el-form-item>
 
                 <div v-show="taskTempAble" style="float: left;">开始时间: {{taskTempDetail.beginTime | formatDate}}</div>
-                <div v-show="taskTempAble" style="float: left;margin-left: 10px;">截止: {{taskTempDetail.endTime | formatDate}}</div>
-                <div v-show="taskTempAble" style="margin-left: 310px">任务时长: {{taskTempDetail.workHours}}</div>
+                <div v-show="taskTempAble" style="float: left;margin-left: 20px;">截止: {{taskTempDetail.endTime | formatDate}}</div>
+                <div v-show="taskTempAble" style="margin-left: 350px">任务时长: {{taskTempDetail.workHours}}小时</div>
                 <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
                     <el-date-picker @change="changeTime"
                                     v-model="taskTempDetail.beginTime"
@@ -2439,10 +2439,10 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
                         <input class="member-time-week" :disabled="taskTempAble" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
-                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) > 40" style="color:red;display:inline">
-                            {{parseFloat(item.weekHours==''?0:item.weekHours)}}</div>
-                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) <=40" style="display:inline">
-                            {{parseFloat(item.weekHours==''?0:item.weekHours)}}</div>
+                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) > 40" style="color:red;display:inline">
+                            {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
+                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) <=40" style="display:inline">
+                            {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
                     </div>
                 </div>
             </el-form>
@@ -3628,6 +3628,7 @@
                     this.fetchMyRecheckWait();
                     this.fetchMyRecheckPass();
                     this.fetchMySignInData();
+                    this.fetchMultipleAccess();
                     this.fetchPersonalMultipleWait();
                     // this.fetchPersonalMultipleAccess();
                     this.fetchPersonalTaskModifyWait();
@@ -4116,6 +4117,7 @@
                     el['endColor'] = endColor
                     el['endText'] = endText
                 })
+                setTimeout(console.log('wait 100ms'),100)
                 return list
             },
             fetchIntegral() {
@@ -6161,6 +6163,7 @@
                         // task.name = '(待审核 多人任务)' + task.name;
                     })
                     this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
+                    console.log(this.task.doing)
                 }))
 
             },
