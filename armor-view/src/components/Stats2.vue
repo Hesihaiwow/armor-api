@@ -102,8 +102,8 @@
                             @change="changeMonth3"
                     size="medium">
                     </el-date-picker></div>
-                    <!--<el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="selectMantisProject">导入bug信息</el-button>-->
-                    <el-button type="primary" style="margin-left: 850px;margin-top: -5px;" @click="selectMantisProject">导出bug信息</el-button>
+                    <el-button type="primary" style="margin-left: 850px;margin-top: -5px;" v-show="environment == 'dev' || environment == 'test'" @click="selectMantisProject">导出bug信息</el-button>
+                    <el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" style="margin-left: 850px;margin-top: -5px;" @click="importBugVisible = true">导入bug信息</el-button>
                     <el-table :data="taskBugStatsList" border>
                         <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
                         <el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>
@@ -1012,22 +1012,20 @@
             </span>
         </el-dialog>
 
-        <!--<el-dialog title="选择mantis系统项目" :visible.sync="selectMantisProjectVisible" custom-class="myDialog"-->
-                   <!--:close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"-->
-                   <!--@close="closeMantisVisible">-->
-            <!--<el-select clearable filterable no-match-text=" " v-model="mantisProject" placeholder="请选择"-->
-                       <!--style="width:200px">-->
-                <!--<el-option v-for="item in mantisProjectList" :key="item.id" :label="item.name"-->
-                           <!--:value="item.id"></el-option>-->
-            <!--</el-select>-->
-            <!--<span slot="footer" class="dialog-footer">-->
-                <!--<el-button v-loading.fullscreen.lock="fullscreenLoading"-->
-                           <!--element-loading-text="拼命导入中,请稍后"-->
-                           <!--element-loading-spinner="el-icon-loading"-->
-                           <!--element-loading-background="rgba(0, 0, 0, 0.8)"-->
-                           <!--type="primary" @click="importBugInfo">导入</el-button>-->
-            <!--</span>-->
-        <!--</el-dialog>-->
+        <el-dialog title="导入bug信息" :visible.sync="importBugVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   @close="closeMantisVisible">
+            <el-upload
+                    ref="bugData"
+                    action=""
+                    :on-preview="handleRecordPreview"
+                    :on-remove="handleRecordRemove"
+                    :before-upload="beforeUpload"
+                    :http-request="importBugInfo">
+                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                <!--<div slot="tip" class="el-upload__tip">只能上传.dat文件，且不超过1MB</div>-->
+            </el-upload>
+        </el-dialog>
         <el-dialog title="选择mantis系统项目" :visible.sync="selectMantisProjectVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
                    @close="closeMantisVisible">
@@ -1041,7 +1039,7 @@
                            element-loading-text="拼命导入中,请稍后"
                            element-loading-spinner="el-icon-loading"
                            element-loading-background="rgba(0, 0, 0, 0.8)"
-                           type="primary" @click="importBugInfo">导入</el-button>
+                           type="primary" @click="exportBugInfo">导出</el-button>
             </span>
         </el-dialog>
 
@@ -1398,11 +1396,15 @@
                 ],
                 selectMantisProjectVisible:false,
                 mantisProject:'',
-                fullscreenLoading:false
+                fullscreenLoading:false,
+                urlList:[],
+                environment:'',
+                importBugVisible:false,
                 // -- sch
             }
         },
         beforeMount:function () {
+            this.getEnv();
             this.getStats(this.statsPage.currentPage);
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "stats");
@@ -2934,35 +2936,65 @@
             closeMantisVisible(){
                 this.selectMantisProjectVisible = false;
             },
-            importBugInfo(){
+            importBugInfo(file){
+                this.fullscreenLoading = true;
+                this.importBugVisible = false;
+                var data = new FormData();
+                data.append('uploadFile', file.file);
+                Http.zsyPostHttp('/mantis-bug/import',data,(res)=> {
+                    console.log(111)
+                    if (res.errMsg == "执行成功") {
+                        this.$refs.bugData.clearFiles();
+                        this.$message({
+                            showClose: true,
+                            message: '导入成功',
+                            type: 'success'
+                        });
+                        this.fullscreenLoading = false;
+                        this.mantisUserBugWeekList = [];
+                        this.seriesDataList = [];
+                        this.fetchBugWeekGroupByUser();
+                        this.mantisUserBugMonthList = [];
+                        this.seriesDataList2 = [];
+                        this.onlineBugUserList = [];
+                        this.onlineBugTotalNum = 0;
+                        this.fetchOnlineBugGroupByUser();
+                        this.fetchBugStatsGroupByTask();
+                        this.fetchMantisBugStatsGroupByUser();
+                    }else {
+                        this.fullscreenLoading = false;
+                    }
+                },(fail)=>{
+                    this.$message({
+                        showClose: true,
+                        message: fail.errMsg,
+                        type: 'error'
+                    });
+                    this.fullscreenLoading = false;
+                })
+            },
+            exportBugInfo(){
                 if (this.mantisProject != null &&  this.mantisProject != ''){
                     this.selectMantisProjectVisible = false;
                     var project = this.mantisProjectList.filter(mantisProject=>(mantisProject.id === this.mantisProject))[0]
-                    this.$confirm('确认导入 <'+project.name+'> 的bug信息?', '提示', {
+                    this.$confirm('确认导出 <'+project.name+'> 的bug信息?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
                         this.fullscreenLoading = true;
-                        Http.zsyPostHttp('/mantis-bug/import/'+this.mantisProject,{},(res=>{
+                        Http.zsyGetHttp('/mantis-bug/export/'+this.mantisProject,{},(res=>{
                             if (res.errMsg == '执行成功'){
                                 this.$message({
                                     showClose: true,
-                                    message: '导入成功',
+                                    message: '导出成功',
                                     type: 'success'
                                 });
                                 this.fullscreenLoading = false;
-                                this.mantisUserBugWeekList = [];
-                                this.seriesDataList = [];
-                                this.fetchBugWeekGroupByUser();
-                                this.mantisUserBugMonthList = [];
-                                this.seriesDataList2 = [];
-                                this.onlineBugUserList = [];
-                                this.onlineBugTotalNum = 0;
-                                this.fetchOnlineBugGroupByUser();
-                                this.fetchBugStatsGroupByTask();
-                                this.fetchMantisBugStatsGroupByUser();
-
+                                this.urlList = res.data;
+                                this.urlList.forEach(url=>{
+                                    window.open (url)
+                                })
                             }
                         }))
                     }).catch(() => {
@@ -3020,7 +3052,36 @@
                     this.taskBugStatsList = res.data.list;
                     this.taskBugPage.total = res.data.total;
                 }))
-            }
+            },
+            //查看当前环境,用于显示  导出mantisbug按钮
+            getEnv(){
+                Http.zsyGetHttp('/mantis-bug/env',{},(res=>{
+                    this.environment = res.data;
+                }))
+            },
+            handleRecordPreview(){
+
+            },
+            handleRecordRemove(){
+
+            },
+            beforeUpload(file) {
+                var suffix = file.name.substring(file.name.lastIndexOf(".")+1)
+                const isXls = file.name.substring(file.name.lastIndexOf(".")+1) == "xls";
+                const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                // if ("xls" != suffix) {
+                //     this.$message.error('上传文件只能是".xls"格式!');
+                // }
+                if (!isExcel) {
+                    this.$message.error('上传文件只能是excel 格式!');
+                    return false
+                }
+                if (!isLt2M) {
+                    this.$message.error('上传文件大小不能超过 2MB!');
+                }
+                return isExcel && isLt2M && isXls;
+            },
             // -- sch
         }
     }
