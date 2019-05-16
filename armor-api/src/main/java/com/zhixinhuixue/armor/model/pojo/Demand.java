@@ -43,14 +43,32 @@ public class Demand {
     private Date updateTime;
     @ApiModelProperty("是否删除(0，正常；1，已删除)")
     private Integer isDelete;
-    @ApiModelProperty("是否已读(0:未读,1:已读)")
-    private Integer readStatus;
     @ApiModelProperty("点赞数")
     private Integer likesNum;
     @ApiModelProperty("上线时间")
     private Date onlineTime;
     @ApiModelProperty("创建需求学管id")
     private Integer coachId;
+    @ApiModelProperty("来源(0:其他,1:直播,2:小程序,3:IMS,4:学管端)")
+    private Integer source;
+    @ApiModelProperty("需求负责人id")
+    private Long chargeMan;
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public Long getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(Long chargeMan) {
+        this.chargeMan = chargeMan;
+    }
 
     public Integer getCoachId() {
         return coachId;
@@ -186,14 +204,6 @@ public class Demand {
 
     public void setIsDelete(Integer isDelete) {
         this.isDelete = isDelete;
-    }
-
-    public Integer getReadStatus() {
-        return readStatus;
-    }
-
-    public void setReadStatus(Integer readStatus) {
-        this.readStatus = readStatus;
     }
 
     public Integer getLikesNum() {

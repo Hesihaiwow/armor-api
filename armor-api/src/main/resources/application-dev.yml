@@ -4,7 +4,7 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://192.168.1.210:3307/armor_dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+      url: jdbc:mysql://192.168.1.210:3307/armor_dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&allowMultiQueries=true
       username: zsy
       password: lc12345
       filters: stat
@@ -104,5 +104,9 @@ sms:
   smsTemplateOne: SMS_152507421
   smsTemplateTwo: SMS_152512354
   smsTemplateThree: SMS_152507424
+
+#环境
+env:
+  environment: dev
 
 

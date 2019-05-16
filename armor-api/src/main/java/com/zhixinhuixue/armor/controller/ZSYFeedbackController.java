@@ -439,5 +439,18 @@ public class ZSYFeedbackController extends ZSYController{
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("更新老数据的来源")
+    @PutMapping("/update/source")
+    public String updateSource(){
+        feedbackService.updateSource();
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("更新老数据的负责人")
+    @PutMapping("/update/charge-man")
+    public String updateChargeMan(){
+        feedbackService.updateChargeMan();
+        return ZSYResult.success().build();
+    }
 
 }

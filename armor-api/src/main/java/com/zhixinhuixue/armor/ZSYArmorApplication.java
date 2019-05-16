@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor;
 
+import com.zhixinhuixue.armor.config.ZSYEnvConfig;
 import com.zhixinhuixue.armor.config.ZSYSmsConfig;
 import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import com.zhixinhuixue.armor.context.ZSYTokenAop;
@@ -20,7 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableScheduling
 @MapperScan("com.zhixinhuixue.armor.dao")
-@EnableConfigurationProperties({FastdfsProperty.class,ZSYBasicAuthProperty.class, ZSYQinuOssProperty.class, ZSYUFileProperties.class, ZSYSmsConfig.class})
+@EnableConfigurationProperties({FastdfsProperty.class,ZSYBasicAuthProperty.class, ZSYQinuOssProperty.class, ZSYUFileProperties.class, ZSYSmsConfig.class, ZSYEnvConfig.class})
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @EnableSwagger2
 public class ZSYArmorApplication implements CommandLineRunner {

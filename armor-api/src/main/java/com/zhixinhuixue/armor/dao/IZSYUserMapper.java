@@ -94,5 +94,13 @@ public interface IZSYUserMapper {
      * @return
      */
     User selectByEwId(@Param("ewId") Long ewId);
+
+    /**
+     * 根据姓名查询
+     * @author sch
+     * @param name
+     * @return
+     */
+    User selectByName(@Param("name") String name);
     // -- sch
 }

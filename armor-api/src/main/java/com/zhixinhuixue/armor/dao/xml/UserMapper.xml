@@ -162,6 +162,11 @@
       select * from `user` u left join `extra_work` ew on u.id = ew.user_id
       where ew.id = #{ewId}
   </select>
-  <!-- sch -->
+
+  <!--根据姓名查询-->
+    <select id="selectByName" resultMap="BaseResultMap">
+      SELECT * FROM `user` WHERE `name` = #{name}
+    </select>
+    <!-- sch -->
 
 </mapper>

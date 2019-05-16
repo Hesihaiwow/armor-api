@@ -521,4 +521,29 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     List<DemandBO> selectDemandListByReqDTO(@Param("reqDTO")DemandQueryReqDTO reqDTO);
+
+    /**
+     * 查询没有来源的老需求
+     * @return
+     */
+    List<Demand> selectSourceIsNull();
+
+    /**
+     * 批量更新需求来源
+     * @param list
+     * @return
+     */
+    int updateSourceBatch(@Param("list") List<Demand> list);
+
+    /**
+     * 查询没有负责人的老需求
+     * @return
+     */
+    List<Demand> selectChargeManIsNull();
+
+    /**
+     * 批量更新需求负责人
+     * @return
+     */
+    int updateChargeManBatch(@Param("list") List<Demand> list);
 }

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugWeekQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -75,4 +76,32 @@ public interface IZSYMantisBugService {
      * @return
      */
     PageInfo<MantisBugGroupByTaskResDTO> getBugStatsGroupByTask(MantisBugQueryReqDTO reqDTO);
+
+    /**
+     * 导入Excel到数据库
+     * @author sch
+     * @param uploadFile
+     */
+    void importExcel(MultipartFile uploadFile);
+
+    /**
+     * 导入user信息到数据库
+     * @author sch
+     * @param uploadFile
+     */
+    void importUser(MultipartFile uploadFile);
+
+    /**
+     * 导入category信息到数据库
+     * @author sch
+     * @param uploadFile
+     */
+    void importCategory(MultipartFile uploadFile);
+
+    /**
+     * 获取当前环境
+     * @author sch
+     * @return
+     */
+    String getEnvironment();
 }

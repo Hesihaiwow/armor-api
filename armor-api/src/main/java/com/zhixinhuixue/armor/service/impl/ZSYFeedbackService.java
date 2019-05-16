@@ -1573,6 +1573,61 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
     }
 
+    /**
+     * 更新老数据的来源
+     * @author sch
+     */
+    @Override
+    @Transactional
+    public void updateSource() {
+        List<Demand> demandList = feedbackMapper.selectSourceIsNull();
+        List<Demand> newList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(demandList)){
+            demandList.stream().forEach(demand -> {
+                if (demand.getCoachId() != null && demand.getCoachId() > 0){
+                    demand.setSource(4);
+                }else {
+                    demand.setSource(0);
+                }
+                newList.add(demand);
+            });
+        }
+        if (!CollectionUtils.isEmpty(newList)){
+            if (feedbackMapper.updateSourceBatch(newList) == 0){
+                throw new ZSYServiceException("批量更新需求来源失败");
+            }
+        }
+    }
+
+    /**
+     * 更新老数据的负责人
+     * @author sch
+     */
+    @Override
+    @Transactional
+    public void updateChargeMan() {
+        User user = userMapper.selectByName("颜林艳");
+        if (user != null){
+            List<Demand> demandList = feedbackMapper.selectChargeManIsNull();
+            List<Demand> newList = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(demandList)){
+                demandList.stream().forEach(demand -> {
+                    demand.setChargeMan(user.getId());
+                    newList.add(demand);
+                });
+            }
+            if (!CollectionUtils.isEmpty(newList)){
+                if (feedbackMapper.updateChargeManBatch(newList) == 0){
+                    throw new ZSYServiceException("批量更新需求负责人失败");
+                }
+            }
+        }else {
+            throw new ZSYServiceException("当前用户不存在,请检查");
+        }
+
+
+    }
+
     //导出新需求Excel
     private String getDemandNewExcel(List<DemandResDTO> demandResDTOList) {
         //设置表头

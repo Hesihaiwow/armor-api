@@ -333,4 +333,16 @@ public interface IZSYFeedbackService {
      * @return
      */
     String newDemandExcel(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 更新老数据的来源
+     * @author sch
+     */
+    void updateSource();
+
+    /**
+     * 更新老数据的负责人
+     * @author sch
+     */
+    void updateChargeMan();
 }
