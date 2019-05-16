@@ -242,6 +242,12 @@
             </el-tab-pane>
             <el-tab-pane label="周任务统计" name="week">
                 <div class="add-member-basic-msg fl" >
+                    <el-select v-model="userWeekForm.jobRole" clearable filterable   placeholder="筛选角色">
+                        <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
+                                   :value="item.roleId"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl" >
                     <el-date-picker
                             v-model="userWeekForm.date"
                             :picker-options="pickerWeek"
@@ -251,12 +257,7 @@
                     </el-date-picker>
                 </div>
                 <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="userWeekForm.jobRole" clearable filterable   placeholder="筛选角色">
-                        <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
-                                   :value="item.roleId"></el-option>
-                    </el-select>
-                </div>
+
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
                 <el-table :data="userWeekData" border  >
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
