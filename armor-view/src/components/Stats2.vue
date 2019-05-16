@@ -76,7 +76,7 @@
                         </template>
                     </el-table-column>
                     <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
-                    <el-table-column label="操作" width="110" fixed="right" align="center">
+                    <el-table-column label="操作" width="110" align="center">
                         <template scope="scope">
                             <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
                         </template>
