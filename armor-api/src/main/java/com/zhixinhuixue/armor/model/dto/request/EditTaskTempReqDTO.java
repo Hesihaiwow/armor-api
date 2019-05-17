@@ -58,7 +58,7 @@ public class EditTaskTempReqDTO {
      * @return
      */
     @NotBlank(message = "任务描述不能为空")
-    @Size(min = 1,max = 255,message = "任务描述必须在{min}~{max}之间")
+//    @Size(min = 1,max = 255,message = "任务描述必须在{min}~{max}之间")
     private String description;
 
     /**
