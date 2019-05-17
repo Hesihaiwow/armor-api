@@ -45,12 +45,15 @@ public class DemandCompletedResDTO {
     private Long workedTime;
     @ApiModelProperty("上线时间")
     private Date onlineTime;
-    @ApiModelProperty("负责人")
-    private String chargeMan;
     @ApiModelProperty("项目id")
     private Long projectId;
     @ApiModelProperty("状态")
     private Integer status;
+    @ApiModelProperty("来源")
+    private Integer source;
+    @ApiModelProperty("负责人")
+    private Long chargeMan;
+    private String chargeManName;
 
     public Date getFeedbackTime() {
         return feedbackTime;
@@ -204,11 +207,27 @@ public class DemandCompletedResDTO {
         this.onlineTime = onlineTime;
     }
 
-    public String getChargeMan() {
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public Long getChargeMan() {
         return chargeMan;
     }
 
-    public void setChargeMan(String chargeMan) {
+    public void setChargeMan(Long chargeMan) {
         this.chargeMan = chargeMan;
+    }
+
+    public String getChargeManName() {
+        return chargeManName;
+    }
+
+    public void setChargeManName(String chargeManName) {
+        this.chargeManName = chargeManName;
     }
 }

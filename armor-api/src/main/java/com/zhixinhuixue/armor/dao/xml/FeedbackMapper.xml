@@ -64,10 +64,15 @@
     <result column="type" property="type" jdbcType="INTEGER"></result>
     <result column="likes_num" property="likesNum" jdbcType="INTEGER"></result>
     <result column="coach_id" property="coachId" jdbcType="INTEGER"></result>
+    <result column="coach_id" property="coachId" jdbcType="INTEGER"></result>
+    <result column="source" property="source" jdbcType="INTEGER"></result>
+    <result column="charge_man" property="chargeMan" jdbcType="BIGINT"></result>
+    <result column="charge_man_name" property="chargeManName" jdbcType="VARCHAR"></result>
   </resultMap>
 
   <resultMap id="demandRejectedMap" type="com.zhixinhuixue.armor.model.bo.DemandRejectedBO" extends="demandMap">
     <result column="reject_user_id" property="rejectUser" jdbcType="BIGINT"></result>
+    <result column="reject_user_name" property="rejectUserName" jdbcType="VARCHAR"></result>
     <result column="reject_time" property="rejectedTime" jdbcType="TIMESTAMP"></result>
   </resultMap>
 
@@ -78,13 +83,11 @@
   <resultMap id="demandCompletedMap" type="com.zhixinhuixue.armor.model.bo.DemandCompletedBO" extends="demandMap">
     <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
     <result column="online_time" property="onlineTime" jdbcType="TIMESTAMP"></result>
-    <result column="users" property="chargeMan" jdbcType="VARCHAR"></result>
   </resultMap>
 
   <resultMap id="demandRunningMap" type="com.zhixinhuixue.armor.model.bo.DemandRunningBO" extends="demandMap">
     <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
     <result column="expect_official_time" property="expectOnlineTime" jdbcType="TIMESTAMP"></result>
-    <result column="users" property="chargeMan" jdbcType="VARCHAR"></result>
   </resultMap>
 
   <resultMap id="demandDetailMap" type="com.zhixinhuixue.armor.model.bo.DemandDetailBO">
@@ -180,11 +183,12 @@
   <!--新增需求-->
   <insert id="insertDemand" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
     insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,create_by,create_time,
-    is_delete,update_time,target,release_time,question,`type`)
+    is_delete,update_time,target,release_time,question,`type`,`source`,`charge_man`)
     values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
     ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
     ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
-    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER});
+    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER}
+    ,#{source,jdbcType=INTEGER},#{chargeMan,jdbcType=BIGINT});
   </insert>
 
   <!--学管端新增需求-->
@@ -341,9 +345,6 @@
       <if test="releaseTime != null">
         release_time = #{releaseTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="readStatus != null">
-        read_status = #{readStatus,jdbcType=INTEGER},
-      </if>
       <if test="question != null">
         question = #{question,jdbcType=LONGVARCHAR},
       </if>
@@ -355,6 +356,12 @@
       </if>
       <if test="onlineTime != null">
         online_time = #{onlineTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="source != null">
+        source = #{source,jdbcType=INTEGER},
+      </if>
+      <if test="chargeMan != null">
+        charge_man = #{chargeMan,jdbcType=BIGINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -425,33 +432,34 @@
 
   <!-- 获取新需求反馈列表 -->
   <select id="selectDemandPage" resultMap="demandMap">
-    select * from feedback
+    select fb.* ,u.name charge_man_name from feedback fb
+    LEFT JOIN user u ON fb.charge_man = u.id
     <where>
-      is_delete = 0
-      and status = 0
+      fb.is_delete = 0
+      and fb.status = 0
       <if test="origin != null and origin != ''">
-        and origin = #{origin}
+        and fb.origin = #{origin}
       </if>
       <if test="priority != null and priority != -1">
-        and priority = #{priority}
+        and fb.priority = #{priority}
       </if>
       <if test="type != null and type != -1">
-        and type = #{type}
+        and fb.type = #{type}
       </if>
-      <if test="fromCoach != null and fromCoach == 0">
-        and coach_id > 0
+      <if test="chargeMan != null">
+        and fb.charge_man = #{chargeMan}
       </if>
-      <if test="fromCoach != null and fromCoach == 1">
-        and create_by > 0
+      <if test="source != null">
+        and fb.source = #{source}
       </if>
       <if test="fbTimeStart != null">
-        <![CDATA[ AND  feedback_time >= #{fbTimeStart,jdbcType=TIMESTAMP}]]>
+        <![CDATA[ AND  fb.feedback_time >= #{fbTimeStart,jdbcType=TIMESTAMP}]]>
       </if>
       <if test="fbTimeEnd != null">
-        <![CDATA[ AND  feedback_time <= #{fbTimeEnd,jdbcType=TIMESTAMP}]]>
+        <![CDATA[ AND  fb.feedback_time <= #{fbTimeEnd,jdbcType=TIMESTAMP}]]>
       </if>
     </where>
-    order by create_time desc
+    order by fb.create_time desc
   </select>
 
   <select id="selectDemandList" resultMap="demandMap">
@@ -564,8 +572,11 @@
 
   <!-- 获取驳回需求反馈列表 -->
   <select id="selectDemandRejectedPage" resultMap="demandRejectedMap">
-    select f.*,fr.reject_user_id,fr.reject_time
-    from feedback f left join feedback_rejected fr on f.id = fr.demand_id
+    select f.*,fr.reject_user_id,fr.reject_time,u1.name charge_man_name,u2.name reject_user_name
+    from feedback f
+    left join feedback_rejected fr on f.id = fr.demand_id
+    left join user u1 on u1.id = f.charge_man
+    left join user u2 on u2.id = fr.reject_user_id
     <where>
       f.is_delete = 0 and
       f.status = 3
@@ -577,6 +588,12 @@
       </if>
       <if test="type != null and type != -1">
         and f.type = #{type}
+      </if>
+      <if test="source != null">
+        and f.source = #{source}
+      </if>
+      <if test="chargeMan != null">
+        and f.charge_man = #{chargeMan}
       </if>
     </where>
     order by fr.reject_time desc
@@ -649,8 +666,10 @@
 
   <!-- 获取排队需求列表 -->
   <select id="selectDemandQueuedPage" resultMap="demandQueuedMap">
-    select f.*,fq.agree_time
-    from feedback f left join feedback_queue fq on f.id = fq.demand_id
+    select f.*,fq.agree_time,u.name charge_man_name
+    from feedback f
+    left join feedback_queue fq on f.id = fq.demand_id
+    left join user u on u.id = f.charge_man
     <where>
       f.is_delete = 0 and
       f.status = 4
@@ -662,6 +681,12 @@
       </if>
       <if test="type != null and type != -1">
         and f.type = #{type}
+      </if>
+      <if test="chargeMan != null">
+        and f.charge_man = #{chargeMan}
+      </if>
+      <if test="source != null">
+        and f.source = #{source}
       </if>
     </where>
     order by fq.agree_time desc
@@ -729,12 +754,12 @@
 
   <!-- 获取完成需求列表 -->
   <select id="selectDemandCompletedPage" resultMap="demandCompletedMap">
-    select f.*,fq.agree_time,group_concat(u.name separator ',') users
+    select f.*,fq.agree_time,u.name charge_man_name
     from feedback f
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
     LEFT JOIN task t on fpt.task_id = t.id AND t.is_delete = 0
-    LEFT JOIN user u on t.create_by = u.id
+    LEFT JOIN user u on f.charge_man = u.id
     left join feedback_queue fq on f.id = fq.demand_id
     <where>
       f.is_delete = 0 and
@@ -749,7 +774,10 @@
         and f.origin = #{origin}
       </if>
       <if test="chargeMan != null">
-        and u.id = #{chargeMan}
+        and f.charge_man = #{chargeMan}
+      </if>
+      <if test="source != null">
+        and f.source = #{source}
       </if>
     </where>
     GROUP BY f.id
@@ -847,13 +875,13 @@
 
   <!-- 获取进行中需求列表 -->
   <select id="selectDemandRunningPage" resultMap="demandRunningMap">
-    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
+    select f.*,fq.agree_time,fp.expect_official_time,u.name charge_man_name
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
     LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
-    LEFT JOIN user u on t.create_by = u.id
+    LEFT JOIN user u on f.charge_man = u.id
     <where>
       f.is_delete = 0 and
       f.status = 1
@@ -867,21 +895,25 @@
         and f.type = #{type}
       </if>
       <if test="chargeMan != null">
-        and u.id = #{chargeMan}
+        and f.charge_man = #{chargeMan}
       </if>
+      <if test="source != null">
+        and f.source = #{source}
+      </if>
+
     </where>
     GROUP BY f.id
     ORDER BY f.feedback_time DESC
   </select>
 
   <select id="selectDemandRunningList" resultMap="demandRunningMap">
-    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
+    select f.*,fq.agree_time,fp.expect_official_time,u.name charge_man_name
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
     LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
-    LEFT JOIN user u on t.create_by = u.id
+    LEFT JOIN user u on f.charge_man = u.id
     <where>
       f.is_delete = 0 and
       f.status = 1
@@ -895,7 +927,10 @@
         and f.type = #{type}
       </if>
       <if test="chargeMan != null">
-        and u.id = #{chargeMan}
+        and f.charge_man = #{chargeMan}
+      </if>
+      <if test="source != null">
+        and f.source = #{source}
       </if>
     </where>
     GROUP BY f.id

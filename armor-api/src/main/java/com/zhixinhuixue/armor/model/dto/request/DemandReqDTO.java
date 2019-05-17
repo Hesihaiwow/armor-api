@@ -49,8 +49,30 @@ public class DemandReqDTO {
     @ApiModelProperty("提出时间")
     private Date feedbackTime;
 
+    @NotNull(message = "来源不能为空")
+    private Integer source;
+
+    @NotNull(message = "负责人不能为空")
+    private Long chargeMan;
+
     @ApiModelProperty("附件地址")
     private List<String> urlList;
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public Long getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(Long chargeMan) {
+        this.chargeMan = chargeMan;
+    }
 
     public Date getFeedbackTime() {
         return feedbackTime;

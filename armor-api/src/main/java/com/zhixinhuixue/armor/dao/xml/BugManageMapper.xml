@@ -113,6 +113,7 @@
             <if test="bugListReqDTO.endTime != null">
                 <![CDATA[  and bm.create_time <= #{bugListReqDTO.endTime} ]]>
             </if>
+            and bm.demand_system_id is not null
         </where>
         order by bm.create_time desc
     </select>

@@ -115,7 +115,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
         Page<DemandBO> demandBOS = feedbackMapper.selectDemandPage(reqDTO.getOrigin(),reqDTO.getPriority()
-                ,reqDTO.getType(),reqDTO.getFromCoach(),reqDTO.getFbTimeStart(),reqDTO.getFbTimeEnd());
+                ,reqDTO.getType(),reqDTO.getFbTimeStart(),reqDTO.getFbTimeEnd(),reqDTO.getChargeMan(),reqDTO.getSource());
         Page<DemandResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandBOS)){
             BeanUtils.copyProperties(demandBOS,list);
@@ -225,7 +225,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     public ArmorPageInfo<DemandRejectedResDTO> getDemandRejectedList(DemandQueryReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandRejectedBO> demandRejectedBOS = feedbackMapper.selectDemandRejectedPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType());
+        Page<DemandRejectedBO> demandRejectedBOS = feedbackMapper.selectDemandRejectedPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource());
         Page<DemandRejectedResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandRejectedBOS)){
 
@@ -347,7 +347,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     public ArmorPageInfo<DemandQueuedResDTO> getDemandQueuedList(DemandQueryReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandQueuedBO> demandQueuedBOS = feedbackMapper.selectDemandQueuedPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType());
+        Page<DemandQueuedBO> demandQueuedBOS = feedbackMapper.selectDemandQueuedPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource());
         Page<DemandQueuedResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandQueuedBOS)){
             BeanUtils.copyProperties(demandQueuedBOS,list);
@@ -516,7 +516,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     public PageInfo<DemandCompletedResDTO> getDemandCompletedList(DemandQueryReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandCompletedBO> demandCompletedBOS = feedbackMapper.selectDemandCompletedPage(reqDTO.getBeginTime(),reqDTO.getEndTime(),reqDTO.getChargeMan(),reqDTO.getOrigin());
+        Page<DemandCompletedBO> demandCompletedBOS = feedbackMapper.selectDemandCompletedPage(reqDTO.getBeginTime(),reqDTO.getEndTime(),reqDTO.getOrigin(),reqDTO.getChargeMan(),reqDTO.getSource());
         Page<DemandCompletedResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandCompletedBOS)){
             BeanUtils.copyProperties(demandCompletedBOS,list);
@@ -613,7 +613,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     public ArmorPageInfo<DemandRunningResDTO> getDemandRunningList(DemandQueryReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandRunningBO> demandRunningBOS = feedbackMapper.selectDemandRunningPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan());
+        Page<DemandRunningBO> demandRunningBOS = feedbackMapper.selectDemandRunningPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource());
         Page<DemandRunningResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandRunningBOS)){
             BeanUtils.copyProperties(demandRunningBOS,list);
@@ -668,7 +668,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
         //重新查询进行中需求集合  用于过滤读取状态  内存分页
         if (reqDTO.getReadStatus() != null && reqDTO.getReadStatus() != -1){
-            List<DemandRunningBO> demandRunningBOList = feedbackMapper.selectDemandRunningList(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan());
+            List<DemandRunningBO> demandRunningBOList = feedbackMapper.selectDemandRunningList(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource());
             List<DemandRunningResDTO> demandRunningResDTOList = new ArrayList<>();
             List<DemandRunningResDTO> filterList = new ArrayList<>();
             if (!CollectionUtils.isEmpty(demandRunningBOList)){
