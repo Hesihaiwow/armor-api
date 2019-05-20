@@ -95,8 +95,10 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     public PageInfo<UserLeaveResDTO> getLeaveList(UserLeaveListReqDTO userLeaveListReqDTO) {
         PageHelper.startPage(userLeaveListReqDTO.getPageNum(), ZSYConstants.PAGE_SIZE);
         userLeaveListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
-        if(userLeaveListReqDTO.getBeginTime()==null || userLeaveListReqDTO.getEndTime()==null){
+        if(userLeaveListReqDTO.getBeginTime()==null){
             userLeaveListReqDTO.setBeginTime(null);
+        }
+        if (userLeaveListReqDTO.getEndTime() == null){
             userLeaveListReqDTO.setEndTime(null);
         }
         Page<UserLeaveBO> userLeaveBOS = userLeaveMapper.getLeaveList(userLeaveListReqDTO);
