@@ -194,11 +194,12 @@
   <!--学管端新增需求-->
   <insert id="insertDemandByCoach" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
     insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,coach_id,create_time,
-    is_delete,update_time,target,release_time,question,`type`)
+    is_delete,update_time,target,release_time,question,`type`,`source`,`charge_man`)
     values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
     ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{coachId,jdbcType=INTEGER}
     ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
-    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER});
+    ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER}
+    ,#{source,jdbcType=INTEGER},#{chargeMan,jdbcType=BIGINT});
   </insert>
 
   <!--新增已读-->

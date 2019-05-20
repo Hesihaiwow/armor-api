@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -493,6 +494,74 @@ public class ZSYBugService implements IZSYBugService {
         resDTO.setOptimizationNum(optimizationNum);
         resDTO.setTotalNum(totalNum);
         return resDTO;
+    }
+
+    /**
+     * 分页查询线上bug(旧数据)
+     * @author sch
+     * @param bugListReqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<OnlineBugResDTO> getOldBugManagePage(BugListReqDTO bugListReqDTO) {
+        PageHelper.startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
+        Page<OnlineBugBO> onlineBugBOS = bugManageMapper.selectOldOnlineBugPage(bugListReqDTO);
+        Page<OnlineBugResDTO> page = new Page<>();
+        if (!CollectionUtils.isEmpty(onlineBugBOS)){
+            BeanUtils.copyProperties(onlineBugBOS,page);
+            onlineBugBOS.stream().forEach(onlineBugBO -> {
+                OnlineBugResDTO onlineBugResDTO = new OnlineBugResDTO();
+                BeanUtils.copyProperties(onlineBugBO,onlineBugResDTO);
+                String developers = "";
+                String testers = "";
+                if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())){
+                    for (Long userId : onlineBugBO.getUserIds()) {
+                        User user = userMapper.selectById(userId);
+                        if (user.getDepartmentId().equals(87526048211664896L)){
+                            developers = developers  + user.getName()+ " ";
+                        }
+                        if (user.getDepartmentId().equals(87526088225325056L)){
+                            testers = testers  + user.getName()+ " ";
+                        }
+                    }
+                }
+                onlineBugResDTO.setDevelopers(developers);
+                onlineBugResDTO.setTesters(testers);
+                if (onlineBugBO.getProjectId() != null){
+                    onlineBugResDTO.setDemandSystemName("知心慧学");
+                }
+                if (onlineBugBO.getProcessTime() != null && onlineBugBO.getProjectId() != null){
+                    onlineBugResDTO.setIsSolved(1);
+                }
+                if (onlineBugBO.getType() == null){
+                    onlineBugResDTO.setType(0);
+                }
+                page.add(onlineBugResDTO);
+            });
+        }
+        return new PageInfo<>(page);
+    }
+
+    /**
+     * 更新老数据状态为已解决
+     * @author sch
+     */
+    @Override
+    public void updateStatus() {
+        List<OnlineBugManage> onlineBugManages = bugManageMapper.selectIsSolvedIsNull();
+        List<OnlineBugManage> newList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(onlineBugManages)){
+            onlineBugManages.stream().forEach(onlineBugManage -> {
+                onlineBugManage.setIsSolved(1);
+                newList.add(onlineBugManage);
+            });
+        }
+        if (!CollectionUtils.isEmpty(newList)){
+            if (bugManageMapper.updateStatusBatch(newList) == 0){
+                throw new ZSYServiceException("批量更新bug处理状态失败");
+            }
+        }
     }
 
     /**

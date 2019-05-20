@@ -19,6 +19,34 @@ public class BugListReqDTO {
 
     private Long departmentId;
 
+    /**
+     * 问题类型
+     * @return
+     */
+    private Integer type;
+
+    /**
+     * 是否解决
+     * @return
+     */
+    private Integer isSolved;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getIsSolved() {
+        return isSolved;
+    }
+
+    public void setIsSolved(Integer isSolved) {
+        this.isSolved = isSolved;
+    }
+
     public Long getUserId() {
         return userId;
     }

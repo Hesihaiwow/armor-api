@@ -113,7 +113,43 @@
             <if test="bugListReqDTO.endTime != null">
                 <![CDATA[  and bm.create_time <= #{bugListReqDTO.endTime} ]]>
             </if>
+            <if test="bugListReqDTO.type != null">
+                and bm.type = #{bugListReqDTO.type}
+            </if>
+            <if test="bugListReqDTO.isSolved != null">
+                and bm.is_solved = #{bugListReqDTO.isSolved}
+            </if>
             and bm.demand_system_id is not null
+        </where>
+        order by bm.create_time desc
+    </select>
+
+    <!--查询bug数据(老数据)-->
+    <select id="selectOldOnlineBugPage" resultMap="OnlineBugBOPageMap">
+        select distinct bm.* from `bug_manage` bm
+        left join `bug_user` bu on bm.id = bu.bug_id
+        left join `user` u on bu.user_id = u.id
+        left join `department` dep on dep.id = u.department_id
+        <where>
+            <if test="bugListReqDTO.userId != null">
+                and bu.user_id = #{bugListReqDTO.userId}
+            </if>
+            <if test="bugListReqDTO.departmentId != null">
+                and dep.parent_id = #{bugListReqDTO.departmentId}
+            </if>
+            <if test="bugListReqDTO.startTime != null">
+                <![CDATA[  and bm.create_time >= #{bugListReqDTO.startTime} ]]>
+            </if>
+            <if test="bugListReqDTO.endTime != null">
+                <![CDATA[  and bm.create_time <= #{bugListReqDTO.endTime} ]]>
+            </if>
+            <if test="bugListReqDTO.type != null">
+                and bm.type = #{bugListReqDTO.type}
+            </if>
+            <if test="bugListReqDTO.isSolved != null">
+                and bm.is_solved = #{bugListReqDTO.isSolved}
+            </if>
+            and bm.demand_system_id is null
         </where>
         order by bm.create_time desc
     </select>
@@ -136,11 +172,17 @@
         <if test="bugListReqDTO.endTime != null">
             <![CDATA[  and create_time <= #{bugListReqDTO.endTime} ]]>
         </if>
+        AND demand_system_id is not null
     </select>
 
     <!--查询总数-->
     <select id="selectCountTotal" resultType="java.lang.Integer">
-        SELECT COUNT(id) FROM `bug_manage`
+        SELECT COUNT(id) FROM `bug_manage` WHERE demand_system_id is not null
+    </select>
+
+    <!--查询解决状态为空的数据-->
+    <select id="selectIsSolvedIsNull" resultMap="OnlineBugMap">
+        SELECT * FROM `bug_manage` WHERE `is_solved` IS NULL
     </select>
 
     <!-- 删除Bug处理记录  -->
@@ -171,6 +213,13 @@
         `demand_system` = #{demandSystemName,jdbcType=VARCHAR},
         `demand_system_id` = #{demandSystemId,jdbcType=INTEGER}
         WHERE id=#{id,jdbcType=BIGINT};
+    </update>
+
+    <!--批量更新bug解决状态-->
+    <update id="updateStatusBatch" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineBugManage">
+        <foreach collection="list" separator=";" item="item">
+            UPDATE `bug_manage` SET `is_solved` = 1 WHERE `id` = #{item.id}
+        </foreach>
     </update>
 
 </mapper>

@@ -1334,6 +1334,12 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         demand.setCreateTime(new Date());
         demand.setUpdateTime(new Date());
         demand.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        demand.setSource(4);
+        User user = userMapper.selectByName("颜林艳");
+        if (user == null){
+            throw new ZSYServiceException("当前用户不存在,请检查");
+        }
+        demand.setChargeMan(user.getId());
         if (feedbackMapper.insertDemandByCoach(demand) == 0){
             throw new ZSYServiceException("提需求失败");
         }
