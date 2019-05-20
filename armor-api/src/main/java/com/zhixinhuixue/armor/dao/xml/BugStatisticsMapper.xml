@@ -291,6 +291,7 @@
             <![CDATA[ AND  bm.discover_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         </if>
         and bm.demand_system_id is not NULL
+        and bm.type = 0
         GROUP BY bm.demand_system
     </select>
 
@@ -301,6 +302,7 @@
         LEFT JOIN bug_user bu ON bm.id = bu.bug_id
         LEFT JOIN user u ON u.id = bu.user_id
         WHERE bm.demand_system_id IS NOT NULL
+        AND bm.`type` = 0
         and bu.user_id in
         (SELECT DISTINCT sys_user_id FROM mantis_category)
         <if test="beginTime != null">
