@@ -59,7 +59,7 @@
                                 {{(bugReqDTO.pageNum-1)*10 + scope.$index + 1}}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>
+                        <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
                         <el-table-column prop="createTime" label="反馈日期"  width="130">
                             <template scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
@@ -82,6 +82,8 @@
                                 <span v-if="scope.row.type == 2">协助</span>
                             </template>
                         </el-table-column>
+                        <el-table-column prop="testers" label="测试人员" align="center" width="110"></el-table-column>
+                        <el-table-column prop="developers" label="开发人员" align="center" width="110"></el-table-column>
                         <el-table-column prop="isSolved" label="是否解决" align="center" width="110">
                             <template scope="scope">
                                 <span v-if="scope.row.isSolved == 0">未解决</span>
@@ -139,7 +141,7 @@
                                 {{(oldBugReqDTO.pageNum-1)*10 + scope.$index + 1}}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>
+                        <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
                         <el-table-column prop="createTime" label="反馈日期"  width="130">
                             <template scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
