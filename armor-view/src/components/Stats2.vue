@@ -2547,7 +2547,9 @@
                     return
                 }
                 this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss')
-                this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                if (this.onlineBugForm.processTime != null && this.onlineBugForm.processTime != '') {
+                    this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                }
                 let param = this.onlineBugForm;
                 param.description = param.description.trim()
                 param['bugUsers'] = this.bugUsers;

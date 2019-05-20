@@ -4117,7 +4117,6 @@
                     el['endColor'] = endColor
                     el['endText'] = endText
                 })
-                setTimeout(console.log('wait 100ms'),100)
                 return list
             },
             fetchIntegral() {
@@ -6163,7 +6162,6 @@
                         // task.name = '(待审核 多人任务)' + task.name;
                     })
                     this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
-                    console.log(this.task.doing)
                 }))
 
             },
