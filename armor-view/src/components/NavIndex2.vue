@@ -1048,7 +1048,7 @@
                         <!--</div>-->
                     <!--</el-tab-pane>-->
                 <!--</el-tabs>-->
-                <p class="mic-title">任务延长申请审核</p>
+                <p class="mic-title">任务修改申请审核</p>
                 <el-tabs v-model="taskModifyTabsActiveName" @tab-click="handleClick">
                     <el-tab-pane label="待审核" name="wait">
                         <div class="task-lis" v-for="modifyData in taskModifyData.waitAssess"
@@ -3595,6 +3595,8 @@
                 this.fetchUnreadNoticeNum();
                 this.fetchSignInData();
                 // this.fetchMultipleWait();
+                this.fetchUserLeaveList();
+                this.fetchUserLeavePassList();
                 this.fetchControlledPeople();
                 if (this.userRole === 0) {
                     // 所有审核通过的数据
@@ -3619,8 +3621,6 @@
                     this.fetchTaskFinished();
                     this.fetchTaskWaitAssess();
                     this.fetchTaskCommented();
-                    this.fetchUserLeaveList();
-                    this.fetchUserLeavePassList();
                     this.fetchQuestionDoing();
                     this.fetchQuestionCompleted();
                     this.fetchMyRunningExtraWork();
