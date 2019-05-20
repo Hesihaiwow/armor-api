@@ -1099,6 +1099,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
     @Override
     @Transactional
     public void importExcel(MultipartFile uploadFile) {
+        String originalFilename = uploadFile.getOriginalFilename();
+        if (!originalFilename.contains("mantisBug")){
+            throw new ZSYServiceException("请检查文件是否选择正确");
+        }
         long time1 = System.currentTimeMillis();
         String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
         if (!isExcel(suffix)){
@@ -1148,6 +1152,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
             mantisBugStatistics.setStatus(Integer.valueOf(fields.get(8)));
             mantisBugStatistics.setCategoryId(Integer.valueOf(fields.get(9)));
             mantisBugStatistics.setCategoryName(fields.get(10));
+            mantisBugStatistics.setImportTime(new Date());
             mantisBugStatistics.setDateSubmitted(Integer.valueOf(fields.get(11)));
             mantisBugStatistics.setLastUpdated(Integer.valueOf(fields.get(12)));
             beforeFilter.add(mantisBugStatistics);
