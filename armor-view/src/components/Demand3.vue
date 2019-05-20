@@ -2102,12 +2102,14 @@
                 this.isSaving = true
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        if (this.demandForm.type == null) {
+                        if (this.demandForm.type === null) {
                             this.$message({showClose: true, message: '类型不能为空', type: 'warning'});
+                            this.isSaving = false;
                             return;
                         }
                         if (this.demandForm.source === null || this.demandForm.source === ''){
                             this.$message({showClose: true, message: '来源不能为空', type: 'warning'});
+                            this.isSaving = false;
                             return;
                         }
                         if (this.demandForm.source == 1 || this.demandForm.source == 2){
@@ -2119,12 +2121,14 @@
                         if (this.demandForm.source == 4){
                             this.demandForm.chargeMan = '139964039693336576'
                         }
-                        if (this.demandForm.chargeMan == null || this.demandForm.chargeMan == ''){
+                        if (this.demandForm.chargeMan === null || this.demandForm.chargeMan === ''){
                             this.$message({showClose: true, message: '负责人不能为空', type: 'warning'});
+                            this.isSaving = false;
                             return;
                         }
-                        if (this.demandForm.priority == null ||this.demandForm.priority == '') {
+                        if (this.demandForm.priority === null ||this.demandForm.priority === '') {
                             this.$message({showClose: true, message: '优先级不能为空', type: 'warning'});
+                            this.isSaving = false;
                             return;
                         }
                         var param = this.demandForm
@@ -2150,7 +2154,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         var param = this.demandForm
-                        if (this.demandForm.type == null) {
+                        if (this.demandForm.type === null) {
                             this.$message({showClose: true, message: '类型不能为空', type: 'warning'});
                             this.isSaving = false;
                             return;
@@ -2173,12 +2177,14 @@
                             this.demandForm.chargeMan = '139964039693336576';
                             this.isSaving = false;
                         }
-                        if (this.demandForm.chargeMan == null || this.demandForm.chargeMan == ''){
+                        if (this.demandForm.chargeMan === null || this.demandForm.chargeMan === ''){
                             this.$message({showClose: true, message: '负责人不能为空', type: 'warning'});
+                            this.isSaving = false;
                             return;
                         }
-                        if (this.demandForm.priority == null ||this.demandForm.priority == '') {
+                        if (this.demandForm.priority === null ||this.demandForm.priority === '') {
                             this.$message({showClose: true, message: '优先级不能为空', type: 'warning'});
+                            this.isSaving = false;
                             return;
 
                         }
@@ -2220,6 +2226,7 @@
                     this.demandForm.priority = demand.priority
                     this.demandForm.origin = demand.origin
                     this.demandForm.source = demand.source
+                    this.demandForm.chargeMan = demand.chargeMan
                     this.demandForm.question = demand.question
                     this.demandForm.target = demand.target
                     this.demandForm.releaseTime = new Date(demand.releaseTime)
@@ -2257,6 +2264,8 @@
                 this.demandForm.title = null
                 this.demandForm.type = 0
                 this.demandForm.priority = 0
+                this.demandForm.source = 0
+                this.demandForm.chargeMan = null
                 this.demandForm.origin = null
                 this.demandForm.question = null
                 this.demandForm.target = null

@@ -1984,7 +1984,7 @@
         <el-dialog title="计算加班总时长" :visible.sync="showPersonalTotalEWrokTime" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
         @close="closeMyEWorkCounter">
-            <el-select clearable filterable no-match-text=" " v-model="workMonth1" placeholder="不选择及查询本年度"
+            <el-select clearable no-match-text=" " v-model="workMonth1" placeholder="不选择及查询本年度"
                        size="small" style="width:200px">
                 <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
                            :value="item.id"></el-option>
@@ -1997,7 +1997,7 @@
         <el-dialog title="计算加班总时长" :visible.sync="showTotalEWrokTime" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
         @close="closeEWorkCounter">
-            <el-select clearable filterable no-match-text=" " v-model="workMonth2" placeholder="不选择及查询本年度"
+            <el-select clearable no-match-text=" " v-model="workMonth2" placeholder="不选择及查询本年度"
                         style="width:200px">
                 <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
                            :value="item.id"></el-option>
