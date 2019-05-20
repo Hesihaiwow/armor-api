@@ -202,6 +202,11 @@
       LEFT JOIN `user` u ON u.id = ucp.user_id
       WHERE ucp.`check_user_id` = #{checkUserId}
   </select>
-  <!-- sch -->
+
+  <!--查询用户最后一级审核人-->
+    <select id="selectUserLastCheckUser" resultType="java.lang.Long">
+        SELECT check_user_id FROM user_check_people WHERE user_id = #{userId} ORDER BY `level` DESC LIMIT 1
+    </select>
+    <!-- sch -->
 
 </mapper>

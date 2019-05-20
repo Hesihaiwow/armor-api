@@ -29,7 +29,7 @@ public class ZSYUserWeekSevice implements IZSYUserWeekService{
      */
     @Override
     public Double getUserWeekHours(Long taskId, Long id, int weekNumber, int year) {
-        return userWeekMapper.getUserWeekHours(taskId, id, weekNumber, year);
+        return userWeekMapper.getUserWeekHours(0l, id, weekNumber, year);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ZSYUserWeekSevice implements IZSYUserWeekService{
      */
     @Override
     public Double getUserWeekHoursWithoutTask(Long taskId, Long userId, int year, int weekNumber) {
-        Double userWeekHours = userWeekMapper.getUserWeekHours(taskId, userId, weekNumber, year);
+        Double userWeekHours = userWeekMapper.getUserWeekHours(0l, userId, weekNumber, year);
         Double userWeekHoursByTask = userWeekMapper.selectHoursByTaskAndUser(taskId,userId,weekNumber,year);
         Double userWeekHoursWithoutTask = userWeekHours - userWeekHoursByTask;
 

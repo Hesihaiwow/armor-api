@@ -128,5 +128,12 @@ public interface IZSYUserMapper {
      * @return
      */
     List<UserCheckPeopleBO> selectUserByCheckUserId(@Param("checkUserId")Long checkUserId);
+
+    /**
+     * 查询用户最后一级审核人
+     * @param userId
+     * @return
+     */
+    Long selectUserLastCheckUser(@Param("userId")Long userId);
     // -- sch
 }

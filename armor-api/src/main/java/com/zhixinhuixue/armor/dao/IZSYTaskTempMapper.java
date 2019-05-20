@@ -168,4 +168,11 @@ public interface IZSYTaskTempMapper {
      * @return
      */
     List<TaskTempBO> selectTaskTempLevelThree(@Param("userId")Long userId);
+
+    /**
+     * 查询任务审核日志
+     * @param ttId
+     * @return
+     */
+    TaskReviewLog selectTaskReviewLogByTaskTempAndCheckUser(@Param("ttId")Long ttId,@Param("checkUserId")Long checkUserId);
 }

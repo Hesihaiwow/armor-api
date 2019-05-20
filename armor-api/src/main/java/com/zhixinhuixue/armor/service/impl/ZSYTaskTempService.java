@@ -539,11 +539,24 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserCheckPeopleByUserId(userId);
         //查询申请人,当前临时任务审核日志
         List<TaskReviewLogBO> taskReviewLogBOS = taskTempMapper.selectTaskReviewLogByTaskTemp(existTaskTemp.getId());
+//        int size1 = taskReviewLogBOS.size();
+//        taskReviewLogBOS = taskReviewLogBOS.stream().sorted(Comparator.comparing(TaskReviewLog::getCheckUserId))
+//                .collect(Collectors.collectingAndThen(Collectors.toCollection(
+//                        () -> new TreeSet<>(Comparator.comparing(TaskReviewLog::getCheckUserId))
+//                ),ArrayList::new));
+//        int size2 = taskReviewLogBOS.size();
+//        if (size1 != size2){
+//            throw new ZSYServiceException("有重复数据,请先删除申请后重新创建");
+//        }
         Integer level = 0;
         for (UserCheckPeopleBO userCheckPeopleBO : userCheckPeopleBOS) {
             if (userCheckPeopleBO.getCheckUserId().equals(ZSYTokenRequestContext.get().getUserId())){
                 level = userCheckPeopleBO.getLevel();
             }
+        }
+        TaskReviewLog existTaskReviewLog = taskTempMapper.selectTaskReviewLogByTaskTempAndCheckUser(editTaskTempReqDTO.getId(),ZSYTokenRequestContext.get().getUserId());
+        if (existTaskReviewLog != null){
+            throw new ZSYServiceException("你已审核通过,请不要重复审核");
         }
         TaskReviewLog taskReviewLog = new TaskReviewLog();
         taskReviewLog.setId(snowFlakeIDHelper.nextId());
@@ -584,8 +597,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                     throw new ZSYServiceException("批量修改周工作量(临时)失败");
                 }
             }
+        Long lastCheckUser = userMapper.selectUserLastCheckUser(userId);
         //当前情况:  不是最后一级审核
-        if (userCheckPeopleBOS.size() - taskReviewLogBOS.size() > 1){
+        if (!lastCheckUser.equals(ZSYTokenRequestContext.get().getUserId())){
             taskTempMapper.insertTaskReviewLog(taskReviewLog);
             taskLogMapper.insert(taskService.buildLog(ZSYTokenRequestContext.get().getUserName() + "通过了" + user.getName() + "的多人任务审核", existTaskTemp.getDescription(), taskId));
         }else {
