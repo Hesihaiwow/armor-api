@@ -131,6 +131,66 @@
                 </div>
             </div>
         </div>
+        <div class="my-task-con" v-show="userRole == 3">
+
+            <p class="mic-title" style="margin-top: 20px">请假统计</p>
+            <div class="my-task-detail" style="width: 1200px;">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="leaveReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="leaveReqDTO.beginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择开始时间"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="leaveReqDTO.endTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择截止时间"
+                    >
+                    </el-date-picker>
+                </div>
+                <el-button type="primary" @click="getLeaveList" style="margin-left: 10px" size="small">查询</el-button>
+                <el-table :data="leaveManage" border>
+                    <el-table-column type="index" label="序号" width="80"></el-table-column>
+                    <el-table-column prop="description" label="请假原因" align="center"></el-table-column>
+                    <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
+                    <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
+                    <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
+                    <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="leaveHandleCurrentChange"
+                            :current-page.sync="leaveReqDTO.pageNum"
+                            :page-size="leaveFormPage.pageSize"
+                            :layout="leavePageLayout"
+                            :total="leaveFormPage.total">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
 
         <div class="my-task-con">
             <div v-show="userRole>0 && userRole < 3">
@@ -3236,6 +3296,23 @@
                     beginWeek:'',
                     endWeek:''
                 },
+                userLeaveReqDTO:{
+                    pageNum:1,
+                    userId:'',
+                    beginTime:'',
+                    endTime:''
+                },
+                leaveManage:[],
+                leaveFormPage:{
+                    pageSize: 10,
+                    total: 0,
+                },
+                leaveReqDTO:{
+                    userId:'',
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1,
+                },
                 // -- sch
             };
         },
@@ -3524,6 +3601,12 @@
                 }
                 return 'total, pager'
             },
+            leavePageLayout() {
+                if (this.leaveFormPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             mySignInPageLayout() {
                 if (this.mySignInPage.total > 0) {
                     return 'total, prev, pager, next'
@@ -3594,6 +3677,7 @@
                 this.fetchTaskExpandSuccess();
                 this.fetchUnreadNoticeNum();
                 this.fetchSignInData();
+                this.getLeaveList();
                 // this.fetchMultipleWait();
                 this.fetchUserLeaveList();
                 this.fetchUserLeavePassList();
@@ -6723,6 +6807,25 @@
                 this.taskModifyDetail.endTime = '';
                 this.taskModifyDetail.userWeeks = [];
                 this.taskModifyDetail.userWeekResDTOList = [];
+            },
+            getLeaveList(){
+                if (this.userRole == 3){
+                    if (this.leaveReqDTO.beginTime != null && this.leaveReqDTO.beginTime != ''){
+                        this.leaveReqDTO.beginTime = moment(this.leaveReqDTO.beginTime).format('YYYY-MM-DD 00:00:00')
+                    }
+                    if (this.leaveReqDTO.endTime != null && this.leaveReqDTO.endTime != ''){
+                        this.leaveReqDTO.endTime = moment(this.leaveReqDTO.beginTime).format('YYYY-MM-DD 23:59:59')
+                    }
+                    http.zsyPostHttp(`/userLeave/list`, this.leaveReqDTO, (resp) => {
+                        this.leaveManage =  resp.data.list;
+                        this.leaveFormPage.total = resp.data.total;
+                    });
+                }
+
+            },
+            leaveHandleCurrentChange(currentPage){
+                this.leaveReqDTO.pageNum = currentPage;
+                this.getLeaveList();
             },
             // -- sch
         },

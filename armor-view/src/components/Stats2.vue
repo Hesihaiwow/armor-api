@@ -1505,7 +1505,7 @@
         },
         methods: {
             getStats(currentPage){
-                Http.zsyGetHttp(`/stats/list/`, {}, (resp) => {
+                Http.zsyGetHttp(`/stats/list`, {}, (resp) => {
                     this.statsData =  resp.data;
                 });
             },
@@ -1525,7 +1525,7 @@
                 });
             },
             getLeaveList(){
-                Http.zsyPostHttp(`/userLeave/list/`, this.leaveList, (resp) => {
+                Http.zsyPostHttp(`/userLeave/list`, this.leaveList, (resp) => {
                     this.leaveManage =  resp.data.list;
                     this.leaveFormPage.total = resp.data.total;
                 });
@@ -1557,7 +1557,7 @@
                     this.leaveList.beginTime = `${time[0]} 00:00:00`
                     this.leaveList.endTime = `${time[1]} 23:59:59`
                 } else {
-                    this.leaveList.startTime = this.leaveList.endTime = this.leaveDaterange = ''
+                    this.leaveList.beginTime = this.leaveList.endTime = this.leaveDaterange = ''
                 }
             },
             timeChange(time) {
