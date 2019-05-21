@@ -1023,6 +1023,29 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         return onlineBugUserMonthResDTOList;
     }
 
+
+    /**
+     * 查询开发人员解决bug饼形图
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public List<OnlineBugUserMonthResDTO> getOnlineBugGroupByDeveloper(MantisBugWeekQueryReqDTO reqDTO) {
+        Date beginTime = reqDTO.getBeginTime();
+        Date endTime = reqDTO.getEndTime();
+        List<OnlineBugUserMonthBO> onlineBugUserMonthBOS = bugStatisticsMapper.selectBugMonthGroupByDeveloper(beginTime,endTime);
+        List<OnlineBugUserMonthResDTO> onlineBugUserMonthResDTOList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(onlineBugUserMonthBOS)){
+            onlineBugUserMonthBOS.stream().forEach(onlineBugUserMonthBO -> {
+                OnlineBugUserMonthResDTO resDTO = new OnlineBugUserMonthResDTO();
+                BeanUtils.copyProperties(onlineBugUserMonthBO,resDTO);
+                onlineBugUserMonthResDTOList.add(resDTO);
+            });
+        }
+        return onlineBugUserMonthResDTOList;
+    }
+
     /**
      * 按任务统计bug
      * @param reqDTO

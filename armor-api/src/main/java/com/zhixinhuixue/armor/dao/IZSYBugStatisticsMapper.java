@@ -109,4 +109,12 @@ public interface IZSYBugStatisticsMapper {
      * 清空原来的bug数据
      */
     void deleteAllBugStats();
+
+    /**
+     * 查询开发人员解决bug饼形图
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<OnlineBugUserMonthBO> selectBugMonthGroupByDeveloper(@Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
 }

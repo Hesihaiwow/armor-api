@@ -314,6 +314,24 @@
         GROUP BY bu.user_id
     </select>
 
+    <!--查询开发人员解决bug饼形图-->
+    <select id="selectBugMonthGroupByDeveloper" resultMap="OnlineBugMonthMap">
+        SELECT bu.user_id,u.name user_name,ifnull(count(bm.id),0) bug_num
+        FROM bug_manage bm
+        LEFT JOIN bug_user bu ON bm.id = bu.bug_id
+        LEFT JOIN user u ON u.id = bu.user_id
+        WHERE bm.demand_system_id IS NOT NULL
+        AND bm.`type` = 0
+        and u.job_role = 1
+        <if test="beginTime != null">
+            <![CDATA[ AND  bm.discover_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ AND  bm.discover_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        GROUP BY bu.user_id
+    </select>
+
     <!--按任务统计bug-->
     <select id="selectBugStatsGroupByTask" resultMap="BugNumGroupByTaskMap">
         SELECT mbs.task_id,t.name task_name,IFNULL(COUNT(mbs.bs_id),0) total_bug_num

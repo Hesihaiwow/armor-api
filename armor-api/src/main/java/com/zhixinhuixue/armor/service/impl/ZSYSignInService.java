@@ -2187,12 +2187,14 @@ public class ZSYSignInService implements IZSYSignInService {
                             }
                             eWorkHour = hour+afterPoint;
                             totalEWorkHours = totalEWorkHours + eWorkHour;
+                            row4Celli.setCellStyle(style7);
                             if (eWorkHour>=0.5){
                                 eWorkDays += 1;
+                                row4Celli.setCellStyle(style6);
                             }
                             row3Celli.setCellStyle(style6);
                             row4Celli.setCellValue(eWorkHour);
-                            row4Celli.setCellStyle(style6);
+
                         }else {
                             row4Celli.setCellValue("");
                             row4Celli.setCellStyle(style7);

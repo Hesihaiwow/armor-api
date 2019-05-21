@@ -53,6 +53,12 @@ public class MantisBugController {
         return ZSYResult.success().data(mantisBugService.getOnlineBugGroupByUser(reqDTO)).build();
     }
 
+    @ApiOperation("查询开发人员解决bug饼形图")
+    @PostMapping("/online-bug/develop")
+    public String getOnlineBugGroupByDeveloper(@RequestBody MantisBugWeekQueryReqDTO reqDTO){
+        return ZSYResult.success().data(mantisBugService.getOnlineBugGroupByDeveloper(reqDTO)).build();
+    }
+
     @ApiOperation("按任务统计bug")
     @PostMapping("/stats/task")
     public String getBugStatsGroupByTask(@RequestBody MantisBugQueryReqDTO reqDTO){

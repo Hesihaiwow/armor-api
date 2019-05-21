@@ -104,4 +104,12 @@ public interface IZSYMantisBugService {
      * @return
      */
     String getEnvironment();
+
+    /**
+     * 查询开发人员解决bug饼形图
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    List<OnlineBugUserMonthResDTO> getOnlineBugGroupByDeveloper(MantisBugWeekQueryReqDTO reqDTO);
 }
