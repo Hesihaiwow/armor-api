@@ -60,12 +60,12 @@
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
-                        <el-table-column prop="createTime" label="反馈日期"  width="130">
+                        <el-table-column prop="createTime" label="反馈日期"  width="115">
                             <template scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="processTime" label="解决日期"  width="130">
+                        <el-table-column prop="processTime" label="解决日期"  width="115">
                             <template scope="scope">
                                 <span>{{scope.row.processTime | formatDate1}}</span>
                             </template>
@@ -75,23 +75,23 @@
                         <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
                         <!--<el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>-->
                         <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
-                        <el-table-column prop="type" label="问题类型" align="center" width="110">
+                        <el-table-column prop="type" label="问题类型" align="center" width="100">
                             <template scope="scope">
                                 <span v-if="scope.row.type == 0">bug</span>
                                 <span v-if="scope.row.type == 1">优化</span>
                                 <span v-if="scope.row.type == 2">协助</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="testers" label="测试人员" align="center" width="110"></el-table-column>
-                        <el-table-column prop="developers" label="开发人员" align="center" width="110"></el-table-column>
-                        <el-table-column prop="isSolved" label="是否解决" align="center" width="110">
+                        <el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>
+                        <el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>
+                        <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template scope="scope">
                                 <span v-if="scope.row.isSolved == 0">未解决</span>
                                 <span v-if="scope.row.isSolved == 1">已解决</span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
-                        <el-table-column label="操作" width="110" align="center">
+                        <el-table-column label="操作" width="80" align="center">
                             <template scope="scope">
                                 <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
                             </template>
@@ -142,12 +142,12 @@
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
-                        <el-table-column prop="createTime" label="反馈日期"  width="130">
+                        <el-table-column prop="createTime" label="反馈日期"  width="115">
                             <template scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="processTime" label="解决日期"  width="130">
+                        <el-table-column prop="processTime" label="解决日期"  width="115">
                             <template scope="scope">
                                 <span>{{scope.row.processTime | formatDate1}}</span>
                             </template>
@@ -164,14 +164,16 @@
                                 <span v-if="scope.row.type == 2">协助</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="isSolved" label="是否解决" align="center" width="110">
+                        <el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>
+                        <el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>
+                        <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template scope="scope">
                                 <span v-if="scope.row.isSolved == 0">未解决</span>
                                 <span v-if="scope.row.isSolved == 1">已解决</span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
-                        <el-table-column label="操作" width="110" align="center">
+                        <el-table-column label="操作" width="80" align="center">
                             <template scope="scope">
                                 <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
                             </template>
@@ -203,7 +205,11 @@
                         <el-button type="primary" style="margin-top: -5px" v-show="environment == 'dev' || environment == 'test'" @click="selectMantisProject">导出bug信息</el-button>
                     </el-row>
                     <el-table :data="taskBugStatsList" border>
-                        <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
+                        <el-table-column prop="taskName" label="任务名称" align="center">
+                            <template scope="scope">
+                                <a style="color: #1c8de0;cursor: pointer" @click="toTask(scope.row.taskId)">{{scope.row.taskName}}</a>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>
                         <el-table-column label="测试提交数量"  width="200">
                             <template scope="scope">
@@ -306,7 +312,10 @@
                             @change="changeMonth2"
                             size="medium">
                     </el-date-picker></div>
-                    <div id="myChart9" :style="{width:'1000px',height:'400px',left:'40px',float:'left',marginTop:'20px'}"></div>
+                    <div class="steps-body">
+                        <div id="myChart9" :style="{width:'600px',height:'400px',left:'-130px',float:'left',marginTop:'70px'}"></div>
+                        <div id="myChart10" :style="{width:'600px',height:'400px',left:'-180px',float:'left',marginTop:'70px'}"></div>
+                    </div>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="个人任务" name="personal">
@@ -1504,10 +1513,14 @@
                 taskBugStatsList:[],
                 mantisUserBugWeekList:[],
                 mantisUserBugMonthList:[],
+                mantisDeveloperBugMonthList:[],
                 onlineBugUserList:[],
+                onlineBugDeveloperList:[],
                 seriesDataList:[],
                 seriesDataList2:[],
+                seriesDataList3:[],
                 onlineBugTotalNum:0,
+                onlineBugTotalNum3:0,
                 dateList:[],
                 weekdayList:[],
                 userNameList:[],
@@ -1564,6 +1577,7 @@
             this.fetchBugWeekGroupByUser();
             this.fetchOnlineBugGroupByUser();
             this.fetchBugStatsGroupByTask();
+            this.fetchOnlineBugGroupByDeveloper();
         },
         computed: {
             permit() {
@@ -1780,7 +1794,7 @@
                 }
             },
             saveAddMember(){
-                if (this.addMemberIndex.userId == ''||this.addMemberIndex.integral == '') {
+                if (this.addMemberIndex.userId == ''||this.addMemberIndex.integral === '') {
                     this.errorMsg('请将积分信息填写完整');
                     return
                 }
@@ -1800,7 +1814,7 @@
                     index: '',
                     userId: '',
                     userName: '',
-                    integral: '',
+                    integral: 0,
                 }
                 this.stepTemp = {}
 
@@ -1875,7 +1889,8 @@
                     })
                     this.bugDetailVisible = false;
                     this.fetchBugPage();
-                    this.fetchDiffTypeBugNum();
+                    this.changeMonth2();
+                    this.changeMonth1();
                 }).catch(() => {
                 });
             },
@@ -2384,9 +2399,46 @@
                         {
                             name: '线上bug',
                             type: 'pie',
-                            radius : '80%',
-                            center: ['50%', '60%'],
+                            radius : '60%',
+                            center: ['50%', '50%'],
                             data:this.seriesDataList2,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                });
+            },
+            drawLine10(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart10'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '开发解决bug统计图',
+                        x:'center',
+                        subtext:'总计: '+this.onlineBugTotalNum3+ ' 个'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'right',
+                        data: this.onlineBugDeveloperList
+                    },
+                    series: [
+                        {
+                            name: '线上bug',
+                            type: 'pie',
+                            radius : '60%',
+                            center: ['50%', '50%'],
+                            data:this.seriesDataList3,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -2660,7 +2712,8 @@
                     this.createBugSolvingVisible1 = false
                     this.bugUsers = [];
                     this.fetchBugPage();
-                    this.fetchDiffTypeBugNum();
+                    this.changeMonth1();
+                    this.changeMonth2();
                     this.isSaving = false
                 },(fail)=>{
                     this.$message({
@@ -2686,7 +2739,9 @@
                     return
                 }
                 this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss')
-                this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                if (this.onlineBugForm.processTime != null && this.onlineBugForm.processTime != ''){
+                    this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                }
                 let param = this.onlineBugForm;
                 param.description = param.description.trim()
                 param['bugUsers'] = this.bugUsers;
@@ -2707,6 +2762,8 @@
                     this.updateBugSolvingVisible1 = false
                     this.bugUsers = [];
                     this.fetchBugPage();
+                    this.changeMonth1();
+                    this.changeMonth2();
                 },(fail)=>{
                     this.$message({
                         showClose: true,
@@ -3012,14 +3069,27 @@
                     this.onlineBugUserList = [];
                     this.onlineBugTotalNum = 0;
                     this.fetchOnlineBugGroupByUser();
+
+                    this.mantisDeveloperBugMonthList = [];
+                    this.seriesDataList3 = [];
+                    this.onlineBugDeveloperList = [];
+                    this.onlineBugTotalNum3 = 0;
+                    this.fetchOnlineBugGroupByDeveloper();
                 }else {
                     this.onlineBugTotalNum = 0;
                     this.mantisUserBugMonthList = [];
                     this.seriesDataList2 = [];
                     this.onlineBugUserList = [];
+
+                    this.mantisDeveloperBugMonthList = [];
+                    this.seriesDataList3 = [];
+                    this.onlineBugDeveloperList = [];
+                    this.onlineBugTotalNum3 = 0;
+
                     this.mantisBugReqDTO3.beginTime = '';
                     this.mantisBugReqDTO3.endTime = '';
                     this.fetchOnlineBugGroupByUser();
+                    this.fetchOnlineBugGroupByDeveloper();
                 }
             },
             changeMonth3(){
@@ -3101,7 +3171,6 @@
                 var data = new FormData();
                 data.append('uploadFile', file.file);
                 Http.zsyPostHttp('/mantis-bug/import',data,(res)=> {
-                    console.log(111)
                     if (res.errMsg == "执行成功") {
                         this.$refs.bugData.clearFiles();
                         this.$message({
@@ -3168,7 +3237,7 @@
                 }
             },
             fetchBugWeekGroupByUser(){
-                Http.zsyPostHttp('/mantis-bug/bug-week/user',this.mantisBugReqDTO2,(res=>{
+                Http.zsyPostHttp('/mantis-bug/bug-week/user',this.mantisBugReqDTO2,(res)=>{
                     this.mantisUserBugWeekList = res.data;
 
                     this.mantisUserBugWeekList.forEach(bugWeek=>{
@@ -3186,37 +3255,55 @@
                         this.drawLine8()
                     }
 
-                }))
+                })
             },
             fetchOnlineBugGroupByUser(){
-                Http.zsyPostHttp('/mantis-bug/online-bug/user',this.mantisBugReqDTO3,(res=>{
+                Http.zsyPostHttp('/mantis-bug/online-bug/user',this.mantisBugReqDTO3,(res)=>{
                     this.mantisUserBugMonthList = res.data;
 
                     this.mantisUserBugMonthList.forEach(bugUserMonth=>{
                         var bugUserMonthData = {
-                            'name': bugUserMonth.userName,
+                            'name': bugUserMonth.userName+'('+ bugUserMonth.bugNum+')',
                             'value': bugUserMonth.bugNum
                         }
-                        this.onlineBugUserList.push(bugUserMonth.userName);
+                        this.onlineBugUserList.push(bugUserMonth.userName+'('+ bugUserMonth.bugNum+')');
                         this.seriesDataList2.push(bugUserMonthData);
                         this.onlineBugTotalNum += bugUserMonth.bugNum;
                     })
                     if (this.permit){
                         this.drawLine9()
                     }
-                }))
+                })
+            },
+            fetchOnlineBugGroupByDeveloper(){
+                Http.zsyPostHttp('/mantis-bug/online-bug/develop',this.mantisBugReqDTO3,(res)=>{
+                    this.mantisDeveloperBugMonthList = res.data;
+
+                    this.mantisDeveloperBugMonthList.forEach(bugUserMonth=>{
+                        var bugUserMonthData = {
+                            'name': bugUserMonth.userName+'('+ bugUserMonth.bugNum+')',
+                            'value': bugUserMonth.bugNum
+                        }
+                        this.onlineBugDeveloperList.push(bugUserMonth.userName+'('+ bugUserMonth.bugNum+')');
+                        this.seriesDataList3.push(bugUserMonthData);
+                        this.onlineBugTotalNum3 += bugUserMonth.bugNum;
+                    })
+                    if (this.permit){
+                        this.drawLine10()
+                    }
+                })
             },
             fetchBugStatsGroupByTask(){
-                Http.zsyPostHttp('/mantis-bug/stats/task',this.mantisBugReqDTO4,(res=>{
+                Http.zsyPostHttp('/mantis-bug/stats/task',this.mantisBugReqDTO4,(res)=>{
                     this.taskBugStatsList = res.data.list;
                     this.taskBugPage.total = res.data.total;
-                }))
+                })
             },
             //查看当前环境,用于显示  导出mantisbug按钮
             getEnv(){
-                Http.zsyGetHttp('/mantis-bug/env',{},(res=>{
+                Http.zsyGetHttp('/mantis-bug/env',{},(res)=>{
                     this.environment = res.data;
-                }))
+                })
             },
             handleRecordPreview(){
 
