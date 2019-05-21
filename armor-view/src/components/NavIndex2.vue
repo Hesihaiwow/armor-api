@@ -2039,7 +2039,19 @@
                                 :value="item.id">
                         </el-option>
                     </el-select>
+                    <el-popover
+                            v-show="showTaskDescriptionVisible"
+                            placement="right"
+                            title="任务描述"
+                            width="400"
+                            trigger="hover"
+                            :content="taskDetail.description">
+                        <el-button slot="reference">任务描述</el-button>
+                    </el-popover>
                 </el-form-item>
+                <!--<el-form-item class="task-form" v-show="showTaskDescriptionVisible" label="任务描述: ">-->
+                    <!--<el-input type="textarea" disabled :rows="6" v-model="taskDetail.description"></el-input>-->
+                <!--</el-form-item>-->
                 <el-form-item class="task-form" v-show="showTaskDetailVisible" label="项目: " style="float: left;margin-left: 10px" label-width="44px">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" v-show="showTaskDetailVisible" label="阶段: " style="float: left;margin-left: 25px" label-width="44px">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item class="task-form" v-show="showTaskDetailVisible" label="优先级: " style="margin-left: 270px;">
@@ -2788,6 +2800,7 @@
 
                 },
                 showTaskDetailVisible:false,
+                showTaskDescriptionVisible:false,
                 priorityList: [
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
@@ -3082,6 +3095,7 @@
                 this.createTaskVisible = false;
                 this.clearMultipleTask();
                 this.createMultipleTaskVisible = true;
+                this.showTaskDescriptionVisible = false;
             },
             //创建个人任务
             createPrivateTask(){
@@ -3522,11 +3536,13 @@
               if(id != null && id != ''){
                   http.zsyGetHttp('task/detail/'+id,{},(res =>{
                       this.taskDetail = res.data;
-                      this.showTaskDetailVisible = true
+                      this.showTaskDetailVisible = true;
+                      this.showTaskDescriptionVisible = true;
                   }))
               }else {
                   this.taskDetail = {};
                   this.showTaskDetailVisible = false;
+                  this.showTaskDescriptionVisible = false;
               }
             },
             //按阶段查询任务
@@ -6076,5 +6092,19 @@
 
     .task-form {
         margin-bottom: 0;
+    }
+
+    .trends {
+        /*background-color: #f2f2f2; */
+        /*padding-left: 10px;*/
+        line-height: 30px;
+        border: 1px solid #e4e8f1;
+
+    }
+
+    .trends-title {
+        padding: 0 10px;
+        line-height: 30px;
+        background-color: #e4e8f1;
     }
 </style>
