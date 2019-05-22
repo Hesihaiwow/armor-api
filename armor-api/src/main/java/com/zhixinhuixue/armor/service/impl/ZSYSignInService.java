@@ -288,7 +288,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 Date fifteen = null;
                 try {
                     today0 = sdf.parse(prefix + " 00:00:00");
-                    today10 = sdf.parse(prefix + " 10:00:00");
+                    today10 = sdf.parse(prefix + " 10:01:00");
                     today18 = sdf.parse(prefix + " 18:00:00");
                     today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
@@ -657,7 +657,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 Date today23 = null;
                 try {
                     today0 = sdf.parse(prefix + " 00:00:00");
-                    today10 = sdf.parse(prefix + " 10:00:00");
+                    today10 = sdf.parse(prefix + " 10:01:00");
                     today18 = sdf.parse(prefix + " 18:00:00");
                     today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
