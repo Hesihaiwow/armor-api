@@ -29,6 +29,11 @@ public class TaskEvaluation {
     private Double score;
 
     /**
+     * 积分
+     */
+    private Integer integral;
+
+    /**
      * 评分项(1:沟通,2:态度,3:效率,4:质量,5:文档,6:美感)
      */
     private Integer evaluationOption;
@@ -47,6 +52,14 @@ public class TaskEvaluation {
      * 评价时间
      */
     private Date evaluateTime;
+
+    public Integer getIntegral() {
+        return integral;
+    }
+
+    public void setIntegral(Integer integral) {
+        this.integral = integral;
+    }
 
     public Long getId() {
         return id;

@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -10,11 +11,13 @@ public class AddEvaluationReqDTO {
     /**
      *任务id
      */
+    @NotNull(message = "关联任务不能为空")
     private Long taskId;
 
     /**
      * 评分集合
      */
+    @NotNull(message = "任务评价不能为空")
     private List<EvaluationUserReqDTO> evaluationUserReqDTOS;
 
     public Long getTaskId() {

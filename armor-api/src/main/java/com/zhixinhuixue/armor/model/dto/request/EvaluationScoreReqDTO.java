@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author sch
  * @DATE 2019/5/22 10:51
@@ -9,11 +11,13 @@ public class EvaluationScoreReqDTO {
     /**
      * 评分项
      */
+    @NotNull(message = "评分项不能为空")
     private Integer evaluationOption;
 
     /**
      * 得分
      */
+    @NotNull(message = "评分不能为空")
     private Double score;
 
     public Integer getEvaluationOption() {

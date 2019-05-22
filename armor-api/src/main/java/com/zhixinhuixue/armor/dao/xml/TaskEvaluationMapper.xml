@@ -7,8 +7,31 @@
         <result column="task_user_id" property="taskUserId" jdbcType="BIGINT"></result>
         <result column="score" property="score" jdbcType="DECIMAL"></result>
         <result column="evaluation_option" property="evaluationOption" jdbcType="INTEGER"></result>
+        <result column="integral" property="integral" jdbcType="INTEGER"></result>
         <result column="comment" property="comment" jdbcType="VARCHAR"></result>
         <result column="evaluate_user_id" property="evaluateUserId" jdbcType="BIGINT"></result>
         <result column="evaluate_time" property="evaluateTime" jdbcType="TIMESTAMP"></result>
     </resultMap>
+
+    <!--批量插入任务评价-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskEvaluation">
+        INSERT INTO `task_evaluation`
+        (`id`,`task_id`,`task_user_id`,`score`,`evaluation_option`,`integral`,`comment`,`evaluate_user_id`,`evaluate_time`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.taskUserId,jdbcType=BIGINT}
+            ,#{item.score,jdbcType=DECIMAL},#{item.evaluationOption,jdbcType=INTEGER},#{item.integral,jdbcType=INTEGER}
+            ,#{item.comment,jdbcType=VARCHAR},#{item.evaluateUserId,jdbcType=BIGINT},#{item.evaluateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--根据任务查询已经评价的用户-->
+    <select id="selectEvaluatedUsersByTask" resultType="java.lang.Long">
+        SELECT DISTINCT `task_user_id` FROM `task_evaluation` WHERE `task_id` = #{taskId}
+    </select>
+
+    <!--根据任务和用户查询评价-->
+    <select id="selectByTaskAndUser" resultMap="BaseMap">
+        SELECT * FROM `task_evaluation` WHERE `task_id` = #{taskId} AND `task_user_id` = #{userId}
+    </select>
 </mapper>
