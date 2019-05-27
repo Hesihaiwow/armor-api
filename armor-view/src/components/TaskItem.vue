@@ -370,7 +370,7 @@
                                     <el-rate
                                         v-model="evaluation[`${index}_0`]"
                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                        allow-half=true
+                                        :allow-half=true
                                         style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
@@ -379,7 +379,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_1`]}}</span>
@@ -390,7 +390,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
@@ -399,7 +399,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_1`]}}</span>
@@ -408,7 +408,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_3`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_3`]}}</span>
@@ -417,7 +417,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_2`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_2`]}}</span>
@@ -428,7 +428,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
@@ -437,7 +437,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_1`]}}</span>
@@ -446,7 +446,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_2`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_2`]}}</span>
@@ -457,7 +457,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
@@ -466,7 +466,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_1`]}}</span>
@@ -475,7 +475,7 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_2`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_2`]}}</span>
@@ -484,105 +484,14 @@
                                     <el-rate
                                             v-model="evaluation[`${index}_3`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                            allow-half=true
+                                            :allow-half=true
                                             style="float: left;margin-top: 7px">
                                     </el-rate>
                                     <span>{{evaluation[`${index}_3`]}}</span>
                                 </el-form-item>
                             </div>
 
-                                <!--<el-form-item class="task-form" label="请评价">-->
-                                <!--<div v-if="stage.jobRole == 0">-->
-                                    <!--<span>沟通</span>-->
-                                    <!--<el-rate-->
-                                             <!--v-model="evaluation[`${index}_0`]"-->
-                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                             <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                    <!--<span>态度</span>-->
-                                    <!--<el-rate-->
-                                             <!--v-model="evaluation[`${index}_1`]"-->
-                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                             <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                <!--</div>-->
-                                <!--<div v-if="stage.jobRole == 1">-->
-                                    <!--<span>沟通</span>-->
-                                    <!--<el-rate-->
-                                             <!--v-model="evaluation[`${index}_0`]"-->
-                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                             <!--:allow-half="true">-->
-                                    <!--</el-rate>-->
-                                    <!--<span>态度</span>-->
-                                    <!--<span>{{stage.evaluationList[1].score}}</span>-->
-                                    <!--<el-rate-->
-                                             <!--v-model="evaluation[`${index}_1`]"-->
-                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                             <!--:allow-half="true"-->
-                                    <!--@change="changeDevAttitude">-->
-                                    <!--</el-rate>-->
-                                    <!--<span>质量</span>-->
-                                    <!--<el-rate-->
-                                             <!--v-model="evaluation[`${index}_3`]"-->
-                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                             <!--:allow-half="true">-->
-                                    <!--</el-rate>-->
-                                    <!--<span>效率</span>-->
-                                    <!--<el-rate-->
-                                             <!--v-model="evaluation[`${index}_2`]"-->
-                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                             <!--:allow-half="true"/>-->
-                                <!--</div>-->
-                                <!--<div v-if="stage.jobRole == 2">-->
-                                    <!--<span>沟通</span>-->
-                                    <!--<el-rate-->
-                                            <!--v-model="evaluation[`${index}_0`]"-->
-                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                            <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                    <!--<span>态度</span>-->
-                                    <!--<el-rate-->
-                                            <!--v-model="evaluation[`${index}_1`]"-->
-                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                            <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                    <!--<span>美感</span>-->
-                                    <!--<el-rate-->
-                                            <!--v-model="evaluation[`${index}_2`]"-->
-                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                            <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                <!--</div>-->
-                                <!--<div v-if="stage.jobRole == 3">-->
-                                    <!--<span>沟通</span>-->
-                                    <!--<el-rate-->
-                                            <!--v-model="evaluation[`${index}_0`]"-->
-                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                            <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                    <!--<span>态度</span>-->
-                                    <!--<el-rate-->
-                                            <!--v-model="evaluation[`${index}_1`]"-->
-                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                            <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                    <!--<span>文档</span>-->
-                                    <!--<el-rate-->
-                                            <!--v-model="evaluation[`${index}_2`]"-->
-                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                            <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                    <!--<span>效率</span>-->
-                                    <!--<el-rate-->
-                                            <!--v-model="evaluation[`${index}_3`]"-->
-                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-                                            <!--:allow-half=true>-->
-                                    <!--</el-rate>-->
-                                <!--</div>-->
 
-                                <!--&lt;!&ndash;<el-input type="textarea" v-model="assessForm.evaluations[index].score"&ndash;&gt;-->
-                                          <!--&lt;!&ndash;placeholder="请输入你的评价"></el-input>&ndash;&gt;-->
-                            <!--</el-form-item>-->
                         </el-form>
                     </div>
                     <div v-else style="margin-top: 10px">
@@ -1282,6 +1191,7 @@
                 showTaskComment: false,
                 addTaskEvaluationVisible: false,
                 isEvaluated: false,
+                allowHalf: false,
                 taskDetailBO: {},
                 showTaskModify: false,
                 showAddDetail: false,
