@@ -811,17 +811,17 @@
                 <el-form-item label="来源">
                     <el-select v-model="demandForm.source" placeholder="请选择来源">
                         <el-option
-                                v-for="item in sourceList"
+                                v-for="item in sourceList2"
                                 :key="item.id"
                                 :label="item.name"
                                 :value="item.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="负责人" v-show="demandForm.source == 0">
+                <el-form-item label="负责人">
                     <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
                         <el-option
-                                v-for="item in otherChargeManList"
+                                v-for="item in chargeManList"
                                 :key="item.id"
                                 :label="item.name"
                                 :value="item.id">
@@ -1176,6 +1176,12 @@
                     {id:1,name:'其他'}
                 ],
                 sourceList:[
+                    {id:0,name:'其他'},
+                    {id:1,name:'直播课'},
+                    {id:2,name:'小程序'},
+                    {id:3,name:'IMS'}
+                ],
+                sourceList2:[
                     {id:0,name:'其他'},
                     {id:1,name:'直播课'},
                     {id:2,name:'小程序'},
@@ -2165,18 +2171,18 @@
                             this.isSaving = false;
                             return;
                         }
-                        if (this.demandForm.source == 1 || this.demandForm.source == 2){
-                            this.demandForm.chargeMan = '87532428385583104';
-                            this.isSaving = false;
-                        }
-                        if (this.demandForm.source == 3){
-                            this.demandForm.chargeMan = '296175644545384448';
-                            this.isSaving = false;
-                        }
-                        if (this.demandForm.source == 4){
-                            this.demandForm.chargeMan = '139964039693336576';
-                            this.isSaving = false;
-                        }
+                        // if (this.demandForm.source == 1 || this.demandForm.source == 2){
+                        //     this.demandForm.chargeMan = '87532428385583104';
+                        //     this.isSaving = false;
+                        // }
+                        // if (this.demandForm.source == 3){
+                        //     this.demandForm.chargeMan = '296175644545384448';
+                        //     this.isSaving = false;
+                        // }
+                        // if (this.demandForm.source == 4){
+                        //     this.demandForm.chargeMan = '139964039693336576';
+                        //     this.isSaving = false;
+                        // }
                         if (this.demandForm.chargeMan === null || this.demandForm.chargeMan === ''){
                             this.$message({showClose: true, message: '负责人不能为空', type: 'warning'});
                             this.isSaving = false;
