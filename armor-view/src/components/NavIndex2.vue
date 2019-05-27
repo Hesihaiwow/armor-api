@@ -3703,8 +3703,10 @@
                     this.fetchAllMultipleTasks();
                     this.fetchTaskDoing();
                     this.fetchTaskFinished();
-                    this.fetchTaskWaitAssess();
-                    this.fetchTaskCommented();
+                    // this.fetchTaskWaitAssess();
+                    // this.fetchTaskCommented();
+                    this.fetchWaitEvaluate();
+                    this.fetchEvaluated();
                     this.fetchQuestionDoing();
                     this.fetchQuestionCompleted();
                     this.fetchMyRunningExtraWork();
@@ -4259,6 +4261,18 @@
                 http.zsyGetHttp(`/task/commented/${vm.commentedPage.pageNum}`, {}, (resp) => {
                     vm.commentedPage.total = resp.data.total
                     vm.task.commented = this.makeUpItems(resp.data.list)
+                })
+            },
+            //查看评价
+            fetchWaitEvaluate(){
+                http.zsyGetHttp('/evaluation/task/wait',{},(res)=>{
+                    this.task.waitAssess = this.makeUpItems(res.data)
+                })
+            },
+            fetchEvaluated(){
+                http.zsyGetHttp('/evaluation/task/evaluated/'+this.commentedPage.pageNum,{},(res)=>{
+                    this.commentedPage.total = res.data.total
+                    this.task.commented = this.makeUpItems(res.data.list)
                 })
             },
             // 获取所有待审核的任务

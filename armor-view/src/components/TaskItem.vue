@@ -62,10 +62,10 @@
                 <el-button @click="applyModifyMyTask(task)">申请修改任务</el-button>
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
-            <div class="task-data-show" v-show="isPrivate && task.status==3 && taskStatus!='WaitAssess'">
-                <span class="task-score">+{{task.userIntegral}}</span>
-                <span class="task-level first" v-show="task.type==2">{{task.integralGrade}}</span>
-            </div>
+            <!--<div class="task-data-show" v-show="isPrivate && task.status==3 && taskStatus!='WaitAssess'">-->
+                <!--<span class="task-score">+{{task.userIntegral}}</span>-->
+                <!--<span class="task-level first" v-show="task.type==2">{{task.integralGrade}}</span>-->
+            <!--</div>-->
             <div class="" v-show="!isPrivate && task.status==1&& taskStatus!='WaitAssess'">
                 <span class="mark-stage">{{task.stageName}}</span>
             </div>
@@ -206,9 +206,10 @@
                         </el-tooltip>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
-                        <span class="fl ctpc-member-assess" v-show="item.status==3">评价：{{item.commentGrade}}</span>
+                        <span class="fl ctpc-member-assess" v-show="item.status==3 && item.commentGrade">评价：{{item.commentGrade}}</span>
+                        <span class="fl ctpc-member-assess" v-show="item.status==3 && item.avgScore">评分：{{item.avgScore}}</span>
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
-                           @click="commentDetail(item.id)">查看评价</a>
+                           @click="evaluateDetail(item.id,item.jobRole)">查看评价</a>
                         <el-tooltip placement="top">
                             <div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
@@ -342,6 +343,269 @@
             <span slot="footer" class="dialog-footer">
                  <el-button @click="hideWaitAssess">取消</el-button>
                 <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+                title="评价"
+                top="10%"
+                :visible.sync="addTaskEvaluationVisible"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                custom-class="myDialog"
+                size="tiny"
+                :before-close="hideWaitEvaluation">
+            <div class="assess-task">
+                <div class="assess-task-list" v-for="(stage,index) in evaluationStages">
+                    <div class="assess-man-detail">
+                        <span class="amd-job">{{stage.stageName}}</span>
+                        <span class="amd-job-time">工作量：{{stage.taskHours}}小时</span>
+                        <span class="amd-during-time">截止：{{stage.completeTime | formatDate}}</span>
+                        <span class="amd-name">{{stage.userName}}</span>
+                        <span>{{stage.jobRoleName}}</span>
+                    </div>
+                    <div v-if="!isEvaluated">
+                        <el-form>
+                            <div v-if="stage.jobRole == 0">
+                                <el-form-item class="task-form" label="沟通">
+                                    <el-rate
+                                        v-model="evaluation[`${index}_0`]"
+                                        :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                        allow-half=true
+                                        style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole == 1">
+                                <el-form-item class="task-form" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="质量">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole == 2">
+                                <el-form-item class="task-form" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="美感">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole == 2">
+                                <el-form-item class="task-form" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="文档">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="task-form" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                            </div>
+
+                                <!--<el-form-item class="task-form" label="请评价">-->
+                                <!--<div v-if="stage.jobRole == 0">-->
+                                    <!--<span>沟通</span>-->
+                                    <!--<el-rate-->
+                                             <!--v-model="evaluation[`${index}_0`]"-->
+                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                             <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                    <!--<span>态度</span>-->
+                                    <!--<el-rate-->
+                                             <!--v-model="evaluation[`${index}_1`]"-->
+                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                             <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                <!--</div>-->
+                                <!--<div v-if="stage.jobRole == 1">-->
+                                    <!--<span>沟通</span>-->
+                                    <!--<el-rate-->
+                                             <!--v-model="evaluation[`${index}_0`]"-->
+                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                             <!--:allow-half="true">-->
+                                    <!--</el-rate>-->
+                                    <!--<span>态度</span>-->
+                                    <!--<span>{{stage.evaluationList[1].score}}</span>-->
+                                    <!--<el-rate-->
+                                             <!--v-model="evaluation[`${index}_1`]"-->
+                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                             <!--:allow-half="true"-->
+                                    <!--@change="changeDevAttitude">-->
+                                    <!--</el-rate>-->
+                                    <!--<span>质量</span>-->
+                                    <!--<el-rate-->
+                                             <!--v-model="evaluation[`${index}_3`]"-->
+                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                             <!--:allow-half="true">-->
+                                    <!--</el-rate>-->
+                                    <!--<span>效率</span>-->
+                                    <!--<el-rate-->
+                                             <!--v-model="evaluation[`${index}_2`]"-->
+                                             <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                             <!--:allow-half="true"/>-->
+                                <!--</div>-->
+                                <!--<div v-if="stage.jobRole == 2">-->
+                                    <!--<span>沟通</span>-->
+                                    <!--<el-rate-->
+                                            <!--v-model="evaluation[`${index}_0`]"-->
+                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                            <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                    <!--<span>态度</span>-->
+                                    <!--<el-rate-->
+                                            <!--v-model="evaluation[`${index}_1`]"-->
+                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                            <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                    <!--<span>美感</span>-->
+                                    <!--<el-rate-->
+                                            <!--v-model="evaluation[`${index}_2`]"-->
+                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                            <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                <!--</div>-->
+                                <!--<div v-if="stage.jobRole == 3">-->
+                                    <!--<span>沟通</span>-->
+                                    <!--<el-rate-->
+                                            <!--v-model="evaluation[`${index}_0`]"-->
+                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                            <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                    <!--<span>态度</span>-->
+                                    <!--<el-rate-->
+                                            <!--v-model="evaluation[`${index}_1`]"-->
+                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                            <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                    <!--<span>文档</span>-->
+                                    <!--<el-rate-->
+                                            <!--v-model="evaluation[`${index}_2`]"-->
+                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                            <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                    <!--<span>效率</span>-->
+                                    <!--<el-rate-->
+                                            <!--v-model="evaluation[`${index}_3`]"-->
+                                            <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+                                            <!--:allow-half=true>-->
+                                    <!--</el-rate>-->
+                                <!--</div>-->
+
+                                <!--&lt;!&ndash;<el-input type="textarea" v-model="assessForm.evaluations[index].score"&ndash;&gt;-->
+                                          <!--&lt;!&ndash;placeholder="请输入你的评价"></el-input>&ndash;&gt;-->
+                            <!--</el-form-item>-->
+                        </el-form>
+                    </div>
+                    <div v-else style="margin-top: 10px">
+                        <div v-for="item in stage.evaluationResDTOS[0].evaluationScoreResDTOS">
+                            <el-form>
+                                <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -15px">
+                                    <el-rate v-model="item.score"
+                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                             :allow-half=true
+                                             disabled
+                                             style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{item.score}}</span>
+                                </el-form-item>
+                            </el-form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                 <el-button @click="hideWaitEvaluation">取消</el-button>
+                <el-button type="primary" @click="taskEvaluate" v-show="!isEvaluated" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -550,6 +814,53 @@
 
         </el-dialog>
 
+        <el-dialog
+                title="评价详情"
+                top="10%"
+                :visible.sync="showTaskEvaluationDetail"
+                size="tiny"
+                :before-close="hideTaskEvaluationDetail">
+            <h2 style="font-size: 20px;margin-bottom: 20px" v-if="hasAvgEvalution">总体评价：</h2>
+            <div  v-for="(item,index) in avgEvaluation" v-if="hasAvgEvalution">
+                <el-form label-position="left" inline class="demo-table-expand">
+                    <el-form-item class="task-form" :label="item.option" style="margin-top: -10px">
+                        <el-rate v-model="item.score"
+                                 :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                 :allow-half=true
+                                 disabled
+                                 style="float: left;margin-top: 7px">
+                        </el-rate>
+                        <span>{{item.score}}</span>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div v-show="!hasAvgEvalution" class="empty">
+                <h2>暂无数据</h2>
+            </div>
+            <h2 style="font-size: 20px;margin-bottom: 20px" v-show="hasAvgEvalution">用户评价：</h2>
+            <div v-for="(item,index) in taskEvaluation" v-show="hasAvgEvalution">
+                <el-form label-position="left" inline class="demo-table-expand">
+                    <el-form-item class="task-form" label="姓名">
+                        <span>{{ item.evaluateUserName }}</span>
+                    </el-form-item>
+                    <div v-for="evaluation in item.evaluationScoreResDTOS">
+                        <el-form-item class="task-form" :label="evaluation.evaluationOptionName" style="margin-top: -10px">
+                            <el-rate v-model="evaluation.score"
+                                     :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                     :allow-half=true
+                                     disabled
+                            style="float: left;margin-top: 7px">
+                            </el-rate>
+                            <span>{{evaluation.score}}</span>
+                        </el-form-item>
+                    </div>
+
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="hideTaskEvaluationDetail" type="primary">确 定</el-button>
+            </span>
+        </el-dialog>
         <el-dialog
                 title="评价详情"
                 top="10%"
@@ -969,10 +1280,18 @@
                 showAuditTask: false,
                 showTaskDetail: false,
                 showTaskComment: false,
+                addTaskEvaluationVisible: false,
+                isEvaluated: false,
+                taskDetailBO: {},
                 showTaskModify: false,
                 showAddDetail: false,
                 showTaskCommentDetail: false,
+                showTaskEvaluationDetail: false,
                 taskCommentDetail: {},
+                avgEvaluation: [],
+                hasAvgEvalution:false,
+                taskEvaluation: [],
+                value:3.7,
                 showModifyPrivateTask: false,
                 testingVisible:false,
                 expandTimeVisible:false,
@@ -1010,10 +1329,25 @@
                 auditForm: {},
                 assessForm: {
                     taskId: '',
-                    comments: []
+                    comments: [],
+                    testerEvaluations:[],
+                    developerEvaluations:[],
+                    designerEvaluations:[],
+                    producterEvaluations:[],
+                },
+                evaluationForm:{
+                    taskId:'',
+                    evaluationUserReqDTOS:[],
+                    testerEvaluations:[],
+                    developerEvaluations:[],
+                    designerEvaluations:[],
+                    producterEvaluations:[],
                 },
                 commentStages: [],
+                evaluationStages: [],
+                evaluation:{},
                 allComment: false,
+                allEvaluation: false,
                 taskDetail: {},
                 taskLog: {
                     list: [],
@@ -1472,10 +1806,52 @@
                 }).catch(() => {
                 });
             },
+            // showWaitAssess(taskId) {
+            //     let vm = this
+            //     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
+            //         vm.assessForm.taskId = taskId;
+            //         let users = [];
+            //         // 过滤我的任务
+            //         resp.data.users.forEach((user) => {
+            //             if (user.userId != vm.loginUserId) {
+            //                 users.push(user);
+            //             }
+            //         });
+            //         // 查询我的评价
+            //         users.forEach((user) => {
+            //             user.comments.forEach((comment) => {
+            //                 if (comment.createBy == vm.loginUserId) {
+            //                     user.myComment = comment;
+            //                     return;
+            //                 }
+            //             });
+            //         });
+            //         for (let i = 0; i < users.length; i++) {
+            //             if (!users[i].myComment) {
+            //                 vm.assessForm.comments.push({
+            //                     'taskUserId': users[i].id,
+            //                     'description': '',
+            //                     'grade': ''
+            //                 })
+            //             }
+            //         }
+            //         let myComments = 0;
+            //         users.forEach((stage) => {
+            //             if (stage.myComment) {
+            //                 myComments++
+            //             }
+            //         })
+            //         vm.allComment = (myComments == users.length);
+            //         vm.commentStages = users;
+            //     });
+            //
+            //     this.showTaskComment = true;
+            // },
             showWaitAssess(taskId) {
                 let vm = this
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                    vm.assessForm.taskId = taskId;
+                    this.taskDetail = resp.data;
+                    vm.evaluationForm.taskId = taskId;
                     let users = [];
                     // 过滤我的任务
                     resp.data.users.forEach((user) => {
@@ -1483,35 +1859,126 @@
                             users.push(user);
                         }
                     });
-                    // 查询我的评价
-                    users.forEach((user) => {
-                        user.comments.forEach((comment) => {
-                            if (comment.createBy == vm.loginUserId) {
-                                user.myComment = comment;
-                                return;
-                            }
-                        });
-                    });
                     for (let i = 0; i < users.length; i++) {
-                        if (!users[i].myComment) {
-                            vm.assessForm.comments.push({
-                                'taskUserId': users[i].id,
-                                'description': '',
-                                'grade': ''
-                            })
+                        var jobRole = users[i].jobRole;
+                        users[i].evaluationList = []
+                        //测试
+                        if (jobRole == 0){
+                            var evaluationList = [];
+                            var testCommunication = {
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            };
+                            var testAttitude = {
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            }
+                            evaluationList.push(testCommunication);
+                            evaluationList.push(testAttitude);
+                            users[i].evaluationList = evaluationList;
+                        }
+                        else if (jobRole == 1){
+                            //开发
+                            var evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '4'
+                            });
+                            users[i].evaluationList = evaluationList;
+                            // stage.evaluationList.splice(attitude, 1, score)
+                            // this.$set(users[i],users[i].evaluationList,evaluationList)
+                        }
+                        else if (jobRole == 2){
+                            //设计
+                            var evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '6'
+                            });
+                            users[i].evaluationList = evaluationList;
+                            // this.$set(users[i],users[i].evaluationList,evaluationList)
+                        }
+                        else if (jobRole == 3){
+                            //产品
+                            var evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '5'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            users[i].evaluationList = evaluationList;
+                            // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
                     }
-                    let myComments = 0;
-                    users.forEach((stage) => {
-                        if (stage.myComment) {
-                            myComments++
+                    let myEvaluations = 0;
+                    for (let i = 0; i < users.length; i++){
+                        var user = users[i];
+                        if (user.evaluationResDTOS.length > 0) {
+                            myEvaluations += 1;
                         }
-                    })
-                    vm.allComment = (myComments == users.length);
-                    vm.commentStages = users;
+
+                        user.evaluationList.forEach((item,index)=>{
+                            this.$set(this.evaluation,`${i}_${index}`,item.score);
+                        })
+                    }
+                    if (myEvaluations == users.length) {
+                        this.isEvaluated = true
+                    }
+                    vm.evaluationStages = users;
+                    // vm.evaluationStages = users;
+                    this.addTaskEvaluationVisible = true;
                 });
 
-                this.showTaskComment = true;
+            },
+            changeDevAttitude(evaluationList,attitude){
+                // console.log(1111)
+                // this.$forceUpdate()
+                // this.$set(evaluationList, 1, attitude)
+                // console.log(evaluationList,attitude)
             },
             hideWaitAssess() {
                 this.showTaskComment = false;
@@ -1520,6 +1987,10 @@
                     taskId: '',
                     comments: []
                 };
+            },
+            hideWaitEvaluation() {
+                this.addTaskEvaluationVisible = false;
+                this.isEvaluated = false;
             },
             // 评价任务
             taskAssess() {
@@ -1535,6 +2006,57 @@
                     this.$emit('reload');
                     this.isSaving=false
                 })
+            },
+            taskEvaluate(){
+                // this.isSaving=true
+                Object.keys(this.evaluation).forEach(key=>{
+                    let indexArr = key.split('_')
+                    this.evaluationStages[indexArr[0]].evaluationList[indexArr[1]].score = this.evaluation[key]
+                })
+
+                var param = {};
+                param.evaluationUserReqDTOS = [];
+                param.taskId = this.evaluationForm.taskId;
+                var flag = true;
+                for (var j = 0;j<this.evaluationStages.length;j++){
+                    var user = this.evaluationStages[j]
+                    for (var i = 0;i < user.evaluationList.length;i++){
+                        var evaluation = user.evaluationList[i]
+                        if (evaluation.score === 0){
+                            this.$message({ showClose: true,message: '请评价全部评分项',type: 'error'});
+                            this.isSaving=false;
+                            flag = false;
+                            return false;
+                        }
+                        param.evaluationUserReqDTOS.push(evaluation)
+                    }
+                }
+
+                if (flag){
+                    http.zsyPostHttp('/evaluation/add', param, (resp) => {
+                        this.$message({ showClose: true,message: '评价成功',type: 'success'});
+                        this.addTaskEvaluationVisible = false
+                        this.commentStages = []
+                        this.assessForm = {
+                            taskId: '',
+                            comments: [],
+                            testerEvaluations:[],
+                            developerEvaluations:[],
+                            designerEvaluations:[],
+                            producterEvaluations:[],
+                        };
+                        this.$emit('reload');
+                        this.isSaving=false
+                    },(fail)=>{
+                        this.$message({
+                            showClose: true,
+                            message: fail.errMsg,
+                            type: 'error'
+                        });
+                        this.isSaving = false;
+                    })
+                }
+
             },
             // 修改单人任务
             modifyPrivateTask(taskId) {
@@ -1947,6 +2469,10 @@
             hideTaskCommentDetail() {
                 this.showTaskCommentDetail = false
             },
+            hideTaskEvaluationDetail() {
+                this.showTaskEvaluationDetail = false;
+                this.hasAvgEvalution = false;
+            },
             commentDetail(taskUserId) {
                 let vm = this;
                 this.taskDetail.users.forEach((user) => {
@@ -1955,7 +2481,119 @@
                         return
                     }
                 })
-                this.showTaskCommentDetail = true
+                this.showTaskEvaluationDetail = true
+            },
+            evaluateDetail(taskUserId,jobRole) {
+                let vm = this;
+                this.taskDetail.users.forEach((user) => {
+                    if (user.id == taskUserId) {
+                        vm.taskEvaluation = user.evaluationResDTOS;
+                        this.avgEvaluation = []
+                        var length = vm.taskEvaluation.length
+                        //测试
+                        if (vm.taskEvaluation.length>0){
+                            this.hasAvgEvalution = true
+                            if (jobRole == 0){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                            }
+                            if (jobRole == 1){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalQualityScore = 0;
+                                var totalEfficiencyScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'质量',
+                                    'score':Number((totalQualityScore/length).toFixed(2))
+                                })
+
+
+                            }
+                            if (jobRole == 2){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalDesignScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalDesignScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'美感',
+                                    'score':Number((totalDesignScore/length).toFixed(2))
+                                })
+                            }
+                            if (jobRole == 3){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalEfficiencyScore = 0;
+                                var totalDocumentScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalDocumentScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'文档',
+                                    'score':Number((totalDocumentScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                            }
+                        }
+                        return
+                    }
+                })
+                this.showTaskEvaluationDetail = true
             },
             /** 编辑任务填写备注 **/
             showModifyDescription(){
@@ -2141,7 +2779,6 @@
                 this.modifyMyTaskForm.taskId = taskId;
                 this.getTaskDetail(taskId)
                 http.zsyGetHttp('/task/task-user/'+taskId+'/'+userId,{},(res=>{
-                    console.log(111)
                     this.taskUser = res.data;
                     this.changeTaskUserWeek()
                     this.showFinishedTask = false;
@@ -2656,7 +3293,8 @@
             closeMultipleTask(){
                 // this.$emit('reload')
                 // this.taskTempDetail = {};
-            }
+            },
+
         },
         created() {
             // 监听看板任务点击事件
@@ -2818,6 +3456,11 @@
                     }
                 }
             },
+            evaluation:{
+                deep:true,
+                handler(oldVal,newVal){
+                }
+            }
         }
 
     }
