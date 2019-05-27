@@ -1,8 +1,12 @@
 package com.zhixinhuixue.armor.service;
 
+import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * @author sch
@@ -23,4 +27,19 @@ public interface IZSYTaskEvaluationService {
      * @param taskId
      */
     void finishTask(Long taskId);
+
+    /**
+     * 查询待评价任务
+     * @author sch
+     * @return
+     */
+    List<TaskDetailBO> getWaitEvaluated();
+
+    /**
+     * 分页查看已经评价的任务
+     * @author sch
+     * @param pageNum
+     * @return
+     */
+    PageInfo<TaskDetailBO> getEvaluated(Integer pageNum);
 }

@@ -16,10 +16,16 @@ public class EvaluationUserReqDTO {
     private Long taskUserId;
 
     /**
-     * 各项评分
+     * 评分项
      */
-    @NotNull(message = "各项评分不能为空")
-    private List<EvaluationScoreReqDTO> evaluationScoreReqDTOS;
+    @NotNull(message = "评分项不能为空")
+    private Integer evaluationOption;
+
+    /**
+     * 得分
+     */
+    @NotNull(message = "评分不能为空")
+    private Double score;
 
     public Long getTaskUserId() {
         return taskUserId;
@@ -29,11 +35,19 @@ public class EvaluationUserReqDTO {
         this.taskUserId = taskUserId;
     }
 
-    public List<EvaluationScoreReqDTO> getEvaluationScoreReqDTOS() {
-        return evaluationScoreReqDTOS;
+    public Integer getEvaluationOption() {
+        return evaluationOption;
     }
 
-    public void setEvaluationScoreReqDTOS(List<EvaluationScoreReqDTO> evaluationScoreReqDTOS) {
-        this.evaluationScoreReqDTOS = evaluationScoreReqDTOS;
+    public void setEvaluationOption(Integer evaluationOption) {
+        this.evaluationOption = evaluationOption;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
     }
 }

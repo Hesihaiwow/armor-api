@@ -1,5 +1,9 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.EvaluationBO;
+import com.zhixinhuixue.armor.model.bo.EvaluationScoreBO;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.pojo.TaskEvaluation;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,5 +38,56 @@ public interface IZSYTaskEvaluationMapper {
      * @param userId
      * @return
      */
-    List<TaskEvaluation> selectByTaskAndUser(@Param("taskId") Long taskId,@Param("userId")  Long userId);
+    List<EvaluationBO> selectByTaskAndUser(@Param("taskId") Long taskId, @Param("userId")  Long userId);
+
+    List<EvaluationScoreBO> selectByTaskAndTaskUser(@Param("taskId") Long taskId, @Param("userId")  Long userId,@Param("evaluateUserId")  Long evaluateUserId);
+
+    /**
+     * 查询待评价任务
+     * @author sch
+     * @return
+     */
+    List<TaskDetailBO> selectWaitEvaluatedByUser(@Param("userId")Long userId);
+
+    /**
+     * 根据用户查询已经评价的任务
+     * @author sch
+     * @param userId
+     * @return
+     */
+    List<Long> selectEvaluatedTaskIdsByUser(@Param("userId")Long userId);
+
+    /**
+     * 分页根据用户查询已经评价的任务
+     * @author sch
+     * @param userId
+     * @return
+     */
+    Page<Long> selectEvaluatedTaskIdsByUserPage(@Param("userId")Long userId);
+
+    /**
+     * 查看某个人对当前用户的评价
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    List<EvaluationBO> selectSomeoneToMe(@Param("taskId") Long taskId, @Param("userId")  Long userId
+            , @Param("evaluateUserId")  Long evaluateUserId);
+
+    /**
+     * 查看某人都其他用户的评价
+     * @param taskId
+     * @param evaluateUserId
+     * @return
+     */
+    List<EvaluationBO> selectMeToOthers(@Param("taskId") Long taskId, @Param("evaluateUserId")  Long evaluateUserId);
+
+
+    /**
+     * 管理员查看其他人对某个人的评价
+     * @param taskId
+     * @param taskUserId
+     * @return
+     */
+    List<EvaluationBO> selectOthersToMe(@Param("taskId") Long taskId, @Param("taskUserId")  Long taskUserId);
 }

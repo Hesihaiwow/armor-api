@@ -21,6 +21,7 @@ import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
+import io.swagger.models.auth.In;
 import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +93,8 @@ public class ZSYTaskService implements IZSYTaskService {
     // sch --
     @Autowired
     private IZSYNotificationMapper notificationMapper;
+    @Autowired
+    private IZSYTaskEvaluationMapper evaluationMapper;
 
     @Autowired
     private ZSYSmsConfig smsConfig;
@@ -658,6 +661,65 @@ public class ZSYTaskService implements IZSYTaskService {
         List<String> proName = Lists.newArrayList();
         taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
             TaskUserResDTO taskUserResDTO = new TaskUserResDTO();
+            // sch --
+            List<EvaluationBO> evaluationBOS = new ArrayList<>();
+            if (ZSYTokenRequestContext.get().getUserRole() == ZSYUserRole.EMPLOYEE.getValue()){
+                //查看某个人对当前用户的评价
+                evaluationBOS = evaluationMapper.selectSomeoneToMe(taskId,taskUserBO.getUserId(),ZSYTokenRequestContext.get().getUserId());
+
+            }else if (ZSYTokenRequestContext.get().getUserRole() == ZSYUserRole.ADMINISTRATOR.getValue()){
+                //管理员查看其他人对某个人的评价
+                evaluationBOS = evaluationMapper.selectOthersToMe(taskId,taskUserBO.getUserId());
+
+            }
+            List<EvaluationResDTO> evaluationResDTOList = new ArrayList<>();
+            Double totalScore = 0.0;
+            Integer size = 0;
+            if (!CollectionUtils.isEmpty(evaluationBOS)){
+                for (EvaluationBO evaluationBO : evaluationBOS) {
+                    EvaluationResDTO resDTO = new EvaluationResDTO();
+                    resDTO.setEvaluateUserId(evaluationBO.getEvaluateUserId());
+                    resDTO.setTaskId(taskId);
+                    resDTO.setTaskUserName(evaluationBO.getTaskUserName());
+                    resDTO.setEvaluateUserName(evaluationBO.getEvaluateUserName());
+                    resDTO.setTaskUserId(evaluationBO.getTaskUserId());
+                    resDTO.setEvaluateTime(evaluationBO.getEvaluateTime());
+                    List<EvaluationScoreBO> evaluationScoreBOS = evaluationBO.getEvaluationScoreBOS();
+                    List<EvaluationScoreResDTO> evaluationScoreResDTOList = new ArrayList<>();
+                    Integer totalIntegral = 0;
+                    Double singleTotalScore = 0.0;
+                    for (EvaluationScoreBO evaluationScoreBO : evaluationScoreBOS) {
+                        EvaluationScoreResDTO evaluationScoreResDTO = new EvaluationScoreResDTO();
+                        evaluationScoreResDTO.setId(evaluationScoreBO.getId());
+                        evaluationScoreResDTO.setEvaluationOption(evaluationScoreBO.getEvaluationOption());
+                        evaluationScoreResDTO.setScore(evaluationScoreBO.getScore());
+                        evaluationScoreResDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(evaluationScoreBO.getEvaluationOption()));
+                        totalIntegral += evaluationScoreBO.getIntegral();
+                        singleTotalScore += evaluationScoreBO.getScore();
+                        size ++;
+                        evaluationScoreResDTOList.add(evaluationScoreResDTO);
+                    }
+                    resDTO.setEvaluationScoreResDTOS(evaluationScoreResDTOList);
+                    BigDecimal avaIntegral = BigDecimal.valueOf(totalIntegral).divide(BigDecimal.valueOf(evaluationScoreBOS.size())).setScale(1,BigDecimal.ROUND_HALF_UP);
+                    resDTO.setAvgIntegral(avaIntegral);
+                    evaluationResDTOList.add(resDTO);
+                    totalScore += singleTotalScore;
+                }
+
+            }
+            Integer jobRole = taskUserBO.getJobRole();
+            taskUserResDTO.setJobRole(jobRole);
+            if (jobRole == 0){
+                taskUserResDTO.setJobRoleName("测试");
+            }else if (jobRole == 1){
+                taskUserResDTO.setJobRoleName("开发");
+            }else if (jobRole == 2){
+                taskUserResDTO.setJobRoleName("设计");
+            }else if (jobRole == 3){
+                taskUserResDTO.setJobRoleName("产品");
+            }
+            taskUserResDTO.setEvaluationResDTOS(evaluationResDTOList);
+            // -- sch
             BeanUtils.copyProperties(taskUserBO, taskUserResDTO);
             // copy 评价
             List<TaskCommentResDTO> taskCommentResDTOS = new ArrayList<>();
@@ -707,6 +769,12 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUserResDTO.setProTest(false);
             }
             taskUserResDTOS.add(taskUserResDTO);
+            if (!CollectionUtils.isEmpty(evaluationBOS) && taskUserResDTO.getCommentGrade() == null){
+                if (ZSYUserRole.ADMINISTRATOR.getValue() == ZSYTokenRequestContext.get().getUserRole()){
+                    BigDecimal avgScore = BigDecimal.valueOf(totalScore).divide(BigDecimal.valueOf(size)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    taskUserResDTO.setAvgScore(avgScore);
+                }
+            }
         });
         if(taskDetailResDTO.getStageName().contains("测试") && taskTestMapper.selectTesting(taskDetailBO.getId()) == 0){
             taskDetailResDTO.setTesting(true);
@@ -789,20 +857,25 @@ public class ZSYTaskService implements IZSYTaskService {
                         Long taskUserId = taskBO.getTaskUsers().get(0).getId();
                         Long taskId = taskBO.getTaskUsers().get(0).getTaskId();
                         List<TaskComment> taskComment = taskMapper.findTaskComment(taskId, taskUserId);
-                        OptionalDouble average = taskComment.stream().mapToInt(map -> {
-                            String grade = map.getGrade();
-                            Integer value = ZSYIntegral.getValue(grade);
-                            if (value == null) {
-                                throw new ZSYServiceException("无法找到评价等级:" + grade);
+                        if (!CollectionUtils.isEmpty(taskComment)){
+                            OptionalDouble average = taskComment.stream().mapToInt(map -> {
+                                String grade = map.getGrade();
+                                Integer value = ZSYIntegral.getValue(grade);
+                                if (value == null) {
+                                    throw new ZSYServiceException("无法找到评价等级:" + grade);
+                                }
+                                return value;
+                            }).average();
+                            if (average.getAsDouble() >= 90) {
+                                taskResDTO.setIntegralGrade("A");
+                            } else if (average.getAsDouble() >= 80) {
+                                taskResDTO.setIntegralGrade("B");
+                            } else {
+                                taskResDTO.setIntegralGrade("C");
                             }
-                            return value;
-                        }).average();
-                        if (average.getAsDouble() >= 90) {
-                            taskResDTO.setIntegralGrade("A");
-                        } else if (average.getAsDouble() >= 80) {
-                            taskResDTO.setIntegralGrade("B");
-                        } else {
-                            taskResDTO.setIntegralGrade("C");
+                        }
+                        List<EvaluationBO> evaluationBOS = evaluationMapper.selectOthersToMe(taskId, ZSYTokenRequestContext.get().getUserId());
+                        if (!CollectionUtils.isEmpty(evaluationBOS)){
                         }
                     }
                 }

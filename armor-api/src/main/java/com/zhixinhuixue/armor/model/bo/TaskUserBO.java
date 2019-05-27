@@ -19,6 +19,7 @@ public class TaskUserBO extends TaskUser {
      * 负责人
      */
     private String userName;
+    private Integer jobRole;
 
     /**
 
@@ -32,6 +33,14 @@ public class TaskUserBO extends TaskUser {
     private List<TaskCommentBO> taskComments;
 
     private List<UserWeek> userWeeks;
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
+    }
 
     public String getStageName() {
         return stageName;

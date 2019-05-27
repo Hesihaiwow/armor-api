@@ -40,10 +40,23 @@ public class TaskDetailBO extends Task {
     private String avatarUrl;
 
     /**
+     * 当前用户是否已评价
+     */
+    private Integer isEvaluate;
+
+    /**
      * 是否暂停(0表示暂停)
      * @return
      */
     private Integer status;
+
+    public Integer getIsEvaluate() {
+        return isEvaluate;
+    }
+
+    public void setIsEvaluate(Integer isEvaluate) {
+        this.isEvaluate = isEvaluate;
+    }
 
     @Override
     public Integer getStatus() {
