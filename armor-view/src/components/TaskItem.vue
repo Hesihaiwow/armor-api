@@ -209,7 +209,7 @@
                         <span class="fl ctpc-member-assess" v-show="item.status==3 && item.commentGrade">评价：{{item.commentGrade}}</span>
                         <span class="fl ctpc-member-assess" v-show="item.status==3 && item.avgScore">评分：{{item.avgScore}}</span>
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
-                           @click="evaluateDetail(item.id,item.jobRole)">查看评价</a>
+                           @click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>
                         <el-tooltip placement="top">
                             <div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
@@ -729,6 +729,7 @@
                 :visible.sync="showTaskEvaluationDetail"
                 size="tiny"
                 :before-close="hideTaskEvaluationDetail">
+            <span style="font-size: 20px;margin-bottom: 20px" v-if="hasAvgEvalution">被评价人：{{taskUserName}}</span>
             <h2 style="font-size: 20px;margin-bottom: 20px" v-if="hasAvgEvalution">总体评价：</h2>
             <div  v-for="(item,index) in avgEvaluation" v-if="hasAvgEvalution">
                 <el-form label-position="left" inline class="demo-table-expand">
@@ -749,7 +750,7 @@
             <h2 style="font-size: 20px;margin-bottom: 20px" v-show="hasAvgEvalution">用户评价：</h2>
             <div v-for="(item,index) in taskEvaluation" v-show="hasAvgEvalution">
                 <el-form label-position="left" inline class="demo-table-expand">
-                    <el-form-item class="task-form" label="姓名">
+                    <el-form-item class="task-form" label="评价人">
                         <span>{{ item.evaluateUserName }}</span>
                     </el-form-item>
                     <div v-for="evaluation in item.evaluationScoreResDTOS">
@@ -1199,6 +1200,7 @@
                 showTaskEvaluationDetail: false,
                 taskCommentDetail: {},
                 avgEvaluation: [],
+                taskUserName: '',
                 hasAvgEvalution:false,
                 taskEvaluation: [],
                 value:3.7,
@@ -2393,7 +2395,8 @@
                 })
                 this.showTaskEvaluationDetail = true
             },
-            evaluateDetail(taskUserId,jobRole) {
+            evaluateDetail(taskUserId,jobRole,userName) {
+                this.taskUserName = userName;
                 let vm = this;
                 this.taskDetail.users.forEach((user) => {
                     if (user.id == taskUserId) {

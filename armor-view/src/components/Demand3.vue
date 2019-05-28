@@ -246,13 +246,16 @@
                                 <span>{{scope.row.expectOnlineTime | formatDate}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" align="center" width="165" fixed="right">
+                        <el-table-column label="操作" align="center" width="200" fixed="right">
                             <template scope="scope">
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!=0">计划
                                 </el-button>
                                 <el-button @click="linkTask(scope.row.id)" type="text" size="small"
                                            v-show="permit && scope.row.planId!=null">关联任务
+                                </el-button>
+                                <el-button @click="finishFeedback(scope.row.id)" type="text" size="small"
+                                           v-show="permit && scope.row.canFinish == 1">完成需求
                                 </el-button>
                             </template>
                         </el-table-column>
@@ -1600,6 +1603,24 @@
                     this.taskData = resp.data
                 })
                 this.feedbackPlanForm.feedbackId = id
+            },
+            
+            //完成需求
+            finishFeedback(id){
+                this.$confirm('此操作将完成该需求, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyPutHttp('/feedback/finish/'+id,{},(res)=>{
+                        if (res.errCode == '00'){
+                            this.$message({showClose: true, message: '需求已完成', type: 'success'});
+                            this.fetchRunningDemandList();
+                        }
+                    })
+                }).catch(() => {
+                });
+
             },
 
             //查询需求计划
