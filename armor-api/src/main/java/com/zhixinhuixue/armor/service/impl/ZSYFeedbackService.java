@@ -1601,7 +1601,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             Boolean planComplete = true;
             for(int i=0;i<taskIds.size();i++){
                 Task task = taskMapper.selectByPrimaryKey(taskIds.get(i));
-                if(task.getStatus()<=ZSYTaskStatus.COMPLETED.getValue()){
+                if(task.getStatus()< ZSYTaskStatus.COMPLETED.getValue()){
                     planComplete = false;
                 }
             }
