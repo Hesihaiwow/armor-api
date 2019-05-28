@@ -452,7 +452,7 @@
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 2">
+                            <div v-if="stage.jobRole == 3">
                                 <el-form-item class="task-form" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -1867,6 +1867,7 @@
                         }
                     }
                     let myEvaluations = 0;
+                    this.evaluation = []
                     for (let i = 0; i < users.length; i++){
                         var user = users[i];
                         if (user.evaluationResDTOS.length > 0) {
@@ -1881,7 +1882,7 @@
                         this.isEvaluated = true
                     }
                     vm.evaluationStages = users;
-                    // vm.evaluationStages = users;
+
                     this.addTaskEvaluationVisible = true;
                 });
 
@@ -1925,7 +1926,6 @@
                     let indexArr = key.split('_')
                     this.evaluationStages[indexArr[0]].evaluationList[indexArr[1]].score = this.evaluation[key]
                 })
-
                 var param = {};
                 param.evaluationUserReqDTOS = [];
                 param.taskId = this.evaluationForm.taskId;
