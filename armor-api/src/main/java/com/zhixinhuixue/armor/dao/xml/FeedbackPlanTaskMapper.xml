@@ -100,4 +100,9 @@
     select complete_time from task where is_delete = 0 and id = #{taskId}
   </select>
 
+  <!--根据planId查询任务-->
+    <select id="selectTasksByPlanId" resultType="java.lang.Long">
+        SELECT `task_id` FROM `feedback_plan_task` WHERE `feedback_plan_id` = #{id}
+    </select>
+
 </mapper>

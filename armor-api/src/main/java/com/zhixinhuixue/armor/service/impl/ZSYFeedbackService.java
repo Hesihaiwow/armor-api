@@ -69,6 +69,9 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     @Autowired
     private ZSYQinuOssProperty qinuOssProperty;
 
+    @Autowired
+    private IZSYTaskMapper taskMapper;
+
     /**
      * 需求列表
      * @param feedbackListReqDTO
@@ -628,12 +631,22 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
                 }else {
                     resDTO.setReadStatus(0);
                 }
-
                 //根据feedback_id查询task  按任务创建时间降序排序
                 List<Long> taskIds = feedbackMapper.selectTasks(demandRunningBO.getId());
                 if (!CollectionUtils.isEmpty(taskIds)){
                     resDTO.setTaskNum(taskIds.size());
-
+                    Boolean planComplete = true;
+                    for(int i=0;i<taskIds.size();i++){
+                        Task task = taskMapper.selectByPrimaryKey(taskIds.get(i));
+                        if(task.getStatus() < ZSYTaskStatus.COMPLETED.getValue()){
+                            planComplete = false;
+                        }
+                    }
+                    if (planComplete){
+                        resDTO.setCanFinish(1);
+                    }else {
+                        resDTO.setCanFinish(0);
+                    }
                     Date beginTime = feedbackPlanTaskMapper.selectBeginTime(taskIds.get(0));
                     if (beginTime != null){
                         Date today = new Date();
@@ -1570,6 +1583,36 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         }
         return getDemandNewExcel(demandResDTOList);
 
+    }
+
+    /**
+     * 完成需求
+     * @author sch
+     * @param feedbackId
+     */
+    @Override
+    @Transactional
+    public void finishFeedback(Long feedbackId) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYServiceException("当前用户没有权限");
+        }
+        List<Long> taskIds = feedbackMapper.selectTasks(feedbackId);
+        if(taskIds.size()>0){
+            Boolean planComplete = true;
+            for(int i=0;i<taskIds.size();i++){
+                Task task = taskMapper.selectByPrimaryKey(taskIds.get(i));
+                if(task.getStatus()<=ZSYTaskStatus.COMPLETED.getValue()){
+                    planComplete = false;
+                }
+            }
+            if(planComplete){
+                Feedback feedback =feedbackMapper.selectById(feedbackId);
+                feedback.setStatus(ZSYTaskStatus.COMPLETED.getValue());
+                feedbackMapper.updateByFeedbackId(feedback);
+            }else {
+                throw new ZSYServiceException("当前需求下有任务没有完成,请检查");
+            }
+        }
     }
 
     //导出新需求Excel

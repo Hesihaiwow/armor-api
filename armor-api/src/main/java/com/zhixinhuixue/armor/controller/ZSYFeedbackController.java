@@ -439,5 +439,12 @@ public class ZSYFeedbackController extends ZSYController{
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("完成需求")
+    @PutMapping("/finish/{feedbackId}")
+    public String finishFeedback(@PathVariable("feedbackId")Long feedbackId){
+        feedbackService.finishFeedback(feedbackId);
+        return ZSYResult.success().build();
+    }
+
 
 }

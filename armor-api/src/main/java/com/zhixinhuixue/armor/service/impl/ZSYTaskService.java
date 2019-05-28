@@ -926,21 +926,21 @@ public class ZSYTaskService implements IZSYTaskService {
         missionCompleted(taskId);
         // -- sch
         //查找计划并判断是否完成计划
-        List<FeedbackPlanTaskBO> planTasks = feedbackPlanMapper.getTaskIdFromPlan(taskId);
-        if(planTasks.size()>0){
-            Boolean planComplete = true;
-            for(int i=0;i<planTasks.size();i++){
-                Task taskPlan = taskMapper.selectByPrimaryKey(planTasks.get(i).getTaskId());
-                if(taskPlan.getStatus()!=ZSYTaskStatus.COMPLETED.getValue()){
-                    planComplete = false;
-                }
-            }
-            if(planComplete){
-                Feedback feedback =feedbackMapper.selectById(planTasks.get(0).getId());
-                feedback.setStatus(ZSYTaskStatus.COMPLETED.getValue());
-                feedbackMapper.updateByFeedbackId(feedback);
-            }
-        }
+//        List<FeedbackPlanTaskBO> planTasks = feedbackPlanMapper.getTaskIdFromPlan(taskId);
+//        if(planTasks.size()>0){
+//            Boolean planComplete = true;
+//            for(int i=0;i<planTasks.size();i++){
+//                Task taskPlan = taskMapper.selectByPrimaryKey(planTasks.get(i).getTaskId());
+//                if(taskPlan.getStatus()!=ZSYTaskStatus.COMPLETED.getValue()){
+//                    planComplete = false;
+//                }
+//            }
+//            if(planComplete){
+//                Feedback feedback =feedbackMapper.selectById(planTasks.get(0).getId());
+//                feedback.setStatus(ZSYTaskStatus.COMPLETED.getValue());
+//                feedbackMapper.updateByFeedbackId(feedback);
+//            }
+//        }
 
         // 插入日志
         taskLogMapper.insert(buildLog("阶段全部完成", "将全部阶段标记为已完成", taskId));

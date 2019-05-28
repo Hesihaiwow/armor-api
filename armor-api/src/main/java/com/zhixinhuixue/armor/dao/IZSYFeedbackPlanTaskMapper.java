@@ -97,4 +97,12 @@ public interface IZSYFeedbackPlanTaskMapper {
      * @return
      */
     Date selectEndTime(Long lastTaskId);
+
+    /**
+     * 根据planId查询任务
+     * @autuor sch
+     * @param id
+     * @return
+     */
+    List<Long> selectTasksByPlanId(@Param("id") Long id);
 }
