@@ -1152,11 +1152,14 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public PageInfo<TaskListResDTO> getTaskListPage(TaskListReqDTO taskListReqDTO) {
+        long time1 = System.currentTimeMillis();
         if (taskListReqDTO.getPageSize() != null && taskListReqDTO.getPageNum() != null) {
             PageHelper.startPage(taskListReqDTO.getPageNum(), taskListReqDTO.getPageSize());
         }
         taskListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<TaskListBO> taskListBOS = taskMapper.selectPage(taskListReqDTO);
+        long time2 = System.currentTimeMillis();
+        logger.info("查询耗时: "+(time2-time1)+"ms");
         Page<TaskListResDTO> list = new Page();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
@@ -1173,6 +1176,8 @@ public class ZSYTaskService implements IZSYTaskService {
             taskListResDTO.setTags(taskTagResDTOS);
             list.add(taskListResDTO);
         });
+        long time3 = System.currentTimeMillis();
+        logger.info("准备返回值耗时: "+(time3-time2)+"ms");
         return new PageInfo<>(list);
     }
 
