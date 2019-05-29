@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskEvaluationService;
 import com.zhixinhuixue.armor.service.IZSYTaskExpandService;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -42,5 +43,11 @@ public class ZSYTaskEvaluationController {
     @GetMapping("/task/evaluated/{pageNum}")
     public String getEvaluated(@PathVariable("pageNum")Integer pageNum){
         return ZSYResult.success().data(taskEvaluationService.getEvaluated(pageNum)).build();
+    }
+
+    @ApiOperation("管理员分页查看用户所有任务综合评价")
+    @PostMapping("/average/user/page")
+    public String getUserAvgEvaluation(@RequestBody EvaluationPageQueryReqDTO reqDTO){
+        return ZSYResult.success().data(taskEvaluationService.getUserAvgEvaluation(reqDTO)).build();
     }
 }

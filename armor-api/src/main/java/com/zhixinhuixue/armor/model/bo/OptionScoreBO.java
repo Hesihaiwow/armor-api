@@ -15,5 +15,32 @@ public class OptionScoreBO {
      */
     private Double totalScore;
 
+    /**
+     * 评价人数量
+     */
+    private Integer evaluateUserNum;
 
+    public Integer getOption() {
+        return option;
+    }
+
+    public void setOption(Integer option) {
+        this.option = option;
+    }
+
+    public Double getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(Double totalScore) {
+        this.totalScore = totalScore;
+    }
+
+    public Integer getEvaluateUserNum() {
+        return evaluateUserNum;
+    }
+
+    public void setEvaluateUserNum(Integer evaluateUserNum) {
+        this.evaluateUserNum = evaluateUserNum;
+    }
 }

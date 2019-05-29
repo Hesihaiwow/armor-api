@@ -3,6 +3,8 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskEvaluationPageResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,4 +44,12 @@ public interface IZSYTaskEvaluationService {
      * @return
      */
     PageInfo<TaskDetailBO> getEvaluated(Integer pageNum);
+
+    /**
+     * 管理员分页查看用户所有任务综合评价
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    PageInfo<TaskEvaluationPageResDTO> getUserAvgEvaluation(EvaluationPageQueryReqDTO reqDTO);
 }
