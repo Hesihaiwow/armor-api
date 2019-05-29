@@ -12,6 +12,7 @@ public class TaskEvaluationPageBO {
      */
     private Long userId;
     private String userName;
+    private Integer jobRole;
 
     /**
      * 任务
@@ -20,21 +21,25 @@ public class TaskEvaluationPageBO {
     private List<TaskBaseBO> taskBaseBOS;
 
     /**
-     * 评价人数量
-     */
-    private Integer evaluateUserNum;
-
-    /**
      * 评价
      */
     private List<OptionScoreBO> optionScoreBOS;
+    private Integer evaluationNum;
 
-    public Integer getEvaluateUserNum() {
-        return evaluateUserNum;
+    public Integer getEvaluationNum() {
+        return evaluationNum;
     }
 
-    public void setEvaluateUserNum(Integer evaluateUserNum) {
-        this.evaluateUserNum = evaluateUserNum;
+    public void setEvaluationNum(Integer evaluationNum) {
+        this.evaluationNum = evaluationNum;
+    }
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
     }
 
     public Long getUserId() {

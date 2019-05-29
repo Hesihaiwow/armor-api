@@ -12,6 +12,7 @@ public class TaskEvaluationPageResDTO {
      */
     private Long userId;
     private String userName;
+    private Integer jobRole;
 
     /**
      * 任务
@@ -22,7 +23,15 @@ public class TaskEvaluationPageResDTO {
     /**
      * 综合评价
      */
-    private List<EvaluationScoreResDTO> scoreResDTOS;
+    private List<AvgEvaluationScoreResDTO> scoreResDTOS;
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
+    }
 
     public Long getUserId() {
         return userId;
@@ -56,11 +65,11 @@ public class TaskEvaluationPageResDTO {
         this.taskBaseResDTOS = taskBaseResDTOS;
     }
 
-    public List<EvaluationScoreResDTO> getScoreResDTOS() {
+    public List<AvgEvaluationScoreResDTO> getScoreResDTOS() {
         return scoreResDTOS;
     }
 
-    public void setScoreResDTOS(List<EvaluationScoreResDTO> scoreResDTOS) {
+    public void setScoreResDTOS(List<AvgEvaluationScoreResDTO> scoreResDTOS) {
         this.scoreResDTOS = scoreResDTOS;
     }
 }

@@ -25,6 +25,11 @@ public class TaskUserResDTO{
      */
     private BigDecimal avgScore;
 
+    /**
+     * 是否已评价
+     */
+    private Integer isEvaluated;
+
     private Double taskHours;
 
     private Date beginTime;
@@ -79,6 +84,14 @@ public class TaskUserResDTO{
      * 任务结束时，最终评价等级
      */
     private String commentGrade;
+
+    public Integer getIsEvaluated() {
+        return isEvaluated;
+    }
+
+    public void setIsEvaluated(Integer isEvaluated) {
+        this.isEvaluated = isEvaluated;
+    }
 
     public BigDecimal getAvgScore() {
         return avgScore;

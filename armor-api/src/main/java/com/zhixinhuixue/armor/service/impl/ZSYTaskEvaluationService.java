@@ -12,12 +12,15 @@ import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationScoreReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationUserReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.AvgEvaluationScoreResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskBaseResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskEvaluationPageResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskEvaluationService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
+import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -260,6 +263,58 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
     public PageInfo<TaskEvaluationPageResDTO> getUserAvgEvaluation(EvaluationPageQueryReqDTO reqDTO) {
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
         Page<TaskEvaluationPageBO> taskEvaluationPageBOS = evaluationMapper.selectUserAvgEvaluation(reqDTO);
-        return null;
+        Page<TaskEvaluationPageResDTO> page = new Page<>();
+        BeanUtils.copyProperties(taskEvaluationPageBOS,page);
+        if (!CollectionUtils.isEmpty(taskEvaluationPageBOS)){
+            taskEvaluationPageBOS.stream().forEach(taskEvaluationPageBO -> {
+                TaskEvaluationPageResDTO resDTO = new TaskEvaluationPageResDTO();
+                resDTO.setTaskNum(taskEvaluationPageBO.getTaskNum());
+                resDTO.setUserId(taskEvaluationPageBO.getUserId());
+                resDTO.setUserName(taskEvaluationPageBO.getUserName());
+                resDTO.setJobRole(taskEvaluationPageBO.getJobRole());
+                List<OptionScoreBO> optionScoreBOS = taskEvaluationPageBO.getOptionScoreBOS();
+                List<TaskBaseBO> taskBaseBOS = taskEvaluationPageBO.getTaskBaseBOS();
+
+                List<TaskBaseResDTO> taskBaseResDTOList = new ArrayList<>();
+                if (!CollectionUtils.isEmpty(taskBaseBOS)){
+                    taskBaseBOS.stream().forEach(taskBaseBO -> {
+                        TaskBaseResDTO taskBaseResDTO = new TaskBaseResDTO();
+                        taskBaseResDTO.setId(taskBaseBO.getTaskId());
+                        taskBaseResDTO.setName(taskBaseBO.getTaskName());
+                        taskBaseResDTOList.add(taskBaseResDTO);
+                    });
+                }
+                resDTO.setTaskBaseResDTOS(taskBaseResDTOList);
+
+                List<AvgEvaluationScoreResDTO> avgEvaluationScoreResDTOList = new ArrayList<>();
+                Integer evaluationNum = taskEvaluationPageBO.getEvaluationNum();
+                Integer jobRole = taskEvaluationPageBO.getJobRole();
+                Integer optionNum = 0;
+                if (jobRole == 0){
+                    optionNum = 2;
+                }else if (jobRole == 1){
+                    optionNum = 4;
+                }else if (jobRole == 2){
+                    optionNum = 3;
+                }else if (jobRole == 3){
+                    optionNum = 4;
+                }
+                Integer evaluateTimes = evaluationNum/optionNum;
+                if (!CollectionUtils.isEmpty(optionScoreBOS)){
+                    for (OptionScoreBO optionScoreBO : optionScoreBOS) {
+                        AvgEvaluationScoreResDTO avgEvaluationScoreResDTO = new AvgEvaluationScoreResDTO();
+                        avgEvaluationScoreResDTO.setEvaluationOption(optionScoreBO.getOption());
+                        avgEvaluationScoreResDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(optionScoreBO.getOption()));
+                        BigDecimal avgScore = BigDecimal.valueOf(optionScoreBO.getTotalScore())
+                                .divide(BigDecimal.valueOf(evaluateTimes),2,BigDecimal.ROUND_HALF_UP);
+                        avgEvaluationScoreResDTO.setAvgScore(avgScore);
+                        avgEvaluationScoreResDTOList.add(avgEvaluationScoreResDTO);
+                    }
+                }
+                resDTO.setScoreResDTOS(avgEvaluationScoreResDTOList);
+                page.add(resDTO);
+            });
+        }
+        return new PageInfo<>(page);
     }
 }

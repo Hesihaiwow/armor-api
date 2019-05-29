@@ -34,11 +34,12 @@
 
     <resultMap id="EvaluationPageBOMap" type="com.zhixinhuixue.armor.model.bo.TaskEvaluationPageBO">
         <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="job_role" property="jobRole" jdbcType="BIGINT"></result>
         <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
         <association property="taskNum" column="taskUserId=user_id"
                      select="selectTaskNumByTaskUser" javaType="java.lang.Integer"/>
-        <association property="evaluateUserNum" column="taskUserId=user_id"
-                     select="selectEvaluateUserNumByTaskUser"
+        <association property="evaluationNum" column="taskUserId=user_id"
+                     select="selectEvaluationNumByTaskUser"
                      javaType="java.lang.Integer"/>
         <collection property="taskBaseBOS" column="taskUserId=user_id"
                     select="selectTaskBaseInfoByTaskUser"
@@ -54,8 +55,8 @@
     </resultMap>
 
     <resultMap id="OptionScoreBOMap" type="com.zhixinhuixue.armor.model.bo.OptionScoreBO">
-        <result column="option" property="option" javaType="INTEGER"></result>
-        <result column="total_score" property="totalScore" javaType="DECIMAL"></result>
+        <result column="option" property="option" jdbcType="INTEGER"></result>
+        <result column="total_score" property="totalScore" jdbcType="DECIMAL"></result>
     </resultMap>
     <!--批量插入任务评价-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskEvaluation">
@@ -139,7 +140,44 @@
 
     <!--管理员分页查看用户所有任务综合评价-->
     <select id="selectUserAvgEvaluation" parameterType="com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO"
-    >
+                resultMap="EvaluationPageBOMap">
+        SELECT u.id user_id,u.name user_name,u.job_role job_role
+        FROM task_evaluation tev1
+        LEFT JOIN user u on u.id = tev1.task_user_id
+        LEFT JOIN task t on t.id = tev1.task_id
+        WHERE u.is_delete = 0 AND u.status = 0 AND t.is_delete = 0 AND t.review_status = 3 AND t.status = 3 AND t.type = 2
+        <if test="reqDTO.taskUserId != null">
+            AND tev1.task_user_id = #{reqDTO.taskUserId}
+        </if>
+        <if test="reqDTO.beginTime != null">
+            <![CDATA[  AND  t.`complete_time` >= #{reqDTO.beginTime} ]]>
+        </if>
+        <if test="reqDTO.endTime != null">
+            <![CDATA[  AND  t.`complete_time` <= #{reqDTO.endTime} ]]>
+        </if>
+        GROUP BY tev1.task_user_id
+    </select>
 
+    <select id="selectTaskNumByTaskUser" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(id),0) FROM
+        (SELECT * FROM task_evaluation WHERE task_user_id = #{taskUserId}
+        GROUP BY task_id) t1
+    </select>
+
+    <select id="selectTaskBaseInfoByTaskUser" resultMap="TaskBaseBOMap">
+        SELECT t.id task_id,t.name task_name FROM task_evaluation tev
+        LEFT JOIN task t on tev.task_id = t.id
+        WHERE tev.task_user_id = #{taskUserId}
+        GROUP BY tev.task_id
+    </select>
+
+    <select id="selectOptionScoreByTaskUser" resultMap="OptionScoreBOMap">
+        SELECT sum(score) total_score,evaluation_option 'option'
+        FROM task_evaluation WHERE task_user_id = #{taskUserId}
+        GROUP BY evaluation_option;
+    </select>
+
+    <select id="selectEvaluationNumByTaskUser" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(*),0) evaluation_num FROM task_evaluation WHERE task_user_id = #{taskUserId}
     </select>
 </mapper>

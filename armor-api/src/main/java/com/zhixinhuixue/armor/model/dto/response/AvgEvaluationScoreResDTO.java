@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import java.math.BigDecimal;
+
 /**
  * @author sch
  * @DATE 2019/5/29 10:07
@@ -9,7 +11,7 @@ public class AvgEvaluationScoreResDTO {
     /**
      * 得分
      */
-    private Double avgScore;
+    private BigDecimal avgScore;
 
     /**
      * 评分项
@@ -25,11 +27,11 @@ public class AvgEvaluationScoreResDTO {
         this.evaluationOptionName = evaluationOptionName;
     }
 
-    public Double getAvgScore() {
+    public BigDecimal getAvgScore() {
         return avgScore;
     }
 
-    public void setAvgScore(Double avgScore) {
+    public void setAvgScore(BigDecimal avgScore) {
         this.avgScore = avgScore;
     }
 

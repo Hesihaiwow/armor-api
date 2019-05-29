@@ -672,6 +672,12 @@ public class ZSYTaskService implements IZSYTaskService {
                 evaluationBOS = evaluationMapper.selectOthersToMe(taskId,taskUserBO.getUserId());
 
             }
+            List<EvaluationBO> evaluationBOS1 = evaluationMapper.selectMeToOthers(taskId, taskUserBO.getUserId());
+            if (!CollectionUtils.isEmpty(evaluationBOS1) && evaluationBOS1.size()>0){
+                taskUserResDTO.setIsEvaluated(1);
+            }else {
+                taskUserResDTO.setIsEvaluated(0);
+            }
             List<EvaluationResDTO> evaluationResDTOList = new ArrayList<>();
             Double totalScore = 0.0;
             Integer size = 0;
@@ -700,7 +706,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         evaluationScoreResDTOList.add(evaluationScoreResDTO);
                     }
                     resDTO.setEvaluationScoreResDTOS(evaluationScoreResDTOList);
-                    BigDecimal avaIntegral = BigDecimal.valueOf(totalIntegral).divide(BigDecimal.valueOf(evaluationScoreBOS.size())).setScale(1,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal avaIntegral = BigDecimal.valueOf(totalIntegral).divide(BigDecimal.valueOf(evaluationScoreBOS.size()),2,BigDecimal.ROUND_HALF_UP);
                     resDTO.setAvgIntegral(avaIntegral);
                     evaluationResDTOList.add(resDTO);
                     totalScore += singleTotalScore;
@@ -771,7 +777,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskUserResDTOS.add(taskUserResDTO);
             if (!CollectionUtils.isEmpty(evaluationBOS) && taskUserResDTO.getCommentGrade() == null){
                 if (ZSYUserRole.ADMINISTRATOR.getValue() == ZSYTokenRequestContext.get().getUserRole()){
-                    BigDecimal avgScore = BigDecimal.valueOf(totalScore).divide(BigDecimal.valueOf(size)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal avgScore = BigDecimal.valueOf(totalScore).divide(BigDecimal.valueOf(size),2,BigDecimal.ROUND_HALF_UP);
                     taskUserResDTO.setAvgScore(avgScore);
                 }
             }
