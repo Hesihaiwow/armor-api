@@ -333,4 +333,11 @@ public interface IZSYFeedbackService {
      * @return
      */
     String newDemandExcel(DemandQueryReqDTO reqDTO);
+
+    /**
+     * 完成需求
+     * @author sch
+     * @param feedbackId
+     */
+    void finishFeedback(Long feedbackId);
 }

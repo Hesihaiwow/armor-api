@@ -1,5 +1,8 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import com.zhixinhuixue.armor.model.pojo.TaskEvaluation;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +16,19 @@ public class TaskUserResDTO{
     private Long taskId;
 
     private Long userId;
+    private Integer jobRole;
+    private String jobRoleName;
+
+
+    /**
+     * 平均得分
+     */
+    private BigDecimal avgScore;
+
+    /**
+     * 是否评价
+     */
+    private Integer isEvaluated;
 
     private Double taskHours;
 
@@ -53,6 +69,11 @@ public class TaskUserResDTO{
     private List<TaskCommentResDTO> comments;
 
     /**
+     * 评价
+     */
+    private List<EvaluationResDTO> evaluationResDTOS;
+
+    /**
      * 周工作量
      */
     private List<UserWeekResDTO> userWeeks;
@@ -63,6 +84,46 @@ public class TaskUserResDTO{
      * 任务结束时，最终评价等级
      */
     private String commentGrade;
+
+    public Integer getIsEvaluated() {
+        return isEvaluated;
+    }
+
+    public void setIsEvaluated(Integer isEvaluated) {
+        this.isEvaluated = isEvaluated;
+    }
+
+    public BigDecimal getAvgScore() {
+        return avgScore;
+    }
+
+    public void setAvgScore(BigDecimal avgScore) {
+        this.avgScore = avgScore;
+    }
+
+    public Integer getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(Integer jobRole) {
+        this.jobRole = jobRole;
+    }
+
+    public String getJobRoleName() {
+        return jobRoleName;
+    }
+
+    public void setJobRoleName(String jobRoleName) {
+        this.jobRoleName = jobRoleName;
+    }
+
+    public List<EvaluationResDTO> getEvaluationResDTOS() {
+        return evaluationResDTOS;
+    }
+
+    public void setEvaluationResDTOS(List<EvaluationResDTO> evaluationResDTOS) {
+        this.evaluationResDTOS = evaluationResDTOS;
+    }
 
     public String getCommentGrade() {
         if (comments!=null && comments.size()>0) {

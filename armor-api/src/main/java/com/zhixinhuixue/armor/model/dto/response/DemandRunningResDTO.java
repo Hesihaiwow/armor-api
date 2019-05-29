@@ -57,6 +57,16 @@ public class DemandRunningResDTO {
     private Integer readStatus;
     @ApiModelProperty("点赞数")
     private Integer likesNum;
+    @ApiModelProperty("能否点完成")
+    private Integer canFinish;
+
+    public Integer getCanFinish() {
+        return canFinish;
+    }
+
+    public void setCanFinish(Integer canFinish) {
+        this.canFinish = canFinish;
+    }
 
     public Integer getLikesNum() {
         return likesNum;

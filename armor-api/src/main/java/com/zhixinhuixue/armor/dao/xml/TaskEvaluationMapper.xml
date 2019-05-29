@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskEvaluationMapper">
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskEvaluation">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="task_user_id" property="taskUserId" jdbcType="BIGINT"></result>
+        <result column="score" property="score" jdbcType="DECIMAL"></result>
+        <result column="evaluation_option" property="evaluationOption" jdbcType="INTEGER"></result>
+        <result column="integral" property="integral" jdbcType="INTEGER"></result>
+        <result column="comment" property="comment" jdbcType="VARCHAR"></result>
+        <result column="evaluate_user_id" property="evaluateUserId" jdbcType="BIGINT"></result>
+        <result column="evaluate_time" property="evaluateTime" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <resultMap id="EvaluationBOMap" type="com.zhixinhuixue.armor.model.bo.EvaluationBO">
+        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="task_user_id" property="taskUserId" jdbcType="BIGINT"></result>
+        <result column="task_user_name" property="taskUserName" jdbcType="BIGINT"></result>
+        <result column="evaluate_user_name" property="evaluateUserName" jdbcType="BIGINT"></result>
+        <result column="evaluate_user_id" property="evaluateUserId" jdbcType="BIGINT"></result>
+        <result column="evaluate_time" property="evaluateTime" jdbcType="TIMESTAMP"></result>
+        <collection property="evaluationScoreBOS" column="{taskId = task_id,userId = task_user_id,evaluateUserId=evaluate_user_id}"
+                    ofType="com.zhixinhuixue.armor.model.bo.EvaluationScoreBO"
+                    select="selectByTaskAndTaskUser"></collection>
+    </resultMap>
+
+    <resultMap id="EvaluationScoreBOMap" type="com.zhixinhuixue.armor.model.bo.EvaluationScoreBO">
+        <result column="id" property="id" jdbcType="BIGINT"></result>
+        <result column="score" property="score" jdbcType="DECIMAL"></result>
+        <result column="evaluation_option" property="evaluationOption" jdbcType="INTEGER"></result>
+        <result column="integral" property="integral" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <!--批量插入任务评价-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskEvaluation">
+        INSERT INTO `task_evaluation`
+        (`id`,`task_id`,`task_user_id`,`score`,`evaluation_option`,`integral`,`comment`,`evaluate_user_id`,`evaluate_time`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.taskUserId,jdbcType=BIGINT}
+            ,#{item.score,jdbcType=DECIMAL},#{item.evaluationOption,jdbcType=INTEGER},#{item.integral,jdbcType=INTEGER}
+            ,#{item.comment,jdbcType=VARCHAR},#{item.evaluateUserId,jdbcType=BIGINT},#{item.evaluateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--根据任务查询已经评价的用户-->
+    <select id="selectEvaluatedUsersByTask" resultType="java.lang.Long">
+        SELECT DISTINCT `evaluate_user_id` FROM `task_evaluation` WHERE `task_id` = #{taskId}
+    </select>
+
+    <!--根据任务和用户查询评价-->
+    <select id="selectByTaskAndUser" resultMap="EvaluationBOMap">
+        SELECT `task_id`,`task_user_id`,`evaluate_user_id`,`evaluate_time`
+        FROM `task_evaluation` WHERE `task_id` = #{taskId} AND `evaluate_user_id` = #{userId}
+        GROUP BY `evaluate_user_id`
+    </select>
+
+    <!--根据任务和被评价用户查询-->
+    <select id="selectByTaskAndTaskUser" resultMap="EvaluationScoreBOMap">
+        SELECT `id`,`score`,`evaluation_option`,`integral`
+        FROM `task_evaluation` WHERE
+        `task_id` = #{taskId}
+        AND `task_user_id` = #{userId}
+        <if test="evaluateUserId != null">
+            AND `evaluate_user_id` = #{evaluateUserId}
+        </if>
+    </select>
+    <select id="selectWaitEvaluatedByUser">
+        SELECT t.id FROM `task` t
+        LEFT JOIN task_user tu on t.id = tu.task_id
+        WHERE t.review_status = 3 AND t.is_delete = 0 AND t.`status` = 2
+        AND tu.user_id = #{userId}
+    </select>
+
+    <!--根据用户查询已经评价的任务-->
+    <select id="selectEvaluatedTaskIdsByUser" resultType="java.lang.Long">
+        SELECT task_id FROM task_evaluation WHERE evaluate_user_id = #{userId} GROUP BY task_id
+    </select>
+
+    <!--分页根据用户查询已经评价的任务-->
+    <select id="selectEvaluatedTaskIdsByUserPage" resultType="java.lang.Long">
+        SELECT task_id FROM task_evaluation WHERE evaluate_user_id = #{userId} GROUP BY task_id
+    </select>
+
+    <!--查看某个人对当前用户的评价-->
+    <select id="selectSomeoneToMe" resultMap="EvaluationBOMap">
+        SELECT te.`task_id`,te.`task_user_id`,te.`evaluate_user_id`,te.`evaluate_time`,u1.name task_user_name,u2.name evaluate_user_name
+        FROM `task_evaluation` te
+        LEFT JOIN `user` u1 ON u1.id = te.task_user_id
+        LEFT JOIN `user` u2 ON u2.id = te.evaluate_user_id
+        WHERE te.`task_id` = #{taskId} AND te.`task_user_id` = #{userId}
+        AND te.`evaluate_user_id` = #{evaluateUserId}
+        GROUP BY `task_user_id`
+    </select>
+
+    <!--查看某人都其他用户的评价-->
+    <select id="selectMeToOthers" resultMap="EvaluationBOMap">
+        SELECT `task_id`,`task_user_id`,`evaluate_user_id`,`evaluate_time`
+        FROM `task_evaluation`
+        WHERE `task_id` = #{taskId} AND `evaluate_user_id` = #{evaluateUserId}
+        GROUP BY `task_user_id`
+    </select>
+
+    <!--管理员查看其他人对某个人的评价-->
+    <select id="selectOthersToMe" resultMap="EvaluationBOMap">
+        SELECT te.`task_id`,te.`task_user_id`,te.`evaluate_user_id`,te.`evaluate_time`,u1.name task_user_name,u2.name evaluate_user_name
+        FROM `task_evaluation` te
+        LEFT JOIN `user` u1 ON u1.id = te.task_user_id
+        LEFT JOIN `user` u2 ON u2.id = te.evaluate_user_id
+        WHERE te.`task_id` = #{taskId} AND te.`task_user_id` = #{taskUserId}
+        GROUP BY `evaluate_user_id`
+    </select>
+</mapper>
