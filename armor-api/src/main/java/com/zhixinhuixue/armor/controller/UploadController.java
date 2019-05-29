@@ -273,4 +273,12 @@ public class UploadController {
         result.put("url", uploadToUcloud(uploadFile));
         return ZSYResult.success().data(result).build();
     }
+
+    @RequestMapping(value = "ucloud/file", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String uploadFileToUcloud(@RequestParam(value = "uploadFile") MultipartFile uploadFile){
+        JSONObject result = new JSONObject();
+        result.put("url", uploadToUcloud(uploadFile));
+        return ZSYResult.success().data(result).build();
+    }
 }

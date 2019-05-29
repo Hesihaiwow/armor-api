@@ -663,7 +663,7 @@ public class ZSYTaskService implements IZSYTaskService {
             TaskUserResDTO taskUserResDTO = new TaskUserResDTO();
             // sch --
             List<EvaluationBO> evaluationBOS = new ArrayList<>();
-            if (ZSYTokenRequestContext.get().getUserRole() <= ZSYUserRole.EMPLOYEE.getValue()){
+            if (ZSYTokenRequestContext.get().getUserRole() >= ZSYUserRole.PROJECT_MANAGER.getValue()){
                 //查看某个人对当前用户的评价
                 evaluationBOS = evaluationMapper.selectSomeoneToMe(taskId,taskUserBO.getUserId(),ZSYTokenRequestContext.get().getUserId());
 
