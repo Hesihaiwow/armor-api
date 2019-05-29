@@ -672,6 +672,12 @@ public class ZSYTaskService implements IZSYTaskService {
                 evaluationBOS = evaluationMapper.selectOthersToMe(taskId,taskUserBO.getUserId());
 
             }
+            List<EvaluationBO> evaluationBOS1 = evaluationMapper.selectMeToOthers(taskId, taskUserBO.getUserId());
+            if (!CollectionUtils.isEmpty(evaluationBOS1) && evaluationBOS1.size()>0){
+                taskUserResDTO.setIsEvaluated(1);
+            }else {
+                taskUserResDTO.setIsEvaluated(0);
+            }
             List<EvaluationResDTO> evaluationResDTOList = new ArrayList<>();
             Double totalScore = 0.0;
             Integer size = 0;
