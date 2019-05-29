@@ -121,7 +121,7 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="负责人" align="center" width="100">
+                        <el-table-column label="需求负责人" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
@@ -229,7 +229,7 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="负责人" align="center" width="80">
+                        <el-table-column label="需求负责人" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
@@ -388,7 +388,7 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="负责人" align="center" width="80">
+                        <el-table-column label="需求负责人" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
@@ -422,7 +422,7 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" align="center" width="130" fixed="right" v-show="permit">
+                        <el-table-column label="操作" align="center" width="130" v-show="permit">
                             <template scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;" @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!=0">计划
@@ -527,7 +527,7 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="负责人" align="center" width="80">
+                        <el-table-column label="需求负责人" align="center" width="80">
                             <template scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
@@ -637,7 +637,7 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="负责人" align="center" width="80">
+                        <el-table-column label="需求负责人" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
@@ -722,7 +722,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="负责人" v-show="demandForm.source == 0">
+                <el-form-item label="需求负责人" v-show="demandForm.source == 0">
                     <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
                         <el-option
                                 v-for="item in otherChargeManList"
@@ -818,7 +818,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="负责人">
+                <el-form-item label="需求负责人">
                     <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
                         <el-option
                                 v-for="item in chargeManList"
