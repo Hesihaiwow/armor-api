@@ -2379,16 +2379,6 @@
                 <!--<el-form-item class="task-form" v-show="showTaskDescriptionVisible" label="任务描述: ">-->
                     <!--<el-input type="textarea" disabled :rows="6" v-model="taskDetail.description"></el-input>-->
                 <!--</el-form-item>-->
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="项目: " style="float: left;margin-left: 10px" label-width="44px">{{taskDetail.projectName}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="阶段: " style="float: left;margin-left: 25px" label-width="44px">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="优先级: " style="margin-left: 270px;">
-                    <span v-for="item in priorityList"
-                          v-if="item.value == taskDetail.priority">{{item.label}}</span>
-                </el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="设计完成时间: " label-width="100px" style="float: left;margin-left: 10px">{{taskDetail.beginTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="开发完成时间: " label-width="100px" style="margin-left: 270px;">{{taskDetail.testTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="截止时间: " style="margin-left: 2px">{{taskDetail.endTime | formatDate}}</el-form-item>
-                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -27px" label="标签: ">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>

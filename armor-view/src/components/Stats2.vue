@@ -90,6 +90,8 @@
                             :layout="pageLayout"
                             :total="bugFormPage.total">
                     </el-pagination>
+                </div>
+            </el-tab-pane>
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >

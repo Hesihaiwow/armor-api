@@ -956,7 +956,7 @@
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.createBy" clearable placeholder="请选择">
-                                <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
+                                <el-option v-for="item in chargeManList2" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -1197,6 +1197,7 @@
                     {id:'87532428385583104',name:'李晓玉'},
                     {id:'296175644545384448',name:'邵淳'},
                 ],
+                chargeManList2:[],
                 otherChargeManList:[
                     {id:'87526662798835712',name:'杜文彬'},
                     {id:'139964039693336576',name:'颜林艳'}
@@ -1373,7 +1374,7 @@
             this.getDefaultSessionScreenData();
             this.fetchIntroducerList()
             this.fetchOriginList()
-            // this.fetchUserList()
+            this.fetchUserList()
             this.fetchProjectList()
             this.fetchStageList()
             this.fetchTagList()
@@ -1518,7 +1519,7 @@
             fetchUserList() {
                 let vm = this
                 http.zsyGetHttp('/user/effective', {}, (resp) => {
-                    vm.chargeManList = resp.data
+                    vm.chargeManList2 = resp.data
                 })
             },
 
