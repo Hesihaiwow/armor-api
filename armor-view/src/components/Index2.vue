@@ -329,6 +329,10 @@
                     name: 'comments'
                 });
                 this.tabs.push({
+                    label:'评价111',
+                    name:'evaluation'
+                })
+                this.tabs.push({
                     label: '组织',
                     name: 'organization'
                 });
