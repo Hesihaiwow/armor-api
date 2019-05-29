@@ -340,4 +340,16 @@ public interface IZSYFeedbackService {
      * @param feedbackId
      */
     void finishFeedback(Long feedbackId);
+
+    /**
+     * 更新老数据的来源
+     * @author sch
+     */
+    void updateSource();
+
+    /**
+     * 更新老数据的负责人
+     * @author sch
+     */
+    void updateChargeMan();
 }

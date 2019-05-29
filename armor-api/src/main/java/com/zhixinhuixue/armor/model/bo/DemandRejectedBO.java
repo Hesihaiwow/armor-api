@@ -33,6 +33,7 @@ public class DemandRejectedBO {
     private Integer likesNum;
     @ApiModelProperty("驳回人id")
     private Long rejectUser;
+    private String rejectUserName;
     @ApiModelProperty("驳回时间")
     private Date rejectedTime;
     @ApiModelProperty("问题")
@@ -45,6 +46,43 @@ public class DemandRejectedBO {
     private Integer status;
     @ApiModelProperty("学管id")
     private Integer coachId;
+    @ApiModelProperty("来源")
+    private Integer source;
+    @ApiModelProperty("负责人")
+    private Long chargeMan;
+    private String chargeManName;
+
+    public String getRejectUserName() {
+        return rejectUserName;
+    }
+
+    public void setRejectUserName(String rejectUserName) {
+        this.rejectUserName = rejectUserName;
+    }
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public Long getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(Long chargeMan) {
+        this.chargeMan = chargeMan;
+    }
+
+    public String getChargeManName() {
+        return chargeManName;
+    }
+
+    public void setChargeManName(String chargeManName) {
+        this.chargeManName = chargeManName;
+    }
 
     public Integer getCoachId() {
         return coachId;

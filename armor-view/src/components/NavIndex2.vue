@@ -2304,7 +2304,7 @@
         <el-dialog title="计算加班总时长" :visible.sync="showPersonalTotalEWrokTime" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
         @close="closeMyEWorkCounter">
-            <el-select clearable filterable no-match-text=" " v-model="workMonth1" placeholder="不选择及查询本年度"
+            <el-select clearable no-match-text=" " v-model="workMonth1" placeholder="不选择及查询本年度"
                        size="small" style="width:200px">
                 <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
                            :value="item.id"></el-option>
@@ -2317,7 +2317,7 @@
         <el-dialog title="计算加班总时长" :visible.sync="showTotalEWrokTime" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
         @close="closeEWorkCounter">
-            <el-select clearable filterable no-match-text=" " v-model="workMonth2" placeholder="不选择及查询本年度"
+            <el-select clearable no-match-text=" " v-model="workMonth2" placeholder="不选择及查询本年度"
                         style="width:200px">
                 <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
                            :value="item.id"></el-option>
@@ -2359,6 +2359,15 @@
                                 :value="item.id">
                         </el-option>
                     </el-select>
+                    <el-popover
+                            v-show="showTaskDescriptionVisible"
+                            placement="right"
+                            title="任务描述"
+                            width="400"
+                            trigger="hover"
+                            :content="taskDetail.description">
+                        <el-button slot="reference">任务描述</el-button>
+                    </el-popover>
                 </el-form-item>
                 <div v-show="showTaskDetailVisible" style="float: left;margin-top: 3px">项目: {{taskDetail.projectName}}</div>
                 <div v-show="showTaskDetailVisible" style="margin-top: 3px;margin-left: 250px">设计完成时间: {{taskDetail.beginTime | formatDate}}</div>
@@ -2367,6 +2376,19 @@
                 <div v-show="showTaskDetailVisible" style="float: left;margin-top: 3px">优先级: <span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span></div>
                 <div v-show="showTaskDetailVisible" style="margin-top: 3px;margin-left: 250px">任务截止时间: {{taskDetail.endTime | formatDate}}</div>
                 <div v-show="showTaskDetailVisible">标签:
+                <!--<el-form-item class="task-form" v-show="showTaskDescriptionVisible" label="任务描述: ">-->
+                    <!--<el-input type="textarea" disabled :rows="6" v-model="taskDetail.description"></el-input>-->
+                <!--</el-form-item>-->
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="项目: " style="float: left;margin-left: 10px" label-width="44px">{{taskDetail.projectName}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="阶段: " style="float: left;margin-left: 25px" label-width="44px">{{taskDetail.stageName}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="优先级: " style="margin-left: 270px;">
+                    <span v-for="item in priorityList"
+                          v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                </el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="设计完成时间: " label-width="100px" style="float: left;margin-left: 10px">{{taskDetail.beginTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="开发完成时间: " label-width="100px" style="margin-left: 270px;">{{taskDetail.testTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" label="截止时间: " style="margin-left: 2px">{{taskDetail.endTime | formatDate}}</el-form-item>
+                <el-form-item class="task-form" v-show="showTaskDetailVisible" style="margin-left: -27px" label="标签: ">
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
@@ -3229,6 +3251,7 @@
 
                 },
                 showTaskDetailVisible:false,
+                showTaskDescriptionVisible:false,
                 priorityList: [
                     {label: '普通', value: 1},
                     {label: '紧急', value: 2},
@@ -3655,6 +3678,7 @@
                 this.createTaskVisible = false;
                 this.clearMultipleTask();
                 this.createMultipleTaskVisible = true;
+                this.showTaskDescriptionVisible = false;
             },
             //创建个人任务
             createPrivateTask(){
@@ -4106,11 +4130,13 @@
               if(id != null && id != ''){
                   http.zsyGetHttp('task/detail/'+id,{},(res =>{
                       this.taskDetail = res.data;
-                      this.showTaskDetailVisible = true
+                      this.showTaskDetailVisible = true;
+                      this.showTaskDescriptionVisible = true;
                   }))
               }else {
                   this.taskDetail = {};
                   this.showTaskDetailVisible = false;
+                  this.showTaskDescriptionVisible = false;
               }
             },
             //按阶段查询任务
@@ -7226,5 +7252,19 @@
     .ctpc-save {
         background: #36A8FF;
         color: #fff;
+    }
+
+    .trends {
+        /*background-color: #f2f2f2; */
+        /*padding-left: 10px;*/
+        line-height: 30px;
+        border: 1px solid #e4e8f1;
+
+    }
+
+    .trends-title {
+        padding: 0 10px;
+        line-height: 30px;
+        background-color: #e4e8f1;
     }
 </style>

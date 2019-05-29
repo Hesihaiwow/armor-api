@@ -10,6 +10,7 @@ import com.zhixinhuixue.armor.model.dto.response.OnlineBugResDTO;
 import com.zhixinhuixue.armor.service.IZSYBugService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -90,10 +91,17 @@ public class ZSYBugController extends ZSYController{
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("分页查询线上bug")
-    @PostMapping(value = "/page")
+    @ApiOperation("分页查询线上bug(新数据)")
+    @PostMapping(value = "/new/page")
     public String getBugManagePage(@RequestBody BugListReqDTO bugListReqDTO){
         PageInfo<OnlineBugResDTO> pageInfo = bugService.getBugManagePage(bugListReqDTO);
+        return ZSYResult.success().data(pageInfo).build();
+    }
+
+    @ApiOperation("分页查询线上bug(旧数据)")
+    @PostMapping(value = "/old/page")
+    public String getOldBugManagePage(@RequestBody BugListReqDTO bugListReqDTO){
+        PageInfo<OnlineBugResDTO> pageInfo = bugService.getOldBugManagePage(bugListReqDTO);
         return ZSYResult.success().data(pageInfo).build();
     }
 
@@ -116,6 +124,13 @@ public class ZSYBugController extends ZSYController{
     public String getDiffTypeBugNum(@RequestBody BugListReqDTO bugListReqDTO){
         OnlineBugNumResDTO resDTO = bugService.getDiffTypeBugNum(bugListReqDTO);
         return ZSYResult.success().data(resDTO).build();
+    }
+
+    @ApiOperation("更新老数据状态为已解决")
+    @PutMapping("/update/status")
+    public String updateStatus(){
+        bugService.updateStatus();
+        return ZSYResult.success().build();
     }
     // -- sch
 

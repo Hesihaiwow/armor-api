@@ -209,4 +209,10 @@
     </select>
     <!-- sch -->
 
+  <!--根据姓名查询-->
+    <select id="selectByName" resultMap="BaseResultMap">
+      SELECT * FROM `user` WHERE `name` = #{name}
+    </select>
+    <!-- sch -->
+
 </mapper>

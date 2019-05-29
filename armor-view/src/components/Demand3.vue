@@ -16,7 +16,7 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <div class="demand-top-list fl">
+                            <div class="demand-top-list fl" style="margin-left: -5px">
                                 <span class="ttl-name">类型:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="type" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
@@ -26,7 +26,7 @@
                             </div>
 
                             <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">提出人:</span>
+                                <span class="ttl-name" style="margin-left: -25px;">提出人:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="origin" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
                                     <el-option v-for="item in originList" :key="item" :label="item"
@@ -34,31 +34,43 @@
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
-                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
-                                <el-select clearable filterable no-match-text=" " v-model="fromCoach" placeholder="请选择"
+                                <span class="ttl-name" style="margin-left: -25px;">来源:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="source" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in fromCoachList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
                             <div class="demand-top-list fl">
+                                <span class="ttl-name" style="margin-left: -25px;">负责人:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="chargeMan" placeholder="请选择"
+                                           size="small" style="width:100px;margin-left: -50px">
+                                    <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="demand-top-list fl" style="margin-left: -10px">
                                 <el-date-picker
+                                        placeholder="开始时间"
                                         v-model="fbTimeStart"
                                         align="right"
                                         type="date"
                                         value-format="yyyy-MM-dd"
                                         clearable
                                         size="small"
+                                        style="width: 150px"
                                 >
                                 </el-date-picker>
                                 <span style="font-size: 14px;color: #606266;">-</span>
                                 <el-date-picker
+                                        placeholder="截止时间"
                                         v-model="fbTimeEnd"
                                         align="right"
                                         type="date"
                                         value-format="yyyy-MM-dd"
                                         clearable
                                         size="small"
+                                        style="width: 150px"
                                 >
                                 </el-date-picker>
                             </div>
@@ -83,8 +95,11 @@
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.coachId > 0">学管端</span>
-                                <span v-else>其他</span>
+                                <span v-if="scope.row.source == 0">其他</span>
+                                <span v-else-if="scope.row.source == 1">直播课</span>
+                                <span v-else-if="scope.row.source == 2">小程序</span>
+                                <span v-else-if="scope.row.source == 3">IMS</span>
+                                <span v-else-if="scope.row.source == 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
@@ -106,6 +121,11 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
+                        <el-table-column label="需求负责人" align="center" width="120">
+                            <template scope="scope">
+                                <span>{{scope.row.chargeManName}}</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.feedbackTime| formatDate}}</span>
@@ -121,7 +141,7 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" align="center" v-if="permit" width="150" fixed="right">
+                        <el-table-column label="操作" align="center" v-if="permit" width="150">
                             <template scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;"
                                    @click="editDemandVisible=true,editDemand(scope.row)">编辑</a>
@@ -183,6 +203,14 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
+                            <div class="demand-top-list fl">
+                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="source1" placeholder="请选择"
+                                           size="small" style="width:100px;margin-left: -50px">
+                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
                             <el-button type="primary" size="small" @click="select1">查询</el-button>
                         </div>
                     </div>
@@ -201,6 +229,20 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
+                        <el-table-column label="需求负责人" align="center" width="120">
+                            <template scope="scope">
+                                <span>{{scope.row.chargeManName}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="来源" align="center" width="100">
+                            <template scope="scope">
+                                <span v-if="scope.row.source == 0">其他</span>
+                                <span v-else-if="scope.row.source == 1">直播课</span>
+                                <span v-else-if="scope.row.source == 2">小程序</span>
+                                <span v-else-if="scope.row.source == 3">IMS</span>
+                                <span v-else-if="scope.row.source == 4">学管端</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.feedbackTime | formatDate}}</span>
@@ -214,11 +256,6 @@
                         <el-table-column label="采纳时间" align="center" width="130">
                             <template scope="scope">
                                 <span>{{scope.row.agreedTime | formatDate}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="负责人" align="center" width="80">
-                            <template scope="scope">
-                                <span>{{scope.row.chargeMan}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="启动开发时间" align="center" width="130">
@@ -306,6 +343,22 @@
                                                :value="item"></el-option>
                                 </el-select>
                             </div>
+                            <div class="demand-top-list fl">
+                                <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="chargeMan4" placeholder="请选择"
+                                           size="small" style="width:100px;margin-left: -50px">
+                                    <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="demand-top-list fl">
+                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="source4" placeholder="请选择"
+                                           size="small" style="width:100px;margin-left: -50px">
+                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
                             <el-button type="primary" size="small" @click="select4">查询</el-button>
                         </div>
                     </div>
@@ -338,6 +391,20 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
+                        <el-table-column label="需求负责人" align="center" width="120">
+                            <template scope="scope">
+                                <span>{{scope.row.chargeManName}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="来源" align="center" width="80">
+                            <template scope="scope">
+                                <span v-if="scope.row.source == 0">其他</span>
+                                <span v-else-if="scope.row.source == 1">直播课</span>
+                                <span v-else-if="scope.row.source == 2">小程序</span>
+                                <span v-else-if="scope.row.source == 3">IMS</span>
+                                <span v-else-if="scope.row.source == 4">学管端</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.feedbackTime | formatDate}}</span>
@@ -358,7 +425,7 @@
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" align="center" width="130" fixed="right" v-show="permit">
+                        <el-table-column label="操作" align="center" width="130" v-show="permit">
                             <template scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;" @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!=0">计划
@@ -415,6 +482,22 @@
                                                :value="item"></el-option>
                                 </el-select>
                             </div>
+                            <div class="demand-top-list fl">
+                                <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="chargeMan3" placeholder="请选择"
+                                           size="small" style="width:100px;margin-left: -50px">
+                                    <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="demand-top-list fl">
+                                <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                                <el-select clearable filterable no-match-text=" " v-model="source3" placeholder="请选择"
+                                           size="small" style="width:100px;margin-left: -50px">
+                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                               :value="item.id"></el-option>
+                                </el-select>
+                            </div>
                             <el-button type="primary" size="small" @click="select3">查询</el-button>
                         </div>
                     </div>
@@ -442,9 +525,23 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="提出人" align="center" width="120">
+                        <el-table-column label="提出人" align="center" width="80">
                             <template scope="scope">
                                 <span>{{scope.row.origin}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="需求负责人" align="center" width="80">
+                            <template scope="scope">
+                                <span>{{scope.row.chargeManName}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="来源" align="center" width="80">
+                            <template scope="scope">
+                                <span v-if="scope.row.source == 0">其他</span>
+                                <span v-else-if="scope.row.source == 1">直播课</span>
+                                <span v-else-if="scope.row.source == 2">小程序</span>
+                                <span v-else-if="scope.row.source == 3">IMS</span>
+                                <span v-else-if="scope.row.source == 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
@@ -518,6 +615,14 @@
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
+                        <div class="demand-top-list fl">
+                            <span class="ttl-name" style="margin-left: -15px;">来源:</span>
+                            <el-select clearable filterable no-match-text=" " v-model="source2" placeholder="请选择"
+                                       size="small" style="width:100px;margin-left: -50px">
+                                <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
                         <el-button type="primary" size="small" @click="select2">查询</el-button>
                     </div>
                     <el-table :data="demandData" border>
@@ -533,6 +638,20 @@
                         <el-table-column label="提出人" align="center" width="120">
                             <template scope="scope">
                                 <span>{{scope.row.origin}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="需求负责人" align="center" width="120">
+                            <template scope="scope">
+                                <span>{{scope.row.chargeManName}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="来源" align="center" width="80">
+                            <template scope="scope">
+                                <span v-if="scope.row.source == 0">其他</span>
+                                <span v-else-if="scope.row.source == 1">直播课</span>
+                                <span v-else-if="scope.row.source == 2">小程序</span>
+                                <span v-else-if="scope.row.source == 3">IMS</span>
+                                <span v-else-if="scope.row.source == 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
@@ -595,6 +714,26 @@
             <el-form :model="demandForm" ref="demandForm" :rules="rules" label-width="110px">
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
+                </el-form-item>
+                <el-form-item label="来源">
+                    <el-select v-model="demandForm.source" placeholder="请选择来源">
+                        <el-option
+                                v-for="item in sourceList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="需求负责人" v-show="demandForm.source == 0">
+                    <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
+                        <el-option
+                                v-for="item in otherChargeManList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="类型">
                     <el-select v-model="demandForm.type" placeholder="请选择类型">
@@ -672,7 +811,26 @@
                 <el-form-item label="需求标题" prop="title">
                     <el-input type="text" v-model="demandForm.title"></el-input>
                 </el-form-item>
-                <br>
+                <el-form-item label="来源">
+                    <el-select v-model="demandForm.source" placeholder="请选择来源">
+                        <el-option
+                                v-for="item in sourceList2"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="需求负责人">
+                    <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
+                        <el-option
+                                v-for="item in chargeManList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="类型" style="margin-top: -20px">
                     <el-select v-model.number="demandForm.type" placeholder="请选择类型">
                         <el-option
@@ -980,8 +1138,6 @@
                 ],
                 originList: [],
                 introducerList: [],
-                chargeMan: '',
-                chargeManList: [],
                 demandData: [],
                 planTask: [],
                 linkTaskId: '',
@@ -1022,11 +1178,36 @@
                     {id:0,name:'学管端'},
                     {id:1,name:'其他'}
                 ],
+                sourceList:[
+                    {id:0,name:'其他'},
+                    {id:1,name:'直播课'},
+                    {id:2,name:'小程序'},
+                    {id:3,name:'IMS'}
+                ],
+                sourceList2:[
+                    {id:0,name:'其他'},
+                    {id:1,name:'直播课'},
+                    {id:2,name:'小程序'},
+                    {id:3,name:'IMS'},
+                    {id:4,name:'学管端'}
+                ],
+                chargeManList:[
+                    {id:'87526662798835712',name:'杜文彬'},
+                    {id:'139964039693336576',name:'颜林艳'},
+                    {id:'87532428385583104',name:'李晓玉'},
+                    {id:'296175644545384448',name:'邵淳'},
+                ],
+                otherChargeManList:[
+                    {id:'87526662798835712',name:'杜文彬'},
+                    {id:'139964039693336576',name:'颜林艳'}
+                ],
 
                 type: '',
                 priority: '',
                 readStatus: '',
                 origin: '',
+                source: '',
+                chargeMan: '',
                 introducer: '',
                 fromCoach:'',
                 fbTimeStart:'',
@@ -1037,9 +1218,12 @@
                 type1: '',
                 readStatus1: '',
                 origin1: '',
+                source1: '',
                 chargeMan1: '',
 
                 priority4: '',
+                source4: '',
+                chargeMan4: '',
                 type4: '',
                 readStatus4: '',
                 origin4: '',
@@ -1049,10 +1233,13 @@
                 type3: '',
                 readStatus3: '',
                 origin3: '',
+                source3: '',
+                chargeMan3: '',
                 introducer3: '',
 
                 origin2: '',
                 chargeMan2: '',
+                source2: '',
                 beginTime2: '',
                 endTime2: '',
 
@@ -1090,6 +1277,8 @@
                     type: 0,
                     priority: 0,
                     origin: '',
+                    source: 0,
+                    chargeMan: '',
                     question: '',
                     target: '',
                     releaseTime: '',
@@ -1184,7 +1373,7 @@
             this.getDefaultSessionScreenData();
             this.fetchIntroducerList()
             this.fetchOriginList()
-            this.fetchUserList()
+            // this.fetchUserList()
             this.fetchProjectList()
             this.fetchStageList()
             this.fetchTagList()
@@ -1692,6 +1881,7 @@
                 this.reqDTO.readStatus = null;
                 this.reqDTO.user = null;
                 this.reqDTO.chargeMan = null;
+                this.reqDTO.source = null;
                 this.reqDTO.origin = null;
                 this.reqDTO.type = null;
                 this.reqDTO.beginTime = null;
@@ -1705,6 +1895,8 @@
                 this.type = null
                 this.readStatus = null
                 this.origin = null
+                this.chargeMan = null
+                this.source = null
                 this.introducer = null
                 this.fromCoach = null
                 this.fbTimeStart = null
@@ -1713,12 +1905,15 @@
             clear1() {
                 this.priority1 = null
                 this.type1 = null
+                this.source1 = null
                 this.readStatus1 = null
                 this.origin1 = null
                 this.chargeMan1 = null
             },
             clear4() {
                 this.priority4 = null
+                this.source4 = null
+                this.chargeMan4 = null
                 this.type4 = null
                 this.readStatus4 = null
                 this.origin4 = null
@@ -1729,11 +1924,14 @@
                 this.type3 = null
                 this.readStatus3 = null
                 this.origin3 = null
+                this.source3 = null
+                this.chargeMan3 = null
                 this.introducer3 = null
             },
             clear2() {
                 this.introducer2 = null
                 this.chargeMan2 = null
+                this.source2 = null
                 this.beginTime2 = null
                 this.endTime2 = null
             },
@@ -1782,8 +1980,11 @@
                 if (this.type != undefined && this.type != null) {
                     this.reqDTO.type = this.type
                 }
-                if (this.fromCoach != undefined && this.fromCoach !=null){
-                    this.reqDTO.fromCoach = this.fromCoach
+                if (this.source != undefined && this.source !=null){
+                    this.reqDTO.source = this.source
+                }
+                if (this.chargeMan != undefined && this.chargeMan !=null){
+                    this.reqDTO.chargeMan = this.chargeMan
                 }
                 if (this.fbTimeStart){
                     this.reqDTO.fbTimeStart = moment(this.fbTimeStart).format('YYYY-MM-DD 00:00:00')
@@ -1808,11 +2009,14 @@
                 if (this.type1 != undefined && this.type1 != null) {
                     this.reqDTO.type = this.type1
                 }
-                if (this.chargeMan1) {
-                    this.reqDTO.chargeMan = String(this.chargeMan1)
+                if (this.chargeMan1 != undefined && this.chargeMan1 != null) {
+                    this.reqDTO.chargeMan = this.chargeMan1
                 }
-                if (this.origin1) {
+                if (this.origin1 != undefined && this.origin1 != null) {
                     this.reqDTO.origin = this.origin1
+                }
+                if (this.source1 != undefined && this.source1 != null){
+                    this.reqDTO.source = this.source1
                 }
 
                 this.fetchRunningDemandList()
@@ -1835,6 +2039,12 @@
                 if (this.type4 != undefined && this.type4 != null) {
                     this.reqDTO.type = this.type4
                 }
+                if (this.source4 != undefined && this.source4 != null) {
+                    this.reqDTO.source = this.source4
+                }
+                if (this.chargeMan4 != undefined && this.chargeMan4 != null) {
+                    this.reqDTO.chargeMan = this.chargeMan4
+                }
 
                 this.fetchQueueDemandList()
             },
@@ -1856,6 +2066,12 @@
                 if (this.type3 != undefined && this.type3 != null) {
                     this.reqDTO.type = this.type3
                 }
+                if (this.source3 != undefined && this.source3 != null) {
+                    this.reqDTO.source = this.source3
+                }
+                if (this.chargeMan3 != undefined && this.chargeMan3 != null) {
+                    this.reqDTO.chargeMan = this.chargeMan3
+                }
 
                 this.fetchRejectedDemandList()
             },
@@ -1864,8 +2080,6 @@
             select2() {
                 this.clearReqDTO()
                 this.reqDTO.pageNum = 1
-
-
                 if (this.origin2) {
                     this.reqDTO.origin = this.origin2
                 }
@@ -1875,8 +2089,11 @@
                 if (this.endTime2) {
                     this.reqDTO.endTime = moment(this.endTime2).format('YYYY-MM-DD 23:59:59')
                 }
-                if (this.chargeMan2) {
-                    this.reqDTO.chargeMan = String(this.chargeMan2)
+                if (this.chargeMan2 != undefined && this.chargeMan2 != null) {
+                    this.reqDTO.chargeMan = this.chargeMan2
+                }
+                if (this.source2 != undefined && this.source2 != null){
+                    this.reqDTO.source = this.source2
                 }
 
                 this.fetchCompletedDemandList()
@@ -1902,6 +2119,7 @@
 
             //关闭dialog
             closeDialog(formName) {
+                this.demandForm.source = 0;
                 this.$refs[formName].resetFields();
                 this.isSaving = false
             },
@@ -1911,14 +2129,36 @@
                 this.isSaving = true
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        if (this.demandForm.type == null) {
+                        if (this.demandForm.type === null) {
                             this.$message({showClose: true, message: '类型不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
                         }
-                        if (this.demandForm.priority == null) {
+                        if (this.demandForm.source === null || this.demandForm.source === ''){
+                            this.$message({showClose: true, message: '来源不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
+                        }
+                        if (this.demandForm.source == 1 || this.demandForm.source == 2){
+                            this.demandForm.chargeMan = '87532428385583104'
+                        }
+                        if (this.demandForm.source == 3){
+                            this.demandForm.chargeMan = '296175644545384448'
+                        }
+                        if (this.demandForm.source == 4){
+                            this.demandForm.chargeMan = '139964039693336576'
+                        }
+                        if (this.demandForm.chargeMan === null || this.demandForm.chargeMan === ''){
+                            this.$message({showClose: true, message: '负责人不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
+                        }
+                        if (this.demandForm.priority === null ||this.demandForm.priority === '') {
                             this.$message({showClose: true, message: '优先级不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
                         }
                         var param = this.demandForm
-                        // param.type = Number(param.type)
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
                         param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:00:00')
 
@@ -1941,11 +2181,39 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         var param = this.demandForm
-                        if (this.demandForm.type == null) {
+                        if (this.demandForm.type === null) {
                             this.$message({showClose: true, message: '类型不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
                         }
-                        if (this.demandForm.priority == null) {
+                        console.log(this.demandForm.source)
+                        if (this.demandForm.source === null || this.demandForm.source === ''){
+                            this.$message({showClose: true, message: '来源不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
+                        }
+                        // if (this.demandForm.source == 1 || this.demandForm.source == 2){
+                        //     this.demandForm.chargeMan = '87532428385583104';
+                        //     this.isSaving = false;
+                        // }
+                        // if (this.demandForm.source == 3){
+                        //     this.demandForm.chargeMan = '296175644545384448';
+                        //     this.isSaving = false;
+                        // }
+                        // if (this.demandForm.source == 4){
+                        //     this.demandForm.chargeMan = '139964039693336576';
+                        //     this.isSaving = false;
+                        // }
+                        if (this.demandForm.chargeMan === null || this.demandForm.chargeMan === ''){
+                            this.$message({showClose: true, message: '负责人不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
+                        }
+                        if (this.demandForm.priority === null ||this.demandForm.priority === '') {
                             this.$message({showClose: true, message: '优先级不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
+
                         }
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
                         http.zsyPutHttp('/feedback/demand/edit/' + this.demandForm.id, param, (resp) => {
@@ -1957,6 +2225,13 @@
                             }else if (param.status == 4){
                                 this.fetchQueueDemandList()
                             }
+                            this.isSaving = false
+                        },(fail)=>{
+                            this.$message({
+                                showClose: true,
+                                message: fail.errMsg,
+                                type: 'error'
+                            });
                             this.isSaving = false
                         })
                     }else {
@@ -1977,6 +2252,8 @@
                     this.demandForm.type = demand.type
                     this.demandForm.priority = demand.priority
                     this.demandForm.origin = demand.origin
+                    this.demandForm.source = demand.source
+                    this.demandForm.chargeMan = demand.chargeMan
                     this.demandForm.question = demand.question
                     this.demandForm.target = demand.target
                     this.demandForm.releaseTime = new Date(demand.releaseTime)
@@ -2014,6 +2291,8 @@
                 this.demandForm.title = null
                 this.demandForm.type = 0
                 this.demandForm.priority = 0
+                this.demandForm.source = 0
+                this.demandForm.chargeMan = null
                 this.demandForm.origin = null
                 this.demandForm.question = null
                 this.demandForm.target = null

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugWeekQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,6 +19,13 @@ public interface IZSYMantisBugService {
      * 查询mantis中bug信息并导入到任务系统
      */
     void importMantisBug(Integer projectId);
+
+    /**
+     * 查询mantis中的bug信息导出Excel
+     * @author sch
+     * @param projectId
+     */
+    List<String> exportMantisBug(Integer projectId);
 
     /**
      * @author sch
@@ -68,4 +76,40 @@ public interface IZSYMantisBugService {
      * @return
      */
     PageInfo<MantisBugGroupByTaskResDTO> getBugStatsGroupByTask(MantisBugQueryReqDTO reqDTO);
+
+    /**
+     * 导入Excel到数据库
+     * @author sch
+     * @param uploadFile
+     */
+    void importExcel(MultipartFile uploadFile);
+
+    /**
+     * 导入user信息到数据库
+     * @author sch
+     * @param uploadFile
+     */
+    void importUser(MultipartFile uploadFile);
+
+    /**
+     * 导入category信息到数据库
+     * @author sch
+     * @param uploadFile
+     */
+    void importCategory(MultipartFile uploadFile);
+
+    /**
+     * 获取当前环境
+     * @author sch
+     * @return
+     */
+    String getEnvironment();
+
+    /**
+     * 查询开发人员解决bug饼形图
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    List<OnlineBugUserMonthResDTO> getOnlineBugGroupByDeveloper(MantisBugWeekQueryReqDTO reqDTO);
 }

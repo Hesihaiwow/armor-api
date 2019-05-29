@@ -83,4 +83,17 @@ public interface IZSYBugService {
      * @return
      */
     OnlineBugNumResDTO getDiffTypeBugNum(BugListReqDTO bugListReqDTO);
+
+    /**
+     * 分页查询线上bug(旧数据)
+     * @author sch
+     * @param bugListReqDTO
+     * @return
+     */
+    PageInfo<OnlineBugResDTO> getOldBugManagePage(BugListReqDTO bugListReqDTO);
+
+    /**
+     * 更新老数据状态为已解决
+     */
+    void updateStatus();
 }

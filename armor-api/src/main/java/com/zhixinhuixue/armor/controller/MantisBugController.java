@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author sch
@@ -27,18 +28,6 @@ public class MantisBugController {
         mantisBugService.importMantisBug(projectId);
         return ZSYResult.success().build();
     }
-
-//    @ApiOperation("查询mantis用户信息")
-//    @GetMapping("/user/list")
-//    public String getMantisUserList(){
-//        return ZSYResult.success().data(mantisBugService.getMantisUserList()).build();
-//    }
-//
-//    @ApiOperation("查询mantis反馈系统信息")
-//    @GetMapping("/category/list")
-//    public String getMantisCategory(){
-//        return ZSYResult.success().data(mantisBugService.getMantisCategory()).build();
-//    }
 
     @ApiOperation("查询反馈系统(分类)")
     @GetMapping("/category/list")
@@ -64,9 +53,48 @@ public class MantisBugController {
         return ZSYResult.success().data(mantisBugService.getOnlineBugGroupByUser(reqDTO)).build();
     }
 
+    @ApiOperation("查询开发人员解决bug饼形图")
+    @PostMapping("/online-bug/develop")
+    public String getOnlineBugGroupByDeveloper(@RequestBody MantisBugWeekQueryReqDTO reqDTO){
+        return ZSYResult.success().data(mantisBugService.getOnlineBugGroupByDeveloper(reqDTO)).build();
+    }
+
     @ApiOperation("按任务统计bug")
     @PostMapping("/stats/task")
     public String getBugStatsGroupByTask(@RequestBody MantisBugQueryReqDTO reqDTO){
         return ZSYResult.success().data(mantisBugService.getBugStatsGroupByTask(reqDTO)).build();
+    }
+
+    @ApiOperation("导出数据到Excel")
+    @GetMapping("/export/{projectId}")
+    public String exportMantisBug(@PathVariable("projectId")Integer projectId){
+        return ZSYResult.success().data(mantisBugService.exportMantisBug(projectId)).build();
+    }
+
+    @ApiOperation("导入Excel到数据库")
+    @PostMapping("/import")
+    public String importExcel(MultipartFile uploadFile){
+        mantisBugService.importExcel(uploadFile);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("导入user信息到数据库")
+    @PostMapping("/import/user")
+    public String importUser(MultipartFile uploadFile){
+        mantisBugService.importUser(uploadFile);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("导入category信息到数据库")
+    @PostMapping("/import/category")
+    public String importCategory(MultipartFile uploadFile){
+        mantisBugService.importCategory(uploadFile);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("获取当前环境")
+    @GetMapping("/env")
+    public String getEnvironment(){
+        return ZSYResult.success().data(mantisBugService.getEnvironment()).build();
     }
 }

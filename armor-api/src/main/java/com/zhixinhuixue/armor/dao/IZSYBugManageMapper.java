@@ -9,6 +9,8 @@ import com.zhixinhuixue.armor.model.pojo.BugManage;
 import com.zhixinhuixue.armor.model.pojo.OnlineBugManage;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * Created by Lang on 2017/11/7 0008.
  */
@@ -92,4 +94,26 @@ public interface IZSYBugManageMapper {
      * @return
      */
     Integer selectCountTotal();
+
+    /**
+     * 查询bug数据(老数据)
+     * @author sch
+     * @param bugListReqDTO
+     * @return
+     */
+    Page<OnlineBugBO> selectOldOnlineBugPage(@Param("bugListReqDTO")BugListReqDTO bugListReqDTO);
+
+    /**
+     * 查询解决状态为空的数据
+     * @author sch
+     * @return
+     */
+    List<OnlineBugManage> selectIsSolvedIsNull();
+
+    /**
+     * 批量更新bug解决状态
+     * @param list
+     * @return
+     */
+    int updateStatusBatch(@Param("list") List<OnlineBugManage> list);
 }

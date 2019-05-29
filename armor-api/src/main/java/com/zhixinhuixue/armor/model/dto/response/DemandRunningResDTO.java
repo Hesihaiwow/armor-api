@@ -37,8 +37,6 @@ public class DemandRunningResDTO {
     private Date agreedTime;
     @ApiModelProperty("计划上线时间")
     private Date expectOnlineTime;
-    @ApiModelProperty("负责人")
-    private String chargeMan;
     @ApiModelProperty("启动开发时间")
     private Date startTime;
     @ApiModelProperty("任务数")
@@ -57,6 +55,11 @@ public class DemandRunningResDTO {
     private Integer readStatus;
     @ApiModelProperty("点赞数")
     private Integer likesNum;
+    @ApiModelProperty("来源")
+    private Integer source;
+    @ApiModelProperty("负责人")
+    private Long chargeMan;
+    private String chargeManName;
     @ApiModelProperty("能否点完成")
     private Integer canFinish;
 
@@ -204,12 +207,28 @@ public class DemandRunningResDTO {
         this.expectOnlineTime = expectOnlineTime;
     }
 
-    public String getChargeMan() {
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public Long getChargeMan() {
         return chargeMan;
     }
 
-    public void setChargeMan(String chargeMan) {
+    public void setChargeMan(Long chargeMan) {
         this.chargeMan = chargeMan;
+    }
+
+    public String getChargeManName() {
+        return chargeManName;
+    }
+
+    public void setChargeManName(String chargeManName) {
+        this.chargeManName = chargeManName;
     }
 
     public Date getStartTime() {

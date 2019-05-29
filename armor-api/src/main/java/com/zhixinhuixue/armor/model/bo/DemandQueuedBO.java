@@ -41,6 +41,35 @@ public class DemandQueuedBO {
     private Integer status;
     @ApiModelProperty("学管id")
     private Integer coachId;
+    @ApiModelProperty("来源")
+    private Integer source;
+    @ApiModelProperty("负责人")
+    private Long chargeMan;
+    private String chargeManName;
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public Long getChargeMan() {
+        return chargeMan;
+    }
+
+    public void setChargeMan(Long chargeMan) {
+        this.chargeMan = chargeMan;
+    }
+
+    public String getChargeManName() {
+        return chargeManName;
+    }
+
+    public void setChargeManName(String chargeManName) {
+        this.chargeManName = chargeManName;
+    }
 
     public Integer getCoachId() {
         return coachId;

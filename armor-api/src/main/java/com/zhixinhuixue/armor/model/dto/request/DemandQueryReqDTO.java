@@ -18,7 +18,7 @@ public class DemandQueryReqDTO {
     @ApiModelProperty("是否已读(0:未读,1:已读)")
     private Integer readStatus;
     @ApiModelProperty("负责人")
-    private String chargeMan;
+    private Long chargeMan;
     @ApiModelProperty("来源")
     private String origin;
     @ApiModelProperty("类型(0:个人建议,1:市场反馈,2:公司决策)")
@@ -35,6 +35,16 @@ public class DemandQueryReqDTO {
     private Date fbTimeStart;
     @ApiModelProperty("提出时间(结束)")
     private Date fbTimeEnd;
+    @ApiModelProperty("来源")
+    private Integer source;
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
 
     public Date getFbTimeEnd() {
         return fbTimeEnd;
@@ -84,11 +94,11 @@ public class DemandQueryReqDTO {
         this.endTime = endTime;
     }
 
-    public String getChargeMan() {
+    public Long getChargeMan() {
         return chargeMan;
     }
 
-    public void setChargeMan(String chargeMan) {
+    public void setChargeMan(Long chargeMan) {
         this.chargeMan = chargeMan;
     }
 
