@@ -4,6 +4,8 @@ import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.EvaluationBO;
 import com.zhixinhuixue.armor.model.bo.EvaluationScoreBO;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.TaskEvaluationPageBO;
+import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskEvaluation;
 import org.apache.ibatis.annotations.Param;
 
@@ -90,4 +92,12 @@ public interface IZSYTaskEvaluationMapper {
      * @return
      */
     List<EvaluationBO> selectOthersToMe(@Param("taskId") Long taskId, @Param("taskUserId")  Long taskUserId);
+
+    /**
+     * 管理员分页查看用户所有任务综合评价
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    Page<TaskEvaluationPageBO> selectUserAvgEvaluation(@Param("reqDTO") EvaluationPageQueryReqDTO reqDTO);
 }

@@ -8,6 +8,11 @@ import java.util.Date;
  */
 public class EvaluationPageQueryReqDTO {
     /**
+     * 页码
+     */
+    private Integer pageNum;
+
+    /**
      * 被评价人
      */
     private Long taskUserId;
@@ -21,6 +26,14 @@ public class EvaluationPageQueryReqDTO {
      * 任务完成时间  截止
      */
     private Date endTime;
+
+    public Integer getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
 
     public Long getTaskUserId() {
         return taskUserId;

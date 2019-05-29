@@ -7,13 +7,12 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.bo.EvaluationBO;
-import com.zhixinhuixue.armor.model.bo.EvaluationScoreBO;
-import com.zhixinhuixue.armor.model.bo.TaskBO;
-import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationScoreReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationUserReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskEvaluationPageResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskEvaluationService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
@@ -249,5 +248,18 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         }
 //        taskMapper.selectTaskDetailByTaskId()
         return new PageInfo<>(page);
+    }
+
+    /**
+     * 管理员分页查看用户所有任务综合评价
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    @Override
+    public PageInfo<TaskEvaluationPageResDTO> getUserAvgEvaluation(EvaluationPageQueryReqDTO reqDTO) {
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        Page<TaskEvaluationPageBO> taskEvaluationPageBOS = evaluationMapper.selectUserAvgEvaluation(reqDTO);
+        return null;
     }
 }

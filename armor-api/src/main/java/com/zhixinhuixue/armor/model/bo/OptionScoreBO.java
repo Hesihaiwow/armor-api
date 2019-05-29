@@ -15,11 +15,6 @@ public class OptionScoreBO {
      */
     private Double totalScore;
 
-    /**
-     * 评价人数量
-     */
-    private Integer evaluateUserNum;
-
     public Integer getOption() {
         return option;
     }
@@ -36,11 +31,4 @@ public class OptionScoreBO {
         this.totalScore = totalScore;
     }
 
-    public Integer getEvaluateUserNum() {
-        return evaluateUserNum;
-    }
-
-    public void setEvaluateUserNum(Integer evaluateUserNum) {
-        this.evaluateUserNum = evaluateUserNum;
-    }
 }
