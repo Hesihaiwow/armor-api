@@ -2517,7 +2517,8 @@
                 this.hideTaskDetail()
             },
             taskStepStatus(item, taskUserNum){
-                const commented = item.commentNum > 0 && item.commentNum == taskUserNum - 1;
+                // const commented = item.commentNum > 0 && item.commentNum == taskUserNum - 1;
+                const commented = item.isEvaluated == 1;
                 let className = 'in';
                 if (item.status == 1) {
                     // 进行中
