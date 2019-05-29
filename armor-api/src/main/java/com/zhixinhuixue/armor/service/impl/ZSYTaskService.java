@@ -700,7 +700,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         evaluationScoreResDTOList.add(evaluationScoreResDTO);
                     }
                     resDTO.setEvaluationScoreResDTOS(evaluationScoreResDTOList);
-                    BigDecimal avaIntegral = BigDecimal.valueOf(totalIntegral).divide(BigDecimal.valueOf(evaluationScoreBOS.size())).setScale(1,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal avaIntegral = BigDecimal.valueOf(totalIntegral).divide(BigDecimal.valueOf(evaluationScoreBOS.size()),2,BigDecimal.ROUND_HALF_UP);
                     resDTO.setAvgIntegral(avaIntegral);
                     evaluationResDTOList.add(resDTO);
                     totalScore += singleTotalScore;
@@ -771,7 +771,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskUserResDTOS.add(taskUserResDTO);
             if (!CollectionUtils.isEmpty(evaluationBOS) && taskUserResDTO.getCommentGrade() == null){
                 if (ZSYUserRole.ADMINISTRATOR.getValue() == ZSYTokenRequestContext.get().getUserRole()){
-                    BigDecimal avgScore = BigDecimal.valueOf(totalScore).divide(BigDecimal.valueOf(size)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal avgScore = BigDecimal.valueOf(totalScore).divide(BigDecimal.valueOf(size),2,BigDecimal.ROUND_HALF_UP);
                     taskUserResDTO.setAvgScore(avgScore);
                 }
             }
