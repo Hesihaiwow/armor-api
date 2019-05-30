@@ -37,7 +37,7 @@
                                 <span class="ttl-name" style="margin-left: -25px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -207,7 +207,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source1" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -352,7 +352,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source4" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -491,7 +491,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source3" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -616,7 +616,7 @@
                             <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                             <el-select clearable filterable no-match-text=" " v-model="source2" placeholder="请选择"
                                        size="small" style="width:100px;margin-left: -50px">
-                                <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -953,7 +953,7 @@
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.createBy" clearable placeholder="请选择">
-                                <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
+                                <el-option v-for="item in chargeManList2" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -1194,6 +1194,7 @@
                     {id:'87532428385583104',name:'李晓玉'},
                     {id:'296175644545384448',name:'邵淳'},
                 ],
+                chargeManList2:[],
                 otherChargeManList:[
                     {id:'87526662798835712',name:'杜文彬'},
                     {id:'139964039693336576',name:'颜林艳'}
@@ -1370,7 +1371,7 @@
             this.getDefaultSessionScreenData();
             this.fetchIntroducerList()
             this.fetchOriginList()
-            // this.fetchUserList()
+            this.fetchUserList()
             this.fetchProjectList()
             this.fetchStageList()
             this.fetchTagList()
@@ -1515,7 +1516,7 @@
             fetchUserList() {
                 let vm = this
                 http.zsyGetHttp('/user/effective', {}, (resp) => {
-                    vm.chargeManList = resp.data
+                    vm.chargeManList2 = resp.data
                 })
             },
 
