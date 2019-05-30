@@ -350,10 +350,12 @@
 
 
 </script>
-<style scoped>
+<style>
     .el-form-item {
         margin-bottom: 0px;
     }
+</style>
+<style scoped>
     .userCommentsBlock{
         width: 1100px;
         margin: auto;

@@ -2096,6 +2096,10 @@
 
             // 修改任务
             modifyTask(taskId) {
+                if (this.modifyTaskForm.modifyDescription == null || this.modifyTaskForm.modifyDescription.trim() == ''){
+                    this.errorMsg('请填写修改任务备注');
+                    return;
+                }
                 this.hideTaskDetail();
                 this.showTaskModify = true
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
