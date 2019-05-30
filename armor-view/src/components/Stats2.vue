@@ -18,80 +18,6 @@
                     <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="线上问题统计" name="bug"  style="">
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="bugReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <div class="add-member-basic-msg fl"><el-date-picker
-                        v-model="bugDaterange"
-                        type="daterange"
-                        placeholder="选择日期范围"
-                        unlink-panels
-                        @change="bugTimeChange1"
-                        :picker-options="pickerOptions">
-                </el-date-picker></div>
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchBugPage()" class="search-btn"></div>
-                <el-button type="primary" style="margin-left: 300px;margin-bottom: 10px;" class="add-member-basic-msg fl" @click="openBugDialog" v-show="permit">创建bug处理</el-button>
-                <div class="fr">
-                    <span>bug: {{BugNumData.bugNum}}</span>
-                    <span>优化: {{BugNumData.optimizationNum}}</span>
-                    <span style="margin-right: 10px">协助: {{BugNumData.assistanceNum}}</span>
-                </div>
-                <el-table :data="bugPage" border>
-                    <el-table-column type="index" label="序号" align="center" width="80">
-                        <template scope="scope">
-                            {{(bugReqDTO.pageNum-1)*10 + scope.$index + 1}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>
-                    <el-table-column prop="createTime" label="反馈日期"  width="130">
-                        <template scope="scope">
-                            <span>{{scope.row.discoverTime | formatDate1}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="processTime" label="解决日期"  width="130">
-                        <template scope="scope">
-                            <span>{{scope.row.processTime | formatDate1}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>
-                    <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
-                    <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
-                    <!--<el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>-->
-                    <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
-                    <el-table-column prop="type" label="问题类型" align="center" width="110">
-                        <template scope="scope">
-                            <span v-if="scope.row.type == 0">bug</span>
-                            <span v-if="scope.row.type == 1">优化</span>
-                            <span v-if="scope.row.type == 2">协助</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="isSolved" label="是否解决" align="center" width="110">
-                        <template scope="scope">
-                            <span v-if="scope.row.isSolved == 0">未解决</span>
-                            <span v-if="scope.row.isSolved == 1">已解决</span>
-                        </template>
-                    </el-table-column>
-                    <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
-                    <el-table-column label="操作" width="110" align="center">
-                        <template scope="scope">
-                            <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                            @current-change="handleCurrentChange"
-                            :current-page.sync="bugReqDTO.pageNum"
-                            :page-size="bugFormPage.pageSize"
-                            :layout="pageLayout"
-                            :total="bugFormPage.total">
-                    </el-pagination>
-                </div>
-            </el-tab-pane>
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
@@ -387,8 +313,8 @@
                             size="medium">
                     </el-date-picker></div>
                     <div class="steps-body">
-                        <div id="myChart9" :style="{width:'600px',height:'400px',left:'-170px',float:'left',marginTop:'70px'}"></div>
-                        <div id="myChart10" :style="{width:'600px',height:'400px',left:'-220px',float:'left',marginTop:'70px'}"></div>
+                        <div id="myChart9" :style="{width:'600px',height:'400px',left:'-120px',float:'left',marginTop:'70px'}"></div>
+                        <div id="myChart10" :style="{width:'600px',height:'400px',left:'-180px',float:'left',marginTop:'70px'}"></div>
                     </div>
                 </div>
             </el-tab-pane>

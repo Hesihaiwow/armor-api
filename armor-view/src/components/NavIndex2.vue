@@ -629,7 +629,7 @@
                                        :tagList="tagList"></task-item>
                             <div class="pagination" v-show="this.task.commented.length>0">
                                 <el-pagination
-                                        @current-change="handleCommentedPage"
+                                        @current-change="handleEvaluatedPage"
                                         :current-page.sync="commentedPage.pageNum"
                                         :page-size="commentedPage.pageSize"
                                         :layout="commentedPageLayout"
@@ -4956,6 +4956,10 @@
             handleCommentedPage(currentPage) {
                 this.commentedPage.pageNum = currentPage
                 this.fetchTaskCommented()
+            },
+            handleEvaluatedPage(currentPage) {
+                this.commentedPage.pageNum = currentPage
+                this.fetchEvaluated()
             },
             handleAuditSuccessPage(currentPage) {
                 this.auditSuccessPage.pageNum = currentPage
