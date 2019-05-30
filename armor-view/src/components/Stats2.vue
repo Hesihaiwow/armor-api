@@ -314,7 +314,7 @@
                     </el-date-picker></div>
                     <div class="steps-body">
                         <div id="myChart9" :style="{width:'600px',height:'400px',left:'-120px',float:'left',marginTop:'70px'}"></div>
-                        <div id="myChart10" :style="{width:'600px',height:'400px',left:'-180px',float:'left',marginTop:'70px'}"></div>
+                        <div id="myChart10" :style="{width:'600px',height:'400px',left:'-220px',float:'left',marginTop:'70px'}"></div>
                     </div>
                 </div>
             </el-tab-pane>
