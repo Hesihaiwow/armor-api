@@ -37,7 +37,7 @@
                                 <span class="ttl-name" style="margin-left: -25px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -207,7 +207,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source1" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -355,7 +355,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source4" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -494,7 +494,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="source3" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -619,7 +619,7 @@
                             <span class="ttl-name" style="margin-left: -15px;">来源:</span>
                             <el-select clearable filterable no-match-text=" " v-model="source2" placeholder="请选择"
                                        size="small" style="width:100px;margin-left: -50px">
-                                <el-option v-for="item in sourceList" :key="item.id" :label="item.name"
+                                <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
