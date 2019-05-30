@@ -106,7 +106,7 @@
 
     <!--分页根据用户查询已经评价的任务-->
     <select id="selectEvaluatedTaskIdsByUserPage" resultType="java.lang.Long">
-        SELECT task_id FROM task_evaluation WHERE evaluate_user_id = #{userId} GROUP BY task_id
+        SELECT task_id FROM task_evaluation WHERE evaluate_user_id = #{userId} GROUP BY task_id ORDER BY `evaluate_time` DESC
     </select>
 
     <!--查看某个人对当前用户的评价-->
