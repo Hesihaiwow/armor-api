@@ -241,7 +241,7 @@
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
                                     <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
                                     <!--<img src="../assets/img/u431.png" alt="">-->
                                     <span  class="mark-msg">{{item.projectName}}</span>
                                 </div>
