@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
-import com.zhixinhuixue.armor.model.bo.EvaluationBO;
-import com.zhixinhuixue.armor.model.bo.EvaluationScoreBO;
-import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
-import com.zhixinhuixue.armor.model.bo.TaskEvaluationPageBO;
+import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskEvaluation;
 import org.apache.ibatis.annotations.Param;
@@ -100,4 +97,40 @@ public interface IZSYTaskEvaluationMapper {
      * @return
      */
     Page<TaskEvaluationPageBO> selectUserAvgEvaluation(@Param("reqDTO") EvaluationPageQueryReqDTO reqDTO);
+
+    /**
+     * 查询任务
+     * @author sch
+     * @param reqDTO
+     * @param userId
+     * @return
+     */
+    List<TaskBaseBO> selectTaskBaseInfoByTaskUser(@Param("reqDTO")EvaluationPageQueryReqDTO reqDTO, @Param("userId")Long userId);
+
+    /**
+     * 查询任务数量
+     * @author sch
+     * @param taskIds
+     * @param userId
+     * @return
+     */
+    Integer selectTaskNumByTaskUser(@Param("taskIds")List<Long> taskIds, @Param("userId")Long userId);
+
+    /**
+     * 查询各项评分
+     * @author sch
+     * @param taskIds
+     * @param userId
+     * @return
+     */
+    List<OptionScoreBO> selectOptionScoreByTaskUser(@Param("taskIds")List<Long> taskIds, @Param("userId")Long userId);
+
+    /**
+     * 查询评价数量
+     * @author sch
+     * @param taskIds
+     * @param userId
+     * @return
+     */
+    Integer selectEvaluationNumByTaskUser(@Param("taskIds")List<Long> taskIds, @Param("userId")Long userId);
 }

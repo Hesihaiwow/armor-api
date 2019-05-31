@@ -36,17 +36,6 @@
         <result column="user_id" property="userId" jdbcType="BIGINT"></result>
         <result column="job_role" property="jobRole" jdbcType="BIGINT"></result>
         <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
-        <association property="taskNum" column="taskUserId=user_id"
-                     select="selectTaskNumByTaskUser" javaType="java.lang.Integer"/>
-        <association property="evaluationNum" column="taskUserId=user_id"
-                     select="selectEvaluationNumByTaskUser"
-                     javaType="java.lang.Integer"/>
-        <collection property="taskBaseBOS" column="taskUserId=user_id"
-                    select="selectTaskBaseInfoByTaskUser"
-                    ofType="com.zhixinhuixue.armor.model.bo.TaskBaseBO"/>
-        <collection property="optionScoreBOS" column="taskUserId=user_id"
-                    select="selectOptionScoreByTaskUser"
-                    ofType="com.zhixinhuixue.armor.model.bo.OptionScoreBO"/>
     </resultMap>
 
     <resultMap id="TaskBaseBOMap" type="com.zhixinhuixue.armor.model.bo.TaskBaseBO">
@@ -149,35 +138,48 @@
         <if test="reqDTO.taskUserId != null">
             AND tev1.task_user_id = #{reqDTO.taskUserId}
         </if>
+        GROUP BY tev1.task_user_id
+    </select>
+
+    <select id="selectTaskNumByTaskUser" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(id),0) FROM
+        (SELECT * FROM task_evaluation WHERE task_user_id = #{userId}
+        AND task_id in
+        <foreach collection="taskIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        GROUP BY task_id) t1
+    </select>
+
+    <!--查询任务-->
+    <select id="selectTaskBaseInfoByTaskUser" resultMap="TaskBaseBOMap">
+        SELECT t.id task_id,t.name task_name FROM task_evaluation tev
+        LEFT JOIN task t on tev.task_id = t.id
+        WHERE tev.task_user_id = #{userId}
         <if test="reqDTO.beginTime != null">
             <![CDATA[  AND  t.`complete_time` >= #{reqDTO.beginTime} ]]>
         </if>
         <if test="reqDTO.endTime != null">
             <![CDATA[  AND  t.`complete_time` <= #{reqDTO.endTime} ]]>
         </if>
-        GROUP BY tev1.task_user_id
-    </select>
-
-    <select id="selectTaskNumByTaskUser" resultType="java.lang.Integer">
-        SELECT IFNULL(COUNT(id),0) FROM
-        (SELECT * FROM task_evaluation WHERE task_user_id = #{taskUserId}
-        GROUP BY task_id) t1
-    </select>
-
-    <select id="selectTaskBaseInfoByTaskUser" resultMap="TaskBaseBOMap">
-        SELECT t.id task_id,t.name task_name FROM task_evaluation tev
-        LEFT JOIN task t on tev.task_id = t.id
-        WHERE tev.task_user_id = #{taskUserId}
         GROUP BY tev.task_id
     </select>
 
+    <!--查询各项得分-->
     <select id="selectOptionScoreByTaskUser" resultMap="OptionScoreBOMap">
         SELECT sum(score) total_score,evaluation_option 'option'
-        FROM task_evaluation WHERE task_user_id = #{taskUserId}
+        FROM task_evaluation WHERE task_user_id = #{userId} AND task_id in
+        <foreach collection="taskIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
         GROUP BY evaluation_option;
     </select>
 
     <select id="selectEvaluationNumByTaskUser" resultType="java.lang.Integer">
-        SELECT IFNULL(COUNT(*),0) evaluation_num FROM task_evaluation WHERE task_user_id = #{taskUserId}
+        SELECT IFNULL(COUNT(*),0) evaluation_num FROM task_evaluation WHERE task_user_id = #{userId}
+        AND task_id in
+        <foreach collection="taskIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
     </select>
 </mapper>

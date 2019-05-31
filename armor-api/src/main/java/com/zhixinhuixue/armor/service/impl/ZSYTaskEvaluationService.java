@@ -268,15 +268,20 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         if (!CollectionUtils.isEmpty(taskEvaluationPageBOS)){
             taskEvaluationPageBOS.stream().forEach(taskEvaluationPageBO -> {
                 TaskEvaluationPageResDTO resDTO = new TaskEvaluationPageResDTO();
-                resDTO.setTaskNum(taskEvaluationPageBO.getTaskNum());
                 resDTO.setUserId(taskEvaluationPageBO.getUserId());
                 resDTO.setUserName(taskEvaluationPageBO.getUserName());
                 resDTO.setJobRole(taskEvaluationPageBO.getJobRole());
-                List<OptionScoreBO> optionScoreBOS = taskEvaluationPageBO.getOptionScoreBOS();
-                List<TaskBaseBO> taskBaseBOS = taskEvaluationPageBO.getTaskBaseBOS();
+                List<TaskBaseBO> taskBaseBOS = evaluationMapper.selectTaskBaseInfoByTaskUser(reqDTO,taskEvaluationPageBO.getUserId());
+                List<OptionScoreBO> optionScoreBOS = new ArrayList<>();
 
                 List<TaskBaseResDTO> taskBaseResDTOList = new ArrayList<>();
+                Integer evaluationNum = 0;
                 if (!CollectionUtils.isEmpty(taskBaseBOS)){
+                    List<Long> taskIds = taskBaseBOS.stream().map(TaskBaseBO::getTaskId).collect(Collectors.toList());
+                    Integer taskNum = evaluationMapper.selectTaskNumByTaskUser(taskIds,taskEvaluationPageBO.getUserId());
+                    resDTO.setTaskNum(taskNum);
+                    optionScoreBOS = evaluationMapper.selectOptionScoreByTaskUser(taskIds,taskEvaluationPageBO.getUserId());
+                    evaluationNum = evaluationMapper.selectEvaluationNumByTaskUser(taskIds,taskEvaluationPageBO.getUserId());
                     taskBaseBOS.stream().forEach(taskBaseBO -> {
                         TaskBaseResDTO taskBaseResDTO = new TaskBaseResDTO();
                         taskBaseResDTO.setId(taskBaseBO.getTaskId());
@@ -287,7 +292,6 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                 resDTO.setTaskBaseResDTOS(taskBaseResDTOList);
 
                 List<AvgEvaluationScoreResDTO> avgEvaluationScoreResDTOList = new ArrayList<>();
-                Integer evaluationNum = taskEvaluationPageBO.getEvaluationNum();
                 Integer jobRole = taskEvaluationPageBO.getJobRole();
                 Integer optionNum = 0;
                 if (jobRole == 0){
@@ -312,7 +316,9 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     }
                 }
                 resDTO.setScoreResDTOS(avgEvaluationScoreResDTOList);
-                page.add(resDTO);
+                if (!CollectionUtils.isEmpty(taskBaseBOS)){
+                    page.add(resDTO);
+                }
             });
         }
         return new PageInfo<>(page);
