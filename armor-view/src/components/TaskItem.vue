@@ -364,9 +364,9 @@
                         <span>{{stage.jobRoleName}}</span>
                     </div>
                     <div v-if="!isEvaluated">
-                        <el-form>
+                        <el-form class="person-evaluate">
                             <div v-if="stage.jobRole == 0">
-                                <el-form-item class="task-form" label="沟通">
+                                <el-form-item label="沟通" class="person-evaluate el-form-item">
                                     <el-rate
                                         v-model="evaluation[`${index}_0`]"
                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -375,7 +375,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="态度">
+                                <el-form-item label="态度" class="person-evaluate el-form-item">
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -386,7 +386,7 @@
                                 </el-form-item>
                             </div>
                             <div v-if="stage.jobRole == 1">
-                                <el-form-item class="task-form" label="沟通">
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -395,7 +395,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="态度">
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -404,7 +404,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_1`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="质量">
+                                <el-form-item class="person-evaluate el-form-item" label="质量">
                                     <el-rate
                                             v-model="evaluation[`${index}_3`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -413,7 +413,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_3`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="效率">
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
                                     <el-rate
                                             v-model="evaluation[`${index}_2`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -424,7 +424,7 @@
                                 </el-form-item>
                             </div>
                             <div v-if="stage.jobRole == 2">
-                                <el-form-item class="task-form" label="沟通">
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -433,7 +433,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="态度">
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -442,7 +442,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_1`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="美感">
+                                <el-form-item class="person-evaluate el-form-item" label="美感">
                                     <el-rate
                                             v-model="evaluation[`${index}_2`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -453,7 +453,7 @@
                                 </el-form-item>
                             </div>
                             <div v-if="stage.jobRole == 3">
-                                <el-form-item class="task-form" label="沟通">
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -462,7 +462,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_0`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="态度">
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
                                     <el-rate
                                             v-model="evaluation[`${index}_1`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -471,7 +471,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_1`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="文档">
+                                <el-form-item class="person-evaluate el-form-item" label="文档">
                                     <el-rate
                                             v-model="evaluation[`${index}_2`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -480,7 +480,7 @@
                                     </el-rate>
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
-                                <el-form-item class="task-form" label="效率">
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
                                     <el-rate
                                             v-model="evaluation[`${index}_3`]"
                                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -497,7 +497,7 @@
                     <div v-else style="margin-top: 10px">
                         <div v-for="item in stage.evaluationResDTOS[0].evaluationScoreResDTOS">
                             <el-form>
-                                <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -15px">
+                                <el-form-item  :label="item.evaluationOptionName" style="margin-top: -15px">
                                     <el-rate v-model="item.score"
                                              :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                              :allow-half=true
@@ -1063,6 +1063,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <div>
+                    <el-button type="danger" v-show="taskTempDetail.isChecked == 0" @click="deleteMultipleTask(taskTempDetail.id)">删除申请</el-button>
                     <el-button type="primary" v-show="taskTempDetail.isChecked == 0" @click="editMultipleTask('editTaskTempForm')">修改申请</el-button>
                 </div>
             </span>
@@ -3087,6 +3088,20 @@
                     this.taskAble = false
                 });
             },
+            deleteMultipleTask(id){
+                this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyDeleteHttp(`/task-temp/delete/` + id, {}, (resp) => {
+                        this.$message({showClose: true, message: '删除成功', type: 'success'});
+                        this.$emit('reload');
+                        this.taskTempDetailVisible = false;
+                    })
+                }).catch(() => {
+                });
+            },
             saveApplyModifyMyTask(formName) {
                 var sumHours=0;
                 if((moment(this.modifyMyTaskForm.beginTime).isAfter(moment(this.modifyMyTaskForm.endTime)))){
@@ -4042,6 +4057,15 @@
 
     .ctpc-ins-edit .ctpc-btns {
         margin-top: 0;
+    }
+    .person-evaluate {
+
+    }
+    .person-evaluate.el-form-item {
+        margin-bottom: 0px;
+    }
+    .el-form-item {
+        margin-bottom: 0px;
     }
 </style>
 <style>

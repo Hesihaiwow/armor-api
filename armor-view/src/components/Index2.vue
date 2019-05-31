@@ -324,12 +324,12 @@
                     label: '计算',
                     name: 'calculate'
                 });
+                // this.tabs.push({
+                //     label: '评价',
+                //     name: 'comments'
+                // });
                 this.tabs.push({
-                    label: '评价',
-                    name: 'comments'
-                });
-                this.tabs.push({
-                    label:'评价111',
+                    label:'评价',
                     name:'evaluation'
                 })
                 this.tabs.push({

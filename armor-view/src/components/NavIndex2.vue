@@ -240,7 +240,7 @@
                                     </div>
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
                                     <img v-else="" src="../assets/img/u431.png" alt="" >
                                     <!--<img src="../assets/img/u431.png" alt="">-->
                                     <span  class="mark-msg">{{item.projectName}}</span>
@@ -270,8 +270,8 @@
                                     </div>
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle;" >
                                     <!--<img src="../assets/img/u431.png" alt="">-->
                                     <span  class="mark-msg">{{item.projectName}}</span>
                                 </div>
@@ -550,8 +550,8 @@
                                     </div>
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
                                     <span  class="mark-msg">{{item.projectName}}</span>
                                 </div>
                                 <div class="task-data-show">
@@ -579,8 +579,8 @@
                                     </div>
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle" >
                                     <!--<img src="../assets/img/u431.png" alt="">-->
                                     <span  class="mark-msg">{{item.projectName}}</span>
                                 </div>
@@ -833,91 +833,9 @@
                 <!--</div>-->
             </div>
             <div v-show="userRole===0">
-                <!--<p class="mic-title">多人任务审核</p>-->
-                <!--<el-tabs v-model="taskTempActiveName2" @tab-click="handleClick">-->
-                    <!--<el-tab-pane label="待审核" name="wait">-->
-                        <!--<div class="task-lis" v-for="item in taskTemp.waitAssess2" @click="getTaskTempDetail(item)">-->
-                            <!--<div class="head-img"><img src="../assets/img/waitAudit.png"></div>-->
-                            <!--<div class="main-task-detail">-->
-                                <!--<div class="task-name" style="width: 700px">-->
-                                    <!--<span style="color: red">(待审核 多人任务)</span>-->
-                                    <!--<span>{{item.taskName}}:({{item.description}})</span>-->
-                                <!--</div>-->
-                                <!--<div class="task-state">-->
-                                    <!--<span class="task-end blue">申请人：{{item.userName}}</span>-->
-                                    <!--<span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <!--<div class="task-mark" style="position:relative; left:-10px">-->
-                                <!--<img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">-->
-                                <!--<img v-else="" src="../assets/img/u431.png" alt="" >-->
-                                <!--&lt;!&ndash;<img src="../assets/img/u431.png" alt="">&ndash;&gt;-->
-                                <!--<span  class="mark-msg">{{item.projectName}}</span>-->
-                            <!--</div>-->
-                            <!--<div class="task-username">-->
-                                <!--<img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"-->
-                                     <!--:src="item.avatarUrl" :alt="item.userName">-->
-                                <!--<span v-else="">{{item.userName}}</span>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="pagination" v-show="this.taskTemp.waitAssess2.length>0">-->
-                            <!--<el-pagination-->
-                                    <!--@current-change="handleWaitAuditTaskTempPage2"-->
-                                    <!--:current-page.sync="taskTempPage3.pageNum"-->
-                                    <!--:page-size="taskTempPage3.pageSize"-->
-                                    <!--:layout="taskTempWaitAuditPageLayout2"-->
-                                    <!--:total="taskTempPage3.total">-->
-                            <!--</el-pagination>-->
-                        <!--</div>-->
-                        <!--<div v-show="this.taskTemp.waitAssess2.length==0" class="empty">-->
-                            <!--<h2>暂无数据</h2>-->
-                        <!--</div>-->
-                    <!--</el-tab-pane>-->
-                    <!--<el-tab-pane label="审核通过" name="access">-->
-                        <!--<div class="task-lis" v-for="item in taskTemp.auditSuccess2" @click="getTaskTempDetail(item)">-->
-                            <!--<div class="head-img"><img src="../assets/img/finished.jpg"></div>-->
-                            <!--<div class="main-task-detail">-->
-                                <!--<div class="task-name" style="width: 700px;">-->
-                                    <!--<span>{{item.taskName}}:({{item.description}})</span>-->
-                                <!--</div>-->
-                                <!--<div class="task-state">-->
-                                    <!--<span class="task-end blue">申请人：{{item.userName}}</span>-->
-                                    <!--<span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>-->
-                                    <!--<span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>-->
-                                    <!--<span class="task-time-opt"><i class="el-icon-circle-check"></i></span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <!--<div class="task-mark" style="position:relative; left:-10px">-->
-                                <!--<img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">-->
-                                <!--<img v-else="" src="../assets/img/u431.png" alt="" >-->
-                                <!--&lt;!&ndash;<img src="../assets/img/u431.png" alt="">&ndash;&gt;-->
-                                <!--<span  class="mark-msg">{{item.projectName}}</span>-->
-                            <!--</div>-->
-                            <!--<div class="task-data-show">-->
-                            <!--</div>-->
-                            <!--<div class="task-username">-->
-                                <!--<img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"-->
-                                     <!--:src="item.avatarUrl" :alt="item.userName">-->
-                                <!--<span v-else="">{{item.userName}}</span>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="pagination" v-show="this.taskTemp.auditSuccess2.length>0">-->
-                            <!--<el-pagination-->
-                                    <!--@current-change="handleAuditSuccessTaskTempPage2"-->
-                                    <!--:current-page.sync="taskTempPage4.pageNum"-->
-                                    <!--:page-size="taskTempPage4.pageSize"-->
-                                    <!--:layout="taskTempAuditSuccessPageLayout2"-->
-                                    <!--:total="taskTempPage4.total">-->
-                            <!--</el-pagination>-->
-                        <!--</div>-->
-                        <!--<div v-show="this.taskTemp.auditSuccess2.length==0" class="empty">-->
-                            <!--<h2>暂无数据</h2>-->
-                        <!--</div>-->
-                    <!--</el-tab-pane>-->
-                <!--</el-tabs>-->
                 <div v-show="showTaskReviewTabVisible">
                     <p class="mic-title">多人任务审核</p>
-                    <el-tabs v-model="taskTempActiveName2" @tab-click="handleClick">
+                    <el-tabs v-model="taskTempActiveName2" @tab-click="handleClickMultiTask">
                         <el-tab-pane label="待审核" name="wait">
                             <div class="task-lis" v-for="item in taskTemp.waitAssess2" @click="getTaskTempDetail(item)">
                                 <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
@@ -932,8 +850,8 @@
                                     </div>
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
                                     <!--<img src="../assets/img/u431.png" alt="">-->
                                     <span  class="mark-msg">{{item.projectName}}</span>
                                 </div>
@@ -962,8 +880,8 @@
                                     </div>
                                 </div>
                                 <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" >
+                                    <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
                                     <!--<img src="../assets/img/u431.png" alt="">-->
                                     <span  class="mark-msg">{{item.projectName}}</span>
                                 </div>
@@ -995,7 +913,7 @@
                      @click="integralBasicVisible=true">
                     <!--<span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分-->
                 </div>
-                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClick">
+                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClickPrivateTask">
                     <el-tab-pane label="待审核" name="wait">
                         <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
                                    taskStatus="WaitAuditing"
@@ -1109,7 +1027,7 @@
                     <!--</el-tab-pane>-->
                 <!--</el-tabs>-->
                 <p class="mic-title">任务修改申请审核</p>
-                <el-tabs v-model="taskModifyTabsActiveName" @tab-click="handleClick">
+                <el-tabs v-model="taskModifyTabsActiveName" @tab-click="handleClickTaskModify">
                     <el-tab-pane label="待审核" name="wait">
                         <div class="task-lis" v-for="modifyData in taskModifyData.waitAssess"
                              @click="getTaskModifyDetail(modifyData.id,modifyData.taskId,modifyData.userId)">
@@ -1163,7 +1081,7 @@
                     </el-tab-pane>
                 </el-tabs>
                 <p class="mic-title">线上问题审核</p>
-                <el-tabs v-model="questionActiveName" @tab-click="handleClick">
+                <el-tabs v-model="questionActiveName" @tab-click="handleClickOnlineQuestion">
                     <el-tab-pane label="待审核" name="wait">
                         <div class="task-lis" v-for="item in question.wait" @click="checkQuestion(item)">
                             <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
@@ -1177,8 +1095,8 @@
                                 </div>
                             </div>
                             <div class="task-mark" style="position:relative; left:-10px">
-                                <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">
-                                <img v-else="" src="../assets/img/u431.png" alt="" >
+                                <img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
                                 <!--<img src="../assets/img/u431.png" alt="">-->
                                 <span  class="mark-msg">{{item.projectName}}</span>
                             </div>
@@ -1316,7 +1234,7 @@
             <div v-show="userRole < 3">
                 <p class="mic-title">{{userRole!=0?'请假申请':'请假申请审核'}}</p>
                 <div class="my-task-detail">
-                    <el-tabs v-model="activeLeaveName" @tab-click="handleClick">
+                    <el-tabs v-model="activeLeaveName" @tab-click="handleClickLeave">
                         <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
                             <!--@click="reviewDetail(help)"-->
                             <div class="task-lis" v-for="leave in leaveList.wait" @click="editLeaveDetail(leave,0)">
@@ -1383,7 +1301,7 @@
             <div v-show="userRole < 3">
                 <p class="mic-title">{{userRole!=0?'加班申请':'加班申请审核'}}</p>
                 <div class="my-task-detail">
-                    <el-tabs v-model="activeEWorkName" @tab-click="handleClick">
+                    <el-tabs v-model="activeEWorkName" @tab-click="handleClickExtraWork">
                         <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
                             <div class="task-lis" v-for="eWork in eWorkList.wait" @click="showExtraWorkDetail(eWork.id)">
                                 <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
@@ -1448,7 +1366,7 @@
             <div v-show="userRole < 3">
                 <p class="mic-title">{{userRole!=0?'补打卡申请':'补打卡申请审核'}}</p>
                 <div class="my-task-detail">
-                    <el-tabs v-model="activeRecheckName" @tab-click="handleClick">
+                    <el-tabs v-model="activeRecheckName" @tab-click="handleClickRecheck">
                         <el-tab-pane :label="userRole!=0?'审核中':'待审核'" name="wait">
                             <div class="task-lis" v-for="recheck in recheckList.wait" @click="editRecheck(recheck)">
                                 <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
@@ -1786,7 +1704,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button type="danger" @click="deleteQuestion(questionForm.oqrId)">删除</el-button>
-            <el-button type="primary" icon="edit" @click="editQuestion(questionForm)"></el-button>
+            <el-button type="primary" v-show="activeQuestionName === 'wait'" icon="edit" @click="editQuestion(questionForm)"></el-button>
           </span>
         </el-dialog>
         <el-dialog title="线上问题(数据)记录"
@@ -2984,7 +2902,7 @@
                 },
                 dialogImageUrl: '',
                 dialogVisible: false,
-                activeQuestionName: 'running',
+                activeQuestionName: 'wait',
                 question: {
                     running: [],
                     completed: [],
@@ -3643,6 +3561,71 @@
                 // 点击进行中和已完成
                 if (tab.label == '测试中') {
                     this.fetchTaskTesting();
+                }
+            },
+            handleClickLeave(){
+              if (this.activeLeaveName === 'wait'){
+                  this.fetchUserLeaveList();
+              }else {
+                  this.fetchUserLeavePassList();
+              }
+            },
+            handleClickExtraWork(){
+              if (this.activeEWorkName === 'wait'){
+                  if (this.userRole === 0){
+                      this.fetchCheckingExtraWork();
+                  } else {
+                      this.fetchMyRunningExtraWork();
+                  }
+              }else {
+                  if (this.userRole === 0){
+                      this.fetchCheckedExtraWork();
+                  }else {
+                      this.fetchMyCheckedExtraWork();
+                  }
+              }
+            },
+            handleClickRecheck(){
+                if (this.activeRecheckName === 'wait'){
+                    if (this.userRole === 0){
+                        this.fetchRecheckWait();
+                    } else {
+                        this.fetchMyRecheckWait();
+                    }
+                }else {
+                    if (this.userRole === 0){
+                        this.fetchRecheckPass();
+                    } else {
+                        this.fetchMyRecheckPass();
+                    }
+                }
+            },
+            handleClickMultiTask(){
+               if (this.taskTempActiveName2 === 'wait'){
+                   this.fetchPendingTaskTemp();
+               }else {
+                   this.fetchMultipleAccess();
+               }
+            },
+            handleClickPrivateTask(){
+                if (this.auditTabsActiveName === 'wait'){
+                    this.fetchTaskWaitAudit();
+                }else {
+                    this.fetchTaskAuditSuccess();
+                }
+            },
+            handleClickTaskModify(){
+                if(this.taskModifyTabsActiveName === 'wait'){
+                    this.fetchTaskModifyWait();
+                }else {
+                    this.fetchTaskModifyAccessed();
+                }
+            },
+            handleClickOnlineQuestion(){
+                if (this.questionActiveName === 'wait'){
+                    this.fetchQuestionWait();
+                }else {
+                    this.fetchQuestionAccepted();
                 }
             },
             createTaskClick() {
@@ -5247,7 +5230,7 @@
             },
             //编辑问题
             editQuestion(item){
-                this.fetchQuestionDoing()
+                // this.fetchQuestionDoing()
                 this.acceptedQuestionVisible = false;
                 this.checkQuestionVisible = false;
                 this.editQuestionVisible = true;
