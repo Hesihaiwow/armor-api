@@ -15,5 +15,20 @@ public class OptionScoreBO {
      */
     private Double totalScore;
 
+    public Integer getOption() {
+        return option;
+    }
+
+    public void setOption(Integer option) {
+        this.option = option;
+    }
+
+    public Double getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(Double totalScore) {
+        this.totalScore = totalScore;
+    }
 
 }

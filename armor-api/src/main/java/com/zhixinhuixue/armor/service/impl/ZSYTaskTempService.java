@@ -16,6 +16,7 @@ import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.service.IZSYTaskTempService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYTagColor;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskStage;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskType;
 import org.springframework.beans.BeanUtils;
@@ -612,6 +613,15 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             if (taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue() && taskTemp.getType() == ZSYTaskType.PUBLIC_TASK.getValue()) {
                 throw new ZSYServiceException("该任务已结束");
             }
+            Long stageId = taskTemp.getStageId();
+            if (ZSYTaskStage.WAIT_DESIGN.getValue().equals(stageId)){
+                taskTemp.setStageId(ZSYTaskStage.DESIGNING.getValue());
+            }else if (ZSYTaskStage.WAIT_DEVELOP.getValue().equals(stageId)){
+                taskTemp.setStageId(ZSYTaskStage.DEVELOPING.getValue());
+            }else if (ZSYTaskStage.WAIT_TEST.getValue().equals(stageId)){
+                taskTemp.setStageId(ZSYTaskStage.TESTING.getValue());
+            }
+            taskMapper.updateByPrimaryKeySelective(taskTemp);
             if (existTaskTemp.getReviewStatus() == 1) {
                 existTaskTemp.setReviewStatus(2);
                 if (taskTempMapper.updateTaskTemp(existTaskTemp) == 0) {

@@ -1,12 +1,12 @@
-package com.zhixinhuixue.armor.model.dto.response;
+package com.zhixinhuixue.armor.model.bo;
 
 import java.util.List;
 
 /**
  * @author sch
- * @DATE 2019/5/28 17:14
+ * @DATE 2019/5/29 10:41
  */
-public class TaskEvaluationPageResDTO {
+public class TaskEvaluationPageBO {
     /**
      * 用户
      */
@@ -18,12 +18,21 @@ public class TaskEvaluationPageResDTO {
      * 任务
      */
     private Integer taskNum;
-    private List<TaskBaseResDTO> taskBaseResDTOS;
+    private List<TaskBaseBO> taskBaseBOS;
 
     /**
-     * 综合评价
+     * 评价
      */
-    private List<AvgEvaluationScoreResDTO> scoreResDTOS;
+    private List<OptionScoreBO> optionScoreBOS;
+    private Integer evaluationNum;
+
+    public Integer getEvaluationNum() {
+        return evaluationNum;
+    }
+
+    public void setEvaluationNum(Integer evaluationNum) {
+        this.evaluationNum = evaluationNum;
+    }
 
     public Integer getJobRole() {
         return jobRole;
@@ -57,19 +66,19 @@ public class TaskEvaluationPageResDTO {
         this.taskNum = taskNum;
     }
 
-    public List<TaskBaseResDTO> getTaskBaseResDTOS() {
-        return taskBaseResDTOS;
+    public List<TaskBaseBO> getTaskBaseBOS() {
+        return taskBaseBOS;
     }
 
-    public void setTaskBaseResDTOS(List<TaskBaseResDTO> taskBaseResDTOS) {
-        this.taskBaseResDTOS = taskBaseResDTOS;
+    public void setTaskBaseBOS(List<TaskBaseBO> taskBaseBOS) {
+        this.taskBaseBOS = taskBaseBOS;
     }
 
-    public List<AvgEvaluationScoreResDTO> getScoreResDTOS() {
-        return scoreResDTOS;
+    public List<OptionScoreBO> getOptionScoreBOS() {
+        return optionScoreBOS;
     }
 
-    public void setScoreResDTOS(List<AvgEvaluationScoreResDTO> scoreResDTOS) {
-        this.scoreResDTOS = scoreResDTOS;
+    public void setOptionScoreBOS(List<OptionScoreBO> optionScoreBOS) {
+        this.optionScoreBOS = optionScoreBOS;
     }
 }
