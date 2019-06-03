@@ -199,7 +199,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="chargeMan1" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in chargeManList2" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -229,11 +229,11 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="需求负责人" align="center" width="120">
-                            <template scope="scope">
-                                <span>{{scope.row.chargeManName}}</span>
-                            </template>
-                        </el-table-column>
+                        <!--<el-table-column label="需求负责人" align="center" width="120">-->
+                            <!--<template scope="scope">-->
+                                <!--<span>{{scope.row.chargeManName}}</span>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
                         <el-table-column label="来源" align="center" width="100">
                             <template scope="scope">
                                 <span v-if="scope.row.source == 0">其他</span>
@@ -256,6 +256,11 @@
                         <el-table-column label="采纳时间" align="center" width="130">
                             <template scope="scope">
                                 <span>{{scope.row.agreedTime | formatDate}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="任务负责人" align="center" width="130">
+                            <template scope="scope">
+                                <span>{{scope.row.taskChargeMan}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="启动开发时间" align="center" width="130">
@@ -605,10 +610,10 @@
                             </el-select>
                         </div>
                         <div class="demand-top-list fl">
-                            <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
+                            <span class="ttl-name" style="margin-left: -15px;">任务负责人:</span>
                             <el-select clearable filterable no-match-text=" " v-model="chargeMan2" placeholder="请选择"
                                        size="small" style="width:100px;margin-left: -50px">
-                                <el-option v-for="item in chargeManList" :key="item.id" :label="item.name"
+                                <el-option v-for="item in chargeManList2" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -637,9 +642,9 @@
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="需求负责人" align="center" width="120">
+                        <el-table-column label="任务负责人" align="center" width="120">
                             <template scope="scope">
-                                <span>{{scope.row.chargeManName}}</span>
+                                <span>{{scope.row.taskChargeMan}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="80">
@@ -1990,7 +1995,7 @@
                     this.reqDTO.type = this.type1
                 }
                 if (this.chargeMan1 != undefined && this.chargeMan1 != null) {
-                    this.reqDTO.chargeMan = this.chargeMan1
+                    this.reqDTO.taskChargeMan = this.chargeMan1
                 }
                 if (this.origin1 != undefined && this.origin1 != null) {
                     this.reqDTO.origin = this.origin1
@@ -2070,7 +2075,7 @@
                     this.reqDTO.endTime = moment(this.endTime2).format('YYYY-MM-DD 23:59:59')
                 }
                 if (this.chargeMan2 != undefined && this.chargeMan2 != null) {
-                    this.reqDTO.chargeMan = this.chargeMan2
+                    this.reqDTO.taskChargeMan = this.chargeMan2
                 }
                 if (this.source2 != undefined && this.source2 != null){
                     this.reqDTO.source = this.source2
