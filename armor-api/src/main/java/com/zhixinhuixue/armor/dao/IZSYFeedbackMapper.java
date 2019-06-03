@@ -101,7 +101,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandCompletedBO> selectDemandCompletedPage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime,@Param("origin")String origin
-                            ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source);
+                            ,@Param("chargeMan")String chargeMan,@Param("source")Integer source);
 
     /**
      * 获取我开发的需求
@@ -130,10 +130,10 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandRunningBO> selectDemandRunningPage(@Param("origin") String origin, @Param("priority")Integer priority,
-                                                 @Param("type")Integer type,@Param("chargeMan")Long chargeMan,@Param("source")Integer source);
+                                                 @Param("type")Integer type,@Param("chargeMan")String chargeMan,@Param("source")Integer source);
 
     List<DemandRunningBO> selectDemandRunningList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                              @Param("type")Integer type, @Param("chargeMan")Long chargeMan,@Param("source")Integer source);
+                                              @Param("type")Integer type, @Param("chargeMan")String chargeMan,@Param("source")Integer source);
 
 
     /**

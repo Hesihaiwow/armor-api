@@ -19,6 +19,8 @@ public class DemandQueryReqDTO {
     private Integer readStatus;
     @ApiModelProperty("负责人")
     private Long chargeMan;
+    @ApiModelProperty("任务负责人")
+    private String taskChargeMan;
     @ApiModelProperty("来源")
     private String origin;
     @ApiModelProperty("类型(0:个人建议,1:市场反馈,2:公司决策)")
@@ -37,6 +39,14 @@ public class DemandQueryReqDTO {
     private Date fbTimeEnd;
     @ApiModelProperty("来源")
     private Integer source;
+
+    public String getTaskChargeMan() {
+        return taskChargeMan;
+    }
+
+    public void setTaskChargeMan(String taskChargeMan) {
+        this.taskChargeMan = taskChargeMan;
+    }
 
     public Integer getSource() {
         return source;

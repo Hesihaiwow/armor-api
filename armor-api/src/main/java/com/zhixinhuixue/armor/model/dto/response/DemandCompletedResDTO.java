@@ -54,6 +54,16 @@ public class DemandCompletedResDTO {
     @ApiModelProperty("负责人")
     private Long chargeMan;
     private String chargeManName;
+    @ApiModelProperty("任务负责人")
+    private String taskChargeMan;
+
+    public String getTaskChargeMan() {
+        return taskChargeMan;
+    }
+
+    public void setTaskChargeMan(String taskChargeMan) {
+        this.taskChargeMan = taskChargeMan;
+    }
 
     public Date getFeedbackTime() {
         return feedbackTime;
