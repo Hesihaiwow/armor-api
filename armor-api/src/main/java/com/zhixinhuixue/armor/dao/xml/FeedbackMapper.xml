@@ -83,11 +83,13 @@
   <resultMap id="demandCompletedMap" type="com.zhixinhuixue.armor.model.bo.DemandCompletedBO" extends="demandMap">
     <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
     <result column="online_time" property="onlineTime" jdbcType="TIMESTAMP"></result>
+    <result column="users" property="taskChargeMan" jdbcType="VARCHAR"></result>
   </resultMap>
 
   <resultMap id="demandRunningMap" type="com.zhixinhuixue.armor.model.bo.DemandRunningBO" extends="demandMap">
     <result column="agree_time" property="agreedTime" jdbcType="TIMESTAMP"></result>
     <result column="expect_official_time" property="expectOnlineTime" jdbcType="TIMESTAMP"></result>
+    <result column="users" property="taskChargeMan" jdbcType="VARCHAR"></result>
   </resultMap>
 
   <resultMap id="demandDetailMap" type="com.zhixinhuixue.armor.model.bo.DemandDetailBO">
@@ -755,12 +757,12 @@
 
   <!-- 获取完成需求列表 -->
   <select id="selectDemandCompletedPage" resultMap="demandCompletedMap">
-    select f.*,fq.agree_time,u.name charge_man_name
+    select f.*,fq.agree_time,group_concat(u.name separator ',') users
     from feedback f
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task fpt on fp.id = fpt.feedback_plan_id
     LEFT JOIN task t on fpt.task_id = t.id AND t.is_delete = 0
-    LEFT JOIN user u on f.charge_man = u.id
+    LEFT JOIN user u on t.create_by = u.id
     left join feedback_queue fq on f.id = fq.demand_id
     <where>
       f.is_delete = 0 and
@@ -774,8 +776,8 @@
       <if test="origin != null and origin != ''">
         and f.origin = #{origin}
       </if>
-      <if test="chargeMan != null">
-        and f.charge_man = #{chargeMan}
+      <if test="chargeMan != null and chargeMan != ''">
+        and u.id = #{chargeMan}
       </if>
       <if test="source != null">
         and f.source = #{source}
@@ -876,13 +878,13 @@
 
   <!-- 获取进行中需求列表 -->
   <select id="selectDemandRunningPage" resultMap="demandRunningMap">
-    select f.*,fq.agree_time,fp.expect_official_time,u.name charge_man_name
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
     LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
-    LEFT JOIN user u on f.charge_man = u.id
+    LEFT JOIN user u on t.create_by = u.id
     <where>
       f.is_delete = 0 and
       f.status = 1
@@ -895,8 +897,8 @@
       <if test="type != null and type != -1">
         and f.type = #{type}
       </if>
-      <if test="chargeMan != null">
-        and f.charge_man = #{chargeMan}
+      <if test="chargeMan != null and chargeMan != ''">
+        and u.id = #{chargeMan}
       </if>
       <if test="source != null">
         and f.source = #{source}
@@ -908,13 +910,13 @@
   </select>
 
   <select id="selectDemandRunningList" resultMap="demandRunningMap">
-    select f.*,fq.agree_time,fp.expect_official_time,u.name charge_man_name
+    select f.*,fq.agree_time,fp.expect_official_time,group_concat(distinct u.name separator ',') users
     from feedback f
     left join feedback_queue fq on f.id = fq.demand_id
     LEFT JOIN feedback_plan fp on f.id = fp.feedback_id
     LEFT JOIN feedback_plan_task ft on fp.id = ft.feedback_plan_id
     LEFT JOIN task t on ft.task_id = t.id AND t.is_delete = 0
-    LEFT JOIN user u on f.charge_man = u.id
+    LEFT JOIN user u on t.create_by = u.id
     <where>
       f.is_delete = 0 and
       f.status = 1
@@ -927,8 +929,8 @@
       <if test="type != null and type != -1">
         and f.type = #{type}
       </if>
-      <if test="chargeMan != null">
-        and f.charge_man = #{chargeMan}
+      <if test="chargeMan != null and chargeMan != '' ">
+        and u.id = #{chargeMan}
       </if>
       <if test="source != null">
         and f.source = #{source}

@@ -41,6 +41,8 @@ public class DemandRunningBO {
     private Long projectId;
     @ApiModelProperty("状态")
     private Integer status;
+    @ApiModelProperty("任务负责人")
+    private String taskChargeMan;
     @ApiModelProperty("点赞数")
     private Integer likesNum;
     @ApiModelProperty("学管id")
@@ -50,6 +52,14 @@ public class DemandRunningBO {
     @ApiModelProperty("负责人")
     private Long chargeMan;
     private String chargeManName;
+
+    public String getTaskChargeMan() {
+        return taskChargeMan;
+    }
+
+    public void setTaskChargeMan(String taskChargeMan) {
+        this.taskChargeMan = taskChargeMan;
+    }
 
     public Integer getCoachId() {
         return coachId;
