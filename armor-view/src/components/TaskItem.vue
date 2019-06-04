@@ -2002,7 +2002,7 @@
                     }
                 })
                 if (param.evaluationUserReqDTOS.length >0 && isSerious){
-                    this.$message({ showClose: true,message: '请认真评价(不要随意5星!)',type: 'error'});
+                    this.$message({ showClose: true,message: '请认真评价(不要随意全5星!)',type: 'error'});
                     return false;
                 }
                 if (flag){
