@@ -87,9 +87,9 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         if (CollectionUtils.isEmpty(evaluationUserReqDTOS)){
             throw new ZSYServiceException("任务评价不能为空");
         }
-        if (userIds.size() - evaluationUserReqDTOS.size() > 1){
-            throw new ZSYServiceException("请对所有用户同时进行评价");
-        }
+//        if (userIds.size() - evaluationUserReqDTOS.size() > 1){
+//            throw new ZSYServiceException("请对所有用户同时进行评价");
+//        }
 
         evaluationUserReqDTOS.stream().forEach(evaluationUserReqDTO -> {
             Long taskUserId = evaluationUserReqDTO.getTaskUserId();
