@@ -2001,8 +2001,8 @@
                         isSerious = false;
                     }
                 })
-                if (isSerious){
-                    this.$message({ showClose: true,message: '请认真评价',type: 'error'});
+                if (param.evaluationUserReqDTOS.length >0 && isSerious){
+                    this.$message({ showClose: true,message: '请认真评价(不要随意5星!)',type: 'error'});
                     return false;
                 }
                 if (flag){
