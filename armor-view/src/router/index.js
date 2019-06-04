@@ -16,6 +16,7 @@ import Plan from '@/components/Plan2'
 import demandDetail from '@/components/demandDetail'
 import Notice from '@/components/Notice'
 import SummaryNav from '@/components/SummaryNav'
+import Evaluation from '@/components/Evaluation'
 
 
 Vue.use(Router)
@@ -100,6 +101,10 @@ export default new Router({
                 {
                     path:'summaryNav',
                     component:SummaryNav
+                },
+                {
+                    path:'evaluation',
+                    component:Evaluation
                 }
             ]
         }

@@ -324,10 +324,14 @@
                     label: '计算',
                     name: 'calculate'
                 });
+                // this.tabs.push({
+                //     label: '评价',
+                //     name: 'comments'
+                // });
                 this.tabs.push({
-                    label: '评价',
-                    name: 'comments'
-                });
+                    label:'评价',
+                    name:'evaluation'
+                })
                 this.tabs.push({
                     label: '组织',
                     name: 'organization'
