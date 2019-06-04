@@ -357,9 +357,10 @@
             <div class="assess-task">
                 <div class="assess-task-list" v-for="(stage,index) in evaluationStages">
                     <div class="assess-man-detail">
-                        <span class="amd-job">{{stage.stageName}}</span>
-                        <i class="el-icon-plus" v-show="!isEvaluated" style="cursor: pointer;margin-left: -40px" @click="plus(index,stage.jobRole,stage.userId)"></i>
-                        <i class="el-icon-minus" v-show="!isEvaluated" style="cursor: pointer" @click="minus(index,stage.jobRole,stage.userId)"></i>
+                        <!--<span class="amd-job">{{stage.stageName}}</span>-->
+                        <!--<i class="el-icon-plus" v-show="!isEvaluated" style="cursor: pointer;margin-left: -40px" @click="plus(index,stage.jobRole,stage.userId)"></i>-->
+                        <!--<i class="el-icon-minus" v-show="!isEvaluated" style="cursor: pointer" @click="minus(index,stage.jobRole,stage.userId)"></i>-->
+                        <el-checkbox v-model="checkBox[`${index}`]" @change="hasIntersection(index,stage.userId)" style="margin-right: 20px">任务有交集</el-checkbox>
                         <span class="amd-job-time">工作量：{{stage.taskHours}}小时</span>
                         <span class="amd-during-time">截止：{{stage.completeTime | formatDate}}</span>
                         <span class="amd-name">{{stage.userName}}</span>
@@ -1260,6 +1261,7 @@
                 evaluationStages: [],
                 evaluation:{},
                 showEvaluate:{},
+                checkBox:{},
                 allComment: false,
                 allEvaluation: false,
                 productShow: true,
@@ -1880,6 +1882,7 @@
                             myEvaluations += 1;
                         }
                         this.$set(this.showEvaluate,`${i}`,true)
+                        this.$set(this.checkBox,`${i}`,true)
                         user.showEvaluate = true;
                         user.evaluationList.forEach((item,index)=>{
                             this.$set(this.evaluation,`${i}_${index}`,item.score);
@@ -1916,6 +1919,24 @@
                 this.testShow = true;
                 this.developShow = true;
                 this.designShow = true;
+            },
+            hasIntersection(index,taskUserId){
+                var checked = this.checkBox[`${index}`]
+                if (checked){
+                    this.evaluationStages.forEach(user=>{
+                        if (taskUserId === user.userId){
+                            user.showEvaluate = true
+                        }
+                    })
+                    this.showEvaluate[`${index}`] = true;
+                } else {
+                    this.evaluationStages.forEach(user=>{
+                        if (taskUserId === user.userId){
+                            user.showEvaluate = false
+                        }
+                    })
+                    this.showEvaluate[`${index}`] = false;
+                }
             },
             plus(index,jobRole,taskUserId){
                 this.evaluationStages.forEach(user=>{
@@ -1974,7 +1995,16 @@
                         }
                     }
                 }
-
+                var isSerious = true;
+                param.evaluationUserReqDTOS.forEach(evaluation=>{
+                    if (evaluation.score != 5){
+                        isSerious = false;
+                    }
+                })
+                if (isSerious){
+                    this.$message({ showClose: true,message: '请认真评价',type: 'error'});
+                    return false;
+                }
                 if (flag){
                     http.zsyPostHttp('/evaluation/add', param, (resp) => {
                         this.$message({ showClose: true,message: '评价成功',type: 'success'});
