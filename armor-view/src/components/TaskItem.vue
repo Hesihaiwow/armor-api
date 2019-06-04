@@ -360,7 +360,7 @@
                         <!--<span class="amd-job">{{stage.stageName}}</span>-->
                         <!--<i class="el-icon-plus" v-show="!isEvaluated" style="cursor: pointer;margin-left: -40px" @click="plus(index,stage.jobRole,stage.userId)"></i>-->
                         <!--<i class="el-icon-minus" v-show="!isEvaluated" style="cursor: pointer" @click="minus(index,stage.jobRole,stage.userId)"></i>-->
-                        <el-checkbox v-model="checkBox[`${index}`]" @change="hasIntersection(index,stage.userId)" style="margin-right: 20px">任务有交集</el-checkbox>
+                        <el-checkbox v-show="!isEvaluated"  v-model="checkBox[`${index}`]" @change="hasIntersection(index,stage.userId)" style="margin-right: 20px">任务有交集</el-checkbox>
                         <span class="amd-job-time">工作量：{{stage.taskHours}}小时</span>
                         <span class="amd-during-time">截止：{{stage.completeTime | formatDate}}</span>
                         <span class="amd-name">{{stage.userName}}</span>
