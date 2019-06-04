@@ -358,6 +358,8 @@
                 <div class="assess-task-list" v-for="(stage,index) in evaluationStages">
                     <div class="assess-man-detail">
                         <span class="amd-job">{{stage.stageName}}</span>
+                        <i class="el-icon-plus" v-show="!isEvaluated" style="cursor: pointer;margin-left: -40px" @click="plus(index,stage.jobRole,stage.userId)"></i>
+                        <i class="el-icon-minus" v-show="!isEvaluated" style="cursor: pointer" @click="minus(index,stage.jobRole,stage.userId)"></i>
                         <span class="amd-job-time">工作量：{{stage.taskHours}}小时</span>
                         <span class="amd-during-time">截止：{{stage.completeTime | formatDate}}</span>
                         <span class="amd-name">{{stage.userName}}</span>
@@ -365,7 +367,7 @@
                     </div>
                     <div v-if="!isEvaluated">
                         <el-form class="person-evaluate">
-                            <div v-if="stage.jobRole == 0">
+                            <div v-if="stage.jobRole == 0 && showEvaluate[`${index}`]">
                                 <el-form-item label="沟通" class="person-evaluate el-form-item">
                                     <el-rate
                                         v-model="evaluation[`${index}_0`]"
@@ -385,7 +387,7 @@
                                     <span>{{evaluation[`${index}_1`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 1">
+                            <div v-if="stage.jobRole == 1 && showEvaluate[`${index}`]" >
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -423,7 +425,7 @@
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 2">
+                            <div v-if="stage.jobRole == 2 && showEvaluate[`${index}`]" >
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -452,7 +454,7 @@
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 3">
+                            <div v-if="stage.jobRole == 3 && showEvaluate[`${index}`]">
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -490,8 +492,6 @@
                                     <span>{{evaluation[`${index}_3`]}}</span>
                                 </el-form-item>
                             </div>
-
-
                         </el-form>
                     </div>
                     <div v-else style="margin-top: 10px">
@@ -1259,8 +1259,13 @@
                 commentStages: [],
                 evaluationStages: [],
                 evaluation:{},
+                showEvaluate:{},
                 allComment: false,
                 allEvaluation: false,
+                productShow: true,
+                developShow: true,
+                designShow: true,
+                testShow: true,
                 taskDetail: {},
                 taskLog: {
                     list: [],
@@ -1874,16 +1879,18 @@
                         if (user.evaluationResDTOS.length > 0) {
                             myEvaluations += 1;
                         }
-
+                        this.$set(this.showEvaluate,`${i}`,true)
+                        user.showEvaluate = true;
                         user.evaluationList.forEach((item,index)=>{
                             this.$set(this.evaluation,`${i}_${index}`,item.score);
+
                         })
                     }
-                    if (myEvaluations == users.length) {
-                        this.isEvaluated = true
-                    }
                     vm.evaluationStages = users;
-
+                    if (myEvaluations>0) {
+                        this.isEvaluated = true
+                        vm.evaluationStages = vm.evaluationStages.filter(user=>{return user.evaluationResDTOS.length > 0})
+                    }
                     this.addTaskEvaluationVisible = true;
                 });
 
@@ -1905,6 +1912,27 @@
             hideWaitEvaluation() {
                 this.addTaskEvaluationVisible = false;
                 this.isEvaluated = false;
+                this.productShow = true;
+                this.testShow = true;
+                this.developShow = true;
+                this.designShow = true;
+            },
+            plus(index,jobRole,taskUserId){
+                this.evaluationStages.forEach(user=>{
+                    if (taskUserId === user.userId){
+                        user.showEvaluate = true
+                    }
+                })
+                this.showEvaluate[`${index}`] = true;
+            },
+            minus(index,jobRole,taskUserId){
+
+                this.evaluationStages.forEach(user=>{
+                    if (taskUserId === user.userId){
+                        user.showEvaluate = false
+                    }
+                })
+                this.showEvaluate[`${index}`] = false;
             },
             // 评价任务
             taskAssess() {
@@ -1933,15 +1961,17 @@
                 var flag = true;
                 for (var j = 0;j<this.evaluationStages.length;j++){
                     var user = this.evaluationStages[j]
-                    for (var i = 0;i < user.evaluationList.length;i++){
-                        var evaluation = user.evaluationList[i]
-                        if (evaluation.score === 0){
-                            this.$message({ showClose: true,message: '请评价全部评分项',type: 'error'});
-                            this.isSaving=false;
-                            flag = false;
-                            return false;
+                    if (user.showEvaluate){
+                        for (var i = 0;i < user.evaluationList.length;i++){
+                            var evaluation = user.evaluationList[i]
+                            if (evaluation.score === 0){
+                                this.$message({ showClose: true,message: '请评价全部评分项',type: 'error'});
+                                this.isSaving=false;
+                                flag = false;
+                                return false;
+                            }
+                            param.evaluationUserReqDTOS.push(evaluation)
                         }
-                        param.evaluationUserReqDTOS.push(evaluation)
                     }
                 }
 
