@@ -66,7 +66,7 @@
             drag: function (event) {
                 // 自己创建的任务及超管才可以拖动任务
                 let taskCreateBy = event.currentTarget.getAttribute('createby');
-                if(this.loginUserRole===0 ){
+                if(this.loginUserId === taskCreateBy || this.loginUserRole===0 ){
                     dom = event.currentTarget;
                 }else{
                     event.preventDefault();
