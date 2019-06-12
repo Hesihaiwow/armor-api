@@ -3448,6 +3448,7 @@
             },
             initTime(){
                 var date = new Date();
+                this.weekPublishReqDTO.date = date
                 // 本周一的日期
                 date.setDate(date.getDate() - date.getDay() + 1);
                 var begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
@@ -3476,7 +3477,7 @@
                             message: '修改成功',
                             type: 'success'
                         });
-                        this.initTime();
+                        this.fetchWeekPublishPlan();
                         this.clearWeekPublish();
                         this.editWeekPublishVisible = false;
                     }
@@ -3517,7 +3518,7 @@
                 this.weekPublish.condition = '';
                 this.weekPublish.canOnline = null;
                 this.weekPublish.platforms = [];
-                this.weekPublishReqDTO.date = ''
+                // this.weekPublishReqDTO.date = ''
             },
             addFormTagId(platformId, num, $event) {
                 if (this.hasClass($event.currentTarget, 'active')) {
