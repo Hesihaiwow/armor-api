@@ -1,13 +1,14 @@
 <template>
     <div>
         <div class="toggle-view">
-            <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun">
+            <input type="button" :value="btnValStatus==1?'点击切换到看板模式':'点击切换到列表模式'" @click="btnValFun"/>
             <!--<input type="button" value="创建多人任务" @click="createTaskClick" v-show="permit">-->
             <!--<input type="button" style="margin-left: 450px" :value="publishText" @click="setPublish" v-show="btnValStatus == 2&&publishHide">-->
             <!--<el-checkbox v-model="publishType" style="display: inline-block;margin-left: 10px" v-show="btnValStatus == 2&&publishHide" @change="publishTask">仅显示发版时间之前的任务
             </el-checkbox>-->
             <el-checkbox v-model="showMyTaskVisible" style="display: inline-block;margin-left: 10px" v-show="userRole < 2 && btnValStatus == 2" @change="showMyTask(showMyTaskVisible)">仅显示我负责的任务
             </el-checkbox>
+            <!--<input type="button" value="本周发版计划" @click="showWeekPublishPlan"/>-->
         </div>
 
         <div class="task-con">
@@ -155,6 +156,26 @@
                     <el-button type="warning" @click="publishVisible=false">取消</el-button>
                 </span>
         </el-dialog>
+        <el-dialog title="周发版计划"  :visible.sync="showWeekPublishPlanVisible">
+            <div class="add-member-basic-msg fl" >
+                <el-date-picker
+                        v-model="weekPublishReqDTO.date"
+                        :picker-options="pickerWeek"
+                        type="week"
+                        format="yyyy 第 WW 周"
+                        placeholder="选择周">
+                </el-date-picker>
+                <el-table :data="weekPublishData" border>
+                    <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
+                    <el-table-column prop="createByName" label="任务负责人" align="center"></el-table-column>
+                    <el-table-column prop="developers" label="开发" align="center"></el-table-column>
+                    <el-table-column prop="testers" label="测试" align="center"></el-table-column>
+                    <el-table-column prop="platforms" label="需要发布平台" align="center"></el-table-column>
+                    <el-table-column prop="canOnline" label="需要可以发布上线" align="center"></el-table-column>
+                    <el-table-column prop="condition" label="任务发布情况" align="center"></el-table-column>
+                </el-table>
+            </div>
+        </el-dialog>
     </div>
 
 
@@ -245,7 +266,17 @@
                         }
                     }]
                 },
-                showMyTaskVisible:false
+                showMyTaskVisible:false,
+                showWeekPublishPlanVisible: false,
+                weekPublishReqDTO:{
+                    date:'',
+                    beginTime:'',
+                    endTime:''
+                },
+                weekPublishData:[],
+                pickerWeek:{
+                    firstDayOfWeek:1
+                },
             };
         },
         created() {
@@ -288,6 +319,7 @@
             this.fetchTagList()
             this.fetchTaskList()
             this.getPublishTime()
+            this.initTime()
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "task");
 
@@ -448,7 +480,8 @@
             createTaskClick() {
                 // 点击建任务
                 this.$refs.createTaskPop.show();
-            }, timeChange(time) {
+            },
+            timeChange(time) {
                 // 选择结束时间
                 time = time.split(' - ')
                 if (time && time.length == 2) {
@@ -603,6 +636,31 @@
             fetchTaskByStageId(){
                 window.localStorage.setItem("justMine",0);
             },
+
+            //展开本周发版计划
+            showWeekPublishPlan(){
+                this.fetchWeekPublishPlan();
+                this.showWeekPublishPlanVisible = true;
+            },
+            //查询周发版计划
+            fetchWeekPublishPlan(){
+                http.zsyPostHttp('week-publish/list',this.weekPublishReqDTO,(res)=>{
+                    this.weekPublishData = res.data;
+                })
+            },
+            initTime(){
+                var date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 1);
+                var begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                var end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+            }
             // -- sch
         },
         components: {
@@ -615,6 +673,9 @@
     }
 </script>
 <style scoped>
+    .el-dialog.el-dialog--small {
+        width: 80%;
+    }
     .toggle-view {
         width:1080px;
         margin: 0 auto 10px;

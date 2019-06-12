@@ -18,6 +18,41 @@
                     <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
                 </el-table>
             </el-tab-pane>
+            <el-tab-pane label="周发版计划" name="weekPublish"  style="">
+                <div class="add-member-basic-msg fl" >
+                    <el-date-picker
+                            v-model="weekPublishReqDTO.date"
+                            :picker-options="pickerWeek"
+                            type="week"
+                            format="yyyy 第 WW 周"
+                            @change="changeWeekPublishTime"
+                            placeholder="选择周">
+                    </el-date-picker>
+                </div>
+                <el-table :data="weekPublishData" border>
+                    <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
+                    <el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>
+                    <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
+                    <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
+                    <el-table-column prop="platforms" label="需要发布平台" align="center" width="130"></el-table-column>
+                    <el-table-column label="是否可以发布上线" align="center" width="100">
+                        <template scope="scope">
+                            <el-tooltip content="点击更改状态" placement="top">
+                                <i class="el-icon-circle-check" v-if="scope.row.canOnline==1"
+                                   @click="updateCanOnline(scope.row.canOnline,scope.row.taskId)" style="cursor: pointer"></i>
+                                <i class="el-icon-circle-close" v-else style="cursor: pointer"
+                                   @click="updateCanOnline(scope.row.canOnline,scope.row.taskId)"></i>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="condition" label="任务发布情况" align="center"></el-table-column>
+                    <el-table-column label="操作" width="80" align="center">
+                        <template scope="scope">
+                            <el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
@@ -1157,6 +1192,26 @@
             </span>
         </el-dialog>
 
+        <el-dialog title="编辑周发版计划" :visible.sync="editWeekPublishVisible"
+                   :close-on-click-modal="false" :close-on-press-escape="false"
+        @close="closeEditWeekPublish">
+                <el-form :model="weekPublish"  ref="weekPublishForm">
+                    <el-form-item label="平台: ">
+                        <el-checkbox-group
+                                v-model="weekPublish.platforms">
+                            <el-checkbox v-for="platform in platformList"
+                                         :label="platform.id" :key="platform.id">{{platform.name}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item  label="任务发布情况: ">
+                        <el-input type="textarea"  v-model="weekPublish.condition" :rows="3"></el-input>
+                    </el-form-item>
+                </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveEditWeekPublish(weekPublish.id)">确认修改</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
@@ -1574,6 +1629,22 @@
                 urlList:[],
                 environment:'',
                 importBugVisible:false,
+
+                showWeekPublishPlanVisible: false,
+                editWeekPublishVisible: false,
+                weekPublishReqDTO:{
+                    date:'',
+                    beginTime:'',
+                    endTime:''
+                },
+                weekPublish:{
+                    taskId:'',
+                    canOnline:null,
+                    condition:'',
+                    platforms:[]
+                },
+                weekPublishData:[],
+                platformList:[],
                 // -- sch
             }
         },
@@ -1609,6 +1680,8 @@
             this.fetchOnlineBugGroupByUser();
             this.fetchBugStatsGroupByTask();
             this.fetchOnlineBugGroupByDeveloper();
+            this.initTime();
+            this.fetchPlatformList();
         },
         computed: {
             permit() {
@@ -3358,6 +3431,122 @@
                     this.$message.error('上传文件大小不能超过 2MB!');
                 }
                 return isExcel && isLt2M && isXls;
+            },
+            //查询周发版计划
+            fetchWeekPublishPlan(){
+                Http.zsyPostHttp('week-publish/list',this.weekPublishReqDTO,(res)=>{
+                    this.weekPublishData = res.data;
+                })
+            },
+            //查询平台
+            fetchPlatformList() {
+                Http.zsyGetHttp('/platform/list', {}, (resp) => {
+                    this.platformList = resp.data;
+                })
+            },
+            initTime(){
+                var date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 1);
+                var begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                var end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+                this.fetchWeekPublishPlan()
+            },
+            editWeekPublish(weekPublish){
+                this.weekPublish.taskId = weekPublish.taskId;
+                this.weekPublish.condition = weekPublish.condition;
+                weekPublish.platformResDTOS.forEach(platform=>{
+                    this.weekPublish.platforms.push(platform.id)
+                })
+                this.editWeekPublishVisible = true;
+            },
+            saveEditWeekPublish(){
+                Http.zsyPostHttp('/week-publish/edit',this.weekPublish,(res)=>{
+                    if (res){
+                        this.$message({
+                            showClose: true,
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        this.initTime();
+                        this.clearWeekPublish();
+                        this.editWeekPublishVisible = false;
+                    }
+                })
+            },
+            updateCanOnline(canOnline,taskId){
+                  if (canOnline === 0){
+                      this.weekPublish.canOnline = 1;
+                      this.weekPublish.taskId = taskId;
+                  } else if (canOnline === 1){
+                      this.weekPublish.canOnline = 0;
+                      this.weekPublish.taskId = taskId;
+                  }
+                  this.saveEditWeekPublish()
+            },
+            changeWeekPublishTime(){
+                if (this.weekPublishReqDTO.date != null && this.weekPublishReqDTO.date != '') {
+                    var date = this.weekPublishReqDTO.date;
+                    // 本周一的日期
+                    date.setDate(date.getDate() - date.getDay() + 1);
+                    var begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                    // 本周日的日期
+                    date.setDate(date.getDate() + 6);
+                    var end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+
+                    this.weekPublishReqDTO.beginTime = begin;
+                    this.weekPublishReqDTO.endTime = end;
+                    this.fetchWeekPublishPlan()
+                }
+
+            },
+            closeEditWeekPublish(){
+                this.clearWeekPublish();
+            },
+            clearWeekPublish(){
+                this.weekPublish.id = '';
+                this.weekPublish.condition = '';
+                this.weekPublish.canOnline = null;
+                this.weekPublish.platforms = [];
+            },
+            addFormTagId(platformId, num, $event) {
+                if (this.hasClass($event.currentTarget, 'active')) {
+                    this.removeClass($event.currentTarget, 'active');
+                    if (num == 1) {
+                        this.weekPublish.platforms.splice(this.findIndex(this.weekPublish.platforms, platformId), 1);
+                    }
+                } else {
+                    this.addClass($event.currentTarget, 'active');
+                    if (num == 1) {
+                        this.weekPublish.platforms.push(platformId);
+                    }
+                }
+            },
+            hasClass(obj, cls) {
+                return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+            },
+            addClass(obj, cls) {
+                if (!this.hasClass(obj, cls)) obj.className += " " + cls;
+            },
+            removeClass(obj, cls) {
+                if (this.hasClass(obj, cls)) {
+                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                    obj.className = obj.className.replace(reg, ' ');
+                }
+            },
+            findIndex(arr, val) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] == val) {
+                        return i;
+                    }
+                }
             },
             // -- sch
         }
