@@ -29,6 +29,7 @@
                             placeholder="选择周">
                     </el-date-picker>
                 </div>
+                <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
                 <el-table :data="weekPublishData" border>
                     <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
                     <el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>
@@ -1635,7 +1636,8 @@
                 weekPublishReqDTO:{
                     date:'',
                     beginTime:'',
-                    endTime:''
+                    endTime:'',
+                    isTesting:false
                 },
                 weekPublish:{
                     taskId:'',
@@ -3515,6 +3517,7 @@
                 this.weekPublish.condition = '';
                 this.weekPublish.canOnline = null;
                 this.weekPublish.platforms = [];
+                this.weekPublishReqDTO.date = ''
             },
             addFormTagId(platformId, num, $event) {
                 if (this.hasClass($event.currentTarget, 'active')) {
