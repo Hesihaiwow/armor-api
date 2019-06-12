@@ -7,6 +7,12 @@ import java.util.Date;
  * @DATE 2019/6/11 10:04
  */
 public class WeekPublishQueryReqDTO {
+
+    /**
+     * 是否测试中
+     */
+    private Boolean isTesting;
+
     /**
      * 任务截止时间  开始
      */
@@ -16,6 +22,14 @@ public class WeekPublishQueryReqDTO {
      * 任务截止时间  结束
      */
     private Date endTime;
+
+    public Boolean getIsTesting() {
+        return isTesting;
+    }
+
+    public void setIsTesting(Boolean isTesting) {
+        this.isTesting = isTesting;
+    }
 
     public Date getBeginTime() {
         return beginTime;
