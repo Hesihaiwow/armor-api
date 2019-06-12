@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYPlatformMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Platform">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+  </resultMap>
+
+  <!--新增平台-->
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Platform">
+      INSERT INTO `platform` (`id`,`name`,`create_by`,`create_time`)
+      VALUES
+      (#{platform.id,jdbcType=BIGINT},#{platform.name,jdbcType=VARCHAR}
+      ,#{platform.createBy,jdbcType=BIGINT},#{platform.createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--校验是否同名-->
+  <select id="selectByName" resultMap="BaseResultMap">
+      SELECT * FROM `platform` WHERE `name` = #{name}
+  </select>
+
+  <!--列表查询平台-->
+  <select id="selectList" resultMap="BaseResultMap">
+      SELECT * FROM `platform`
+  </select>
+
+    <select id="selectPlaformsByTask" resultMap="BaseResultMap">
+        SELECT p.* FROM `week_publish_plan_platform` wppp
+        LEFT JOIN `platform` p ON p.id = wppp.platform_id
+        WHERE wppp.task_id = #{taskId}
+    </select>
+
+</mapper>

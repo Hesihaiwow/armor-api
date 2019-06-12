@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYWeekPublishPlanMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="can_online" jdbcType="INTEGER" property="canOnline" />
+    <result column="condition" jdbcType="VARCHAR" property="condition" />
+  </resultMap>
+
+    <!--新增周发版任务-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
+        INSERT INTO `week_publish_plan` (`id`,`task_id`,`can_online`,`condition`)
+        VALUES
+        (#{weekPublishPlan.id,jdbcType=BIGINT},#{weekPublishPlan.taskId,jdbcType=BIGINT}
+        ,#{weekPublishPlan.canOnline,jdbcType=INTEGER},#{weekPublishPlan.condition,jdbcType=VARCHAR})
+    </insert>
+
+    <!--批量插入任务需要发版的平台-->
+    <insert id="insertPublishPlatformBatch" parameterType="com.zhixinhuixue.armor.model.pojo.WeekPublishPlanPlatform">
+        INSERT INTO `week_publish_plan_platform` (`id`,`task_id`,`platform_id`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.platformId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+    <!--更新-->
+    <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
+        UPDATE `week_publish_plan`
+        <set>
+            <if test="canOnline != null">
+                `can_online` = #{canOnline,jdbcType=INTEGER},
+            </if>
+            <if test="condition != null and condition!=''">
+                `condition` = #{condition,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where `task_id` = #{taskId,jdbcType=BIGINT}
+    </update>
+
+    <!--删除原来的task-platform-->
+    <delete id="deletePublishPlatformByTask">
+        DELETE FROM `week_publish_plan_platform` WHERE `task_id` = #{taskId}
+    </delete>
+
+    <!--校验是否已经存在-->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT * FROM `week_publish_plan` WHERE `task_id` = #{taskId}
+    </select>
+
+    <!--根据主键查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `week_publish_plan` WHERE `id` = #{id}
+    </select>
+
+</mapper>

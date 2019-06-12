@@ -175,4 +175,10 @@ public interface IZSYTaskTempMapper {
      * @return
      */
     TaskReviewLog selectTaskReviewLogByTaskTempAndCheckUser(@Param("ttId")Long ttId,@Param("checkUserId")Long checkUserId);
+
+    int deleteByTask(@Param("taskId")Long taskId);
+
+    int deleteReviewLogByTask(@Param("taskId")Long taskId);
+
+    int deleteUserWeekTempByTask(@Param("taskId")Long taskId);
 }

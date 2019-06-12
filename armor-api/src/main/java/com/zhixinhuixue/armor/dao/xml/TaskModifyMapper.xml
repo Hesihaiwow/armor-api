@@ -78,6 +78,10 @@
         DELETE FROM `task_modify_table` WHERE `id` = #{id}
     </delete>
 
+    <delete id="deleteByTask">
+        DELETE FROM `task_modify_table` WHERE `task_id` = #{taskId}
+    </delete>
+
     <!--新增任务修改申请-->
     <select id="selectById" resultMap="BaseMap">
         SELECT * FROM `task_modify_table` WHERE `id` = #{id}

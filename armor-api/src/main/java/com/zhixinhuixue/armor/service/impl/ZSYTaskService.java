@@ -104,6 +104,8 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYTaskModifyMapper taskModifyMapper;
     @Autowired
     private IZSYTaskModifyUserWeekMapper taskModifyUserWeekMapper;
+    @Autowired
+    private IZSYWeekPublishPlanMapper weekPublishPlanMapper;
     // -- sch
 
 
@@ -325,6 +327,21 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setCreateBy(taskReqDTO.getCreateBy());
         // 修改任务
         taskMapper.updateByPrimaryKeySelective(task);
+        if (ZSYTaskStage.TESTING.getValue().equals(task.getStageId())){
+            //移动到测试中阶段
+
+            //校验是否已经存在
+            WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(task.getId());
+            if (exist == null){
+                WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
+                weekPublishPlan.setId(snowFlakeIDHelper.nextId());
+                weekPublishPlan.setTaskId(task.getId());
+                weekPublishPlan.setCanOnline(0);
+                weekPublishPlan.setCondition("");
+
+                weekPublishPlanMapper.insert(weekPublishPlan);
+            }
+        }
         // 插入任务用户
         if (taskReqDTO.getTaskUsers() != null && taskReqDTO.getTaskUsers().size() > 0) {
             List<TaskUser> taskUsers = Lists.newArrayList();
@@ -390,6 +407,21 @@ public class ZSYTaskService implements IZSYTaskService {
                     taskTempMapper.deleteByUserAndTask(deleteTaskUserId,taskId);
                     taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
                     taskTempMapper.deleteUserWeekTempByUserAndTask(deleteTaskUserId,taskId);
+                }
+                if (taskModify != null){
+                    taskModifyMapper.deleteById(taskModify.getId());
+                    taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
+                }
+            });
+
+        }else {
+            oldTaskUserIds.stream().forEach(userId->{
+                TaskTemp existTaskTemp = taskTempMapper.selectByUserAndTask(userId, taskId);
+                TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskId, userId);
+                if (existTaskTemp != null){
+                    taskTempMapper.deleteByUserAndTask(userId,taskId);
+                    taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
+                    taskTempMapper.deleteUserWeekTempByUserAndTask(userId,taskId);
                 }
                 if (taskModify != null){
                     taskModifyMapper.deleteById(taskModify.getId());
@@ -1566,6 +1598,21 @@ public class ZSYTaskService implements IZSYTaskService {
                 task.setUpdateTime(new Date());
                 taskMapper.updateByPrimaryKeySelective(task);
                 // sch --
+                if (ZSYTaskStage.TESTING.getValue().equals(targetTask.getStageId())){
+                    //移动到测试中阶段
+
+                    //校验是否已经存在
+                    WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(task.getId());
+                    if (exist == null){
+                        WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
+                        weekPublishPlan.setId(snowFlakeIDHelper.nextId());
+                        weekPublishPlan.setTaskId(task.getId());
+                        weekPublishPlan.setCanOnline(0);
+                        weekPublishPlan.setCondition("");
+
+                        weekPublishPlanMapper.insert(weekPublishPlan);
+                    }
+                }
                 //阶段改变后,新增通知
                 stageChange(originTask,originTask.getStageId(),targetTask.getStageId());
                 // -- sch

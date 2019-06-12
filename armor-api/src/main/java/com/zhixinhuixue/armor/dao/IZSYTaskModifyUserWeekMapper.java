@@ -32,4 +32,6 @@ public interface IZSYTaskModifyUserWeekMapper {
      * @return
      */
     List<TaskModifyUserWeek> selectByTmId(@Param("tmId")Long tmId);
+
+    int deleteByTask(@Param("taskId")Long taskId);
 }

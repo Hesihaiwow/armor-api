@@ -15,10 +15,7 @@ import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.service.IZSYTaskTempService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
-import com.zhixinhuixue.armor.source.enums.ZSYTagColor;
-import com.zhixinhuixue.armor.source.enums.ZSYTaskStage;
-import com.zhixinhuixue.armor.source.enums.ZSYTaskStatus;
-import com.zhixinhuixue.armor.source.enums.ZSYTaskType;
+import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +58,8 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
     @Autowired
     private IZSYStageMapper stageMapper;
+    @Autowired
+    private IZSYWeekPublishPlanMapper weekPublishPlanMapper;
 
     /**
      * 新增任务(临时)
@@ -540,15 +539,6 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserCheckPeopleByUserId(userId);
         //查询申请人,当前临时任务审核日志
         List<TaskReviewLogBO> taskReviewLogBOS = taskTempMapper.selectTaskReviewLogByTaskTemp(existTaskTemp.getId());
-//        int size1 = taskReviewLogBOS.size();
-//        taskReviewLogBOS = taskReviewLogBOS.stream().sorted(Comparator.comparing(TaskReviewLog::getCheckUserId))
-//                .collect(Collectors.collectingAndThen(Collectors.toCollection(
-//                        () -> new TreeSet<>(Comparator.comparing(TaskReviewLog::getCheckUserId))
-//                ),ArrayList::new));
-//        int size2 = taskReviewLogBOS.size();
-//        if (size1 != size2){
-//            throw new ZSYServiceException("有重复数据,请先删除申请后重新创建");
-//        }
         Integer level = 0;
         for (UserCheckPeopleBO userCheckPeopleBO : userCheckPeopleBOS) {
             if (userCheckPeopleBO.getCheckUserId().equals(ZSYTokenRequestContext.get().getUserId())){
@@ -615,11 +605,25 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             }
             Long stageId = taskTemp.getStageId();
             if (ZSYTaskStage.WAIT_DESIGN.getValue().equals(stageId)){
-                taskTemp.setStageId(ZSYTaskStage.DESIGNING.getValue());
-            }else if (ZSYTaskStage.WAIT_DEVELOP.getValue().equals(stageId)){
+                if (ZSYJobRole.DESIGN.getValue() == user.getJobRole() || ZSYJobRole.PRODUCT.getValue() == user.getJobRole()){
+                    taskTemp.setStageId(ZSYTaskStage.DESIGNING.getValue());
+                }
+            }else if (ZSYTaskStage.WAIT_DEVELOP.getValue().equals(stageId) && ZSYJobRole.PROGRAMER.getValue() == user.getJobRole()){
                 taskTemp.setStageId(ZSYTaskStage.DEVELOPING.getValue());
-            }else if (ZSYTaskStage.WAIT_TEST.getValue().equals(stageId)){
+            }else if (ZSYTaskStage.WAIT_TEST.getValue().equals(stageId) && ZSYJobRole.TEST.getValue() == user.getJobRole()){
                 taskTemp.setStageId(ZSYTaskStage.TESTING.getValue());
+            }
+            if (ZSYTaskStage.TESTING.getValue().equals(taskTemp.getStageId())){
+                //校验是否已经存在
+                WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(taskTemp.getId());
+                if (exist == null){
+                    WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
+                    weekPublishPlan.setId(snowFlakeIDHelper.nextId());
+                    weekPublishPlan.setTaskId(taskTemp.getId());
+                    weekPublishPlan.setCanOnline(0);
+                    weekPublishPlan.setCondition("");
+                    weekPublishPlanMapper.insert(weekPublishPlan);
+                }
             }
             taskMapper.updateByPrimaryKeySelective(taskTemp);
             if (existTaskTemp.getReviewStatus() == 1) {

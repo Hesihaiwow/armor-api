@@ -152,6 +152,18 @@
         DELETE FROM `task_temp` WHERE `user_id` = #{userId} AND `task_id` = #{taskId}
     </delete>
 
+    <delete id="deleteByTask">
+        DELETE FROM `task_temp` WHERE `task_id` = #{taskId}
+    </delete>
+
+    <delete id="deleteReviewLogByTask">
+        DELETE FROM `task_review_log` WHERE `task_id` = #{taskId}
+    </delete>
+
+    <delete id="deleteUserWeekTempByTask">
+        DELETE FROM `user_week_temp` WHERE `task_id` = #{taskId}
+    </delete>
+
     <!--根据任务id和userId查询 临时任务-->
     <select id="selectByUserAndTask" resultMap="BaseTaskTempMap">
         SELECT * FROM `task_temp` WHERE `user_id` = #{userId} AND `task_id` = #{taskId} AND `review_status` != 3

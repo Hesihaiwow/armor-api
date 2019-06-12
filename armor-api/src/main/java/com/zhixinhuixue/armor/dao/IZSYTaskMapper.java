@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.dao;
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskComment;
 import org.apache.ibatis.annotations.Param;
@@ -260,4 +261,11 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<TaskListBO> selectTaskInfoByStageId(@Param("stageId")Long stageId, @Param("departmentId")Long departmentId);
+
+    /**
+     * 查询即将发版任务(测试中)
+     * @param reqDTO
+     * @return
+     */
+    List<WeekPublishTaskBO> selectWeekPublishTask(@Param("reqDTO") WeekPublishQueryReqDTO reqDTO);
 }

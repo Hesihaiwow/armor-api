@@ -102,4 +102,6 @@ public interface IZSYTaskModifyMapper {
      * @return
      */
     TaskModify selectByTaskAndUser(@Param("taskId")Long taskId,@Param("userId")Long userId);
+
+    int deleteByTask(@Param("taskId")Long taskId);
 }

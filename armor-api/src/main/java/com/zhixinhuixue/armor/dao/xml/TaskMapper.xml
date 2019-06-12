@@ -89,7 +89,21 @@
         </collection>
     </resultMap>
 
-
+    <resultMap id="WeekPublishTaskMap" type="com.zhixinhuixue.armor.model.bo.WeekPublishTaskBO">
+        <result column="id" property="taskId" jdbcType="BIGINT"></result>
+        <result column="name" property="taskName" jdbcType="VARCHAR"></result>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"></result>
+        <result column="user_name" property="createByName" jdbcType="VARCHAR"></result>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
+        <result column="can_online" property="canOnline" jdbcType="INTEGER"></result>
+        <result column="condition" property="condition" jdbcType="VARCHAR"></result>
+        <collection property="userIds" column="taskId=id"
+                    select="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper.selectUserIdByTaskId"
+                    ofType="java.lang.Long"/>
+        <collection property="platforms" column="taskId=id"
+                    select="com.zhixinhuixue.armor.dao.IZSYPlatformMapper.selectPlaformsByTask"
+                    ofType="com.zhixinhuixue.armor.model.pojo.Platform"/>
+    </resultMap>
     <!-- 查询任务详情 -->
     <select id="selectTaskDetailByTaskId" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
         select t1.*,t2.`name` as projectName,t3.`name` as stageName,t4.name as userName from task t1
@@ -585,6 +599,17 @@
         and t1.status = 1
         and t7.parent_id =#{departmentId}
         order by t1.sort ASC
+    </select>
+
+    <!--查询即将发版任务(测试中)-->
+    <select id="selectWeekPublishTask" resultMap="WeekPublishTaskMap">
+        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition
+        FROM task t
+        LEFT JOIN user u ON u.id = t.create_by
+        LEFT JOIN week_publish_plan wpp ON wpp.task_id = t.id
+        WHERE t.is_delete = 0 AND t.status = 1 AND t.stage_id = 212754785051344896 AND t.review_status = 3 AND t.type = 2
+        <![CDATA[  AND  t.end_time >= #{reqDTO.beginTime} ]]>
+        <![CDATA[  AND  t.end_time <= #{reqDTO.endTime} ]]>
     </select>
     <!-- sch -->
 </mapper>

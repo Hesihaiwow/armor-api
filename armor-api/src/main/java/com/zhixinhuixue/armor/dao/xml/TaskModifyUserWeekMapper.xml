@@ -32,6 +32,10 @@
         DELETE FROM `task_modify_user_week` WHERE `tm_id` = #{id}
     </delete>
 
+    <delete id="deleteByTask">
+        DELETE FROM `task_modify_user_week` WHERE `task_id` = #{taskId}
+    </delete>
+
     <!--根据tmID查询周工时分配-->
     <select id="selectByTmId" resultMap="BaseMap">
         SELECT * FROM `task_modify_user_week` WHERE `tm_id` = #{tmId}
