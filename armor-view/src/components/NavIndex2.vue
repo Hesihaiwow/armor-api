@@ -15,6 +15,78 @@
                        type="primary" @click="excelSignInVisible=true"
                        style="margin-left: 20px">导出考勤记录</el-button>
         </div>
+        <div class="my-integral-con" v-show="userRole>0 && userRole < 3" style="width: 1300px;margin-bottom: 10px">
+            <div><p class="mic-title">我的评价</p></div>
+            <div class="mic-main clearfix" style="float: left;">
+                <div class="fl" style="margin-left: 0px;width: 430px">
+                    <div style="font-size: 16px;">本周评价</div>
+                    <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.weekTime}}</div>
+                    <div  v-for="(item,index) in personalEvaluation.weekEvaluations"
+                         v-if="personalEvaluation.weekEvaluations.length > 0">
+                        <el-form label-position="left" inline class="demo-table-expand">
+                            <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
+                                <el-rate v-model="item.avgScore"
+                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                         :allow-half=true
+                                         disabled
+                                         style="float: left;margin-top: 7px">
+                                </el-rate>
+                                <span>{{item.avgScore}}</span>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div v-show="personalEvaluation.weekEvaluations.length === 0" class="empty" style="margin-left: -200px">
+                        <h2>暂无评价</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="mic-main clearfix" style="float:left;">
+                <div class="fl" style="margin-left: 0px;width: 430px">
+                    <div style="font-size: 16px;">本月评价</div>
+                    <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.monthTime}}</div>
+                    <div  v-for="(item,index) in personalEvaluation.monthEvaluations"
+                         v-if="personalEvaluation.monthEvaluations.length > 0">
+                        <el-form label-position="left" inline class="demo-table-expand">
+                            <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
+                                <el-rate v-model="item.avgScore"
+                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                         :allow-half=true
+                                         disabled
+                                         style="float: left;margin-top: 7px">
+                                </el-rate>
+                                <span>{{item.avgScore}}</span>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div v-show="personalEvaluation.monthEvaluations.length == 0" class="empty" style="margin-left: -200px">
+                        <h2>暂无评价</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="mic-main clearfix">
+                <div class="fl" style="margin-left: 0px;width: 430px">
+                    <div style="font-size: 16px">年度评价</div>
+                    <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.yearTime}}</div>
+                    <div  v-for="(item,index) in personalEvaluation.yearEvaluations"
+                         v-if="personalEvaluation.yearEvaluations.length > 0">
+                        <el-form label-position="left" inline class="demo-table-expand">
+                            <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
+                                <el-rate v-model="item.avgScore"
+                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                         :allow-half=true
+                                         disabled
+                                         style="float: left;margin-top: 7px">
+                                </el-rate>
+                                <span>{{item.avgScore}}</span>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div v-show="personalEvaluation.yearEvaluations.length === 0" class="empty" style="margin-left: -200px;">
+                        <h2>暂无评价</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--<div class="my-integral-con" v-show="userRole>0 && userRole < 3">-->
             <!--<div><p class="mic-title">我的积分</p>-->
                 <!--<div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"-->
@@ -3244,6 +3316,16 @@
                     endTime:'',
                     pageNum:1,
                 },
+
+                //个人综合评价
+                personalEvaluation:{
+                    weekTime:'',
+                    monthTime:'',
+                    yearTime:'',
+                    weekEvaluations:[],
+                    monthEvaluations:[],
+                    yearEvaluations:[]
+                }
                 // -- sch
             };
         },
@@ -3716,6 +3798,7 @@
                     // this.fetchPersonalMultipleAccess();
                     this.fetchPersonalTaskModifyWait();
                     this.fetchPersonalTaskModifyAccessed();
+                    this.fetchPersonalEvaluation();
                 }
 
             },
@@ -6844,6 +6927,15 @@
                 this.leaveReqDTO.pageNum = currentPage;
                 this.getLeaveList();
             },
+
+            fetchPersonalEvaluation(){
+                http.zsyGetHttp('/evaluation/average/personal',{},(res)=>{
+                    this.personalEvaluation = res.data;
+                    this.personalEvaluation.weekTime = this.getDateString('week')
+                    this.personalEvaluation.monthTime = this.getDateString('month')
+                    this.personalEvaluation.yearTime = this.getDateString('year')
+                })
+            }
             // -- sch
         },
         components: {

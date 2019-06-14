@@ -730,43 +730,47 @@
                 :visible.sync="showTaskEvaluationDetail"
                 size="tiny"
                 :before-close="hideTaskEvaluationDetail">
-            <span style="font-size: 20px;margin-bottom: 20px" v-if="hasAvgEvalution">被评价人：{{taskUserName}}</span>
-            <h2 style="font-size: 20px;margin-bottom: 20px" v-if="hasAvgEvalution">总体评价：</h2>
-            <div  v-for="(item,index) in avgEvaluation" v-if="hasAvgEvalution">
-                <el-form label-position="left" inline class="demo-table-expand">
-                    <el-form-item class="task-form" :label="item.option" style="margin-top: -10px">
-                        <el-rate v-model="item.score"
-                                 :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                 :allow-half=true
-                                 disabled
-                                 style="float: left;margin-top: 7px">
-                        </el-rate>
-                        <span>{{item.score}}</span>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <div v-show="!hasAvgEvalution" class="empty">
-                <h2>暂无数据</h2>
-            </div>
-            <h2 style="font-size: 20px;margin-bottom: 20px" v-show="hasAvgEvalution">用户评价：</h2>
-            <div v-for="(item,index) in taskEvaluation" v-show="hasAvgEvalution">
-                <el-form label-position="left" inline class="demo-table-expand">
-                    <el-form-item class="task-form" label="评价人">
-                        <span>{{ item.evaluateUserName }}</span>
-                    </el-form-item>
-                    <div v-for="evaluation in item.evaluationScoreResDTOS">
-                        <el-form-item class="task-form" :label="evaluation.evaluationOptionName" style="margin-top: -10px">
-                            <el-rate v-model="evaluation.score"
+            <div style="border: gray;border-style: solid;border-width: 1px;padding: 10px;">
+                <span style="font-size: 20px;margin-bottom: 20px" v-if="hasAvgEvalution">被评价人：{{taskUserName}}</span>
+                <h2 style="font-size: 20px;margin-bottom: 20px" v-if="hasAvgEvalution">总体评价：</h2>
+                <div  v-for="(item,index) in avgEvaluation" v-if="hasAvgEvalution">
+                    <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item class="task-form" :label="item.option" style="margin-top: -10px">
+                            <el-rate v-model="item.score"
                                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                      :allow-half=true
                                      disabled
-                            style="float: left;margin-top: 7px">
+                                     style="float: left;margin-top: 7px">
                             </el-rate>
-                            <span>{{evaluation.score}}</span>
+                            <span>{{item.score}}</span>
                         </el-form-item>
-                    </div>
+                    </el-form>
+                </div>
+                <div v-show="!hasAvgEvalution" class="empty">
+                    <h2>暂无数据</h2>
+                </div>
+            </div>
+            <div style="border: gray;border-style: solid;border-width: 1px;padding: 10px;margin-top: 10px">
+                <h2 style="font-size: 20px;margin-bottom: 20px" v-show="hasAvgEvalution">用户评价：</h2>
+                <div v-for="(item,index) in taskEvaluation" v-show="hasAvgEvalution">
+                    <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item class="task-form" label="评价人">
+                            <span>{{ item.evaluateUserName }}</span>
+                        </el-form-item>
+                        <div v-for="evaluation in item.evaluationScoreResDTOS">
+                            <el-form-item class="task-form" :label="evaluation.evaluationOptionName" style="margin-top: -10px">
+                                <el-rate v-model="evaluation.score"
+                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                         :allow-half=true
+                                         disabled
+                                style="float: left;margin-top: 7px">
+                                </el-rate>
+                                <span>{{evaluation.score}}</span>
+                            </el-form-item>
+                        </div>
 
-                </el-form>
+                    </el-form>
+                </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="hideTaskEvaluationDetail" type="primary">确 定</el-button>
