@@ -47,6 +47,12 @@
         <result column="option" property="option" jdbcType="INTEGER"></result>
         <result column="total_score" property="totalScore" jdbcType="DECIMAL"></result>
     </resultMap>
+
+    <resultMap id="PersonTotalEvaMap" type="com.zhixinhuixue.armor.model.bo.PersonTotalEvaBO">
+        <result column="total_score" property="totalScore" jdbcType="DECIMAL"></result>
+        <result column="option" property="option" jdbcType="INTEGER"></result>
+        <result column="times" property="times" jdbcType="INTEGER"></result>
+    </resultMap>
     <!--批量插入任务评价-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskEvaluation">
         INSERT INTO `task_evaluation`
@@ -155,7 +161,7 @@
     <select id="selectTaskBaseInfoByTaskUser" resultMap="TaskBaseBOMap">
         SELECT t.id task_id,t.name task_name FROM task_evaluation tev
         LEFT JOIN task t on tev.task_id = t.id
-        WHERE tev.task_user_id = #{userId}
+        WHERE tev.task_user_id = #{userId} AND t.status = 3
         <if test="reqDTO.beginTime != null">
             <![CDATA[  AND  t.`complete_time` >= #{reqDTO.beginTime} ]]>
         </if>
@@ -181,5 +187,13 @@
         <foreach collection="taskIds" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
+    </select>
+
+    <!--根据用户 和 时间  查询  阶段的评价-->
+    <select id="selectPersonalTotalEva" resultMap="PersonTotalEvaMap">
+        SELECT ifnull(sum(score),0) total_score,evaluation_option `option`,count(id) times FROM task_evaluation WHERE task_user_id = #{userId}
+        <![CDATA[  AND  `evaluate_time` >= #{beginTime} ]]>
+        <![CDATA[  AND  `evaluate_time` <= #{endTime} ]]>
+        GROUP BY evaluation_option
     </select>
 </mapper>

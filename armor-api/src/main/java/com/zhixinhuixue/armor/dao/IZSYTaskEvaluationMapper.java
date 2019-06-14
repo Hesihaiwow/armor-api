@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskEvaluation;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -133,4 +134,14 @@ public interface IZSYTaskEvaluationMapper {
      * @return
      */
     Integer selectEvaluationNumByTaskUser(@Param("taskIds")List<Long> taskIds, @Param("userId")Long userId);
+
+    /**
+     * 根据用户 和 时间  查询  阶段的评价
+     * @author sch
+     * @param userId
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<PersonTotalEvaBO> selectPersonalTotalEva(@Param("userId") Long userId, @Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
 }

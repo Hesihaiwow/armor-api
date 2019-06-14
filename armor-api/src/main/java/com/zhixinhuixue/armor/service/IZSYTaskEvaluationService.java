@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.PersonEvaluationResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskEvaluationPageResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +53,11 @@ public interface IZSYTaskEvaluationService {
      * @return
      */
     PageInfo<TaskEvaluationPageResDTO> getUserAvgEvaluation(EvaluationPageQueryReqDTO reqDTO);
+
+    /**
+     * 个人主页查看周,月,年的综合评价
+     * @author sch
+     * @return
+     */
+    PersonEvaluationResDTO getPersonalAverageEva();
 }

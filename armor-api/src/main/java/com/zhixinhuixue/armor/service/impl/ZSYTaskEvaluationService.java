@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
+import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
@@ -13,6 +14,7 @@ import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationScoreReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationUserReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.AvgEvaluationScoreResDTO;
+import com.zhixinhuixue.armor.model.dto.response.PersonEvaluationResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskBaseResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskEvaluationPageResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
@@ -31,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -322,5 +326,138 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
             });
         }
         return new PageInfo<>(page);
+    }
+
+    @Override
+    public PersonEvaluationResDTO getPersonalAverageEva() {
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Calendar calendar = Calendar.getInstance();
+        Date today = new Date();
+        String thisWeekFirstDayStr = DateHelper.getThisWeekFirstDay();
+        String thisWeekLastDayStr = DateHelper.getThisWeekLastDay();
+        String thisMonthFirstDayStr = DateHelper.getThisMonthFirstDay();
+        String thisMonthLastDayStr = DateHelper.getThisMonthLastDay();
+        Date currYearFirst = getCurrYearFirst();
+        Date currYearLast = getCurrYearLast();
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat timeSDF2 = new SimpleDateFormat("yyyy-MM-dd");
+        String currYearLastStr = timeSDF2.format(currYearLast);
+        Date weekFirstDay = null;
+        Date weekLastDay = null;
+        Date monthFirstDay = null;
+        Date monthLastDay = null;
+        PersonEvaluationResDTO personEvaluationResDTO = new PersonEvaluationResDTO();
+        try {
+            currYearLast = timeSDF.parse(currYearLastStr+" 23:59:59");
+            calendar.setTime(timeSDF.parse(thisWeekFirstDayStr));
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            weekFirstDay = calendar.getTime();
+
+            calendar.setTime(timeSDF.parse(thisWeekLastDayStr));
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            weekLastDay = calendar.getTime();
+
+            monthFirstDay = timeSDF.parse(thisMonthFirstDayStr);
+            monthLastDay = timeSDF.parse(thisMonthLastDayStr);
+
+            //查询本周评价
+            List<PersonTotalEvaBO> weekTotalEvaluations = evaluationMapper.selectPersonalTotalEva(userId,weekFirstDay,weekLastDay);
+            List<PersonTotalEvaBO> monthTotalEvaluations = evaluationMapper.selectPersonalTotalEva(userId, monthFirstDay, monthLastDay);
+            List<PersonTotalEvaBO> yearTotalEvaluations = evaluationMapper.selectPersonalTotalEva(userId, currYearFirst, currYearLast);
+
+            List<AvgEvaluationScoreResDTO> weekAvgEvaList = new ArrayList<>();
+            List<AvgEvaluationScoreResDTO> monthAvgEvaList = new ArrayList<>();
+            List<AvgEvaluationScoreResDTO> yearAvgEvaList = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(weekTotalEvaluations)){
+                for (PersonTotalEvaBO weekTotalEvaluation : weekTotalEvaluations) {
+                    AvgEvaluationScoreResDTO resDTO = new AvgEvaluationScoreResDTO();
+                    resDTO.setEvaluationOption(weekTotalEvaluation.getOption());
+                    resDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(weekTotalEvaluation.getOption()));
+                    BigDecimal avgScore = BigDecimal.valueOf(weekTotalEvaluation.getTotalScore())
+                            .divide(BigDecimal.valueOf(weekTotalEvaluation.getTimes()),2,BigDecimal.ROUND_HALF_UP);
+                    resDTO.setAvgScore(avgScore);
+                    weekAvgEvaList.add(resDTO);
+                }
+            }
+
+            if (!CollectionUtils.isEmpty(monthTotalEvaluations)){
+                for (PersonTotalEvaBO monthTotalEvaluation : monthTotalEvaluations) {
+                    AvgEvaluationScoreResDTO resDTO = new AvgEvaluationScoreResDTO();
+                    resDTO.setEvaluationOption(monthTotalEvaluation.getOption());
+                    resDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(monthTotalEvaluation.getOption()));
+                    BigDecimal avgScore = BigDecimal.valueOf(monthTotalEvaluation.getTotalScore())
+                            .divide(BigDecimal.valueOf(monthTotalEvaluation.getTimes()),2,BigDecimal.ROUND_HALF_UP);
+                    resDTO.setAvgScore(avgScore);
+                    monthAvgEvaList.add(resDTO);
+                }
+            }
+
+            if (!CollectionUtils.isEmpty(yearTotalEvaluations)){
+                for (PersonTotalEvaBO yearTotalEvaluation : yearTotalEvaluations) {
+                    AvgEvaluationScoreResDTO resDTO = new AvgEvaluationScoreResDTO();
+                    resDTO.setEvaluationOption(yearTotalEvaluation.getOption());
+                    resDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(yearTotalEvaluation.getOption()));
+                    BigDecimal avgScore = BigDecimal.valueOf(yearTotalEvaluation.getTotalScore())
+                            .divide(BigDecimal.valueOf(yearTotalEvaluation.getTimes()),2,BigDecimal.ROUND_HALF_UP);
+                    resDTO.setAvgScore(avgScore);
+                    yearAvgEvaList.add(resDTO);
+                }
+            }
+
+
+            personEvaluationResDTO.setWeekEvaluations(weekAvgEvaList);
+            personEvaluationResDTO.setMonthEvaluations(monthAvgEvaList);
+            personEvaluationResDTO.setYearEvaluations(yearAvgEvaList);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return personEvaluationResDTO;
+    }
+
+    /**
+     * 获取当年的第一天
+     * @return
+     */
+    public Date getCurrYearFirst(){
+        Calendar currCal=Calendar.getInstance();
+        int currentYear = currCal.get(Calendar.YEAR);
+        return getYearFirst(currentYear);
+    }
+
+    /**
+     * 获取当年的最后一天
+     * @return
+     */
+    public Date getCurrYearLast(){
+        Calendar currCal=Calendar.getInstance();
+        int currentYear = currCal.get(Calendar.YEAR);
+        return getYearLast(currentYear);
+    }
+
+    /**
+     * 获取某年第一天日期
+     * @param year 年份
+     * @return Date
+     */
+    public Date getYearFirst(int year){
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, year);
+        Date currYearFirst = calendar.getTime();
+        return currYearFirst;
+    }
+
+    /**
+     * 获取某年最后一天日期
+     * @param year 年份
+     * @return Date
+     */
+    public Date getYearLast(int year){
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, year);
+        calendar.roll(Calendar.DAY_OF_YEAR, -1);
+        Date currYearLast = calendar.getTime();
+        return currYearLast;
     }
 }

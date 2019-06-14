@@ -50,4 +50,10 @@ public class ZSYTaskEvaluationController {
     public String getUserAvgEvaluation(@RequestBody EvaluationPageQueryReqDTO reqDTO){
         return ZSYResult.success().data(taskEvaluationService.getUserAvgEvaluation(reqDTO)).build();
     }
+
+    @ApiOperation("个人主页查看周,月,年的综合评价")
+    @GetMapping("/average/personal")
+    public String getPersonalAverageEva(){
+        return ZSYResult.success().data(taskEvaluationService.getPersonalAverageEva()).build();
+    }
 }

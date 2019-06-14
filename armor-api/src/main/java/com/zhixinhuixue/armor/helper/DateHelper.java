@@ -90,7 +90,7 @@ public class DateHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK,Calendar.DAY_OF_WEEK);
         String day_first = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(day_first).append(" ").append(TIME_BEGIN);
+        StringBuffer str = new StringBuffer().append(day_first).append(" ").append(TIME_END);
         return str.toString();
     }
 
