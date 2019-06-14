@@ -19,7 +19,7 @@
             <div><p class="mic-title">我的评价</p></div>
             <div class="mic-main clearfix" style="float: left;">
                 <div class="fl" style="margin-left: 0px;width: 430px">
-                    <div style="font-size: 16px;">本周评价</div>
+                    <div style="font-size: 16px;">本周综合评价</div>
                     <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.weekTime}}</div>
                     <div  v-for="(item,index) in personalEvaluation.weekEvaluations"
                          v-if="personalEvaluation.weekEvaluations.length > 0">
@@ -42,7 +42,7 @@
             </div>
             <div class="mic-main clearfix" style="float:left;">
                 <div class="fl" style="margin-left: 0px;width: 430px">
-                    <div style="font-size: 16px;">本月评价</div>
+                    <div style="font-size: 16px;">本月综合评价</div>
                     <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.monthTime}}</div>
                     <div  v-for="(item,index) in personalEvaluation.monthEvaluations"
                          v-if="personalEvaluation.monthEvaluations.length > 0">
@@ -65,7 +65,7 @@
             </div>
             <div class="mic-main clearfix">
                 <div class="fl" style="margin-left: 0px;width: 430px">
-                    <div style="font-size: 16px">年度评价</div>
+                    <div style="font-size: 16px">年度综合评价</div>
                     <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.yearTime}}</div>
                     <div  v-for="(item,index) in personalEvaluation.yearEvaluations"
                          v-if="personalEvaluation.yearEvaluations.length > 0">
