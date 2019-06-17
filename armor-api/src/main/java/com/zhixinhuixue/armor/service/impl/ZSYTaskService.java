@@ -807,7 +807,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUserResDTO.setProTest(false);
             }
             taskUserResDTOS.add(taskUserResDTO);
-            if (!CollectionUtils.isEmpty(evaluationBOS) && taskUserResDTO.getCommentGrade() == null){
+            if (!CollectionUtils.isEmpty(evaluationBOS)){
                 if (ZSYUserRole.ADMINISTRATOR.getValue() == ZSYTokenRequestContext.get().getUserRole()){
                     BigDecimal avgScore = BigDecimal.valueOf(totalScore).divide(BigDecimal.valueOf(size),2,BigDecimal.ROUND_HALF_UP);
                     taskUserResDTO.setAvgScore(avgScore);
