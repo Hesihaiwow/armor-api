@@ -806,6 +806,7 @@ public class ZSYTaskService implements IZSYTaskService {
             }else{
                 taskUserResDTO.setProTest(false);
             }
+            taskUserResDTO.setCommentGrade(null);
             taskUserResDTOS.add(taskUserResDTO);
             if (!CollectionUtils.isEmpty(evaluationBOS)){
                 if (ZSYUserRole.ADMINISTRATOR.getValue() == ZSYTokenRequestContext.get().getUserRole()){
