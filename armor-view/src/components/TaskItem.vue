@@ -206,7 +206,7 @@
                         </el-tooltip>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
-                        <span class="fl ctpc-member-assess" v-show="item.status==3 && item.commentGrade">评价：{{item.commentGrade}}</span>
+                        <!--<span class="fl ctpc-member-assess" v-show="item.status==3 && item.commentGrade">评价：{{item.commentGrade}}</span>-->
                         <span class="fl ctpc-member-assess" v-show="item.status==3 && item.avgScore">评分：{{item.avgScore}}</span>
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
                            @click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>
@@ -1009,7 +1009,7 @@
                 <el-form-item v-show="taskTempDetail.isChecked == 1" label="任务描述: " prop="description">
                     {{taskTempDetail.description}}
                 </el-form-item>
-                <el-form-item v-show="taskTempDetail.isChecked == 0" label="任务描述: " prop="description" style="margin-top: -40px">
+                <el-form-item v-show="taskTempDetail.isChecked == 0" label="任务描述: " prop="description" style="margin-top: -10px">
                     <el-input type="textarea"  v-model="description" :rows="3"></el-input>
                 </el-form-item>
 
@@ -1092,7 +1092,7 @@
                 </div>
                 <el-form-item><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <!--<el-form-item class="task-form" label="申请人：">{{taskUser.userName}}</el-form-item>-->
-                <div style="margin-top: -30px">任务描述: {{taskUser.description}}</div>
+                <div style="margin-top: -10px">任务描述: {{taskUser.description}}</div>
                 <div style="float: left;margin-top: 3px">开始时间: {{taskUser.beginTime | formatDate}}</div>
                 <div style="float: left;margin-top: 3px;margin-left: 10px;">截止时间: {{taskUser.endTime | formatDate}}</div>
                 <div style="margin-top: 3px;margin-left: 310px">任务时长: {{taskUser.taskHours}}小时</div>
