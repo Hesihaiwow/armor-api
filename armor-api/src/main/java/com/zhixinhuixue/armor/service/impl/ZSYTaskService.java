@@ -1417,19 +1417,27 @@ public class ZSYTaskService implements IZSYTaskService {
         taskMapper.updateByPrimaryKeySelective(task);
         taskUserMapper.deleteByTaskId(taskId);
 
-        taskUserIds.stream().forEach(userId->{
-            TaskTemp existTaskTemp = taskTempMapper.selectByUserAndTask(userId, taskId);
-            if (existTaskTemp != null){
-                taskTempMapper.deleteByUserAndTask(userId,taskId);
-                taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
-                taskTempMapper.deleteUserWeekTempByUserAndTask(userId,taskId);
-            }
-            TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskId, userId);
-            if (taskModify != null){
-                taskModifyMapper.deleteById(taskModify.getId());
-                taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
-            }
-        });
+        if (!CollectionUtils.isEmpty(taskUserIds)){
+            taskUserIds.stream().forEach(userId->{
+                TaskTemp existTaskTemp = taskTempMapper.selectByUserAndTask(userId, taskId);
+                if (existTaskTemp != null){
+                    taskTempMapper.deleteByUserAndTask(userId,taskId);
+                    taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
+                    taskTempMapper.deleteUserWeekTempByUserAndTask(userId,taskId);
+                }
+                TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskId, userId);
+                if (taskModify != null){
+                    taskModifyMapper.deleteById(taskModify.getId());
+                    taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
+                }
+            });
+        }else {
+            taskTempMapper.deleteByTask(taskId);
+            taskTempMapper.deleteUserWeekTempByTask(taskId);
+            taskTempMapper.deleteReviewLogByTask(taskId);
+            taskModifyMapper.deleteByTask(taskId);
+            taskModifyUserWeekMapper.deleteByTask(taskId);
+        }
         return ZSYResult.success();
     }
 
