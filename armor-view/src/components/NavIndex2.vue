@@ -16,6 +16,9 @@
                        style="margin-left: 20px">导出考勤记录</el-button>
         </div>
         <div class="my-integral-con" v-show="userRole>0 && userRole < 3" style="width: 1300px;margin-bottom: 10px">
+            <div class="steps-body">
+                <div id="myChart1" :style="{width:'1100px',height:'250px'}"></div>
+            </div>
             <div><p class="mic-title">我的评价</p></div>
             <div class="mic-main clearfix" style="float: left;">
                 <div class="fl" style="margin-left: 0px;width: 430px">
@@ -3325,7 +3328,12 @@
                     weekEvaluations:[],
                     monthEvaluations:[],
                     yearEvaluations:[]
-                }
+                },
+
+                weekHourStatsList:[],
+                weekHourList:[],
+                weekNumberList:[],
+                thisYear:''
                 // -- sch
             };
         },
@@ -3799,6 +3807,7 @@
                     this.fetchPersonalTaskModifyWait();
                     this.fetchPersonalTaskModifyAccessed();
                     this.fetchPersonalEvaluation();
+                    this.fetchWeekHourStats()
                 }
 
             },
@@ -6935,6 +6944,77 @@
                     this.personalEvaluation.monthTime = this.getDateString('month')
                     this.personalEvaluation.yearTime = this.getDateString('year')
                 })
+            },
+
+            //查询个人近6周工作量
+            fetchWeekHourStats(){
+                var today = new Date();
+                this.thisYear = today.getFullYear()+'年';
+                this.weekHourStatsList = [];
+                this.weekHourList = [];
+                this.weekNumberList = [];
+                http.zsyGetHttp('/data/personal/week-hour-stats',{},(res)=>{
+                    this.weekHourStatsList = res.data;
+                    this.weekHourStatsList = this.weekHourStatsList.reverse();
+                    this.weekHourStatsList.forEach(weekHourStat=>{
+                        this.weekHourList.push(weekHourStat.weekHours);
+                        this.weekNumberList.push(weekHourStat.week);
+                    })
+                    this.drawLine1()
+                })
+            },
+
+            drawLine1(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart1'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '周工时'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: [this.thisYear]
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: this.weekNumberList
+                    },
+                    yAxis: {
+                        type:  'value',
+                        interval:10,
+                        splitLine:{
+                            show:false
+                        },
+                    },
+                    label: {
+                        show: true,//是否展示
+                        position: 'top',//在右端
+                        textStyle: {
+                            fontWeight: 'bolder',
+                            fontSize: '12',
+                            fontFamily: '微软雅黑',
+                            // color: 'black'
+                        }
+                    },
+                        grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    series : [
+                        {
+                            name:this.thisYear,
+                            type:'bar',
+                            data:this.weekHourList,
+                            barWidth:30,
+                            barGap:10
+                        }
+                    ]
+                });
             }
             // -- sch
         },
@@ -7335,5 +7415,10 @@
         padding: 0 10px;
         line-height: 30px;
         background-color: #e4e8f1;
+    }
+
+    .steps-body {
+        display: flex;
+        flex-direction: row;
     }
 </style>
