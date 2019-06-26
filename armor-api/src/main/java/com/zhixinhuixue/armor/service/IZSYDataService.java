@@ -150,4 +150,11 @@ public interface IZSYDataService {
      * @return
      */
     TaskTimeResDTO getTaskTime(Long taskId);
+
+    /**
+     * 近6周工作量
+     * @author sch
+     * @return
+     */
+    List<WeekHourStatsResDTO> getWeekHourStats();
 }

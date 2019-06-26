@@ -4,6 +4,7 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDataMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.*;
@@ -49,6 +50,9 @@ public class ZSYDataService implements IZSYDataService {
 
     @Autowired
     private IZSYUserMapper userMapper;
+
+    @Autowired
+    private IZSYUserWeekMapper userWeekMapper;
 
     /**
      * 年度需求总数(学管端,其他)
@@ -405,6 +409,41 @@ public class ZSYDataService implements IZSYDataService {
         TaskTimeResDTO resDTO = new TaskTimeResDTO();
         resDTO.setTaskHours(taskHours);
         return resDTO;
+    }
+
+    /**
+     * 近6周工作量
+     * @author sch
+     * @return
+     */
+    @Override
+    public List<WeekHourStatsResDTO> getWeekHourStats() {
+        List<WeekHourStatsResDTO> list = new ArrayList<>();
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        Date today = new Date();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+        if (dayOfWeek == 1){
+            weekOfYear = weekOfYear - 1;
+        }
+        //判断往前11周  是否为同一年
+        for (int i = 0;i < 12; i ++){
+            Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
+            WeekHourStatsResDTO resDTO = new WeekHourStatsResDTO();
+            String week = year+"年 第"+weekOfYear+"周";
+            resDTO.setWeek(week);
+            resDTO.setWeekHours(userWeekHours);
+            list.add(resDTO);
+            if (weekOfYear == 1){
+                year = year - 1;
+                weekOfYear = 53;
+            }
+            weekOfYear --;
+        }
+        return list;
     }
 
 
