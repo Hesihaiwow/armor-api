@@ -154,10 +154,16 @@ public class ZSYDataController {
         return ZSYResult.success().data(resDTO).build();
     }
 
-    @ApiOperation("查询近6周工作量")
+    @ApiOperation("查询近12周工作量")
     @GetMapping("/personal/week-hour-stats")
     public String getWeekHourStats(){
         return ZSYResult.success().data(zsyDataService.getWeekHourStats()).build();
+    }
+
+    @ApiOperation("管理员查看人员近12周工作量")
+    @GetMapping("/week-hour-stats/{userId}")
+    public String getUserWeekHourStats(@PathVariable("userId")Long userId){
+        return ZSYResult.success().data(zsyDataService.getUserWeekHourStats(userId)).build();
     }
 
 }

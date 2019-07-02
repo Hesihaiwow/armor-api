@@ -157,4 +157,12 @@ public interface IZSYDataService {
      * @return
      */
     List<WeekHourStatsResDTO> getWeekHourStats();
+
+    /**
+     * 管理员查看人员近12周工作量
+     * @author sch
+     * @param userId
+     * @return
+     */
+    List<WeekHourStatsResDTO> getUserWeekHourStats(Long userId);
 }
