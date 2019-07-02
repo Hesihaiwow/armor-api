@@ -15,6 +15,19 @@
                        type="primary" @click="excelSignInVisible=true"
                        style="margin-left: 20px">导出考勤记录</el-button>
         </div>
+        <div v-show="userRole == 0" style="margin-top: 10px">
+            <span style="font-size: 18px;color: black">员工周工作量</span>
+                <div class="add-member-basic-msg" style="margin-top: 5px;">
+                    <el-select v-model="weekHourUserId" clearable filterable placeholder="筛选用户" @change="fetchUserWeekHourStats(weekHourUserId)" style="width: 150px">
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
+                    </el-select>
+                </div>
+                <div id="myChart2" :style="{width:'1100px',height:'250px',marginTop:'10px'}" v-show="weekHourStatsList.length>0"></div>
+                <div v-show="weekHourStatsList.length==0" class="empty">
+                    <h2>暂无数据</h2>
+                </div>
+        </div>
         <div class="my-integral-con" v-show="userRole>0 && userRole < 3" style="width: 1300px;margin-bottom: 10px">
             <div class="steps-body">
                 <div id="myChart1" :style="{width:'1100px',height:'250px'}"></div>
@@ -3333,7 +3346,8 @@
                 weekHourStatsList:[],
                 weekHourList:[],
                 weekNumberList:[],
-                thisYear:''
+                thisYear:'',
+                weekHourUserId:''
                 // -- sch
             };
         },
@@ -3770,6 +3784,7 @@
                 this.fetchUserLeavePassList();
                 this.fetchControlledPeople();
                 if (this.userRole === 0) {
+                    // this.fetchUserWeekHourStats()
                     // 所有审核通过的数据
                     this.fetchTaskAuditSuccess()
                     //待审核的积分转移，审核通过的积分转移
@@ -6946,7 +6961,7 @@
                 })
             },
 
-            //查询个人近6周工作量
+            //查询个人近12周工作量
             fetchWeekHourStats(){
                 var today = new Date();
                 this.thisYear = today.getFullYear()+'年';
@@ -6963,10 +6978,84 @@
                     this.drawLine1()
                 })
             },
+            fetchUserWeekHourStats(userId){
+                if (userId != null && userId != ''){
+                    var today = new Date();
+                    this.thisYear = today.getFullYear()+'年';
+                    this.weekHourStatsList = [];
+                    this.weekHourList = [];
+                    this.weekNumberList = [];
+                    http.zsyGetHttp('/data/week-hour-stats/'+userId,{},(res)=>{
+                        this.weekHourStatsList = res.data;
+                        this.weekHourStatsList = this.weekHourStatsList.reverse();
+                        this.weekHourStatsList.forEach(weekHourStat=>{
+                            this.weekHourList.push(weekHourStat.weekHours);
+                            this.weekNumberList.push(weekHourStat.week);
+                        })
+                        this.drawLine2()
+                    })
+                }else {
+                    this.weekHourStatsList = [];
+                    this.weekHourList = [];
+                    this.weekNumberList = [];
+                }
+            },
 
             drawLine1(){
                 // 基于准备好的dom，初始化echarts实例
                 let myChart = this.$echarts.init(document.getElementById('myChart1'))
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '周工时'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: [this.thisYear]
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: this.weekNumberList
+                    },
+                    yAxis: {
+                        type:  'value',
+                        interval:10,
+                        splitLine:{
+                            show:false
+                        },
+                    },
+                    label: {
+                        show: true,//是否展示
+                        position: 'top',//在右端
+                        textStyle: {
+                            fontWeight: 'bolder',
+                            fontSize: '12',
+                            fontFamily: '微软雅黑',
+                            // color: 'black'
+                        }
+                    },
+                        grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    series : [
+                        {
+                            name:this.thisYear,
+                            type:'bar',
+                            data:this.weekHourList,
+                            barWidth:30,
+                            barGap:10
+                        }
+                    ]
+                });
+            },
+            drawLine2(){
+                // 基于准备好的dom，初始化echarts实例
+                let myChart = this.$echarts.init(document.getElementById('myChart2'))
                 // 绘制图表
                 myChart.setOption({
                     title: {
