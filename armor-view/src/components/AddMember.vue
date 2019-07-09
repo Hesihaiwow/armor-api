@@ -36,6 +36,19 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">级别</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="addForm.level" placeholder="请选择级别">
+            <el-option
+                    v-for="item in levelList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">手机号</div>
         <div class="ftp-msg fl">
           <el-input class="w280" v-model="addForm.phone" placeholder="请输入手机号"></el-input>
@@ -107,6 +120,7 @@
           phone:'',
           userRole:'',
           jobRole:'',
+          level:'',
           departmentId:'',
           checkSort:'',
           email:'',
@@ -140,10 +154,24 @@
           }, {
               roleId: 3,
               roleName: '产品'
-          }, {
+          },{
+              roleId: 5,
+              roleName: '算法工程师'
+          },{
               roleId: 4,
               roleName: '其他'
           }],
+          levelList:[
+              {id:1,name:'一级'},
+              {id:2,name:'二级'},
+              {id:3,name:'三级'},
+              {id:4,name:'四级'},
+              {id:5,name:'五级'},
+              {id:6,name:'六级'},
+              {id:7,name:'七级'},
+              {id:8,name:'八级'},
+              {id:9,name:'九级'}
+          ],
         showAddPop: false,
           checkUserIdList:[],
           num:1,
@@ -169,6 +197,7 @@
         this.addForm.userRole='';
         this.addForm.email='';
         this.addForm.jobRole='';
+        this.addForm.level='';
         this.addForm.checkSort='';
         this.num = 1;
         this.checkUserIdList = [];
@@ -201,6 +230,10 @@
         }
         if (Helper.trim(this.addForm.jobRole)==''){
             this.warnMsg("请选择用户角色");
+            return;
+        }
+        if (Helper.trim(this.addForm.level)==''){
+            this.warnMsg("请选择用户级别");
             return;
         }
           if (Helper.trim(this.addForm.checkSort)==''){

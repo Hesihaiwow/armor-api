@@ -2478,6 +2478,7 @@
                 <div v-show="taskTempAble" style="float: left;">开始时间: {{taskTempDetail.beginTime | formatDate}}</div>
                 <div v-show="taskTempAble" style="float: left;margin-left: 20px;">截止: {{taskTempDetail.endTime | formatDate}}</div>
                 <div v-show="taskTempAble" style="margin-left: 350px">任务时长: {{taskTempDetail.workHours}}小时</div>
+                <div v-show="taskTempAble" style="margin-left: 0px">任务级别: {{taskTempDetail.taskLevelName}}</div>
                 <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
                     <el-date-picker @change="changeTime"
                                     v-model="taskTempDetail.beginTime"
@@ -2498,11 +2499,17 @@
                     </el-date-picker>
                 </el-form-item>
 
-                <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：">
-                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 20%"></el-input>
+                <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：" style="float: left">
+                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 40%"></el-input>
                     小时
                 </el-form-item>
 
+                <el-form-item v-show="!taskTempAble" class="task-form" label="任务级别: " style="margin-left: 285px">
+                    <el-select v-model="taskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px">
+                        <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
                 <div v-for="(item,index) in sortWeekTempNumber" v-show="!taskTempAble">
                         <div class="add-member-basic-list clearfix">
                             <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
@@ -3235,8 +3242,17 @@
                     userWeeks:[],
                     taskReviewLogResDTOList:[],
                     isChecked:'',
-                    suggest:''
+                    suggest:'',
+                    taskLevel:'',
+                    taskLevelName:'',
                 },
+                taskLevelList:[
+                    {id:1,name:"一级"},
+                    {id:2,name:"二级"},
+                    {id:3,name:"三级"},
+                    {id:4,name:"四级"},
+                    {id:5,name:"五级"}
+                ],
                 taskTemp:{
                     waitAssess: [],
                     waitAssess2: [],
@@ -4178,6 +4194,10 @@
                                 return false;
                             }
                         }
+                        if (param.taskLevel === undefined || param.taskLevel === null || param.taskLevel === '') {
+                            this.$message({showClose: true, message: '请选择任务级别', type: 'error'});
+                            return false;
+                        }
                         param.workHours = String(param.workHours)
                         if (param.workHours.length != parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
@@ -4630,6 +4650,8 @@
               this.taskTempDetail.createTime = taskTemp.createTime;
               this.taskTempDetail.description = taskTemp.description;
               this.taskTempDetail.isChecked = taskTemp.isChecked;
+              this.taskTempDetail.taskLevel = taskTemp.taskLevel;
+              this.taskTempDetail.taskLevelName = taskTemp.taskLevelName;
               this.description = taskTemp.description;
               // this.taskTempDetail.reviewStatus = taskTemp.reviewStatus;
               this.taskTempDetail.workHours = taskTemp.workHours;

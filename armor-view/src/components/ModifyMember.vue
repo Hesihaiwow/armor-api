@@ -30,6 +30,19 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">级别</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="modifyForm.level" placeholder="请选择级别">
+            <el-option
+                    v-for="item in levelList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">职位</div>
         <div class="ftp-msg fl">
           <el-input class="w280" v-model="modifyForm.jobName" placeholder="请输入职位"></el-input>
@@ -133,6 +146,7 @@
           account:'',
           jobName:'',
           jobRole:'',
+          level:'',
           phone:'',
           userRole:'',
           checkSort:'',
@@ -154,9 +168,23 @@
             roleId: 3,
             roleName: '产品'
         }, {
+            roleId: 5,
+            roleName: '算法工程师'
+        }, {
             roleId: 4,
             roleName: '其他'
         }],
+          levelList:[
+              {id:1,name:'一级'},
+              {id:2,name:'二级'},
+              {id:3,name:'三级'},
+              {id:4,name:'四级'},
+              {id:5,name:'五级'},
+              {id:6,name:'六级'},
+              {id:7,name:'七级'},
+              {id:8,name:'八级'},
+              {id:9,name:'九级'}
+          ],
         //用户权限手
         options: [{
               value: 0,
@@ -199,6 +227,7 @@
             this.modifyForm.phone=res.data.phone;
             this.modifyForm.userRole=res.data.userRole;
             this.modifyForm.jobRole=res.data.jobRole;
+            this.modifyForm.level=res.data.level;
             this.modifyForm.status=res.data.status;
             this.modifyForm.email=res.data.email;
             this.modifyForm.departmentId=res.data.departmentId;
@@ -228,6 +257,7 @@
         this.modifyForm.userRole='';
         this.modifyForm.email='';
         this.modifyForm.jobRole='';
+        this.modifyForm.level='';
         this.modifyForm.checkSort='';
         this.num = 1;
         this.checkUserIdList = [];
@@ -266,6 +296,10 @@
             this.warnMsg("请选择用户角色");
             return;
         }
+          if (Helper.trim(this.modifyForm.level)==''){
+              this.warnMsg("请选择用户级别");
+              return;
+          }
           if (Helper.trim(this.modifyForm.checkSort)==''){
               this.warnMsg("请选择用户考勤序号");
               return;

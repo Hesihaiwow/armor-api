@@ -115,6 +115,9 @@
                             截止：{{item.endTime | formatDate}}
                         </div>
                         <div class="text item" v-show="taskDetail.type==2">
+                            任务级别：{{item.taskLevelName}}
+                        </div>
+                        <div class="text item" v-show="taskDetail.type==2">
                             描述：{{item.description}}
                         </div>
                     </el-card>
@@ -389,6 +392,44 @@
                                 </el-form-item>
                             </div>
                             <div v-if="stage.jobRole == 1 && showEvaluate[`${index}`]" >
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="质量">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole == 5 && showEvaluate[`${index}`]" >
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -1830,6 +1871,33 @@
                             // stage.evaluationList.splice(attitude, 1, score)
                             // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
+                        else if (jobRole == 5){
+                            //算法
+                            var evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '4'
+                            });
+                            users[i].evaluationList = evaluationList;
+                            // stage.evaluationList.splice(attitude, 1, score)
+                            // this.$set(users[i],users[i].evaluationList,evaluationList)
+                        }
                         else if (jobRole == 2){
                             //设计
                             var evaluationList = [];
@@ -2491,7 +2559,7 @@
                                     'score':Number((totalAttitudeScore/length).toFixed(2))
                                 })
                             }
-                            if (jobRole == 1){
+                            else if (jobRole == 1){
                                 var totalCommunicateScore = 0;
                                 var totalAttitudeScore = 0;
                                 var totalQualityScore = 0;
@@ -2518,10 +2586,36 @@
                                     'option':'质量',
                                     'score':Number((totalQualityScore/length).toFixed(2))
                                 })
-
-
                             }
-                            if (jobRole == 2){
+                            else if (jobRole == 5){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalQualityScore = 0;
+                                var totalEfficiencyScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'质量',
+                                    'score':Number((totalQualityScore/length).toFixed(2))
+                                })
+                            }
+                            else if (jobRole == 2){
                                 var totalCommunicateScore = 0;
                                 var totalAttitudeScore = 0;
                                 var totalDesignScore = 0;
@@ -2543,7 +2637,7 @@
                                     'score':Number((totalDesignScore/length).toFixed(2))
                                 })
                             }
-                            if (jobRole == 3){
+                            else if (jobRole == 3){
                                 var totalCommunicateScore = 0;
                                 var totalAttitudeScore = 0;
                                 var totalEfficiencyScore = 0;

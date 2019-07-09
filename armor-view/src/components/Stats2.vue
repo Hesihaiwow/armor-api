@@ -1622,6 +1622,10 @@
                         roleName: '产品'
                     },
                     {
+                        roleId: 5,
+                        roleName: '算法工程师'
+                    },
+                    {
                         roleId: 4,
                         roleName: '其他'
                     }
