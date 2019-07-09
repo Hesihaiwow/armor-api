@@ -39,6 +39,16 @@ public class User {
 
     private Integer checkSort;
 
+    private Integer level;
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
     public Integer getCheckSort() {
         return checkSort;
     }

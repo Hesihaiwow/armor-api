@@ -694,6 +694,21 @@ public class ZSYTaskService implements IZSYTaskService {
         taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
             TaskUserResDTO taskUserResDTO = new TaskUserResDTO();
             // sch --
+            Integer taskLevel = taskUserBO.getTaskLevel();
+            if (taskLevel != null){
+                taskUserResDTO.setTaskLevel(taskLevel);
+                if (taskLevel == 1){
+                    taskUserResDTO.setTaskLevelName("一级");
+                }else if(taskLevel == 2){
+                    taskUserResDTO.setTaskLevelName("二级");
+                }else if (taskLevel == 3){
+                    taskUserResDTO.setTaskLevelName("三级");
+                }else if (taskLevel == 4){
+                    taskUserResDTO.setTaskLevelName("四级");
+                }else if (taskLevel == 5){
+                    taskUserResDTO.setTaskLevelName("五级");
+                }
+            }
             List<EvaluationBO> evaluationBOS = new ArrayList<>();
             if (ZSYTokenRequestContext.get().getUserRole() >= ZSYUserRole.PROJECT_MANAGER.getValue()){
                 //查看某个人对当前用户的评价

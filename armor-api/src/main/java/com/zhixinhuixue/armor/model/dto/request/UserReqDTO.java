@@ -33,6 +33,9 @@ public class UserReqDTO {
     @NotNull(message = "角色不能为空")
     private Integer jobRole;
 
+    @NotNull(message = "级别不能为空")
+    private Integer level;
+
     @NotNull(message = "用户角色不能为空")
     private Integer userRole;
 
@@ -50,6 +53,14 @@ public class UserReqDTO {
     @Pattern(regexp = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}",message = "邮箱格式错误")
     @NotNull(message = "邮箱不能为空")
     private String email;
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public List<UserCheckPeopleReqDTO> getCheckUserList() {
         return checkUserList;

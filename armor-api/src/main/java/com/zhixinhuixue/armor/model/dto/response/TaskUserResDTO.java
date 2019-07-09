@@ -81,9 +81,31 @@ public class TaskUserResDTO{
     private List<UserTaskResDTO> userTask;
 
     /**
+     * 任务级别
+     */
+    private Integer taskLevel;
+    private String taskLevelName;
+
+    /**
      * 任务结束时，最终评价等级
      */
     private String commentGrade;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
+
+    public String getTaskLevelName() {
+        return taskLevelName;
+    }
+
+    public void setTaskLevelName(String taskLevelName) {
+        this.taskLevelName = taskLevelName;
+    }
 
     public Integer getIsEvaluated() {
         return isEvaluated;

@@ -51,6 +51,11 @@ public class TaskTemp {
     private Integer level;
 
     /**
+     * 任务级别
+     */
+    private Integer taskLevel;
+
+    /**
      * 状态  1:进行中 2:已完成(待评价) 3: 已结束
      */
     private Integer status;
@@ -70,6 +75,14 @@ public class TaskTemp {
      * 创建时间
      */
     private Date createTime;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
 
     public Integer getLevel() {
         return level;

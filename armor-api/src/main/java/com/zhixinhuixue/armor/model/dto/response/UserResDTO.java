@@ -72,9 +72,22 @@ public class UserResDTO {
     private Integer checkSort;
 
     /**
+     * 级别
+     */
+    private Integer level;
+
+    /**
      * 创建任务审核人集合
      */
     private List<UserCheckPeopleResDTO> checkUsers;
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public List<UserCheckPeopleResDTO> getCheckUsers() {
         return checkUsers;

@@ -54,6 +54,12 @@ public class EditTaskTempReqDTO {
     private Date endTime;
 
     /**
+     * 任务级别
+     */
+    @NotNull(message = "任务级别不能为空")
+    private Integer taskLevel;
+
+    /**
      * 任务描述
      * @return
      */
@@ -72,6 +78,14 @@ public class EditTaskTempReqDTO {
      * @return
      */
     private String suggest;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
 
     public String getSuggest() {
         return suggest;

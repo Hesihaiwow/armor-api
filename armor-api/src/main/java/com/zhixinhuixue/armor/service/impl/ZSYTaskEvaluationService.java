@@ -306,6 +306,8 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     optionNum = 3;
                 }else if (jobRole == 3){
                     optionNum = 4;
+                }else if (jobRole == 5){
+                    optionNum = 4;
                 }
                 Integer evaluateTimes = evaluationNum/optionNum;
                 if (!CollectionUtils.isEmpty(optionScoreBOS)){

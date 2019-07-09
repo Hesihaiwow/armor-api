@@ -12,6 +12,7 @@
         <result column="complete_hours" jdbcType="INTEGER" property="completeHours"/>
         <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="task_level" jdbcType="INTEGER" property="taskLevel"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
 
@@ -85,12 +86,13 @@
    insert into task_user (id, task_id,
       user_id, task_hours, begin_time,
       end_time, description, complete_hours,
-      complete_time, status, create_time
+      complete_time, status, create_time,task_level
       )
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT},
       #{userId,jdbcType=BIGINT}, #{taskHours,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP},
       #{endTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, #{completeHours,jdbcType=INTEGER},
-      #{completeTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      #{completeTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+      #{taskLevel,jdbcType=INTEGER}
       )
   </insert>
 

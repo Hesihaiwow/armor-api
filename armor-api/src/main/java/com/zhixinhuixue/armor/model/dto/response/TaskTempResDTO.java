@@ -72,9 +72,31 @@ public class TaskTempResDTO {
     private Integer isChecked;
 
     /**
+     * 任务级别
+     */
+    private Integer taskLevel;
+    private String taskLevelName;
+
+    /**
      * 用户-周工作量
      */
     private List<UserWeekTempResDTO> userWeekTempList;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
+
+    public String getTaskLevelName() {
+        return taskLevelName;
+    }
+
+    public void setTaskLevelName(String taskLevelName) {
+        this.taskLevelName = taskLevelName;
+    }
 
     public Integer getIsChecked() {
         return isChecked;

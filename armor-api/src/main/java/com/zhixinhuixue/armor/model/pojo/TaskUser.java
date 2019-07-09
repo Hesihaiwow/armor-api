@@ -28,6 +28,16 @@ public class TaskUser {
 
     private Date createTime;
 
+    private Integer taskLevel;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
+
     public Long getId() {
         return id;
     }

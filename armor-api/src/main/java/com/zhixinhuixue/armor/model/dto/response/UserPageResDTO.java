@@ -37,10 +37,20 @@ public class UserPageResDTO {
 
     private Integer checkSort;
 
+    private Integer level;
+
     /**
      * 用户的创建任务审核人集合
      */
     private List<UserCheckPeopleResDTO> checkUsers;
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public List<UserCheckPeopleResDTO> getCheckUsers() {
         return checkUsers;

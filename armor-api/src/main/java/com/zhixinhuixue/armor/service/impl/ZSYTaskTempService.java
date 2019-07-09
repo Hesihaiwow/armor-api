@@ -474,6 +474,21 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             taskTempBOList.stream().forEach(taskTempBO -> {
                 TaskTempResDTO taskTempResDTO = new TaskTempResDTO();
                 BeanUtils.copyProperties(taskTempBO, taskTempResDTO);
+                Integer taskLevel = taskTempBO.getTaskLevel();
+                if (taskLevel != null){
+                    if (taskLevel == 1){
+                        taskTempResDTO.setTaskLevelName("一级");
+                    }else if(taskLevel == 2){
+                        taskTempResDTO.setTaskLevelName("二级");
+                    }else if (taskLevel == 3){
+                        taskTempResDTO.setTaskLevelName("三级");
+                    }else if (taskLevel == 4){
+                        taskTempResDTO.setTaskLevelName("四级");
+                    }else if (taskLevel == 5){
+                        taskTempResDTO.setTaskLevelName("五级");
+                    }
+                }
+
                 List<UserWeekTemp> userWeekTempList = taskTempBO.getUserWeekTempList();
                 List<UserWeekTempResDTO> userWeekTempResDTOList = new ArrayList<>();
                 BeanUtils.copyProperties(userWeekTempList, userWeekTempResDTOList);
@@ -628,6 +643,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             taskMapper.updateByPrimaryKeySelective(taskTemp);
             if (existTaskTemp.getReviewStatus() == 1) {
                 existTaskTemp.setReviewStatus(2);
+                existTaskTemp.setTaskLevel(editTaskTempReqDTO.getTaskLevel());
                 if (taskTempMapper.updateTaskTemp(existTaskTemp) == 0) {
                     throw new ZSYServiceException("审核失败");
                 }
@@ -651,6 +667,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 taskUser.setTaskId(taskId);
                 taskUser.setUserId(userId);
                 taskUser.setStageId(null);
+                taskUser.setTaskLevel(editTaskTempReqDTO.getTaskLevel());
                 taskUserMapper.insert(taskUser);
 
 

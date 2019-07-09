@@ -11,6 +11,7 @@
         <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
         <result column="type" property="type" jdbcType="INTEGER"></result>
         <result column="status" property="status" jdbcType="INTEGER"></result>
+        <result column="task_level" property="taskLevel" jdbcType="INTEGER"></result>
         <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
         <result column="description" property="description" jdbcType="VARCHAR"></result>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
@@ -89,7 +90,7 @@
     </insert>
 
     <!--修改任务(临时)-->
-    <update id="updateTaskTemp" parameterType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
+    <update id="updateTaskTemp" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTemp">
         UPDATE `task_temp`
         <set>
             <if test="workHours != null">
@@ -111,7 +112,10 @@
                 `review_status` = #{reviewStatus,jdbcType=INTEGER},
             </if>
             <if test="level != null">
-                `level` = #{level,jdbcType=INTEGER}
+                `level` = #{level,jdbcType=INTEGER},
+            </if>
+            <if test="taskLevel != null">
+                `task_level` = #{taskLevel,jdbcType=INTEGER},
             </if>
         </set>
         WHERE `id` = #{id,jdbcType=BIGINT}
