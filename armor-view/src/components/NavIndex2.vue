@@ -45,9 +45,10 @@
                                          :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                          :allow-half=true
                                          disabled
+                                         show-text
+                                         text-template="{value}"
                                          style="float: left;margin-top: 7px">
                                 </el-rate>
-                                <span>{{item.avgScore}}</span>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -68,9 +69,10 @@
                                          :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                          :allow-half=true
                                          disabled
+                                         show-text
+                                         text-template="{value}"
                                          style="float: left;margin-top: 7px">
                                 </el-rate>
-                                <span>{{item.avgScore}}</span>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -91,9 +93,10 @@
                                          :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                          :allow-half=true
                                          disabled
+                                         show-text
+                                         text-template="{value}"
                                          style="float: left;margin-top: 7px">
                                 </el-rate>
-                                <span>{{item.avgScore}}</span>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -3361,6 +3364,8 @@
 
                 weekHourStatsList:[],
                 weekHourList:[],
+                avgWeekHourList:[],
+                leaveHourList:[],
                 weekNumberList:[],
                 thisYear:'',
                 weekHourUserId:''
@@ -6996,7 +7001,9 @@
                     this.weekHourStatsList.forEach(weekHourStat=>{
                         this.weekHourList.push(weekHourStat.weekHours);
                         this.weekNumberList.push(weekHourStat.week);
-                    })
+                        this.avgWeekHourList.push(weekHourStat.avgWeekHours);
+                        this.leaveHourList.push(weekHourStat.leaveHours);
+                    });
                     this.drawLine1()
                 })
             },
@@ -7007,13 +7014,17 @@
                     this.weekHourStatsList = [];
                     this.weekHourList = [];
                     this.weekNumberList = [];
+                    this.avgWeekHourList = [];
+                    this.leaveHourList = [];
                     http.zsyGetHttp('/data/week-hour-stats/'+userId,{},(res)=>{
                         this.weekHourStatsList = res.data;
                         this.weekHourStatsList = this.weekHourStatsList.reverse();
                         this.weekHourStatsList.forEach(weekHourStat=>{
                             this.weekHourList.push(weekHourStat.weekHours);
                             this.weekNumberList.push(weekHourStat.week);
-                        })
+                            this.avgWeekHourList.push(weekHourStat.avgWeekHours);
+                            this.leaveHourList.push(weekHourStat.leaveHours);
+                        });
                         this.drawLine2()
                     })
                 }else {
@@ -7035,30 +7046,49 @@
                         trigger: 'axis'
                     },
                     legend: {
-                        data: [this.thisYear]
+                        data: ['个人周工时','平均周工时','周请假']
                     },
                     xAxis: {
                         type: 'category',
                         data: this.weekNumberList
                     },
-                    yAxis: {
-                        type:  'value',
-                        interval:10,
-                        splitLine:{
-                            show:false
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name:'时长',
+                            interval: 10,
+                            axisLabel: {
+                                formatter: '{value} h'
+                            },
+                            splitLine: {
+                                show: false
+                            }
                         },
-                    },
-                    label: {
-                        show: true,//是否展示
-                        position: 'top',//在右端
-                        textStyle: {
-                            fontWeight: 'bolder',
-                            fontSize: '12',
-                            fontFamily: '微软雅黑',
-                            // color: 'black'
-                        }
-                    },
-                        grid: {
+                        // {
+                        //     type: 'value',
+                        //     name: '时长',
+                        //     min: 0,
+                        //     interval: 10,
+                        //     axisLabel: {
+                        //         formatter: '{value} h'
+                        //     },
+                        //     splitLine:{
+                        //         show:false
+                        //     },
+                        // },
+
+                    ],
+                    // label: {
+                    //     show: true,//是否展示
+                    //     position: 'inside',//在右端
+                    //     textStyle: {
+                    //         fontWeight: 'bolder',
+                    //         fontSize: '12',
+                    //         fontFamily: '微软雅黑',
+                    //         // color: 'black'
+                    //     }
+                    // },
+                    grid: {
                         left: '3%',
                         right: '4%',
                         bottom: '3%',
@@ -7066,12 +7096,47 @@
                     },
                     series : [
                         {
-                            name:this.thisYear,
+                            name:'个人周工时',
                             type:'bar',
+                            stack:'总量',
                             data:this.weekHourList,
-                            barWidth:30,
-                            barGap:10
-                        }
+                            barWidth:32,
+                            barGap:0,
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside'
+                                }
+                            }
+                        },
+                        {
+                            name:'平均周工时',
+                            type:'bar',
+                            data:this.avgWeekHourList,
+                            barWidth:32,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside',
+                                    // verticalAlign:'middle'
+                                }
+                            }
+                        },
+                        {
+                            name:'周请假',
+                            type:'bar',
+                            stack:'总量',
+                            data:this.leaveHourList,
+                            barWidth:32,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            }
+                        },
                     ]
                 });
             },
@@ -7087,30 +7152,49 @@
                         trigger: 'axis'
                     },
                     legend: {
-                        data: [this.thisYear]
+                        data: ['个人周工时','平均周工时','周请假']
                     },
                     xAxis: {
                         type: 'category',
                         data: this.weekNumberList
                     },
-                    yAxis: {
-                        type:  'value',
-                        interval:10,
-                        splitLine:{
-                            show:false
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name:'时长',
+                            interval: 10,
+                            axisLabel: {
+                                formatter: '{value} h'
+                            },
+                            splitLine: {
+                                show: false
+                            }
                         },
-                    },
-                    label: {
-                        show: true,//是否展示
-                        position: 'top',//在右端
-                        textStyle: {
-                            fontWeight: 'bolder',
-                            fontSize: '12',
-                            fontFamily: '微软雅黑',
-                            // color: 'black'
-                        }
-                    },
-                        grid: {
+                        // {
+                        //     type: 'value',
+                        //     name: '时长',
+                        //     min: 0,
+                        //     interval: 10,
+                        //     axisLabel: {
+                        //         formatter: '{value} h'
+                        //     },
+                        //     splitLine:{
+                        //         show:false
+                        //     },
+                        // },
+
+                    ],
+                    // label: {
+                    //     show: true,//是否展示
+                    //     position: 'inside',//在右端
+                    //     textStyle: {
+                    //         fontWeight: 'bolder',
+                    //         fontSize: '12',
+                    //         fontFamily: '微软雅黑',
+                    //         // color: 'black'
+                    //     }
+                    // },
+                    grid: {
                         left: '3%',
                         right: '4%',
                         bottom: '3%',
@@ -7118,12 +7202,47 @@
                     },
                     series : [
                         {
-                            name:this.thisYear,
+                            name:'个人周工时',
                             type:'bar',
+                            stack:'总量',
                             data:this.weekHourList,
-                            barWidth:30,
-                            barGap:10
-                        }
+                            barWidth:32,
+                            barGap:0,
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside'
+                                }
+                            }
+                        },
+                        {
+                            name:'平均周工时',
+                            type:'bar',
+                            data:this.avgWeekHourList,
+                            barWidth:32,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside',
+                                    // verticalAlign:'middle'
+                                }
+                            }
+                        },
+                        {
+                            name:'周请假',
+                            type:'bar',
+                            stack:'总量',
+                            data:this.leaveHourList,
+                            barWidth:32,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            }
+                        },
                     ]
                 });
             }

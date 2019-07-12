@@ -539,14 +539,16 @@
                     <div v-else style="margin-top: 10px">
                         <div v-for="item in stage.evaluationResDTOS[0].evaluationScoreResDTOS">
                             <el-form>
-                                <el-form-item  :label="item.evaluationOptionName" style="margin-top: -15px">
+                                <el-form-item  :label="item.evaluationOptionName">
                                     <el-rate v-model="item.score"
                                              :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                              :allow-half=true
                                              disabled
+                                             show-text
+                                             text-template="{value}"
                                              style="float: left;margin-top: 7px">
                                     </el-rate>
-                                    <span>{{item.score}}</span>
+                                    <!--<span>{{item.score}}</span>-->
                                 </el-form-item>
                             </el-form>
 
