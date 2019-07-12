@@ -23,6 +23,11 @@
     <association property="leaveHours" column="{weekNumber=week_number,year=year,userId=user_id}" select="getLeaveWeekHours"/>
   </resultMap>
 
+    <resultMap id="AvgWeekHourBO" type="com.zhixinhuixue.armor.model.bo.AvgUserWeekHourBO">
+        <result column="workerNum" property="workerNum" jdbcType="INTEGER"></result>
+        <result column="totalHours" property="totalHours" jdbcType="DECIMAL"></result>
+    </resultMap>
+
   <insert id="insertList" parameterType="java.util.List">
     insert into user_week (id, week_number, hours, task_id, user_id ,year)
     values
@@ -105,6 +110,16 @@
     <select id="selectHoursByTaskAndUser" resultType="java.lang.Double">
         SELECT IFNULL(sum(user_week.hours),0) FROM user_week WHERE task_id = #{taskId}
         and user_id = #{userId} and `year` = #{year} and week_number = #{weekNumber}
+    </select>
+
+    <!--查询不同角色每周所有人工作量的平均时长-->
+    <select id="selectAvgWeekHour" resultMap="AvgWeekHourBO">
+        SELECT IFNULL(COUNT(t.`name`),0) workerNum,IFNULL(SUM(t.workHours),0) totalHours FROM
+          (SELECT u.`name`,IFNULL(sum(uw.hours),0) workHours FROM user_week uw
+              LEFT JOIN user u ON u.id = uw.user_id
+              LEFT JOIN user_leave ul on ul.id = uw.task_id
+              WHERE uw.`year` = #{year} AND uw.week_number = #{weekOfYear} AND u.job_role = #{jobRole} AND ul.id IS NULL
+          GROUP BY u.`name`) t
     </select>
 
     <update id="updateHours" parameterType="java.util.Map" >

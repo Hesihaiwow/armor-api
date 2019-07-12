@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.zhixinhuixue.armor.model.bo.AvgUserWeekHourBO;
 import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
@@ -66,4 +67,14 @@ public interface IZSYUserWeekMapper {
      */
     Double selectHoursByTaskAndUser(@Param("taskId") Long taskId, @Param("userId") Long userId,
                                     @Param("weekNumber") int weekNumber,@Param("year") int year);
+
+    /**
+     * 查询不同角色每周所有人工作量的平均时长
+     * @author sch
+     * @param jobRole
+     * @param year
+     * @param weekOfYear
+     * @return
+     */
+    AvgUserWeekHourBO selectAvgWeekHour(@Param("jobRole")Integer jobRole, @Param("year")int year, @Param("weekOfYear")int weekOfYear);
 }

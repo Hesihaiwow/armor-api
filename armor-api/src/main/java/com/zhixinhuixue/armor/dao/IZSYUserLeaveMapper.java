@@ -36,4 +36,14 @@ public interface IZSYUserLeaveMapper {
      * @return
      */
     UserLeave selectByUserAndTime(@Param("userId")Long userId, @Param("today0")Date today0, @Param("today23")Date today23);
+
+    /**
+     * 根据用户和起止时间查询周请假时长
+     * @author sch
+     * @param userId
+     * @param firstDay
+     * @param lastDay
+     * @return
+     */
+    Double selectWeekLeaveHoursByUser(@Param("userId")Long userId, @Param("firstDay")Date firstDay, @Param("lastDay")Date lastDay);
 }

@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYDataMapper;
-import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.*;
@@ -53,6 +50,9 @@ public class ZSYDataService implements IZSYDataService {
 
     @Autowired
     private IZSYUserWeekMapper userWeekMapper;
+
+    @Autowired
+    private IZSYUserLeaveMapper userLeaveMapper;
 
     /**
      * 年度需求总数(学管端,其他)
@@ -427,20 +427,57 @@ public class ZSYDataService implements IZSYDataService {
         if (dayOfWeek == 1){
             weekOfYear = weekOfYear - 1;
         }
-        //判断往前11周  是否为同一年
-        for (int i = 0;i < 12; i ++){
-            Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
-            WeekHourStatsResDTO resDTO = new WeekHourStatsResDTO();
-            String week = year+"年 第"+weekOfYear+"周";
-            resDTO.setWeek(week);
-            resDTO.setWeekHours(userWeekHours);
-            list.add(resDTO);
-            if (weekOfYear == 1){
-                year = year - 1;
-                weekOfYear = 53;
+        User user = userMapper.selectById(userId);
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String firstDayStr = DateHelper.getThisWeekFirstDay();
+        String lastDayStr = DateHelper.getThisWeekLastDay();
+        try {
+            Date firstDay = timeSDF.parse(firstDayStr);
+            calendar.setTime(firstDay);
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            firstDay = calendar.getTime();
+
+            Date lastDay = timeSDF.parse(lastDayStr);
+            calendar.setTime(lastDay);
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            lastDay = calendar.getTime();
+            for (int i = 0;i < 12; i ++){
+                Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
+                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId,firstDay,lastDay);
+                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(),year,weekOfYear);
+                Double totalHours = avgUserWeekHourBO.getTotalHours();
+                Integer workerNum = avgUserWeekHourBO.getWorkerNum();
+                Double avgWeekHours = 0.0;
+                if (totalHours != null && totalHours != 0 && workerNum != null && workerNum !=0){
+                    avgWeekHours = new BigDecimal((totalHours/workerNum)).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+                }
+                WeekHourStatsResDTO resDTO = new WeekHourStatsResDTO();
+                resDTO.setAvgWeekHours(avgWeekHours);
+                String week = year+"年 第"+weekOfYear+"周";
+                resDTO.setWeek(week);
+                resDTO.setWeekHours(userWeekHours);
+
+                //查询请假
+                //开始时间
+                calendar.setTime(firstDay);
+                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                firstDay = calendar.getTime();
+                //结束时间
+                calendar.setTime(lastDay);
+                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                lastDay = calendar.getTime();
+                resDTO.setLeaveHours(leaveHours);
+                list.add(resDTO);
+                if (weekOfYear == 1){
+                    year = year - 1;
+                    weekOfYear = 53;
+                }
+                weekOfYear --;
             }
-            weekOfYear --;
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
         return list;
     }
 
@@ -454,19 +491,55 @@ public class ZSYDataService implements IZSYDataService {
         if (dayOfWeek == 1){
             weekOfYear = weekOfYear - 1;
         }
-        //判断往前11周  是否为同一年
-        for (int i = 0;i < 12; i ++){
-            Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
-            WeekHourStatsResDTO resDTO = new WeekHourStatsResDTO();
-            String week = year+"年 第"+weekOfYear+"周";
-            resDTO.setWeek(week);
-            resDTO.setWeekHours(userWeekHours);
-            list.add(resDTO);
-            if (weekOfYear == 1){
-                year = year - 1;
-                weekOfYear = 53;
+        User user = userMapper.selectById(userId);
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String firstDayStr = DateHelper.getThisWeekFirstDay();
+        String lastDayStr = DateHelper.getThisWeekLastDay();
+        try {
+            Date firstDay = timeSDF.parse(firstDayStr);
+            calendar.setTime(firstDay);
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            firstDay = calendar.getTime();
+
+            Date lastDay = timeSDF.parse(lastDayStr);
+            calendar.setTime(lastDay);
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            lastDay = calendar.getTime();
+            for (int i = 0;i < 12; i ++){
+                Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
+                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId,firstDay,lastDay);
+                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(),year,weekOfYear);
+                Double totalHours = avgUserWeekHourBO.getTotalHours();
+                Integer workerNum = avgUserWeekHourBO.getWorkerNum();
+                Double avgWeekHours = 0.0;
+                if (totalHours != null && totalHours != 0 && workerNum != null && workerNum !=0){
+                    avgWeekHours = new BigDecimal((totalHours/workerNum)).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+                }
+                WeekHourStatsResDTO resDTO = new WeekHourStatsResDTO();
+                resDTO.setAvgWeekHours(avgWeekHours);
+                String week = year+"年 第"+weekOfYear+"周";
+                resDTO.setWeek(week);
+                resDTO.setWeekHours(userWeekHours);
+
+                //查询请假
+                //开始时间
+                calendar.setTime(firstDay);
+                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                firstDay = calendar.getTime();
+                //结束时间
+                calendar.setTime(lastDay);
+                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                lastDay = calendar.getTime();
+                resDTO.setLeaveHours(leaveHours);
+                list.add(resDTO);
+                if (weekOfYear == 1){
+                    year = year - 1;
+                    weekOfYear = 53;
+                }
+                weekOfYear --;
             }
-            weekOfYear --;
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
         return list;
     }
