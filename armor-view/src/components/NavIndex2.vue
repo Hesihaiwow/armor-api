@@ -279,6 +279,75 @@
                 </div>
             </div>
         </div>
+        <div class="my-task-con" v-show="userRole == 3">
+            <p class="mic-title" style="margin-top: 20px">加班统计</p>
+            <div class="my-task-detail" style="width: 1200px;">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="extraWorkReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <!--<span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>-->
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="ewBeginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择开始时间"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="ewEndTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择截止时间"
+                    >
+                    </el-date-picker>
+                </div>
+                <el-button type="primary" @click="searchEWorkStats" style="margin-left: 10px" size="small">查询</el-button>
+                <el-table :data="extraWorkStatsList" border>
+                    <el-table-column type="index" label="序号" align="center" width="80">
+                        <template scope="scope">
+                            {{(extraWorkReqDTO.pageNum-1)*10 + scope.$index + 1}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="reason" label="加班原因" align="center"></el-table-column>
+                    <el-table-column prop="userName" label="申请人" align="center" width="130"></el-table-column>
+                    <el-table-column prop="workHours" label="时长" align="center" width="80"></el-table-column>
+                    <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkRecords" label="打卡记录" align="left">
+                        <template scope="scope">
+                            {{scope.row.checkRecords}}
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="eWorkHandleCurrentChange"
+                            :current-page.sync="extraWorkReqDTO.pageNum"
+                            :page-size="extraWorkPage.pageSize"
+                            :layout="leavePageLayout"
+                            :total="extraWorkPage.total">
+                    </el-pagination>
+                </div>
+            </div>
+
+        </div>
 
         <div class="my-task-con">
             <div v-show="userRole>0 && userRole < 3">
@@ -3347,7 +3416,22 @@
                 weekHourList:[],
                 weekNumberList:[],
                 thisYear:'',
-                weekHourUserId:''
+                weekHourUserId:'',
+
+                //加班统计
+                ewBeginTime:null,
+                ewEndTime:null,
+                extraWorkReqDTO:{
+                    pageNum:1,
+                    userId:null,
+                    beginTime:null,
+                    endTime:null
+                },
+                extraWorkStatsList:[],
+                extraWorkPage:{
+                    pageSize:10,
+                    total:0
+                }
                 // -- sch
             };
         },
@@ -3642,6 +3726,12 @@
                 }
                 return 'total, pager'
             },
+            eWorkPageLayout() {
+                if (this.extraWorkPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             mySignInPageLayout() {
                 if (this.mySignInPage.total > 0) {
                     return 'total, prev, pager, next'
@@ -3783,6 +3873,7 @@
                 this.fetchUserLeaveList();
                 this.fetchUserLeavePassList();
                 this.fetchControlledPeople();
+                this.getExtraWorkStats();
                 if (this.userRole === 0) {
                     // this.fetchUserWeekHourStats()
                     // 所有审核通过的数据
@@ -5776,8 +5867,16 @@
                         });
                     }else {
                         this.uploadToMysqlVisible = false;
-                        this.fullscreenLoading = true;
+                        this.fullscreenLoading = false;
                     }
+                },(fail)=>{
+                    console.log(fail)
+                    this.$message({
+                        showClose: true,
+                        message: fail.errMsg,
+                        type: 'error'
+                    });
+                    this.fullscreenLoading = false;
                 })
             },
             closeSignInDialog(){
@@ -6076,6 +6175,10 @@
             mySignInHandleCurrentChange(currentPage){
                 this.mySignInPage.pageNum = currentPage;
                 this.fetchMySignInData();
+            },
+            eWorkHandleCurrentChange(currentPage){
+                this.extraWorkReqDTO.pageNum = currentPage;
+                this.getExtraWorkStats();
             },
             //格式化时间
             getTime(time){
@@ -7104,6 +7207,37 @@
                         }
                     ]
                 });
+            },
+
+            getExtraWorkStats(){
+                if (this.userRole == 3 ){
+                    http.zsyPostHttp('/stats/extra-work/page',this.extraWorkReqDTO,(res)=>{
+                        this.extraWorkStatsList = res.data.list;
+                        this.extraWorkPage.total = res.data.total;
+                        this.extraWorkStatsList.forEach(extraWork=>{
+                            if (extraWork.checkRecords.length > 0) {
+                                let checkTimeStr = '';
+                                extraWork.checkRecords.forEach(checkTime => {
+                                    checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
+                                })
+                                extraWork.checkRecords = checkTimeStr.substring(0,checkTimeStr.length-2)
+                            }
+                        });
+                        // this.extraWorkReqDTO.beginTime = null;
+                        // this.extraWorkReqDTO.endTime = null;
+                    })
+                }
+            },
+            searchEWorkStats(){
+                this.extraWorkReqDTO.beginTime = null;
+                this.extraWorkReqDTO.endTime = null;
+                if (this.ewBeginTime !== undefined && this.ewBeginTime !== null && this.ewBeginTime !== ''){
+                    this.extraWorkReqDTO.beginTime = moment(this.ewBeginTime).format('YYYY-MM-DD 00:00:00');
+                }
+                if (this.ewEndTime !== undefined && this.ewEndTime !== null && this.ewEndTime !== ''){
+                    this.extraWorkReqDTO.endTime = moment(this.ewEndTime).format('YYYY-MM-DD 23:59:59');
+                }
+                this.getExtraWorkStats()
             }
             // -- sch
         },
