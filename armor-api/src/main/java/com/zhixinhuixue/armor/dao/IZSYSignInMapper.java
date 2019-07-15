@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.SignInBO;
+import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.pojo.ResignIn;
 import com.zhixinhuixue.armor.model.pojo.SignIn;
@@ -235,4 +236,11 @@ public interface IZSYSignInMapper {
      * @return
      */
     List<SignIn> selectAllBetween0And7AndUserId(@Param("yearAndMonth")String yearAndMonth, @Param("userId")Long userId);
+
+    /**
+     * 查询签到时间记录
+     * @param reqDTO
+     * @return
+     */
+    List<Date> selectCheckTimeByUser(ExtraWorkStatsReqDTO reqDTO);
 }

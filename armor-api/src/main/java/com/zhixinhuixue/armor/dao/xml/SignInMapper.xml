@@ -303,4 +303,21 @@
         <![CDATA[  and  time(check_time) <= '07:00:00' ]]>
         and check_time like "%"#{yearAndMonth}"%"
     </select>
+
+    <!--查询签到时间记录-->
+    <select id="selectCheckTimeByUser" resultType="java.util.Date">
+        SELECT check_time FROM sign_in
+        <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="beginTime != null">
+                <![CDATA[  AND  `check_time` >= #{beginTime} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[  AND  `check_time` <= #{endTime} ]]>
+            </if>
+        </where>
+        ORDER BY check_time
+    </select>
 </mapper>

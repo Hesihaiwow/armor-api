@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
@@ -42,4 +43,10 @@ public interface IZSYStatsService {
      * @return
      */
     List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO userWeek);
+
+    /**
+     * 加班统计
+     * @author sch
+     */
+    PageInfo<ExtraWorkStatsResDTO> getExtraWorkStats(ExtraWorkStatsReqDTO reqDTO);
 }

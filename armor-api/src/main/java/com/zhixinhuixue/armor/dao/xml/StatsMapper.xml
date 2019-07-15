@@ -12,6 +12,16 @@
         <result column="sum" jdbcType="DECIMAL" property="sum" />
     </resultMap>
 
+    <resultMap id="ExtraWorkBO" type="com.zhixinhuixue.armor.model.bo.ExtraWorkStatsBO">
+        <result column="ew_id" property="ewId" jdbcType="BIGINT"></result>
+        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
+        <result column="work_hours" property="workHours" jdbcType="DECIMAL"></result>
+    </resultMap>
+
     <select id="getStats" resultMap="BaseResultMap" parameterType="java.lang.Long">
       SELECT
       COUNT(case when (t.`status`=1 and ta.is_delete=0)  then 2 end)as process,
@@ -62,6 +72,23 @@
             and t1.grade = #{grade}
         </if>
         order by t2.id desc
+    </select>
+
+    <!--分页查询加班统计-->
+    <select id="selectExtraWorkStatsPage" resultMap="ExtraWorkBO"
+            parameterType="com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO">
+        SELECT ew.id ew_id,u.id user_id,u.`name` user_name,ew.reason,ew.begin_time,ew.end_time,ew.work_hours FROM extra_work ew
+        LEFT JOIN user u ON u.id = ew.user_id
+        WHERE ew.review_status = 2
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        <if test="beginTime != null">
+            <![CDATA[  AND  `begin_time` >= #{beginTime} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[  AND  `end_time` <= #{endTime} ]]>
+        </if>
     </select>
 
 

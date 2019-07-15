@@ -1,8 +1,10 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.ExtraWorkStatsBO;
 import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.bo.UserCommentBo;
+import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import org.apache.ibatis.annotations.Param;
@@ -29,4 +31,12 @@ public interface IZSYStatsMapper {
      * @return
      */
     Page<UserCommentBo> selectUserCommentsPage(@Param("userId") Long userId, @Param("grade") String grade, @Param("departmentId") Long departmentId);
+
+    /**
+     * 分页查询加班统计
+     * @author sch
+     * @param reqDTO
+     * @return
+     */
+    Page<ExtraWorkStatsBO> selectExtraWorkStatsPage(ExtraWorkStatsReqDTO reqDTO);
 }
