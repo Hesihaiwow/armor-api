@@ -6995,6 +6995,8 @@
                 this.weekHourStatsList = [];
                 this.weekHourList = [];
                 this.weekNumberList = [];
+                this.avgWeekHourList = [];
+                this.leaveHourList = [];
                 http.zsyGetHttp('/data/personal/week-hour-stats',{},(res)=>{
                     this.weekHourStatsList = res.data;
                     this.weekHourStatsList = this.weekHourStatsList.reverse();
