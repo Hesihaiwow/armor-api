@@ -259,12 +259,12 @@
                     <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
                     <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
                         <template scope="scope">
-                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                            <div type="text" size="small" >{{scope.row.beginTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
                         <template scope="scope">
-                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                            <div type="text" size="small" >{{scope.row.endTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -322,17 +322,18 @@
                     <el-table-column prop="workHours" label="时长" align="center" width="80"></el-table-column>
                     <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
                         <template scope="scope">
-                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                            <div type="text" size="small" >{{scope.row.beginTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
                         <template scope="scope">
-                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                            <div type="text" size="small" >{{scope.row.endTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkRecords" label="打卡记录" align="left">
                         <template scope="scope">
-                            {{scope.row.checkRecords}}
+                            <span v-if="scope.row.checkRecords.length === 0">暂无</span>
+                            <span v-else>{{scope.row.checkRecords}}</span>
                         </template>
                     </el-table-column>
                 </el-table>

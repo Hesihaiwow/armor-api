@@ -723,7 +723,7 @@
                                    :value="item.id"></el-option>
                     </el-select>
                 </div>
-                <span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>
+                <!--<span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>-->
                 <div class="add-member-basic-msg fl">
                     <el-date-picker
                             v-model="ewBeginTime"
@@ -731,7 +731,7 @@
                             type="date"
                             value-format="yyyy-MM-dd"
                             clearable
-                            placeholder="选择日期"
+                            placeholder="选择开始时间"
                     >
                     </el-date-picker>
                     <span style="font-size: 14px;color: #606266;">-</span>
@@ -741,7 +741,7 @@
                             type="date"
                             value-format="yyyy-MM-dd"
                             clearable
-                            placeholder="选择日期"
+                            placeholder="选择截止时间"
                     >
                     </el-date-picker>
                 </div>
@@ -767,7 +767,8 @@
                     </el-table-column>
                     <el-table-column prop="checkRecords" label="打卡记录" align="left">
                         <template scope="scope">
-                            {{scope.row.checkRecords}}
+                            <span v-if="scope.row.checkRecords.length === 0">暂无</span>
+                            <span v-else>{{scope.row.checkRecords}}</span>
                         </template>
                     </el-table-column>
                 </el-table>
