@@ -81,14 +81,15 @@
         LEFT JOIN user u ON u.id = ew.user_id
         WHERE ew.review_status = 2
         <if test="userId != null">
-            AND user_id = #{userId}
+            AND ew.user_id = #{userId}
         </if>
         <if test="beginTime != null">
-            <![CDATA[  AND  `begin_time` >= #{beginTime} ]]>
+            <![CDATA[  AND  ew.`begin_time` >= #{beginTime} ]]>
         </if>
         <if test="endTime != null">
-            <![CDATA[  AND  `end_time` <= #{endTime} ]]>
+            <![CDATA[  AND  ew.`end_time` <= #{endTime} ]]>
         </if>
+        ORDER BY ew.`end_time` DESC
     </select>
 
 
