@@ -285,7 +285,7 @@
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="extraWorkReqDTO.userId" clearable filterable   placeholder="筛选用户">
                         <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
-                                   :value="item.id"></el-option>
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <!--<span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>-->

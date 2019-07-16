@@ -1720,8 +1720,6 @@
                 extraWorkReqDTO:{
                     pageNum:1,
                     userId:null,
-                    beginTime1:null,
-                    endTime1:null
                 },
                 extraWorkStatsList:[],
                 extraWorkPage:{
