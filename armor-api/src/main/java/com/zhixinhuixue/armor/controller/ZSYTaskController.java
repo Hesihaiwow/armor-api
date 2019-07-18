@@ -42,14 +42,14 @@ public class ZSYTaskController extends ZSYController {
     @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
     @PutMapping(value = "/auditing/reject/{taskId}")
     public String taskReject(@PathVariable("taskId") Long taskId) {
-        return taskService.auditTask(taskId, ZSYReviewStatus.REJECT.getValue()).build();
+        return taskService.auditTask(taskId,0,0l, ZSYReviewStatus.REJECT.getValue()).build();
     }
 
     @ApiOperation("任务审核通过")
-    @PutMapping(value = "/auditing/accept/{taskId}")
+    @PutMapping(value = "/auditing/accept/{taskId}/{level}/{userId}")
     @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
-    public String taskAccept(@PathVariable("taskId") Long taskId) {
-        return taskService.auditTask(taskId, ZSYReviewStatus.ACCEPT.getValue()).build();
+    public String taskAccept(@PathVariable("taskId") Long taskId,@PathVariable("level")Integer level,@PathVariable("userId") Long userId) {
+        return taskService.auditTask(taskId,level,userId, ZSYReviewStatus.ACCEPT.getValue()).build();
     }
 
     @ApiOperation("完成我的任务完成")

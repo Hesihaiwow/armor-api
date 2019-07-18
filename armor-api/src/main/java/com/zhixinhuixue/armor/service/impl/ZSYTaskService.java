@@ -498,9 +498,10 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     @Transactional
-    public ZSYResult auditTask(Long taskId, Integer auditStatus) {
+    public ZSYResult auditTask(Long taskId,Integer level,Long userId, Integer auditStatus) {
         checkUser();
         Task taskTemp = taskMapper.selectByPrimaryKey(taskId);
+        TaskUser taskUser = taskUserMapper.selectByTaskAndUser(taskId,userId);
         if (taskTemp == null) {
             logger.warn("无法找到任务,id:{}", taskId);
             throw new ZSYServiceException("无法找到任务,id:" + taskId);
@@ -510,11 +511,17 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.warn("该任务已被审核,id:{}", ZSYReviewStatus.getName(auditStatus), taskId);
             throw new ZSYServiceException("该任务已被审核");
         }
+        if (taskUser == null){
+            logger.warn("无法找到任务人员,userId:{}", userId);
+            throw new ZSYServiceException("无法找到任务人员,userId:{}" + userId);
+        }
+        taskUser.setTaskLevel(level);
         Task task = new Task();
         task.setId(taskId);
         task.setReviewStatus(auditStatus);
         task.setUpdateTime(new Date());
         taskMapper.updateByPrimaryKeySelective(task);
+        taskUserMapper.updateByPrimaryKeySelective(taskUser);
         // 插入日志
         taskLogMapper.insert(buildLog(ZSYReviewStatus.getName(auditStatus), taskTemp.getName(), taskTemp.getId()));
         return ZSYResult.success();

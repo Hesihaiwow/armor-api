@@ -108,6 +108,9 @@
             <if test="taskHours != null">
                 task_hours = #{taskHours,jdbcType=INTEGER},
             </if>
+            <if test="taskHours != null">
+                task_level = #{taskLevel,jdbcType=INTEGER},
+            </if>
             <if test="beginTime != null">
                 begin_time = #{beginTime,jdbcType=TIMESTAMP},
             </if>
