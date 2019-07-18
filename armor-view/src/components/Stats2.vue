@@ -716,6 +716,72 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
+            <el-tab-pane label="加班统计" name="eWork"  style="" v-if="admin" >
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="extraWorkReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <!--<span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>-->
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="ewBeginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择开始时间"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="ewEndTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="选择截止时间"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="searchEWorkStats()" class="search-btn"></div>
+                <el-table :data="extraWorkStatsList" border>
+                    <el-table-column type="index" label="序号" align="center" width="80">
+                        <template scope="scope">
+                            {{(extraWorkReqDTO.pageNum-1)*10 + scope.$index + 1}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="reason" label="加班原因" align="center"></el-table-column>
+                    <el-table-column prop="userName" label="申请人" align="center" width="130"></el-table-column>
+                    <el-table-column prop="workHours" label="时长" align="center" width="80"></el-table-column>
+                    <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="checkRecords" label="打卡记录" align="left">
+                        <template scope="scope">
+                            <span v-if="scope.row.checkRecords.length === 0">暂无</span>
+                            <span v-else>{{scope.row.checkRecords}}</span>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="eWorkHandleCurrentChange"
+                            :current-page.sync="extraWorkReqDTO.pageNum"
+                            :page-size="extraWorkPage.pageSize"
+                            :layout="eWorkPageLayout"
+                            :total="extraWorkPage.total">
+                    </el-pagination>
+                </div>
+            </el-tab-pane>
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
@@ -1651,6 +1717,20 @@
                 },
                 weekPublishData:[],
                 platformList:[],
+
+                //加班统计
+                ewBeginTime:null,
+                ewEndTime:null,
+                extraWorkReqDTO:{
+                    pageNum:1,
+                    userId:null,
+                },
+                extraWorkStatsList:[],
+                extraWorkPage:{
+                    pageSize:10,
+                    total:0
+                }
+
                 // -- sch
             }
         },
@@ -1688,6 +1768,7 @@
             this.fetchOnlineBugGroupByDeveloper();
             this.initTime();
             this.fetchPlatformList();
+            this.getExtraWorkStats();
         },
         computed: {
             permit() {
@@ -1718,6 +1799,12 @@
             },
             leavePageLayout() {
                 if (this.leaveFormPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            eWorkPageLayout() {
+                if (this.extraWorkPage.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -2046,6 +2133,10 @@
             leaveHandleCurrentChange(currentPage){
                 this.leaveList.pageNum = currentPage;
                 this.getLeaveList();
+            },
+            eWorkHandleCurrentChange(currentPage){
+                this.extraWorkReqDTO.pageNum = currentPage;
+                this.getExtraWorkStats();
             },
             isDecimal(str) {
                 var regu = /^[-]{0,1}[0-9]{1,}$/;
@@ -3556,6 +3647,32 @@
                     }
                 }
             },
+            getExtraWorkStats(){
+                Http.zsyPostHttp('/stats/extra-work/page',this.extraWorkReqDTO,(res)=>{
+                    this.extraWorkStatsList = res.data.list;
+                    this.extraWorkPage.total = res.data.total;
+                    this.extraWorkStatsList.forEach(extraWork=>{
+                        if (extraWork.checkRecords.length > 0) {
+                            let checkTimeStr = '';
+                            extraWork.checkRecords.forEach(checkTime => {
+                                checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
+                            });
+                            extraWork.checkRecords = checkTimeStr.substring(0,checkTimeStr.length-2)
+                        }
+                    })
+                })
+            },
+            searchEWorkStats(){
+                this.extraWorkReqDTO.beginTime = null;
+                this.extraWorkReqDTO.endTime = null;
+                if (this.ewBeginTime !== undefined && this.ewBeginTime !== null && this.ewBeginTime !== ''){
+                    this.extraWorkReqDTO.beginTime = moment(this.ewBeginTime).format('YYYY-MM-DD 00:00:00');
+                }
+                if (this.ewEndTime !== undefined && this.ewEndTime !== null && this.ewEndTime !== ''){
+                    this.extraWorkReqDTO.endTime = moment(this.ewEndTime).format('YYYY-MM-DD 23:59:59');
+                }
+                this.getExtraWorkStats()
+            }
             // -- sch
         }
     }

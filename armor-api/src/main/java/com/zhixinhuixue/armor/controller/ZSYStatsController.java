@@ -1,22 +1,16 @@
 package com.zhixinhuixue.armor.controller;
 
-import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserCommentsReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.CalculateResDTO;
 import com.zhixinhuixue.armor.model.dto.response.StatsPageResDTO;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,5 +77,15 @@ public class ZSYStatsController extends ZSYController{
                 userCommentsReqDTO.getPageNum(),
                 userCommentsReqDTO.getUserId(),
                 userCommentsReqDTO.getGrade())).build();
+    }
+
+    /**
+     * 加班统计
+     * @author sch
+     */
+    @ApiOperation("加班统计")
+    @PostMapping("/extra-work/page")
+    public String getExtraWorkStats(@RequestBody ExtraWorkStatsReqDTO reqDTO){
+        return ZSYResult.success().data(statsService.getExtraWorkStats(reqDTO)).build();
     }
 }

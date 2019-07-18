@@ -4,16 +4,11 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYStatsMapper;
-import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.helper.DateHelper;
-import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
-import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
-import com.zhixinhuixue.armor.model.bo.UserCommentBo;
-import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
+import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
@@ -23,10 +18,16 @@ import com.zhixinhuixue.armor.source.ZSYConstants;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.lang.management.ThreadInfo;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Lang on 2017/9/4 0004.
@@ -44,6 +45,8 @@ public class ZSYStatsService implements IZSYStatsService {
     private IZSYTaskUserMapper taskUserMapper;
     @Autowired
     private IZSYUserWeekMapper userWeekMapper;
+    @Autowired
+    private IZSYSignInMapper signInMapper;
 
     @Override
     public List<StatsPageResDTO> getStats() {
@@ -138,6 +141,43 @@ public class ZSYStatsService implements IZSYStatsService {
         });
 
         return statsWeekResDTOS;
+    }
+
+    /**
+     * 加班统计
+     * @author sch
+     */
+    @Override
+    public PageInfo<ExtraWorkStatsResDTO> getExtraWorkStats(ExtraWorkStatsReqDTO reqDTO) {
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        Page<ExtraWorkStatsBO> extraWorkStatsBOS = statsMapper.selectExtraWorkStatsPage(reqDTO);
+        Page<ExtraWorkStatsResDTO> page = new Page<>();
+        BeanUtils.copyProperties(extraWorkStatsBOS,page);
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (!CollectionUtils.isEmpty(extraWorkStatsBOS)){
+            extraWorkStatsBOS.stream().forEach(extraWorkStatsBO -> {
+                Date ewBeginTime = extraWorkStatsBO.getBeginTime();
+                String beginTimeStr = timeSDF.format(ewBeginTime).substring(0,10)+" 00:00:00";
+                Date ewEndTime = extraWorkStatsBO.getEndTime();
+                String endTimeStr = timeSDF.format(ewEndTime).substring(0,10)+" 23:59:59";
+                reqDTO.setUserId(extraWorkStatsBO.getUserId());
+                try {
+                    Date beginTime = timeSDF.parse(beginTimeStr);
+                    Date endTime = timeSDF.parse(endTimeStr);
+                    reqDTO.setBeginTime(beginTime);
+                    reqDTO.setEndTime(endTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                ExtraWorkStatsResDTO resDTO = new ExtraWorkStatsResDTO();
+                BeanUtils.copyProperties(extraWorkStatsBO,resDTO);
+                List<Date> dateList = signInMapper.selectCheckTimeByUser(reqDTO);
+                resDTO.setCheckRecords(dateList);
+                page.add(resDTO);
+            });
+        }
+
+        return new PageInfo<>(page);
     }
 
 
