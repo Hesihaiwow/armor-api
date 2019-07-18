@@ -5,6 +5,7 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+        <result column="doc" jdbcType="LONGVARCHAR" property="doc"/>
         <result column="project_id" jdbcType="BIGINT" property="projectId"/>
         <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
         <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
@@ -407,7 +408,7 @@
       insert into task (id, name, description,
       project_id,stage_id, begin_time, test_time, end_time, `type`, status,
       review_status, priority, create_by,
-      complete_time, create_time, update_time, is_delete,sort, facility, examine
+      complete_time, create_time, update_time, is_delete,sort, facility, examine,doc
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
       #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{beginTime,jdbcType=TIMESTAMP},
@@ -416,6 +417,7 @@
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
        #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER},#{facility,jdbcType=INTEGER},#{examine,jdbcType=INTEGER}
+       ,#{doc,jdbcType=LONGVARCHAR}
       )
   </insert>
 

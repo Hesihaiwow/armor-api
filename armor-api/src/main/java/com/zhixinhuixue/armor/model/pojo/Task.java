@@ -44,6 +44,16 @@ public class Task {
 
     private Integer sort;
 
+    private String doc;
+
+    public String getDoc() {
+        return doc;
+    }
+
+    public void setDoc(String doc) {
+        this.doc = doc;
+    }
+
     public Long getId() {
         return id;
     }

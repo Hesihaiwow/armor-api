@@ -25,6 +25,11 @@ public class TaskReqDTO {
     private String taskName;
 
     /**
+     * 关联文档
+     */
+    private String doc;
+
+    /**
      * 任务描述
      */
 //    @NotNull(message = "任务描述不能为空")
@@ -91,6 +96,14 @@ public class TaskReqDTO {
      */
     @Size( max = 500, message = "任务操作描述长度在0~{max}之间")
     private String modifyDescription;
+
+    public String getDoc() {
+        return doc;
+    }
+
+    public void setDoc(String doc) {
+        this.doc = doc;
+    }
 
     public Integer getTaskType() {
         return taskType;

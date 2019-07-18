@@ -43,6 +43,12 @@ public class TaskDetailResDTO {
     private Date updateTime;
 
     private Long createBy;
+
+    /**
+     * 关联文档
+     */
+    private String doc;
+
     /**
      * 项目名称
      */
@@ -67,6 +73,14 @@ public class TaskDetailResDTO {
      * 任务用户（阶段）
      */
     private List<TaskUserResDTO> users;
+
+    public String getDoc() {
+        return doc;
+    }
+
+    public void setDoc(String doc) {
+        this.doc = doc;
+    }
 
     public Long getId() {
         return id;
