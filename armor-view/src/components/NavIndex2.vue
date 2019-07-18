@@ -7368,7 +7368,6 @@
                     window.open(url,'_blank')
                 }
             },
-            },
 
             getExtraWorkStats(){
                 if (this.userRole == 3 ){
