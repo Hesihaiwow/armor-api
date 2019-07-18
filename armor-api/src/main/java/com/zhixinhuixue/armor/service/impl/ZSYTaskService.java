@@ -316,6 +316,7 @@ public class ZSYTaskService implements IZSYTaskService {
         }
         task.setId(taskId);
         task.setName(taskReqDTO.getTaskName());
+        task.setDoc(taskReqDTO.getDoc());
         task.setDescription(taskReqDTO.getDescription());
         task.setProjectId(taskReqDTO.getProjectId());
         task.setStageId(taskReqDTO.getStageId());
