@@ -95,6 +95,11 @@
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item class="task-form" label="任务ID：">{{taskDetail.id}}</el-form-item>
                 <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="关联文档：">
+                    <a id="text" v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                       @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                    </a>
+                </el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item class="task-form" label="优先级：">
@@ -173,6 +178,11 @@
                 :before-close="hideTaskDetail">
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item class="task-form" label="关联文档：">
+                    <a  v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                        @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                    </a>
+                </el-form-item>
                 <el-form-item class="task-form" style="white-space: pre-wrap" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：" style="margin-bottom: -36px;">{{taskDetail.stageName}}</el-form-item>
@@ -1037,6 +1047,11 @@
                 <el-form-item v-show="taskTempDetail.taskReviewLogResDTOList.length > 0"><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <div style="margin-top: -10px">申请人: {{taskTempDetail.userName}}</div>
                 <div style="margin-top: 3px;">任务名称: {{taskTempDetail.taskName}}</div>
+                <div style="margin-top: 3px;">关联文档:
+                    <a  v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                                                       @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                    </a>
+                </div>
                 <div style="float: left;margin-top: 3px">项目: {{taskDetail.projectName}}</div>
                 <div style="margin-top: 3px;margin-left: 250px">设计完成时间: {{taskDetail.beginTime | formatDate}}</div>
                 <div style="float: left;margin-top: 3px">阶段: {{taskDetail.stageName}}</div>
@@ -1617,7 +1632,22 @@
                 this.showFinishedTask = true;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data;
+                    // let aStr = this.taskDetail.doc;
+                    // // let reg = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-)+)/g;
+                    // let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
+                    // // let reg = /[hH][tT][tT][pP]([sS]?):\/\/(\S+\.)+\S{2,}/;
+                    // aStr = aStr.replace(reg,"<a href='$1$2' target='_blank'>$1$2</a>");
+                    // this.taskDetail.doc = aStr;
+                    // document.getElementById('text').innerHTML=aStr;
+                    // console.log(reg.test(aStr));
+                    // console.log(aStr);
                 })
+            },
+            //跳转到任务关联文档URL
+            toFile(url){
+                if (url !== null && url !== ''){
+                    window.open(url,'_blank')
+                }
             },
             hideFinishedPop() {
                 this.resetFinishForm();

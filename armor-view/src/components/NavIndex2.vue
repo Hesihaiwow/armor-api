@@ -2459,6 +2459,11 @@
                 <el-form-item v-show="taskTempDetail.taskReviewLogResDTOList.length > 0"><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <div style="margin-top: 0px">申请人: {{taskTempDetail.userName}}</div>
                 <div style="margin-top: 3px;">任务名称: {{taskTempDetail.taskName}}</div>
+                <div style="margin-top: 3px;">关联文档:
+                    <a v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                                                       @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                    </a>
+                </div>
                 <div style="float: left;margin-top: 3px">项目: {{taskDetail.projectName}}</div>
                 <div style="margin-top: 3px;margin-left: 250px">设计完成时间: {{taskDetail.beginTime | formatDate}}</div>
                 <div style="float: left;margin-top: 3px">阶段: {{taskDetail.stageName}}</div>
@@ -2561,6 +2566,11 @@
                    :close-on-click-modal="false" :close-on-press-escape="false">
             <div style="margin-top: -10px">申请人: {{taskUser.userName}}</div>
             <div style="margin-top: 3px;">任务名称: {{taskDetail.name}}</div>
+            <div style="margin-top: 3px;">关联文档:
+                <a v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                   @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                </a>
+            </div>
             <div style="float: left;margin-top: 3px">项目: {{taskDetail.projectName}}</div>
             <div style="margin-top: 3px;margin-left: 250px">设计完成时间: {{taskDetail.beginTime | formatDate}}</div>
             <div style="float: left;margin-top: 3px">阶段: {{taskDetail.stageName}}</div>
@@ -7247,7 +7257,13 @@
                         },
                     ]
                 });
-            }
+            },
+            //跳转到任务关联文档URL
+            toFile(url){
+                if (url !== null && url !== ''){
+                    window.open(url,'_blank')
+                }
+            },
             // -- sch
         },
         components: {

@@ -949,6 +949,12 @@
                         <div class="add-member-basic-msg">
                             <input class="member-time-count" v-model="taskStep.taskName" @change="" style="width:300px">
                         </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl">关联文档：
+                        </div>
+                        <div class="add-member-basic-msg">
+                            <el-input type="textarea" placeholder="请输入HTTP://或HTTPS://开头的正确URL" v-model="taskStep.doc"
+                                      :rows="2" style="width: 300px"></el-input>
+                        </div>
 
                         <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务描述：
                         </div>
@@ -1149,6 +1155,7 @@
                 taskData: [],
                 taskStep: {
                     taskName: '',
+                    doc: '',
                     index: '',
                     taskType: 2,
                     name: '',
@@ -1615,6 +1622,14 @@
                     this.warnMsg("任务名称请勿超过100字");
                     return;
                 }
+                if (this.taskStep.doc !== undefined && this.taskStep.doc !== null && this.taskStep.doc !== '') {
+                    let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
+                    let flag = reg.test(this.taskStep.doc.trim());
+                    if (!flag){
+                        this.warnMsg("请输入HTTP://或HTTPS://开头的正确URL");
+                        return;
+                    }
+                }
                 if (this.taskStep.createBy == '') {
                     this.warnMsg("请填写任务负责人");
                     return;
@@ -1657,6 +1672,7 @@
                 if (this.taskStep.index === '') {
                     let task = {}
                     task.taskName = this.taskStep.taskName.trim()
+                    task.doc = this.taskStep.doc.trim()
                     task.description = this.taskStep.description.trim()
                     task.createBy = this.taskStep.createBy
                     task.beginTime = moment(this.taskStep.beginTime).format('YYYY-MM-DD 23:59:59')
@@ -2192,7 +2208,6 @@
                             this.isSaving = false;
                             return;
                         }
-                        console.log(this.demandForm.source)
                         if (this.demandForm.source === null || this.demandForm.source === ''){
                             this.$message({showClose: true, message: '来源不能为空', type: 'warning'});
                             this.isSaving = false;

@@ -27,6 +27,14 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
+                        <div class="ctpc-list-menu fl">关联文档：
+                        </div>
+                        <div class="ctpc-list-con fl">
+                            <el-input type="textarea" placeholder="请输入HTTP://或HTTPS://开头的正确URL" v-model="taskForm.doc"
+                                      :rows="2" style="width: 300px"></el-input>
+                        </div>
+                    </div>
+                    <div class="ctpc-list clearfix">
                         <div class="ctpc-list-menu fl"><span class="star">*</span>项目</div>
                         <div class="ctpc-list-con fl">
                             <el-select v-model="taskForm.projectId" placeholder="请选择">
@@ -226,6 +234,7 @@
                     taskType: 2,
                     description: '',
                     taskName: '',
+                    doc: '',
                     beginTime:'',
                     testTime:'',
                     endTime: '',
@@ -534,6 +543,14 @@
                     this.warnMsg("请填写任务名称");
                     return;
                 }
+                if (this.taskForm.doc !== undefined && this.taskForm.doc !== null && this.taskForm.doc !== '') {
+                    let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
+                    let flag = reg.test(this.taskForm.doc);
+                    if (!flag){
+                        this.warnMsg("请输入HTTP://或HTTPS://开头的正确URL");
+                        return;
+                    }
+                }
                 if (this.taskForm.projectId == '') {
                     this.warnMsg("请选择项目");
                     return;
@@ -576,6 +593,7 @@
                   }*/
                 let param = this.taskForm;
                 param.taskName = param.taskName.trim()
+                param.doc = param.doc.trim()
                 param.description = param.description.trim()
                 param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                 param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 23:59:59');
@@ -599,6 +617,7 @@
                     });
                     vm.taskForm.description = '';
                     vm.taskForm.taskName = '';
+                    vm.taskForm.doc = '';
                     vm.taskForm.endTime = '';
                     vm.taskForm.beginTime = '';
                     vm.taskForm.testTime = '';

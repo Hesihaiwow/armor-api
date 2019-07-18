@@ -145,6 +145,11 @@
                 :before-close="hideTaskDetail">
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
+                <el-form-item class="task-form" label="关联文档：">
+                    <a v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                       @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                    </a>
+                </el-form-item>
                 <el-form-item class="task-form" style="white-space: pre-wrap" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：" style="margin-bottom: -36px;">{{taskDetail.stageName}}</el-form-item>
@@ -555,6 +560,12 @@
                     this.taskLog.list = this.taskLog.list.concat(logs);
                     this.taskLog.hasNextPage = resp.data.hasNextPage;
                 });
+            },
+            //跳转到任务关联文档URL
+            toFile(url){
+                if (url !== null && url !== ''){
+                    window.open(url,'_blank')
+                }
             },
         }
     }
