@@ -594,6 +594,10 @@
                     <el-input v-model="modifyTaskForm.taskName" style="width: 300px"></el-input>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="">
+                    <span slot="label">关联文档</span>
+                    <el-input v-model="modifyTaskForm.doc" style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="">
                     <span slot="label"><span class="star">*</span>项目</span>
                     <el-select v-model="modifyTaskForm.projectId" placeholder="请选择">
                         <el-option
@@ -2270,6 +2274,7 @@
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.modifyTaskForm.id = resp.data.id;
                     this.modifyTaskForm.taskName = resp.data.name;
+                    this.modifyTaskForm.doc = resp.data.doc;
                     this.modifyTaskForm.description = resp.data.description;
                     this.modifyTaskForm.endTime = resp.data.endTime;
                     this.modifyTaskForm.beginTime = resp.data.beginTime;
@@ -2315,6 +2320,7 @@
             },
             hideTaskModify() {
                 this.modifyTaskForm.taskName = '';
+                this.modifyTaskForm.doc = '';
                 this.modifyTaskForm.description = '';
                 this.modifyTaskForm.taskName = '';
                 this.modifyTaskForm.endTime = '';
@@ -2488,6 +2494,14 @@
                     this.warnMsg("请填写任务名称");
                     return;
                 }
+                if (this.modifyTaskForm.doc !== undefined && this.modifyTaskForm.doc !== null && this.modifyTaskForm.doc !== '') {
+                    let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
+                    let flag = reg.test(this.modifyTaskForm.doc.trim());
+                    if (!flag){
+                        this.warnMsg("请输入HTTP://或HTTPS://开头的正确URL");
+                        return;
+                    }
+                }
                 if (this.modifyTaskForm.projectId == '') {
                     this.warnMsg("请选择项目");
                     return;
@@ -2518,6 +2532,7 @@
                 }
                 let param = this.modifyTaskForm;
                 param.taskName = param.taskName.trim()
+                param.doc = param.doc.trim()
                 param.description = param.description.trim()
                 param.modifyDescription = param.modifyDescription.trim()
                 param.taskUsers.forEach((user) => {
