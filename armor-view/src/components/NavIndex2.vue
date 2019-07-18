@@ -2460,8 +2460,8 @@
                 <div style="margin-top: 0px">申请人: {{taskTempDetail.userName}}</div>
                 <div style="margin-top: 3px;">任务名称: {{taskTempDetail.taskName}}</div>
                 <div style="margin-top: 3px;">关联文档:
-                    <a v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
-                                                       @click="toFile(taskDetail.doc)">{{taskDetail.doc.substr(0,50)}}...
+                    <a v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                                                       @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                     </a>
                 </div>
                 <div style="float: left;margin-top: 3px">项目: {{taskDetail.projectName}}</div>
@@ -2567,8 +2567,8 @@
             <div style="margin-top: -10px">申请人: {{taskUser.userName}}</div>
             <div style="margin-top: 3px;">任务名称: {{taskDetail.name}}</div>
             <div style="margin-top: 3px;">关联文档:
-                <a v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
-                   @click="toFile(taskDetail.doc)">{{taskDetail.doc.substr(0,50)}}...
+                <a v-if="taskDetail.doc !== undefined && taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
+                   @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                 </a>
             </div>
             <div style="float: left;margin-top: 3px">项目: {{taskDetail.projectName}}</div>
