@@ -97,7 +97,7 @@
                 <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="关联文档：">
                     <a id="text" v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
-                       @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                       @click="toFile(taskDetail.doc)">{{taskDetail.doc.substr(0,50)}}...
                     </a>
                 </el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
@@ -180,7 +180,7 @@
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item class="task-form" label="关联文档：">
                     <a  v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
-                        @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                        @click="toFile(taskDetail.doc)">{{taskDetail.doc.substr(0,50)}}...
                     </a>
                 </el-form-item>
                 <el-form-item class="task-form" style="white-space: pre-wrap" label="任务描述：">{{taskDetail.description}}</el-form-item>
@@ -1049,7 +1049,7 @@
                 <div style="margin-top: 3px;">任务名称: {{taskTempDetail.taskName}}</div>
                 <div style="margin-top: 3px;">关联文档:
                     <a  v-if="taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
-                                                       @click="toFile(taskDetail.doc)">{{taskDetail.doc}}
+                                                       @click="toFile(taskDetail.doc)">{{taskDetail.doc.substr(0,50)}}...
                     </a>
                 </div>
                 <div style="float: left;margin-top: 3px">项目: {{taskDetail.projectName}}</div>
