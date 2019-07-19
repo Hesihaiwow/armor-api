@@ -1356,6 +1356,7 @@
                 },
                 modifyTaskForm: {
                     taskName: '',
+                    doc: '',
                     description: '',
                     projectId: '',
                     beginTime:'',
