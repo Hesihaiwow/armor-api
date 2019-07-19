@@ -3463,7 +3463,9 @@
                 extraWorkPage:{
                     pageSize:10,
                     total:0
-                }
+                },
+                userInfo:{},
+                jobRoleName:''
                 // -- sch
             };
         },
@@ -7111,6 +7113,10 @@
                 this.weekNumberList = [];
                 this.avgWeekHourList = [];
                 this.leaveHourList = [];
+                this.userInfo = {};
+                this.jobRoleName = '';
+                let userId = helper.decodeToken().userId;
+                this.fetchUserInfo(userId);
                 http.zsyGetHttp('/data/personal/week-hour-stats',{},(res)=>{
                     this.weekHourStatsList = res.data;
                     this.weekHourStatsList = this.weekHourStatsList.reverse();
@@ -7132,6 +7138,9 @@
                     this.weekNumberList = [];
                     this.avgWeekHourList = [];
                     this.leaveHourList = [];
+                    this.userInfo = {};
+                    this.jobRoleName = '';
+                    this.fetchUserInfo(userId);
                     http.zsyGetHttp('/data/week-hour-stats/'+userId,{},(res)=>{
                         this.weekHourStatsList = res.data;
                         this.weekHourStatsList = this.weekHourStatsList.reverse();
@@ -7149,7 +7158,32 @@
                     this.weekNumberList = [];
                 }
             },
-
+            //查询用户
+            fetchUserInfo(userId){
+                http.zsyGetHttp('/user/'+userId,{},(res)=>{
+                    this.userInfo = res.data;
+                    console.log(this.userInfo)
+                    let jobRole = this.userInfo.jobRole;
+                    let jobRoleName = '';
+                    if (jobRole !== undefined && jobRole !== null && jobRole !== ''){
+                        if (jobRole === 0){
+                            jobRoleName = '测试';
+                        } else if(jobRole === 1){
+                            jobRoleName = '开发';
+                        }else if (jobRole === 2){
+                            jobRoleName = '设计';
+                        } else if (jobRole === 3){
+                            jobRoleName = '产品';
+                        } else if (jobRole === 5){
+                            jobRoleName = '算法工程师';
+                        } else if (jobRole === 4){
+                            jobRoleName = '其他';
+                        }
+                    }
+                    this.jobRoleName = jobRoleName;
+                    console.log(this.jobRoleName)
+                })
+            },
             drawLine1(){
                 // 基于准备好的dom，初始化echarts实例
                 let myChart = this.$echarts.init(document.getElementById('myChart1'))
@@ -7162,7 +7196,7 @@
                         trigger: 'axis'
                     },
                     legend: {
-                        data: ['个人周工时','平均周工时','周请假']
+                        data: ['个人周工时','平均周工时('+this.jobRoleName+')','周请假']
                     },
                     xAxis: {
                         type: 'category',
@@ -7226,7 +7260,7 @@
                             }
                         },
                         {
-                            name:'平均周工时',
+                            name:'平均周工时('+this.jobRoleName+')',
                             type:'bar',
                             data:this.avgWeekHourList,
                             barWidth:32,
@@ -7268,7 +7302,7 @@
                         trigger: 'axis'
                     },
                     legend: {
-                        data: ['个人周工时','平均周工时','周请假']
+                        data: ['个人周工时','平均周工时('+this.jobRoleName+')','周请假']
                     },
                     xAxis: {
                         type: 'category',
@@ -7332,7 +7366,7 @@
                             }
                         },
                         {
-                            name:'平均周工时',
+                            name:'平均周工时('+this.jobRoleName+')',
                             type:'bar',
                             data:this.avgWeekHourList,
                             barWidth:32,
