@@ -2552,7 +2552,9 @@
                 }
                 let param = this.modifyTaskForm;
                 param.taskName = param.taskName.trim()
-                param.doc = param.doc.trim()
+                if (this.modifyTaskForm.doc !== undefined && this.modifyTaskForm.doc !== null && this.modifyTaskForm.doc !== '') {
+                    param.doc = param.doc.trim()
+                }
                 param.description = param.description.trim()
                 param.modifyDescription = param.modifyDescription.trim()
                 param.taskUsers.forEach((user) => {
