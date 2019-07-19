@@ -5910,7 +5910,6 @@
                         this.fullscreenLoading = false;
                     }
                 },(fail)=>{
-                    console.log(fail)
                     this.$message({
                         showClose: true,
                         message: fail.errMsg,
@@ -7162,7 +7161,6 @@
             fetchUserInfo(userId){
                 http.zsyGetHttp('/user/'+userId,{},(res)=>{
                     this.userInfo = res.data;
-                    console.log(this.userInfo)
                     let jobRole = this.userInfo.jobRole;
                     let jobRoleName = '';
                     if (jobRole !== undefined && jobRole !== null && jobRole !== ''){
@@ -7181,7 +7179,6 @@
                         }
                     }
                     this.jobRoleName = jobRoleName;
-                    console.log(this.jobRoleName)
                 })
             },
             drawLine1(){
