@@ -9,6 +9,7 @@ import com.zhixinhuixue.armor.config.ZSYSmsConfig;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
+import com.zhixinhuixue.armor.filter.ZSYLoginFilter;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.MD5Helper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
@@ -845,6 +846,11 @@ public class ZSYTaskService implements IZSYTaskService {
             taskDetailResDTO.setTesting(false);
         }
         taskDetailResDTO.setUsers(taskUserResDTOS);
+        List<TaskUserResDTO> collect = taskDetailResDTO.getUsers().stream().filter(taskUserResDTO -> taskUserResDTO.getUserId().equals(ZSYTokenRequestContext.get().getUserId())).collect(Collectors.toList());
+        taskDetailResDTO.setMyTaskLevelName("");
+        if (!CollectionUtils.isEmpty(collect)){
+            taskDetailResDTO.setMyTaskLevelName(collect.get(0).getTaskLevelName());
+        }
         taskDetailResDTO.setProNames(proName);
         return ZSYResult.success().data(taskDetailResDTO);
     }

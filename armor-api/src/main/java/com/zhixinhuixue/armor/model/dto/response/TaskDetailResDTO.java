@@ -45,6 +45,11 @@ public class TaskDetailResDTO {
     private Long createBy;
 
     /**
+     * 我的任务级别
+     */
+    private String myTaskLevelName;
+
+    /**
      * 关联文档
      */
     private String doc;
@@ -73,6 +78,14 @@ public class TaskDetailResDTO {
      * 任务用户（阶段）
      */
     private List<TaskUserResDTO> users;
+
+    public String getMyTaskLevelName() {
+        return myTaskLevelName;
+    }
+
+    public void setMyTaskLevelName(String myTaskLevelName) {
+        this.myTaskLevelName = myTaskLevelName;
+    }
 
     public String getDoc() {
         return doc;
