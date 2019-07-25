@@ -2583,7 +2583,7 @@
                 </el-form-item>
 
                 <el-form-item v-show="!taskTempAble" class="task-form" label="任务级别: " style="margin-left: 285px">
-                    <el-select v-model="taskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px">
+                    <el-select v-model="taskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">
                         <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
