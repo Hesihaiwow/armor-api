@@ -556,7 +556,11 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
     @Override
     @Transactional
     public void accessTaskTemp(EditTaskTempReqDTO editTaskTempReqDTO){
-            Long taskId = editTaskTempReqDTO.getTaskId();
+        Integer taskLevel = editTaskTempReqDTO.getTaskLevel();
+        if (taskLevel == null){
+            throw new ZSYServiceException("任务级别不能为空");
+        }
+        Long taskId = editTaskTempReqDTO.getTaskId();
             Long userId = editTaskTempReqDTO.getUserId();
             TaskTemp existTaskTemp = taskTempMapper.selectById(editTaskTempReqDTO.getId());
             if (existTaskTemp == null) {
