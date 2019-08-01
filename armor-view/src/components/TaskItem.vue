@@ -727,9 +727,8 @@
                 :visible.sync="showTaskModify"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
-                size="tiny"
                 :show-close="false"
-                custom-class="myDialog"
+                class="hhh"
                 :before-close="hideTaskModify">
             <span slot="title">
                 <span class="my-dialog-title">编辑任务</span>
@@ -739,23 +738,30 @@
                </span>
             </span>
             <el-form label-width="80px">
-                <el-form-item class="task-form-edit" label="">
-                    <span slot="label"><span class="star">*</span>任务名称</span>
-                    <el-input v-model="modifyTaskForm.taskName" style="width: 440px"></el-input>
+                <el-form-item class="task-form-edit" label="" style="margin-left: -75px">
+                    <span ><span class="star">*</span>任务名称</span>
+                    <el-input v-model="modifyTaskForm.taskName" style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="">
-                    <span slot="label">关联文档</span>
-                    <el-input v-model="modifyTaskForm.doc" style="width: 440px"></el-input>
+                <el-form-item class="task-form-edit" label="" style="margin-left: -75px;margin-top: 3px">
+                    <span ><span class="star">*</span>任务描述</span>
+                    <el-input type="textarea" v-model="modifyTaskForm.description" :rows="1" style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
-                <div>
+                <el-form-item class="task-form-edit" label="" style="margin-left: -75px;margin-top: 5px">
+                    <span >关联文档</span>
+                    <el-input v-model="modifyTaskForm.doc" placeholder="请输入HTTP://或HTTPS://开头的正确URL"
+                              style="width: 608px;margin-left: 37px"></el-input>
+                </el-form-item>
+                <div v-show="modifyTaskForm.functionResDTOS!==undefined && modifyTaskForm.functionResDTOS.length>0">
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                    <span style="margin-left: 7px">功能点(提示:一个功能点新增一条记录)</span>
-                    <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;width: 75%;margin-left: 79px">
-                        <el-button style="margin-left: 0px" v-show="num>=0" @click="addFunction(num)" type="text">加1</el-button>
-                        <el-button  type="text" v-show="num>0"@click="minusFunction(num)">减1</el-button>
+                    <span style="margin-left: 7px">功能点</span>
+                    <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;width: 585px;margin-left: 102px">
+                        <!--<el-button style="margin-left: 0px" v-show="num>=0" @click="addFunction(num)" type="text">加1</el-button>-->
+                        <!--<el-button  type="text" v-show="num>0"@click="minusFunction(num)">减1</el-button>-->
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=0" @click="addFunction"></i>
+                        <i class="el-icon-minus" v-show="num>0"@click="minusFunction(num-1)"></i>
                         <div v-for="item in modifyTaskForm.functionResDTOS">
-                            <el-select placeholder="涉及模块或子系统" v-model="item.moduleId" clearable
-                                       style="width: 160px" size="mini">
+                            <el-select placeholder="模块" v-model="item.moduleId" clearable
+                                       style="width: 200px">
                                 <el-option
                                         v-for="item in taskTempModuleData"
                                         :key="item.id"
@@ -763,9 +769,9 @@
                                         :value="item.id">
                                 </el-option>
                             </el-select>
-                            <el-input v-model="item.function" placeholder="功能点" style="width: 160px" size="mini"></el-input>
+                            <el-input v-model="item.function" placeholder="功能点" style="width: 240px"></el-input>
                             <el-select placeholder="动作" v-model="item.action" clearable
-                                       style="width: 80px" size="mini">
+                                       style="width: 120px">
                                 <el-option
                                         v-for="item in actionList"
                                         :key="item.id"
@@ -775,8 +781,8 @@
                             </el-select>
                         </div>
                         <div v-for="i in num">
-                            <el-select placeholder="涉及模块或子系统" v-model="taskTempModuleList[i-1]" clearable
-                                       style="width: 160px" size="mini">
+                            <el-select placeholder="模块" v-model="taskTempModuleList[i-1]" clearable
+                                       style="width: 200px" >
                                 <el-option
                                         v-for="item in taskTempModuleData"
                                         :key="item.id"
@@ -784,9 +790,9 @@
                                         :value="item.id">
                                 </el-option>
                             </el-select>
-                            <el-input v-model="functionList[i-1]" placeholder="功能点" style="width: 160px" size="mini"></el-input>
+                            <el-input v-model="functionList[i-1]" placeholder="功能点" style="width: 240px"></el-input>
                             <el-select placeholder="动作" v-model="functionActionList[i-1]" clearable
-                                       style="width: 80px" size="mini">
+                                       style="width: 120px">
                                 <el-option
                                         v-for="item in actionList"
                                         :key="item.id"
@@ -798,9 +804,9 @@
                     </div>
 
                 </div>
-                <el-form-item class="task-form-edit" label="" style="float: left">
-                    <span slot="label"><span class="star">*</span>项目</span>
-                    <el-select v-model="modifyTaskForm.projectId" placeholder="请选择" style="width: 180px">
+                <el-form-item class="task-form-edit" label="" style="float: left;margin-left: -75px;margin-top: 5px">
+                    <span ><span class="star">*</span>项目</span>
+                    <el-select v-model="modifyTaskForm.projectId" placeholder="请选择" style="width: 140px;margin-left: 56px">
                         <el-option
                                 v-for="item in projectList"
                                 :key="item.id"
@@ -809,9 +815,9 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="margin-left: 260px">
-                    <span slot="label"><span class="star">*</span>负责人</span>
-                    <el-select v-model="modifyTaskForm.createBy" placeholder="请选择" style="width: 180px">
+                <el-form-item class="task-form-edit" label="" style="float: left;margin-left: -70px;margin-top: 5px">
+                    <span ><span class="star">*</span>负责人</span>
+                    <el-select v-model="modifyTaskForm.createBy" placeholder="请选择" style="width: 140px;margin-left: 42px">
                         <el-option
                                 v-for="item in userList"
                                 :key="item.id"
@@ -820,9 +826,16 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="float: left">
-                    <span slot="label"><span class="star">*</span>优先级</span>
-                    <el-select v-model="modifyTaskForm.priority" placeholder="请选择" style="width: 180px">
+                <el-form-item class="task-form-edit" label="" style="margin-left: 420px;margin-top: 5px">
+                    <span ><span class="star">*</span>阶段</span>
+                    <el-select v-model="modifyTaskForm.stageId" :multiple-limit="1" placeholder="请选择" style="width: 140px;margin-left: 28px">
+                        <el-option v-for="item in stageList" :key="item.id"
+                                   :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="" style="float: left;margin-left: -75px;margin-top: 5px">
+                    <span><span class="star">*</span>优先级</span>
+                    <el-select v-model="modifyTaskForm.priority" placeholder="请选择" style="width: 140px;margin-left: 42px;margin-top: 5px">
                         <el-option
                                 v-for="item in priorityList"
                                 :key="item.value"
@@ -831,9 +844,9 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="margin-left: 260px">
-                    <span slot="label"><span class="star">*</span>难易度</span>
-                    <el-select v-model="modifyTaskForm.facility" placeholder="请选择" style="width: 180px">
+                <el-form-item class="task-form-edit" label="" style="float: left;margin-left: -70px;margin-top: 10px">
+                    <span ><span class="star">*</span>难易度</span>
+                    <el-select v-model="modifyTaskForm.facility" placeholder="请选择" style="width: 140px;margin-left: 42px">
                         <el-option
                                 v-for="item in facilityList"
                                 :key="item.value"
@@ -842,49 +855,15 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="float: left">
-                    <span slot="label"><span class="star">*</span>设计完成日期</span>
-                    <el-date-picker style="width: 180px"
-                            v-model="modifyTaskForm.beginTime"
-                            type="date"
-                            format="yyyy-MM-dd"
-                            placeholder="选择日期时间">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="margin-left: 260px">
-                    <span slot="label"><span class="star">*</span>开发完成日期</span>
-                    <el-date-picker style="width: 180px"
-                            v-model="modifyTaskForm.testTime"
-                            type="date"
-                            format="yyyy-MM-dd"
-                            placeholder="选择日期时间">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item class="task-form-edit" label="">
-                    <span slot="label"><span class="star">*</span>截止日期</span>
-                    <el-date-picker style="width: 180px"
-                            v-model="modifyTaskForm.endTime"
-                            type="date"
-                            format="yyyy-MM-dd"
-                            placeholder="选择日期时间">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="float: left">
-                    <span slot="label"><span class="star">*</span>阶段</span>
-                    <el-select v-model="modifyTaskForm.stageId" :multiple-limit="1" placeholder="请选择" style="width: 180px">
-                        <el-option v-for="item in stageList" :key="item.id"
-                                   :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="margin-left: 260px">
-                    <span slot="label"><span class="star">*</span>标签</span>
+                <el-form-item class="task-form-edit" label="" style="margin-left: 420px;margin-top: 10px">
+                    <span ><span class="star">*</span>标签</span>
                     <!--  <div class="fl tag-name clearfix">
                          <el-button class="fl" size="small" v-for="item in tagList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
                       </div> -->
-                    <el-select style="width: 180px"
-                            v-model="modifyTaskForm.tags"
-                            multiple
-                            placeholder="请选择标签">
+                    <el-select style="width: 140px;margin-left: 28px"
+                               v-model="modifyTaskForm.tags"
+                               multiple
+                               placeholder="请选择标签">
                         <el-option
                                 v-for="item in tagList"
                                 :key="item.id"
@@ -893,9 +872,32 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="">
-                    <span slot="label"><span class="star">*</span>任务描述</span>
-                    <el-input type="textarea" v-model="modifyTaskForm.description" :rows="3" style="width: 440px;"></el-input>
+                <el-form-item class="task-form-edit" label="" style="float: left;margin-left: 5px;margin-top: 5px">
+                    <span style="width: 110px;margin-left: -80px"><span class="star">*</span>设计完成日期</span>
+                    <el-date-picker style="width: 140px"
+                            v-model="modifyTaskForm.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="" style="float: left;margin-left: -70px;margin-top: 5px">
+                    <span style=""><span class="star">*</span>开发完成日期</span>
+                    <el-date-picker style="width: 140px"
+                            v-model="modifyTaskForm.testTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item class="task-form-edit" label="" style="margin-left: 420px;margin-top: 5px">
+                    <span style=""><span class="star">*</span>截止日期</span>
+                    <el-date-picker style="width: 140px"
+                            v-model="modifyTaskForm.endTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
                 </el-form-item>
             </el-form>
             <div class="ctpc-member-con">
@@ -971,10 +973,10 @@
                     <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
                 </div>
             </div>
-            <div class="add-member-opt" v-show="!showAddDetail && userRole == 0" @click="addMember">
-                <span class="add-member-icon">+</span>
-                <span class="add-member-msg">添加成员</span>
-            </div>
+            <!--<div class="add-member-opt" v-show="!showAddDetail && userRole == 0" @click="addMember">-->
+                <!--<span class="add-member-icon">+</span>-->
+                <!--<span class="add-member-msg">添加成员</span>-->
+            <!--</div>-->
             <!--   <span slot="footer" class="dialog-footer">
                <el-button @click="hideTaskModify">取 消</el-button>
                <el-button type="primary" @click="saveTaskInfo">保 存</el-button>
@@ -4020,6 +4022,9 @@
     }
 </script>
 <style>
+    .hhh .el-dialog--small {
+        width: 755px;
+    }
 
     .hh.el-table td, .hh.el-table th {
         height: 25px;

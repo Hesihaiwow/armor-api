@@ -966,11 +966,13 @@
                             <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                             <span style="margin-left: 7px">功能点(提示:一个功能点新增一条记录)</span>
                             <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                                <el-button style="margin-left: 0px" v-show="num>=1" @click="plus(num-1)" type="text">加1</el-button>
-                                <el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>
+                                <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
+                                <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+                                <!--<el-button style="margin-left: 0px" v-show="num>=1" @click="plus(num-1)" type="text">加1</el-button>-->
+                                <!--<el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>-->
                                 <div v-for="i in num">
-                                    <el-select placeholder="涉及模块或子系统" v-model="taskTempModuleList[i-1]" clearable
-                                               style="width: 160px" size="mini">
+                                    <el-select placeholder="模块" v-model="taskTempModuleList[i-1]" clearable
+                                               style="width: 160px" size="small">
                                         <el-option
                                                 v-for="item in taskTempModuleData"
                                                 :key="item.id"
@@ -978,9 +980,9 @@
                                                 :value="item.id">
                                         </el-option>
                                     </el-select>
-                                    <el-input v-model="functionList[i-1]" placeholder="功能点" style="width: 240px" size="mini"></el-input>
+                                    <el-input v-model="functionList[i-1]" placeholder="功能点" style="width: 240px" size="small"></el-input>
                                     <el-select placeholder="动作" v-model="functionActionList[i-1]" clearable
-                                               style="width: 80px" size="mini">
+                                               style="width: 80px" size="small">
                                         <el-option
                                                 v-for="item in actionList"
                                                 :key="item.id"

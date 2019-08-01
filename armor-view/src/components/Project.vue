@@ -67,7 +67,7 @@
         </div>
       </el-tab-pane>
 
-        <el-tab-pane label="模块或子系统管理" name="taskTempModule">
+        <el-tab-pane label="模块管理" name="taskTempModule">
         <div class="task-item" v-for="list in taskTempModuleData">
           <img v-if="list.imageUrl" :src="list.imageUrl" class="task-logo" style="width: 40px;height: 40px;border-radius: 50%;">
           <img v-else="" src="../assets/img/u431.png" class="task-logo">
@@ -135,6 +135,7 @@
                 action=""
                 :show-file-list="false"
                 :http-request="upload2"
+                ref='uploadPic'
                 :before-upload="beforeAvatarUpload">
           <img v-if="taskTempModule.imageUrl" :src="taskTempModule.imageUrl" class="avatar" >
           <img v-else="" src="../assets/img/u1285.png" class="avatar" >
@@ -182,6 +183,7 @@
               class="avatar-uploader"
               action=""
               :show-file-list="false"
+              ref='uploadPic2'
               :http-request="upload2"
               :before-upload="beforeAvatarUpload">
           <img v-if="taskTempModule.imageUrl" :src="taskTempModule.imageUrl" style="height: 180px;width: 200px">
@@ -331,8 +333,10 @@
       hideEdit(){
         this.project.name = this.project.description = this.editProjectId= '';
         this.editProjectVisible = false;
-        this.taskTempModule.name = this.taskTempModule.description = this.editTaskTempModuleId= '';
+        this.taskTempModule.name = this.taskTempModule.description = this.editTaskTempModuleId = this.taskTempModule.imageUrl =  '';
         this.editTaskTempModuleVisible = false;
+          this.$refs.uploadPic2.clearFiles();
+
       },
       projectList(){
         Http.zsyGetHttp(Http.API_URI.PROJECT,null,(res)=>{
@@ -355,8 +359,9 @@
       hidePop () {
         this.project.name = this.project.description = this.editProjectId= '';
         this.showAddTask = false;
-        this.taskTempModule.name = this.taskTempModule.description = '';
+        this.taskTempModule.name = this.taskTempModule.description  = this.taskTempModule.imageUrl = '';
         this.showAddTaskTempModule = false;
+        this.$refs.uploadPic.clearFiles();
       },
       saveAdd () {
         // 保存
@@ -614,7 +619,7 @@
             }
             Http.zsyPutHttp("/task-temp-module/update/"+this.editTaskTempModuleId,this.taskTempModule,(res)=>{
                 this.successMsg('模块更新成功');
-                this.taskTempModule.name = this.taskTempModule.description = this.editTaskTempModuleId= '';
+                this.taskTempModule.name = this.taskTempModule.description = this.editTaskTempModuleId = this.taskTempModule.imageUrl = '';
                 this.editTaskTempModuleVisible = false;
                 this.fetchTaskTempModuleList();
             });

@@ -2472,11 +2472,13 @@
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                     <span style="margin-left: 7px">功能点(提示:一个功能点新增一条记录)</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <el-button style="margin-left: 0px" v-show="num>=1" @click="plus(num-1)" type="text">加1</el-button>
-                        <el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>
-                        <div v-for="i in num">
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
+                        <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+                        <!--<el-button style="margin-left: 0px" v-show="num>=1" @click="plus(num-1)" type="text">加1</el-button>-->
+                        <!--<el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>-->
+                        <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
-                            style="width: 260px" size="mini">
+                            style="width: 260px">
                                 <el-option
                                         v-for="item in taskFunctionData"
                                         :key="item.id"
@@ -2495,7 +2497,7 @@
                                 <!--</el-option>-->
                             <!--</el-select>-->
                             <el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable
-                                       style="width: 120px" size="mini">
+                                       style="width: 120px">
                                 <el-option
                                         v-for="item in taskLevelList"
                                         :key="item.id"
@@ -4189,11 +4191,11 @@
                     let taskTempFunction = this.taskTempForm.taskTempFunctionList[i];
                     let functionId = taskTempFunction.functionId;
                     let level = taskTempFunction.level;
-                    if (functionId === undefined || functionId === null){
+                    if (functionId === undefined || functionId === null || functionId === ''){
                         this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
                         return false;
                     }
-                    if (level === undefined || level === null){
+                    if (level === undefined || level === null || level === ''){
                         this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
                         return false;
                     }
@@ -4548,6 +4550,7 @@
                   this.taskDetail = {};
                   this.showTaskDetailVisible = false;
                   this.showTaskDescriptionVisible = false;
+                  this.clearFunctionForm();
               }
             },
             //按阶段查询任务
@@ -7654,10 +7657,12 @@
             },
             //查询任务功能点
             fetchTaskFunction(taskId){
-                if (taskId != null){
+                if (taskId !== undefined && taskId != null && taskId !== ''){
                     http.zsyGetHttp(`/task-function/list/`+taskId,{},(res)=>{
                         this.taskFunctionData = res.data;
                     })
+                }else {
+                    this.taskFunctionData = [];
                 }
             },
             clearFunctionForm(){
