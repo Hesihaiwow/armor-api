@@ -1398,7 +1398,8 @@
             </span>
         </el-dialog>
         <el-dialog title="修改任务申请" custom-class="myDialog" :visible.sync="modifyMyTaskVisible"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny"
+                    @close="closeModifyTaskDialog">
             <el-form  :model="modifyMyTaskForm"  ref="modifyMyTaskForm">
 
                 <div style="margin-top: -10px">申请人: {{taskUser.userName}}</div>
@@ -1444,6 +1445,34 @@
                 <el-form-item label="修改原因: ">
                     <el-input type="textarea"  v-model="modifyMyTaskReason" :rows="2"></el-input>
                 </el-form-item>
+                <div v-show="this.personTaskFunctionList !== undefined && this.personTaskFunctionList.length>0">
+                    <span style="margin-left: 1px">功能点:</span>
+                    <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plusTaskTempFunction"></i>
+                        <i class="el-icon-minus" v-show="num>1"@click="minusTaskTempFunction(num-1)"></i>
+                        <div v-for="i in num" style="margin-top: 3px">
+                            <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
+                                       style="width: 260px">
+                                <el-option
+                                        v-for="item in taskFunctionData"
+                                        :key="item.id"
+                                        :label="item.functionStr"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                            <el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable
+                                       style="width: 120px">
+                                <el-option
+                                        v-for="item in taskLevelList"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+
                 <el-form-item label="任务描述: ">
                     <el-input type="textarea"  v-model="modifyMyTaskDescription" :rows="3"></el-input>
                 </el-form-item>
@@ -3287,10 +3316,17 @@
                 this.modifyMyTaskForm.userId = userId;
                 this.modifyMyTaskForm.taskId = taskId;
                 this.getTaskDetail(taskId);
+                this.fetchTaskFunction(taskId);
                 if (this.taskDetail.users !== undefined && this.taskDetail.users.length>0){
                     let userList = this.taskDetail.users.filter(user => user.userId === userId);
                     let taskUser = userList[0];
                     this.personTaskFunctionList = taskUser.functionResDTOList;
+                    this.personTaskFunctionList.forEach(resDTO=>{
+                        this.taskFunctionList.push(resDTO.functionId);
+                        this.functionLevelList.push(resDTO.level);
+                        this.num = this.personTaskFunctionList.length;
+                    })
+
                 }
                 http.zsyGetHttp('/task/task-user/'+taskId+'/'+userId,{},(res=>{
                     this.taskUser = res.data;
@@ -3919,9 +3955,16 @@
             },
             //查询任务功能点
             fetchTaskFunction(taskId){
-                http.zsyGetHttp(`/task-function/list/`+taskId,{},(res)=>{
-                    this.taskFunctionData = res.data;
-                })
+                if (taskId !== undefined && taskId != null && taskId !== ''){
+                    http.zsyGetHttp(`/task-function/list/`+taskId,{},(res)=>{
+                        this.taskFunctionData = res.data;
+                    })
+                }else {
+                    this.taskFunctionData = [];
+                }
+            },
+            closeModifyTaskDialog(){
+                this.personTaskFunctionList = [];
             }
         },
         created() {
