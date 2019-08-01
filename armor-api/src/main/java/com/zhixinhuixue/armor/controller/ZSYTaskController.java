@@ -46,7 +46,7 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("任务审核通过")
-    @PutMapping(value = "/auditing/accept/{taskId}/")
+    @PutMapping(value = "/auditing/accept/{taskId}")
     @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, paramType = "path", dataType = "long")
     public String taskAccept(@PathVariable("taskId") Long taskId) {
         return taskService.auditTask(taskId,ZSYReviewStatus.ACCEPT.getValue()).build();
