@@ -39,7 +39,7 @@ public class ZSYTaskTempModuleService implements IZSYTaskTempModuleService {
     @Override
     @Transactional
     public void add(ProjectReqDTO reqDTO) {
-        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.ADMINISTRATOR.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()){
             throw new ZSYServiceException("当前用户没有权限");
         }
         //校验是否已存在
@@ -88,7 +88,7 @@ public class ZSYTaskTempModuleService implements IZSYTaskTempModuleService {
     @Override
     @Transactional
     public void update(ProjectReqDTO reqDTO, Long id) {
-        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.ADMINISTRATOR.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()){
             throw new ZSYServiceException("当前用户没有权限");
         }
         //校验是否已存在
@@ -111,7 +111,7 @@ public class ZSYTaskTempModuleService implements IZSYTaskTempModuleService {
     @Override
     @Transactional
     public void delete(Long id) {
-        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.ADMINISTRATOR.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()){
             throw new ZSYServiceException("当前用户没有权限");
         }
         //校验是否已存在
