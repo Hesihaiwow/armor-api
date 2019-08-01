@@ -172,7 +172,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setStatus(ZSYTaskStatus.DOING.getValue());
         task.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         task.setType(taskReqDTO.getTaskType());
-        task.setDoc(taskReqDTO.getDoc());
+        task.setDoc(taskReqDTO.getDoc().trim());
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
             task.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
             task.setFacility(ZSYTaskFacility.EASY.getValue());
@@ -341,7 +341,7 @@ public class ZSYTaskService implements IZSYTaskService {
         }
         task.setId(taskId);
         task.setName(taskReqDTO.getTaskName());
-        task.setDoc(taskReqDTO.getDoc());
+        task.setDoc(taskReqDTO.getDoc().trim());
         task.setDescription(taskReqDTO.getDescription());
         task.setProjectId(taskReqDTO.getProjectId());
         task.setStageId(taskReqDTO.getStageId());
@@ -390,6 +390,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 newFunctions.forEach(newFunction->{
                     TaskFunction function = new TaskFunction();
                     BeanUtils.copyProperties(newFunction,function);
+                    function.setFunction(newFunction.getFunction().trim());
                     function.setId(snowFlakeIDHelper.nextId());
                     function.setTaskId(taskId);
                     newFunctionList.add(function);
