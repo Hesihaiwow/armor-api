@@ -113,7 +113,7 @@
                 </el-form-item>
                 <div v-show="taskDetail.type===2 && taskDetail.functionResDTOS !== undefined && taskDetail.functionResDTOS.length>0">
                     <span style="margin-left: 0px">功能点:</span>
-                    <el-table class="hh" :data="taskDetail.functionResDTOS">
+                    <el-table class="hh" :data="taskDetail.functionResDTOS" height="200">
                         <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
@@ -136,7 +136,7 @@
                         </div>
                         <div v-show="taskDetail.type===2 && item.functionResDTOList !== undefined && item.functionResDTOList.length>0">
                             <span style="margin-left: 0px">功能点:</span>
-                            <el-table class="hh" :data="item.functionResDTOList">
+                            <el-table class="hh" :data="item.functionResDTOList" height="200">
                                 <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                                 <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                                 <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
@@ -342,7 +342,7 @@
                 </div>
                 <div v-show="taskDetail.functionResDTOS !== undefined && taskDetail.functionResDTOS.length>0">
                     <span style="margin-left: 0px">功能点:</span>
-                    <el-table class="hh" :data="taskDetail.functionResDTOS">
+                    <el-table class="hh" :data="taskDetail.functionResDTOS" height="200">
                         <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="200"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
@@ -751,7 +751,7 @@
                     <el-input v-model="modifyTaskForm.doc" placeholder="请输入HTTP://或HTTPS://开头的正确URL"
                               style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
-                <div>
+                <div v-show="modifyTaskForm.functionResDTOS!==undefined && modifyTaskForm.functionResDTOS.length>0">
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                     <span style="margin-left: 7px">功能点</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;width: 585px;margin-left: 102px">
@@ -759,8 +759,7 @@
                         <!--<el-button  type="text" v-show="num>0"@click="minusFunction(num)">减1</el-button>-->
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=0" @click="addFunction"></i>
                         <i class="el-icon-minus" v-show="num>0"@click="minusFunction(num-1)"></i>
-                        <div v-show="modifyTaskForm.functionResDTOS!==undefined && modifyTaskForm.functionResDTOS.length>0">
-                            <div v-for="item in modifyTaskForm.functionResDTOS">
+                        <div v-for="item in modifyTaskForm.functionResDTOS">
                                 <el-select placeholder="模块" v-model="item.moduleId" clearable
                                            style="width: 200px">
                                     <el-option
@@ -781,7 +780,6 @@
                                     </el-option>
                                 </el-select>
                             </div>
-                        </div>
                         <div v-for="i in num">
                             <el-select placeholder="模块" v-model="taskTempModuleList[i-1]" clearable
                                        style="width: 200px" >
