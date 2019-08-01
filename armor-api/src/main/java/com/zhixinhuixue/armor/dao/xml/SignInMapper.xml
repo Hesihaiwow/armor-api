@@ -51,6 +51,7 @@
         <result column="status" jdbcType="INTEGER" property="status" />
         <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
         <result column="user_role" jdbcType="INTEGER" property="userRole" />
+        <result column="check_sort" jdbcType="INTEGER" property="checkSort" />
         <result column="last_login" jdbcType="TIMESTAMP" property="lastLogin" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
@@ -319,5 +320,24 @@
             </if>
         </where>
         ORDER BY check_time
+    </select>
+
+    <!--批量查询打卡情况-->
+    <select id="selectBatch" resultType="com.zhixinhuixue.armor.model.pojo.SignIn">
+        <foreach collection="queryDTOS" item="item" separator=";">
+            SELECT * FROM `sign_in` WHERE `user_id` = #{item.userId}
+            <![CDATA[  and  `check_time` >= #{item.beginTime} ]]>
+            <![CDATA[  and  `check_time` <= #{item.endTime} ]]>
+        </foreach>
+    </select>
+
+    <!--查询一天没打卡用户id集合-->
+    <select id="selectNotCheckUsers" resultType="java.lang.Long">
+        SELECT u.id FROM user u
+        LEFT JOIN sign_in sit ON u.id = sit.user_id
+        <![CDATA[  and  `check_time` >= #{today0} ]]>
+        <![CDATA[  and  `check_time` <= #{today23} ]]>
+        WHERE u.is_delete = 0 AND u.`status` = 0 and `check_sort` > 0 AND check_time IS NULL
+        GROUP BY u.id;
     </select>
 </mapper>

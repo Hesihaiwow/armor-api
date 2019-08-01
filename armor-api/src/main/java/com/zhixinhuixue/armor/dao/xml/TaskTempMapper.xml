@@ -3,60 +3,63 @@
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTempMapper">
 
     <resultMap id="BaseTaskTempMap" type="com.zhixinhuixue.armor.model.pojo.TaskTemp">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
-        <result column="work_hours" property="workHours" jdbcType="DECIMAL"></result>
-        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
-        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
-        <result column="type" property="type" jdbcType="INTEGER"></result>
-        <result column="status" property="status" jdbcType="INTEGER"></result>
-        <result column="task_level" property="taskLevel" jdbcType="INTEGER"></result>
-        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
-        <result column="description" property="description" jdbcType="VARCHAR"></result>
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="work_hours" property="workHours" jdbcType="DECIMAL"/>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="task_level" property="taskLevel" jdbcType="INTEGER"/>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="TaskTempBO" type="com.zhixinhuixue.armor.model.bo.TaskTempBO" extends="BaseTaskTempMap">
-        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
-        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
-        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"></result>
-        <result column="project_image" property="projectImage" jdbcType="VARCHAR"></result>
-        <result column="project_name" property="projectName" jdbcType="VARCHAR"></result>
-        <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
-        <result column="priority" property="priority" jdbcType="INTEGER"></result>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"/>
+        <result column="project_image" property="projectImage" jdbcType="VARCHAR"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+        <result column="project_id" property="projectId" jdbcType="BIGINT"/>
+        <result column="priority" property="priority" jdbcType="INTEGER"/>
         <collection property="userWeekTempList" column="{userId=user_id,taskId=task_id}"
                 ofType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp"
-                select="selectUserWeekTempByUserAndTask"></collection>
+                select="selectUserWeekTempByUserAndTask"/>
         <collection property="taskReviewLogBOS" column="id"
                     ofType="com.zhixinhuixue.armor.model.bo.TaskReviewLogBO"
                     select="selectTaskReviewLogByTaskTemp"/>
+        <collection property="functions" column="ttId=id"
+                    ofType="com.zhixinhuixue.armor.model.bo.TaskTempFunctionBO"
+                    select="com.zhixinhuixue.armor.dao.IZSYTaskTempFunctionMapper.selectListByTtId"/>
     </resultMap>
 
     <resultMap id="BaseTaskReviewLogMap" type="com.zhixinhuixue.armor.model.pojo.TaskReviewLog">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="task_temp_id" property="taskTempId" jdbcType="BIGINT"></result>
-        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="check_user_id" property="checkUserId" jdbcType="BIGINT"></result>
-        <result column="check_user_name" property="checkUserName" jdbcType="VARCHAR"></result>
-        <result column="level" property="level" jdbcType="INTEGER"></result>
-        <result column="suggest" property="suggest" jdbcType="VARCHAR"></result>
-        <result column="review_time" property="reviewTime" jdbcType="TIMESTAMP"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="task_temp_id" property="taskTempId" jdbcType="BIGINT"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="check_user_id" property="checkUserId" jdbcType="BIGINT"/>
+        <result column="check_user_name" property="checkUserName" jdbcType="VARCHAR"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+        <result column="suggest" property="suggest" jdbcType="VARCHAR"/>
+        <result column="review_time" property="reviewTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="TaskReviewLogBOMap" type="com.zhixinhuixue.armor.model.bo.TaskReviewLogBO" extends="BaseTaskReviewLogMap">
-        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="BaseUserWeekTempMap" type="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="week_number" property="weekNumber" jdbcType="INTEGER"></result>
-        <result column="hours" property="hours" jdbcType="DECIMAL"></result>
-        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
-        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="year" property="year" jdbcType="INTEGER"></result>
-        <result column="status" property="status" jdbcType="INTEGER"></result>
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="week_number" property="weekNumber" jdbcType="INTEGER"/>
+        <result column="hours" property="hours" jdbcType="DECIMAL"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="year" property="year" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!--新增任务-->
@@ -114,9 +117,9 @@
             <if test="level != null">
                 `level` = #{level,jdbcType=INTEGER},
             </if>
-            <if test="taskLevel != null">
-                `task_level` = #{taskLevel,jdbcType=INTEGER},
-            </if>
+            <!--<if test="taskLevel != null">-->
+                <!--`task_level` = #{taskLevel,jdbcType=INTEGER},-->
+            <!--</if>-->
         </set>
         WHERE `id` = #{id,jdbcType=BIGINT}
     </update>
@@ -287,5 +290,10 @@
 
     <select id="selectTaskReviewLogByTaskTempAndCheckUser" resultMap="BaseTaskReviewLogMap">
         SELECT * FROM `task_review_log` WHERE `task_temp_id` = #{ttId} AND `check_user_id` = #{checkUserId}
+    </select>
+
+    <!--查询任务的所有临时任务-->
+    <select id="selectByTask" resultMap="BaseTaskTempMap">
+        SELECT * FROM `task_temp` WHERE `task_id` = #{taskId}
     </select>
 </mapper>

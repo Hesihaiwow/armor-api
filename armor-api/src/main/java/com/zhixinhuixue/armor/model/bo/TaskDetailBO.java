@@ -46,9 +46,21 @@ public class TaskDetailBO extends Task {
 
     /**
      * 是否暂停(0表示暂停)
-     * @return
      */
     private Integer status;
+
+    /**
+     * 功能点
+     */
+    private List<TaskFunctionBO> functionBOS;
+
+    public List<TaskFunctionBO> getFunctionBOS() {
+        return functionBOS;
+    }
+
+    public void setFunctionBOS(List<TaskFunctionBO> functionBOS) {
+        this.functionBOS = functionBOS;
+    }
 
     public Integer getIsEvaluate() {
         return isEvaluate;

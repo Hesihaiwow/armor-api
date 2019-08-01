@@ -66,6 +66,21 @@
           <div class="add-task-msg">创建新项目</div>
         </div>
       </el-tab-pane>
+
+        <el-tab-pane label="模块管理" name="taskTempModule">
+        <div class="task-item" v-for="list in taskTempModuleData">
+          <img v-if="list.imageUrl" :src="list.imageUrl" class="task-logo" style="width: 40px;height: 40px;border-radius: 50%;">
+          <img v-else="" src="../assets/img/u431.png" class="task-logo">
+          <div class="task-info"  @click="editTaskTempModule(list.id,list.name,list.description,list.imageUrl)">
+            <div class="task-name">{{list.name}}</div>
+            <div class="task-sub-name">{{list.description}}</div>
+          </div>
+        </div>
+        <div class="add-task-item" v-show="hasPermission" @click="addTaskTempModule">
+          <div class="add-task-btn">＋</div>
+          <div class="add-task-msg">创建新模块</div>
+        </div>
+      </el-tab-pane>
         <el-tab-pane label="发布平台管理" name="platform"  style="line-height:50px">
             <el-tag
                     v-for="platform in platformList"
@@ -110,6 +125,31 @@
         </div>
       </div>
     </div>
+    <div class="add-task-pop" v-show="showAddTaskTempModule">
+      <div class="add-task-pop-con">
+        <div class="add-task-top">
+          创建模块<span class="close" @click="hidePop">×</span>
+        </div>
+        <el-upload
+                class="avatar-uploader"
+                action=""
+                :show-file-list="false"
+                :http-request="upload2"
+                ref='uploadPic'
+                :before-upload="beforeAvatarUpload">
+          <img v-if="taskTempModule.imageUrl" :src="taskTempModule.imageUrl" class="avatar" >
+          <img v-else="" src="../assets/img/u1285.png" class="avatar" >
+          <!--<i v-else><img src="../assets/img/u1284.png" alt="" class="att-img"></i>-->
+          <p class="att-msg">点击图片为你的模块上传模块图</p>
+        </el-upload>
+        <input type="text" class="project-name" placeholder="模块名称" v-model="taskTempModule.name">
+        <textarea class="project-intro" placeholder="模块简介（选填）" v-model="taskTempModule.description"></textarea>
+        <div class="att-bents">
+          <span class="cancel" @click="hidePop">取消</span>
+          <span class="save" @click="saveTaskTempModule" :loading="isSaving">保存</span>
+        </div>
+      </div>
+    </div>
     <div class="add-task-pop" v-show="editProjectVisible">
       <div class="add-task-pop-con">
         <div class="add-task-top">
@@ -131,6 +171,31 @@
         <span class="delete" @click="deleteWindow">删除项目</span>
         <span class="cancel" @click="hideEdit">取消</span>
         <span class="save" @click="updateProject">保存</span>
+      </div>
+      </div>
+    </div>
+    <div class="add-task-pop" v-show="editTaskTempModuleVisible">
+      <div class="add-task-pop-con">
+        <div class="add-task-top">
+          编辑模块<span class="close" @click="hideEdit">×</span>
+        </div>
+        <el-upload
+              class="avatar-uploader"
+              action=""
+              :show-file-list="false"
+              ref='uploadPic2'
+              :http-request="upload2"
+              :before-upload="beforeAvatarUpload">
+          <img v-if="taskTempModule.imageUrl" :src="taskTempModule.imageUrl" style="height: 180px;width: 200px">
+          <img v-else="" src="../assets/img/u1285.png" style="height: 180px;width: 200px">
+        </el-upload>
+        <p class="att-msg">点击图片为你的模块上传模块图</p>
+      <input type="text" class="project-name" :placeholder="taskTempModule.name" v-model="taskTempModule.name">
+      <textarea class="project-intro" placeholder="模块简介（选填）" v-model="taskTempModule.description"></textarea>
+      <div class="att-bents">
+        <span class="delete" @click="deleteTaskTempModule">删除模块</span>
+        <span class="cancel" @click="hideEdit">取消</span>
+        <span class="save" @click="updateTaskTempModule">保存</span>
       </div>
       </div>
     </div>
@@ -208,6 +273,18 @@
         },//待编辑项目ID
         editProjectId:'',
         color:['','primary','success','warning','danger','info','primary','success',],
+
+          taskTempModuleData:[],
+          taskTempModule:{
+              id:'',
+              name:'',
+              description:'',
+              imageUrl:''
+          },
+          showAddTaskTempModule: false,
+          editTaskTempModuleVisible: false,
+          editTaskTempModuleId:'',
+
       };
     },
     beforeMount:function () {
@@ -217,6 +294,7 @@
       this.fetchTagList();
       this.fetchStageList();
       this.fetchPlatformList();
+      this.fetchTaskTempModuleList();
     },
     computed: {
         //是否有权限
@@ -255,6 +333,10 @@
       hideEdit(){
         this.project.name = this.project.description = this.editProjectId= '';
         this.editProjectVisible = false;
+        this.taskTempModule.name = this.taskTempModule.description = this.editTaskTempModuleId = this.taskTempModule.imageUrl =  '';
+        this.editTaskTempModuleVisible = false;
+          this.$refs.uploadPic2.clearFiles();
+
       },
       projectList(){
         Http.zsyGetHttp(Http.API_URI.PROJECT,null,(res)=>{
@@ -277,6 +359,9 @@
       hidePop () {
         this.project.name = this.project.description = this.editProjectId= '';
         this.showAddTask = false;
+        this.taskTempModule.name = this.taskTempModule.description  = this.taskTempModule.imageUrl = '';
+        this.showAddTaskTempModule = false;
+        this.$refs.uploadPic.clearFiles();
       },
       saveAdd () {
         // 保存
@@ -314,7 +399,7 @@
         upload(file) {
             var data = new FormData();
             data.append('uploadFile', file.file);
-            Http.zsyPostHttp('/upload/image', data, (res) => {
+            Http.zsyPostHttp('/upload/ucloud/image', data, (res) => {
                 this.project.imageUrl = res.data.url;
             })
         },
@@ -479,7 +564,81 @@
                 message: msg,
                 type: 'error'
             });
-        }
+        },
+
+        //查询 临时任务涉及项目
+        fetchTaskTempModuleList(){
+            Http.zsyGetHttp('/task-temp-module/list',{},(res)=>{
+                this.taskTempModuleData = res.data;
+            })
+        },
+        addTaskTempModule(){
+            this.showAddTaskTempModule = true;
+        },
+        upload2(file) {
+            var data = new FormData();
+            data.append('uploadFile', file.file);
+            Http.zsyPostHttp('/upload/ucloud/image', data, (res) => {
+                this.taskTempModule.imageUrl = res.data.url;
+            })
+        },
+        saveTaskTempModule(){
+            this.isSaving = true
+            if(this.taskTempModule.name.trim() === undefined
+                || this.taskTempModule.name.trim() === null
+                || this.taskTempModule.name.trim() ===''
+                || this.taskTempModule.name.trim().length>15){
+                this.warnMsg("模块或子系统名称不能为空且不超过15字");
+                return;
+            }
+            Http.zsyPostHttp('/task-temp-module/add',this.taskTempModule,(res)=>{
+                this.successMsg("模块添加成功");
+                this.fetchTaskTempModuleList();
+                this.taskTempModule.name = this.taskTempModule.description = this.taskTempModule.imageUrl= '';
+                this.showAddTaskTempModule = false;
+                this.isSaving = false;
+            });
+
+        },
+        editTaskTempModule(id,name,description,url){
+            if(this.hasPermission){
+                this.editTaskTempModuleId=id;
+                this.taskTempModule.name =name;
+                this.taskTempModule.description = description;
+                this.taskTempModule.imageUrl =url ;
+                this.editTaskTempModuleVisible = true;
+            }
+        },
+        updateTaskTempModule(){
+            if(this.taskTempModule.name.trim() === undefined
+                || this.taskTempModule.name.trim() === null
+                || this.taskTempModule.name.trim() ===''
+                || this.taskTempModule.name.trim().length>15){
+                this.warnMsg("项目名称不能为空且不超过15字");
+                return false;
+            }
+            Http.zsyPutHttp("/task-temp-module/update/"+this.editTaskTempModuleId,this.taskTempModule,(res)=>{
+                this.successMsg('模块更新成功');
+                this.taskTempModule.name = this.taskTempModule.description = this.editTaskTempModuleId = this.taskTempModule.imageUrl = '';
+                this.editTaskTempModuleVisible = false;
+                this.fetchTaskTempModuleList();
+            });
+        },
+        deleteTaskTempModule(){//删除临时任务涉及项目弹出框
+            this.$confirm('此操作将永久删除该模块, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                Http.zsyDeleteHttp("/task-temp-module/delete/"+this.editTaskTempModuleId,null,(res)=>{
+                    this.successMsg('删除成功')
+                    this.taskTempModule.name = this.taskTempModule.description = this.taskTempModule.imageUrl = this.editTaskTempModuleId= '';
+                    this.editTaskTempModuleVisible = false;
+                    this.fetchTaskTempModuleList();
+                })
+            }).catch(() => {
+            });
+        },
     }
   }
 </script>

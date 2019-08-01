@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.dao;
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.SignInBO;
 import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.SignInQueryDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.pojo.ResignIn;
 import com.zhixinhuixue.armor.model.pojo.SignIn;
@@ -243,4 +244,19 @@ public interface IZSYSignInMapper {
      * @return
      */
     List<Date> selectCheckTimeByUser(ExtraWorkStatsReqDTO reqDTO);
+
+    /**
+     * 批量查询打卡情况
+     * @param queryDTOS
+     * @return
+     */
+    List<SignIn> selectBatch(@Param("queryDTOS") List<SignInQueryDTO> queryDTOS);
+
+    /**
+     * 查询一天没打卡用户id集合
+     * @param today0
+     * @param today23
+     * @return
+     */
+    List<Long> selectNotCheckUsers(@Param("today0")Date today0, @Param("today23")Date today23);
 }

@@ -60,6 +60,8 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
     private IZSYStageMapper stageMapper;
     @Autowired
     private IZSYWeekPublishPlanMapper weekPublishPlanMapper;
+    @Autowired
+    private IZSYTaskTempFunctionMapper functionMapper;
 
     /**
      * 新增任务(临时)
@@ -84,10 +86,6 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         taskTemp.setReviewStatus(1);
         taskTemp.setLevel(1);
 
-        if (taskTempMapper.insertTaskTemp(taskTemp) == 0){
-            throw new ZSYServiceException("新增任务(临时)失败");
-        }
-
         List<UserWeekReqDTO> userWeeks = addTaskTempReqDTO.getUserWeeks();
         List<UserWeekTemp> userWeekTempList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userWeeks)){
@@ -106,12 +104,31 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         }else {
             throw new ZSYServiceException("周工时为空");
         }
+
+        List<TaskTempFunctionReqDTO> functionReqDTOS = addTaskTempReqDTO.getTaskTempFunctionList();
+        List<TaskTempFunction> functionList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(functionReqDTOS)){
+            functionReqDTOS.forEach(functionReqDTO->{
+                TaskTempFunction function = new TaskTempFunction();
+                BeanUtils.copyProperties(functionReqDTO,function);
+                function.setId(snowFlakeIDHelper.nextId());
+                function.setTtId(taskTemp.getId());
+                functionList.add(function);
+            });
+        }
+
+        if (taskTempMapper.insertTaskTemp(taskTemp) == 0){
+            throw new ZSYServiceException("新增任务(临时)失败");
+        }
         if (!CollectionUtils.isEmpty(userWeekTempList)){
             //删除原有的userWeekTemp
             taskTempMapper.deleteUserWeekTempByUserAndTask(userId,addTaskTempReqDTO.getTaskId());
             if (taskTempMapper.insertUserWeekTempBatch(userWeekTempList) == 0){
                 throw new ZSYServiceException("批量插入周工作量(临时)失败");
             }
+        }
+        if (!CollectionUtils.isEmpty(functionList)){
+            functionMapper.insertBatch(functionList);
         }
     }
 
@@ -157,6 +174,23 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 throw new ZSYServiceException("批量修改周工作量(临时)失败");
             }
         }
+
+        List<TaskTempFunctionReqDTO> taskTempFunctionList = editTaskTempReqDTO.getTaskTempFunctionList();
+        List<TaskTempFunction> functionList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskTempFunctionList)){
+            taskTempFunctionList.forEach(taskTempFunctionReqDTO -> {
+                TaskTempFunction function = new TaskTempFunction();
+                BeanUtils.copyProperties(taskTempFunctionReqDTO,function);
+                function.setId(snowFlakeIDHelper.nextId());
+                function.setTtId(editTaskTempReqDTO.getId());
+                functionList.add(function);
+            });
+        }
+        //删除原有的function
+        functionMapper.deleteByTtId(editTaskTempReqDTO.getId());
+        if (!CollectionUtils.isEmpty(functionList)){
+            functionMapper.insertBatch(functionList);
+        }
     }
 
     /**
@@ -187,6 +221,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 throw new ZSYServiceException("删除周工作量失败");
             }
         }
+
+        //删除功能点
+        functionMapper.deleteByTtId(id);
 
         taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
     }
@@ -327,6 +364,30 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             taskTempResDTO.setIsChecked(0);
         }
         taskTempResDTO.setTaskReviewLogResDTOList(taskReviewLogResDTOList);
+
+        List<TaskTempFunctionBO> functions = taskTempBO.getFunctions();
+        List<TaskTempFunctionResDTO> functionResDTOS = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(functions)){
+            functions.forEach(function->{
+                TaskTempFunctionResDTO resDTO = new TaskTempFunctionResDTO();
+                BeanUtils.copyProperties(function,resDTO);
+                resDTO.setActionName(FunctionAction.getName(function.getAction()));
+                Integer level = function.getLevel();
+                if (level == 1){
+                    resDTO.setLevelName("一级");
+                }else if(level == 2){
+                    resDTO.setLevelName("二级");
+                }else if (level == 3){
+                    resDTO.setLevelName("三级");
+                }else if (level == 4){
+                    resDTO.setLevelName("四级");
+                }else if (level == 5){
+                    resDTO.setLevelName("五级");
+                }
+                functionResDTOS.add(resDTO);
+            });
+        }
+        taskTempResDTO.setFunctionResDTOList(functionResDTOS);
         return taskTempResDTO;
     }
 
@@ -379,7 +440,6 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                         userWeekTempResDTOList.add(userWeekTempResDTO);
                     }
                     userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
-
                 }
                 taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
                 taskTempResDTOPage.add(taskTempResDTO);
@@ -467,6 +527,29 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                     });
                 }
                 taskTempResDTO.setTaskReviewLogResDTOList(taskReviewLogResDTOList);
+                List<TaskTempFunctionBO> functions = taskTempBO.getFunctions();
+                List<TaskTempFunctionResDTO> functionResDTOS = new ArrayList<>();
+                if (!CollectionUtils.isEmpty(functions)){
+                    functions.forEach(function->{
+                        TaskTempFunctionResDTO resDTO = new TaskTempFunctionResDTO();
+                        BeanUtils.copyProperties(function,resDTO);
+                        resDTO.setActionName(FunctionAction.getName(function.getAction()));
+                        Integer level = function.getLevel();
+                        if (level == 1){
+                            resDTO.setLevelName("一级");
+                        }else if(level == 2){
+                            resDTO.setLevelName("二级");
+                        }else if (level == 3){
+                            resDTO.setLevelName("三级");
+                        }else if (level == 4){
+                            resDTO.setLevelName("四级");
+                        }else if (level == 5){
+                            resDTO.setLevelName("五级");
+                        }
+                        functionResDTOS.add(resDTO);
+                    });
+                }
+                taskTempResDTO.setFunctionResDTOList(functionResDTOS);
                 taskTempResDTOList.add(taskTempResDTO);
             });
         }
@@ -543,6 +626,30 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                     });
                 }
                 taskTempResDTO.setTaskReviewLogResDTOList(taskReviewLogResDTOList);
+
+                List<TaskTempFunctionBO> functions = taskTempBO.getFunctions();
+                List<TaskTempFunctionResDTO> functionResDTOS = new ArrayList<>();
+                if (!CollectionUtils.isEmpty(functions)){
+                    functions.forEach(function->{
+                        TaskTempFunctionResDTO resDTO = new TaskTempFunctionResDTO();
+                        BeanUtils.copyProperties(function,resDTO);
+                        resDTO.setActionName(FunctionAction.getName(function.getAction()));
+                        Integer level = function.getLevel();
+                        if (level == 1){
+                            resDTO.setLevelName("一级");
+                        }else if(level == 2){
+                            resDTO.setLevelName("二级");
+                        }else if (level == 3){
+                            resDTO.setLevelName("三级");
+                        }else if (level == 4){
+                            resDTO.setLevelName("四级");
+                        }else if (level == 5){
+                            resDTO.setLevelName("五级");
+                        }
+                        functionResDTOS.add(resDTO);
+                    });
+                }
+                taskTempResDTO.setFunctionResDTOList(functionResDTOS);
                 taskTempResDTOList.add(taskTempResDTO);
             });
         }
@@ -556,11 +663,10 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
     @Override
     @Transactional
     public void accessTaskTemp(EditTaskTempReqDTO editTaskTempReqDTO){
-        Integer taskLevel = editTaskTempReqDTO.getTaskLevel();
-        if (taskLevel == null){
-            throw new ZSYServiceException("任务级别不能为空");
-        }
-        Long taskId = editTaskTempReqDTO.getTaskId();
+//        if (editTaskTempReqDTO.getTaskLevel() == null){
+//            throw new ZSYServiceException("任务级别不能为空");
+//        }
+            Long taskId = editTaskTempReqDTO.getTaskId();
             Long userId = editTaskTempReqDTO.getUserId();
             TaskTemp existTaskTemp = taskTempMapper.selectById(editTaskTempReqDTO.getId());
             if (existTaskTemp == null) {
@@ -621,6 +727,23 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                     throw new ZSYServiceException("批量修改周工作量(临时)失败");
                 }
             }
+        List<TaskTempFunctionReqDTO> taskTempFunctionList = editTaskTempReqDTO.getTaskTempFunctionList();
+        List<TaskTempFunction> functionList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskTempFunctionList)){
+            taskTempFunctionList.forEach(taskTempFunctionReqDTO -> {
+                TaskTempFunction function = new TaskTempFunction();
+                BeanUtils.copyProperties(taskTempFunctionReqDTO,function);
+                function.setId(snowFlakeIDHelper.nextId());
+                function.setTtId(editTaskTempReqDTO.getId());
+                functionList.add(function);
+            });
+        }
+        //删除原有的function
+        functionMapper.deleteByTtId(editTaskTempReqDTO.getId());
+        if (!CollectionUtils.isEmpty(functionList)){
+            functionMapper.insertBatch(functionList);
+        }
+
         Long lastCheckUser = userMapper.selectUserLastCheckUser(userId);
         //当前情况:  不是最后一级审核
         if (!lastCheckUser.equals(ZSYTokenRequestContext.get().getUserId())){

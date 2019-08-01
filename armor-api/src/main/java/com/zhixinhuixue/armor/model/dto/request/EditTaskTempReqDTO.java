@@ -74,10 +74,22 @@ public class EditTaskTempReqDTO {
     private List<UserWeekReqDTO> userWeeks;
 
     /**
+     * 功能点
+     */
+    private List<TaskTempFunctionReqDTO> taskTempFunctionList;
+
+    /**
      * 审核意见
-     * @return
      */
     private String suggest;
+
+    public List<TaskTempFunctionReqDTO> getTaskTempFunctionList() {
+        return taskTempFunctionList;
+    }
+
+    public void setTaskTempFunctionList(List<TaskTempFunctionReqDTO> taskTempFunctionList) {
+        this.taskTempFunctionList = taskTempFunctionList;
+    }
 
     public Integer getTaskLevel() {
         return taskLevel;

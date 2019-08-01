@@ -944,26 +944,58 @@
             <div class="ctpc-add-member-detail" v-if="showTaskDetail">
                 <div class="add-member-basic">
                     <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务名称：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>任务名称：
                         </div>
                         <div class="add-member-basic-msg">
-                            <input class="member-time-count" v-model="taskStep.taskName" @change="" style="width:300px">
+                            <input class="member-time-count" v-model="taskStep.taskName" @change="" style="width:455px">
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl">关联文档：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px">关联文档：
                         </div>
                         <div class="add-member-basic-msg">
                             <el-input type="textarea" placeholder="请输入HTTP://或HTTPS://开头的正确URL" v-model="taskStep.doc"
-                                      :rows="2" style="width: 300px"></el-input>
+                                      :rows="2" style="width: 455px"></el-input>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务描述：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>任务描述：
                         </div>
                         <div class="add-member-basic-msg ">
                             <el-input type="textarea" placeholder="添加任务描述" v-model="taskStep.description"
-                                      :rows="2" style="width: 300px"></el-input>
+                                      :rows="2" style="width: 455px"></el-input>
                         </div>
+                        <div>
+                            <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 0px;">*</span>
+                            <span style="margin-left: 7px">功能点</span>
+                            <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
+                                <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
+                                <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+                                <!--<el-button style="margin-left: 0px" v-show="num>=1" @click="plus(num-1)" type="text">加1</el-button>-->
+                                <!--<el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>-->
+                                <div v-for="i in num">
+                                    <el-select placeholder="模块" v-model="taskTempModuleList[i-1]" clearable
+                                               style="width: 160px" size="small">
+                                        <el-option
+                                                v-for="item in taskTempModuleData"
+                                                :key="item.id"
+                                                :label="item.name"
+                                                :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                    <el-input v-model="functionList[i-1]" placeholder="功能点" style="width: 240px" size="small"></el-input>
+                                    <el-select placeholder="动作" v-model="functionActionList[i-1]" clearable
+                                               style="width: 80px" size="small">
+                                        <el-option
+                                                v-for="item in actionList"
+                                                :key="item.id"
+                                                :label="item.name"
+                                                :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>负责人：
+                            </div>
+
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -15px"><span class="star">*</span>负责人：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.createBy" clearable placeholder="请选择">
@@ -972,14 +1004,14 @@
                             </el-select>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 60px"><span class="star">*</span>设计截止日期：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 90px"><span class="star">*</span>设计截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="taskStep.beginTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>优先级：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -15px"><span class="star">*</span>优先级：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.priority" clearable placeholder="请选择">
@@ -992,14 +1024,14 @@
                             </el-select>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 60px"><span class="star">*</span>开发截止日期：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 90px"><span class="star">*</span>开发截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="taskStep.testTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>难易度：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -15px"><span class="star">*</span>难易度：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.facility" clearable placeholder="请选择">
@@ -1012,14 +1044,14 @@
                             </el-select>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width:110px;margin-left: 60px"><span class="star">*</span>任务截止日期：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width:110px;margin-left: 90px"><span class="star">*</span>任务截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="taskStep.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 0px"><span class="star">*</span>阶段：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -30px"><span class="star">*</span>阶段：
                         </div>
                         <div class="add-member-basic-msg fl" style="margin-left: 15px">
                             <el-select v-model="taskStep.stageId" :multiple-limit="1"
@@ -1028,13 +1060,13 @@
                                            :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 31px"><span class="star">*</span>标签：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 61px"><span class="star">*</span>标签：
                         </div>
                         <div class="add-member-basic-msg fl" style="margin-left: 17px">
                             <ul class="ctpc-tags">
                                 <li class="tag-lis-add">
                                     <div class="tag-add-sel">
-                                        <el-select v-model="taskStep.tags" multiple placeholder="添加标签" size="small">
+                                        <el-select v-model="taskStep.tags" multiple placeholder="添加标签" class="hhhh" size="small">
                                             <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                                        :value="item.id"></el-option>
                                         </el-select>
@@ -1168,7 +1200,8 @@
                     stageId: '',
                     priority: '',
                     facility: '',
-                    tags: []
+                    tags: [],
+                    taskFunctionList:[]
                 },
                 priorityList:[
                     {label: '普通', value: 1},
@@ -1355,6 +1388,26 @@
                     ]
                 },
 
+                num:1,
+                taskTempModuleData:[],
+                actionList:[
+                    {id:0,name:'新增'},
+                    {id:1,name:'修改'},
+                    {id:2,name:'删除'}
+                ],
+                taskTempModuleList:[],
+                functionList:[],
+                functionLevelList:[],
+                functionActionList:[],
+                taskFunctionList:[],
+
+                taskLevelList:[
+                    {id:1,name:"一级"},
+                    {id:2,name:"二级"},
+                    {id:3,name:"三级"},
+                    {id:4,name:"四级"},
+                    {id:5,name:"五级"}
+                ],
 
             }
         },
@@ -1582,6 +1635,7 @@
 
             //取消添加任务
             cancelAddTask() {
+                this.clearFunctionForm();
                 this.showTaskDetail = !this.showTaskDetail;
                 if (this.taskStep.index !== '') {
                     this.planTask[this.taskStep.index] = this.stepTemp;
@@ -1614,7 +1668,7 @@
 
             //添加任务
             saveAddTask() {
-                if (this.taskStep.taskName == '') {
+                if (this.taskStep.taskName === '') {
                     this.warnMsg("请填写任务名称");
                     return;
                 }
@@ -1624,25 +1678,54 @@
                 }
                 if (this.taskStep.doc !== undefined && this.taskStep.doc !== null && this.taskStep.doc !== '') {
                     let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
-                    let flag = reg.test(this.taskStep.doc.trim());
+                    let flag = reg.test(this.taskStep.doc);
                     if (!flag){
                         this.warnMsg("请输入HTTP://或HTTPS://开头的正确URL");
                         return;
                     }
                 }
-                if (this.taskStep.createBy == '') {
+                this.taskStep.taskFunctionList = [];
+                for(let i = 0;i<this.num;i++){
+                    let taskFunction={
+                        moduleId:this.taskTempModuleList[i],
+                        function:this.functionList[i],
+                        action:this.functionActionList[i],
+                    };
+                    this.taskStep.taskFunctionList.push(taskFunction);
+                }
+                let vm = this;
+                for (let i = 0;i<this.taskStep.taskFunctionList.length;i++){
+                    let taskFunction = this.taskStep.taskFunctionList[i];
+                    let functionPoint = '';
+                    let action = taskFunction.action;
+                    functionPoint = taskFunction.function;
+                    let moduleId = taskFunction.moduleId;
+                    if (moduleId === undefined || moduleId === null || moduleId === ''){
+                        vm.warnMsg("模块或子系统不能为空,请检查");
+                        return;
+                    }
+                    if (functionPoint === undefined || functionPoint === null || functionPoint === '') {
+                        vm.warnMsg("功能点不能为空,请检查");
+                        return;
+                    }
+                    if (action === undefined || action === null || action === ''){
+                        vm.warnMsg("功能点动作不能为空,请检查");
+                        return;
+                    }
+                }
+                if (this.taskStep.createBy === '') {
                     this.warnMsg("请填写任务负责人");
                     return;
                 }
-                if (this.taskStep.beginTime == '') {
+                if (this.taskStep.beginTime === '') {
                     this.warnMsg("请选择设计结束时间");
                     return;
                 }
-                if (this.taskStep.testTime == '') {
+                if (this.taskStep.testTime === '') {
                     this.warnMsg("请选择开发结束时间");
                     return;
                 }
-                if (this.taskStep.endTime == '') {
+                if (this.taskStep.endTime === '') {
                     this.warnMsg("请选择结束时间");
                     return;
                 }
@@ -1658,39 +1741,39 @@
                     this.warnMsg("请选择任务难易度");
                     return;
                 }
-                if (this.taskStep.tags.length == 0) {
+                if (this.taskStep.tags.length === 0) {
                     this.warnMsg("请选择至少一项标签");
                     return;
                 }
-                for (var i = 0; i < this.chargeManList.length; i++) {
-                    if (this.taskStep.createBy == this.chargeManList[i].id) {
+                for (let i = 0; i < this.chargeManList.length; i++) {
+                    if (this.taskStep.createBy === this.chargeManList[i].id) {
                         this.taskStep.userName = this.chargeManList[i].name
                     }
                 }
 
                 this.showTaskDetail = !this.showTaskDetail;
                 if (this.taskStep.index === '') {
-                    let task = {}
-                    task.taskName = this.taskStep.taskName.trim()
-                    task.doc = this.taskStep.doc.trim()
-                    task.description = this.taskStep.description.trim()
-                    task.createBy = this.taskStep.createBy
-                    task.beginTime = moment(this.taskStep.beginTime).format('YYYY-MM-DD 23:59:59')
-                    task.testTime = moment(this.taskStep.testTime).format('YYYY-MM-DD 23:59:59')
-                    task.endTime = moment(this.taskStep.endTime).format('YYYY-MM-DD 23:59:59')
-                    task.taskType = this.taskStep.taskType
-                    task.projectId = 0
-                    task.priority = this.taskStep.priority
-                    task.facility = this.taskStep.facility
-                    task.stageId = this.taskStep.stageId
-                    task.tags = this.taskStep.tags
-                    task.userName = this.taskStep.userName
-                    this.planTask.push(task)
+                    let task = {};
+                    task.taskName = this.taskStep.taskName;
+                    task.doc = this.taskStep.doc;
+                    task.description = this.taskStep.description;
+                    task.createBy = this.taskStep.createBy;
+                    task.beginTime = moment(this.taskStep.beginTime).format('YYYY-MM-DD 23:59:59');
+                    task.testTime = moment(this.taskStep.testTime).format('YYYY-MM-DD 23:59:59');
+                    task.endTime = moment(this.taskStep.endTime).format('YYYY-MM-DD 23:59:59');
+                    task.taskType = this.taskStep.taskType;
+                    task.projectId = 0;
+                    task.priority = this.taskStep.priority;
+                    task.facility = this.taskStep.facility;
+                    task.stageId = this.taskStep.stageId;
+                    task.tags = this.taskStep.tags;
+                    task.userName = this.taskStep.userName;
+                    task.functionReqDTOS = this.taskStep.taskFunctionList;
+                    this.planTask.push(task);
                 } else {
                     // 取消css
                     this.planTask[this.taskStep.index].cssClass = ''
                 }
-
                 this.taskStep = {
                     index: '',
                     taskName: '',
@@ -1703,15 +1786,16 @@
                     priority: '',
                     facility: '',
                     stageId: '',
-                    tags: ''
-                }
+                    tags: '',
+                    taskFunctionList:[]
+                };
                 this.stepTemp = {}
             },
 
             //保存计划
             savePlan(num) {
-                if (num == 4) {
-                    if ((this.project == null || this.project == '') && (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId == '' || this.feedbackPlanForm.projectId == 0)) {
+                if (num === 4) {
+                    if ((this.project == null || this.project === '') && (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId === '' || this.feedbackPlanForm.projectId === 0)) {
                         this.$message({
                             showClose: true,
                             message: '请选择项目',
@@ -1720,8 +1804,8 @@
                         return false;
                     }
                 }
-                if (num == 1) {
-                    if (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId == '' || this.feedbackPlanForm.projectId == 0) {
+                if (num === 1) {
+                    if (this.feedbackPlanForm.projectId == null || this.feedbackPlanForm.projectId === '' || this.feedbackPlanForm.projectId === 0) {
                         this.$message({
                             showClose: true,
                             message: '请选择项目',
@@ -1731,16 +1815,16 @@
                     }
                 }
 
-                this.updateDemandProject()
-                this.isSaving = true
-                if (this.feedbackPlanForm.expectStartTime == '') {
+                this.updateDemandProject();
+                this.isSaving = true;
+                if (this.feedbackPlanForm.expectStartTime === '') {
                     this.warnMsg("请选择预计开始时间");
                     this.isSaving = false
                     return;
                 }
-                if (this.feedbackPlanForm.expectOfficialTime == '') {
+                if (this.feedbackPlanForm.expectOfficialTime === '') {
                     this.warnMsg("请填写预计上线时间");
-                    this.isSaving = false
+                    this.isSaving = false;
                     return;
                 }
                 let param = this.feedbackPlanForm;
@@ -1755,14 +1839,16 @@
                         type: 'success'
                     });
                     //刷新  进行中需求列表
-                    if (num == 1) {
+                    if (num === 1) {
                         this.fetchRunningDemandList();
                     }
                     //刷新   排队中需求列表
-                    if (num == 4) {
+                    if (num === 4) {
                         this.fetchQueueDemandList()
                     }
                     this.planVisible = false;
+                    this.isSaving = false
+                },(err)=>{
                     this.isSaving = false
                 })
             },
@@ -2123,6 +2209,7 @@
 
             //添加任务
             addTask() {
+                this.fetchTaskTempModuleList();
                 this.showTaskDetail = true
             },
 
@@ -2376,6 +2463,28 @@
                     this.clearReqDTO()
                     this.fetchCompletedDemandList()
                 }
+            },
+
+            //查询 临时任务涉及项目
+            fetchTaskTempModuleList(){
+                http.zsyGetHttp('/task-temp-module/list',{},(res)=>{
+                    this.taskTempModuleData = res.data;
+                })
+            },
+            plus(i){
+                this.num = this.num+1;
+            },
+            minus(i){
+                this.num = this.num-1;
+                this.taskTempModuleList.splice(i);
+                this.functionList.splice(i);
+                this.functionActionList.splice(i);
+            },
+            clearFunctionForm(){
+                this.taskTempModuleList = [];
+                this.functionList = [];
+                this.functionActionList = [];
+                this.num = 1;
             },
         },
     }
@@ -2738,6 +2847,24 @@
 </style>
 
 <style>
+    .hhhh .el-form-item__content{
+        padding-left: 40px;
+    }
+    .hhhh .el-form-item__content>span{
+        position: absolute;
+        left: 0;
+    }
+    .hhhh .el-select__tags{
+        height: 30px;
+        overflow: hidden;
+    }
+    .hhhh .el-input{
+        height: 36px;
+        overflow: hidden;
+    }
+    .hhhh .el-input__inner{
+        height:36px!important;
+    }
     .quill-editor {
         height: 745px;
 

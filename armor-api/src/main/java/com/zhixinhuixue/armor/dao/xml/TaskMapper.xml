@@ -83,11 +83,14 @@
         <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
         <collection property="taskTags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
-                    ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
+                    ofType="com.zhixinhuixue.armor.model.pojo.Tag"/>
         <collection property="taskUsers" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper.selectDetailByTaskId"
                     ofType="com.zhixinhuixue.armor.model.bo.TaskUserBO">
         </collection>
+        <collection property="functionBOS" column="taskId=id"
+                    ofType="com.zhixinhuixue.armor.model.bo.TaskFunctionBO"
+                    select="com.zhixinhuixue.armor.dao.IZSYTaskFunctionMapper.selectBOListByTaskId"/>
     </resultMap>
 
     <resultMap id="WeekPublishTaskMap" type="com.zhixinhuixue.armor.model.bo.WeekPublishTaskBO">
