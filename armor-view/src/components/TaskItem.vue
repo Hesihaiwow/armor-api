@@ -1274,10 +1274,31 @@
                 <div v-show="taskTempDetail.isChecked === 0 && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <!--<el-button style="margin-left: 0px" v-show="taskTempDetail.functionResDTOList>=1" @click="plus(taskTempDetail.functionResDTOList-1)" type="text">加1</el-button>-->
-                        <!--<el-button  type="text" v-show="taskTempDetail.functionResDTOList>1"@click="minus(taskTempDetail.functionResDTOList-1)">减1</el-button>-->
-                        <div v-for="item in taskTempDetail.functionResDTOList">
-                            <el-select placeholder="功能点" v-model="item.functionId" clearable
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plusTaskTempFunction"></i>
+                        <i class="el-icon-minus" v-show="num>1"@click="minusTaskTempFunction(num-1)"></i>
+                        <!--<div v-for="item in taskTempDetail.functionResDTOList">-->
+                            <!--<el-select placeholder="功能点" v-model="item.functionId" clearable-->
+                                       <!--style="width: 260px">-->
+                                <!--<el-option-->
+                                        <!--v-for="item in taskFunctionData"-->
+                                        <!--:key="item.id"-->
+                                        <!--:label="item.functionStr"-->
+                                        <!--:value="item.id">-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                            <!--<el-select placeholder="复杂度" v-model="item.level" clearable-->
+                                       <!--style="width: 120px">-->
+                                <!--<el-option-->
+                                        <!--v-for="item in taskLevelList"-->
+                                        <!--:key="item.id"-->
+                                        <!--:label="item.name"-->
+                                        <!--:value="item.id">-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                        <!--</div>-->
+
+                        <div v-for="i in num" style="margin-top: 3px">
+                            <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
                                        style="width: 260px">
                                 <el-option
                                         v-for="item in taskFunctionData"
@@ -1286,17 +1307,7 @@
                                         :value="item.id">
                                 </el-option>
                             </el-select>
-                            <!--<el-input v-model="item.function" placeholder="功能点" style="width: 190px" size="mini"></el-input>-->
-                            <!--<el-select placeholder="动作" v-model="item.action" clearable-->
-                                       <!--style="width: 80px" size="mini">-->
-                                <!--<el-option-->
-                                        <!--v-for="item in actionList"-->
-                                        <!--:key="item.id"-->
-                                        <!--:label="item.name"-->
-                                        <!--:value="item.id">-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                            <el-select placeholder="复杂度" v-model="item.level" clearable
+                            <el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable
                                        style="width: 120px">
                                 <el-option
                                         v-for="item in taskLevelList"
@@ -1306,7 +1317,6 @@
                                 </el-option>
                             </el-select>
                         </div>
-
                     </div>
 
                 </div>
@@ -3323,9 +3333,15 @@
                     this.beginTime = this.taskTempDetail.beginTime;
                     this.endTime = this.taskTempDetail.endTime;
                     this.getTaskDetail(taskId);
-                    this.fetchTaskTempModuleList();
                     this.changeTaskTempWeek();
                     this.taskTempDetailVisible = true;
+                    if (this.taskTempDetail.functionResDTOList !== undefined && this.taskTempDetail.functionResDTOList.length > 0){
+                        this.num = this.taskTempDetail.functionResDTOList.length;
+                        this.taskTempDetail.functionResDTOList.forEach(resDTO=>{
+                            this.taskFunctionList.push(resDTO.functionId);
+                            this.functionLevelList.push(resDTO.level);
+                        })
+                    }
                 }))
 
             },
@@ -3655,26 +3671,56 @@
                                 functionList.push(taskTempFunction);
                             })
                         }
-                        param.taskTempFunctionList = functionList;
-                        if (param.taskTempFunctionList.length>0){
-                            param.taskTempFunctionList.forEach(taskTempFunction=>{
-                                let functionId = taskTempFunction.functionId;
-                                let level = taskTempFunction.level;
-                                if (functionId === undefined || functionId === null){
-                                    this.$message({showClose: true, message: '关联不能为空,请检查', type: 'error'});
-                                    return false;
-                                }
-                                if (level === undefined || level === null){
-                                    this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
-                                    return false;
-                                }
+                        param.taskTempFunctionList = [];
+                        // if (param.taskTempFunctionList.length>0){
+                        //     param.taskTempFunctionList.forEach(taskTempFunction=>{
+                        //         let functionId = taskTempFunction.functionId;
+                        //         let level = taskTempFunction.level;
+                        //         if (functionId === undefined || functionId === null){
+                        //             this.$message({showClose: true, message: '原有的关联功能点不能为空,请检查', type: 'error'});
+                        //             return false;
+                        //         }
+                        //         if (level === undefined || level === null){
+                        //             this.$message({showClose: true, message: '原有的功能点复杂度不能为空,请检查', type: 'error'});
+                        //             return false;
+                        //         }
+                        //     })
+                        // }
+
+                        //新增的功能点
+                        let taskTempFunctionList = [];
+                        for(let i = 0;i<this.num;i++){
+                            let taskTempFunction={
+                                functionId:this.taskFunctionList[i],
+                                level:this.functionLevelList[i],
+                            };
+                            taskTempFunctionList.push(taskTempFunction);
+                        }
+                        for(let i = 0;i < taskTempFunctionList.length;i++){
+                            let taskTempFunction = taskTempFunctionList[i];
+                            let functionId = taskTempFunction.functionId;
+                            let level = taskTempFunction.level;
+                            if (functionId === undefined || functionId === null || functionId === ''){
+                                this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                return false;
+                            }
+                            if (level === undefined || level === null || level === ''){
+                                this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                return false;
+                            }
+                        }
+                        if (taskTempFunctionList.length>0){
+                            taskTempFunctionList.forEach(resDTO=>{
+                                param.taskTempFunctionList.push(resDTO)
                             })
                         }
+                        // console.log(taskTempFunctionList)
+                        // console.log(param.taskTempFunctionList)
                         http.zsyPutHttp('/task-temp/update', param, (resp) => {
                             this.taskTempDetailVisible = false;
                             this.$message({showClose: true, message: '任务修改成功', type: 'success'});
                             this.$refs[formName].resetFields();
-                            this.description = ''
+                            this.description = '';
                             this.taskAble = false;
                             vm.$emit('reload');
                             // window.history.go(0)
@@ -3824,6 +3870,9 @@
             closeMultipleTask(){
                 // this.$emit('reload')
                 // this.taskTempDetail = {};
+                this.taskFunctionList = [];
+                this.functionLevelList = [];
+                this.num = 0;
             },
             fetchTaskTempModuleList(){
                 http.zsyGetHttp('/task-temp-module/list',{},(res)=>{
@@ -3838,6 +3887,14 @@
                 this.taskTempModuleList.splice(i);
                 this.functionList.splice(i);
                 this.functionActionList.splice(i);
+            },
+            plusTaskTempFunction(i){
+                this.num = this.num+1;
+            },
+            minusTaskTempFunction(i){
+                this.num = this.num-1;
+                this.taskFunctionList.splice(i);
+                this.functionLevelList.splice(i);
             },
             clearFunctionForm(){
                 this.taskTempModuleList = [];

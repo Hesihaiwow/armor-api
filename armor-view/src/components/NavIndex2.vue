@@ -2486,16 +2486,6 @@
                                         :value="item.id">
                                 </el-option>
                             </el-select>
-                            <!--<el-input v-model="functionList[i-1]" placeholder="功能点" style="width: 190px" size="mini"></el-input>-->
-                            <!--<el-select placeholder="动作" v-model="functionActionList[i-1]" clearable-->
-                                       <!--style="width: 80px" size="mini">-->
-                                <!--<el-option-->
-                                        <!--v-for="item in actionList"-->
-                                        <!--:key="item.id"-->
-                                        <!--:label="item.name"-->
-                                        <!--:value="item.id">-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
                             <el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable
                                        style="width: 120px">
                                 <el-option
@@ -2608,8 +2598,40 @@
                 <div v-show="!taskTempAble && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 0px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <div v-for="item in taskTempDetail.functionResDTOList">
-                            <el-select placeholder="功能点" v-model="item.functionId" clearable
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
+                        <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+                        <!--<div v-for="item in taskTempDetail.functionResDTOList">-->
+                            <!--<el-select placeholder="功能点" v-model="item.functionId" clearable-->
+                                       <!--style="width: 260px">-->
+                                <!--<el-option-->
+                                        <!--v-for="item in taskFunctionData"-->
+                                        <!--:key="item.id"-->
+                                        <!--:label="item.functionStr"-->
+                                        <!--:value="item.id">-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                            <!--&lt;!&ndash;<el-input v-model="item.function" placeholder="功能点" style="width: 190px" size="mini"></el-input>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<el-select placeholder="动作" v-model="item.action" clearable&ndash;&gt;-->
+                                       <!--&lt;!&ndash;style="width: 80px" size="mini">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<el-option&ndash;&gt;-->
+                                        <!--&lt;!&ndash;v-for="item in actionList"&ndash;&gt;-->
+                                        <!--&lt;!&ndash;:key="item.id"&ndash;&gt;-->
+                                        <!--&lt;!&ndash;:label="item.name"&ndash;&gt;-->
+                                        <!--&lt;!&ndash;:value="item.id">&ndash;&gt;-->
+                                <!--&lt;!&ndash;</el-option>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</el-select>&ndash;&gt;-->
+                            <!--<el-select placeholder="复杂度" v-model="item.level" clearable-->
+                                       <!--style="width: 120px">-->
+                                <!--<el-option-->
+                                        <!--v-for="item in taskLevelList"-->
+                                        <!--:key="item.id"-->
+                                        <!--:label="item.name"-->
+                                        <!--:value="item.id">-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                        <!--</div>-->
+                        <div v-for="i in num" style="margin-top: 3px">
+                            <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
                                        style="width: 260px">
                                 <el-option
                                         v-for="item in taskFunctionData"
@@ -2618,17 +2640,7 @@
                                         :value="item.id">
                                 </el-option>
                             </el-select>
-                            <!--<el-input v-model="item.function" placeholder="功能点" style="width: 190px" size="mini"></el-input>-->
-                            <!--<el-select placeholder="动作" v-model="item.action" clearable-->
-                                       <!--style="width: 80px" size="mini">-->
-                                <!--<el-option-->
-                                        <!--v-for="item in actionList"-->
-                                        <!--:key="item.id"-->
-                                        <!--:label="item.name"-->
-                                        <!--:value="item.id">-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                            <el-select placeholder="复杂度" v-model="item.level" clearable
+                            <el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable
                                        style="width: 120px">
                                 <el-option
                                         v-for="item in taskLevelList"
@@ -2644,39 +2656,7 @@
                 </div>
                 <div v-show="taskTempAble && taskTempDetail.functionResDTOList !== undefined && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 0px">功能点:</span>
-                    <!--<div style="border: gray;border-style: solid;border-width: 1px;padding: 10px;">-->
-                        <!--<div v-for="item in taskTempDetail.functionResDTOList">-->
-                            <!--<el-select placeholder="涉及模块或子系统" v-model="item.moduleId" clearable-->
-                                       <!--style="width: 160px" size="mini" disabled>-->
-                                <!--<el-option-->
-                                        <!--v-for="item in taskTempModuleData"-->
-                                        <!--:key="item.id"-->
-                                        <!--:label="item.name"-->
-                                        <!--:value="item.id">-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                            <!--<el-input v-model="item.function" disabled placeholder="功能点" style="width: 190px" size="mini"></el-input>-->
-                            <!--<el-select placeholder="动作" v-model="item.action" clearable-->
-                                       <!--style="width: 80px" size="mini" disabled>-->
-                                <!--<el-option-->
-                                        <!--v-for="item in actionList"-->
-                                        <!--:key="item.id"-->
-                                        <!--:label="item.name"-->
-                                        <!--:value="item.id">-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                            <!--<el-select placeholder="复杂度" v-model="item.level" clearable-->
-                                       <!--style="width: 80px" size="mini" disabled>-->
-                                <!--<el-option-->
-                                        <!--v-for="item in taskLevelList"-->
-                                        <!--:key="item.id"-->
-                                        <!--:label="item.name"-->
-                                        <!--:value="item.id">-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                        <!--</div>-->
 
-                    <!--</div>-->
                     <el-table class="hh" :data="taskTempDetail.functionResDTOList">
                         <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
@@ -4292,6 +4272,9 @@
                             this.$refs[formName].resetFields();
                             this.description = '';
                             this.taskTempForm.taskTempFunctionList = [];
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                            this.num = 1;
                             this.createMultipleTaskVisible = false;
                             this.taskAble = false;
                             vm.reload()
@@ -4437,7 +4420,7 @@
                     }
                     sumHours +=  parseFloat(this.taskTempWeekNumber[i].hours)
                 }
-                if(sumHours!==this.taskTempDetail.workHours){
+                if(sumHours!=this.taskTempDetail.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return
                 }
@@ -4500,31 +4483,40 @@
                         }
                         param.description = this.description;
 
+                        // if (param.functionResDTOList.length>0){
+                        //     param.functionResDTOList.forEach(resDTO=>{
+                        //         let taskTempFunction={
+                        //             functionId:resDTO.functionId,
+                        //             level:resDTO.level,
+                        //         };
+                        //         functionList.push(taskTempFunction);
+                        //     })
+                        // }
                         let functionList = [];
-                        if (param.functionResDTOList.length>0){
-                            param.functionResDTOList.forEach(resDTO=>{
-                                let taskTempFunction={
-                                    functionId:resDTO.functionId,
-                                    level:resDTO.level,
-                                };
-                                functionList.push(taskTempFunction);
-                            })
+                        for(let i = 0;i<this.num;i++){
+                            let taskTempFunction={
+                                functionId:this.taskFunctionList[i],
+                                level:this.functionLevelList[i],
+                            };
+                            functionList.push(taskTempFunction);
                         }
                         param.taskTempFunctionList = functionList;
                         if (param.taskTempFunctionList.length>0){
-                            param.taskTempFunctionList.forEach(taskTempFunction=>{
+                            for (let i = 0;i<param.taskTempFunctionList.length;i++){
+                                let taskTempFunction = param.taskTempFunctionList[i];
                                 let functionId = taskTempFunction.functionId;
                                 let level = taskTempFunction.level;
-                                if (functionId === undefined || functionId === null){
+                                if (functionId === undefined || functionId === null || functionId ===''){
                                     this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
                                     return false;
                                 }
-                                if (level === undefined || level === null){
+                                if (level === undefined || level === null || level === ''){
                                     this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
                                     return false;
                                 }
-                            })
+                            }
                         }
+                        console.log(param.taskTempFunctionList)
                         http.zsyPutHttp(`/task-temp/access`, param, (resp) => {
                             this.$message({showClose: true, message: '审核成功', type: 'success'});
                             this.taskTempDetailVisible = false;
@@ -4952,7 +4944,6 @@
                 this.addSuggestVisible = false;
                 this.getTaskDetail(taskTemp.taskId);
 
-              this.taskTempDetailVisible = true;
               if (this.taskTempActiveName == 'access' || this.taskTempActiveName2 == 'access' || taskTemp.isChecked == 1) {
                   this.taskTempAble = true
               }else {
@@ -4977,7 +4968,16 @@
               this.taskTempDetail.reviewStatus = taskTemp.reviewStatus;
               this.taskTempDetail.userWeeks = taskTemp.userWeekTempList;
               this.taskTempDetail.taskReviewLogResDTOList = taskTemp.taskReviewLogResDTOList;
-              this.changeTaskTempWeek()
+              if (this.taskTempDetail.functionResDTOList !== undefined && this.taskTempDetail.functionResDTOList.length>0){
+                  this.taskTempDetail.functionResDTOList.forEach(resDTO=>{
+                      this.taskFunctionList.push(resDTO.functionId);
+                      this.functionLevelList.push(resDTO.level);
+                      this.num = this.taskTempDetail.functionResDTOList.length;
+                  })
+              }
+                this.taskTempDetailVisible = true;
+
+                this.changeTaskTempWeek()
             },
             //积分转移详情
             reviewDetail(help) {
