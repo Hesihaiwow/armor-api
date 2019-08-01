@@ -944,27 +944,27 @@
             <div class="ctpc-add-member-detail" v-if="showTaskDetail">
                 <div class="add-member-basic">
                     <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务名称：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>任务名称：
                         </div>
                         <div class="add-member-basic-msg">
-                            <input class="member-time-count" v-model="taskStep.taskName" @change="" style="width:300px">
+                            <input class="member-time-count" v-model="taskStep.taskName" @change="" style="width:455px">
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl">关联文档：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px">关联文档：
                         </div>
                         <div class="add-member-basic-msg">
                             <el-input type="textarea" placeholder="请输入HTTP://或HTTPS://开头的正确URL" v-model="taskStep.doc"
-                                      :rows="2" style="width: 300px"></el-input>
+                                      :rows="2" style="width: 455px"></el-input>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>任务描述：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>任务描述：
                         </div>
                         <div class="add-member-basic-msg ">
                             <el-input type="textarea" placeholder="添加任务描述" v-model="taskStep.description"
-                                      :rows="2" style="width: 300px"></el-input>
+                                      :rows="2" style="width: 455px"></el-input>
                         </div>
                         <div>
-                            <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                            <span style="margin-left: 7px">功能点(提示:一个功能点新增一条记录)</span>
+                            <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 0px;">*</span>
+                            <span style="margin-left: 7px">功能点</span>
                             <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                                 <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
                                 <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
@@ -995,7 +995,7 @@
                             </div>
 
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>负责人：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -15px"><span class="star">*</span>负责人：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.createBy" clearable placeholder="请选择">
@@ -1004,14 +1004,14 @@
                             </el-select>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 60px"><span class="star">*</span>设计截止日期：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 90px"><span class="star">*</span>设计截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="taskStep.beginTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>优先级：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -15px"><span class="star">*</span>优先级：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.priority" clearable placeholder="请选择">
@@ -1024,14 +1024,14 @@
                             </el-select>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 60px"><span class="star">*</span>开发截止日期：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 90px"><span class="star">*</span>开发截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="taskStep.testTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 15px"><span class="star">*</span>难易度：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -15px"><span class="star">*</span>难易度：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.facility" clearable placeholder="请选择">
@@ -1044,14 +1044,14 @@
                             </el-select>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width:110px;margin-left: 60px"><span class="star">*</span>任务截止日期：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width:110px;margin-left: 90px"><span class="star">*</span>任务截止日期：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-date-picker v-model="taskStep.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 0px"><span class="star">*</span>阶段：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -30px"><span class="star">*</span>阶段：
                         </div>
                         <div class="add-member-basic-msg fl" style="margin-left: 15px">
                             <el-select v-model="taskStep.stageId" :multiple-limit="1"
@@ -1060,13 +1060,13 @@
                                            :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 31px"><span class="star">*</span>标签：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 61px"><span class="star">*</span>标签：
                         </div>
                         <div class="add-member-basic-msg fl" style="margin-left: 17px">
                             <ul class="ctpc-tags">
                                 <li class="tag-lis-add">
                                     <div class="tag-add-sel">
-                                        <el-select v-model="taskStep.tags" multiple placeholder="添加标签" size="small">
+                                        <el-select v-model="taskStep.tags" multiple placeholder="添加标签" class="hhhh" size="small">
                                             <el-option v-for="item in tagList" :key="item.id" :label="item.name"
                                                        :value="item.id"></el-option>
                                         </el-select>
@@ -2847,6 +2847,24 @@
 </style>
 
 <style>
+    .hhhh .el-form-item__content{
+        padding-left: 40px;
+    }
+    .hhhh .el-form-item__content>span{
+        position: absolute;
+        left: 0;
+    }
+    .hhhh .el-select__tags{
+        height: 30px;
+        overflow: hidden;
+    }
+    .hhhh .el-input{
+        height: 36px;
+        overflow: hidden;
+    }
+    .hhhh .el-input__inner{
+        height:36px!important;
+    }
     .quill-editor {
         height: 745px;
 

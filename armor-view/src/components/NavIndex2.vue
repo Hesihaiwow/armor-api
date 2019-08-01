@@ -2470,7 +2470,7 @@
 
                 <div>
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                    <span style="margin-left: 7px">功能点(提示:一个功能点新增一条记录)</span>
+                    <span style="margin-left: 7px">功能点</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
                         <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
@@ -2538,8 +2538,9 @@
                     </el-date-picker>
                 </el-form-item>
                 <span class="star" style="float: left;margin-top: 17px;margin-right: -8px;margin-left: 8px;">*</span>
-                <el-form-item class="task-form" label="工作量" prop="workHours" style="margin-top: 10px">
-                    <el-input style="width:100px" v-model="taskTempForm.workHours" :maxlength="6"></el-input>
+                <el-form-item class="task-form" label="" prop="workHours" style="margin-top: 10px">
+                    <span style="margin-left: -58px">工作量</span>
+                    <el-input style="width:100px;margin-left: 22px" v-model="taskTempForm.workHours" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
                 <div v-for="(item,index) in sortWeekNumber">
@@ -2609,7 +2610,7 @@
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <div v-for="item in taskTempDetail.functionResDTOList">
                             <el-select placeholder="功能点" v-model="item.functionId" clearable
-                                       style="width: 260px" size="mini">
+                                       style="width: 260px">
                                 <el-option
                                         v-for="item in taskFunctionData"
                                         :key="item.id"
@@ -2628,7 +2629,7 @@
                                 <!--</el-option>-->
                             <!--</el-select>-->
                             <el-select placeholder="复杂度" v-model="item.level" clearable
-                                       style="width: 120px" size="mini">
+                                       style="width: 120px">
                                 <el-option
                                         v-for="item in taskLevelList"
                                         :key="item.id"
@@ -2677,7 +2678,7 @@
 
                     <!--</div>-->
                     <el-table class="hh" :data="taskTempDetail.functionResDTOList">
-                        <el-table-column prop="moduleName" label="涉及模块或子系统" align="center"></el-table-column>
+                        <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
                         <el-table-column prop="levelName" label="复杂度" align="center" width="120"></el-table-column>

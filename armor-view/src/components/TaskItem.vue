@@ -114,7 +114,7 @@
                 <div v-show="taskDetail.type===2 && taskDetail.functionResDTOS !== undefined && taskDetail.functionResDTOS.length>0">
                     <span style="margin-left: 0px">功能点:</span>
                     <el-table class="hh" :data="taskDetail.functionResDTOS">
-                        <el-table-column prop="moduleName" label="涉及模块或子系统" align="center"></el-table-column>
+                        <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
                     </el-table>
@@ -137,7 +137,7 @@
                         <div v-show="taskDetail.type===2 && item.functionResDTOList !== undefined && item.functionResDTOList.length>0">
                             <span style="margin-left: 0px">功能点:</span>
                             <el-table class="hh" :data="item.functionResDTOList">
-                                <el-table-column prop="moduleName" label="涉及模块或子系统" align="center"></el-table-column>
+                                <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                                 <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                                 <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
                                 <el-table-column prop="levelName" label="复杂度" align="center" width="120"></el-table-column>
@@ -343,7 +343,7 @@
                 <div v-show="taskDetail.functionResDTOS !== undefined && taskDetail.functionResDTOS.length>0">
                     <span style="margin-left: 0px">功能点:</span>
                     <el-table class="hh" :data="taskDetail.functionResDTOS">
-                        <el-table-column prop="moduleName" label="涉及模块或子系统" align="center"></el-table-column>
+                        <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="200"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
                     </el-table>
@@ -746,10 +746,10 @@
                     <span ><span class="star">*</span>任务描述</span>
                     <el-input type="textarea" v-model="modifyTaskForm.description" :rows="1" style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="margin-left: -75px;margin-top: 5px">
+                <el-form-item class="task-form-edit" label="" style="margin-left: -67px;margin-top: 5px">
                     <span >关联文档</span>
                     <el-input v-model="modifyTaskForm.doc" placeholder="请输入HTTP://或HTTPS://开头的正确URL"
-                              style="width: 608px;margin-left: 37px"></el-input>
+                              style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
                 <div v-show="modifyTaskForm.functionResDTOS!==undefined && modifyTaskForm.functionResDTOS.length>0">
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
@@ -855,7 +855,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="" style="margin-left: 420px;margin-top: 10px">
+                <el-form-item class="task-form-edit hhhh" label="" style="margin-left: 420px;margin-top: 10px">
                     <span ><span class="star">*</span>标签</span>
                     <!--  <div class="fl tag-name clearfix">
                          <el-button class="fl" size="small" v-for="item in tagList" @click="addFormTagId(item.id,2,$event)">{{item.name}}</el-button>
@@ -1272,13 +1272,13 @@
                 </div>
                 <el-form-item><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <div v-show="taskTempDetail.isChecked === 0 && taskTempDetail.functionResDTOList.length>0">
-                    <span style="margin-left: 12px">功能点:</span>
+                    <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <!--<el-button style="margin-left: 0px" v-show="taskTempDetail.functionResDTOList>=1" @click="plus(taskTempDetail.functionResDTOList-1)" type="text">加1</el-button>-->
                         <!--<el-button  type="text" v-show="taskTempDetail.functionResDTOList>1"@click="minus(taskTempDetail.functionResDTOList-1)">减1</el-button>-->
                         <div v-for="item in taskTempDetail.functionResDTOList">
                             <el-select placeholder="功能点" v-model="item.functionId" clearable
-                                       style="width: 260px" size="mini">
+                                       style="width: 260px">
                                 <el-option
                                         v-for="item in taskFunctionData"
                                         :key="item.id"
@@ -1297,7 +1297,7 @@
                                 <!--</el-option>-->
                             <!--</el-select>-->
                             <el-select placeholder="复杂度" v-model="item.level" clearable
-                                       style="width: 120px" size="mini">
+                                       style="width: 120px">
                                 <el-option
                                         v-for="item in taskLevelList"
                                         :key="item.id"
@@ -1313,7 +1313,7 @@
                 <div v-show="taskTempDetail.isChecked === 1 && taskTempDetail.functionResDTOList !== undefined && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 0px">功能点:</span>
                     <el-table class="hh" :data="taskTempDetail.functionResDTOList">
-                        <el-table-column prop="moduleName" label="涉及模块或子系统" align="center"></el-table-column>
+                        <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
                         <el-table-column prop="levelName" label="复杂度" align="center" width="120"></el-table-column>
@@ -4025,7 +4025,24 @@
     .hhh .el-dialog--small {
         width: 755px;
     }
-
+    .hhhh .el-form-item__content{
+        padding-left: 40px;
+    }
+    .hhhh .el-form-item__content>span{
+        position: absolute;
+        left: 0;
+    }
+    .hhhh .el-select__tags{
+        height: 30px;
+        overflow: hidden;
+    }
+    .hhhh .el-input{
+        height: 36px;
+        overflow: hidden;
+    }
+    .hhhh .el-input__inner{
+        height:36px!important;
+    }
     .hh.el-table td, .hh.el-table th {
         height: 25px;
         min-width: 0;
