@@ -2729,7 +2729,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <div v-if="userRole == 0">
-                    <el-button type="danger" @click="deleteMultipleTask(taskTempDetail.id)">删除申请</el-button>
+                    <el-button type="danger" v-show="taskTempDetail.isChecked == 0" @click="deleteMultipleTask(taskTempDetail.id)">删除申请</el-button>
                     <el-button type="success" v-show="taskTempDetail.isChecked == 0" @click="acceptMultipleTask(taskTempDetail.id,'editTaskTempForm')">申请通过</el-button>
                 </div>
                 <div v-else>

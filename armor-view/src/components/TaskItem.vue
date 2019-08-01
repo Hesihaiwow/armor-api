@@ -1417,6 +1417,15 @@
                 <el-form-item><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <!--<el-form-item class="task-form" label="申请人：">{{taskUser.userName}}</el-form-item>-->
                 <div style="margin-top: -10px">任务描述: {{taskUser.description}}</div>
+                <div v-show="this.personTaskFunctionList !== undefined && this.personTaskFunctionList.length>0">
+                    <span style="margin-left: 0px">功能点:</span>
+                    <el-table class="hh" :data="this.personTaskFunctionList">
+                        <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
+                        <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
+                        <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
+                        <el-table-column prop="levelName" label="复杂度" align="center" width="120"></el-table-column>
+                    </el-table>
+                </div>
                 <div style="float: left;margin-top: 3px">开始时间: {{taskUser.beginTime | formatDate}}</div>
                 <div style="float: left;margin-top: 3px;margin-left: 10px;">截止时间: {{taskUser.endTime | formatDate}}</div>
                 <div style="margin-top: 3px;margin-left: 310px">任务时长: {{taskUser.taskHours}}小时</div>
@@ -1597,6 +1606,7 @@
                 designShow: true,
                 testShow: true,
                 taskDetail: {},
+                personTaskFunctionList:[],
                 privateTaskLevel:'',
                 actionList:[
                     {id:0,name:'新增'},
@@ -3272,26 +3282,31 @@
             },
             //申请修改任务
             applyModifyMyTask(task){
-                var taskId = task.taskUsers[0].taskId;
-                var userId = task.taskUsers[0].userId;
+                let taskId = task.taskUsers[0].taskId;
+                let userId = task.taskUsers[0].userId;
                 this.modifyMyTaskForm.userId = userId;
                 this.modifyMyTaskForm.taskId = taskId;
-                this.getTaskDetail(taskId)
+                this.getTaskDetail(taskId);
+                if (this.taskDetail.users !== undefined && this.taskDetail.users.length>0){
+                    let userList = this.taskDetail.users.filter(user => user.userId === userId);
+                    let taskUser = userList[0];
+                    this.personTaskFunctionList = taskUser.functionResDTOList;
+                }
                 http.zsyGetHttp('/task/task-user/'+taskId+'/'+userId,{},(res=>{
                     this.taskUser = res.data;
-                    this.changeTaskUserWeek()
+                    this.changeTaskUserWeek();
                     this.showFinishedTask = false;
-                }))
+                }));
                 this.modifyMyTaskVisible = true;
             },
             applyExpandTime(task){
-                this.expandTime.name = task.name
-                this.expandTime.beginTime= task.taskUsers[0].beginTime
-                this.expandTime.endTime= task.taskUsers[0].endTime
-                this.expandTime.taskId= task.id
-                this.expandTime.reason = null
-                this.expandTime.hours = 0
-                this.expandTimeVisible = true
+                this.expandTime.name = task.name;
+                this.expandTime.beginTime= task.taskUsers[0].beginTime;
+                this.expandTime.endTime= task.taskUsers[0].endTime;
+                this.expandTime.taskId= task.id;
+                this.expandTime.reason = null;
+                this.expandTime.hours = 0;
+                this.expandTimeVisible = true;
                 this.showFinishedTask = false
             },
             addTaskExpand(){
