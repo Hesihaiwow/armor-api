@@ -751,7 +751,7 @@
                     <el-input v-model="modifyTaskForm.doc" placeholder="请输入HTTP://或HTTPS://开头的正确URL"
                               style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
-                <div v-show="modifyTaskForm.functionResDTOS!==undefined && modifyTaskForm.functionResDTOS.length>0">
+                <div>
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                     <span style="margin-left: 7px">功能点</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;width: 585px;margin-left: 102px">
@@ -759,26 +759,28 @@
                         <!--<el-button  type="text" v-show="num>0"@click="minusFunction(num)">减1</el-button>-->
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=0" @click="addFunction"></i>
                         <i class="el-icon-minus" v-show="num>0"@click="minusFunction(num-1)"></i>
-                        <div v-for="item in modifyTaskForm.functionResDTOS">
-                            <el-select placeholder="模块" v-model="item.moduleId" clearable
-                                       style="width: 200px">
-                                <el-option
-                                        v-for="item in taskTempModuleData"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id">
-                                </el-option>
-                            </el-select>
-                            <el-input v-model="item.function" placeholder="功能点" style="width: 240px"></el-input>
-                            <el-select placeholder="动作" v-model="item.action" clearable
-                                       style="width: 120px">
-                                <el-option
-                                        v-for="item in actionList"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id">
-                                </el-option>
-                            </el-select>
+                        <div v-show="modifyTaskForm.functionResDTOS!==undefined && modifyTaskForm.functionResDTOS.length>0">
+                            <div v-for="item in modifyTaskForm.functionResDTOS">
+                                <el-select placeholder="模块" v-model="item.moduleId" clearable
+                                           style="width: 200px">
+                                    <el-option
+                                            v-for="item in taskTempModuleData"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                                <el-input v-model="item.function" placeholder="功能点" style="width: 240px"></el-input>
+                                <el-select placeholder="动作" v-model="item.action" clearable
+                                           style="width: 120px">
+                                    <el-option
+                                            v-for="item in actionList"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </div>
                         </div>
                         <div v-for="i in num">
                             <el-select placeholder="模块" v-model="taskTempModuleList[i-1]" clearable

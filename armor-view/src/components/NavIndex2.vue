@@ -2468,7 +2468,7 @@
                     <!--<el-button type="text" style="margin-left: 12px" @click="addFunctionVisible=true">点击新增任务功能点</el-button>-->
                 <!--</div>-->
 
-                <div>
+                <div v-show="this.taskFunctionData.length>0">
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                     <span style="margin-left: 7px">功能点</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
@@ -4180,27 +4180,30 @@
                 });
             },
             saveMultipleTask(formName) {
-                this.taskTempForm.taskTempFunctionList = [];
-                for(let i = 0;i<this.num;i++){
-                    let taskTempFunction={
-                        functionId:this.taskFunctionList[i],
-                        level:this.functionLevelList[i]
-                    };
-                    this.taskTempForm.taskTempFunctionList.push(taskTempFunction);
-                }
-                for(let i = 0;i < this.taskTempForm.taskTempFunctionList.length;i++){
-                    let taskTempFunction = this.taskTempForm.taskTempFunctionList[i];
-                    let functionId = taskTempFunction.functionId;
-                    let level = taskTempFunction.level;
-                    if (functionId === undefined || functionId === null || functionId === ''){
-                        this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
-                        return false;
+                if (this.taskFunctionData.length>0){
+                    this.taskTempForm.taskTempFunctionList = [];
+                    for(let i = 0;i<this.num;i++){
+                        let taskTempFunction={
+                            functionId:this.taskFunctionList[i],
+                            level:this.functionLevelList[i]
+                        };
+                        this.taskTempForm.taskTempFunctionList.push(taskTempFunction);
                     }
-                    if (level === undefined || level === null || level === ''){
-                        this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
-                        return false;
+                    for(let i = 0;i < this.taskTempForm.taskTempFunctionList.length;i++){
+                        let taskTempFunction = this.taskTempForm.taskTempFunctionList[i];
+                        let functionId = taskTempFunction.functionId;
+                        let level = taskTempFunction.level;
+                        if (functionId === undefined || functionId === null || functionId === ''){
+                            this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                            return false;
+                        }
+                        if (level === undefined || level === null || level === ''){
+                            this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                            return false;
+                        }
                     }
                 }
+
                 let sumHours=0;
                 for(let i=0;i<this.weekNumber.length;i++){
                     if(this.weekNumber[i].hours===''|| this.weekNumber[i].hours=== undefined){
