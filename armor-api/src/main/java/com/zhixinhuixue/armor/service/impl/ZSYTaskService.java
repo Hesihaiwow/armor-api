@@ -175,7 +175,6 @@ public class ZSYTaskService implements IZSYTaskService {
         if (taskReqDTO.getDoc() != null){
             task.setDoc(taskReqDTO.getDoc().trim());
         }
-            task.setDoc(taskReqDTO.getDoc().trim());
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
             task.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
             task.setFacility(ZSYTaskFacility.EASY.getValue());
