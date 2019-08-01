@@ -78,9 +78,22 @@ public class TaskTempResDTO {
     private String taskLevelName;
 
     /**
+     * 功能点
+     */
+    private List<TaskTempFunctionResDTO> functionResDTOList;
+
+    /**
      * 用户-周工作量
      */
     private List<UserWeekTempResDTO> userWeekTempList;
+
+    public List<TaskTempFunctionResDTO> getFunctionResDTOList() {
+        return functionResDTOList;
+    }
+
+    public void setFunctionResDTOList(List<TaskTempFunctionResDTO> functionResDTOList) {
+        this.functionResDTOList = functionResDTOList;
+    }
 
     public Integer getTaskLevel() {
         return taskLevel;

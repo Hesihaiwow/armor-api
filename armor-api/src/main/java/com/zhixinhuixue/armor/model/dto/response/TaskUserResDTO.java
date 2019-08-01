@@ -74,6 +74,11 @@ public class TaskUserResDTO{
     private List<EvaluationResDTO> evaluationResDTOS;
 
     /**
+     * 任务功能点
+     */
+    private List<TaskTempFunctionResDTO> functionResDTOList;
+
+    /**
      * 周工作量
      */
     private List<UserWeekResDTO> userWeeks;
@@ -90,6 +95,14 @@ public class TaskUserResDTO{
      * 任务结束时，最终评价等级
      */
     private String commentGrade;
+
+    public List<TaskTempFunctionResDTO> getFunctionResDTOList() {
+        return functionResDTOList;
+    }
+
+    public void setFunctionResDTOList(List<TaskTempFunctionResDTO> functionResDTOList) {
+        this.functionResDTOList = functionResDTOList;
+    }
 
     public Integer getTaskLevel() {
         return taskLevel;

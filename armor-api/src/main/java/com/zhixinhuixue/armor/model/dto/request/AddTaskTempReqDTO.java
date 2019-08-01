@@ -55,6 +55,20 @@ public class AddTaskTempReqDTO {
     @NotNull(message = "任务周工时不能为空")
     private List<UserWeekReqDTO> userWeeks;
 
+    /**
+     * 任务功能点
+     */
+    @NotNull(message = "任务功能点不能为空")
+    private List<TaskTempFunctionReqDTO> taskTempFunctionList;
+
+    public List<TaskTempFunctionReqDTO> getTaskTempFunctionList() {
+        return taskTempFunctionList;
+    }
+
+    public void setTaskTempFunctionList(List<TaskTempFunctionReqDTO> taskTempFunctionList) {
+        this.taskTempFunctionList = taskTempFunctionList;
+    }
+
     public List<UserWeekReqDTO> getUserWeeks() {
         return userWeeks;
     }

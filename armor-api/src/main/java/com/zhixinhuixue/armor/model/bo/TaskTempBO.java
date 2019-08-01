@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.model.bo;
 
 import com.zhixinhuixue.armor.model.pojo.TaskTemp;
+import com.zhixinhuixue.armor.model.pojo.TaskTempFunction;
 import com.zhixinhuixue.armor.model.pojo.UserWeekTemp;
 
 import java.util.List;
@@ -31,10 +32,23 @@ public class TaskTempBO extends TaskTemp {
     private List<TaskReviewLogBO> taskReviewLogBOS;
 
     /**
+     * 功能点
+     */
+    private List<TaskTempFunctionBO> functions;
+
+    /**
      * 用户周工作量
      * @return
      */
     private List<UserWeekTemp> userWeekTempList;
+
+    public List<TaskTempFunctionBO> getFunctions() {
+        return functions;
+    }
+
+    public void setFunctions(List<TaskTempFunctionBO> functions) {
+        this.functions = functions;
+    }
 
     public List<TaskReviewLogBO> getTaskReviewLogBOS() {
         return taskReviewLogBOS;

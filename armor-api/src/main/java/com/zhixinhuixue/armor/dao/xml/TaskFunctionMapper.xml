@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskFunctionMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskFunction">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="task_id" jdbcType="BIGINT" property="taskId" />
+        <result column="module_id" jdbcType="BIGINT" property="moduleId" />
+        <result column="function" jdbcType="VARCHAR" property="function" />
+        <result column="action" jdbcType="INTEGER" property="action" />
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TaskFunctionBO" extends="BaseResultMap">
+        <result column="module_name" jdbcType="VARCHAR" property="moduleName"/>
+    </resultMap>
+
+    <!--批量插入任务功能点-->
+    <insert id="insertBatch">
+        INSERT INTO `task_function`
+        (`id`,`task_id`,`module_id`,`function`,`action`)
+        VALUES
+        <foreach collection="functions" separator="," item="item">
+            (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.moduleId,jdbcType=BIGINT}
+            ,#{item.function,jdbcType=VARCHAR},#{item.action,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!--批量修改-->
+    <update id="updateBatch">
+        <foreach collection="functions" item="item" separator=";">
+            UPDATE `task_function`
+            <set>
+                <if test="item.function!=null and item.function!=''">
+                    `function` = #{item.function},
+                </if>
+                <if test="item.action != null">
+                    `action` = #{item.action},
+                </if>
+                <if test="item.moduleId != null">
+                    `module_id` = #{item.moduleId},
+                </if>
+            </set>
+            WHERE `id` = #{item.id}
+        </foreach>
+    </update>
+
+    <!--根据任务id删除所关联的功能点-->
+    <delete id="deleteByTaskId">
+        DELETE FROM `task_function` WHERE `task_id` = #{taskId}
+    </delete>
+
+    <!--根据taskId查询任务功能点-->
+    <select id="selectListByTaskId" resultMap="BaseResultMap">
+        SELECT * FROM `task_function` WHERE `task_id` = #{taskId}
+    </select>
+
+    <select id="selectBOListByTaskId" resultMap="BOMap">
+        SELECT tf.*,ttm.`name` module_name
+        FROM `task_function` tf
+        LEFT JOIN `task_temp_module` ttm ON tf.`module_id` = ttm.`id`
+        WHERE tf.`task_id`= #{taskId}
+    </select>
+
+</mapper>

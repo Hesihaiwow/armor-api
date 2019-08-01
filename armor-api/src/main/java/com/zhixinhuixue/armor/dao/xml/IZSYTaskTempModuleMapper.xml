@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTempModuleMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTempModule">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+        <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTempModule">
+        INSERT INTO `task_temp_module`
+        (`id`,`name`,`description`,`create_by`,`create_time`,`is_delete`,`image_url`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR}
+        ,#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER}
+        ,#{imageUrl,jdbcType=VARCHAR})
+    </insert>
+
+    <!--修改-->
+    <update id="update" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTempModule">
+        UPDATE `task_temp_module`
+        <set>
+            <if test="name != null and name != ''">
+                `name` = #{name},
+            </if>
+            <if test="description != null">
+                `description` = #{description},
+            </if>
+            <if test="isDelete != null">
+                `is_delete` = #{isDelete},
+            </if>
+            <if test="imageUrl != null">
+                `image_url` = #{imageUrl},
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--根据名称查询-->
+    <select id="selectByName" resultMap="BaseResultMap">
+        SELECT * FROM `task_temp_module` WHERE `is_delete` = 0 AND `name` = #{name}
+    </select>
+
+    <!--查看列表-->
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT * FROM `task_temp_module` WHERE `is_delete` = 0
+    </select>
+
+    <!--查询-->
+    <select id="selectByPrimary" resultMap="BaseResultMap">
+        SELECT * FROM `task_temp_module` WHERE `id` = #{id}
+    </select>
+
+    <!--校验是否关联任务-->
+    <select id="selectCountInUse" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `task_function` WHERE `module_id` = #{id}
+    </select>
+
+
+</mapper>

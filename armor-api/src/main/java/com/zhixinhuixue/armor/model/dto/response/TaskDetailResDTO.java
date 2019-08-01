@@ -79,6 +79,19 @@ public class TaskDetailResDTO {
      */
     private List<TaskUserResDTO> users;
 
+    /**
+     * 任务功能点
+     */
+    private List<TaskFunctionResDTO> functionResDTOS;
+
+    public List<TaskFunctionResDTO> getFunctionResDTOS() {
+        return functionResDTOS;
+    }
+
+    public void setFunctionResDTOS(List<TaskFunctionResDTO> functionResDTOS) {
+        this.functionResDTOS = functionResDTOS;
+    }
+
     public String getMyTaskLevelName() {
         return myTaskLevelName;
     }

@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.config.ZSYSmsConfig;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
@@ -107,6 +108,10 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYTaskModifyUserWeekMapper taskModifyUserWeekMapper;
     @Autowired
     private IZSYWeekPublishPlanMapper weekPublishPlanMapper;
+    @Autowired
+    private IZSYTaskTempFunctionMapper taskTempFunctionMapper;
+    @Autowired
+    private IZSYTaskFunctionMapper taskFunctionMapper;
     // -- sch
 
 
@@ -196,9 +201,28 @@ public class ZSYTaskService implements IZSYTaskService {
 
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
+
+        //任务功能点
+        List<TaskFunctionReqDTO> functionReqDTOS = taskReqDTO.getFunctionReqDTOS();
+        List<TaskFunction> functions = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(functionReqDTOS)){
+            functionReqDTOS.forEach(functionReqDTO->{
+                TaskFunction function = new TaskFunction();
+                BeanUtils.copyProperties(functionReqDTO,function);
+                function.setId(snowFlakeIDHelper.nextId());
+                function.setTaskId(task.getId());
+                function.setFunction(functionReqDTO.getFunction().trim());
+                functions.add(function);
+            });
+        }
+
         task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
         // 插入新任务
         taskMapper.insert(task);
+        //插入任务功能点
+        if (!CollectionUtils.isEmpty(functions)){
+            taskFunctionMapper.insertBatch(functions);
+        }
         // 插入任务用户
         if (taskReqDTO.getTaskUsers() != null && taskReqDTO.getTaskUsers().size() > 0) {
             List<TaskUser> taskUsers = Lists.newArrayList();
@@ -330,6 +354,51 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setCreateBy(taskReqDTO.getCreateBy());
         // 修改任务
         taskMapper.updateByPrimaryKeySelective(task);
+
+        List<TaskFunction> functionList = taskFunctionMapper.selectListByTaskId(taskId);
+        List<TaskFunctionReqDTO> functionReqDTOS = taskReqDTO.getFunctionReqDTOS();
+        if (!CollectionUtils.isEmpty(functionReqDTOS)){
+            if (!CollectionUtils.isEmpty(functionList)){
+                if (functionList.size()>functionReqDTOS.size()){
+                    throw new ZSYServiceException("任务功能点不可删除,请检查");
+                }
+            }
+            //过滤出新增的功能点
+            List<TaskFunctionReqDTO> newFunctions = functionReqDTOS.stream()
+                    .filter(functionReqDTO -> functionReqDTO.getId() == null).collect(Collectors.toList());
+
+            //原有的功能点
+            List<TaskFunctionReqDTO> oldFunctions = functionReqDTOS.stream()
+                    .filter(functionReqDTO -> functionReqDTO.getId() != null).collect(Collectors.toList());
+
+            if (!CollectionUtils.isEmpty(functionList) && !CollectionUtils.isEmpty(oldFunctions)){
+                for (TaskFunctionReqDTO oldFunction : oldFunctions) {
+                    for (TaskFunction taskFunction : functionList) {
+                        if (oldFunction.getId().equals(taskFunction.getId())){
+                            taskFunction.setAction(oldFunction.getAction());
+                            taskFunction.setFunction(oldFunction.getFunction());
+                            taskFunction.setModuleId(oldFunction.getModuleId());
+                        }
+                    }
+                }
+                //批量修改原来的功能点
+                taskFunctionMapper.updateBatch(functionList);
+            }
+
+            if (!CollectionUtils.isEmpty(newFunctions)){
+                List<TaskFunction> newFunctionList = new ArrayList<>();
+                newFunctions.forEach(newFunction->{
+                    TaskFunction function = new TaskFunction();
+                    BeanUtils.copyProperties(newFunction,function);
+                    function.setId(snowFlakeIDHelper.nextId());
+                    function.setTaskId(taskId);
+                    newFunctionList.add(function);
+                });
+                //批量插入新的功能点
+                taskFunctionMapper.insertBatch(newFunctionList);
+            }
+
+        }
         if (ZSYTaskStage.TESTING.getValue().equals(task.getStageId())){
             //移动到测试中阶段
 
@@ -499,10 +568,10 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     @Transactional
-    public ZSYResult auditTask(Long taskId,Integer level,Long userId, Integer auditStatus) {
+    public ZSYResult auditTask(Long taskId,Integer auditStatus) {
         checkUser();
         Task taskTemp = taskMapper.selectByPrimaryKey(taskId);
-        TaskUser taskUser = taskUserMapper.selectByTaskAndUser(taskId,userId);
+//        TaskUser taskUser = taskUserMapper.selectByTaskAndUser(taskId,userId);
         if (taskTemp == null) {
             logger.warn("无法找到任务,id:{}", taskId);
             throw new ZSYServiceException("无法找到任务,id:" + taskId);
@@ -512,17 +581,17 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.warn("该任务已被审核,id:{}", ZSYReviewStatus.getName(auditStatus), taskId);
             throw new ZSYServiceException("该任务已被审核");
         }
-        if (taskUser == null){
-            logger.warn("无法找到任务人员,userId:{}", userId);
-            throw new ZSYServiceException("无法找到任务人员,userId:{}" + userId);
-        }
-        taskUser.setTaskLevel(level);
+//        if (taskUser == null){
+//            logger.warn("无法找到任务人员,userId:{}", userId);
+//            throw new ZSYServiceException("无法找到任务人员,userId:{}" + userId);
+//        }
+//        taskUser.setTaskLevel(level);
         Task task = new Task();
         task.setId(taskId);
         task.setReviewStatus(auditStatus);
         task.setUpdateTime(new Date());
         taskMapper.updateByPrimaryKeySelective(task);
-        taskUserMapper.updateByPrimaryKeySelective(taskUser);
+//        taskUserMapper.updateByPrimaryKeySelective(taskUser);
         // 插入日志
         taskLogMapper.insert(buildLog(ZSYReviewStatus.getName(auditStatus), taskTemp.getName(), taskTemp.getId()));
         return ZSYResult.success();
@@ -697,6 +766,18 @@ public class ZSYTaskService implements IZSYTaskService {
         });
         taskDetailResDTO.setTags(taskTagResDTOS);
 
+        //任务功能点
+        List<TaskFunctionBO> taskFunctionBOS = taskDetailBO.getFunctionBOS();
+        List<TaskFunctionResDTO> taskFunctionResDTOS = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskFunctionBOS)){
+            taskFunctionBOS.forEach(taskFunctionBO -> {
+                TaskFunctionResDTO resDTO = new TaskFunctionResDTO();
+                BeanUtils.copyProperties(taskFunctionBO,resDTO);
+                resDTO.setActionName(FunctionAction.getName(taskFunctionBO.getAction()));
+                taskFunctionResDTOS.add(resDTO);
+            });
+        }
+        taskDetailResDTO.setFunctionResDTOS(taskFunctionResDTOS);
         // copy 任务阶段
         List<TaskUserResDTO> taskUserResDTOS = new ArrayList<>();
 
@@ -782,6 +863,35 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUserResDTO.setJobRoleName("产品");
             }
             taskUserResDTO.setEvaluationResDTOS(evaluationResDTOList);
+
+            //个人子任务任务功能点
+            TaskTemp taskTemp = taskTempMapper.selectByUserAndTask(taskUserBO.getUserId(), taskId);
+            List<TaskTempFunctionResDTO> functionResDTOS = new ArrayList<>();
+            List<TaskTempFunctionBO> functionBOS = new ArrayList<>();
+            if (taskTemp != null){
+                functionBOS = taskTempFunctionMapper.selectListByTtId(taskTemp.getId());
+                if (!CollectionUtils.isEmpty(functionBOS)){
+                    functionBOS.forEach(functionBO->{
+                        TaskTempFunctionResDTO resDTO = new TaskTempFunctionResDTO();
+                        BeanUtils.copyProperties(functionBO,resDTO);
+                        resDTO.setActionName(FunctionAction.getName(functionBO.getAction()));
+                        Integer level = functionBO.getLevel();
+                        if (level == 1){
+                            resDTO.setLevelName("一级");
+                        }else if(level == 2){
+                            resDTO.setLevelName("二级");
+                        }else if (level == 3){
+                            resDTO.setLevelName("三级");
+                        }else if (level == 4){
+                            resDTO.setLevelName("四级");
+                        }else if (level == 5){
+                            resDTO.setLevelName("五级");
+                        }
+                        functionResDTOS.add(resDTO);
+                    });
+                }
+            }
+            taskUserResDTO.setFunctionResDTOList(functionResDTOS);
             // -- sch
             BeanUtils.copyProperties(taskUserBO, taskUserResDTO);
             // copy 评价
@@ -1441,33 +1551,44 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
         //查询taskUser
-        List<Long> taskUserIds = taskUserMapper.selectUserByTaskId(taskId);
+//        List<Long> taskUserIds = taskUserMapper.selectUserByTaskId(taskId);
         userWeekMaper.deleteByTaskId(taskId);
         feedbackPlanTaskMapper.deleteByTaskId(taskId);
         taskMapper.updateByPrimaryKeySelective(task);
         taskUserMapper.deleteByTaskId(taskId);
 
-        if (!CollectionUtils.isEmpty(taskUserIds)){
-            taskUserIds.stream().forEach(userId->{
-                TaskTemp existTaskTemp = taskTempMapper.selectByUserAndTask(userId, taskId);
-                if (existTaskTemp != null){
-                    taskTempMapper.deleteByUserAndTask(userId,taskId);
-                    taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
-                    taskTempMapper.deleteUserWeekTempByUserAndTask(userId,taskId);
-                }
-                TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskId, userId);
-                if (taskModify != null){
-                    taskModifyMapper.deleteById(taskModify.getId());
-                    taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
-                }
-            });
-        }else {
-            taskTempMapper.deleteByTask(taskId);
-            taskTempMapper.deleteUserWeekTempByTask(taskId);
-            taskTempMapper.deleteReviewLogByTask(taskId);
-            taskModifyMapper.deleteByTask(taskId);
-            taskModifyUserWeekMapper.deleteByTask(taskId);
+//        if (!CollectionUtils.isEmpty(taskUserIds)){
+//            taskUserIds.stream().forEach(userId->{
+//                TaskTemp existTaskTemp = taskTempMapper.selectByUserAndTask(userId, taskId);
+//                if (existTaskTemp != null){
+//                    taskTempMapper.deleteByUserAndTask(userId,taskId);
+//                    taskTempMapper.deleteTaskReviewLog(existTaskTemp.getId());
+//                    taskTempMapper.deleteUserWeekTempByUserAndTask(userId,taskId);
+//                    taskTempFunctionMapper.deleteByTtId(existTaskTemp.getId());
+//                }
+//                TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskId, userId);
+//                if (taskModify != null){
+//                    taskModifyMapper.deleteById(taskModify.getId());
+//                    taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
+//                }
+//            });
+//        }else {
+        List<TaskTemp> taskTemps = taskTempMapper.selectByTask(taskId);
+        if (!CollectionUtils.isEmpty(taskTemps)){
+            List<Long> collect = taskTemps.stream().map(TaskTemp::getId).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(collect)){
+                collect.forEach(ttId->{
+                    taskTempFunctionMapper.deleteByTtId(ttId);
+                });
+            }
         }
+        taskFunctionMapper.deleteByTaskId(taskId);
+        taskTempMapper.deleteByTask(taskId);
+        taskTempMapper.deleteUserWeekTempByTask(taskId);
+        taskTempMapper.deleteReviewLogByTask(taskId);
+        taskModifyMapper.deleteByTask(taskId);
+        taskModifyUserWeekMapper.deleteByTask(taskId);
+//        }
         return ZSYResult.success();
     }
 

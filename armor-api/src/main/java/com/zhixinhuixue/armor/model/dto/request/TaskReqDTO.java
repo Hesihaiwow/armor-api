@@ -97,6 +97,20 @@ public class TaskReqDTO {
     @Size( max = 500, message = "任务操作描述长度在0~{max}之间")
     private String modifyDescription;
 
+    /**
+     * 任务功能点
+     */
+//    @NotNull(message = "任务功能点不能为空")
+    private List<TaskFunctionReqDTO> functionReqDTOS;
+
+    public List<TaskFunctionReqDTO> getFunctionReqDTOS() {
+        return functionReqDTOS;
+    }
+
+    public void setFunctionReqDTOS(List<TaskFunctionReqDTO> functionReqDTOS) {
+        this.functionReqDTOS = functionReqDTOS;
+    }
+
     public String getDoc() {
         return doc;
     }

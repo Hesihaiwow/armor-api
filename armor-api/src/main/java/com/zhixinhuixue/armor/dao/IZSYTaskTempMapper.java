@@ -181,4 +181,11 @@ public interface IZSYTaskTempMapper {
     int deleteReviewLogByTask(@Param("taskId")Long taskId);
 
     int deleteUserWeekTempByTask(@Param("taskId")Long taskId);
+
+    /**
+     * 查询任务的所有临时任务
+     * @param taskId
+     * @return
+     */
+    List<TaskTemp> selectByTask(@Param("taskId")Long taskId);
 }
