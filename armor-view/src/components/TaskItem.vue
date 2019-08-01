@@ -2784,7 +2784,7 @@
                 }
                 if (this.modifyTaskForm.doc !== undefined && this.modifyTaskForm.doc !== null && this.modifyTaskForm.doc !== '') {
                     let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
-                    let flag = reg.test(this.modifyTaskForm.doc.trim());
+                    let flag = reg.test(this.modifyTaskForm.doc);
                     if (!flag){
                         this.warnMsg("请输入HTTP://或HTTPS://开头的正确URL");
                         return;
@@ -2801,7 +2801,7 @@
                             this.warnMsg("原有的模块或子系统不能为空,请检查");
                             return;
                         }
-                        if (functionPoint === undefined || functionPoint === null || functionPoint.trim() === '') {
+                        if (functionPoint === undefined || functionPoint === null || functionPoint === '') {
                             this.warnMsg("原有的功能点不能为空,请检查");
                             return;
                         }
@@ -2831,7 +2831,7 @@
                         this.warnMsg("新增的模块或子系统不能为空,请检查");
                         return;
                     }
-                    if (functionPoint === undefined || functionPoint === null || functionPoint.trim() === '') {
+                    if (functionPoint === undefined || functionPoint === null || functionPoint === '') {
                         this.warnMsg("新增的功能点不能为空,请检查");
                         return;
                     }

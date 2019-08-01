@@ -1676,7 +1676,7 @@
                 }
                 if (this.taskStep.doc !== undefined && this.taskStep.doc !== null && this.taskStep.doc !== '') {
                     let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
-                    let flag = reg.test(this.taskStep.doc.trim());
+                    let flag = reg.test(this.taskStep.doc);
                     if (!flag){
                         this.warnMsg("请输入HTTP://或HTTPS://开头的正确URL");
                         return;
@@ -1752,9 +1752,9 @@
                 this.showTaskDetail = !this.showTaskDetail;
                 if (this.taskStep.index === '') {
                     let task = {};
-                    task.taskName = this.taskStep.taskName.trim();
-                    task.doc = this.taskStep.doc.trim();
-                    task.description = this.taskStep.description.trim();
+                    task.taskName = this.taskStep.taskName;
+                    task.doc = this.taskStep.doc;
+                    task.description = this.taskStep.description;
                     task.createBy = this.taskStep.createBy;
                     task.beginTime = moment(this.taskStep.beginTime).format('YYYY-MM-DD 23:59:59');
                     task.testTime = moment(this.taskStep.testTime).format('YYYY-MM-DD 23:59:59');
