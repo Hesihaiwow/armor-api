@@ -1418,9 +1418,9 @@
                 <el-form-item><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <!--<el-form-item class="task-form" label="申请人：">{{taskUser.userName}}</el-form-item>-->
                 <div style="margin-top: -10px">任务描述: {{taskUser.description}}</div>
-                <div v-show="this.personTaskFunctionList !== undefined && this.personTaskFunctionList.length>0">
+                <div v-show="taskDetail.myFunctionResDTOS !== undefined && taskDetail.myFunctionResDTOS.length>0">
                     <span style="margin-left: 0px">功能点:</span>
-                    <el-table class="hh" :data="this.personTaskFunctionList">
+                    <el-table class="hh" :data="taskDetail.myFunctionResDTOS">
                         <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
@@ -1445,7 +1445,7 @@
                 <el-form-item label="修改原因: ">
                     <el-input type="textarea"  v-model="modifyMyTaskReason" :rows="2"></el-input>
                 </el-form-item>
-                <div v-show="this.personTaskFunctionList !== undefined && this.personTaskFunctionList.length>0">
+                <div v-show="taskDetail.myFunctionResDTOS !== undefined && taskDetail.myFunctionResDTOS.length>0">
                     <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plusTaskTempFunction"></i>
@@ -1973,8 +1973,6 @@
                     // aStr = aStr.replace(reg,"<a href='$1$2' target='_blank'>$1$2</a>");
                     // this.taskDetail.doc = aStr;
                     // document.getElementById('text').innerHTML=aStr;
-                    // console.log(reg.test(aStr));
-                    // console.log(aStr);
                 })
             },
             //跳转到任务关联文档URL
@@ -2343,10 +2341,8 @@
 
             },
             changeDevAttitude(evaluationList,attitude){
-                // console.log(1111)
                 // this.$forceUpdate()
                 // this.$set(evaluationList, 1, attitude)
-                // console.log(evaluationList,attitude)
             },
             hideWaitAssess() {
                 this.showTaskComment = false;
@@ -3317,17 +3313,14 @@
                 this.modifyMyTaskForm.taskId = taskId;
                 this.getTaskDetail(taskId);
                 this.fetchTaskFunction(taskId);
-                if (this.taskDetail.users !== undefined && this.taskDetail.users.length>0){
-                    let userList = this.taskDetail.users.filter(user => user.userId === userId);
-                    let taskUser = userList[0];
-                    this.personTaskFunctionList = taskUser.functionResDTOList;
-                    this.personTaskFunctionList.forEach(resDTO=>{
-                        this.taskFunctionList.push(resDTO.functionId);
-                        this.functionLevelList.push(resDTO.level);
-                        this.num = this.personTaskFunctionList.length;
-                    })
-
-                }
+                // if (this.taskDetail.myFunctionResDTOS !== undefined && this.taskDetail.myFunctionResDTOS.length>0){
+                //     console.log(this.taskDetail.myFunctionResDTOS);
+                //     this.taskDetail.myFunctionResDTOS.forEach(resDTO=>{
+                //         this.taskFunctionList.push(resDTO.functionId);
+                //         this.functionLevelList.push(resDTO.level);
+                //     });
+                //     this.num = this.taskDetail.myFunctionResDTOS.length;
+                // }
                 http.zsyGetHttp('/task/task-user/'+taskId+'/'+userId,{},(res=>{
                     this.taskUser = res.data;
                     this.changeTaskUserWeek();
@@ -3402,7 +3395,15 @@
                 if(id != null && id !== ''){
                     http.zsyGetHttp('task/detail/'+id,{},(res =>{
                         this.taskDetail = res.data;
-                        this.showTaskDetailVisible = true
+                        this.showTaskDetailVisible = true;
+                        if (this.taskDetail.myFunctionResDTOS !== undefined && this.taskDetail.myFunctionResDTOS.length>0){
+                            console.log(this.taskDetail.myFunctionResDTOS);
+                            this.taskDetail.myFunctionResDTOS.forEach(resDTO=>{
+                                this.taskFunctionList.push(resDTO.functionId);
+                                this.functionLevelList.push(resDTO.level);
+                            });
+                            this.num = this.taskDetail.myFunctionResDTOS.length;
+                        }
                     }))
                 }else {
                     this.taskDetail = {};
@@ -3798,20 +3799,20 @@
                 });
             },
             saveApplyModifyMyTask(formName) {
-                var sumHours=0;
+                let sumHours=0;
                 if((moment(this.modifyMyTaskForm.beginTime).isAfter(moment(this.modifyMyTaskForm.endTime)))){
                     this.$message({showClose: true, message: '开始时间不能在截止时间后面', type: 'error'});
                     return false;
                 }
                 for(var i=0;i<this.taskModifyWeekNumber.length;i++){
-                    if(this.taskModifyWeekNumber[i].hours==''|| this.taskModifyWeekNumber[i].hours=== undefined){
-                        if(this.taskModifyWeekNumber[i].hoursTemp !== undefined &&this.taskModifyWeekNumber[i].hoursTemp!=''){
+                    if(this.taskModifyWeekNumber[i].hours===''|| this.taskModifyWeekNumber[i].hours=== undefined){
+                        if(this.taskModifyWeekNumber[i].hoursTemp !== undefined &&this.taskModifyWeekNumber[i].hoursTemp!==''){
                             this.taskModifyWeekNumber[i].hours = this.taskModifyWeekNumber[i].hoursTemp
                         }else{
                             this.taskModifyWeekNumber[i].hours = 0
                         }
                     }
-                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.taskModifyWeekNumber[i].hours);
+                    let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.taskModifyWeekNumber[i].hours);
                     if(!ishours &&ishours!=0){
                         this.errorMsg('工作量填写错误');
                         return false;
@@ -3827,7 +3828,7 @@
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return
                 }
-                this.modifyMyTaskForm.userWeeks = this.taskModifyWeekNumber
+                this.modifyMyTaskForm.userWeeks = this.taskModifyWeekNumber;
 
 
                 let vm = this;
@@ -3835,21 +3836,21 @@
                     if (valid) {
                         // this.taskAble = true;
                         var param = this.modifyMyTaskForm;
-                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00')
-                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50')
-                        if (this.modifyMyTaskReason == null || this.modifyMyTaskReason.trim() == ''){
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
+                        if (this.modifyMyTaskReason == null || this.modifyMyTaskReason.trim() === ''){
                             this.$message({showClose: true, message: '修改原因不能为空', type: 'error'});
                             return false;
                         }
-                        if (this.modifyMyTaskDescription == null || this.modifyMyTaskDescription.trim() == ''){
+                        if (this.modifyMyTaskDescription == null || this.modifyMyTaskDescription.trim() === ''){
                             this.$message({showClose: true, message: '新的任务描述不能为空', type: 'error'});
                             return false;
                         }
-                        if (param.beginTime == null || param.beginTime == ''){
+                        if (param.beginTime == null || param.beginTime === ''){
                             this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
                             return false;
                         }
-                        if (param.endTime == null || param.endTime == ''){
+                        if (param.endTime == null || param.endTime === ''){
                             this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
                             return false;
                         }
@@ -3858,28 +3859,28 @@
                             return false;
                         }
                         //任务是设计相关阶段时
-                        if (this.taskDetail.stageId == '212754785051344891' || this.taskDetail.stageId == '212754785051344892'){
+                        if (this.taskDetail.stageId === '212754785051344891' || this.taskDetail.stageId === '212754785051344892'){
                             if (!(moment(this.modifyMyTaskForm.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
                                 return false;
                             }
                         }
                         //任务是开发相关阶段时
-                        if (this.taskDetail.stageId == '212754785051344890' || this.taskDetail.stageId == '212754785051344894'){
+                        if (this.taskDetail.stageId === '212754785051344890' || this.taskDetail.stageId === '212754785051344894'){
                             if (!(moment(this.modifyMyTaskForm.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
                                 return false;
                             }
                         }
                         //任务是测试相关阶段时
-                        if (this.taskDetail.stageId == '212754785051344895' || this.taskDetail.stageId == '212754785051344896'){
+                        if (this.taskDetail.stageId === '212754785051344895' || this.taskDetail.stageId === '212754785051344896'){
                             if (!(moment(this.modifyMyTaskForm.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
                                 return false;
                             }
                         }
-                        param.workHours = String(param.workHours)
-                        if (param.workHours.length != parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                        param.workHours = String(param.workHours);
+                        if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
                             return false;
                         }
@@ -3889,15 +3890,37 @@
                         }
                         param.reason = this.modifyMyTaskReason;
                         param.description = this.modifyMyTaskDescription;
-                        http.zsyPostHttp('/task-modify/add', param, (resp) => {
-                            this.modifyMyTaskVisible = false;
-                            this.$message({showClose: true, message: '添加任务修改申请成功', type: 'success'});
-                            this.$refs[formName].resetFields();
-                            this.clearModifyMyTaskForm()
-                            // this.taskAble = false;
-                            vm.$emit('reload')
-                            // window.history.go(0)
-                        });
+                        let taskTempFunctionList = [];
+                        for(let i = 0;i<this.num;i++){
+                            let taskTempFunction={
+                                functionId:this.taskFunctionList[i],
+                                level:this.functionLevelList[i],
+                            };
+                            taskTempFunctionList.push(taskTempFunction);
+                        }
+                        for(let i = 0;i < taskTempFunctionList.length;i++){
+                            let taskTempFunction = taskTempFunctionList[i];
+                            let functionId = taskTempFunction.functionId;
+                            let level = taskTempFunction.level;
+                            if (functionId === undefined || functionId === null || functionId === ''){
+                                this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                return false;
+                            }
+                            if (level === undefined || level === null || level === ''){
+                                this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                return false;
+                            }
+                        }
+                        console.log(taskTempFunctionList)
+                        // http.zsyPostHttp('/task-modify/add', param, (resp) => {
+                        //     this.modifyMyTaskVisible = false;
+                        //     this.$message({showClose: true, message: '添加任务修改申请成功', type: 'success'});
+                        //     this.$refs[formName].resetFields();
+                        //     this.clearModifyMyTaskForm()
+                        //     // this.taskAble = false;
+                        //     vm.$emit('reload')
+                        //     // window.history.go(0)
+                        // });
                     } else {
                         return false;
                     }
@@ -3964,7 +3987,9 @@
                 }
             },
             closeModifyTaskDialog(){
-                this.personTaskFunctionList = [];
+                // this.num = 0;
+                this.taskFunctionList = [];
+                this.functionLevelList = [];
             }
         },
         created() {
