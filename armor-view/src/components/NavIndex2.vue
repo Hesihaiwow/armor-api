@@ -2472,7 +2472,7 @@
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                     <span style="margin-left: 7px">功能点</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1 && num<taskFunctionData.length" @click="plus"></i>
                         <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
                         <!--<el-button style="margin-left: 0px" v-show="num>=1" @click="plus(num-1)" type="text">加1</el-button>-->
                         <!--<el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>-->
@@ -2598,11 +2598,12 @@
                 <div v-show="!taskTempAble && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 0px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus"></i>
-                        <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+                        <!--<i style="margin-left: 0px" class="el-icon-plus" v-show="num>=taskTempDetail.functionResDTOList.length" @click="plus"></i>-->
+                        <!--<i class="el-icon-minus" v-show="num>taskTempDetail.functionResDTOList.length" @click="minus(num-1)"></i>-->
 
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
+                                       disabled
                                        style="width: 260px">
                                 <el-option
                                         v-for="item in taskFunctionData"
@@ -2796,10 +2797,10 @@
                 && taskModifyDetail.functionResDTOList.length>0">
                     <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plus(num-1)"></i>
-                        <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1&&num<taskFunctionData.length&&userRole>0" @click="plus(num-1)"></i>
+                        <i class="el-icon-minus" v-show="num>1&&userRole>0"@click="minus(num-1)"></i>
                         <div v-for="i in num" style="margin-top: 3px">
-                            <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
+                            <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable :disabled="userRole===0"
                                        style="width: 260px">
                                 <el-option
                                         v-for="item in taskFunctionData"
@@ -4035,6 +4036,7 @@
             createMultipleTask(){
                 this.createTaskVisible = false;
                 this.clearMultipleTask();
+                this.taskFunctionData = [];
                 this.createMultipleTaskVisible = true;
                 this.showTaskDescriptionVisible = false;
             },
@@ -4203,6 +4205,25 @@
                             this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
                             return false;
                         }
+                    }
+                    let newArr = [this.taskTempForm.taskTempFunctionList[0].functionId];
+                    for (let i = 1; i < this.taskTempForm.taskTempFunctionList.length; i++) {
+                        let repeat = false;
+                        for (let j = 0; j < newArr.length; j++) {
+                            if (this.taskTempForm.taskTempFunctionList[i].functionId === newArr[j]) {
+                                repeat = true;
+                                break;
+                            }else{
+
+                            }
+                        }
+                        if (!repeat){
+                            newArr.push(this.taskTempForm.taskTempFunctionList[i].functionId)
+                        }
+                    }
+                    if (this.taskTempForm.taskTempFunctionList.length>newArr.length){
+                        this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                        return false;
                     }
                 }
 
@@ -4529,6 +4550,25 @@
                                         return false;
                                     }
                                 }
+                            }
+                            let newArr = [param.taskTempFunctionList[0].functionId];
+                            for (let i = 1; i < param.taskTempFunctionList.length; i++) {
+                                let repeat = false;
+                                for (let j = 0; j < newArr.length; j++) {
+                                    if (param.taskTempFunctionList[i].functionId === newArr[j]) {
+                                        repeat = true;
+                                        break;
+                                    }else{
+
+                                    }
+                                }
+                                if (!repeat){
+                                    newArr.push(param.taskTempFunctionList[i].functionId)
+                                }
+                            }
+                            if (param.taskTempFunctionList.length>newArr.length){
+                                this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                return false;
                             }
                         }
 
@@ -7206,6 +7246,26 @@
                             }
                         }
                         param.taskModifyFunctionList = taskModifyFunctionList;
+                        let newArr = [param.taskModifyFunctionList[0].functionId];
+                        for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
+                            let repeat = false;
+                            for (let j = 0; j < newArr.length; j++) {
+                                if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
+                                    repeat = true;
+                                    break;
+                                }else{
+
+                                }
+                            }
+                            if (!repeat){
+                                newArr.push(param.taskModifyFunctionList[i].functionId)
+                            }
+                        }
+                        if (param.taskModifyFunctionList.length>newArr.length){
+                            this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                            return false;
+                        }
+
                         http.zsyPutHttp('/task-modify/update', param, (resp) => {
                             this.showTaskModifyDetailVisible = false;
                             this.$message({showClose: true, message: '更新任务修改申请成功', type: 'success'});
@@ -7325,6 +7385,26 @@
                             }
                         }
                         param.taskModifyFunctionList = taskModifyFunctionList;
+                        let newArr = [param.taskModifyFunctionList[0].functionId];
+                        for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
+                            let repeat = false;
+                            for (let j = 0; j < newArr.length; j++) {
+                                if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
+                                    repeat = true;
+                                    break;
+                                }else{
+
+                                }
+                            }
+                            if (!repeat){
+                                newArr.push(param.taskModifyFunctionList[i].functionId)
+                            }
+                        }
+                        if (param.taskModifyFunctionList.length>newArr.length){
+                            this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                            return false;
+                        }
+
                         http.zsyPutHttp('/task-modify/review', param, (resp) => {
                             this.showTaskModifyDetailVisible = false;
                             this.$message({showClose: true, message: '审核通过', type: 'success'});
