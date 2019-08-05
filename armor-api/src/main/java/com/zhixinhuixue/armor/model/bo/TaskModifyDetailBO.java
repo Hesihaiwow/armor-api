@@ -22,9 +22,22 @@ public class TaskModifyDetailBO extends TaskModify {
     private String userName;
 
     /**
+     * 功能点
+     */
+    private List<TaskModifyFunctionBO> functionBOS;
+
+    /**
      * 周工时分配
      */
     private List<TaskModifyUserWeek> taskModifyUserWeeks;
+
+    public List<TaskModifyFunctionBO> getFunctionBOS() {
+        return functionBOS;
+    }
+
+    public void setFunctionBOS(List<TaskModifyFunctionBO> functionBOS) {
+        this.functionBOS = functionBOS;
+    }
 
     public String getTaskName() {
         return taskName;

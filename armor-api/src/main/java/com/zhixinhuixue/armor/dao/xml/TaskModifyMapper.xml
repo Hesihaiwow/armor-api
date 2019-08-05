@@ -30,6 +30,9 @@
         <collection property="taskModifyUserWeeks" column="tmId = id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskModifyUserWeekMapper.selectByTmId"
                     ofType="com.zhixinhuixue.armor.model.pojo.TaskModifyUserWeek"/>
+        <collection property="functionBOS" column="tmId = id"
+                    ofType="com.zhixinhuixue.armor.model.bo.TaskModifyFunctionBO"
+                    select="com.zhixinhuixue.armor.dao.IZSYTaskModifyFunctionMapper.selectBOListByTmId"/>
     </resultMap>
 
     <!--新增任务修改申请-->

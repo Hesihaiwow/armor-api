@@ -112,6 +112,8 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYTaskTempFunctionMapper taskTempFunctionMapper;
     @Autowired
     private IZSYTaskFunctionMapper taskFunctionMapper;
+    @Autowired
+    private IZSYTaskModifyFunctionMapper taskModifyFunctionMapper;
     // -- sch
 
 
@@ -1622,6 +1624,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskTempMapper.deleteByTask(taskId);
         taskTempMapper.deleteUserWeekTempByTask(taskId);
         taskTempMapper.deleteReviewLogByTask(taskId);
+        taskModifyFunctionMapper.deleteByTask(taskId);
         taskModifyMapper.deleteByTask(taskId);
         taskModifyUserWeekMapper.deleteByTask(taskId);
 //        }

@@ -44,6 +44,16 @@ public class AddTaskModifyReqDTO {
     @NotNull(message = "任务周工时不能为空")
     private List<UserWeekReqDTO> userWeeks;
 
+    private List<TaskTempFunctionReqDTO> taskModifyFunctionList;
+
+    public List<TaskTempFunctionReqDTO> getTaskModifyFunctionList() {
+        return taskModifyFunctionList;
+    }
+
+    public void setTaskModifyFunctionList(List<TaskTempFunctionReqDTO> taskModifyFunctionList) {
+        this.taskModifyFunctionList = taskModifyFunctionList;
+    }
+
     public String getDescription() {
         return description;
     }

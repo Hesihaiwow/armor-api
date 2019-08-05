@@ -62,9 +62,31 @@ public class TaskModifyDetailResDTO {
     private Date endTime;
 
     /**
+     * 功能点
+     */
+    private List<TaskModifyFunctionResDTO> functionResDTOList;
+    private List<TaskTempFunctionResDTO> oldFunctionResDTOList;
+
+    /**
      * 周工时分配
      */
     private List<UserWeekResDTO> userWeekResDTOList;
+
+    public List<TaskTempFunctionResDTO> getOldFunctionResDTOList() {
+        return oldFunctionResDTOList;
+    }
+
+    public void setOldFunctionResDTOList(List<TaskTempFunctionResDTO> oldFunctionResDTOList) {
+        this.oldFunctionResDTOList = oldFunctionResDTOList;
+    }
+
+    public List<TaskModifyFunctionResDTO> getFunctionResDTOList() {
+        return functionResDTOList;
+    }
+
+    public void setFunctionResDTOList(List<TaskModifyFunctionResDTO> functionResDTOList) {
+        this.functionResDTOList = functionResDTOList;
+    }
 
     public String getDescription() {
         return description;

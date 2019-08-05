@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskModifyFunctionMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskModifyFunction">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="tm_id" jdbcType="BIGINT" property="tmId" />
+        <result column="function_id" jdbcType="BIGINT" property="functionId" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TaskModifyFunctionBO" extends="BaseResultMap">
+        <result column="module_id" property="moduleId" jdbcType="BIGINT"/>
+        <result column="module_name" property="moduleName" jdbcType="VARCHAR"/>
+        <result column="function" property="function" jdbcType="VARCHAR"/>
+        <result column="action" property="action" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskModifyFunction">
+        INSERT INTO `task_modify_function`
+        (`id`,`tm_id`,`function_id`,`level`)
+        VALUES
+        <foreach collection="functionList" separator="," item="item">
+            (#{item.id,jdbcType=BIGINT},#{item.tmId,jdbcType=BIGINT}
+            ,#{item.functionId,jdbcType=BIGINT},#{item.level,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!--根据tmId删除 修改任务功能点-->
+    <delete id="deleteByTmId">
+        DELETE FROM `task_modify_function` WHERE `tm_id` = #{tmId}
+    </delete>
+
+    <!--根据任务id删除修改任功能点-->
+    <delete id="deleteByTask">
+        DELETE FROM `task_modify_function` WHERE `tm_id` IN
+        (SELECT `id` FROM `task_modify_table` WHERE `task_id` = #{taskId})
+    </delete>
+
+    <select id="selectBOListByTmId" resultMap="BOMap">
+        SELECT tmf.*,ttm.id module_id,ttm.name module_name,tf.function,tf.action
+        FROM `task_modify_function` tmf
+        LEFT JOIN `task_function` tf ON tf.`id` = tmf.`function_id`
+        LEFT JOIN `task_temp_module` ttm ON ttm.`id` = tf.`module_id`
+        WHERE tmf.`tm_id` = #{tmId}
+    </select>
+
+</mapper>
