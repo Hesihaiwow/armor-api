@@ -1274,7 +1274,7 @@
                 <div v-show="taskTempDetail.isChecked === 0 && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plusTaskTempFunction"></i>
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1&&num<taskFunctionData.length" @click="plusTaskTempFunction"></i>
                         <i class="el-icon-minus" v-show="num>1"@click="minusTaskTempFunction(num-1)"></i>
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
@@ -1427,7 +1427,7 @@
                 <div v-show="taskDetail.myFunctionResDTOS !== undefined && taskDetail.myFunctionResDTOS.length>0">
                     <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1" @click="plusTaskTempFunction"></i>
+                        <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1&&num<taskFunctionData.length" @click="plusTaskTempFunction"></i>
                         <i class="el-icon-minus" v-show="num>1"@click="minusTaskTempFunction(num-1)"></i>
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="modifyTaskFunctionList[i-1]" clearable
@@ -3294,14 +3294,7 @@
                 this.modifyMyTaskForm.taskId = taskId;
                 this.getTaskDetail(taskId);
                 this.fetchTaskFunction(taskId);
-                // if (this.taskDetail.myFunctionResDTOS !== undefined && this.taskDetail.myFunctionResDTOS.length>0){
-                //     console.log(this.taskDetail.myFunctionResDTOS);
-                //     this.taskDetail.myFunctionResDTOS.forEach(resDTO=>{
-                //         this.taskFunctionList.push(resDTO.functionId);
-                //         this.functionLevelList.push(resDTO.level);
-                //     });
-                //     this.num = this.taskDetail.myFunctionResDTOS.length;
-                // }
+
                 http.zsyGetHttp('/task/task-user/'+taskId+'/'+userId,{},(res=>{
                     this.taskUser = res.data;
                     this.changeTaskUserWeek();
@@ -3380,7 +3373,6 @@
                         this.taskDetail = res.data;
                         this.showTaskDetailVisible = true;
                         if (this.taskDetail.myFunctionResDTOS !== undefined && this.taskDetail.myFunctionResDTOS.length>0){
-                            console.log(this.taskDetail.myFunctionResDTOS);
                             this.taskDetail.myFunctionResDTOS.forEach(resDTO=>{
                                 this.modifyTaskFunctionList.push(resDTO.functionId);
                                 this.modifyFunctionLevelList.push(resDTO.level);
@@ -3725,6 +3717,25 @@
                                     param.taskTempFunctionList.push(resDTO)
                                 })
                             }
+                            let newArr = [taskTempFunctionList[0].functionId];
+                            for (let i = 1; i < taskTempFunctionList.length; i++) {
+                                let repeat = false;
+                                for (let j = 0; j < newArr.length; j++) {
+                                    if (taskTempFunctionList[i].functionId === newArr[j]) {
+                                        repeat = true;
+                                        break;
+                                    }else{
+
+                                    }
+                                }
+                                if (!repeat){
+                                    newArr.push(taskTempFunctionList[i].functionId)
+                                }
+                            }
+                            if (taskTempFunctionList.length>newArr.length){
+                                this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                return false;
+                            }
                         }
 
                         http.zsyPutHttp('/task-temp/update', param, (resp) => {
@@ -3773,7 +3784,6 @@
                     }
                     let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.taskModifyWeekNumber[i].hours);
                     if(!ishours){
-                        console.log(this.taskModifyWeekNumber[i].hours);
                         this.errorMsg('工作量填写错误');
                         return false;
                     }
@@ -3871,6 +3881,25 @@
                                 return false;
                             }
                         }
+                        let newArr = [taskModifyFunctionList[0].functionId];
+                        for (let i = 1; i < taskModifyFunctionList.length; i++) {
+                            let repeat = false;
+                            for (let j = 0; j < newArr.length; j++) {
+                                if (taskModifyFunctionList[i].functionId === newArr[j]) {
+                                    repeat = true;
+                                    break;
+                                }else{
+
+                                }
+                            }
+                            if (!repeat){
+                                newArr.push(taskModifyFunctionList[i].functionId)
+                            }
+                        }
+                        if (taskModifyFunctionList.length>newArr.length){
+                            this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                            return false;
+                        }
                         param.taskModifyFunctionList = taskModifyFunctionList;
                         http.zsyPostHttp('/task-modify/add', param, (resp) => {
                             this.modifyMyTaskVisible = false;
@@ -3948,8 +3977,8 @@
             },
             closeModifyTaskDialog(){
                 // this.num = 0;
-                this.taskFunctionList = [];
-                this.functionLevelList = [];
+                this.modifyTaskFunctionList = [];
+                this.modifyFunctionLevelList = [];
                 this.clearModifyMyTaskForm()
             }
         },
