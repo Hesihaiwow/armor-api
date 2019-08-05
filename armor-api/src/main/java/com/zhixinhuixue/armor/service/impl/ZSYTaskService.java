@@ -112,6 +112,8 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYTaskTempFunctionMapper taskTempFunctionMapper;
     @Autowired
     private IZSYTaskFunctionMapper taskFunctionMapper;
+    @Autowired
+    private IZSYTaskModifyFunctionMapper taskModifyFunctionMapper;
     // -- sch
 
 
@@ -782,6 +784,37 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskFunctionResDTOS.add(resDTO);
             });
         }
+        if (ZSYTokenRequestContext.get().getUserRole()>ZSYUserRole.ADMINISTRATOR.getValue()){
+            //我的任务功能点
+            TaskTemp temp = taskTempMapper.selectByUserAndTask(ZSYTokenRequestContext.get().getUserId(), taskId);
+            if (temp!= null){
+                List<TaskTempFunctionBO> functionBOS = taskTempFunctionMapper.selectListByTtId(temp.getId());
+                List<TaskTempFunctionResDTO> functionResDTOS = new ArrayList<>();
+                if (!CollectionUtils.isEmpty(functionBOS)){
+                    functionBOS.forEach(functionBO->{
+                        TaskTempFunctionResDTO resDTO = new TaskTempFunctionResDTO();
+                        BeanUtils.copyProperties(functionBO,resDTO);
+                        resDTO.setActionName(FunctionAction.getName(functionBO.getAction()));
+                        Integer level = functionBO.getLevel();
+                        if (level == 1){
+                            resDTO.setLevelName("一级");
+                        }else if(level == 2){
+                            resDTO.setLevelName("二级");
+                        }else if (level == 3){
+                            resDTO.setLevelName("三级");
+                        }else if (level == 4){
+                            resDTO.setLevelName("四级");
+                        }else if (level == 5){
+                            resDTO.setLevelName("五级");
+                        }
+                        functionResDTOS.add(resDTO);
+                    });
+                    taskDetailResDTO.setMyFunctionResDTOS(functionResDTOS);
+                }
+            }
+
+        }
+
         taskDetailResDTO.setFunctionResDTOS(taskFunctionResDTOS);
         // copy 任务阶段
         List<TaskUserResDTO> taskUserResDTOS = new ArrayList<>();
@@ -1591,6 +1624,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskTempMapper.deleteByTask(taskId);
         taskTempMapper.deleteUserWeekTempByTask(taskId);
         taskTempMapper.deleteReviewLogByTask(taskId);
+        taskModifyFunctionMapper.deleteByTask(taskId);
         taskModifyMapper.deleteByTask(taskId);
         taskModifyUserWeekMapper.deleteByTask(taskId);
 //        }

@@ -84,6 +84,19 @@ public class TaskDetailResDTO {
      */
     private List<TaskFunctionResDTO> functionResDTOS;
 
+    /**
+     * 我的任务功能点
+     */
+    private List<TaskTempFunctionResDTO> myFunctionResDTOS;
+
+    public List<TaskTempFunctionResDTO> getMyFunctionResDTOS() {
+        return myFunctionResDTOS;
+    }
+
+    public void setMyFunctionResDTOS(List<TaskTempFunctionResDTO> myFunctionResDTOS) {
+        this.myFunctionResDTOS = myFunctionResDTOS;
+    }
+
     public List<TaskFunctionResDTO> getFunctionResDTOS() {
         return functionResDTOS;
     }
