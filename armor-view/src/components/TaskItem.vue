@@ -128,9 +128,9 @@
                         <div class="text item" v-show="taskDetail.type===2">
                             截止：{{item.endTime | formatDate}}
                         </div>
-                        <!--<div class="text item">-->
-                            <!--任务级别：{{item.taskLevelName}}-->
-                        <!--</div>-->
+                        <div class="text item" v-show="taskDetail.type===1">
+                            任务复杂度：{{item.taskLevelName}}
+                        </div>
                         <div class="text item" v-show="taskDetail.type===2">
                             描述：{{item.description}}
                         </div>
@@ -175,12 +175,12 @@
                     <el-form-item class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>
                     <el-form-item class="task-form" label="负责人：">{{item.userName}}</el-form-item>
                 </div>
-                <!--<el-form-item class="task-form" label="任务级别: ">-->
-                    <!--<el-select v-model="privateTaskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px">-->
-                        <!--<el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"-->
-                                   <!--:value="item.id"></el-option>-->
-                    <!--</el-select>-->
-                <!--</el-form-item>-->
+                <el-form-item class="task-form" label="任务复杂度: ">
+                    <el-select v-model="privateTaskLevel" clearable filterable placeholder="请选择任务复杂度"  style="width: 170px">
+                        <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                  <el-tooltip content="删除该任务" placement="top">
@@ -1982,19 +1982,19 @@
             },
             // 审核通过任务
             acceptTask(privateTaskLevel,userId) {
-                // if (privateTaskLevel !== undefined && privateTaskLevel !== null && privateTaskLevel !== ''){
-                    http.zsyPutHttp(`task/auditing/accept/${this.auditForm.taskId}`, {}, (resp) => {
+                if (privateTaskLevel !== undefined && privateTaskLevel !== null && privateTaskLevel !== ''){
+                    http.zsyPutHttp(`task/auditing/accept/${this.auditForm.taskId}/${privateTaskLevel}/${userId}`, {}, (resp) => {
                         this.$message({ showClose: true,message: '任务审核成功',type: 'success'});
                         this.$emit('reload');
                         this.auditForm.taskId = '';
                         this.auditForm.taskUserId = '';
-                        // this.privateTaskLevel = '';
-                    })
+                        this.privateTaskLevel = '';
+                    });
                     this.showAuditTask = false;
                     this.taskDetail = {};
-                // } else {
-                //     this.$message({ showClose: true,message: '请选择任务级别',type: 'error'});
-                // }
+                } else {
+                    this.$message({ showClose: true,message: '请选择任务复杂度',type: 'error'});
+                }
 
             },
             // 打回任务
