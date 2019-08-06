@@ -7803,7 +7803,8 @@
             },
             //查看复杂度参考表
             showLevelReference(){
-              let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/df71d0bf-6a42-4a84-a55d-4e21288fa073.png";
+              let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/功能点复杂度参考表.pdf";
+              // let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/df71d0bf-6a42-4a84-a55d-4e21288fa073.png";
               window.open(url,'_blank')
             },
             //查询 临时任务涉及项目
