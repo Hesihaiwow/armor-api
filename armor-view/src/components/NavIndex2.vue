@@ -2470,7 +2470,7 @@
 
                 <div v-show="this.taskFunctionData.length>0">
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
-                    <span style="margin-left: 7px">功能点</span>
+                    <span style="margin-left: 7px;color: blue;cursor: pointer" @click="showLevelReference">功能点(点击查看复杂度参考表)</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1 && num<taskFunctionData.length" @click="plus"></i>
                         <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
@@ -7800,6 +7800,11 @@
                 this.num = this.num-1;
                 this.taskFunctionList.splice(i);
                 this.functionLevelList.splice(i);
+            },
+            //查看复杂度参考表
+            showLevelReference(){
+              let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/df71d0bf-6a42-4a84-a55d-4e21288fa073.png";
+              window.open(url,'_blank')
             },
             //查询 临时任务涉及项目
             fetchTaskTempModuleList(){

@@ -1107,19 +1107,19 @@
                 <el-form-item class="task-form-edit" label="任务描述">
                     <el-input type="textarea" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="阶段">
-                    <el-select
-                            v-model="modifyPrivateTaskForm.stageId"
-                            default-first-option
-                            placeholder="请选择阶段">
-                        <el-option
-                                v-for="item in stageList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
+                <!--<el-form-item class="task-form-edit" label="阶段">-->
+                    <!--<el-select-->
+                            <!--v-model="modifyPrivateTaskForm.stageId"-->
+                            <!--default-first-option-->
+                            <!--placeholder="请选择阶段">-->
+                        <!--<el-option-->
+                                <!--v-for="item in stageList"-->
+                                <!--:key="item.id"-->
+                                <!--:label="item.name"-->
+                                <!--:value="item.id">-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
                 <el-form-item class="task-form-edit" label="标签">
                     <el-select
                             v-model="modifyPrivateTaskForm.tags"
@@ -2521,6 +2521,7 @@
             },
             // 显示修改单人任务弹出层
             showModifyPrivateTaskDialog(taskId) {
+                this.modifyPrivateTaskForm.tags = [];
                 this.showAuditTask = false;
                 this.taskDetail = {};
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
