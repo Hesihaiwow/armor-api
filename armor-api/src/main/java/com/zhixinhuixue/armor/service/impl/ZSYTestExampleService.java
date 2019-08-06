@@ -8,6 +8,7 @@ import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TestExampleBO;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
@@ -17,6 +18,7 @@ import com.zhixinhuixue.armor.service.IZSYTestExampleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
      * @param reqDTO
      */
     @Override
+    @Transactional
     public void add(AddTestExampleReqDTO reqDTO) {
         TestExample example = exampleMapper.selectByNameAndTaskAndFunction(reqDTO.getName(),reqDTO.getTaskId(),reqDTO.getFunctionId());
         if (example != null){
@@ -155,11 +158,29 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
      * @param exampleId
      */
     @Override
+    @Transactional
     public void deleteExample(Long exampleId) {
         TestExample example = exampleMapper.selectById(exampleId);
         if (example == null){
             throw new ZSYServiceException("当前测试用例不存在,请检查");
         }
         exampleMapper.deleteById(exampleId);
+    }
+
+    /**
+     * 编辑
+     * @param reqDTO
+     */
+    @Override
+    @Transactional
+    public void editExample(EditTestExampleReqDTO reqDTO) {
+        TestExample example = exampleMapper.selectById(reqDTO.getId());
+        if (example == null){
+            throw new ZSYServiceException("当前测试用例不存在,请检查");
+        }
+        BeanUtils.copyProperties(reqDTO,example);
+        if (exampleMapper.update(example) == 0){
+            throw new ZSYServiceException("更新测试用例失败");
+        }
     }
 }

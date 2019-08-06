@@ -54,6 +54,7 @@ public class ZSYTestExampleController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public String editExample(@Valid @RequestBody EditTestExampleReqDTO reqDTO){
+        exampleService.editExample(reqDTO);
         return ZSYResult.success().build();
     }
 }

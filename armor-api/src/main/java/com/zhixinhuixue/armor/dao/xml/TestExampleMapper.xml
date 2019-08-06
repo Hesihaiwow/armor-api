@@ -38,6 +38,35 @@
         ,#{updateName,jdbcType=VARCHAR},#{#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
     </insert>
 
+    <!--更新 -->
+    <update id="update" parameterType="com.zhixinhuixue.armor.model.pojo.TestExample">
+        UPDATE `test_example`
+        <set>
+            <if test="name != null">
+                `name` = #{name},
+            </if>
+            <if test="checkPoint != null">
+                `check_point` = #{checkPoint},
+            </if>
+            <if test="expectResult != null">
+                `expect_result` = #{expectResult},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark},
+            </if>
+            <if test="type != null">
+                `type` = #{type},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="examStatus != null">
+                `exam_status` = #{examStatus},
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
     <!--删除-->
     <delete id="deleteById">
         DELETE FROM `test_example` WHERE `id` = #{exampleId}
