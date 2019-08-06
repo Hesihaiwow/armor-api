@@ -36,7 +36,7 @@ public interface IZSYTaskService {
      * @param taskId
      * @return
      */
-    ZSYResult auditTask(Long taskId,Integer auditStatus);
+    ZSYResult auditTask(Long taskId,Integer level,Long userId,Integer auditStatus);
 
     /**
      * 完成个人任务
