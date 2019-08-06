@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.service;
 
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
 
 /**
  * @author sch
@@ -13,4 +15,18 @@ public interface IZSYTestExampleService {
      * @param reqDTO
      */
     void add(AddTestExampleReqDTO reqDTO);
+
+    /**
+     * 查看树
+     * @param taskId
+     * @return
+     */
+    TaskTreeResDTO getTree(Long taskId);
+
+    /**
+     * 查看测试用例详情
+     * @param exampleId
+     * @return
+     */
+    ExampleDetailResDTO getExampleDetail(Long exampleId);
 }

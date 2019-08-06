@@ -5,11 +5,9 @@ import com.zhixinhuixue.armor.service.IZSYTestExampleService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -30,5 +28,17 @@ public class ZSYTestExampleController {
     public String add(@Valid @RequestBody AddTestExampleReqDTO reqDTO){
         exampleService.add(reqDTO);
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("查看树")
+    @GetMapping("/tree/{taskId}")
+    public String getTree(@PathVariable("taskId")Long taskId){
+        return ZSYResult.success().data(exampleService.getTree(taskId)).build();
+    }
+
+    @ApiOperation("查看测试用例详情")
+    @GetMapping("/detail/{exampleId}")
+    public String getExampleDetail(@PathVariable("exampleId")Long exampleId){
+        return ZSYResult.success().data(exampleService.getExampleDetail(exampleId)).build();
     }
 }

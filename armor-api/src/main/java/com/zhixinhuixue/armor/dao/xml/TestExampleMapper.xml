@@ -38,5 +38,10 @@
         SELECT * FROM `test_example` WHERE `name` = #{name} AND `task_id` = taskId AND `function_id` = #{functionId}
     </select>
 
+    <!--根据功能点id查询测试用例-->
+    <select id="selectByFunction" resultMap="BaseResultMap">
+        SELECT * FROM `test_example` WHERE `function_id` = #{functionId}
+    </select>
+
 
 </mapper>
