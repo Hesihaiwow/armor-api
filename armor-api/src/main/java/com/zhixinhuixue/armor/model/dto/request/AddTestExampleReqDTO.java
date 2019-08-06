@@ -36,13 +36,13 @@ public class AddTestExampleReqDTO {
     /**
      * 检查项
      */
-    @NotBlank(message = "检查项不能为空")
+//    @NotBlank(message = "检查项不能为空")
     private String checkPoint;
 
     /**
      * 预期结果
      */
-    @NotBlank(message = "预期结果不能为空")
+//    @NotBlank(message = "预期结果不能为空")
     private String expectResult;
 
     /**

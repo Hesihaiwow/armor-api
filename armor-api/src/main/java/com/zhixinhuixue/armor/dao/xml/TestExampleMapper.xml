@@ -19,6 +19,11 @@
         <result column="process_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
 
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TestExampleBO" extends="BaseResultMap">
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="function" property="function" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <!--新增-->
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TestExample">
         INSERT INTO `test_example`
@@ -33,6 +38,11 @@
         ,#{updateName,jdbcType=VARCHAR},#{#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
     </insert>
 
+    <!--删除-->
+    <delete id="deleteById">
+        DELETE FROM `test_example` WHERE `id` = #{exampleId}
+    </delete>
+
     <!--根据名称查询-->
     <select id="selectByNameAndTaskAndFunction" resultMap="BaseResultMap">
         SELECT * FROM `test_example` WHERE `name` = #{name} AND `task_id` = taskId AND `function_id` = #{functionId}
@@ -41,6 +51,15 @@
     <!--根据功能点id查询测试用例-->
     <select id="selectByFunction" resultMap="BaseResultMap">
         SELECT * FROM `test_example` WHERE `function_id` = #{functionId}
+    </select>
+
+    <!--查看测试用例详情-->
+    <select id="selectDetailById" resultMap="BOMap">
+        SELECT te.*,t.name task_name,tf.function
+        FROM `test_example` te
+        LEFT JOIN `task` t ON t.`id` = te.`task_id`
+        LEFT JOIN `task_function` tf ON tf.`id` = te.`function_id`
+        WHERE `te.id` = #{exampleId}
     </select>
 
 

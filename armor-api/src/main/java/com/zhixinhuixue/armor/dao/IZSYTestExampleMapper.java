@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
+import com.zhixinhuixue.armor.model.bo.TestExampleBO;
 import com.zhixinhuixue.armor.model.pojo.TestExample;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,4 +31,24 @@ public interface IZSYTestExampleMapper {
      * @return
      */
     List<TestExample> selectByFunction(@Param("functionId") Long functionId);
+
+    /**
+     * 查看测试用例详情
+     * @param exampleId
+     * @return
+     */
+    TestExampleBO selectDetailById(@Param("exampleId") Long exampleId);
+
+    /**
+     * 根据id删除
+     * @param exampleId
+     */
+    void deleteById(@Param("exampleId") Long exampleId);
+
+    /**
+     * 根据主键查询
+     * @param exampleId
+     * @return
+     */
+    TestExample selectById(Long exampleId);
 }

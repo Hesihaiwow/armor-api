@@ -29,4 +29,10 @@ public interface IZSYTestExampleService {
      * @return
      */
     ExampleDetailResDTO getExampleDetail(Long exampleId);
+
+    /**
+     * 删除
+     * @param exampleId
+     */
+    void deleteExample(Long exampleId);
 }

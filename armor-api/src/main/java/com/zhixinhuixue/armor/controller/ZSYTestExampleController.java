@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.controller;
 
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTestExampleService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -40,5 +42,18 @@ public class ZSYTestExampleController {
     @GetMapping("/detail/{exampleId}")
     public String getExampleDetail(@PathVariable("exampleId")Long exampleId){
         return ZSYResult.success().data(exampleService.getExampleDetail(exampleId)).build();
+    }
+
+    @ApiOperation("删除")
+    @DeleteMapping("/delete/{exampleId}")
+    public String deleteExample(@PathVariable("exampleId")Long exampleId){
+        exampleService.deleteExample(exampleId);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("编辑")
+    @PostMapping("/edit")
+    public String editExample(@Valid @RequestBody EditTestExampleReqDTO reqDTO){
+        return ZSYResult.success().build();
     }
 }

@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYTestExampleMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
+import com.zhixinhuixue.armor.model.bo.TestExampleBO;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
@@ -13,6 +14,7 @@ import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskFunction;
 import com.zhixinhuixue.armor.model.pojo.TestExample;
 import com.zhixinhuixue.armor.service.IZSYTestExampleService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -115,7 +117,49 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
      */
     @Override
     public ExampleDetailResDTO getExampleDetail(Long exampleId) {
+        ExampleDetailResDTO resDTO = new ExampleDetailResDTO();
+        TestExampleBO exampleBO = exampleMapper.selectDetailById(exampleId);
+        if (exampleBO == null){
+            throw new ZSYServiceException("当前测试用例不存在,请检查");
+        }
+        BeanUtils.copyProperties(exampleBO,resDTO);
+        if (exampleBO.getType() == 0){
+            resDTO.setTypeName("正常用例");
+        }else if (exampleBO.getType() == 1){
+            resDTO.setTypeName("异常用例");
+        }
 
-        return null;
+        if (exampleBO.getStatus() == null){
+            resDTO.setStatusName("暂无");
+        }else if (exampleBO.getStatus() == 0){
+            resDTO.setStatusName("通过");
+        }else if (exampleBO.getStatus() == 1){
+            resDTO.setStatusName("失败");
+        }else if (exampleBO.getStatus() == 2){
+            resDTO.setStatusName("阻塞");
+        }
+
+        if (exampleBO.getExamStatus() == null){
+            resDTO.setExamStatusName("暂无");
+        }else if (exampleBO.getExamStatus() == 0){
+            resDTO.setExamStatusName("评审通过");
+        }else if (exampleBO.getExamStatus() == 1){
+            resDTO.setExamStatusName("评审失败");
+        }
+
+        return resDTO;
+    }
+
+    /**
+     * 删除
+     * @param exampleId
+     */
+    @Override
+    public void deleteExample(Long exampleId) {
+        TestExample example = exampleMapper.selectById(exampleId);
+        if (example == null){
+            throw new ZSYServiceException("当前测试用例不存在,请检查");
+        }
+        exampleMapper.deleteById(exampleId);
     }
 }
