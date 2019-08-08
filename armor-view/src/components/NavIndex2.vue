@@ -29,82 +29,108 @@
                 </div>
         </div>
         <div class="my-integral-con" v-show="userRole>0 && userRole < 3" style="width: 1300px;margin-bottom: 10px">
-            <div class="steps-body">
-                <div id="myChart1" :style="{width:'1100px',height:'250px'}"></div>
+            <p class="mic-title">我的线上问题</p>
+            <div class="my-task-detail hh">
+                <el-tabs v-model="tabName" @tab-click="handleClickTab">
+                    <el-tab-pane label="任务积分" name="integral">
+                        <div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"
+                        @click="integralBasicVisible=true">
+                        <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分
+                        </div>
+                        <div class="mic-main clearfix">
+                            <div class="mic-item fl" v-for="(item,key) in taskIntegralItem" style="margin-left: 75px;">
+                                <div class="mic-item-title"><img :src="`${require(`../assets/img/icon_${key+6}.png`)}`"
+                                                                 class="icon-score">
+                                </div>
+                                <div class="mic-item-title" style="font-size: 12px">{{item.time}}</div>
+                                <div class="mic-item-integral">{{item.score}}</div>
+                            </div>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="周工时" name="weekHours">
+                        <div id="myChart1" :style="{width:'1100px',height:'250px'}"></div>
+                    </el-tab-pane>
+                    <el-tab-pane label="我的评价" name="evaluation">
+                        <div class="mic-main clearfix" style="float: left;">
+                            <div class="fl" style="margin-left: 0px;width: 430px">
+                                <div style="font-size: 16px;">本周综合评价</div>
+                                <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.weekTime}}</div>
+                                <div  v-for="(item,index) in personalEvaluation.weekEvaluations"
+                                      v-if="personalEvaluation.weekEvaluations.length > 0">
+                                    <el-form label-position="left" inline class="demo-table-expand">
+                                        <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
+                                            <el-rate v-model="item.avgScore"
+                                                     :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                                     :allow-half=true
+                                                     disabled
+                                                     show-text
+                                                     text-template="{value}"
+                                                     style="float: left;margin-top: 7px">
+                                            </el-rate>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                                <div v-show="personalEvaluation.weekEvaluations.length === 0" class="empty" style="margin-left: -200px">
+                                    <h2>暂无评价</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mic-main clearfix" style="float:left;">
+                            <div class="fl" style="margin-left: 0px;width: 430px">
+                                <div style="font-size: 16px;">本月综合评价</div>
+                                <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.monthTime}}</div>
+                                <div  v-for="(item,index) in personalEvaluation.monthEvaluations"
+                                      v-if="personalEvaluation.monthEvaluations.length > 0">
+                                    <el-form label-position="left" inline class="demo-table-expand">
+                                        <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
+                                            <el-rate v-model="item.avgScore"
+                                                     :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                                     :allow-half=true
+                                                     disabled
+                                                     show-text
+                                                     text-template="{value}"
+                                                     style="float: left;margin-top: 7px">
+                                            </el-rate>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                                <div v-show="personalEvaluation.monthEvaluations.length == 0" class="empty" style="margin-left: -200px">
+                                    <h2>暂无评价</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mic-main clearfix">
+                            <div class="fl" style="margin-left: 0px;width: 430px">
+                                <div style="font-size: 16px">年度综合评价</div>
+                                <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.yearTime}}</div>
+                                <div  v-for="(item,index) in personalEvaluation.yearEvaluations"
+                                      v-if="personalEvaluation.yearEvaluations.length > 0">
+                                    <el-form label-position="left" inline class="demo-table-expand">
+                                        <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
+                                            <el-rate v-model="item.avgScore"
+                                                     :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                                     :allow-half=true
+                                                     disabled
+                                                     show-text
+                                                     text-template="{value}"
+                                                     style="float: left;margin-top: 7px">
+                                            </el-rate>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                                <div v-show="personalEvaluation.yearEvaluations.length === 0" class="empty" style="margin-left: -200px;">
+                                    <h2>暂无评价</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
             </div>
-            <div><p class="mic-title">我的评价</p></div>
-            <div class="mic-main clearfix" style="float: left;">
-                <div class="fl" style="margin-left: 0px;width: 430px">
-                    <div style="font-size: 16px;">本周综合评价</div>
-                    <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.weekTime}}</div>
-                    <div  v-for="(item,index) in personalEvaluation.weekEvaluations"
-                         v-if="personalEvaluation.weekEvaluations.length > 0">
-                        <el-form label-position="left" inline class="demo-table-expand">
-                            <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
-                                <el-rate v-model="item.avgScore"
-                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                         :allow-half=true
-                                         disabled
-                                         show-text
-                                         text-template="{value}"
-                                         style="float: left;margin-top: 7px">
-                                </el-rate>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                    <div v-show="personalEvaluation.weekEvaluations.length === 0" class="empty" style="margin-left: -200px">
-                        <h2>暂无评价</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="mic-main clearfix" style="float:left;">
-                <div class="fl" style="margin-left: 0px;width: 430px">
-                    <div style="font-size: 16px;">本月综合评价</div>
-                    <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.monthTime}}</div>
-                    <div  v-for="(item,index) in personalEvaluation.monthEvaluations"
-                         v-if="personalEvaluation.monthEvaluations.length > 0">
-                        <el-form label-position="left" inline class="demo-table-expand">
-                            <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
-                                <el-rate v-model="item.avgScore"
-                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                         :allow-half=true
-                                         disabled
-                                         show-text
-                                         text-template="{value}"
-                                         style="float: left;margin-top: 7px">
-                                </el-rate>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                    <div v-show="personalEvaluation.monthEvaluations.length == 0" class="empty" style="margin-left: -200px">
-                        <h2>暂无评价</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="mic-main clearfix">
-                <div class="fl" style="margin-left: 0px;width: 430px">
-                    <div style="font-size: 16px">年度综合评价</div>
-                    <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.yearTime}}</div>
-                    <div  v-for="(item,index) in personalEvaluation.yearEvaluations"
-                         v-if="personalEvaluation.yearEvaluations.length > 0">
-                        <el-form label-position="left" inline class="demo-table-expand">
-                            <el-form-item class="task-form" :label="item.evaluationOptionName" style="margin-top: -10px">
-                                <el-rate v-model="item.avgScore"
-                                         :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                         :allow-half=true
-                                         disabled
-                                         show-text
-                                         text-template="{value}"
-                                         style="float: left;margin-top: 7px">
-                                </el-rate>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                    <div v-show="personalEvaluation.yearEvaluations.length === 0" class="empty" style="margin-left: -200px;">
-                        <h2>暂无评价</h2>
-                    </div>
-                </div>
-            </div>
+            <!--<div class="steps-body">-->
+                <!--<div id="myChart1" :style="{width:'1100px',height:'250px'}"></div>-->
+            <!--</div>-->
+            <!--<div><p class="mic-title">我的评价</p></div>-->
+
         </div>
         <!--<div class="my-integral-con" v-show="userRole>0 && userRole < 3">-->
             <!--<div><p class="mic-title">我的积分</p>-->
@@ -3192,6 +3218,20 @@
                         score: ''
                     }
                 ],
+                taskIntegralItem: [
+                    {
+                        label: '本月',
+                        score: ''
+                    },
+                    {
+                        label: '本季度',
+                        score: ''
+                    },
+                    {
+                        label: '年度总积分',
+                        score: ''
+                    }
+                ],
 
                 // sch --
                 createQuestionVisible: false,
@@ -3623,7 +3663,21 @@
                     total:0
                 },
                 userInfo:{},
-                jobRoleName:''
+                jobRoleName:'',
+                tabName:'integral',
+                personalTaskIntegralData:{
+                    userId:'',
+                    userName:'',
+                    seasonIntegral:'',
+                    monthIntegral:'',
+                    yearIntegral:'',
+                    monthBegin:'',
+                    monthEnd:'',
+                    seasonBegin:'',
+                    seasonEnd:'',
+                    yearBegin:'',
+                    yearEnd:''
+                }
                 // -- sch
             };
         },
@@ -4049,7 +4103,7 @@
             reload() {
                 this.task.doing = []
                 this.initSignInTime()
-                this.fetchIntegral()
+                // this.fetchIntegral()
                 this.fetchTaskWaitAudit()
                 this.fetchProjectList()
                 this.fetchStageList()
@@ -4108,6 +4162,7 @@
                     this.fetchPersonalTaskModifyAccessed();
                     this.fetchPersonalEvaluation();
                     this.fetchWeekHourStats();
+                    this.fetchPersonalTaskIntegral();
                 }
 
             },
@@ -7363,48 +7418,50 @@
                         param.reason = this.modifyMyTaskReason;
                         param.id = this.taskModifyDetail.id;
 
-                        let taskModifyFunctionList = [];
-                        for(let i = 0;i<this.num;i++){
-                            let taskModifyFunction={
-                                functionId:this.taskFunctionList[i],
-                                level:this.functionLevelList[i],
-                            };
-                            taskModifyFunctionList.push(taskModifyFunction);
-                        }
-                        for(let i = 0;i < taskModifyFunctionList.length;i++){
-                            let taskModifyFunction = taskModifyFunctionList[i];
-                            let functionId = taskModifyFunction.functionId;
-                            let level = taskModifyFunction.level;
-                            if (functionId === undefined || functionId === null || functionId === ''){
-                                this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
-                                return false;
+                        if (this.taskModifyDetail.functionResDTOList !== undefined
+                            && this.taskModifyDetail.functionResDTOList.length>0) {
+                            let taskModifyFunctionList = [];
+                            for(let i = 0;i<this.num;i++){
+                                let taskModifyFunction={
+                                    functionId:this.taskFunctionList[i],
+                                    level:this.functionLevelList[i],
+                                };
+                                taskModifyFunctionList.push(taskModifyFunction);
                             }
-                            if (level === undefined || level === null || level === ''){
-                                this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
-                                return false;
-                            }
-                        }
-                        param.taskModifyFunctionList = taskModifyFunctionList;
-                        let newArr = [param.taskModifyFunctionList[0].functionId];
-                        for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
-                            let repeat = false;
-                            for (let j = 0; j < newArr.length; j++) {
-                                if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
-                                    repeat = true;
-                                    break;
-                                }else{
-
+                            for(let i = 0;i < taskModifyFunctionList.length;i++){
+                                let taskModifyFunction = taskModifyFunctionList[i];
+                                let functionId = taskModifyFunction.functionId;
+                                let level = taskModifyFunction.level;
+                                if (functionId === undefined || functionId === null || functionId === ''){
+                                    this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                    return false;
+                                }
+                                if (level === undefined || level === null || level === ''){
+                                    this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                    return false;
                                 }
                             }
-                            if (!repeat){
-                                newArr.push(param.taskModifyFunctionList[i].functionId)
+                            param.taskModifyFunctionList = taskModifyFunctionList;
+                            let newArr = [param.taskModifyFunctionList[0].functionId];
+                            for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
+                                let repeat = false;
+                                for (let j = 0; j < newArr.length; j++) {
+                                    if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
+                                        repeat = true;
+                                        break;
+                                    }else{
+
+                                    }
+                                }
+                                if (!repeat){
+                                    newArr.push(param.taskModifyFunctionList[i].functionId)
+                                }
+                            }
+                            if (param.taskModifyFunctionList.length>newArr.length){
+                                this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                return false;
                             }
                         }
-                        if (param.taskModifyFunctionList.length>newArr.length){
-                            this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
-                            return false;
-                        }
-
                         http.zsyPutHttp('/task-modify/review', param, (resp) => {
                             this.showTaskModifyDetailVisible = false;
                             this.$message({showClose: true, message: '审核通过', type: 'success'});
@@ -7832,6 +7889,28 @@
                 this.taskFunctionList = [];
                 this.functionLevelList = [];
                 this.num = 0;
+            },
+            //切换tab
+            handleClickTab(){
+                if (this.tabName === 'integral'){
+                    this.fetchPersonalTaskIntegral();
+                } else if (this.tabName === 'weekHours'){
+                    this.fetchWeekHourStats();
+                } else if (this.tabName === 'evaluation'){
+                    this.fetchPersonalEvaluation();
+                }
+            },
+            //查看任务
+            fetchPersonalTaskIntegral(){
+                http.zsyGetHttp('/integral/personal',{},(res)=>{
+                    this.personalTaskIntegralData = res.data;
+                    let items = [];
+                    items.push({label: '', score: this.personalTaskIntegralData.monthIntegral, time: this.getDateString('month')});
+                    let seasonRange = moment(this.personalTaskIntegralData.seasonBegin).format("YYYY-MM-DD")+'--'+moment(this.personalTaskIntegralData.seasonEnd).format('YYYY-MM-DD');
+                    items.push({label: '', score: this.personalTaskIntegralData.seasonIntegral, time: seasonRange});
+                    items.push({label: '', score: this.personalTaskIntegralData.yearIntegral, time: this.getDateString('year')});
+                    this.taskIntegralItem = items;
+                })
             }
             // -- sch
         },
@@ -7853,6 +7932,9 @@
         min-width: 0;
         text-overflow: ellipsis;
         vertical-align: middle;
+    }
+    .hh .el-tabs__header {
+        border-bottom: 0;
     }
 </style>
 <style scoped>
