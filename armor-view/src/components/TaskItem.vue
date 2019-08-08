@@ -908,8 +908,8 @@
                     <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                     <span style="position: absolute;right: 10px;">
                         <el-button type="text" icon="edit" v-show="userRole == 0"
-                                   @click="modifyStep(index,modifyTaskForm.taskUsers)"></el-button>
-                    <el-button v-show="userRole == 0" type="text" icon="close" @click="deleteMember(index)"></el-button>
+                                   @click="modifyStep(index,modifyTaskForm.taskUsers,modifyTaskForm.id)"></el-button>
+                    <el-button v-show="userRole === 0" type="text" icon="close" @click="deleteMember(index)"></el-button>
                     </span>
                 </div>
                 <div class="bdl-line"></div>
@@ -919,21 +919,29 @@
                           :rows="3"></el-input>
                 <div class="add-member-basic">
                     <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
-                        <div class="add-member-basic-msg fl">
+                        <div class="add-member-basic-menu fl" style="margin-left: -30px"><span class="star">*</span>姓名：</div>
+                        <div class="add-member-basic-msg fl" style="margin-left: 30px">
                             <el-select v-model="step.userId" filterable placeholder="请选择" @change="stepUserChange">
                                 <el-option v-for="item in userList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 26px"><span class="star">*</span>工作量：
                         </div>
                         <div class="add-member-basic-msg fl">
                             <!--<input class="member-time-count" v-model="step.taskHours">工时-->
                             <el-input v-model="otherStep.taskHours" style="width: 70px"></el-input>
                             工时
                         </div>
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>状态：</div>
+                        <div class="add-member-basic-msg fl">
+                            <el-select v-model="otherStep.status" filterable placeholder="请选择">
+                                <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
                     </div>
+
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>开始日期：</div>
                         <div class="add-member-basic-msg fl">
@@ -957,15 +965,39 @@
                                     {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
                             </div>
                         </div>
-                    <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu fl"><span class="star">*</span>状态：</div>
-                        <div class="add-member-basic-msg fl">
-                            <el-select v-model="otherStep.status" filterable placeholder="请选择">
-                                <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
+
+
+                    <!--<div v-show="step.functionResDTOList !== undefined && step.functionResDTOList.length>0">-->
+                        <!--<span style="margin-left: 0px;color: blue;cursor: pointer" @click="showLevelReference">功能点(点击查看复杂度参考表):</span>-->
+                        <!--<div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">-->
+                            <!--&lt;!&ndash;<i style="margin-left: 0px" class="el-icon-plus" v-show="num>=taskTempDetail.functionResDTOList.length" @click="plus"></i>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<i class="el-icon-minus" v-show="num>taskTempDetail.functionResDTOList.length" @click="minus(num-1)"></i>&ndash;&gt;-->
+                            <!--<div v-for="i in modifyTaskNum" style="margin-top: 3px">-->
+                                <!--<el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable-->
+                                           <!--disabled-->
+                                           <!--style="width: 360px">-->
+                                    <!--<el-option-->
+                                            <!--v-for="item in taskFunctionData"-->
+                                            <!--:key="item.id"-->
+                                            <!--:label="item.functionStr"-->
+                                            <!--:value="item.id">-->
+                                    <!--</el-option>-->
+                                <!--</el-select>-->
+                                <!--<el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable-->
+                                           <!--style="width: 120px">-->
+                                    <!--<el-option-->
+                                            <!--v-for="item in taskLevelList"-->
+                                            <!--:key="item.id"-->
+                                            <!--:label="item.name"-->
+                                            <!--:value="item.id">-->
+                                    <!--</el-option>-->
+                                <!--</el-select>-->
+                            <!--</div>-->
+
+
+                        <!--</div>-->
+
+                    <!--</div>-->
 
                 </div>
                 <div class="ctpc-btns">
@@ -1107,19 +1139,19 @@
                 <el-form-item class="task-form-edit" label="任务描述">
                     <el-input type="textarea" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item class="task-form-edit" label="阶段">
-                    <el-select
-                            v-model="modifyPrivateTaskForm.stageId"
-                            default-first-option
-                            placeholder="请选择阶段">
-                        <el-option
-                                v-for="item in stageList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
+                <!--<el-form-item class="task-form-edit" label="阶段">-->
+                    <!--<el-select-->
+                            <!--v-model="modifyPrivateTaskForm.stageId"-->
+                            <!--default-first-option-->
+                            <!--placeholder="请选择阶段">-->
+                        <!--<el-option-->
+                                <!--v-for="item in stageList"-->
+                                <!--:key="item.id"-->
+                                <!--:label="item.name"-->
+                                <!--:value="item.id">-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
                 <el-form-item class="task-form-edit" label="标签">
                     <el-select
                             v-model="modifyPrivateTaskForm.tags"
@@ -1630,6 +1662,7 @@
                     pageNum: 1
                 },
                 modifyTaskForm: {
+                    id:'',
                     taskName: '',
                     doc: '',
                     description: '',
@@ -1649,6 +1682,7 @@
                     createBy:''
                 },
                 num:0,
+                modifyTaskNum:0,
                 taskTempModuleList:[],
                 functionList:[],
                 functionLevelList:[],
@@ -1691,7 +1725,8 @@
                     completeHours: '',
                     completeTime: '',
                     description: '',
-                    status: ''
+                    status: '',
+                    functionResDTOList:[]
                 },
                 otherStep:{
                     description: '',
@@ -2521,6 +2556,7 @@
             },
             // 显示修改单人任务弹出层
             showModifyPrivateTaskDialog(taskId) {
+                this.modifyPrivateTaskForm.tags = [];
                 this.showAuditTask = false;
                 this.taskDetail = {};
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
@@ -2606,7 +2642,8 @@
                 });
             },
             // 修改阶段
-            modifyStep(index, stages) {
+            modifyStep(index, stages,taskId) {
+                // this.fetchTaskFunction(taskId);
                 this.stepTemp = {
                     stageId: stages[index].stageId,
                     stageName: stages[index].stageName,
@@ -2620,15 +2657,26 @@
                     completeTime: stages[index].completeTime,
                     status: stages[index].status,
                     userWeeks: stages[index].userWeeks,
-                }
+                    functionResDTOList:stages[index].functionResDTOList
+                };
                 this.step = stages[index];
+                // this.modifyTaskNum = 0;
+                // this.taskFunctionList = [];
+                // this.functionLevelList = [];
+                // if (this.step.functionResDTOList.length>0){
+                //     this.modifyTaskNum = this.step.functionResDTOList.length;
+                //     this.step.functionResDTOList.forEach(taskFunction=>{
+                //         this.taskFunctionList.push(taskFunction.functionId);
+                //         this.functionLevelList.push(taskFunction.level);
+                //     })
+                // }
                 this.step.index = index;
                 this.otherStep.description = stages[index].description;
                 this.otherStep.status = stages[index].status;
                 this.otherStep.taskHours = stages[index].taskHours;
                 this.modifyTaskForm.taskUsers.forEach((item) => {
                     item.cssClass = ''
-                })
+                });
                 this.modifyTaskForm.taskUsers[index].cssClass = 'stepActive'
                 this.showAddDetail = true;
                 this.weekNumberTemp = stages[index].userWeeks
@@ -2707,24 +2755,24 @@
                     completeHours: '',
                     completeTime: '',
                     status: ''
-                }
-                this.otherStep.description = ''
-                this.otherStep.status=''
-                this.otherStep.taskHours=''
+                };
+                this.otherStep.description = '';
+                this.otherStep.status='';
+                this.otherStep.taskHours='';
                 this.weekNumberTemp = []
             },
             saveAddMember() {
-                var sumHours=0;
-                for(var i=0;i<this.weekNumber.length;i++){
-                    if(this.weekNumber[i].hours==''|| this.weekNumber[i].hours=== undefined){
-                        if(this.weekNumber[i].hoursTemp !== undefined &&this.weekNumber[i].hoursTemp!=''){
+                let sumHours=0;
+                for(let i=0;i<this.weekNumber.length;i++){
+                    if(this.weekNumber[i].hours===''|| this.weekNumber[i].hours=== undefined){
+                        if(this.weekNumber[i].hoursTemp !== undefined &&this.weekNumber[i].hoursTemp!==''){
                             this.weekNumber[i].hours = this.weekNumber[i].hoursTemp
                         }else{
                             this.weekNumber[i].hours = 0
                         }
                     }
-                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
-                    if(!ishours &&ishours!=0){
+                    let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.weekNumber[i].hours);
+                    if(!ishours){
                         this.errorMsg('工作量填写错误');
                         return false;
                     }
@@ -2739,15 +2787,18 @@
                     return
                 }
                 const valid =
-                    this.step.userId == '' ||
-                    this.otherStep.taskHours == '' ||
-                    this.step.beginTime == '' ||
-                    this.step.endTime == '';
+                    this.step.userId === '' ||
+                    this.otherStep.taskHours === '' ||
+                    this.step.beginTime === '' ||
+                    this.step.endTime === '';
                 if (valid) {
                     this.warnMsg('请将阶段填写完整');
                     return
                 }
                 if (this.step.index === '') {
+                    // if (this.taskFunctionList.length>0) {
+                    //     this.
+                    // }
                     let taskUser = {};
                     taskUser.userId = this.step.userId;
                     taskUser.userName = this.step.userName;
@@ -2761,9 +2812,9 @@
                 } else {
                     // 取消css
                     this.modifyTaskForm.taskUsers[this.step.index].cssClass = '';
-                    this.modifyTaskForm.taskUsers[this.step.index].description = this.otherStep.description
-                    this.modifyTaskForm.taskUsers[this.step.index].status = this.otherStep.status
-                    this.modifyTaskForm.taskUsers[this.step.index].taskHours = this.otherStep.taskHours
+                    this.modifyTaskForm.taskUsers[this.step.index].description = this.otherStep.description;
+                    this.modifyTaskForm.taskUsers[this.step.index].status = this.otherStep.status;
+                    this.modifyTaskForm.taskUsers[this.step.index].taskHours = this.otherStep.taskHours;
                     this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumber;
                 }
 
@@ -3980,7 +4031,13 @@
                 this.modifyTaskFunctionList = [];
                 this.modifyFunctionLevelList = [];
                 this.clearModifyMyTaskForm()
-            }
+            },
+            //查看复杂度参考表
+            showLevelReference(){
+                let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/功能点复杂度参考表.pdf";
+                // let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/df71d0bf-6a42-4a84-a55d-4e21288fa073.png";
+                window.open(url,'_blank')
+            },
         },
         created() {
             // 监听看板任务点击事件
