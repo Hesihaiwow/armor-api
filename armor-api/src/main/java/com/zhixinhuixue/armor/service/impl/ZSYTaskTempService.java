@@ -384,6 +384,28 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 }else if (level == 5){
                     resDTO.setLevelName("五级");
                 }
+                List<UserAndLevelBO> userAndLevelBOS = functionMapper.selectUserAndLevelByFunction(function.getId());
+                List<UserAndLevelResDTO> userAndLevelResDTOS = new ArrayList<>();
+                if (!CollectionUtils.isEmpty(userAndLevelBOS)){
+                    userAndLevelBOS.forEach(userAndLevelBO -> {
+                        UserAndLevelResDTO userAndLevelResDTO = new UserAndLevelResDTO();
+                        BeanUtils.copyProperties(userAndLevelBO,userAndLevelResDTO);
+                        Integer level2 = userAndLevelBO.getLevel();
+                        if (level2 == 1){
+                            userAndLevelResDTO.setLevelName("一级");
+                        }else if(level2 == 2){
+                            userAndLevelResDTO.setLevelName("二级");
+                        }else if (level2 == 3){
+                            userAndLevelResDTO.setLevelName("三级");
+                        }else if (level2 == 4){
+                            userAndLevelResDTO.setLevelName("四级");
+                        }else if (level2 == 5){
+                            userAndLevelResDTO.setLevelName("五级");
+                        }
+                        userAndLevelResDTOS.add(userAndLevelResDTO);
+                    });
+                }
+                resDTO.setUserAndLevelResDTOS(userAndLevelResDTOS);
                 functionResDTOS.add(resDTO);
             });
         }
@@ -546,6 +568,28 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                         }else if (level == 5){
                             resDTO.setLevelName("五级");
                         }
+                        List<UserAndLevelBO> userAndLevelBOS = functionMapper.selectUserAndLevelByFunction(function.getFunctionId());
+                        List<UserAndLevelResDTO> userAndLevelResDTOS = new ArrayList<>();
+                        if (!CollectionUtils.isEmpty(userAndLevelBOS)){
+                            userAndLevelBOS.forEach(userAndLevelBO -> {
+                                UserAndLevelResDTO userAndLevelResDTO = new UserAndLevelResDTO();
+                                BeanUtils.copyProperties(userAndLevelBO,userAndLevelResDTO);
+                                Integer level2 = userAndLevelBO.getLevel();
+                                if (level2 == 1){
+                                    userAndLevelResDTO.setLevelName("一级");
+                                }else if(level2 == 2){
+                                    userAndLevelResDTO.setLevelName("二级");
+                                }else if (level2 == 3){
+                                    userAndLevelResDTO.setLevelName("三级");
+                                }else if (level2 == 4){
+                                    userAndLevelResDTO.setLevelName("四级");
+                                }else if (level2 == 5){
+                                    userAndLevelResDTO.setLevelName("五级");
+                                }
+                                userAndLevelResDTOS.add(userAndLevelResDTO);
+                            });
+                        }
+                        resDTO.setUserAndLevelResDTOS(userAndLevelResDTOS);
                         functionResDTOS.add(resDTO);
                     });
                 }

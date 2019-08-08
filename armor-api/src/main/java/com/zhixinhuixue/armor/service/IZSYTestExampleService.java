@@ -4,6 +4,9 @@ import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @author sch
@@ -42,4 +45,17 @@ public interface IZSYTestExampleService {
      * @param reqDTO
      */
     void editExample(EditTestExampleReqDTO reqDTO);
+
+    /**
+     * 导入
+     * @param uploadFile
+     * @param taskId
+     */
+    void importExample(MultipartFile uploadFile, Long taskId);
+
+    /**
+     * 导出
+     * @return
+     */
+    String exportExample(Long taskId);
 }

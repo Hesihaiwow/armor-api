@@ -1,15 +1,14 @@
 package com.zhixinhuixue.armor.controller;
 
-import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTestExampleService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -56,5 +55,18 @@ public class ZSYTestExampleController {
     public String editExample(@Valid @RequestBody EditTestExampleReqDTO reqDTO){
         exampleService.editExample(reqDTO);
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("导入")
+    @PostMapping(value = "/import/{taskId}",produces = "application/json; charset=utf-8")
+    public String importExample(@PathVariable("taskId")Long taskId,@RequestParam(value = "uploadFile") MultipartFile uploadFile){
+        exampleService.importExample(uploadFile,taskId);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("导出")
+    @GetMapping("/export/{taskId}")
+    public String exportExample(@PathVariable("taskId")Long taskId){
+        return ZSYResult.success().data(exampleService.exportExample(taskId)).build();
     }
 }

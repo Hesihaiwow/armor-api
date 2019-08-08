@@ -58,4 +58,17 @@ public interface IZSYTestExampleMapper {
      * @return
      */
     int update(TestExample example);
+
+    /**
+     * 批量插入
+     * @param exampleList
+     */
+    void insertBatch(@Param("exampleList") List<TestExample> exampleList);
+
+    /**
+     * 根据taskId查询测试用例
+     * @param taskId
+     * @return
+     */
+    List<TestExampleBO> selectListByTaskId(@Param("taskId")Long taskId);
 }

@@ -10,7 +10,7 @@ CREATE TABLE `test_example` (
   `check_point` text DEFAULT NULL COMMENT '检查项',
   `expect_result` text DEFAULT NULL COMMENT '预期结果',
   `remark` text DEFAULT NULL COMMENT '备注',
-  `type` int(1) NOT NULL COMMENT '正反用例   0:正常用例  1:异常用例',
+  `type` int(1) DEFAULT NULL COMMENT '正反用例   0:正常用例  1:异常用例',
   `status` int(1) DEFAULT NULL COMMENT '状态  0:通过,1:失败 2:阻塞',
   `exam_status` int(1) DEFAULT NULL COMMENT '评审状态   0:评审通过, 1:评审失败',
   `create_time` datetime NOT NULL COMMENT '创建日期',
