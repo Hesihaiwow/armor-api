@@ -3,19 +3,16 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO;
-import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
+import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralReviewResDTO;
-import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
@@ -23,12 +20,19 @@ import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.zhixinhuixue.armor.helper.DateHelper.getCurrYearFirst;
+import static com.zhixinhuixue.armor.helper.DateHelper.getCurrYearLast;
 
 
 /**
@@ -96,10 +100,10 @@ public class ZSYIntegralService implements IZSYIntegralService {
         userIntegralResDTO.setId(id);
         userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(), DateHelper.getThisWeekLastDay(), id));
         userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(), DateHelper.getThisMonthLastDay(), id));
-        userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id));
+        userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id));
         Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id,ZSYTokenRequestContext.get().getDepartmentId());//季度排名为空设为0
         userIntegralResDTO.setQuarterRank(quarterRank != null ? quarterRank : 0);
-        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(DateHelper.getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(DateHelper.getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId());//年度排名为空设为0
+        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId());//年度排名为空设为0
         userIntegralResDTO.setYearRank(yearRank != null ? yearRank : 0);
         User user = userMapper.selectById(id);
         userIntegralResDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());

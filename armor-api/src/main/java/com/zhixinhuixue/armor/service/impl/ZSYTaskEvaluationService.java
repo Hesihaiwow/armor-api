@@ -196,6 +196,7 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     task.setId(taskId);
                     task.setStatus(ZSYTaskStatus.FINISHED.getValue());
                     task.setUpdateTime(new Date());
+                    task.setCompleteTime(new Date());
                     taskMapper.updateByPrimaryKeySelective(task);
                     // 修改子任务状态
                     TaskUser taskUser = new TaskUser();

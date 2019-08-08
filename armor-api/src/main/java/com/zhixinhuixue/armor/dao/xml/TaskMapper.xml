@@ -191,7 +191,7 @@
             left join project t3 on t1.project_id = t3.id
             left join `user` t4 on t1.create_by = t4.id
             where t1.review_status = 3 and t2.`status` &gt; 1 AND  t2.`status` != 4
-            and t2.user_id = #{userId} and t1.is_delete = 0  order by t1.create_time desc
+            and t2.user_id = #{userId} and t1.is_delete = 0  order by t2.complete_time desc
     </select>
 
     <!-- 查询用户完成任务后的积分 -->

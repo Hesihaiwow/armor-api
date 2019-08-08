@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
+import com.zhixinhuixue.armor.model.bo.TaskIntegralBO;
 import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public interface IZSYUserIntegralMapper {
@@ -134,4 +136,12 @@ public interface IZSYUserIntegralMapper {
      */
     List<UserIntegral> getUserIntegralByTaskId(@Param("id") Long id);
 
+    /**
+     * 查询用户任务功能点结合,评价
+     * @param userId
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<TaskIntegralBO> selectTaskIntegralByUser(@Param("userId")Long userId, @Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
 }

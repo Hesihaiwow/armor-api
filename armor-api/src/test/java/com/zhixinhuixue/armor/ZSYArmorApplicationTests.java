@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor;
 
+import com.zhixinhuixue.armor.helper.DateHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,4 +17,9 @@ public class ZSYArmorApplicationTests {
 		System.out.println(UUID.randomUUID().toString().replaceAll("-",""));
 	}
 
+	@Test
+	public void test(){
+		String weekFirstDayStr = DateHelper.getThisWeekFirstDay();
+		System.out.println("weekFirstDayStr = " + weekFirstDayStr);
+	}
 }

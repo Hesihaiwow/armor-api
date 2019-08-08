@@ -1133,7 +1133,7 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setStatus(ZSYTaskStatus.COMPLETED.getValue());
-        task.setCompleteTime(new Date());
+//        task.setCompleteTime(new Date());
         task.setUpdateTime(new Date());
         // 将任务状态改为已完成（待评价）
         taskMapper.updateByPrimaryKeySelective(task);
