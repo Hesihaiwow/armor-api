@@ -7224,46 +7224,50 @@
                         param.description = this.modifyMyTaskDescription;
                         param.id = this.taskModifyDetail.id;
 
-                        let taskModifyFunctionList = [];
-                        for(let i = 0;i<this.num;i++){
-                            let taskModifyFunction={
-                                functionId:this.taskFunctionList[i],
-                                level:this.functionLevelList[i],
-                            };
-                            taskModifyFunctionList.push(taskModifyFunction);
-                        }
-                        for(let i = 0;i < taskModifyFunctionList.length;i++){
-                            let taskModifyFunction = taskModifyFunctionList[i];
-                            let functionId = taskModifyFunction.functionId;
-                            let level = taskModifyFunction.level;
-                            if (functionId === undefined || functionId === null || functionId === ''){
-                                this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
-                                return false;
+                        if (this.taskModifyDetail.functionResDTOList !== undefined
+                            && this.taskModifyDetail.functionResDTOList.length>0) {
+                            let taskModifyFunctionList = [];
+                            for(let i = 0;i<this.num;i++){
+                                let taskModifyFunction={
+                                    functionId:this.taskFunctionList[i],
+                                    level:this.functionLevelList[i],
+                                };
+                                taskModifyFunctionList.push(taskModifyFunction);
                             }
-                            if (level === undefined || level === null || level === ''){
-                                this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
-                                return false;
-                            }
-                        }
-                        param.taskModifyFunctionList = taskModifyFunctionList;
-                        let newArr = [param.taskModifyFunctionList[0].functionId];
-                        for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
-                            let repeat = false;
-                            for (let j = 0; j < newArr.length; j++) {
-                                if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
-                                    repeat = true;
-                                    break;
-                                }else{
-
+                            for(let i = 0;i < taskModifyFunctionList.length;i++){
+                                let taskModifyFunction = taskModifyFunctionList[i];
+                                let functionId = taskModifyFunction.functionId;
+                                let level = taskModifyFunction.level;
+                                if (functionId === undefined || functionId === null || functionId === ''){
+                                    this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                    return false;
+                                }
+                                if (level === undefined || level === null || level === ''){
+                                    this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                    return false;
                                 }
                             }
-                            if (!repeat){
-                                newArr.push(param.taskModifyFunctionList[i].functionId)
+                            param.taskModifyFunctionList = taskModifyFunctionList;
+                            let newArr = [param.taskModifyFunctionList[0].functionId];
+                            for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
+                                let repeat = false;
+                                for (let j = 0; j < newArr.length; j++) {
+                                    if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
+                                        repeat = true;
+                                        break;
+                                    }else{
+
+                                    }
+                                }
+                                if (!repeat){
+                                    newArr.push(param.taskModifyFunctionList[i].functionId)
+                                }
                             }
-                        }
-                        if (param.taskModifyFunctionList.length>newArr.length){
-                            this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
-                            return false;
+                            if (param.taskModifyFunctionList.length>newArr.length){
+                                this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                return false;
+                            }
+
                         }
 
                         http.zsyPutHttp('/task-modify/update', param, (resp) => {
