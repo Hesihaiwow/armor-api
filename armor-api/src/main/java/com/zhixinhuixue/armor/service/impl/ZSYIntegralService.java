@@ -268,5 +268,190 @@ public class ZSYIntegralService implements IZSYIntegralService {
         userIntegralMapper.insert(userIntegralFirst);
     }
 
+    /**
+     * 查询用户任务积分
+     */
+    @Override
+    public UserTaskIntegralResDTO getPersonalIntegral() {
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        User user = userMapper.selectById(userId);
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH)+1;
+        System.out.println("month = " + month);
+        String seasonOneBeginStr = year+"-01-01 00:00:00";
+        String seasonOneEndStr = year+"-03-31 23:59:59";
+        String seasonTwoBeginStr = year+"-04-01 00:00:00";
+        String seasonTwoEndStr = year+"-06-30 23:59:59";
+        String seasonThreeBeginStr = year+"-07-01 00:00:00";
+        String seasonThreeEndStr = year+"-09-30 23:59:59";
+        String seasonFourBeginStr = year+"-10-01 00:00:00";
+        String seasonFourEndStr = year+"-12-31 23:59:59";
+        Date seasonOneBegin;
+        Date seasonOneEnd;
+        Date seasonTwoBegin;
+        Date seasonTwoEnd;
+        Date seasonThreeBegin;
+        Date seasonThreeEnd;
+        Date seasonFourBegin;
+        Date seasonFourEnd;
+        Date seasonBegin = null;
+        Date seasonEnd = null;
 
+        String thisWeekFirstDayStr = DateHelper.getThisWeekFirstDay();
+        String thisWeekLastDayStr = DateHelper.getThisWeekLastDay();
+        String thisMonthFirstDayStr = DateHelper.getThisMonthFirstDay();
+        String thisMonthLastDayStr = DateHelper.getThisMonthLastDay();
+        Date currYearFirst = DateHelper.getCurrYearFirst();
+        Date currYearLast = DateHelper.getCurrYearLast();
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat timeSDF2 = new SimpleDateFormat("yyyy-MM-dd");
+        String currYearLastStr = timeSDF2.format(currYearLast);
+        Date weekFirstDay;
+        Date weekLastDay;
+        Date monthFirstDay;
+        Date monthLastDay;
+        UserTaskIntegralResDTO resDTO = new UserTaskIntegralResDTO();
+
+        try {
+            seasonOneBegin = timeSDF.parse(seasonOneBeginStr);
+            seasonOneEnd = timeSDF.parse(seasonOneEndStr);
+            seasonTwoBegin = timeSDF.parse(seasonTwoBeginStr);
+            seasonTwoEnd = timeSDF.parse(seasonTwoEndStr);
+            seasonThreeBegin = timeSDF.parse(seasonThreeBeginStr);
+            seasonThreeEnd = timeSDF.parse(seasonThreeEndStr);
+            seasonFourBegin = timeSDF.parse(seasonFourBeginStr);
+            seasonFourEnd = timeSDF.parse(seasonFourEndStr);
+            if (month>=1 && month<=3){
+                seasonBegin = seasonOneBegin;
+                seasonEnd = seasonOneEnd;
+            }else if (month>=4 && month<=6){
+                seasonBegin = seasonTwoBegin;
+                seasonEnd = seasonTwoEnd;
+            }else if (month>=7 && month<=9){
+                seasonBegin = seasonThreeBegin;
+                seasonEnd = seasonThreeEnd;
+            }else if (month>=10 && month<=12){
+                seasonBegin = seasonFourBegin;
+                seasonEnd = seasonFourEnd;
+            }
+            currYearLast = timeSDF.parse(currYearLastStr+" 23:59:59");
+            calendar.setTime(timeSDF.parse(thisWeekFirstDayStr));
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            weekFirstDay = calendar.getTime();
+
+            calendar.setTime(timeSDF.parse(thisWeekLastDayStr));
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            weekLastDay = calendar.getTime();
+
+            monthFirstDay = timeSDF.parse(thisMonthFirstDayStr);
+            monthLastDay = timeSDF.parse(thisMonthLastDayStr);
+
+            //查询用户已完成且已评价完且含有功能点的任务  功能点的复杂度集合
+            List<TaskIntegralBO> monthIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,monthFirstDay,monthLastDay);
+            List<TaskIntegralBO> seasonIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,seasonBegin,seasonEnd);
+            List<TaskIntegralBO> yearIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,currYearFirst,currYearLast);
+
+            Integer userLevel = user.getLevel();
+            if (userLevel == null){
+                throw new ZSYServiceException("当前用户暂无级别,请联系超管");
+            }
+            BigDecimal userCoefficient = BigDecimal.ZERO;
+            if (userLevel == 1){
+                userCoefficient = BigDecimal.valueOf(0.9);
+            }else if (userLevel == 2){
+                userCoefficient = BigDecimal.valueOf(0.8);
+            }else if (userLevel == 3){
+                userCoefficient = BigDecimal.valueOf(0.7);
+            }else if (userLevel == 4){
+                userCoefficient = BigDecimal.valueOf(0.6);
+            }else if (userLevel == 5){
+                userCoefficient = BigDecimal.valueOf(0.5);
+            }else if (userLevel == 6){
+                userCoefficient = BigDecimal.valueOf(0.4);
+            }else if (userLevel == 7){
+                userCoefficient = BigDecimal.valueOf(0.3);
+            }else if (userLevel == 8){
+                userCoefficient = BigDecimal.valueOf(0.2);
+            }else if (userLevel == 9){
+                userCoefficient = BigDecimal.valueOf(0.1);
+            }
+
+            //月任务积分
+            if (!CollectionUtils.isEmpty(monthIntegralList)){
+                BigDecimal monthIntegral = getIntegral(monthIntegralList, userCoefficient);
+                resDTO.setMonthIntegral(monthIntegral);
+            }
+            //月任务积分
+            if (!CollectionUtils.isEmpty(seasonIntegralList)){
+                BigDecimal weekIntegral = getIntegral(seasonIntegralList, userCoefficient);
+                resDTO.setSeasonIntegral(weekIntegral);
+            }
+            //年任务积分
+            if (!CollectionUtils.isEmpty(yearIntegralList)){
+                BigDecimal yearIntegral = getIntegral(yearIntegralList, userCoefficient);
+                resDTO.setYearIntegral(yearIntegral);
+            }
+            resDTO.setUserId(user.getId());
+            resDTO.setUserName(user.getName());
+            resDTO.setMonthBegin(monthFirstDay);
+            resDTO.setMonthEnd(monthLastDay);
+            resDTO.setSeasonBegin(seasonBegin);
+            resDTO.setSeasonEnd(seasonEnd);
+            resDTO.setYearBegin(currYearFirst);
+            resDTO.setYearEnd(currYearLast);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return resDTO;
+    }
+
+    private BigDecimal getIntegral(List<TaskIntegralBO> weekIntegralList, BigDecimal userCoefficient) {
+        BigDecimal totalIntegral = BigDecimal.ZERO;
+        for (TaskIntegralBO weekIntegral : weekIntegralList) {
+            //评分系数
+            BigDecimal evaluateCoefficient = BigDecimal.ZERO;
+            Integer originIntegral = 0;
+            List<TaskTempFunctionBO> functions = weekIntegral.getFunctions();
+            if (!CollectionUtils.isEmpty(functions)){
+                for (TaskTempFunctionBO function : functions) {
+                    Integer integral = 0;
+                    Integer level = function.getLevel();
+                    if (level == 1){
+                        integral = 1;
+                    }else if (level == 2){
+                        integral = 3;
+                    }else if (level == 3){
+                        integral = 8;
+                    }else if (level == 4){
+                        integral = 20;
+                    }else if (level == 5){
+                        integral = 40;
+                    }
+                    originIntegral += integral;
+                }
+
+                TaskEvaluationScoreAndNumBO evaluationScoreAndNumBO = weekIntegral.getEvaluationScoreAndNumBO();
+                if (evaluationScoreAndNumBO != null){
+                    BigDecimal avgScore = evaluationScoreAndNumBO.getTotalScore().divide(BigDecimal.valueOf(evaluationScoreAndNumBO.getTotalNum()),2, BigDecimal.ROUND_HALF_UP);
+                    if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
+                        evaluateCoefficient = BigDecimal.valueOf(1);
+                    }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
+                        evaluateCoefficient = BigDecimal.valueOf(0.9);
+                    }else if (avgScore.compareTo(BigDecimal.valueOf(4.6)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.3)) >= 0){
+                        evaluateCoefficient = BigDecimal.valueOf(0.8);
+                    }else if (avgScore.compareTo(BigDecimal.valueOf(4.3)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4)) >= 0){
+                        evaluateCoefficient = BigDecimal.valueOf(0.7);
+                    }else if (avgScore.compareTo(BigDecimal.valueOf(4)) < 0){
+                        evaluateCoefficient = BigDecimal.valueOf(0.6);
+                    }
+                }
+
+                BigDecimal resultIntegral = BigDecimal.valueOf(originIntegral).multiply(userCoefficient).multiply(evaluateCoefficient).setScale(2,BigDecimal.ROUND_HALF_UP);
+                totalIntegral = totalIntegral.add(resultIntegral);
+            }
+        }
+        return totalIntegral;
+    }
 }
