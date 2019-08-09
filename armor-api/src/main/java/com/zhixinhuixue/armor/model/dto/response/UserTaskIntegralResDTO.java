@@ -23,6 +23,8 @@ public class UserTaskIntegralResDTO {
     private BigDecimal monthIntegral;
     private BigDecimal yearIntegral;
 
+    private boolean developRole;
+
     /**
      * 时间段
      */
@@ -32,6 +34,14 @@ public class UserTaskIntegralResDTO {
     private Date seasonEnd;
     private Date yearBegin;
     private Date yearEnd;
+
+    public boolean isDevelopRole() {
+        return developRole;
+    }
+
+    public void setDevelopRole(boolean developRole) {
+        this.developRole = developRole;
+    }
 
     public Date getMonthBegin() {
         return monthBegin;

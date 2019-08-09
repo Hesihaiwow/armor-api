@@ -51,6 +51,11 @@ public class TaskResDTO {
     private boolean isExpand;
 
     /**
+     * 用户完成任务时间
+     */
+    private Date sonTaskCompleteTime;
+
+    /**
      * 临时任务id
      */
     private Long ttId;
@@ -59,6 +64,14 @@ public class TaskResDTO {
      * 任务用户
      */
     private List<TaskUserResDTO> taskUsers;
+
+    public Date getSonTaskCompleteTime() {
+        return sonTaskCompleteTime;
+    }
+
+    public void setSonTaskCompleteTime(Date sonTaskCompleteTime) {
+        this.sonTaskCompleteTime = sonTaskCompleteTime;
+    }
 
     public Long getTtId() {
         return ttId;

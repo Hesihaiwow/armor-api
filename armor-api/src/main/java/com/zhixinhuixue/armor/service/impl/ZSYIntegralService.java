@@ -312,7 +312,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
         Date monthFirstDay;
         Date monthLastDay;
         UserTaskIntegralResDTO resDTO = new UserTaskIntegralResDTO();
-
+        resDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());
         try {
             seasonOneBegin = timeSDF.parse(seasonOneBeginStr);
             seasonOneEnd = timeSDF.parse(seasonOneEndStr);
@@ -376,6 +376,9 @@ public class ZSYIntegralService implements IZSYIntegralService {
             }else if (userLevel == 9){
                 userCoefficient = BigDecimal.valueOf(0.1);
             }
+            resDTO.setMonthIntegral(BigDecimal.ZERO);
+            resDTO.setSeasonIntegral(BigDecimal.ZERO);
+            resDTO.setYearIntegral(BigDecimal.ZERO);
 
             //月任务积分
             if (!CollectionUtils.isEmpty(monthIntegralList)){
