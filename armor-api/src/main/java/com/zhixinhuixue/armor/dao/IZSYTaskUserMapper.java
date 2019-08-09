@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IZSYTaskUserMapper {
@@ -85,6 +86,15 @@ public interface IZSYTaskUserMapper {
      * @return
      */
     TaskUser selectByTaskAndUser(@Param("taskId")Long taskId, @Param("userId")Long userId);
+
+    /**
+     * 根据用户和时间查询已完成
+     * @param userId
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<TaskUser> selectByUserAndTime(@Param("userId")Long userId, @Param("beginTime")Date beginTime,@Param("endTime") Date endTime);
 
 //    List<Long> selectUserIdByTaskId(@Param("taskId")Long taskId);
     // -- sch

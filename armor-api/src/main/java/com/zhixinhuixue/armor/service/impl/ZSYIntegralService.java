@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
@@ -13,6 +14,7 @@ import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
+import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import com.zhixinhuixue.armor.service.IZSYIntegralService;
@@ -50,6 +52,9 @@ public class ZSYIntegralService implements IZSYIntegralService {
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+
+    @Autowired
+    private IZSYTaskUserMapper taskUserMapper;
 
     /**
      * 用户积分排名表
@@ -275,6 +280,10 @@ public class ZSYIntegralService implements IZSYIntegralService {
     public UserTaskIntegralResDTO getPersonalIntegral() {
         Long userId = ZSYTokenRequestContext.get().getUserId();
         User user = userMapper.selectById(userId);
+        Integer userLevel = user.getLevel();
+        if (userLevel == null){
+            throw new ZSYServiceException("当前用户暂无级别,请联系超管");
+        }
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH)+1;
@@ -352,10 +361,12 @@ public class ZSYIntegralService implements IZSYIntegralService {
             List<TaskIntegralBO> seasonIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,seasonBegin,seasonEnd);
             List<TaskIntegralBO> yearIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,currYearFirst,currYearLast);
 
-            Integer userLevel = user.getLevel();
-            if (userLevel == null){
-                throw new ZSYServiceException("当前用户暂无级别,请联系超管");
-            }
+            //个人任务
+            List<TaskUser> monthTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(),monthFirstDay,monthLastDay);
+            List<TaskUser> seasonTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(),seasonBegin,seasonEnd);
+            List<TaskUser> yearTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(),currYearFirst,currYearLast);
+
+            //用戶级别系数
             BigDecimal userCoefficient = BigDecimal.ZERO;
             if (userLevel == 1){
                 userCoefficient = BigDecimal.valueOf(0.9);
@@ -380,21 +391,42 @@ public class ZSYIntegralService implements IZSYIntegralService {
             resDTO.setSeasonIntegral(BigDecimal.ZERO);
             resDTO.setYearIntegral(BigDecimal.ZERO);
 
-            //月任务积分
+            BigDecimal monthIntegral = BigDecimal.ZERO;
+            BigDecimal seasonIntegral = BigDecimal.ZERO;
+            BigDecimal yearIntegral = BigDecimal.ZERO;
+            BigDecimal monthPrivateIntegral = BigDecimal.ZERO;
+            BigDecimal seasonPrivateIntegral = BigDecimal.ZERO;
+            BigDecimal yearPrivateIntegral = BigDecimal.ZERO;
+            //月多人任务积分
             if (!CollectionUtils.isEmpty(monthIntegralList)){
-                BigDecimal monthIntegral = getIntegral(monthIntegralList, userCoefficient);
+                monthIntegral = getIntegral(monthIntegralList, userCoefficient);
                 resDTO.setMonthIntegral(monthIntegral);
             }
-            //月任务积分
+            //季度多人任务积分
             if (!CollectionUtils.isEmpty(seasonIntegralList)){
-                BigDecimal weekIntegral = getIntegral(seasonIntegralList, userCoefficient);
-                resDTO.setSeasonIntegral(weekIntegral);
+                seasonIntegral = getIntegral(seasonIntegralList, userCoefficient);
+                resDTO.setSeasonIntegral(seasonIntegral);
             }
-            //年任务积分
+            //年度多人任务积分
             if (!CollectionUtils.isEmpty(yearIntegralList)){
-                BigDecimal yearIntegral = getIntegral(yearIntegralList, userCoefficient);
+                yearIntegral = getIntegral(yearIntegralList, userCoefficient);
                 resDTO.setYearIntegral(yearIntegral);
             }
+
+            //月度个人任务积分
+            BigDecimal privateTaskCoefficient = BigDecimal.valueOf(0.8);
+            if (!CollectionUtils.isEmpty(monthTaskUsers)){
+                monthPrivateIntegral = getPrivateIntegral(monthTaskUsers, userCoefficient, privateTaskCoefficient);
+            }
+            if (!CollectionUtils.isEmpty(seasonTaskUsers)){
+                seasonPrivateIntegral = getPrivateIntegral(seasonTaskUsers, userCoefficient, privateTaskCoefficient);
+            }
+            if (!CollectionUtils.isEmpty(yearTaskUsers)){
+                yearPrivateIntegral = getPrivateIntegral(yearTaskUsers, userCoefficient, privateTaskCoefficient);
+            }
+            resDTO.setMonthIntegral(monthIntegral.add(monthPrivateIntegral));
+            resDTO.setSeasonIntegral(seasonIntegral.add(seasonPrivateIntegral));
+            resDTO.setYearIntegral(yearIntegral.add(yearPrivateIntegral));
             resDTO.setUserId(user.getId());
             resDTO.setUserName(user.getName());
             resDTO.setMonthBegin(monthFirstDay);
@@ -408,6 +440,32 @@ public class ZSYIntegralService implements IZSYIntegralService {
             e.printStackTrace();
         }
         return resDTO;
+    }
+
+    private BigDecimal getPrivateIntegral(List<TaskUser> monthTaskUsers, BigDecimal userCoefficient, BigDecimal privateTaskCoefficient) {
+        Integer totalOriginIntegral = 0;
+        for (TaskUser taskUser : monthTaskUsers) {
+            //
+            Integer privateTaskIntegral = 0;
+            Integer taskLevel = taskUser.getTaskLevel();
+            if (taskLevel != null){
+                if (taskLevel == 1){
+                    privateTaskIntegral = 1;
+                }else if (taskLevel == 2){
+                    privateTaskIntegral = 3;
+                }else if (taskLevel == 3){
+                    privateTaskIntegral = 8;
+                }else if (taskLevel == 4){
+                    privateTaskIntegral = 20;
+                }else if (taskLevel == 5){
+                    privateTaskIntegral = 40;
+                }
+                totalOriginIntegral += privateTaskIntegral;
+            }
+        }
+        BigDecimal privateTotalIntegral = BigDecimal.valueOf(totalOriginIntegral).multiply(userCoefficient)
+                .multiply(privateTaskCoefficient).setScale(2,BigDecimal.ROUND_HALF_UP);
+        return privateTotalIntegral;
     }
 
     private BigDecimal getIntegral(List<TaskIntegralBO> weekIntegralList, BigDecimal userCoefficient) {
