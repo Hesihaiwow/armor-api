@@ -2504,7 +2504,7 @@
                         <!--<el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>-->
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
-                            style="width: 260px">
+                            style="width: 400px">
                                 <el-option
                                         v-for="item in taskFunctionData"
                                         :key="item.id"
@@ -2630,7 +2630,7 @@
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
                                        disabled
-                                       style="width: 260px">
+                                       style="width: 400px">
                                 <el-option
                                         v-for="item in taskFunctionData"
                                         :key="item.id"
@@ -5079,6 +5079,8 @@
               this.taskTempDetail.reviewStatus = taskTemp.reviewStatus;
               this.taskTempDetail.userWeeks = taskTemp.userWeekTempList;
               this.taskTempDetail.taskReviewLogResDTOList = taskTemp.taskReviewLogResDTOList;
+                this.taskFunctionList = [];
+                this.functionLevelList = [];
               if (this.taskTempDetail.functionResDTOList !== undefined && this.taskTempDetail.functionResDTOList.length>0){
                   this.taskTempDetail.functionResDTOList.forEach(resDTO=>{
                       this.taskFunctionList.push(resDTO.functionId);
