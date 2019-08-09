@@ -29,7 +29,7 @@
                 </div>
         </div>
         <div class="my-integral-con" v-show="userRole>0 && userRole < 3" style="width: 1300px;margin-bottom: 10px">
-            <p class="mic-title">我的线上问题</p>
+            <p class="mic-title">我的统计</p>
             <div class="my-task-detail hh">
                 <el-tabs v-model="tabName" @tab-click="handleClickTab">
                     <el-tab-pane label="任务积分" name="integral">
@@ -3676,7 +3676,8 @@
                     seasonBegin:'',
                     seasonEnd:'',
                     yearBegin:'',
-                    yearEnd:''
+                    yearEnd:'',
+                    developRole:'',
                 }
                 // -- sch
             };
@@ -4138,7 +4139,7 @@
                     this.fetchMultipleAccess();
                     this.fetchTaskModifyWait();
                     this.fetchTaskModifyAccessed();
-                } else {
+                } else if (this.userRole>0&&this.userRole<3) {
                     // this.fetchMyHelpWaitList();
                     // this.fetchMyReviewSuccess();
                     this.fetchAllMultipleTasks();
@@ -4674,7 +4675,7 @@
                 list.forEach((el) => {
                     let endTime = '', today = moment().format('YYYY-MM-DD')
                     if (el.status >= 2) {
-                        endTime = el.completeTime
+                        endTime = el.sonTaskCompleteTime
                     } else if ((el.reviewStatus == 1 || el.reviewStatus == 3) && el.taskUsers[0].status == 1) {
                         endTime = el.taskUsers[0].endTime
                     } else {
@@ -7279,46 +7280,50 @@
                         param.description = this.modifyMyTaskDescription;
                         param.id = this.taskModifyDetail.id;
 
-                        let taskModifyFunctionList = [];
-                        for(let i = 0;i<this.num;i++){
-                            let taskModifyFunction={
-                                functionId:this.taskFunctionList[i],
-                                level:this.functionLevelList[i],
-                            };
-                            taskModifyFunctionList.push(taskModifyFunction);
-                        }
-                        for(let i = 0;i < taskModifyFunctionList.length;i++){
-                            let taskModifyFunction = taskModifyFunctionList[i];
-                            let functionId = taskModifyFunction.functionId;
-                            let level = taskModifyFunction.level;
-                            if (functionId === undefined || functionId === null || functionId === ''){
-                                this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
-                                return false;
+                        if (this.taskModifyDetail.functionResDTOList !== undefined
+                            && this.taskModifyDetail.functionResDTOList.length>0) {
+                            let taskModifyFunctionList = [];
+                            for(let i = 0;i<this.num;i++){
+                                let taskModifyFunction={
+                                    functionId:this.taskFunctionList[i],
+                                    level:this.functionLevelList[i],
+                                };
+                                taskModifyFunctionList.push(taskModifyFunction);
                             }
-                            if (level === undefined || level === null || level === ''){
-                                this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
-                                return false;
-                            }
-                        }
-                        param.taskModifyFunctionList = taskModifyFunctionList;
-                        let newArr = [param.taskModifyFunctionList[0].functionId];
-                        for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
-                            let repeat = false;
-                            for (let j = 0; j < newArr.length; j++) {
-                                if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
-                                    repeat = true;
-                                    break;
-                                }else{
-
+                            for(let i = 0;i < taskModifyFunctionList.length;i++){
+                                let taskModifyFunction = taskModifyFunctionList[i];
+                                let functionId = taskModifyFunction.functionId;
+                                let level = taskModifyFunction.level;
+                                if (functionId === undefined || functionId === null || functionId === ''){
+                                    this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                    return false;
+                                }
+                                if (level === undefined || level === null || level === ''){
+                                    this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                    return false;
                                 }
                             }
-                            if (!repeat){
-                                newArr.push(param.taskModifyFunctionList[i].functionId)
+                            param.taskModifyFunctionList = taskModifyFunctionList;
+                            let newArr = [param.taskModifyFunctionList[0].functionId];
+                            for (let i = 1; i < param.taskModifyFunctionList.length; i++) {
+                                let repeat = false;
+                                for (let j = 0; j < newArr.length; j++) {
+                                    if (param.taskModifyFunctionList[i].functionId === newArr[j]) {
+                                        repeat = true;
+                                        break;
+                                    }else{
+
+                                    }
+                                }
+                                if (!repeat){
+                                    newArr.push(param.taskModifyFunctionList[i].functionId)
+                                }
                             }
-                        }
-                        if (param.taskModifyFunctionList.length>newArr.length){
-                            this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
-                            return false;
+                            if (param.taskModifyFunctionList.length>newArr.length){
+                                this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                return false;
+                            }
+
                         }
 
                         http.zsyPutHttp('/task-modify/update', param, (resp) => {
@@ -7910,6 +7915,7 @@
                     items.push({label: '', score: this.personalTaskIntegralData.seasonIntegral, time: seasonRange});
                     items.push({label: '', score: this.personalTaskIntegralData.yearIntegral, time: this.getDateString('year')});
                     this.taskIntegralItem = items;
+                    this.developVisible = this.personalTaskIntegralData.developRole;
                 })
             }
             // -- sch

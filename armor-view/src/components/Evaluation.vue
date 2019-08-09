@@ -97,9 +97,11 @@
                                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                      :allow-half=true
                                      disabled
+                                     show-text
+                                     text-template="{value}"
                                      style="float: left;margin-top: 7px">
                             </el-rate>
-                            <span>{{item.score}}</span>
+                            <!--<span>{{item.score}}</span>-->
                         </el-form-item>
                     </el-form>
                 </div>
@@ -120,9 +122,11 @@
                                          :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                          :allow-half=true
                                          disabled
+                                         show-text
+                                         text-template="{value}"
                                          style="float: left;margin-top: 7px">
                                 </el-rate>
-                                <span>{{evaluation.score}}</span>
+                                <!--<span>{{evaluation.score}}</span>-->
                             </el-form-item>
                         </div>
 
