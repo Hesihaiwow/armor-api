@@ -45,17 +45,17 @@ public class TestExample {
     private String remark;
 
     /**
-     * 正反用例   0:正常用例  1:异常用例
+     * 正反用例   0:无, 1:正常用例  2:异常用例
      */
     private Integer type;
 
     /**
-     * 状态 0:通过,1:失败 2:阻塞'
+     * 状态 0:无,1:通过,2:失败 3:阻塞'
      */
     private Integer status;
 
     /**
-     * 评审状态  0:评审通过, 1:评审失败'
+     * 评审状态  0:无 1:评审通过, 2:评审失败'
      */
     private Integer examStatus;
 

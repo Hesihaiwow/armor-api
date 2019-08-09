@@ -18,7 +18,7 @@ public class TaskTreeResDTO {
     /**
      * 功能点
      */
-    private List<TaskFunctionTreeResDTO> functionTreeResDTOS;
+    private List<TestFunctionTreeResDTO> functionTreeResDTOS;
 
     public Long getTaskId() {
         return taskId;
@@ -36,21 +36,33 @@ public class TaskTreeResDTO {
         this.taskName = taskName;
     }
 
-    public List<TaskFunctionTreeResDTO> getFunctionTreeResDTOS() {
+    public List<TestFunctionTreeResDTO> getFunctionTreeResDTOS() {
         return functionTreeResDTOS;
     }
 
-    public void setFunctionTreeResDTOS(List<TaskFunctionTreeResDTO> functionTreeResDTOS) {
+    public void setFunctionTreeResDTOS(List<TestFunctionTreeResDTO> functionTreeResDTOS) {
         this.functionTreeResDTOS = functionTreeResDTOS;
     }
 
-    public static class TaskFunctionTreeResDTO{
+    public static class TestFunctionTreeResDTO{
+        /**
+         * 父级id
+         */
+        private Long pid;
+
         /**
          * 功能点
          */
         private Long functionId;
         private String function;
 
+        public Long getPid() {
+            return pid;
+        }
+
+        public void setPid(Long pid) {
+            this.pid = pid;
+        }
 
         /**
          * 测试用例
@@ -82,6 +94,19 @@ public class TaskTreeResDTO {
         }
 
         public static class TestExampleTreeResDTO{
+            /**
+             * 父级id
+             */
+            private Long pid;
+
+            public Long getPid() {
+                return pid;
+            }
+
+            public void setPid(Long pid) {
+                this.pid = pid;
+            }
+
             /**
              * 测试用例
              */

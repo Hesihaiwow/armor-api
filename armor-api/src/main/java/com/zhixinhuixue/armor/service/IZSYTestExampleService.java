@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.service;
 
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.AddTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
@@ -58,4 +59,24 @@ public interface IZSYTestExampleService {
      * @return
      */
     String exportExample(Long taskId);
+
+    /**
+     * 新增功能点
+     * @param reqDTO
+     */
+    void addFunction(AddTestFunctionReqDTO reqDTO);
+
+    /**
+     * 修改审批状态
+     * @param exampleId
+     * @param examStatus
+     */
+    void editExamStatus(Long exampleId, Integer examStatus);
+
+    /**
+     * 修改状态
+     * @param exampleId
+     * @param status
+     */
+    void editStatus(Long exampleId, Integer status);
 }

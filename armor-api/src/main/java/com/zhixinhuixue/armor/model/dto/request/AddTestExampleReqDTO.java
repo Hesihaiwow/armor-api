@@ -24,7 +24,7 @@ public class AddTestExampleReqDTO {
     /**
      * 正反用例   0:正常用例  1:异常用例
      */
-    @NotNull(message = "正反用例不能为空")
+//    @NotNull(message = "正反用例不能为空")
     private Integer type;
 
     /**

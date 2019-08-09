@@ -118,5 +118,10 @@
         WHERE te.`task_id` = #{taskId}
     </select>
 
+    <!--根据主键查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `test_example` WHERE `id` = #{exampleId}
+    </select>
+
 
 </mapper>

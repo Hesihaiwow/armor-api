@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.AddTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTestExampleService;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -23,6 +24,13 @@ public class ZSYTestExampleController {
 
     @Autowired
     private IZSYTestExampleService exampleService;
+
+    @ApiOperation("新增功能点")
+    @PostMapping("/function/add")
+    public String addFunction(@Valid @RequestBody AddTestFunctionReqDTO reqDTO){
+        exampleService.addFunction(reqDTO);
+        return ZSYResult.success().build();
+    }
 
     @ApiOperation("新增")
     @PostMapping("/add")
@@ -54,6 +62,20 @@ public class ZSYTestExampleController {
     @PostMapping("/edit")
     public String editExample(@Valid @RequestBody EditTestExampleReqDTO reqDTO){
         exampleService.editExample(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("修改审批状态")
+    @PutMapping("/exam-status/{exampleId}/{examStatus}")
+    public String editExamStatus(@PathVariable("exampleId")Long exampleId,@PathVariable("examStatus")Integer examStatus){
+        exampleService.editExamStatus(exampleId,examStatus);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("修改状态")
+    @PutMapping("/status/{exampleId}/{status}")
+    public String editStatus(@PathVariable("exampleId")Long exampleId,@PathVariable("status")Integer status){
+        exampleService.editStatus(exampleId,status);
         return ZSYResult.success().build();
     }
 

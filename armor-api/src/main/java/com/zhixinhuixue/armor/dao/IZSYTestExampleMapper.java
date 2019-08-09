@@ -50,7 +50,7 @@ public interface IZSYTestExampleMapper {
      * @param exampleId
      * @return
      */
-    TestExample selectById(Long exampleId);
+    TestExample selectById(@Param("exampleId")Long exampleId);
 
     /**
      * 更新

@@ -4,17 +4,22 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYTaskFunctionMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYTestExampleMapper;
+import com.zhixinhuixue.armor.dao.IZSYTestFunctionMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TestExampleBO;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.AddTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskFunction;
 import com.zhixinhuixue.armor.model.pojo.TestExample;
+import com.zhixinhuixue.armor.model.pojo.TestFunction;
 import com.zhixinhuixue.armor.service.IZSYTestExampleService;
+import com.zhixinhuixue.armor.source.enums.TestExampleStatus;
+import com.zhixinhuixue.armor.source.enums.TestExampleType;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +46,8 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
     @Autowired
     private IZSYTestExampleMapper exampleMapper;
     @Autowired
+    private IZSYTestFunctionMapper testFunctionMapper;
+    @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
     private IZSYTaskMapper taskMapper;
@@ -57,21 +64,44 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
     @Override
     @Transactional
     public void add(AddTestExampleReqDTO reqDTO) {
-        TestExample example = exampleMapper.selectByNameAndTaskAndFunction(reqDTO.getName(),reqDTO.getTaskId(),reqDTO.getFunctionId());
+//        TestExample example = exampleMapper.selectByNameAndTaskAndFunction(reqDTO.getName(),reqDTO.getTaskId(),reqDTO.getFunctionId());
 //        if (example != null){
 //            throw new ZSYServiceException("当前测试用例已存在");
 //        }
+        Task task = taskMapper.selectByPrimaryKey(reqDTO.getTaskId());
+        if (task == null){
+            throw new ZSYServiceException("关联任务不存在,请检查");
+        }
+        List<Long> functionIds = testFunctionMapper.selectListByTask(reqDTO.getTaskId()).stream().map(TestFunction::getId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(functionIds)){
+            throw new ZSYServiceException("关联任务暂无功能点");
+        }else {
+            TestFunction function = testFunctionMapper.selectById(reqDTO.getFunctionId());
+            if (function==null){
+                throw new ZSYServiceException("任务功能点不存在,请检查");
+            }
+            if (!functionIds.contains(function.getId())){
+                throw new ZSYServiceException("关联功能点不属于当前任务,请检查");
+            }
+        }
+
         TestExample testExample = new TestExample();
         testExample.setId(snowFlakeIDHelper.nextId());
         testExample.setName(reqDTO.getName().trim());
         testExample.setTaskId(reqDTO.getTaskId());
         testExample.setFunctionId(reqDTO.getFunctionId());
-        testExample.setCheckPoint(reqDTO.getCheckPoint().trim());
-        testExample.setExpectResult(reqDTO.getExpectResult().trim());
+        if (reqDTO.getCheckPoint() != null){
+            testExample.setCheckPoint(reqDTO.getCheckPoint().trim());
+        }
+        if (reqDTO.getExpectResult() != null){
+            testExample.setExpectResult(reqDTO.getExpectResult().trim());
+        }
         if (reqDTO.getRemark() != null){
             testExample.setRemark(reqDTO.getRemark().trim());
         }
         testExample.setType(reqDTO.getType());
+        testExample.setStatus(TestExampleStatus.NONE.getValue());
+        testExample.setExamStatus(TestExampleStatus.NONE.getValue());
         testExample.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         testExample.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
         testExample.setCreateName(ZSYTokenRequestContext.get().getUserName());
@@ -96,18 +126,21 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         if (task != null){
             taskTreeResDTO.setTaskId(taskId);
             taskTreeResDTO.setTaskName(task.getName());
-            List<TaskFunction> functions = functionMapper.selectListByTaskId(taskId);
-            List<TaskTreeResDTO.TaskFunctionTreeResDTO> functionTreeResDTOS = new ArrayList<>();
+//            List<TaskFunction> functions = functionMapper.selectListByTaskId(taskId);
+            List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId);
+            List<TaskTreeResDTO.TestFunctionTreeResDTO> functionTreeResDTOS = new ArrayList<>();
             if (!CollectionUtils.isEmpty(functions)){
                 functions.forEach(function->{
-                    TaskTreeResDTO.TaskFunctionTreeResDTO taskFunctionTreeResDTO = new TaskTreeResDTO.TaskFunctionTreeResDTO();
+                    TaskTreeResDTO.TestFunctionTreeResDTO taskFunctionTreeResDTO = new TaskTreeResDTO.TestFunctionTreeResDTO();
+                    taskFunctionTreeResDTO.setPid(taskId);
                     taskFunctionTreeResDTO.setFunctionId(function.getId());
-                    taskFunctionTreeResDTO.setFunction(function.getFunction());
-                    List<TaskTreeResDTO.TaskFunctionTreeResDTO.TestExampleTreeResDTO> testExampleTreeResDTOS = new ArrayList<>();
+                    taskFunctionTreeResDTO.setFunction(function.getName());
+                    List<TaskTreeResDTO.TestFunctionTreeResDTO.TestExampleTreeResDTO> testExampleTreeResDTOS = new ArrayList<>();
                     List<TestExample> examples = exampleMapper.selectByFunction(function.getId());
                     if (!CollectionUtils.isEmpty(examples)){
                         examples.forEach(example->{
-                            TaskTreeResDTO.TaskFunctionTreeResDTO.TestExampleTreeResDTO resDTO = new TaskTreeResDTO.TaskFunctionTreeResDTO.TestExampleTreeResDTO();
+                            TaskTreeResDTO.TestFunctionTreeResDTO.TestExampleTreeResDTO resDTO = new TaskTreeResDTO.TestFunctionTreeResDTO.TestExampleTreeResDTO();
+                            resDTO.setPid(function.getId());
                             resDTO.setId(example.getId());
                             resDTO.setName(example.getName());
                             testExampleTreeResDTOS.add(resDTO);
@@ -135,30 +168,9 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
             throw new ZSYServiceException("当前测试用例不存在,请检查");
         }
         BeanUtils.copyProperties(exampleBO,resDTO);
-        if (exampleBO.getType() == 0){
-            resDTO.setTypeName("正常用例");
-        }else if (exampleBO.getType() == 1){
-            resDTO.setTypeName("异常用例");
-        }
-
-        if (exampleBO.getStatus() == null){
-            resDTO.setStatusName("暂无");
-        }else if (exampleBO.getStatus() == 0){
-            resDTO.setStatusName("通过");
-        }else if (exampleBO.getStatus() == 1){
-            resDTO.setStatusName("失败");
-        }else if (exampleBO.getStatus() == 2){
-            resDTO.setStatusName("阻塞");
-        }
-
-        if (exampleBO.getExamStatus() == null){
-            resDTO.setExamStatusName("暂无");
-        }else if (exampleBO.getExamStatus() == 0){
-            resDTO.setExamStatusName("评审通过");
-        }else if (exampleBO.getExamStatus() == 1){
-            resDTO.setExamStatusName("评审失败");
-        }
-
+        resDTO.setTypeName(TestExampleType.getName(exampleBO.getType()));
+        resDTO.setStatusName(TestExampleStatus.getName(exampleBO.getStatus()));
+        resDTO.setExamStatusName(TestExampleStatus.getName(exampleBO.getExamStatus()));
         return resDTO;
     }
 
@@ -188,6 +200,9 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
             throw new ZSYServiceException("当前测试用例不存在,请检查");
         }
         BeanUtils.copyProperties(reqDTO,example);
+        example.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        example.setUpdateName(ZSYTokenRequestContext.get().getUserName());
+        example.setUpdateTime(new Date());
         if (exampleMapper.update(example) == 0){
             throw new ZSYServiceException("更新测试用例失败");
         }
@@ -246,15 +261,16 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         }
         long time2 = System.currentTimeMillis();
         logger.info("解析Excel耗时: "+(time2-time1)+"ms");
-        List<TaskFunction> functions = functionMapper.selectListByTaskId(taskId);
+//        List<TaskFunction> functions = functionMapper.selectListByTaskId(taskId);
+        List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId);
         Map<String,Long> functionMap = new HashMap<>();
         if (CollectionUtils.isEmpty(functions)){
             throw new ZSYServiceException("当前任务暂无功能点,请检查");
         }
         functions.forEach(function->{
-            functionMap.put(function.getFunction(),function.getId());
+            functionMap.put(function.getName(),function.getId());
         });
-        List<String> functionNames = functions.stream().map(TaskFunction::getFunction).collect(Collectors.toList());
+        List<String> functionNames = functions.stream().map(TestFunction::getName).collect(Collectors.toList());
         List<TestExample> exampleList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(fieldList)){
             for (int i = 0;i<fieldList.size();i++){
@@ -276,10 +292,12 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
                 example.setExpectResult(fieldList.get(i).get(4).trim());
                 example.setRemark(fieldList.get(i).get(5).trim());
                 if (fieldList.get(i).get(2).trim().equals("正常")){
-                    example.setType(0);
+                    example.setType(TestExampleType.NORMAL.getValue());
                 }else if (fieldList.get(i).get(2).trim().equals("异常")){
-                    example.setType(1);
+                    example.setType(TestExampleType.NOT_NORMAL.getValue());
                 }
+                example.setStatus(TestExampleStatus.NONE.getValue());
+                example.setExamStatus(TestExampleStatus.NONE.getValue());
                 example.setCreateTime(new Date());
                 example.setUpdateTime(new Date());
                 example.setCreateBy(ZSYTokenRequestContext.get().getUserId());
@@ -344,6 +362,66 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
 
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public void addFunction(AddTestFunctionReqDTO reqDTO) {
+        TestFunction testFunction = new TestFunction();
+        testFunction.setId(snowFlakeIDHelper.nextId());
+        testFunction.setTaskId(reqDTO.getTaskId());
+        testFunction.setName(reqDTO.getName().trim());
+//        testFunction
+        testFunction.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        testFunction.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        testFunction.setCreateName(ZSYTokenRequestContext.get().getUserName());
+        testFunction.setUpdateName(ZSYTokenRequestContext.get().getUserName());
+        testFunction.setCreateTime(new Date());
+        testFunction.setUpdateTime(new Date());
+        if (testFunctionMapper.insert(testFunction) == 0){
+            throw new ZSYServiceException("新增功能点失败");
+        }
+    }
+
+    /**
+     * 修改审批状态
+     * @param exampleId
+     * @param examStatus
+     */
+    @Override
+    @Transactional
+    public void editExamStatus(Long exampleId, Integer examStatus) {
+        TestExample example = exampleMapper.selectById(exampleId);
+        if (example == null){
+            throw new ZSYServiceException("当前测试用例不存在,请检查");
+        }
+        example.setExamStatus(examStatus);
+        example.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        example.setUpdateName(ZSYTokenRequestContext.get().getUserName());
+        example.setUpdateTime(new Date());
+        if (exampleMapper.update(example) == 0){
+            throw new ZSYServiceException("更新测试用例审批状态失败");
+        }
+    }
+
+    /**
+     * 修改状态
+     * @param exampleId
+     * @param status
+     */
+    @Override
+    public void editStatus(Long exampleId, Integer status) {
+        TestExample example = exampleMapper.selectById(exampleId);
+        if (example == null){
+            throw new ZSYServiceException("当前测试用例不存在,请检查");
+        }
+        example.setStatus(status);
+        example.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        example.setUpdateName(ZSYTokenRequestContext.get().getUserName());
+        example.setUpdateTime(new Date());
+        if (exampleMapper.update(example) == 0){
+            throw new ZSYServiceException("更新测试用例状态失败");
+        }
     }
 
     /**

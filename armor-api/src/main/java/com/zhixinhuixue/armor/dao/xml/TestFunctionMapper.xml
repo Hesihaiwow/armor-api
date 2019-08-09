@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTestFunctionMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TestFunction">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+        <result column="process_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TestExampleBO" extends="BaseResultMap">
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="function" property="function" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TestFunction">
+        INSERT INTO `test_function`
+        (`id`,`name`,`task_id`,`create_by`,`update_by`,`create_name`,`update_name`
+        ,`create_time`,`update_time`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{taskId,jdbcType=BIGINT}
+        ,#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT},#{createName,jdbcType=VARCHAR}
+        ,#{updateName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!--根据任务id查询功能点-->
+    <select id="selectListByTask" resultMap="BaseResultMap">
+        SELECT * FROM `test_function` WHERE  `task_id` = #{taskId}
+    </select>
+
+    <!--根据id查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `test_function` WHERE  `id` = #{functionId}
+    </select>
+
+</mapper>
