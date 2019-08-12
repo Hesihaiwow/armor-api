@@ -11,6 +11,7 @@ import com.zhixinhuixue.armor.model.bo.TestExampleBO;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.AddTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EditTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
@@ -125,7 +126,11 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         Task task = taskMapper.selectByPrimaryKey(taskId);
         if (task != null){
             taskTreeResDTO.setTaskId(taskId);
+            taskTreeResDTO.setId(taskId);
             taskTreeResDTO.setTaskName(task.getName());
+            taskTreeResDTO.setTreeName(task.getName());
+            taskTreeResDTO.setLevel(1);
+            taskTreeResDTO.setIsEdit(false);
 //            List<TaskFunction> functions = functionMapper.selectListByTaskId(taskId);
             List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId);
             List<TaskTreeResDTO.TestFunctionTreeResDTO> functionTreeResDTOS = new ArrayList<>();
@@ -134,7 +139,11 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
                     TaskTreeResDTO.TestFunctionTreeResDTO taskFunctionTreeResDTO = new TaskTreeResDTO.TestFunctionTreeResDTO();
                     taskFunctionTreeResDTO.setPid(taskId);
                     taskFunctionTreeResDTO.setFunctionId(function.getId());
+                    taskFunctionTreeResDTO.setId(function.getId());
                     taskFunctionTreeResDTO.setFunction(function.getName());
+                    taskFunctionTreeResDTO.setTreeName(function.getName());
+                    taskFunctionTreeResDTO.setLevel(2);
+                    taskFunctionTreeResDTO.setIsEdit(false);
                     List<TaskTreeResDTO.TestFunctionTreeResDTO.TestExampleTreeResDTO> testExampleTreeResDTOS = new ArrayList<>();
                     List<TestExample> examples = exampleMapper.selectByFunction(function.getId());
                     if (!CollectionUtils.isEmpty(examples)){
@@ -143,10 +152,13 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
                             resDTO.setPid(function.getId());
                             resDTO.setId(example.getId());
                             resDTO.setName(example.getName());
+                            resDTO.setTreeName(example.getName());
+                            resDTO.setLevel(3);
+                            resDTO.setIsEdit(false);
                             testExampleTreeResDTOS.add(resDTO);
                         });
                     }
-                    taskFunctionTreeResDTO.setExampleTreeResDTOS(testExampleTreeResDTOS);
+                    taskFunctionTreeResDTO.setFunctionTreeResDTOS(testExampleTreeResDTOS);
                     functionTreeResDTOS.add(taskFunctionTreeResDTO);
                 });
             }
@@ -422,6 +434,45 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         if (exampleMapper.update(example) == 0){
             throw new ZSYServiceException("更新测试用例状态失败");
         }
+    }
+
+    /**
+     * 修改功能点名称
+     * @param reqDTO
+     */
+    @Override
+    @Transactional
+    public void editFunction(EditTestFunctionReqDTO reqDTO) {
+        TestFunction function = testFunctionMapper.selectById(reqDTO.getId());
+        if (function == null){
+            throw new ZSYServiceException("当前功能点不存在,请检查");
+        }
+        function.setName(reqDTO.getName().trim());
+        function.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        function.setUpdateName(ZSYTokenRequestContext.get().getUserName());
+        function.setUpdateTime(new Date());
+        if (testFunctionMapper.update(function) == 0){
+            throw new ZSYServiceException("修改功能点失败");
+
+        }
+    }
+
+    /**
+     * 删除功能点
+     * @param functionId
+     */
+    @Override
+    @Transactional
+    public void deleteFunction(Long functionId) {
+        TestFunction function = testFunctionMapper.selectById(functionId);
+        if (function == null){
+            throw new ZSYServiceException("当前功能点不存在,请检查");
+        }
+        List<TestExample> examples = exampleMapper.selectByFunction(functionId);
+        if (!CollectionUtils.isEmpty(examples)){
+            throw new ZSYServiceException("当前功能点下存在测试用例,请先删除测试用例后,再删除功能点");
+        }
+        testFunctionMapper.deleteById(functionId);
     }
 
     /**

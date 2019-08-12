@@ -29,6 +29,30 @@
         ,#{updateName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
     </insert>
 
+    <!--修改功能点-->
+    <update id="update" parameterType="com.zhixinhuixue.armor.model.pojo.TestFunction">
+        UPDATE `test_function`
+        <set>
+            <if test="name != null and name !='' ">
+                `name` = #{name},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy},
+            </if>
+            <if test="updateName != null">
+                `update_name` = #{updateName},
+            </if>
+            <if test="updateTime != null">
+                `update_name` = #{updateName}
+            </if>
+        </set>
+    </update>
+
+    <!--删除功能点-->
+    <delete id="deleteById">
+        DELETE FROM `test_function` WHERE `id` = #{functionId}
+    </delete>
+
     <!--根据任务id查询功能点-->
     <select id="selectListByTask" resultMap="BaseResultMap">
         SELECT * FROM `test_function` WHERE  `task_id` = #{taskId}

@@ -14,11 +14,51 @@ public class TaskTreeResDTO {
      */
     private Long taskId;
     private String taskName;
+    private String treeName;
+    private Integer level;
+    private Long id;
+
+    /**
+     * 是否编辑
+     */
+    private boolean isEdit;
+
+    public boolean getIsEdit() {
+        return isEdit;
+    }
+
+    public void setIsEdit(boolean isEdit) {
+        this.isEdit = isEdit;
+    }
 
     /**
      * 功能点
      */
     private List<TestFunctionTreeResDTO> functionTreeResDTOS;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTreeName() {
+        return treeName;
+    }
+
+    public void setTreeName(String treeName) {
+        this.treeName = treeName;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public Long getTaskId() {
         return taskId;
@@ -55,6 +95,38 @@ public class TaskTreeResDTO {
          */
         private Long functionId;
         private String function;
+        private String treeName;
+        private Integer level;
+        private Long id;
+
+        /**
+         * 是否编辑
+         */
+        private boolean isEdit;
+
+        public boolean getIsEdit() {
+            return isEdit;
+        }
+
+        public void setIsEdit(boolean isEdit) {
+            this.isEdit = isEdit;
+        }
+
+        public String getTreeName() {
+            return treeName;
+        }
+
+        public void setTreeName(String treeName) {
+            this.treeName = treeName;
+        }
+
+        public Integer getLevel() {
+            return level;
+        }
+
+        public void setLevel(Integer level) {
+            this.level = level;
+        }
 
         public Long getPid() {
             return pid;
@@ -67,7 +139,15 @@ public class TaskTreeResDTO {
         /**
          * 测试用例
          */
-        private List<TestExampleTreeResDTO> exampleTreeResDTOS;
+        private List<TestExampleTreeResDTO> functionTreeResDTOS;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
 
         public Long getFunctionId() {
             return functionId;
@@ -85,12 +165,12 @@ public class TaskTreeResDTO {
             this.function = function;
         }
 
-        public List<TestExampleTreeResDTO> getExampleTreeResDTOS() {
-            return exampleTreeResDTOS;
+        public List<TestExampleTreeResDTO> getFunctionTreeResDTOS() {
+            return functionTreeResDTOS;
         }
 
-        public void setExampleTreeResDTOS(List<TestExampleTreeResDTO> exampleTreeResDTOS) {
-            this.exampleTreeResDTOS = exampleTreeResDTOS;
+        public void setFunctionTreeResDTOS(List<TestExampleTreeResDTO> functionTreeResDTOS) {
+            this.functionTreeResDTOS = functionTreeResDTOS;
         }
 
         public static class TestExampleTreeResDTO{
@@ -112,6 +192,37 @@ public class TaskTreeResDTO {
              */
             private Long id;
             private String name;
+            private String treeName;
+            private Integer level;
+
+            /**
+             * 是否编辑
+             */
+            private boolean isEdit;
+
+            public boolean getIsEdit() {
+                return isEdit;
+            }
+
+            public void setIsEdit(boolean isEdit) {
+                this.isEdit = isEdit;
+            }
+
+            public String getTreeName() {
+                return treeName;
+            }
+
+            public void setTreeName(String treeName) {
+                this.treeName = treeName;
+            }
+
+            public Integer getLevel() {
+                return level;
+            }
+
+            public void setLevel(Integer level) {
+                this.level = level;
+            }
 
             public Long getId() {
                 return id;

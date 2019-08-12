@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.controller;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.AddTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EditTestFunctionReqDTO;
 import com.zhixinhuixue.armor.service.IZSYTestExampleService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -59,7 +60,7 @@ public class ZSYTestExampleController {
     }
 
     @ApiOperation("编辑")
-    @PostMapping("/edit")
+    @PutMapping("/edit")
     public String editExample(@Valid @RequestBody EditTestExampleReqDTO reqDTO){
         exampleService.editExample(reqDTO);
         return ZSYResult.success().build();
@@ -76,6 +77,20 @@ public class ZSYTestExampleController {
     @PutMapping("/status/{exampleId}/{status}")
     public String editStatus(@PathVariable("exampleId")Long exampleId,@PathVariable("status")Integer status){
         exampleService.editStatus(exampleId,status);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("修改功能点名称")
+    @PutMapping("/function/edit")
+    public String editFunction(@Valid @RequestBody EditTestFunctionReqDTO reqDTO){
+        exampleService.editFunction(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("删除功能点")
+    @DeleteMapping("/function/delete/{functionId}")
+    public String deleteFunction(@PathVariable("functionId")Long functionId){
+        exampleService.deleteFunction(functionId);
         return ZSYResult.success().build();
     }
 

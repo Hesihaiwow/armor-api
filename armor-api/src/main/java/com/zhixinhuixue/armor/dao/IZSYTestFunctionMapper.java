@@ -31,4 +31,17 @@ public interface IZSYTestFunctionMapper {
      * @return
      */
     TestFunction selectById(@Param("functionId") Long functionId);
+
+    /**
+     * 修改功能点
+     * @param function
+     * @return
+     */
+    int update(TestFunction function);
+
+    /**
+     * 删除功能点
+     * @param functionId
+     */
+    void deleteById(@Param("functionId")Long functionId);
 }

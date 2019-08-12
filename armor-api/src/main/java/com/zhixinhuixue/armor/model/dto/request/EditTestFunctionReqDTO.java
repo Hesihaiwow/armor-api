@@ -6,27 +6,27 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author sch
- * @DATE 2019/8/9 14:18
+ * @DATE 2019/8/12 10:26
  */
-public class AddTestFunctionReqDTO {
+public class EditTestFunctionReqDTO {
     /**
-     * 任务id
+     * ID
      */
-    @NotNull(message = "关联任务id不能为空")
-    private Long taskId;
+    @NotNull(message = "功能点id不能为空")
+    private Long id;
 
     /**
-     * 功能点名称
+     * 名称
      */
-    @NotBlank(message = "名称不能为空")
+    @NotBlank(message = "功能点名称不能为空")
     private String name;
 
-    public Long getTaskId() {
-        return taskId;
+    public Long getId() {
+        return id;
     }
 
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

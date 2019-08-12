@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service;
 import com.zhixinhuixue.armor.model.dto.request.AddTestExampleReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.AddTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTestExampleReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.EditTestFunctionReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExampleDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskTreeResDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,4 +80,16 @@ public interface IZSYTestExampleService {
      * @param status
      */
     void editStatus(Long exampleId, Integer status);
+
+    /**
+     * 修改功能点名称
+     * @param reqDTO
+     */
+    void editFunction(EditTestFunctionReqDTO reqDTO);
+
+    /**
+     * 删除功能点
+     * @param functionId
+     */
+    void deleteFunction(Long functionId);
 }
