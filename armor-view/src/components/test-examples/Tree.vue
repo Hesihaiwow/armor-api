@@ -1,19 +1,18 @@
 <template>
     <div class="expand">
         <div>
-            <!--<el-upload-->
-                    <!--class="upload-demo"-->
-                    <!--action="https://jsonplaceholder.typicode.com/posts/"-->
-                    <!--:on-preview="handlePreview"-->
-                    <!--:on-remove="handleRemove"-->
-                    <!--:before-remove="beforeRemove"-->
-                    <!--multiple-->
-                    <!--:limit="3"-->
-                    <!--:on-exceed="handleExceed"-->
-                    <!--:file-list="fileList">-->
-                <!--<el-button size="small" type="primary">点击上传</el-button>-->
-                <!--<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-            <!--</el-upload>-->
+            <div class="upload-box">
+                <el-upload
+                        class="upload-demo"
+                        ref="record"
+                        action=""
+                        :http-request="uploadRecordToMysql"
+                        accept="application/vnd.ms-excel ,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msexcel,">
+                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                    <div slot="tip" class="el-upload__tip">只能上传Excel文件</div>
+                </el-upload>
+            </div>
+
             <el-tree ref="expandMenuList" class="expand-tree"
                      :data="setTree"
                      node-key="id"
@@ -49,6 +48,7 @@
                 },
                 defaultExpandKeys: [],//默认展开节点列表
                 // taskId:'',
+                fileList:[],
             }
         },
         mounted(){
@@ -218,6 +218,32 @@
 
                 }
             },
+            uploadRecordToMysql(file){
+                var data = new FormData();
+                data.append('uploadFile', file.file);
+                http.zsyPostHttp(`/test-example/import/${this.taskId}`,data,(res)=>{
+                    this.$refs.record.clearFiles();
+                    if (res.errMsg == "执行成功"){
+                        this.fullscreenLoading = false;
+                        this.$message({
+                            showClose: true,
+                            message: '导入成功',
+                            type: 'success'
+                        });
+                        this.getDefaultData();
+                    }else {
+                        // this.uploadToMysqlVisible = false;
+                        // this.fullscreenLoading = false;
+                    }
+                },(fail)=>{
+                    this.$message({
+                        showClose: true,
+                        message: fail.errMsg,
+                        type: 'error'
+                    });
+                    // this.fullscreenLoading = false;
+                })
+            },
         },
         created () {
             this.getDefaultData();
@@ -268,4 +294,10 @@
         font-weight:600;
         white-space:normal;
     }
+    .upload-box{
+        padding: 20px 0;
+        text-align: center;
+        background-color: #fff;
+    }
+
 </style>
