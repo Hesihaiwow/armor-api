@@ -207,7 +207,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
     @Override
     @Transactional
     public void editExample(EditTestExampleReqDTO reqDTO) {
-        TestExample example = exampleMapper.selectById(reqDTO.getId());
+        TestExample example = exampleMapper.selectById(reqDTO.getExampleId());
         if (example == null){
             throw new ZSYServiceException("当前测试用例不存在,请检查");
         }

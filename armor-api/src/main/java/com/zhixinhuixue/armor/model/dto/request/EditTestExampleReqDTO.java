@@ -8,7 +8,7 @@ public class EditTestExampleReqDTO {
     /**
      * id
      */
-    private Long id;
+    private Long exampleId;
 
     /**
      * 名称
@@ -45,12 +45,12 @@ public class EditTestExampleReqDTO {
      */
     private Integer examStatus;
 
-    public Long getId() {
-        return id;
+    public Long getExampleId() {
+        return exampleId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setExampleId(Long exampleId) {
+        this.exampleId = exampleId;
     }
 
     public String getName() {
