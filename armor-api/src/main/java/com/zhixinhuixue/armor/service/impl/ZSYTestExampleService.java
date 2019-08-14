@@ -274,20 +274,22 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         long time2 = System.currentTimeMillis();
         logger.info("解析Excel耗时: "+(time2-time1)+"ms");
 //        List<TaskFunction> functions = functionMapper.selectListByTaskId(taskId);
-        List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId);
-        Map<String,Long> functionMap = new HashMap<>();
-        if (CollectionUtils.isEmpty(functions)){
-            throw new ZSYServiceException("当前任务暂无功能点,请检查");
-        }
-        functions.forEach(function->{
-            functionMap.put(function.getName(),function.getId());
-        });
-        List<String> functionNames = functions.stream().map(TestFunction::getName).collect(Collectors.toList());
+//        List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId);
+//        Map<String,Long> functionMap = new HashMap<>();
+//        if (CollectionUtils.isEmpty(functions)){
+//            throw new ZSYServiceException("当前任务暂无功能点,请检查");
+//        }
+//        functions.forEach(function->{
+//            functionMap.put(function.getName(),function.getId());
+//        });
+//        List<String> functionNames = functions.stream().map(TestFunction::getName).collect(Collectors.toList());
         List<TestExample> exampleList = new ArrayList<>();
+        List<TestFunction> functionList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(fieldList)){
             for (int i = 0;i<fieldList.size();i++){
-                if (!functionNames.contains(fieldList.get(i).get(0).trim())){
-                    throw new ZSYServiceException("第"+(i+2)+"行的<功能点>不属于当前任务的功能点,请检查");
+
+                if (fieldList.get(i).get(0)==null || fieldList.get(i).get(0)=="" ){
+                    throw new ZSYServiceException("第"+(i+2)+"行的<功能点>为空,请检查");
                 }
                 if (fieldList.get(i).get(1) == null || fieldList.get(i).get(1) == ""){
                     throw new ZSYServiceException("第"+(i+2)+"行的<用例名称>为空,请检查");
@@ -295,11 +297,23 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
 //                if (fieldList.get(i).get(2) == null || fieldList.get(i).get(2) == ""){
 //                    throw new ZSYServiceException("第"+(i+2)+"行的<正反用例>为空,请检查");
 //                }
+                TestFunction function = new TestFunction();
+                function.setId(snowFlakeIDHelper.nextId());
+                function.setName(fieldList.get(i).get(0).trim());
+                function.setTaskId(taskId);
+                function.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+                function.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+                function.setCreateName(ZSYTokenRequestContext.get().getUserName());
+                function.setUpdateName(ZSYTokenRequestContext.get().getUserName());
+                function.setCreateTime(new Date());
+                function.setUpdateTime(new Date());
+                functionList.add(function);
+
                 TestExample example = new TestExample();
                 example.setId(snowFlakeIDHelper.nextId());
                 example.setName(fieldList.get(i).get(1).trim());
                 example.setTaskId(taskId);
-                example.setFunctionId(functionMap.get(fieldList.get(i).get(0)));
+                example.setFunctionId(function.getId());
                 example.setCheckPoint(fieldList.get(i).get(3).trim());
                 example.setExpectResult(fieldList.get(i).get(4).trim());
                 example.setRemark(fieldList.get(i).get(5).trim());
@@ -320,6 +334,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
             }
             long time3 = System.currentTimeMillis();
             logger.info("准备数据耗时: "+(time3-time2)+"ms");
+            testFunctionMapper.insertBatch(functionList);
             exampleMapper.insertBatch(exampleList);
             logger.info("插入数据耗时: "+(System.currentTimeMillis()-time3)+"ms");
         }

@@ -29,6 +29,19 @@
         ,#{updateName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
     </insert>
 
+    <!--批量新增-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TestFunction">
+        INSERT INTO `test_function`
+        (`id`,`name`,`task_id`,`create_by`,`update_by`,`create_name`,`update_name`
+        ,`create_time`,`update_time`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.name,jdbcType=VARCHAR},#{item.taskId,jdbcType=BIGINT}
+            ,#{item.createBy,jdbcType=BIGINT},#{item.updateBy,jdbcType=BIGINT},#{item.createName,jdbcType=VARCHAR}
+            ,#{item.updateName,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
     <!--修改功能点-->
     <update id="update" parameterType="com.zhixinhuixue.armor.model.pojo.TestFunction">
         UPDATE `test_function`
