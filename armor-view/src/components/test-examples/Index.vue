@@ -53,6 +53,7 @@
                 console.log(this.isIndex,1)
             },
             uploadRecordToMysql(file){
+                let _this = this;
                 var data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp(`/test-example/import/${this.taskId}`,data,(res)=>{
@@ -64,7 +65,10 @@
                             message: '导入成功',
                             type: 'success'
                         });
-                        this.getDefaultData();
+                        setTimeout(function(){
+                            _this.getDefaultData();
+                        }, 1000);
+
                     }else {
                         // this.uploadToMysqlVisible = false;
                         // this.fullscreenLoading = false;

@@ -275,7 +275,7 @@
     .tree-label{
         display: inline-block;
         vertical-align: middle;
-        max-width: 180px;
+        max-width: 170px;
         overflow: hidden;
         text-overflow:ellipsis;
         white-space: nowrap;
