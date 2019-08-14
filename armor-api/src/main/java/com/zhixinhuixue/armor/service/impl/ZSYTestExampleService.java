@@ -249,7 +249,8 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
 
         //导入数据各个列的值的list  用来判断导入数据是否重复
         List<List<String>> fieldList = new ArrayList<>();
-
+        Row firstRow = sheet.getRow(0);
+        int firstCellNum = firstRow.getLastCellNum();
         for(int i = 1 ; i <= lastRowNum ; i++) {
             List<String> fields = new ArrayList<>();
             Row row = null;
@@ -257,14 +258,14 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
             if( row != null ){
                 int lastCellNum = row.getLastCellNum();
                 Cell cell = null;
-                for( int j = 0 ; j < lastCellNum ; j++ ){
+                for( int j = 0 ; j < firstCellNum ; j++ ){
                     cell = row.getCell(j);
                     if( cell != null ){
 //                        cell.setCellType(CellType.STRING);
                         String cellValue = cell.getStringCellValue();
                         fields.add(cellValue);
                     }else {
-                        fields.add("");
+                        fields.add(" ");
 //                        throw new ZSYServiceException("第"+i+"行,第"+j+"列数据为空,请检查");
                     }
                 }
@@ -273,7 +274,6 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         }
         long time2 = System.currentTimeMillis();
         logger.info("解析Excel耗时: "+(time2-time1)+"ms");
-//        List<TaskFunction> functions = functionMapper.selectListByTaskId(taskId);
 //        List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId);
 //        Map<String,Long> functionMap = new HashMap<>();
 //        if (CollectionUtils.isEmpty(functions)){
@@ -285,6 +285,8 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
 //        List<String> functionNames = functions.stream().map(TestFunction::getName).collect(Collectors.toList());
         List<TestExample> exampleList = new ArrayList<>();
         List<TestFunction> functionList = new ArrayList<>();
+        Set<String> functionNameSet = new HashSet<>();
+        Map<String,Long> functionMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(fieldList)){
             for (int i = 0;i<fieldList.size();i++){
 
@@ -297,9 +299,14 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
 //                if (fieldList.get(i).get(2) == null || fieldList.get(i).get(2) == ""){
 //                    throw new ZSYServiceException("第"+(i+2)+"行的<正反用例>为空,请检查");
 //                }
+
+                functionNameSet.add(fieldList.get(i).get(0).trim());
+
+            }
+            for (String functionName : functionNameSet) {
                 TestFunction function = new TestFunction();
                 function.setId(snowFlakeIDHelper.nextId());
-                function.setName(fieldList.get(i).get(0).trim());
+                function.setName(functionName);
                 function.setTaskId(taskId);
                 function.setCreateBy(ZSYTokenRequestContext.get().getUserId());
                 function.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
@@ -309,17 +316,22 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
                 function.setUpdateTime(new Date());
                 functionList.add(function);
 
+                functionMap.put(functionName,function.getId());
+            }
+            for (int i = 0;i<fieldList.size();i++){
+
                 TestExample example = new TestExample();
                 example.setId(snowFlakeIDHelper.nextId());
                 example.setName(fieldList.get(i).get(1).trim());
                 example.setTaskId(taskId);
-                example.setFunctionId(function.getId());
+                Long functionId = functionMap.get(fieldList.get(i).get(0).trim());
+                example.setFunctionId(functionId);
                 example.setCheckPoint(fieldList.get(i).get(3).trim());
                 example.setExpectResult(fieldList.get(i).get(4).trim());
                 example.setRemark(fieldList.get(i).get(5).trim());
-                if (fieldList.get(i).get(2).trim().equals("正常")){
+                if (fieldList.get(i).get(2).trim().equals("正例")){
                     example.setType(TestExampleType.NORMAL.getValue());
-                }else if (fieldList.get(i).get(2).trim().equals("异常")){
+                }else if (fieldList.get(i).get(2).trim().equals("反例")){
                     example.setType(TestExampleType.NOT_NORMAL.getValue());
                 }
                 example.setStatus(TestExampleStatus.NONE.getValue());
@@ -332,6 +344,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
                 example.setUpdateName(ZSYTokenRequestContext.get().getUserName());
                 exampleList.add(example);
             }
+
             long time3 = System.currentTimeMillis();
             logger.info("准备数据耗时: "+(time3-time2)+"ms");
             testFunctionMapper.insertBatch(functionList);

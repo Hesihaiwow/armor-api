@@ -59,6 +59,7 @@
                 `update_name` = #{updateName}
             </if>
         </set>
+        WHERE `id` = #{id}
     </update>
 
     <!--删除功能点-->
