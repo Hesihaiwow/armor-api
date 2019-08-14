@@ -148,7 +148,7 @@
                 </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="success" @click="finishTask">已完成</el-button>
+            <el-button type="success" v-show="finishTaskBtn" @click="finishTask">已完成</el-button>
                 <!--<el-button @click="hideFinishedPop">取 消</el-button>-->
           </span>
         </el-dialog>
@@ -1613,6 +1613,7 @@
                 developShow: true,
                 designShow: true,
                 testShow: true,
+                finishTaskBtn: true,
                 taskDetail: {},
                 personTaskFunctionList:[],
                 privateTaskLevel:'',
@@ -1947,13 +1948,12 @@
                 this.showFinishedTask = true;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data;
-                    // let aStr = this.taskDetail.doc;
-                    // // let reg = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-)+)/g;
-                    // let reg = /(http:\/\/|https:\/\/|HTTP:\/\/|HTTPS:\/\/)(\S+\.)+\S{2,}/;
-                    // // let reg = /[hH][tT][tT][pP]([sS]?):\/\/(\S+\.)+\S{2,}/;
-                    // aStr = aStr.replace(reg,"<a href='$1$2' target='_blank'>$1$2</a>");
-                    // this.taskDetail.doc = aStr;
-                    // document.getElementById('text').innerHTML=aStr;
+                    if (this.taskDetail.users!==undefined && this.taskDetail.users.length>0){
+                        let loginUser = this.taskDetail.users.filter(user=>user.userId===this.loginUserId)[0];
+                        if (loginUser.status===2){
+                            this.finishTaskBtn = false;
+                        }
+                    }
                 })
             },
             //跳转到任务关联文档URL
@@ -1965,6 +1965,7 @@
             hideFinishedPop() {
                 this.resetFinishForm();
                 this.showFinishedTask = false;
+                this.finishTaskBtn = true;
             },
             showAuditPop(taskId, userId) {
                 this.auditForm.taskId = taskId;
@@ -2042,7 +2043,7 @@
                 this.taskLog.pageNum = 1;
             },
             taskItemClick(taskId, taskType) {
-                if (!this.isPrivate || this.taskStatus == 'finished' || this.taskStatus == 'auditSuccess') {
+                if (!this.isPrivate || this.taskStatus == 'auditSuccess') {
                     this.showTaskDetail = true;
                     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                         this.taskDetail = resp.data
@@ -2051,7 +2052,7 @@
                 }
 
                 // 个人点击完成任务
-                if (this.taskStatus == 'TaskDoing' && this.isPrivate) {
+                if ((this.taskStatus == 'TaskDoing' || this.taskStatus == 'finished') && this.isPrivate) {
                     this.taskItems.forEach((task) => {
                         if (task.id === taskId && task.reviewStatus==3 && !this.expandTimeVisible) {
                             this.showFinishedPop(taskId, task.taskUsers[0].id, taskType)

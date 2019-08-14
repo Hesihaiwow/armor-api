@@ -2,56 +2,61 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskEvaluationMapper">
     <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskEvaluation">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="task_user_id" property="taskUserId" jdbcType="BIGINT"></result>
-        <result column="score" property="score" jdbcType="DECIMAL"></result>
-        <result column="evaluation_option" property="evaluationOption" jdbcType="INTEGER"></result>
-        <result column="integral" property="integral" jdbcType="INTEGER"></result>
-        <result column="comment" property="comment" jdbcType="VARCHAR"></result>
-        <result column="evaluate_user_id" property="evaluateUserId" jdbcType="BIGINT"></result>
-        <result column="evaluate_time" property="evaluateTime" jdbcType="TIMESTAMP"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="task_user_id" property="taskUserId" jdbcType="BIGINT"/>
+        <result column="score" property="score" jdbcType="DECIMAL"/>
+        <result column="evaluation_option" property="evaluationOption" jdbcType="INTEGER"/>
+        <result column="integral" property="integral" jdbcType="INTEGER"/>
+        <result column="comment" property="comment" jdbcType="VARCHAR"/>
+        <result column="evaluate_user_id" property="evaluateUserId" jdbcType="BIGINT"/>
+        <result column="evaluate_time" property="evaluateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="EvaluationBOMap" type="com.zhixinhuixue.armor.model.bo.EvaluationBO">
-        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="task_user_id" property="taskUserId" jdbcType="BIGINT"></result>
-        <result column="task_user_name" property="taskUserName" jdbcType="BIGINT"></result>
-        <result column="evaluate_user_name" property="evaluateUserName" jdbcType="BIGINT"></result>
-        <result column="evaluate_user_id" property="evaluateUserId" jdbcType="BIGINT"></result>
-        <result column="evaluate_time" property="evaluateTime" jdbcType="TIMESTAMP"></result>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="task_user_id" property="taskUserId" jdbcType="BIGINT"/>
+        <result column="task_user_name" property="taskUserName" jdbcType="BIGINT"/>
+        <result column="evaluate_user_name" property="evaluateUserName" jdbcType="BIGINT"/>
+        <result column="evaluate_user_id" property="evaluateUserId" jdbcType="BIGINT"/>
+        <result column="evaluate_time" property="evaluateTime" jdbcType="TIMESTAMP"/>
         <collection property="evaluationScoreBOS" column="{taskId = task_id,userId = task_user_id,evaluateUserId=evaluate_user_id}"
                     ofType="com.zhixinhuixue.armor.model.bo.EvaluationScoreBO"
-                    select="selectByTaskAndTaskUser"></collection>
+                    select="selectByTaskAndTaskUser"/>
     </resultMap>
 
     <resultMap id="EvaluationScoreBOMap" type="com.zhixinhuixue.armor.model.bo.EvaluationScoreBO">
-        <result column="id" property="id" jdbcType="BIGINT"></result>
-        <result column="score" property="score" jdbcType="DECIMAL"></result>
-        <result column="evaluation_option" property="evaluationOption" jdbcType="INTEGER"></result>
-        <result column="integral" property="integral" jdbcType="INTEGER"></result>
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="score" property="score" jdbcType="DECIMAL"/>
+        <result column="evaluation_option" property="evaluationOption" jdbcType="INTEGER"/>
+        <result column="integral" property="integral" jdbcType="INTEGER"/>
     </resultMap>
 
     <resultMap id="EvaluationPageBOMap" type="com.zhixinhuixue.armor.model.bo.TaskEvaluationPageBO">
-        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
-        <result column="job_role" property="jobRole" jdbcType="BIGINT"></result>
-        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="job_role" property="jobRole" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="TaskBaseBOMap" type="com.zhixinhuixue.armor.model.bo.TaskBaseBO">
-        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="OptionScoreBOMap" type="com.zhixinhuixue.armor.model.bo.OptionScoreBO">
-        <result column="option" property="option" jdbcType="INTEGER"></result>
-        <result column="total_score" property="totalScore" jdbcType="DECIMAL"></result>
+        <result column="option" property="option" jdbcType="INTEGER"/>
+        <result column="total_score" property="totalScore" jdbcType="DECIMAL"/>
     </resultMap>
 
     <resultMap id="PersonTotalEvaMap" type="com.zhixinhuixue.armor.model.bo.PersonTotalEvaBO">
-        <result column="total_score" property="totalScore" jdbcType="DECIMAL"></result>
-        <result column="option" property="option" jdbcType="INTEGER"></result>
-        <result column="times" property="times" jdbcType="INTEGER"></result>
+        <result column="total_score" property="totalScore" jdbcType="DECIMAL"/>
+        <result column="option" property="option" jdbcType="INTEGER"/>
+        <result column="times" property="times" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="TotalMap" type="com.zhixinhuixue.armor.model.bo.TaskEvaluationScoreAndNumBO">
+        <result column="total_score" property="totalScore" jdbcType="DECIMAL"/>
+        <result column="total_num" property="totalNum" jdbcType="INTEGER"/>
     </resultMap>
     <!--批量插入任务评价-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskEvaluation">
@@ -169,6 +174,7 @@
             <![CDATA[  AND  t.`complete_time` <= #{reqDTO.endTime} ]]>
         </if>
         GROUP BY tev.task_id
+        ORDER BY t.complete_time DESC
     </select>
 
     <!--查询各项得分-->
@@ -195,5 +201,11 @@
         <![CDATA[  AND  `evaluate_time` >= #{beginTime} ]]>
         <![CDATA[  AND  `evaluate_time` <= #{endTime} ]]>
         GROUP BY evaluation_option
+    </select>
+
+    <!--查询任务的总评价得分和总评价次数-->
+    <select id="selectTotalScoreAndNum" resultMap="TotalMap">
+        SELECT IFNULL(SUM(score),0) total_score,COUNT(*) total_num FROM task_evaluation
+        WHERE task_id = #{taskId} AND task_user_id = #{userId}
     </select>
 </mapper>

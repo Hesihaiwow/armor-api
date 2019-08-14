@@ -24,6 +24,18 @@
     <result column="task_hours" jdbcType="INTEGER" property="taskHours" />
     <result column="id" jdbcType="BIGINT" property="id" />
   </resultMap>
+
+  <resultMap id="TaskIntegralBOMap" type="com.zhixinhuixue.armor.model.bo.TaskIntegralBO">
+    <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+    <result column="user_id" property="userId" jdbcType="BIGINT"/>
+    <result column="tt_id" property="ttId" jdbcType="BIGINT"/>
+    <association property="evaluationScoreAndNumBO" column="{taskId=task_id,userId=user_id}"
+                 select="com.zhixinhuixue.armor.dao.IZSYTaskEvaluationMapper.selectTotalScoreAndNum"
+                 javaType="com.zhixinhuixue.armor.model.bo.TaskEvaluationScoreAndNumBO"/>
+    <collection property="functions" column="ttId=tt_id"
+                select="com.zhixinhuixue.armor.dao.IZSYTaskTempFunctionMapper.selectListByTtId"
+                ofType="com.zhixinhuixue.armor.model.bo.TaskTempFunctionBO"/>
+  </resultMap>
   <sql id="Base_Column_List">
     id, task_id, user_id, integral, create_time
   </sql>
@@ -187,6 +199,16 @@
   <select id="getUserIntegralByTaskId" resultMap="BaseResultMap" parameterType="Map">
       SELECT * FROM user_integral WHERE task_id = #{id}
   </select>
+
+  <!--查询用户任务功能点结合,评价-->
+    <select id="selectTaskIntegralByUser" resultMap="TaskIntegralBOMap">
+        SELECT t.id task_id,tt.id tt_id,tt.user_id FROM task_temp tt
+        LEFT JOIN task t ON t.id = tt.task_id AND t.type = 2
+        <![CDATA[ AND t.complete_time >= #{beginTime}]]>
+        <![CDATA[ AND t.complete_time <= #{endTime}]]>
+        LEFT JOIN task_user tu ON tu.task_id = t.id AND tu.user_id = #{userId}
+        WHERE tt.review_status = 2 AND tt.user_id = #{userId} AND t.review_status = 3 AND t.`status` = 3;
+    </select>
 
 
 </mapper>

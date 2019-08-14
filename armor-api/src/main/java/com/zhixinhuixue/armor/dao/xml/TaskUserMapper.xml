@@ -165,5 +165,15 @@
     <select id="selectUserIdByTaskId" resultType="java.lang.Long">
         SELECT user_id FROM task_user WHERE task_id = #{taskId}
     </select>
+
+    <!--根据用户和时间查询已完成-->
+    <select id="selectByUserAndTime" resultMap="BaseResultMap">
+        SELECT tu.* FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        WHERE tu.user_id = #{userId}
+        <![CDATA[ AND tu.complete_time >= #{beginTime}]]>
+        <![CDATA[ AND tu.complete_time <= #{endTime}]]>
+        AND t.is_delete = 0 AND t.review_status = 3 AND t.type = 1 AND tu.`status` > 1;
+    </select>
     <!--  sch  -->
 </mapper>
