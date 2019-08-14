@@ -24,6 +24,9 @@
               taskId:'',
           }
         },
+        watch:{
+            '$route': 'getDefaultData'
+        },
         methods:{
             getDefaultData(){
                 this.taskId=this.$route.query.id;

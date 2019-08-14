@@ -6,7 +6,7 @@
 			:ref="'treeInput'+DATA.id"
 			@click.stop.native="nodeEditFocus"
 			@blur.stop="nodeEditPass(STORE,DATA,NODE)"
-			@keyup.enter.stop.native="nodeEditPass(STORE,DATA,NODE)"></el-input>
+			></el-input>
 		</span>
 		<span v-show="!DATA.isEdit" 
 		:class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
@@ -44,8 +44,13 @@
 			},
 			nodeEditPass(s,d,n){//编辑完成
 				d.isEdit = false;
-                this.$emit('nodeEditPass',s,d,n)
-				console.log(n,222)
+				console.log(n,9)
+				if(n.label!=undefined){
+                    this.$emit('nodeEditPass',s,d,n)
+				}else {
+                    this.$emit('nodeDelk',s,d,n)
+				}
+
 			},
 			nodeEditFocus(){
 				//阻止点击节点的事件冒泡

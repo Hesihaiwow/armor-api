@@ -54,14 +54,9 @@
         mounted(){
             // this.initExpand()
         },
-        // watch:{
-        //     taskId:{
-        //         handler(val,oval){
-        //             this.getTree();
-        //         },
-        //         deep:true,
-        //     }
-        // },
+        watch:{
+            '$route': 'getDefaultData'
+        },
         methods: {
             getDefaultData(){
                 http.zsyGetHttp(`test-example/tree/${this.taskId}`, {}, (res) => {
@@ -110,7 +105,9 @@
                         nodeEditPass: ((s,d,n) => that.handleEditPass(s,d,n)),
                         nodeAdde: ((s,d,n) => that.handleAdde(s,d,n)),
                         nodeEdit: ((s,d,n) => that.handleEdit(s,d,n)),
-                        nodeDel: ((s,d,n) => that.handleDelete(s,d,n))
+                        nodeDel: ((s,d,n) => that.handleDelete(s,d,n)),
+                        nodeDelk: ((s,d,n) => that.handleDel(s,d,n)),
+
                     }
                 });
             },
@@ -144,7 +141,6 @@
 
             },
             handleEditPass(s,d,n){
-                console.log(n.label,3333);
                 this.setFunctional(n.label);
             },
             handleAdde(s,d,n){//增加实例
@@ -181,7 +177,59 @@
                     this.$message.error("此节点有子级，不可删除！")
                     return false;
                 }else{
+                    if(n.level===2){
+                        http.zsyDeleteHttp(`test-example/function/delete/${n.key}`, {}, (res) => {
+                            this.getDefaultData();
+                        })
+                    }else if(n.level===3){
+                        http.zsyDeleteHttp(`test-example/delete/${n.key}`, {}, (res) => {
+                            this.getDefaultData();
+                        })
+                    }else {
+                        this.$message.error("此节点不可删除！")
+                        return false;
+                    }
+
                     //新增节点直接删除，否则要询问是否删除
+                    // let delNode = () => {
+                    //     let list = n.parent.data.functionTreeResDTOS || n.parent.data,//节点同级数据
+                    //         _index = 99999;//要删除的index
+                    //     /*if(!n.parent.data.children){//删除顶级节点，无children
+                    //       list = n.parent.data
+                    //     }*/
+                    //     list.map((c,i) => {
+                    //         if(d.id == c.id){
+                    //             _index = i;
+                    //         }
+                    //     })
+                    //     let k = list.splice(_index,1);
+                    //     http.zsyDeleteHttp(`test-example/delete/${n.key}`, {}, (res) => {
+                    //         this.getDefaultData();
+                    //     })
+                    //
+                    //
+                    //     //console.log(_index,k)
+                    //     this.$message.success("删除成功！")
+                    // }
+                    // let isDel = () => {
+                    //     that.$confirm("是否删除此节点？","提示",{
+                    //         confirmButtonText: "确认",
+                    //         cancelButtonText: "取消",
+                    //         type: "warning"
+                    //     }).then(() => {
+                    //         delNode()
+                    //     }).catch(() => {
+                    //         return false;
+                    //     })
+                    // }
+                    // //判断是否新增
+                    // d.id > this.non_maxexpandId ? delNode() : isDel()
+
+                }
+            },
+            handleDel(s,d,n){//删除空节点
+                console.log(s,d,n)
+                    // 新增节点直接删除，否则要询问是否删除
                     let delNode = () => {
                         let list = n.parent.data.functionTreeResDTOS || n.parent.data,//节点同级数据
                             _index = 99999;//要删除的index
@@ -194,29 +242,12 @@
                             }
                         })
                         let k = list.splice(_index,1);
-                        http.zsyDeleteHttp(`test-example/delete/${n.key}`, {}, (res) => {
-                            this.getDefaultData();
-                        })
-
-
                         //console.log(_index,k)
-                        this.$message.success("删除成功！")
                     }
-                    let isDel = () => {
-                        that.$confirm("是否删除此节点？","提示",{
-                            confirmButtonText: "确认",
-                            cancelButtonText: "取消",
-                            type: "warning"
-                        }).then(() => {
-                            delNode()
-                        }).catch(() => {
-                            return false;
-                        })
-                    }
-                    //判断是否新增
-                    d.id > this.non_maxexpandId ? delNode() : isDel()
 
-                }
+                    delNode()
+
+
             },
             uploadRecordToMysql(file){
                 var data = new FormData();

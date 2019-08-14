@@ -143,7 +143,7 @@
                         });
                     })
                 }
-                this.$router.push({ path: '/index/testExamples', query: {id:this.taskId}});
+                this.$router.push({ path: '/index/testExamples', query: {id:this.upData.taskId}});
             }
         },
         created () {
