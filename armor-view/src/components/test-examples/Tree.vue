@@ -1,18 +1,6 @@
 <template>
     <div class="expand">
-        <div>
-            <div class="upload-box">
-                <el-upload
-                        class="upload-demo"
-                        ref="record"
-                        action=""
-                        :http-request="uploadRecordToMysql"
-                        accept="application/vnd.ms-excel ,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msexcel,">
-                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                    <div slot="tip" class="el-upload__tip">只能上传Excel文件</div>
-                </el-upload>
-            </div>
-
+        <div class="tree-box">
             <el-tree ref="expandMenuList" class="expand-tree"
                      :data="setTree"
                      node-key="id"
@@ -24,6 +12,17 @@
                      :default-expand-all="true"
                      @node-click="handleNodeClick"></el-tree>
         </div>
+        <el-dialog
+                title="修改名称"
+                :visible.sync="centerDialogVisible"
+                width="30%"
+                center>
+            <el-input v-model="editName" placeholder="请输入名称"></el-input>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="centerDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="upEditName">确 定</el-button>
+          </span>
+        </el-dialog>
     </div>
 </template>
 <!-- VUE饿了么树形控件添加增删改功能按钮 -->
@@ -49,6 +48,9 @@
                 defaultExpandKeys: [],//默认展开节点列表
                 // taskId:'',
                 fileList:[],
+                centerDialogVisible:false,
+                editName:'',
+                editId:'',
             }
         },
         mounted(){
@@ -107,7 +109,7 @@
                         nodeEdit: ((s,d,n) => that.handleEdit(s,d,n)),
                         nodeDel: ((s,d,n) => that.handleDelete(s,d,n)),
                         nodeDelk: ((s,d,n) => that.handleDel(s,d,n)),
-
+                        nodeEditName:((s,d,n) => that.handleEditName(s,d,n)),
                     }
                 });
             },
@@ -249,32 +251,18 @@
 
 
             },
-            uploadRecordToMysql(file){
-                var data = new FormData();
-                data.append('uploadFile', file.file);
-                http.zsyPostHttp(`/test-example/import/${this.taskId}`,data,(res)=>{
-                    this.$refs.record.clearFiles();
-                    if (res.errMsg == "执行成功"){
-                        this.fullscreenLoading = false;
-                        this.$message({
-                            showClose: true,
-                            message: '导入成功',
-                            type: 'success'
-                        });
-                        this.getDefaultData();
-                    }else {
-                        // this.uploadToMysqlVisible = false;
-                        // this.fullscreenLoading = false;
-                    }
-                },(fail)=>{
-                    this.$message({
-                        showClose: true,
-                        message: fail.errMsg,
-                        type: 'error'
-                    });
-                    // this.fullscreenLoading = false;
-                })
+            handleEditName(s,d,n){
+                this.editId = n.key;
+                this.editName = n.label;
+                this.centerDialogVisible = true;
             },
+            upEditName(){
+                http.zsyPutHttp(`test-example/function/edit`, {id:this.editId,name:this.editName}, (res) => {
+                    this.getDefaultData();
+                    this.centerDialogVisible = false;
+                })
+            }
+
         },
         created () {
             this.getDefaultData();
@@ -289,7 +277,7 @@
         /*height:80%;*/
         overflow:hidden;
     }
-    .expand>div{
+    .expand .tree-box{
         height:100%;
         /*padding-top:20px;*/
         width:100%;
@@ -297,16 +285,16 @@
         /*max-width:400px;*/
         overflow-y:auto;
     }
-    .expand>div::-webkit-scrollbar-track{
+    .expand .tree-box::-webkit-scrollbar-track{
         box-shadow: inset 0 0 6px rgba(0,0,0,.3);
         border-radius:5px;
     }
-    .expand>div::-webkit-scrollbar-thumb{
+    .expand .tree-box::-webkit-scrollbar-thumb{
         background-color:rgba(50, 65, 87, 0.5);
         outline:1px solid slategrey;
         border-radius:5px;
     }
-    .expand>div::-webkit-scrollbar{
+    .expand .tree-box::-webkit-scrollbar{
         width:10px;
     }
     .expand-tree{
@@ -325,10 +313,6 @@
         font-weight:600;
         white-space:normal;
     }
-    .upload-box{
-        padding: 20px 0;
-        text-align: center;
-        background-color: #fff;
-    }
+
 
 </style>

@@ -10,7 +10,7 @@
             </el-row>
         </div>
         <div class="test-examples-name">
-           <el-input v-model="upData.name" placeholder="请输入实例名称"></el-input>
+           <el-input v-model="upData.name" name="test-examples-name" placeholder="请输入实例名称"></el-input>
         </div>
         <div>
             <el-radio-group v-model="upData.type">

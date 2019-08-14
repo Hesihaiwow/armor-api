@@ -15,6 +15,7 @@
 		<span class="tree-btn" v-show="!DATA.isEdit">
 			<i v-if="NODE.level == 1" class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)" title="新增目录"></i>
 			<i v-if="NODE.level==2" class="el-icon-document" @click.stop="nodeAdde(STORE,DATA,NODE)" title="新增实例"></i>
+			<i v-if="NODE.level==2" class="el-icon-edit" @click.stop="nodeEditName(STORE,DATA,NODE)" title="修改名称"></i>
 			<i v-if="NODE.level==3" class="el-icon-edit" @click.stop="nodeEdit(STORE,DATA,NODE)" title="修改"></i>
 			<i class="el-icon-delete" @click.stop="nodeDel(STORE,DATA,NODE)" title="删除"></i>
 		</span>
@@ -44,7 +45,6 @@
 			},
 			nodeEditPass(s,d,n){//编辑完成
 				d.isEdit = false;
-				console.log(n,9)
 				if(n.label!=undefined){
                     this.$emit('nodeEditPass',s,d,n)
 				}else {
@@ -55,6 +55,9 @@
 			nodeEditFocus(){
 				//阻止点击节点的事件冒泡
 			},
+            nodeEditName(s,d,n){
+                this.$emit('nodeEditName',s,d,n)
+			}
 		}
 	}
 </script>
