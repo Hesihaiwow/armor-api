@@ -2832,7 +2832,7 @@
                         <i class="el-icon-minus" v-show="num>1&&userRole>0"@click="minus(num-1)"></i>
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable :disabled="userRole===0"
-                                       style="width: 260px">
+                                       style="width: 400px">
                                 <el-option
                                         v-for="item in taskFunctionData"
                                         :key="item.id"
