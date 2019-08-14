@@ -1417,22 +1417,22 @@
                 },
 
                 // sch --
-                whichYear1:'2018',
-                whichYear2:'2018',
-                whichYear4:'2018',
-                whichYear5:'2018',
-                whichYear7:'2018',
+                whichYear1:'2019',
+                whichYear2:'2019',
+                whichYear4:'2019',
+                whichYear5:'2019',
+                whichYear7:'2019',
                 taskReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 fbReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 taskMonthReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 taskTimeReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 taskData1:[],
                 taskData2:[],
@@ -1455,7 +1455,7 @@
                 taskTotal:0,
 
                 vacationReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 vacationData:{
                     totalCount:0,

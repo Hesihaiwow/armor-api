@@ -111,9 +111,9 @@
                 showTaskTime:false,
 
                 //年度个人数据
-                whichYear1:'2018',
+                whichYear1:'2019',
                 personDataReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 personData:{
                     taskNum:0,
@@ -133,9 +133,9 @@
 
                 //年度请假
                 // showVacationData:false,
-                whichYear2:'2018',
+                whichYear2:'2019',
                 vacationReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 vacationData:{
                     totalCount:0,

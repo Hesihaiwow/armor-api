@@ -44,4 +44,10 @@ public interface IZSYTestFunctionMapper {
      * @param functionId
      */
     void deleteById(@Param("functionId")Long functionId);
+
+    /**
+     * 批量新增
+     * @param list
+     */
+    void insertBatch(@Param("list")List<TestFunction> list);
 }
