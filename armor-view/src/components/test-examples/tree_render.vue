@@ -10,7 +10,7 @@
 		</span>
 		<span v-show="!DATA.isEdit" 
 		:class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
-			<span>{{DATA.treeName}}</span>
+			<span :title="DATA.treeName">{{DATA.treeName}}</span>
 		</span>
 		<span class="tree-btn" v-show="!DATA.isEdit">
 			<i v-if="NODE.level == 1" class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)" title="新增目录"></i>

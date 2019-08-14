@@ -95,13 +95,14 @@
         .aside {
             flex-shrink: 0;
             width: 300px;
-            border-right: 2px solid #cccccc;
+
         }
         .main {
             flex: 1;
             flex-basis: auto;
             padding: 20px;
             background-color: #fff;
+            border-left: 2px solid #cccccc;
             .upload-box{
                 padding: 20px 0;
                 text-align: right;

@@ -14,17 +14,19 @@
             <h2 class="title">信息</h2>
             <div class="content">
                 <p>
-                    <span>名称:</span>
+                    <span>用例名称:</span>
                     <span>{{lookData.name}}</span>
                 </p>
                 <p>
-                    <span>类型:</span>
-                    <span>
-                        <el-radio-group disabled v-model="lookData.type">
-                            <el-radio :label="1">正用例</el-radio>
-                            <el-radio :label="2">反用例</el-radio>
-                        </el-radio-group>
-                    </span>
+                    <span>用例类型:</span>
+                    <span v-if="lookData.type==1">正用例</span>
+                    <span v-if="lookData.type==2">反用例</span>
+                    <!--<span>-->
+                        <!--<el-radio-group disabled v-model="lookData.type">-->
+                            <!--<el-radio :label="1">正用例</el-radio>-->
+                            <!--<el-radio :label="2">反用例</el-radio>-->
+                        <!--</el-radio-group>-->
+                    <!--</span>-->
                 </p>
                 <p>
                     <span>评审状态:</span>
@@ -43,23 +45,25 @@
                         <th>预期结果</th>
                     </tr>
                     <tr>
-                        <td>
-                            <el-input
-                                    type="textarea"
-                                    :autosize="{ minRows: 8, maxRows: 20}"
-                                    placeholder="请输入内容"
-                                    :disabled="true"
-                                    v-model="lookData.checkPoint">
-                            </el-input>
+                        <td class="border-blue">
+                            <p>{{lookData.checkPoint}}</p>
+                            <!--<el-input-->
+                                    <!--type="textarea"-->
+                                    <!--:autosize="{ minRows: 8, maxRows: 20}"-->
+                                    <!--placeholder="请输入内容"-->
+                                    <!--:disabled="true"-->
+                                    <!--v-model="lookData.checkPoint">-->
+                            <!--</el-input>-->
                         </td>
-                        <td>
-                            <el-input
-                                    type="textarea"
-                                    :autosize="{ minRows: 8, maxRows: 20}"
-                                    placeholder="请输入内容"
-                                    :disabled="true"
-                                    v-model="lookData.expectResult">
-                            </el-input>
+                        <td class="border-blue">
+                            <p>{{lookData.expectResult}}</p>
+                            <!--<el-input-->
+                                    <!--type="textarea"-->
+                                    <!--:autosize="{ minRows: 8, maxRows: 20}"-->
+                                    <!--placeholder="请输入内容"-->
+                                    <!--:disabled="true"-->
+                                    <!--v-model="lookData.expectResult">-->
+                            <!--</el-input>-->
                         </td>
                     </tr>
                 </table>
@@ -68,13 +72,14 @@
         <div class="remarks block">
             <h2 class="title">备注</h2>
             <div class="content">
-                <el-input
-                        type="textarea"
-                        :autosize="{ minRows: 4, maxRows: 20}"
-                        placeholder="请输入内容"
-                        :disabled="true"
-                        v-model="lookData.remark">
-                </el-input>
+                <p class="remarks-msg">{{lookData.remark}}</p>
+                <!--<el-input-->
+                        <!--type="textarea"-->
+                        <!--:autosize="{ minRows: 4, maxRows: 20}"-->
+                        <!--placeholder="请输入内容"-->
+                        <!--:disabled="true"-->
+                        <!--v-model="lookData.remark">-->
+                <!--</el-input>-->
             </div>
         </div>
         <div class="historical-records block">
@@ -169,6 +174,16 @@
         }
         .table-test-step{
             width: 80%;
+            .border-blue{
+                width: 40%;
+                padding: 10px;
+                border: 1px solid #257bd2;
+                border-radius: 5px;
+                p{
+                    min-height: 100px;
+                }
+
+            }
         }
         .block{
             .title{
@@ -183,6 +198,12 @@
         .remarks{
             .content{
                 width: 80%;
+            }
+            .remarks-msg{
+                min-height: 100px;
+                padding: 10px;
+                border: 1px solid #257bd2;
+                border-radius: 5px;
             }
         }
         .historical-records{

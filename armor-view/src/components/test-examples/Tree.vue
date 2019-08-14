@@ -272,10 +272,20 @@
 </script>
 
 <style>
+    .tree-label{
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
     .expand{
-        width:100%;
+        position: fixed;
+        width:300px;
+        height: 100%;
         /*height:80%;*/
-        overflow:hidden;
+        overflow:auto;
     }
     .expand .tree-box{
         height:100%;

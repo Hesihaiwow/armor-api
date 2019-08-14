@@ -10,9 +10,10 @@
             </el-row>
         </div>
         <div class="test-examples-name">
-           <el-input v-model="upData.name" name="test-examples-name" placeholder="请输入实例名称"></el-input>
+            用例名称：<el-input v-model="upData.name" name="test-examples-name" placeholder="请输入实例名称"></el-input>
         </div>
         <div>
+            用例类型：
             <el-radio-group v-model="upData.type">
                 <el-radio :label="1">正用例</el-radio>
                 <el-radio :label="2">反用例</el-radio>
@@ -134,6 +135,7 @@
                             message: '保存成功',
                             type: 'success'
                         });
+                        this.$router.push({ path: '/index/testExamples', query: {id:this.upData.taskId}});
                     })
                 }else {
                     http.zsyPutHttp(`test-example/edit`, this.upData, (res) => {
@@ -141,9 +143,10 @@
                             message: '修改成功',
                             type: 'success'
                         });
+                        this.$router.push({ path: '/index/testExamples', query: {id:this.upData.taskId}});
                     })
                 }
-                this.$router.push({ path: '/index/testExamples', query: {id:this.upData.taskId}});
+
             }
         },
         created () {
@@ -182,6 +185,11 @@
             span{
                 margin-left: 20px;
             }
+        }
+    }
+    .test-examples-name{
+        .el-input{
+            width: 76%;
         }
     }
 }
