@@ -2628,7 +2628,8 @@
                         <!--<i class="el-icon-minus" v-show="num>taskTempDetail.functionResDTOList.length" @click="minus(num-1)"></i>-->
 
                         <div v-for="i in num" style="margin-top: 3px">
-                            <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
+                            <div @mouseenter="mouseEnter(taskFunctionList[i-1])" style="float: left">
+                                <el-select placeholder="功能点" v-model="taskFunctionList[i-1]"  clearable
                                        disabled
                                        style="width: 400px">
                                 <el-option
@@ -2638,15 +2639,19 @@
                                         :value="item.id">
                                 </el-option>
                             </el-select>
-                            <el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable
-                                       style="width: 120px">
-                                <el-option
-                                        v-for="item in taskLevelList"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id">
-                                </el-option>
-                            </el-select>
+                            </div>
+                            <div>
+                                <el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable
+                                           style="width: 120px">
+                                    <el-option
+                                            v-for="item in taskLevelList"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                            <!--<i type="text"  @mouseenter="mouseEnter(taskFunctionList[i-1])">参考</i>-->
                         </div>
 
                     </div>
@@ -2911,6 +2916,15 @@
                      <el-button type="primary" v-show="taskModifyDetail.reviewStatus == 1" @click="editTaskModify(taskModifyDetail.id,'editTaskModifyForm')">修改申请</el-button>
                 </div>
             </span>
+        </el-dialog>
+
+        <el-dialog title="" style="margin-left: 30%;margin-right: 30%" :visible.sync="showUserAndLevelVisible"
+                   top="10%" center="true">
+            <el-table class="hh" :data="userAndLevelData">
+                <el-table-column prop="userName"  align="center"></el-table-column>
+                <el-table-column prop="jobName"  align="center"></el-table-column>
+                <el-table-column prop="levelName"  align="center"></el-table-column>
+            </el-table>
         </el-dialog>
 
     </div>
@@ -3679,6 +3693,9 @@
                     yearEnd:'',
                     developRole:'',
                 }
+                jobRoleName:'',
+                userAndLevelData:[],
+                showUserAndLevelVisible:false
                 // -- sch
             };
         },
@@ -7870,6 +7887,21 @@
               let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/功能点复杂度参考表.pdf";
               // let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/df71d0bf-6a42-4a84-a55d-4e21288fa073.png";
               window.open(url,'_blank')
+            },
+            //鼠标移入
+            mouseEnter(functionId){
+                this.userAndLevelData = [];
+                if (functionId !== undefined && functionId !== null && functionId !== ''){
+                    http.zsyGetHttp('task-function/function-level/'+functionId,{},(res)=>{
+                        this.userAndLevelData = res.data;
+                        this.showUserAndLevelVisible = true;
+                    })
+                }
+            },
+            //鼠标移出
+            mouseLeave(){
+                this.userAndLevelData = [];
+                // this.showUserAndLevelVisible = false;
             },
             //查询 临时任务涉及项目
             fetchTaskTempModuleList(){

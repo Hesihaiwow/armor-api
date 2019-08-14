@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTestExampleMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TestExample">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <result column="function_id" jdbcType="BIGINT" property="functionId"/>
+        <result column="check_point" jdbcType="VARCHAR" property="checkPoint" />
+        <result column="expect_result" jdbcType="VARCHAR" property="expectResult" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="exam_status" jdbcType="INTEGER" property="examStatus" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TestExampleBO" extends="BaseResultMap">
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="function" property="function" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TestExample">
+        INSERT INTO `test_example`
+        (`id`,`name`,`task_id`,`function_id`,`check_point`,`expect_result`,`remark`
+        ,`status`,`exam_status`,`create_by`,`update_by`,`create_name`,`update_name`
+        ,`create_time`,`update_time`,`type`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{taskId,jdbcType=BIGINT}
+        ,#{functionId,jdbcType=BIGINT},#{checkPoint,jdbcType=VARCHAR},#{expectResult,jdbcType=VARCHAR}
+        ,#{remark,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{examStatus,jdbcType=INTEGER}
+        ,#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT},#{createName,jdbcType=VARCHAR}
+        ,#{updateName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP}
+        ,#{type,jdbcType=INTEGER})
+    </insert>
+
+    <!--批量插入-->
+    <insert id="insertBatch">
+        INSERT INTO `test_example`
+        (`id`,`name`,`task_id`,`function_id`,`check_point`,`expect_result`,`remark`
+        ,`status`,`exam_status`,`create_by`,`update_by`,`create_name`,`update_name`
+        ,`create_time`,`update_time`,`type`)
+        VALUES
+        <foreach collection="exampleList" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.name,jdbcType=VARCHAR},#{item.taskId,jdbcType=BIGINT}
+            ,#{item.functionId,jdbcType=BIGINT},#{item.checkPoint,jdbcType=VARCHAR},#{item.expectResult,jdbcType=VARCHAR}
+            ,#{item.remark,jdbcType=VARCHAR},#{item.status,jdbcType=INTEGER},#{item.examStatus,jdbcType=INTEGER}
+            ,#{item.createBy,jdbcType=BIGINT},#{item.updateBy,jdbcType=BIGINT},#{item.createName,jdbcType=VARCHAR}
+            ,#{item.updateName,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP}
+            ,#{item.type,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!--更新 -->
+    <update id="update" parameterType="com.zhixinhuixue.armor.model.pojo.TestExample">
+        UPDATE `test_example`
+        <set>
+            <if test="name != null">
+                `name` = #{name},
+            </if>
+            <if test="checkPoint != null">
+                `check_point` = #{checkPoint},
+            </if>
+            <if test="expectResult != null">
+                `expect_result` = #{expectResult},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark},
+            </if>
+            <if test="type != null">
+                `type` = #{type},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="examStatus != null">
+                `exam_status` = #{examStatus},
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--删除-->
+    <delete id="deleteById">
+        DELETE FROM `test_example` WHERE `id` = #{exampleId}
+    </delete>
+
+    <!--根据名称查询-->
+    <select id="selectByNameAndTaskAndFunction" resultMap="BaseResultMap">
+        SELECT * FROM `test_example` WHERE `name` = #{name} AND `task_id` = #{taskId} AND `function_id` = #{functionId}
+    </select>
+
+    <!--根据功能点id查询测试用例-->
+    <select id="selectByFunction" resultMap="BaseResultMap">
+        SELECT * FROM `test_example` WHERE `function_id` = #{functionId}
+    </select>
+
+    <!--查看测试用例详情-->
+    <select id="selectDetailById" resultMap="BOMap">
+        SELECT te.*,t.name task_name,tf.function
+        FROM `test_example` te
+        LEFT JOIN `task` t ON t.`id` = te.`task_id`
+        LEFT JOIN `task_function` tf ON tf.`id` = te.`function_id`
+        WHERE te.`id` = #{exampleId}
+    </select>
+
+    <!--根据taskId查询测试用例-->
+    <select id="selectListByTaskId" resultMap="BOMap">
+        SELECT te.*,t.name task_name,tf.function
+        FROM `test_example` te
+        LEFT JOIN `task` t ON t.`id` = te.`task_id`
+        LEFT JOIN `task_function` tf ON tf.`id` = te.`function_id`
+        WHERE te.`task_id` = #{taskId}
+    </select>
+
+    <!--根据主键查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `test_example` WHERE `id` = #{exampleId}
+    </select>
+
+
+</mapper>

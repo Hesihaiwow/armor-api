@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.service;
 
 import com.zhixinhuixue.armor.model.dto.response.TaskFunctionListResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskTempFunctionResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserAndLevelResDTO;
 
 import java.util.List;
 
@@ -16,4 +18,11 @@ public interface IZSYTaskFunctionService {
      * @return
      */
     List<TaskFunctionListResDTO> getFunctionListByTask(Long taskId);
+
+    /**
+     * 根据功能点查询相关人员等级
+     * @param functionId
+     * @return
+     */
+    List<UserAndLevelResDTO> getUserAndLevel(Long functionId);
 }

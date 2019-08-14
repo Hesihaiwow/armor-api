@@ -17,6 +17,9 @@ import demandDetail from '@/components/demandDetail'
 import Notice from '@/components/Notice'
 import SummaryNav from '@/components/SummaryNav'
 import Evaluation from '@/components/Evaluation'
+import TestExamples from '@/components/test-examples'
+import TestExamplesEdit from '@/components/test-examples/Edit'
+import TestExamplesLook from '@/components/test-examples/Look'
 
 
 Vue.use(Router)
@@ -71,8 +74,8 @@ export default new Router({
                     component: IntegralHistory
                 },
                 {
-                  path: 'stats',
-                  component: Stats
+                    path: 'stats',
+                    component: Stats
                 },
                 {
                     path: 'demand',
@@ -105,6 +108,20 @@ export default new Router({
                 {
                     path:'evaluation',
                     component:Evaluation
+                },
+                {
+                    path:'testExamples',
+                    component:TestExamples,
+                    children:[
+                        {
+                            path: 'edit',
+                            component: TestExamplesEdit
+                        },
+                        {
+                            path: 'look',
+                            component: TestExamplesLook
+                        }
+                    ]
                 }
             ]
         }

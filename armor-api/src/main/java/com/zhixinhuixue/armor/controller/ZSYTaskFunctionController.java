@@ -29,4 +29,10 @@ public class ZSYTaskFunctionController {
         return ZSYResult.success().data(functionService.getFunctionListByTask(taskId)).build();
     }
 
+    @ApiOperation("根据功能点查询相关人员等级")
+    @GetMapping("/function-level/{functionId}")
+    public String getUserAndLevel(@PathVariable("functionId")Long functionId){
+        return ZSYResult.success().data(functionService.getUserAndLevel(functionId)).build();
+    }
+
 }
