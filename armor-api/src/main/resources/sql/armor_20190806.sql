@@ -4,7 +4,7 @@
 
 CREATE TABLE `test_function` (
   `id` bigint(20) NOT NULL COMMENT '主键',
-  `name` varchar(32) NOT NULL COMMENT '名称',
+  `name` varchar(255) NOT NULL COMMENT '名称',
   `task_id` bigint(20) NOT NULL COMMENT '任务id',
   `create_time` datetime NOT NULL COMMENT '创建日期',
   `create_by` bigint(20) NOT NULL COMMENT '创建人id',
@@ -17,7 +17,7 @@ CREATE TABLE `test_function` (
 
 CREATE TABLE `test_example` (
   `id` bigint(20) NOT NULL COMMENT '主键',
-  `name` varchar(32) NOT NULL COMMENT '名称',
+  `name` varchar(255) NOT NULL COMMENT '名称',
   `task_id` bigint(20) NOT NULL COMMENT '任务id',
   `function_id` bigint(20) NOT NULL COMMENT '任务功能点ID',
   `check_point` text DEFAULT NULL COMMENT '检查项',
