@@ -329,6 +329,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
                 example.setCheckPoint(fieldList.get(i).get(3).trim());
                 example.setExpectResult(fieldList.get(i).get(4).trim());
                 example.setRemark(fieldList.get(i).get(5).trim());
+                example.setType(TestExampleType.NONE.getValue());
                 if (fieldList.get(i).get(2).trim().equals("正例")){
                     example.setType(TestExampleType.NORMAL.getValue());
                 }else if (fieldList.get(i).get(2).trim().equals("反例")){
