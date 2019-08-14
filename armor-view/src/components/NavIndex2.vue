@@ -6946,6 +6946,8 @@
                 //查询修改任务申请详情
                 http.zsyGetHttp('/task-modify/detail/'+tmId,{},(res=>{
                     this.taskModifyDetail = res.data;
+                    this.taskFunctionList=[];
+                    this.functionLevelList=[];
                     if (this.taskModifyDetail.functionResDTOList !== undefined && this.taskModifyDetail.functionResDTOList.length>0){
                         this.taskModifyDetail.functionResDTOList.forEach(resDTO=>{
                             this.taskFunctionList.push(resDTO.functionId);
