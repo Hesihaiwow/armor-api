@@ -3692,7 +3692,7 @@
                     yearBegin:'',
                     yearEnd:'',
                     developRole:'',
-                }
+                },
                 jobRoleName:'',
                 userAndLevelData:[],
                 showUserAndLevelVisible:false
