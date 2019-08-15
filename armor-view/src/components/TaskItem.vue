@@ -3795,9 +3795,16 @@
                             this.$message({showClose: true, message: '任务修改成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.description = '';
+                            param.taskTempFunctionList = [];
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
                             this.taskAble = false;
                             vm.$emit('reload');
                             // window.history.go(0)
+                        },(err)=>{
+                            param.taskTempFunctionList = [];
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
                         });
                     } else {
                         return false;
@@ -3954,16 +3961,24 @@
                                 return false;
                             }
                             param.taskModifyFunctionList = taskModifyFunctionList;
+                            console.log(param.taskModifyFunctionList);
                         }
 
                         http.zsyPostHttp('/task-modify/add', param, (resp) => {
                             this.modifyMyTaskVisible = false;
                             this.$message({showClose: true, message: '添加任务修改申请成功', type: 'success'});
                             this.$refs[formName].resetFields();
-                            this.clearModifyMyTaskForm()
+                            this.clearModifyMyTaskForm();
+                            this.modifyTaskFunctionList = [];
+                            this.modifyFunctionLevelList = [];
+                            param.taskModifyFunctionList = [];
                             // this.taskAble = false;
                             vm.$emit('reload')
                             // window.history.go(0)
+                        },(err)=>{
+                            this.modifyTaskFunctionList = [];
+                            this.modifyFunctionLevelList = [];
+                            param.taskModifyFunctionList = [];
                         });
                     } else {
                         return false;

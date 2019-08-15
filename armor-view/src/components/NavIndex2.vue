@@ -4654,9 +4654,16 @@
                             this.$message({showClose: true, message: '审核成功', type: 'success'});
                             this.taskTempDetailVisible = false;
                             this.$refs[formName].resetFields();
+                            param.taskTempFunctionList = [];
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
                             this.description = '';
                             this.taskAble = false;
                             this.reload();
+                        },(err)=>{
+                            param.taskTempFunctionList = [];
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
                         })
                     } else {
                         return false;
@@ -7357,9 +7364,16 @@
                             this.showTaskModifyDetailVisible = false;
                             this.$message({showClose: true, message: '更新任务修改申请成功', type: 'success'});
                             this.$refs[formName].resetFields();
-                            this.clearEditTaskModifyForm()
+                            this.clearEditTaskModifyForm();
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                            param.taskModifyFunctionList = [];
                             this.fetchPersonalTaskModifyWait();
                             this.fetchPersonalTaskModifyAccessed();
+                        },err=>{
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                            param.taskModifyFunctionList = [];
                         });
                     } else {
                         return false;
@@ -7499,8 +7513,15 @@
                             this.$message({showClose: true, message: '审核通过', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.clearEditTaskModifyForm();
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                            param.taskModifyFunctionList = [];
                             this.fetchTaskModifyWait();
                             this.fetchTaskModifyAccessed();
+                        },err=>{
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                            param.taskModifyFunctionList = [];
                         });
                     } else {
                         return false;
