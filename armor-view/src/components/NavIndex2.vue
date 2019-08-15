@@ -2629,7 +2629,7 @@
                         <!--<i class="el-icon-minus" v-show="num>taskTempDetail.functionResDTOList.length" @click="minus(num-1)"></i>-->
 
                         <div v-for="i in num" style="margin-top: 3px">
-                            <div @mouseenter="mouseEnter(taskFunctionList[i-1])" style="float: left">
+                            <div  style="float: left">
                                 <el-select placeholder="功能点" v-model="taskFunctionList[i-1]"  clearable
                                        disabled
                                        style="width: 400px">
@@ -4517,7 +4517,7 @@
             },
             closeTaskTemp(){
               this.taskFunctionList = [];
-              this.taskLevelList = [];
+              this.functionLevelList = [];
             },
             acceptMultipleTask(id,formName){
 
@@ -5110,9 +5110,10 @@
                       this.num = this.taskTempDetail.functionResDTOList.length;
                   })
               }
-                this.taskTempDetailVisible = true;
-
                 this.changeTaskTempWeek()
+                if (this.taskDetail){
+                    this.taskTempDetailVisible = true;
+                }
             },
             //积分转移详情
             reviewDetail(help) {
