@@ -2585,7 +2585,8 @@
         </el-dialog>
 
         <el-dialog title="多人任务申请详情" custom-class="myDialog" :visible.sync="taskTempDetailVisible"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny">
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny"
+                    @close="closeTaskTemp">
             <el-form  :model="taskTempDetail"  ref="editTaskTempForm">
                 <div v-for="(item,index) in taskTempDetail.taskReviewLogResDTOList">
                     <div>审核阶段: {{item.level}};  审核人: {{item.checkUserName}};  审核时间: {{item.reviewTime | formatTime}}</div>
@@ -4513,6 +4514,10 @@
                     })
                 }).catch(() => {
                 });
+            },
+            closeTaskTemp(){
+              this.taskFunctionList = [];
+              this.taskLevelList = [];
             },
             acceptMultipleTask(id,formName){
 
