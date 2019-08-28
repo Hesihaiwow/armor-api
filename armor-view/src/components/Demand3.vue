@@ -95,23 +95,23 @@
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.source == 0">其他</span>
-                                <span v-else-if="scope.row.source == 1">直播课</span>
-                                <span v-else-if="scope.row.source == 2">小程序</span>
-                                <span v-else-if="scope.row.source == 3">IMS</span>
-                                <span v-else-if="scope.row.source == 4">学管端</span>
+                                <span v-if="scope.row.source === 0">其他</span>
+                                <span v-else-if="scope.row.source === 1">直播课</span>
+                                <span v-else-if="scope.row.source === 2">小程序</span>
+                                <span v-else-if="scope.row.source === 3">IMS</span>
+                                <span v-else-if="scope.row.source === 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.type == 0">个人建议</span>
-                                <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else-if="scope.row.type == 2">公司决策</span>
+                                <span v-if="scope.row.type === 0">个人建议</span>
+                                <span v-else-if="scope.row.type === 1">市场反馈</span>
+                                <span v-else-if="scope.row.type === 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="优先级" align="center" width="100">
                             <template scope="scope">
-                                <div type="text" v-for="item in prioritys" v-if="item.id == scope.row.priority">
+                                <div type="text" v-for="item in prioritys" v-if="item.id === scope.row.priority">
                                     {{item.name}}
                                 </div>
                             </template>
@@ -236,11 +236,11 @@
                         <!--</el-table-column>-->
                         <el-table-column label="来源" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.source == 0">其他</span>
-                                <span v-else-if="scope.row.source == 1">直播课</span>
-                                <span v-else-if="scope.row.source == 2">小程序</span>
-                                <span v-else-if="scope.row.source == 3">IMS</span>
-                                <span v-else-if="scope.row.source == 4">学管端</span>
+                                <span v-if="scope.row.source === 0">其他</span>
+                                <span v-else-if="scope.row.source === 1">直播课</span>
+                                <span v-else-if="scope.row.source === 2">小程序</span>
+                                <span v-else-if="scope.row.source === 3">IMS</span>
+                                <span v-else-if="scope.row.source === 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
@@ -291,13 +291,13 @@
                         <el-table-column label="操作" align="center" width="200" fixed="right">
                             <template scope="scope">
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small"
-                                           v-show="permit || scope.row.taskNum!=0">计划
+                                           v-show="permit || scope.row.taskNum!==0">计划
                                 </el-button>
                                 <el-button @click="linkTask(scope.row.id)" type="text" size="small"
                                            v-show="permit && scope.row.planId!=null">关联任务
                                 </el-button>
                                 <el-button @click="finishFeedback(scope.row.id)" type="text" size="small"
-                                           v-show="permit && scope.row.canFinish == 1">完成需求
+                                           v-show="permit && scope.row.canFinish === 1">完成需求
                                 </el-button>
                             </template>
                         </el-table-column>
@@ -379,14 +379,14 @@
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.type == 0">个人建议</span>
-                                <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else-if="scope.row.type == 2">公司决策</span>
+                                <span v-if="scope.row.type === 0">个人建议</span>
+                                <span v-else-if="scope.row.type === 1">市场反馈</span>
+                                <span v-else-if="scope.row.type === 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="优先级" align="center" width="100">
                             <template scope="scope">
-                                <div type="text" v-for="item in prioritys" v-if="item.id == scope.row.priority">
+                                <div type="text" v-for="item in prioritys" v-if="item.id === scope.row.priority">
                                     {{item.name}}
                                 </div>
                             </template>
@@ -403,11 +403,11 @@
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="80">
                             <template scope="scope">
-                                <span v-if="scope.row.source == 0">其他</span>
-                                <span v-else-if="scope.row.source == 1">直播课</span>
-                                <span v-else-if="scope.row.source == 2">小程序</span>
-                                <span v-else-if="scope.row.source == 3">IMS</span>
-                                <span v-else-if="scope.row.source == 4">学管端</span>
+                                <span v-if="scope.row.source === 0">其他</span>
+                                <span v-else-if="scope.row.source === 1">直播课</span>
+                                <span v-else-if="scope.row.source === 2">小程序</span>
+                                <span v-else-if="scope.row.source === 3">IMS</span>
+                                <span v-else-if="scope.row.source === 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
@@ -433,7 +433,7 @@
                         <el-table-column label="操作" align="center" width="130" v-show="permit">
                             <template scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;" @click="feedbackPlan(scope.row)" type="text" size="small"
-                                           v-show="permit || scope.row.taskNum!=0">计划
+                                           v-show="permit || scope.row.taskNum!==0">计划
                                 </a>
                                 <a style="color:#20a0ff;cursor: pointer;" v-show="permit"
                                    @click="editDemandVisible=true,editDemand(scope.row)">编辑</a>
@@ -518,14 +518,14 @@
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.type == 0">个人建议</span>
-                                <span v-else-if="scope.row.type == 1">市场反馈</span>
-                                <span v-else-if="scope.row.type == 2">公司决策</span>
+                                <span v-if="scope.row.type === 0">个人建议</span>
+                                <span v-else-if="scope.row.type === 1">市场反馈</span>
+                                <span v-else-if="scope.row.type === 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="优先级" align="center" width="100">
                             <template scope="scope">
-                                <div type="text" v-for="item in prioritys" v-if="item.id == scope.row.priority">
+                                <div type="text" v-for="item in prioritys" v-if="item.id === scope.row.priority">
                                     {{item.name}}
                                 </div>
                             </template>
@@ -542,11 +542,11 @@
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="80">
                             <template scope="scope">
-                                <span v-if="scope.row.source == 0">其他</span>
-                                <span v-else-if="scope.row.source == 1">直播课</span>
-                                <span v-else-if="scope.row.source == 2">小程序</span>
-                                <span v-else-if="scope.row.source == 3">IMS</span>
-                                <span v-else-if="scope.row.source == 4">学管端</span>
+                                <span v-if="scope.row.source === 0">其他</span>
+                                <span v-else-if="scope.row.source === 1">直播课</span>
+                                <span v-else-if="scope.row.source === 2">小程序</span>
+                                <span v-else-if="scope.row.source === 3">IMS</span>
+                                <span v-else-if="scope.row.source === 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
@@ -652,11 +652,11 @@
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="80">
                             <template scope="scope">
-                                <span v-if="scope.row.source == 0">其他</span>
-                                <span v-else-if="scope.row.source == 1">直播课</span>
-                                <span v-else-if="scope.row.source == 2">小程序</span>
-                                <span v-else-if="scope.row.source == 3">IMS</span>
-                                <span v-else-if="scope.row.source == 4">学管端</span>
+                                <span v-if="scope.row.source === 0">其他</span>
+                                <span v-else-if="scope.row.source === 1">直播课</span>
+                                <span v-else-if="scope.row.source === 2">小程序</span>
+                                <span v-else-if="scope.row.source === 3">IMS</span>
+                                <span v-else-if="scope.row.source === 4">学管端</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
@@ -730,7 +730,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="需求负责人" v-show="demandForm.source == 0">
+                <el-form-item label="需求负责人" v-show="demandForm.source === 0">
                     <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
                         <el-option
                                 v-for="item in otherChargeManList"
@@ -886,7 +886,8 @@
             </el-form>
         </el-dialog>
         <el-dialog :visible.sync="planVisible" custom-class="myDialog" title="计划" size="tiny"
-                   :close-on-click-modal="false" :close-on-press-escape="false">
+                   :close-on-click-modal="false" :close-on-press-escape="false"
+                   @close="closePlan">
             <div class="ctpc-list clearfix" v-if="projectVisible">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
                 <div class="demand-top-list fl">
@@ -900,20 +901,20 @@
             </div>
             <div class="ctpc-list clearfix" v-else>
                 <div class="ctpc-list-menu fl"><span class="star">*</span>项目：</div>
-                <div class="ctpc-list-con fl" v-for="item in projectList" v-if="item.id == demandForm.projectId">
+                <div class="ctpc-list-con fl" v-for="item in projectList" v-if="item.id === demandForm.projectId">
                     {{item.name}}
                 </div>
             </div>
             <div class="ctpc-list clearfix" style="margin-top: -15px">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>优先级</div>
-                <div class="ctpc-list-con fl" v-for="item in prioritys" v-if="item.id == demandForm.priority">
+                <div class="ctpc-list-con fl" v-for="item in prioritys" v-if="item.id === demandForm.priority">
                     {{item.name}}
                 </div>
             </div>
             <div class="ctpc-list clearfix" style="margin-top: -15px">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>预计开始时间:</div>
                 <div class="ctpc-list-con fl">
-                    <div v-if="!permit || demandForm.status==2">{{feedbackPlanForm.expectStartTime|formatDate}}</div>
+                    <div v-if="!permit || demandForm.status===2">{{feedbackPlanForm.expectStartTime|formatDate}}</div>
                     <el-date-picker v-model="feedbackPlanForm.expectStartTime" type="date" format="yyyy-MM-dd"
                                     v-else=" "
                                     placeholder="选择日期"></el-date-picker>
@@ -922,7 +923,7 @@
             <div class="ctpc-list clearfix" style="margin-top: -15px">
                 <div class="ctpc-list-menu fl"><span class="star">*</span>预计上线时间:</div>
                 <div class="ctpc-list-con fl">
-                    <div v-if="!permit || demandForm.status==2">{{feedbackPlanForm.expectOfficialTime|formatDate}}</div>
+                    <div v-if="!permit || demandForm.status===2">{{feedbackPlanForm.expectOfficialTime|formatDate}}</div>
                     <el-date-picker v-model="feedbackPlanForm.expectOfficialTime" type="date" format="yyyy-MM-dd"
                                     v-else placeholder="选择日期"></el-date-picker>
                 </div>
@@ -1081,7 +1082,7 @@
                     <input type="button" class="ctpc-save" @click="saveAddTask" value="确定">
                 </div>
             </div>
-            <div v-if="!permit ||demandForm.status==2 "></div>
+            <div v-if="!permit ||demandForm.status===2 "></div>
             <div v-else="">
                 <div class="add-member-opt" v-show="!showTaskDetail">
                     <span class="add-member-icon">+</span>
@@ -1140,8 +1141,8 @@
         },
         name: "Demand3",
         data() {
-            var validateEmpty = (rule, value, callback) => {
-                if (value.trim() == '') {
+            let validateEmpty = (rule, value, callback) => {
+                if (value.trim() === '') {
                     callback(new Error());
                 } else {
                     callback();
@@ -1423,26 +1424,26 @@
                 return name;
             },
             dateFilter: function (input) {
-                var d = new Date(input);
-                var year = d.getFullYear();
-                var month = d.getMonth() + 1;
-                var day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-                var hour = d.getHours();
-                var minutes = d.getMinutes();
-                var seconds = d.getSeconds();
+                let d = new Date(input);
+                let year = d.getFullYear();
+                let month = d.getMonth() + 1;
+                let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+                let hour = d.getHours();
+                let minutes = d.getMinutes();
+                let seconds = d.getSeconds();
                 return year + '-' + month + '-' + day;
             }
 
         },
         beforeMount: function () {
-            this.fetchNewDemandList()
+            this.fetchNewDemandList();
             this.getDefaultSessionScreenData();
-            this.fetchIntroducerList()
-            this.fetchOriginList()
-            this.fetchUserList()
-            this.fetchProjectList()
-            this.fetchStageList()
-            this.fetchTagList()
+            this.fetchIntroducerList();
+            this.fetchOriginList();
+            this.fetchUserList();
+            this.fetchProjectList();
+            this.fetchStageList();
+            this.fetchTagList();
             this.$root.eventBus.$emit("handleTabSelected", "demand");
 
         },
@@ -1465,12 +1466,12 @@
             },
             getDefaultSessionScreenData() {
                 if(!sessionStorage.screenData){
-                    this.fetchNewDemandList()
+                    this.fetchNewDemandList();
                     return
                 }
                 let screenData = JSON.parse(sessionStorage.screenData);
                 this.tabName = JSON.parse(sessionStorage.tabName);
-                if (this.tabName == 'new') {
+                if (this.tabName === 'new') {
                     this.introducer = this.reqDTO.introducer;
                     this.pageNum0 = screenData.pageNum;
                     this.priority = this.reqDTO.priority;
@@ -1478,7 +1479,7 @@
                     this.type = this.reqDTO.type;
                     this.origin = this.reqDTO.origin;
                     this.handleCurrentChange();
-                } else if (this.tabName == 'running') {
+                } else if (this.tabName === 'running') {
                     this.pageNum1 = screenData.pageNum;
                     this.priority = this.reqDTO.priority;
                     this.readStatus1 = this.reqDTO.readStatus;
@@ -1486,21 +1487,21 @@
                     this.chargeMan1 = this.reqDTO.chargeMan;
                     this.origin1 = this.reqDTO.origin;
                     this.handleCurrentChange1();
-                } else if (this.tabName == 'queue') {
+                } else if (this.tabName === 'queue') {
                     this.priority4 = this.reqDTO.priority;
                     this.readStatus4 = this.reqDTO.readStatus;
                     this.type4 = this.reqDTO.type;
                     this.pageNum4 = screenData.pageNum;
                     this.origin4 = this.reqDTO.origin;
                     this.handleCurrentChange4();
-                } else if (this.tabName == 'reject') {
+                } else if (this.tabName === 'reject') {
                     this.pageNum3 = screenData.pageNum;
                     this.priority3 = this.reqDTO.priority;
                     this.readStatus3 = this.reqDTO.readStatus;
                     this.type3 = this.reqDTO.type;
                     this.origin3 = this.reqDTO.origin;
                     this.handleCurrentChange3();
-                } else if (this.tabName == 'completed') {
+                } else if (this.tabName === 'completed') {
                     this.beginTime2 = this.reqDTO.beginTime2;
                     this.endTime2 = this.reqDTO.endTime2;
                     this.pageNum2 = screenData.pageNum;
@@ -1516,8 +1517,8 @@
 
             beforeAvatarUpload(file) {
                 const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
-                const isWord = file.type === 'application/msword' || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                const isWord = file.type === 'application/msword' || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
                 if ((!isJPG) && (!isWord) && (!isExcel)) {
                     this.$message.error('上传文件只能是 JPG、JPEG、PNG、word、pdf、excel 格式!');
                     return false
@@ -1531,7 +1532,7 @@
             },
 
             upload(file) {
-                var data = new FormData();
+                let data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/upload/ucloud/file', data, (res) => {
                     this.demandForm.urlList.push(res.data.url)
@@ -1540,20 +1541,20 @@
             //添加项目
             updateDemandProject() {
                 if (this.project) {
-                    this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId)
-                    this.proReqDTO.projectId = String(this.project)
-                    this.feedbackPlanForm.projectId = this.project
+                    this.proReqDTO.id = String(this.feedbackPlanForm.feedbackId);
+                    this.proReqDTO.projectId = String(this.project);
+                    this.feedbackPlanForm.projectId = this.project;
                     http.zsyPostHttp('/feedback/demand/project/add', this.proReqDTO, (res) => {
                         this.$message({
                             showClose: true,
                             message: '项目添加成功',
                             type: 'success'
                         });
-                        this.planVisible = false
-                        this.projectVisible = false
+                        this.planVisible = false;
+                        this.projectVisible = false;
                         this.fetchQueueDemandList()
 
-                    })
+                    });
                     this.project = null
                 }
             },
@@ -1582,7 +1583,7 @@
 
             //查询负责人
             fetchUserList() {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp('/user/effective', {}, (resp) => {
                     vm.chargeManList2 = resp.data
                 })
@@ -1590,7 +1591,7 @@
 
             //查询新需求列表
             fetchNewDemandList() {
-                this.reqDTO.pageNum = this.pageNum0
+                this.reqDTO.pageNum = this.pageNum0;
                 http.zsyPostHttp('/feedback/demand/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.totalSize
@@ -1599,7 +1600,7 @@
 
             //查询进行中需求
             fetchRunningDemandList() {
-                this.reqDTO.pageNum = this.pageNum1
+                this.reqDTO.pageNum = this.pageNum1;
                 http.zsyPostHttp('/feedback/demand-running/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.totalSize
@@ -1608,7 +1609,7 @@
 
             //查询排队中需求
             fetchQueueDemandList() {
-                this.reqDTO.pageNum = this.pageNum4
+                this.reqDTO.pageNum = this.pageNum4;
                 http.zsyPostHttp('/feedback/demand-queued/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.totalSize
@@ -1617,7 +1618,7 @@
 
             //查询不采纳需求
             fetchRejectedDemandList() {
-                this.reqDTO.pageNum = this.pageNum3
+                this.reqDTO.pageNum = this.pageNum3;
                 http.zsyPostHttp('/feedback/demand-rejected/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.totalSize
@@ -1626,13 +1627,17 @@
 
             //查询已完成需求
             fetchCompletedDemandList() {
-                this.reqDTO.pageNum = this.pageNum2
+                this.reqDTO.pageNum = this.pageNum2;
                 http.zsyPostHttp('/feedback/demand-completed/list', this.reqDTO, (res) => {
                     this.demandData = res.data.list;
                     this.demandPage.total = res.data.total
                 })
             },
 
+            //关闭计划弹窗
+            closePlan(){
+                this.cancelAddTask();
+            },
             //取消添加任务
             cancelAddTask() {
                 this.clearFunctionForm();
@@ -1745,6 +1750,15 @@
                     this.warnMsg("请选择至少一项标签");
                     return;
                 }
+                if (moment(this.taskStep.beginTime).isAfter(moment(this.taskStep.testTime))
+                || moment(this.taskStep.beginTime).isAfter(moment(this.taskStep.endTime))) {
+                    this.warnMsg("设计截止时间不可在开发截止时间或任务截止时间之后,请检查");
+                    return;
+                }
+                if (moment(this.taskStep.testTime).isAfter(moment(this.taskStep.endTime))) {
+                    this.warnMsg("开发截止时间不可在任务截止时间之后,请检查");
+                    return;
+                }
                 for (let i = 0; i < this.chargeManList.length; i++) {
                     if (this.taskStep.createBy === this.chargeManList[i].id) {
                         this.taskStep.userName = this.chargeManList[i].name
@@ -1789,7 +1803,8 @@
                     tags: '',
                     taskFunctionList:[]
                 };
-                this.stepTemp = {}
+                this.stepTemp = {};
+                this.clearFunctionForm();
             },
 
             //保存计划
@@ -1819,7 +1834,7 @@
                 this.isSaving = true;
                 if (this.feedbackPlanForm.expectStartTime === '') {
                     this.warnMsg("请选择预计开始时间");
-                    this.isSaving = false
+                    this.isSaving = false;
                     return;
                 }
                 if (this.feedbackPlanForm.expectOfficialTime === '') {
@@ -1857,18 +1872,18 @@
             deleteTask(taskId, feedbackId, link, num) {
                 //任务关联
                 http.zsyPutHttp('/feedback/task/' + feedbackId + '/' + taskId, null, (resp) => {
-                    if (link == 0) {
+                    if (link === 0) {
                         this.$message({showClose: true, message: '删除关联任务成功', type: 'success'});
                     } else {
                         this.$message({showClose: true, message: '任务关联成功', type: 'success'});
                     }
 
                     //刷新  进行中需求列表
-                    if (num == 1) {
+                    if (num === 1) {
                         this.fetchRunningDemandList();
                     }
                     //刷新   排队中需求列表
-                    if (num == 4) {
+                    if (num === 4) {
                         this.fetchQueueDemandList()
                     }
 
@@ -1881,7 +1896,7 @@
 
             //跳转到任务页面
             directPlanTask(taskId) {
-                if (taskId != null && taskId != '') {
+                if (taskId != null && taskId !== '') {
                     this.$router.push({name: 'taskListFormComments', params: {taskId: taskId}})
                 }
             },
@@ -1895,10 +1910,10 @@
 
             //关联任务
             linkTask(id) {
-                this.linkTaskVisible = true
+                this.linkTaskVisible = true;
                 http.zsyGetHttp('/task/plan', {}, (resp) => {
                     this.taskData = resp.data
-                })
+                });
                 this.feedbackPlanForm.feedbackId = id
             },
             
@@ -1910,7 +1925,7 @@
                     type: 'warning'
                 }).then(() => {
                     http.zsyPutHttp('/feedback/finish/'+id,{},(res)=>{
-                        if (res.errCode == '00'){
+                        if (res.errCode === '00'){
                             this.$message({showClose: true, message: '需求已完成', type: 'success'});
                             this.fetchRunningDemandList();
                         }
@@ -1925,7 +1940,7 @@
                 this.showTaskDetail = false;
                 this.clearPlan();
                 http.zsyGetHttp('/feedback/demand/project/' + feedback.id, {}, (res) => {
-                    if (res.data.projectId == 0 || res.data.projectId == null) {
+                    if (res.data.projectId === 0 || res.data.projectId == null) {
                         //此时没有添加项目
                         if (this.permit){
                             this.projectVisible = true
@@ -1938,29 +1953,29 @@
                         this.feedbackPlanForm.projectId = res.data.projectId;
                         this.project = res.data.projectId;
                     }
-                })
-                this.feedbackPlanForm.feedbackId = feedback.id
-                this.demandForm.projectId = feedback.projectId
-                this.demandForm.priority = feedback.priority
-                this.demandForm.status = feedback.status
-                this.planVisible = true
+                });
+                this.feedbackPlanForm.feedbackId = feedback.id;
+                this.demandForm.projectId = feedback.projectId;
+                this.demandForm.priority = feedback.priority;
+                this.demandForm.status = feedback.status;
+                this.planVisible = true;
 
                 http.zsyGetHttp('/feedback/getPlan/' + feedback.id, {}, (resp) => {
-                    if (resp.data.planTask && resp.data.planTask.length != 0) {
-                        this.feedbackPlanForm.id = resp.data.id
-                        this.feedbackPlanForm.expectOfficialTime = resp.data.expectOfficialTime
-                        this.feedbackPlanForm.expectStartTime = resp.data.expectStartTime
+                    if (resp.data.planTask && resp.data.planTask.length !== 0) {
+                        this.feedbackPlanForm.id = resp.data.id;
+                        this.feedbackPlanForm.expectOfficialTime = resp.data.expectOfficialTime;
+                        this.feedbackPlanForm.expectStartTime = resp.data.expectStartTime;
                         this.planTask = resp.data.planTask
                     }
-                    this.feedbackPlanForm.id = resp.data.id
-                    this.feedbackPlanForm.expectOfficialTime = resp.data.expectOfficialTime
+                    this.feedbackPlanForm.id = resp.data.id;
+                    this.feedbackPlanForm.expectOfficialTime = resp.data.expectOfficialTime;
                     this.feedbackPlanForm.expectStartTime = resp.data.expectStartTime
                 })
             },
 
             //查询阶段
             fetchStageList() {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp('/stage/list', {}, (resp) => {
                     vm.stageList = resp.data
                 })
@@ -1968,16 +1983,16 @@
 
             //清除计划
             clearPlan() {
-                this.feedbackPlanForm.feedbackId = ''
-                this.feedbackPlanForm.id = ''
-                this.feedbackPlanForm.expectOfficialTime = ''
-                this.feedbackPlanForm.expectStartTime = ''
+                this.feedbackPlanForm.feedbackId = '';
+                this.feedbackPlanForm.id = '';
+                this.feedbackPlanForm.expectOfficialTime = '';
+                this.feedbackPlanForm.expectStartTime = '';
                 this.planTask = []
             },
 
             //查询标签
             fetchTagList() {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp('/tag/list', {}, (resp) => {
                     vm.tagList = resp.data
                 })
@@ -1999,66 +2014,66 @@
                 this.reqDTO.fbTimeEnd = null;
             },
             clear0() {
-                this.priority = null
-                this.type = null
-                this.readStatus = null
-                this.origin = null
-                this.chargeMan = null
-                this.source = null
-                this.introducer = null
-                this.fromCoach = null
-                this.fbTimeStart = null
+                this.priority = null;
+                this.type = null;
+                this.readStatus = null;
+                this.origin = null;
+                this.chargeMan = null;
+                this.source = null;
+                this.introducer = null;
+                this.fromCoach = null;
+                this.fbTimeStart = null;
                 this.fbTimeEnd = null
             },
             clear1() {
-                this.priority1 = null
-                this.type1 = null
-                this.source1 = null
-                this.readStatus1 = null
-                this.origin1 = null
+                this.priority1 = null;
+                this.type1 = null;
+                this.source1 = null;
+                this.readStatus1 = null;
+                this.origin1 = null;
                 this.chargeMan1 = null
             },
             clear4() {
-                this.priority4 = null
-                this.source4 = null
-                this.chargeMan4 = null
-                this.type4 = null
-                this.readStatus4 = null
-                this.origin4 = null
+                this.priority4 = null;
+                this.source4 = null;
+                this.chargeMan4 = null;
+                this.type4 = null;
+                this.readStatus4 = null;
+                this.origin4 = null;
                 this.introducer4 = null
             },
             clear3() {
-                this.priority3 = null
-                this.type3 = null
-                this.readStatus3 = null
-                this.origin3 = null
-                this.source3 = null
-                this.chargeMan3 = null
+                this.priority3 = null;
+                this.type3 = null;
+                this.readStatus3 = null;
+                this.origin3 = null;
+                this.source3 = null;
+                this.chargeMan3 = null;
                 this.introducer3 = null
             },
             clear2() {
-                this.introducer2 = null
-                this.chargeMan2 = null
-                this.source2 = null
-                this.beginTime2 = null
+                this.introducer2 = null;
+                this.chargeMan2 = null;
+                this.source2 = null;
+                this.beginTime2 = null;
                 this.endTime2 = null
             },
 
             //导出新需求
             excel(){
-                this.clearReqDTO()
-                this.reqDTO.pageNum = 1
+                this.clearReqDTO();
+                this.reqDTO.pageNum = 1;
 
-                if (this.priority != undefined && this.priority != null) {
+                if (this.priority !== undefined && this.priority != null) {
                     this.reqDTO.priority = this.priority
                 }
                 if (this.origin) {
                     this.reqDTO.origin = this.origin
                 }
-                if (this.type != undefined && this.type != null) {
+                if (this.type !== undefined && this.type != null) {
                     this.reqDTO.type = this.type
                 }
-                if (this.fromCoach != undefined && this.fromCoach !=null){
+                if (this.fromCoach !== undefined && this.fromCoach !=null){
                     this.reqDTO.fromCoach = this.fromCoach
                 }
                 if (this.fbTimeStart){
@@ -2076,22 +2091,22 @@
 
             //条件查询新需求
             select0() {
-                this.clearReqDTO()
-                this.reqDTO.pageNum = 1
+                this.clearReqDTO();
+                this.reqDTO.pageNum = 1;
 
-                if (this.priority != undefined && this.priority != null) {
+                if (this.priority !== undefined && this.priority != null) {
                     this.reqDTO.priority = this.priority
                 }
                 if (this.origin) {
                     this.reqDTO.origin = this.origin
                 }
-                if (this.type != undefined && this.type != null) {
+                if (this.type !== undefined && this.type != null) {
                     this.reqDTO.type = this.type
                 }
-                if (this.source != undefined && this.source !=null){
+                if (this.source !== undefined && this.source !=null){
                     this.reqDTO.source = this.source
                 }
-                if (this.chargeMan != undefined && this.chargeMan !=null){
+                if (this.chargeMan !== undefined && this.chargeMan !=null){
                     this.reqDTO.chargeMan = this.chargeMan
                 }
                 if (this.fbTimeStart){
@@ -2105,25 +2120,25 @@
             },
             //条件查询进行中需求
             select1() {
-                this.clearReqDTO()
-                this.reqDTO.pageNum = 1
+                this.clearReqDTO();
+                this.reqDTO.pageNum = 1;
 
-                if (this.priority1 != undefined && this.priority1 != null) {
+                if (this.priority1 !== undefined && this.priority1 != null) {
                     this.reqDTO.priority = this.priority1
                 }
-                if (this.readStatus1 != undefined && this.readStatus1 != null) {
+                if (this.readStatus1 !== undefined && this.readStatus1 != null) {
                     this.reqDTO.readStatus = this.readStatus1
                 }
-                if (this.type1 != undefined && this.type1 != null) {
+                if (this.type1 !== undefined && this.type1 != null) {
                     this.reqDTO.type = this.type1
                 }
-                if (this.chargeMan1 != undefined && this.chargeMan1 != null) {
+                if (this.chargeMan1 !== undefined && this.chargeMan1 != null) {
                     this.reqDTO.taskChargeMan = this.chargeMan1
                 }
-                if (this.origin1 != undefined && this.origin1 != null) {
+                if (this.origin1 !== undefined && this.origin1 != null) {
                     this.reqDTO.origin = this.origin1
                 }
-                if (this.source1 != undefined && this.source1 != null){
+                if (this.source1 !== undefined && this.source1 != null){
                     this.reqDTO.source = this.source1
                 }
 
@@ -2132,25 +2147,25 @@
 
             //条件查询排队中需求
             select4() {
-                this.clearReqDTO()
-                this.reqDTO.pageNum = 1
+                this.clearReqDTO();
+                this.reqDTO.pageNum = 1;
 
-                if (this.priority4 != undefined && this.priority4 != null) {
+                if (this.priority4 !== undefined && this.priority4 != null) {
                     this.reqDTO.priority = this.priority4
                 }
-                if (this.readStatus4 != undefined && this.readStatus4 != null) {
+                if (this.readStatus4 !== undefined && this.readStatus4 != null) {
                     this.reqDTO.readStatus = this.readStatus4
                 }
                 if (this.origin4) {
                     this.reqDTO.origin = this.origin4
                 }
-                if (this.type4 != undefined && this.type4 != null) {
+                if (this.type4 !== undefined && this.type4 != null) {
                     this.reqDTO.type = this.type4
                 }
-                if (this.source4 != undefined && this.source4 != null) {
+                if (this.source4 !== undefined && this.source4 != null) {
                     this.reqDTO.source = this.source4
                 }
-                if (this.chargeMan4 != undefined && this.chargeMan4 != null) {
+                if (this.chargeMan4 !== undefined && this.chargeMan4 != null) {
                     this.reqDTO.chargeMan = this.chargeMan4
                 }
 
@@ -2159,25 +2174,25 @@
 
             //条件查询驳回需求
             select3() {
-                this.clearReqDTO()
-                this.reqDTO.pageNum = 1
+                this.clearReqDTO();
+                this.reqDTO.pageNum = 1;
 
-                if (this.priority3 != undefined && this.priority3 != null) {
+                if (this.priority3 !== undefined && this.priority3 != null) {
                     this.reqDTO.priority = this.priority3
                 }
-                if (this.readStatus3 != undefined && this.readStatus3 != null) {
+                if (this.readStatus3 !== undefined && this.readStatus3 != null) {
                     this.reqDTO.readStatus = this.readStatus3
                 }
                 if (this.origin3) {
                     this.reqDTO.origin = this.origin3
                 }
-                if (this.type3 != undefined && this.type3 != null) {
+                if (this.type3 !== undefined && this.type3 != null) {
                     this.reqDTO.type = this.type3
                 }
-                if (this.source3 != undefined && this.source3 != null) {
+                if (this.source3 !== undefined && this.source3 != null) {
                     this.reqDTO.source = this.source3
                 }
-                if (this.chargeMan3 != undefined && this.chargeMan3 != null) {
+                if (this.chargeMan3 !== undefined && this.chargeMan3 != null) {
                     this.reqDTO.chargeMan = this.chargeMan3
                 }
 
@@ -2186,8 +2201,8 @@
 
             //条件查询已完成需求
             select2() {
-                this.clearReqDTO()
-                this.reqDTO.pageNum = 1
+                this.clearReqDTO();
+                this.reqDTO.pageNum = 1;
                 if (this.origin2) {
                     this.reqDTO.origin = this.origin2
                 }
@@ -2197,10 +2212,10 @@
                 if (this.endTime2) {
                     this.reqDTO.endTime = moment(this.endTime2).format('YYYY-MM-DD 23:59:59')
                 }
-                if (this.chargeMan2 != undefined && this.chargeMan2 != null) {
+                if (this.chargeMan2 !== undefined && this.chargeMan2 != null) {
                     this.reqDTO.taskChargeMan = this.chargeMan2
                 }
-                if (this.source2 != undefined && this.source2 != null){
+                if (this.source2 !== undefined && this.source2 != null){
                     this.reqDTO.source = this.source2
                 }
 
@@ -2235,7 +2250,7 @@
 
             //添加需求
             saveDemand(formName) {
-                this.isSaving = true
+                this.isSaving = true;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if (this.demandForm.type === null) {
@@ -2248,13 +2263,13 @@
                             this.isSaving = false;
                             return;
                         }
-                        if (this.demandForm.source == 1 || this.demandForm.source == 2){
+                        if (this.demandForm.source === 1 || this.demandForm.source === 2){
                             this.demandForm.chargeMan = '87532428385583104'
                         }
-                        if (this.demandForm.source == 3){
+                        if (this.demandForm.source === 3){
                             this.demandForm.chargeMan = '296175644545384448'
                         }
-                        if (this.demandForm.source == 4){
+                        if (this.demandForm.source === 4){
                             this.demandForm.chargeMan = '139964039693336576'
                         }
                         if (this.demandForm.chargeMan === null || this.demandForm.chargeMan === ''){
@@ -2267,14 +2282,14 @@
                             this.isSaving = false;
                             return;
                         }
-                        var param = this.demandForm
-                        param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
-                        param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:00:00')
+                        let param = this.demandForm;
+                        param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00');
+                        param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:00:00');
 
                         http.zsyPostHttp('/feedback/demand/add', param, (resp) => {
                             this.$message({showClose: true, message: '需求创建成功', type: 'success'});
                             this.$refs[formName].resetFields();
-                            this.newDemandVisible = false
+                            this.newDemandVisible = false;
                             this.fetchNewDemandList();
                             this.isSaving = false
                         });
@@ -2286,10 +2301,10 @@
             },
 
             saveEdit(formName) {
-                this.isSaving = true
+                this.isSaving = true;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        var param = this.demandForm
+                        let param = this.demandForm;
                         if (this.demandForm.type === null) {
                             this.$message({showClose: true, message: '类型不能为空', type: 'warning'});
                             this.isSaving = false;
@@ -2323,14 +2338,14 @@
                             return;
 
                         }
-                        param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00')
+                        param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00');
                         http.zsyPutHttp('/feedback/demand/edit/' + this.demandForm.id, param, (resp) => {
                             this.$message({showClose: true, message: '需求修改成功', type: 'success'});
                             this.$refs[formName].resetFields();
-                            this.editDemandVisible = false
-                            if (param.status == 0){
+                            this.editDemandVisible = false;
+                            if (param.status === 0){
                                 this.fetchNewDemandList()
-                            }else if (param.status == 4){
+                            }else if (param.status === 4){
                                 this.fetchQueueDemandList()
                             }
                             this.isSaving = false
@@ -2351,24 +2366,24 @@
             //编辑需求
             editDemand(demand) {
                 if (this.permit) {
-                    this.clearDemandForm()
-                    this.editDemandVisible = true
-                    this.demandDeleteIcon = true
-                    this.demandForm.status = demand.status
-                    this.demandForm.id = demand.id
-                    this.demandForm.title = demand.title
-                    this.demandForm.type = demand.type
-                    this.demandForm.priority = demand.priority
-                    this.demandForm.origin = demand.origin
-                    this.demandForm.source = demand.source
-                    this.demandForm.chargeMan = demand.chargeMan
-                    this.demandForm.question = demand.question
-                    this.demandForm.target = demand.target
-                    this.demandForm.releaseTime = new Date(demand.releaseTime)
+                    this.clearDemandForm();
+                    this.editDemandVisible = true;
+                    this.demandDeleteIcon = true;
+                    this.demandForm.status = demand.status;
+                    this.demandForm.id = demand.id;
+                    this.demandForm.title = demand.title;
+                    this.demandForm.type = demand.type;
+                    this.demandForm.priority = demand.priority;
+                    this.demandForm.origin = demand.origin;
+                    this.demandForm.source = demand.source;
+                    this.demandForm.chargeMan = demand.chargeMan;
+                    this.demandForm.question = demand.question;
+                    this.demandForm.target = demand.target;
+                    this.demandForm.releaseTime = new Date(demand.releaseTime);
                     // this.demandForm.feedbackTime = new Date(demand.feedbackTime)
                     this.demandForm = Object.assign({}, this.demandForm)
                 } else {
-                    this.demandDetail(demand.id)
+                    this.demandDetail(demand.id);
                     this.clearDemandForm()
                 }
             },
@@ -2382,9 +2397,9 @@
                 }).then(() => {
                     http.zsyDeleteHttp('/feedback/delete/' + id, null, (resp) => {
                         this.$message({showClose: true, message: '需求删除成功', type: 'success'});
-                        if (status == 0) {
+                        if (status === 0) {
                             this.fetchNewDemandList()
-                        } else if (status == 4) {
+                        } else if (status === 4) {
                             this.fetchQueueDemandList()
 
                         }
@@ -2395,17 +2410,17 @@
 
             //清空需求表单
             clearDemandForm() {
-                this.demandForm.id = null
-                this.demandForm.title = null
-                this.demandForm.type = 0
-                this.demandForm.priority = 0
-                this.demandForm.source = 0
-                this.demandForm.chargeMan = null
-                this.demandForm.origin = null
-                this.demandForm.question = null
-                this.demandForm.target = null
-                this.demandForm.releaseTime = null
-                this.demandForm.feedbackTime = null
+                this.demandForm.id = null;
+                this.demandForm.title = null;
+                this.demandForm.type = 0;
+                this.demandForm.priority = 0;
+                this.demandForm.source = 0;
+                this.demandForm.chargeMan = null;
+                this.demandForm.origin = null;
+                this.demandForm.question = null;
+                this.demandForm.target = null;
+                this.demandForm.releaseTime = null;
+                this.demandForm.feedbackTime = null;
                 this.demandForm.urlList = []
             },
 
@@ -2414,22 +2429,22 @@
                 this.setSessionScreenData();
             },
             handleCurrentChange1(currentPage) {
-                this.fetchRunningDemandList()
+                this.fetchRunningDemandList();
                 this.setSessionScreenData();
 
             },
             handleCurrentChange2(currentPage) {
-                this.fetchCompletedDemandList()
+                this.fetchCompletedDemandList();
                 this.setSessionScreenData();
 
             },
             handleCurrentChange3(currentPage) {
-                this.fetchRejectedDemandList()
+                this.fetchRejectedDemandList();
                 this.setSessionScreenData();
 
             },
             handleCurrentChange4(currentPage) {
-                this.fetchQueueDemandList()
+                this.fetchQueueDemandList();
                 this.setSessionScreenData();
 
             },
@@ -2442,25 +2457,25 @@
             },
             handleClick(tab, event) {
                 this.setSessionScreenData();
-                if (tab.name == "new") {
-                    this.clear0()
-                    this.clearReqDTO()
+                if (tab.name === "new") {
+                    this.clear0();
+                    this.clearReqDTO();
                     this.fetchNewDemandList()
-                } else if (tab.name == "running") {
-                    this.clear1()
-                    this.clearReqDTO()
+                } else if (tab.name === "running") {
+                    this.clear1();
+                    this.clearReqDTO();
                     this.fetchRunningDemandList()
-                } else if (tab.name == 'queue') {
-                    this.clear4()
-                    this.clearReqDTO()
+                } else if (tab.name === 'queue') {
+                    this.clear4();
+                    this.clearReqDTO();
                     this.fetchQueueDemandList()
-                } else if (tab.name == 'reject') {
-                    this.clear3()
-                    this.clearReqDTO()
+                } else if (tab.name === 'reject') {
+                    this.clear3();
+                    this.clearReqDTO();
                     this.fetchRejectedDemandList()
-                } else if (tab.name == 'completed') {
-                    this.clear2()
-                    this.clearReqDTO()
+                } else if (tab.name === 'completed') {
+                    this.clear2();
+                    this.clearReqDTO();
                     this.fetchCompletedDemandList()
                 }
             },

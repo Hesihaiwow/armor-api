@@ -4,11 +4,12 @@
             <div class="ntb-con">
                     <div class="logo"><img src="../assets/img/site-icon.png" alt=""></div>
                 <div class="personal-name" @click.prevent.stop="personalOpt">
-                    <img v-if="avatarUrl!=''" :src="avatarUrl" alt="" class="personal-headimg">
+                    <img v-if="avatarUrl!==''" :src="avatarUrl" alt="" class="personal-headimg">
                     <span v-else>{{getUserName}}</span>
                     <div class="personal-opt" v-show="showPerOpt">
                         <div class="alter-pwd" @click.stop.prevent="alterPwd">修改密码</div>
                         <div class="alter-pwd" @click.stop.prevent="alterInfo">修改信息</div>
+                        <div class="alter-pwd" @click.stop.prevent="showInfo">查看信息</div>
                         <div class="alter-avatar" @click.stop.prevent="alterAvatar">修改头像</div>
                         <div class="logout-btn" @click.stop.prevent="handleLogout">退出登录</div>
                     </div>
@@ -22,7 +23,7 @@
                         </el-tab-pane>-->
 
                     <el-tab-pane v-for="(item,idx) in tabs" :name="item.name" :key="idx">
-                        <span v-if="item.name == 'notice' && unreadNoticeNum > 0" slot="label">{{item.label}}<span style="color: red">({{unreadNoticeNum}})</span></span>
+                        <span v-if="item.name === 'notice' && unreadNoticeNum > 0" slot="label">{{item.label}}<span style="color: red">({{unreadNoticeNum}})</span></span>
                         <span v-else slot="label">{{item.label}}</span>
                     </el-tab-pane>
                 </el-tabs>
@@ -64,7 +65,7 @@
                 <el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>
                 <el-table-column property="content" label="内容" align="center">
                     <template scope="scope">
-                        <span v-if="scope.row.status == 0">
+                        <span v-if="scope.row.status === 0">
                             <a style="color:orangered;cursor: pointer;"@click="showTaskDetails(scope.row.taskId)">{{scope.row.content}}</a>
                         </span>
                         <span v-else><a style="color:gray;cursor: pointer;"@click="showTaskDetails(scope.row.taskId)">{{scope.row.content}}</a></span>
@@ -84,7 +85,7 @@
                 <el-table-column label="操作" align="center" width="100">
                     <template scope="scope">
                         <a style="color:#20a0ff;cursor: pointer;"
-                           @click="readNotice(scope.row.nid)" v-if="scope.row.status == 0">标记已阅</a>
+                           @click="readNotice(scope.row.nid)" v-if="scope.row.status === 0">标记已阅</a>
                     </template>
                 </el-table-column>
             </el-table>
@@ -174,6 +175,28 @@
                 </ul>
             </div>
         </el-dialog>
+
+        <el-dialog
+                title="个人详情"
+                top="10%"
+                :visible.sync="showUserInfoVisible"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                class="user-class">
+            <el-form>
+                <el-form-item class="task-form" label="姓名：" prop="name">{{userInfo.name}}</el-form-item>
+                <el-form-item class="task-form" label="账号：" prop="account">{{userInfo.account}}</el-form-item>
+                <el-form-item class="task-form" label="角色：" prop="jobRoleName">{{userInfo.jobRoleName}}</el-form-item>
+                <el-form-item class="task-form" label="级别：" prop="levelName">{{userInfo.levelName}}</el-form-item>
+                <el-form-item class="task-form" label="职位：" prop="jobName">{{userInfo.jobName}}</el-form-item>
+                <el-form-item class="task-form" label="手机号：" prop="phone">{{userInfo.phone}}</el-form-item>
+                <el-form-item class="task-form" label="邮箱：" prop="email">{{userInfo.email}}</el-form-item>
+                <el-form-item class="task-form" label="所属部门：" prop="deptName">{{userInfo.deptName}}</el-form-item>
+                <el-form-item class="task-form" label="用户权限：" prop="userRoleName">{{userInfo.userRoleName}}</el-form-item>
+                <el-form-item class="task-form" label="考勤序号：" prop="checkSort">{{userInfo.checkSort}}</el-form-item>
+                <el-form-item class="task-form" label="用户状态：" prop="statusName">{{userInfo.statusName}}</el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -190,11 +213,12 @@
     import Stats from './Stats2'
     import UploadAvatar from './UploadAvatar.vue'
     import Calculate from  './Calculate.vue'
-    import Plan from './Plan.vue'
     import AlterInfo from './AlterInfo'
     import moment from 'moment';
     import Notice from './Notice'
     import SummaryNav from './SummaryNav'
+    import helper from '../lib/Helper'
+
 
     export default {
         data() {
@@ -263,6 +287,21 @@
                     {label: '较难', value: 4},
                     {label: '困难', value: 5},
                 ],
+                userInfo:{
+                    id:'',
+                    name:'',
+                    account:'',
+                    jobRoleName:'',
+                    levelName:'',
+                    jobName:'',
+                    phone:'',
+                    email:'',
+                    deptName:'',
+                    userRoleName:'',
+                    checkSort:'',
+                    statusName:'',
+                },
+                showUserInfoVisible:false
             };
         },
         filters:{
@@ -278,7 +317,7 @@
         created() {
             this.fetchMyProfile();
             this.activeName = 'navIndex';
-            this.fetchUnreadNoticeNum()
+            this.fetchUnreadNoticeNum();
             this.checkNotice()
         },
         mounted(){
@@ -331,7 +370,7 @@
                 this.tabs.push({
                     label:'评价',
                     name:'evaluation'
-                })
+                });
                 this.tabs.push({
                     label: '组织',
                     name: 'organization'
@@ -343,7 +382,7 @@
                     name:'summaryNav'
                 });
             }
-            if (Helper.decodeToken().departmentId == 0) {
+            if (Helper.decodeToken().departmentId === 0) {
                 Http.zsyGetHttp(`/dept/all`,null,(res)=>{
                     this.deptOptions=res.data;
                 });
@@ -366,7 +405,7 @@
                 this.showIndex = false;
                 /*tab切换*/
                 this.$router.push(`/index/${path}`);
-                this.fetchUnreadNoticeNum()
+                this.fetchUnreadNoticeNum();
                 window.localStorage.removeItem("justMine")
             },
             showIndexEvent() {
@@ -394,6 +433,13 @@
                 this.showPerOpt = false;
                 this.$refs.alterInfoPop.show()
             },
+            //查看信息
+            showInfo(){
+                Http.zsyGetHttp('/user/'+helper.decodeToken().userId,null,(res)=>{
+                    this.userInfo = res.data;
+                    this.showUserInfoVisible = true;
+                })
+            },
             //查询最近5条未读通知
             fetchUnreadNotice(){
                 Http.zsyGetHttp('/task/notification/un-read',{},(res)=>{
@@ -404,8 +450,8 @@
             fetchUnreadNoticeNum(){
                 if (Helper.decodeToken().userRole < 3){
                     Http.zsyGetHttp('/task/notification/un-read/num',{},(res)=>{
-                        this.unreadNoticeNum = res.data.count
-                        window.localStorage.setItem("unreadNum",res.data.count)
+                        this.unreadNoticeNum = res.data.count;
+                        window.localStorage.setItem("unreadNum",res.data.count);
                         this.tabs[6].value = this.unreadNoticeNum
 
                     })
@@ -413,7 +459,7 @@
             },
             //查询所有通知
             fetchAllNotice(){
-                this.allShow = true
+                this.allShow = true;
                 Http.zsyPostHttp('/task/notification/all',this.reqDTO,(res)=>{
                     this.noticeData = res.data.list;
                     this.noticePage.total = res.data.total
@@ -423,12 +469,12 @@
             readNotice(nid){
                 Http.zsyPutHttp('/task/notification/read/'+nid,{},(res) => {
                     this.$message({showClose: true, message: '标记成功', type: 'success'});
-                    this.fetchAllNotice()
+                    this.fetchAllNotice();
                     this.fetchUnreadNoticeNum()
                 })
             },
             handleCurrentChange(currentPage) {
-                this.reqDTO.pageNum = currentPage
+                this.reqDTO.pageNum = currentPage;
                 this.fetchAllNotice()
             },
             pageLayout() {
@@ -459,9 +505,9 @@
                 });
             },
             taskStepStatus(item, taskUserNum){
-                const commented = item.commentNum > 0 && item.commentNum == taskUserNum - 1;
+                const commented = item.commentNum > 0 && item.commentNum === taskUserNum - 1;
                 let className = 'in';
-                if (item.status == 1) {
+                if (item.status === 1) {
                     // 进行中
                     className = "in"
                 }else if(item.status>1 && !commented){
@@ -506,7 +552,7 @@
             fetchMyProfile(){
                 // 获取我的个人信息
                 Http.zsyGetHttp('/user/myProfile',{},(res)=>{
-                    if (res.data.avatarUrl && res.data.avatarUrl!='') {
+                    if (res.data.avatarUrl && res.data.avatarUrl!=='') {
                         this.avatarUrl = res.data.avatarUrl
                     }
                 })
@@ -515,7 +561,7 @@
                 this.departmentId=data.id;
             },
             addDept(){
-                if(this.organization.trim()!=''&&this.organization!=null&&this.organization.length<20){
+                if(this.organization.trim()!==''&&this.organization!=null&&this.organization.length<20){
                     Http.zsyPostHttp('/dept/addOrganization?name='+this.organization,null,(res)=>{
                         this.$message({
                             showClose: true,
@@ -538,7 +584,7 @@
                 }
             },
             deptChange(){
-                if(this.departmentId==''){
+                if(this.departmentId===''){
                     this.$message({
                         showClose: true,
                         message: '请选择组织',
@@ -554,7 +600,7 @@
                     });
                     window.localStorage.setItem("token", res.data);
                     this.$router.go(0);
-                })
+                });
 
                 this.deptVisible = false
             },
@@ -568,9 +614,9 @@
                 })
             },
             vaidateEmail(){
-                if(this.emailCode!=null&&this.emailCode!=''){
+                if(this.emailCode!=null&&this.emailCode!==''){
                     Http.zsyGetHttp('/user/validateEmail/'+this.emailCode,{},(res)=>{
-                        if (res.errCode!='00'){
+                        if (res.errCode!=='00'){
                             this.$message({
                                 showClose: true,
                                 message: "邮箱验证失败，请检查后重试",
@@ -613,6 +659,9 @@
         width: 100px;
         line-height: 32px;
     }*/
+    .user-class .el-dialog--small {
+        width: 500px;
+    }
 </style>
 <style scoped>
     .nav-top-bg {

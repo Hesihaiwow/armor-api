@@ -1,53 +1,53 @@
 <template>
     <div>
-        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id,task.type)" v-show="viewType==1"
+        <div class="task-lis" v-for="task in taskItems" @click="taskItemClick(task.id,task.type)" v-show="viewType===1"
              :class="task.borderClass">
-            <div class="trans" v-show="task.examine==1"></div>
+            <div class="trans" v-show="task.examine===1"></div>
             <div class="head-img">
                 <!-- 待审核 -->
-                <img v-if="task.reviewStatus ==1" src="../assets/img/waitAudit.png">
+                <img v-if="task.reviewStatus ===1" src="../assets/img/waitAudit.png">
                 <!-- 审核通过 -->
-                <img v-else-if="taskStatus=='auditSuccess'" src="../assets/img/auditSuccess.png">
+                <img v-else-if="taskStatus==='auditSuccess'" src="../assets/img/auditSuccess.png">
                 <!-- 进行中 -->
-                <img v-else-if="(taskStatus=='TaskDoing' && task.reviewStatus ==3)||(taskStatus=='taskList' && task.status<3)"
+                <img v-else-if="(taskStatus==='TaskDoing' && task.reviewStatus ===3)||(taskStatus==='taskList' && task.status<3)"
                      src="../assets/img/doing.png">
                 <!-- 已完成 -->
-                <img v-else-if="(taskStatus=='finished')||task.status==3" src="../assets/img/finished.jpg">
+                <img v-else-if="(taskStatus==='finished')||task.status===3" src="../assets/img/finished.jpg">
                 <!-- 待评价 -->
-                <img v-else-if="taskStatus=='WaitAssess'" src="../assets/img/waitAssess.png">
+                <img v-else-if="taskStatus==='WaitAssess'" src="../assets/img/waitAssess.png">
             </div>
             <div class="main-task-detail">
                 <div class="task-name">
                     <span v-if="isPrivate">
-                        <span v-show="task.reviewStatus == 1 && task.type == 2" style="color: red">(待审核 多人任务)</span>
-                        <span v-show="task.reviewStatus == 1 && task.type == 1" style="color: red">(待审核 个人任务)</span>
+                        <span v-show="task.reviewStatus === 1 && task.type === 2" style="color: red">(待审核 多人任务)</span>
+                        <span v-show="task.reviewStatus === 1 && task.type === 1" style="color: red">(待审核 个人任务)</span>
                         {{task.name}}
-                        <span v-for="(item,index) in task.taskUsers" v-if="task.type==2">
-                          <span v-if="item.userId == loginUserId && item.description!=''">({{item.description}})</span>
+                        <span v-for="(item,index) in task.taskUsers" v-if="task.type===2">
+                          <span v-if="item.userId === loginUserId && item.description!==''">({{item.description}})</span>
                       </span>
                     </span>
                     <span v-else>{{task.name}}</span>
                 </div>
                 <div class="task-state">
-                    <i class="iconfont icon-person" v-show="task.type==1"></i>
-                    <i class="iconfont icon-people" v-show="task.type==2"></i>
-                    <span class="task-end purple" v-if="task.status==3&&task.stageName=='已发布'">{{task.endText}}</span>
+                    <i class="iconfont icon-person" v-show="task.type===1"></i>
+                    <i class="iconfont icon-people" v-show="task.type===2"></i>
+                    <span class="task-end purple" v-if="task.status===3&&task.stageName==='已发布'">{{task.endText}}</span>
                     <span class="task-end" :class="task.endColor" v-else="">{{task.endText}}</span>
-                    <span v-if="task.status==1&&task.delayNo!=0&&task.delayNo!=null" class="task-end orange">超时人数:{{task.delayNo}}</span>
+                    <span v-if="task.status===1&&task.delayNo!==0&&task.delayNo!=null" class="task-end orange">超时人数:{{task.delayNo}}</span>
                     <span class="task-time-opt">
-                    <i v-show="taskStatus=='TaskDoing'  && task.reviewStatus ==3" class="el-icon-circle-check"
+                    <i v-show="taskStatus==='TaskDoing'  && task.reviewStatus ===3" class="el-icon-circle-check"
                        @click="showFinishedPop(task.id,task.taskUsers[0].id,task.type,task.expand)"></i>
-                        <i v-show="taskStatus=='TaskDoing' && task.type==1 && task.reviewStatus===1 "
+                        <i v-show="taskStatus==='TaskDoing' && task.type===1 && task.reviewStatus===1 "
                            @click="modifyPrivateTask(task.id)" class="el-icon-edit"></i>
-                        <i v-show="taskStatus=='TaskDoing' && task.type==2 && task.reviewStatus==1 "
+                        <i v-show="taskStatus==='TaskDoing' && task.type===2 && task.reviewStatus===1 "
                            @click="getTaskTempDetail(task.id,task.ttId)" class="el-icon-edit"></i>
                         <!-- 待评价 -->
-                        <i v-show="taskStatus=='WaitAssess'" class="el-icon-star-off"></i>
+                        <i v-show="taskStatus==='WaitAssess'" class="el-icon-star-off"></i>
                         <!-- 待审核 -->
-                        <i v-show="taskStatus=='WaitAuditing'" class="el-icon-edit"
+                        <i v-show="taskStatus==='WaitAuditing'" class="el-icon-edit"
                            @click="showAuditPop(task.id,task.taskUsers[0].id)"></i>
                         <!-- 审核通过 -->
-                      <i v-show="taskStatus=='auditSuccess' " @click.stop="modifyPrivateTask(task.id)"
+                      <i v-show="taskStatus==='auditSuccess' " @click.stop="modifyPrivateTask(task.id)"
                          class="el-icon-edit"></i>
                     </span>
                     <ul class="task-key-tag">
@@ -58,7 +58,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="task-mark"  v-show="isPrivate && task.status==1 && !task.expand && taskStatus=='TaskDoing'  && task.reviewStatus == 3 && task.type == 2" style="margin-right: 20px;">
+            <div class="task-mark"  v-show="isPrivate && task.status===1 && !task.expand && taskStatus==='TaskDoing'  && task.reviewStatus === 3 && task.type === 2" style="margin-right: 20px;">
                 <el-button @click="applyModifyMyTask(task)">申请修改任务</el-button>
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
@@ -66,7 +66,7 @@
                 <!--<span class="task-score">+{{task.userIntegral}}</span>-->
                 <!--<span class="task-level first" v-show="task.type==2">{{task.integralGrade}}</span>-->
             <!--</div>-->
-            <div class="" v-show="!isPrivate && task.status==1&& taskStatus!='WaitAssess'">
+            <div class="" v-show="!isPrivate && task.status===1&& taskStatus!=='WaitAssess'">
                 <span class="mark-stage">{{task.stageName}}</span>
             </div>
             <div class="task-mark" style="position:relative; left:-10px">
@@ -76,11 +76,11 @@
                 <span  class="mark-msg">{{task.projectName}}</span>
             </div>
             <div class="task-username">
-                <img class="task-avatar" v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
+                <img class="task-avatar" v-if="task.avatarUrl && task.avatarUrl!==''" :src="task.avatarUrl" :alt="task.userName">
                 <span v-else="">{{task.userName}}</span>
             </div>
         </div>
-        <div v-show="taskItems.length==0" class="empty">
+        <div v-show="taskItems.length===0" class="empty">
             <h2>暂无数据</h2>
         </div>
         <el-dialog
@@ -103,7 +103,7 @@
                 <el-form-item class="task-form" label="项目：" style="float: left;width: 250px">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item class="task-form" label="优先级：" style="float: left;width: 250px">
-                    <span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                    <span v-for="item in priorityList" v-if="item.value === taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
                 <el-form-item class="task-form" label="截止时间：" style="">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
@@ -325,11 +325,11 @@
                 <div style="margin-top: 5px;margin-left: 250px">阶段: {{taskDetail.stageName}}</div>
                 <div style="margin-top: 5px;float: left">优先级:
                     <span v-for="item in priorityList"
-                          v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                          v-if="item.value === taskDetail.priority">{{item.label}}</span>
                 </div>
                 <div style="margin-top: 5px;margin-left: 250px">难易度：
                     <span v-for="item in facilityList"
-                          v-if="item.value == taskDetail.facility">{{item.label}}</span>
+                          v-if="item.value === taskDetail.facility">{{item.label}}</span>
                 </div>
                 <div style="margin-top: 5px;float: left">设计完成时间：{{taskDetail.beginTime | formatDate}}</div>
                 <div style="margin-top: 5px;margin-left: 250px">开发完成时间：{{taskDetail.testTime | formatDate}}</div>
@@ -348,7 +348,7 @@
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
                     </el-table>
                 </div>
-                <div class="ctpc-member-con" v-if="taskDetail.type==2">
+                <div class="ctpc-member-con" v-if="taskDetail.type===2">
                     <div class="ctpc-member-list clearfix" :class="taskStepStatus(item, taskDetail.users.length)"
                          v-for="(item,index) in taskDetail.users">
                         <el-tooltip  placement="top">
@@ -361,15 +361,15 @@
                                     <div>&nbsp;&nbsp;结束时间:{{userTask.endTime | formatDate}}</div>
                                     <!--<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 任务描述:{{userTask.description}}</div>-->
                                 </div>
-                                <div v-if="item.userTask&&item.userTask.length==0">无</div>
+                                <div v-if="item.userTask&&item.userTask.length===0">无</div>
                             </div>
                             <span class="fl ctpc-member-head" >{{item.userName}}</span>
                         </el-tooltip>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                         <!--<span class="fl ctpc-member-assess" v-show="item.status==3 && item.commentGrade">评价：{{item.commentGrade}}</span>-->
-                        <span class="fl ctpc-member-assess" v-show="item.status==3 && item.avgScore">评分：{{item.avgScore}}</span>
-                        <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"
+                        <span class="fl ctpc-member-assess" v-show="item.status===3 && item.avgScore">评分：{{item.avgScore}}</span>
+                        <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status===3"
                            @click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>
                         <el-tooltip placement="top">
                             <div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>
@@ -379,7 +379,7 @@
                     </div>
                     <div class="bdl-line"></div>
                 </div>
-                <div v-else="taskDetail.type==1" v-for="(item,index) in taskDetail.users">
+                <div v-else="taskDetail.type===1" v-for="(item,index) in taskDetail.users">
                     <div style="float: left">工作量：{{item.taskHours}} 工时</div>
                     <div style="margin-left: 250px;">负责人：{{item.userName}}</div>
                     <!--<div style="margin-left: 360px">任务级别：{{item.taskLevelName}}</div>-->
@@ -400,7 +400,7 @@
                     </li>
                 </ul>
             </div>
-            <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status==1 || taskDetail.status==0)">
+            <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status===1 || taskDetail.status===0)">
                 <el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">
                     <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name,taskDetail.proNames)"  style="text-align: right">添加Bug修复时间</el-button>
                 </el-tooltip>
@@ -408,7 +408,7 @@
                     <el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>
                 </el-tooltip>
                 <el-tooltip content="暂停任务" placement="top" >
-                    <el-button type="danger"  @click="modifyStopVisible=true" v-show="userRole===0&&taskDetail.status!=0" style="text-align: left">暂停任务</el-button>
+                    <el-button type="danger"  @click="modifyStopVisible=true" v-show="userRole===0&&taskDetail.status!==0" style="text-align: left">暂停任务</el-button>
                 </el-tooltip>
                 <!--<el-tooltip content="评审任务" placement="top" >
                     <el-button type="primary"  @click="examineTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.examine===0" style="text-align: left">已评审</el-button>
@@ -421,10 +421,10 @@
                 </el-tooltip>
                  <el-tooltip content="编辑该任务" placement="top">
                  <el-button type="primary" icon="edit" @click="showModifyDescription"
-                            v-show="((taskDetail.createBy==loginUserId&&userRole===1)  || userRole===0 )&& taskDetail.type==2"></el-button>
+                            v-show="((taskDetail.createBy===loginUserId&&userRole===1)  || userRole===0 )&& taskDetail.type===2"></el-button>
                </el-tooltip>
                 <el-button type="primary" icon="check" @click="completeTask(taskDetail.examine)"
-                           v-show="taskDetail.status!=3 && userRole==0 && taskDetail.type==2">完成</el-button>
+                           v-show="taskDetail.status!==3 && userRole===0 && taskDetail.type===2">完成</el-button>
                 <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
           </span>
         </el-dialog>
@@ -531,7 +531,7 @@
                     </div>
                     <div v-if="!isEvaluated">
                         <el-form class="person-evaluate">
-                            <div v-if="stage.jobRole == 0 && showEvaluate[`${index}`]">
+                            <div v-if="stage.jobRole === 0 && showEvaluate[`${index}`]">
                                 <el-form-item label="沟通" class="person-evaluate el-form-item">
                                     <el-rate
                                         v-model="evaluation[`${index}_0`]"
@@ -551,7 +551,7 @@
                                     <span>{{evaluation[`${index}_1`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 1 && showEvaluate[`${index}`]" >
+                            <div v-if="stage.jobRole === 1 && showEvaluate[`${index}`]" >
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -589,7 +589,7 @@
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 5 && showEvaluate[`${index}`]" >
+                            <div v-if="stage.jobRole === 5 && showEvaluate[`${index}`]" >
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -627,7 +627,7 @@
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 2 && showEvaluate[`${index}`]" >
+                            <div v-if="stage.jobRole === 2 && showEvaluate[`${index}`]" >
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -656,7 +656,7 @@
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
                             </div>
-                            <div v-if="stage.jobRole == 3 && showEvaluate[`${index}`]">
+                            <div v-if="stage.jobRole === 3 && showEvaluate[`${index}`]">
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -758,7 +758,7 @@
                         <!--<el-button style="margin-left: 0px" v-show="num>=0" @click="addFunction(num)" type="text">加1</el-button>-->
                         <!--<el-button  type="text" v-show="num>0"@click="minusFunction(num)">减1</el-button>-->
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=0" @click="addFunction"></i>
-                        <i class="el-icon-minus" v-show="num>0"@click="minusFunction(num-1)"></i>
+                        <i class="el-icon-minus" v-show="num>0" @click="minusFunction(num-1)"></i>
                         <div v-for="item in modifyTaskForm.functionResDTOS">
                                 <el-select placeholder="模块" v-model="item.moduleId" clearable
                                            style="width: 200px">
@@ -907,7 +907,7 @@
                     <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                     <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                     <span style="position: absolute;right: 10px;">
-                        <el-button type="text" icon="edit" v-show="userRole == 0"
+                        <el-button type="text" icon="edit" v-show="userRole === 0"
                                    @click="modifyStep(index,modifyTaskForm.taskUsers,modifyTaskForm.id)"></el-button>
                     <el-button v-show="userRole === 0" type="text" icon="close" @click="deleteMember(index)"></el-button>
                     </span>
@@ -959,10 +959,10 @@
                             <div class="add-member-basic-list clearfix">
                                 <div class="fl" style="margin-left: 5px"><span class="star">*</span>第{{item.weekNumber}}周工作量({{item.range}})：</div>
                                 <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
-                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) > 40" style="color:red;display:inline">
-                                    {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
-                                <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) <=40" style="display:inline">
-                                    {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours) > 40" style="color:red;display:inline">
+                                    {{parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours)}}</div>
+                                <div class="f1" v-show="parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours) <=40" style="display:inline">
+                                    {{parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours)}}</div>
                             </div>
                         </div>
 
@@ -1295,7 +1295,7 @@
                 <div style="margin-top: 3px;margin-left: 250px">设计完成时间: {{taskDetail.beginTime | formatDate}}</div>
                 <div style="float: left;margin-top: 3px">阶段: {{taskDetail.stageName}}</div>
                 <div style="margin-top: 3px;margin-left: 250px">开发完成时间: {{taskDetail.testTime | formatDate}}</div>
-                <div style="float: left;margin-top: 3px">优先级: <span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span></div>
+                <div style="float: left;margin-top: 3px">优先级: <span v-for="item in priorityList" v-if="item.value === taskDetail.priority">{{item.label}}</span></div>
                 <div style="margin-top: 3px;margin-left: 250px">任务截止时间: {{taskDetail.endTime | formatDate}}</div>
                 <div>标签:
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -1307,10 +1307,10 @@
                     <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1&&num<taskFunctionData.length" @click="plusTaskTempFunction"></i>
-                        <i class="el-icon-minus" v-show="num>1"@click="minusTaskTempFunction(num-1)"></i>
+                        <i class="el-icon-minus" v-show="num>1" @click="minusTaskTempFunction(num-1)"></i>
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
-                                       style="width: 260px">
+                                       style="width: 400px">
                                 <el-option
                                         v-for="item in taskFunctionData"
                                         :key="item.id"
@@ -1419,7 +1419,7 @@
                 <div style="margin-top: 3px;margin-left: 250px">设计完成时间: {{taskDetail.beginTime | formatDate}}</div>
                 <div style="float: left;margin-top: 3px">阶段: {{taskDetail.stageName}}</div>
                 <div style="margin-top: 3px;margin-left: 250px">开发完成时间: {{taskDetail.testTime | formatDate}}</div>
-                <div style="float: left;margin-top: 3px">优先级: <span v-for="item in priorityList" v-if="item.value == taskDetail.priority">{{item.label}}</span></div>
+                <div style="float: left;margin-top: 3px">优先级: <span v-for="item in priorityList" v-if="item.value === taskDetail.priority">{{item.label}}</span></div>
                 <div style="margin-top: 3px;margin-left: 250px">任务截止时间: {{taskDetail.endTime | formatDate}}</div>
                 <div>标签:
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -1445,10 +1445,10 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
                         <input class="member-time-week" disabled v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
-                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) > 40" style="color:red;display:inline">
-                            {{parseFloat(item.weekHours==''?0:item.weekHours)}}</div>
-                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) <=40" style="display:inline">
-                            {{parseFloat(item.weekHours==''?0:item.weekHours)}}</div>
+                        <div class="f1" v-show="parseFloat(item.weekHours===''?0:item.weekHours) > 40" style="color:red;display:inline">
+                            {{parseFloat(item.weekHours===''?0:item.weekHours)}}</div>
+                        <div class="f1" v-show="parseFloat(item.weekHours===''?0:item.weekHours) <=40" style="display:inline">
+                            {{parseFloat(item.weekHours===''?0:item.weekHours)}}</div>
                     </div>
                 </div>
 
@@ -1460,7 +1460,7 @@
                     <span style="margin-left: 1px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1&&num<taskFunctionData.length" @click="plusTaskTempFunction"></i>
-                        <i class="el-icon-minus" v-show="num>1"@click="minusTaskTempFunction(num-1)"></i>
+                        <i class="el-icon-minus" v-show="num>1" @click="minusTaskTempFunction(num-1)"></i>
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="modifyTaskFunctionList[i-1]" clearable
                                        style="width: 260px">
@@ -1513,10 +1513,10 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
                         <input class="member-time-week" v-model="item.hours" :maxlength="6" style="width:80px" :placeholder="item.hoursTemp">&nbsp;&nbsp;&nbsp;&nbsp;已有工作量:
-                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)  > 40" style="color:red;display:inline">
-                            {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) }}</div>
-                        <div class="f1" v-show="parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours)  <=40" style="display:inline">
-                            {{parseFloat(item.weekHours==''?0:item.weekHours) + parseFloat(item.hours==''?0:item.hours) }}</div>
+                        <div class="f1" v-show="parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours)  > 40" style="color:red;display:inline">
+                            {{parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours) }}</div>
+                        <div class="f1" v-show="parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours)  <=40" style="display:inline">
+                            {{parseFloat(item.weekHours===''?0:item.weekHours) + parseFloat(item.hours===''?0:item.hours) }}</div>
                     </div>
                 </div>
             </el-form>
@@ -1553,8 +1553,8 @@
             viewType:'',
         },
         data() {
-            var validateEmpty = (rule, value, callback) => {
-                if (value.trim() == '') {
+            let validateEmpty = (rule, value, callback) => {
+                if (value.trim() === '') {
                     callback(new Error());
                 } else {
                     callback();
@@ -1845,26 +1845,26 @@
                 // 不包含完成的阶段才显示删除
                 if (this.taskDetail.users) {
                     let done = this.taskDetail.users.filter((user) => {
-                        return user.status == 2
-                    })
-                    return done.length == 0 && this.taskDetail.status != 3;
+                        return user.status === 2
+                    });
+                    return done.length === 0 && this.taskDetail.status !== 3;
                 }
             },
             stepBeginTimeOptions() {
-                let endTime = this.modifyTaskForm.endTime
+                let endTime = this.modifyTaskForm.endTime;
                 return {
                     disabledDate(time) {
-                        const fTime = time.getTime()
+                        const fTime = time.getTime();
                         return fTime > endTime;
                     }
                 };
             },
             stepEndTimeOptions() {
-                let endTime = this.modifyTaskForm.endTime
-                let beginTime = this.step.beginTime
+                let endTime = this.modifyTaskForm.endTime;
+                let beginTime = this.step.beginTime;
                 return {
                     disabledDate(time) {
-                        const fTime = time.getTime()
+                        const fTime = time.getTime();
                         return fTime < beginTime || fTime > endTime;
                     }
                 };
@@ -1874,7 +1874,7 @@
                     for (let i = 0; i < this.weekNumber.length; i++) {
                         for (let x = 0; x < this.weekNumberTemp.length; x++) {
                             if (this.weekNumber[i] != null) {
-                                if (this.weekNumber[i].weekNumber == this.weekNumberTemp[x].weekNumber) {
+                                if (this.weekNumber[i].weekNumber === this.weekNumberTemp[x].weekNumber) {
                                     this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
                                 }
                             }
@@ -1884,11 +1884,11 @@
                 return _.orderBy(this.weekNumber, 'weekNumber')
             },
             sortTestWeekNumber(){
-                if (this.testWeekNumber.length != 0) {
+                if (this.testWeekNumber.length !== 0) {
                     for (let i = 0; i < this.testWeekNumber.length; i++) {
                         for (let x = 0; x < this.testWeekNumberTemp.length; x++) {
                             if (this.testWeekNumber[i] != null) {
-                                if (this.testWeekNumber[i].weekNumber == this.testWeekNumberTemp[x].weekNumber) {
+                                if (this.testWeekNumber[i].weekNumber === this.testWeekNumberTemp[x].weekNumber) {
                                     this.testWeekNumber[i].hoursTemp = this.testWeekNumberTemp[x].hours
                                 }
                             }
@@ -1902,7 +1902,7 @@
                     for (let i = 0; i < this.taskTempWeekNumber.length; i++) {
                         for (let x = 0; x < this.taskWeekNumberTemp.length; x++) {
                             if (this.taskTempWeekNumber[i] != null) {
-                                if (this.taskTempWeekNumber[i].weekNumber == this.taskWeekNumberTemp[x].weekNumber) {
+                                if (this.taskTempWeekNumber[i].weekNumber === this.taskWeekNumberTemp[x].weekNumber) {
                                     this.taskTempWeekNumber[i].hoursTemp = this.taskWeekNumberTemp[x].hours
                                 }
                             }
@@ -1916,7 +1916,7 @@
                     for (let i = 0; i < this.taskUserWeekNumber.length; i++) {
                         for (let x = 0; x < this.taskUserTempWeekNumber.length; x++) {
                             if (this.taskUserWeekNumber[i] != null) {
-                                if (this.taskUserWeekNumber[i].weekNumber == this.taskUserTempWeekNumber[x].weekNumber) {
+                                if (this.taskUserWeekNumber[i].weekNumber === this.taskUserTempWeekNumber[x].weekNumber) {
                                     this.taskUserWeekNumber[i].hoursTemp = this.taskUserTempWeekNumber[x].hours
                                 }
                             }
@@ -1930,7 +1930,7 @@
                     for (let i = 0; i < this.taskModifyWeekNumber.length; i++) {
                         for (let x = 0; x < this.taskModifyWeekNumberTemp.length; x++) {
                             if (this.taskModifyWeekNumber[i] != null) {
-                                if (this.taskModifyWeekNumber[i].weekNumber == this.taskModifyWeekNumberTemp[x].weekNumber) {
+                                if (this.taskModifyWeekNumber[i].weekNumber === this.taskModifyWeekNumberTemp[x].weekNumber) {
                                     this.taskModifyWeekNumber[i].hoursTemp = this.taskModifyWeekNumberTemp[x].hours
                                 }
                             }
@@ -1985,7 +1985,7 @@
                     this.taskDetail = resp.data;
                     if (this.taskDetail.users!==undefined && this.taskDetail.users.length>0){
                         let loginUser = this.taskDetail.users.filter(user=>user.userId===this.loginUserId)[0];
-                        if (loginUser.status===2){
+                        if (loginUser.status>=2){
                             this.finishTaskBtn = false;
                         }
                     }
@@ -2040,7 +2040,7 @@
                     this.$emit('reload');
                     this.auditForm.taskId = '';
                     this.auditForm.taskUserId = '';
-                })
+                });
                 this.showAuditTask = false;
                 this.taskDetail = {};
             },
@@ -2051,10 +2051,10 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    var param = this.finishForm
-                    param.completeTime = moment().format('YYYY-MM-DD HH:mm:ss')
+                    let param = this.finishForm;
+                    param.completeTime = moment().format('YYYY-MM-DD HH:mm:ss');
                     http.zsyPutHttp('/task/complete', param, (resp) => {
-                        this.resetFinishForm()
+                        this.resetFinishForm();
                         this.showFinishedTask = false;
                         this.taskDetail = {};
                         this.$message({ showClose: true,message: '操作成功',type: 'success'});
@@ -2078,7 +2078,7 @@
                 this.taskLog.pageNum = 1;
             },
             taskItemClick(taskId, taskType) {
-                if (!this.isPrivate || this.taskStatus == 'auditSuccess') {
+                if (!this.isPrivate || this.taskStatus === 'auditSuccess') {
                     this.showTaskDetail = true;
                     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                         this.taskDetail = resp.data
@@ -2087,20 +2087,20 @@
                 }
 
                 // 个人点击完成任务
-                if ((this.taskStatus == 'TaskDoing' || this.taskStatus == 'finished') && this.isPrivate) {
+                if ((this.taskStatus === 'TaskDoing' || this.taskStatus === 'finished') && this.isPrivate) {
                     this.taskItems.forEach((task) => {
-                        if (task.id === taskId && task.reviewStatus==3 && !this.expandTimeVisible) {
+                        if (task.id === taskId && task.reviewStatus===3 && !this.expandTimeVisible) {
                             this.showFinishedPop(taskId, task.taskUsers[0].id, taskType)
                         }
                     });
                 }
                 // 个人任务点击评价
-                if(this.taskStatus == 'WaitAssess' && this.isPrivate){
+                if(this.taskStatus === 'WaitAssess' && this.isPrivate){
                     this.showWaitAssess(taskId)
                 }
-                var vm = this;
+                let vm = this;
                 // 待审核点击
-                if(vm.taskStatus == 'WaitAuditing'){
+                if(vm.taskStatus === 'WaitAuditing'){
                     vm.taskItems.forEach((task)=>{
                         if (task.id === taskId) {
                             vm.showAuditPop(task.id,task.taskUsers[0].id)
@@ -2200,40 +2200,40 @@
             //     this.showTaskComment = true;
             // },
             showWaitAssess(taskId) {
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data;
                     vm.evaluationForm.taskId = taskId;
                     let users = [];
                     // 过滤我的任务
                     resp.data.users.forEach((user) => {
-                        if (user.userId != vm.loginUserId) {
+                        if (user.userId !== vm.loginUserId) {
                             users.push(user);
                         }
                     });
                     for (let i = 0; i < users.length; i++) {
-                        var jobRole = users[i].jobRole;
-                        users[i].evaluationList = []
+                        let jobRole = users[i].jobRole;
+                        users[i].evaluationList = [];
                         //测试
-                        if (jobRole == 0){
-                            var evaluationList = [];
-                            var testCommunication = {
+                        if (jobRole === 0){
+                            let evaluationList = [];
+                            let testCommunication = {
                                 'taskUserId': users[i].userId,
                                 'score': 0,
                                 'evaluationOption': '1'
                             };
-                            var testAttitude = {
+                            let testAttitude = {
                                 'taskUserId': users[i].userId,
                                 'score': 0,
                                 'evaluationOption': '2'
-                            }
+                            };
                             evaluationList.push(testCommunication);
                             evaluationList.push(testAttitude);
                             users[i].evaluationList = evaluationList;
                         }
-                        else if (jobRole == 1){
+                        else if (jobRole === 1){
                             //开发
-                            var evaluationList = [];
+                            let evaluationList = [];
                             evaluationList.push({
                                 'taskUserId': users[i].userId,
                                 'score': 0,
@@ -2258,9 +2258,9 @@
                             // stage.evaluationList.splice(attitude, 1, score)
                             // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
-                        else if (jobRole == 5){
+                        else if (jobRole === 5){
                             //算法
-                            var evaluationList = [];
+                            let evaluationList = [];
                             evaluationList.push({
                                 'taskUserId': users[i].userId,
                                 'score': 0,
@@ -2285,9 +2285,9 @@
                             // stage.evaluationList.splice(attitude, 1, score)
                             // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
-                        else if (jobRole == 2){
+                        else if (jobRole === 2){
                             //设计
-                            var evaluationList = [];
+                            let evaluationList = [];
                             evaluationList.push({
                                 'taskUserId': users[i].userId,
                                 'score': 0,
@@ -2306,9 +2306,9 @@
                             users[i].evaluationList = evaluationList;
                             // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
-                        else if (jobRole == 3){
+                        else if (jobRole === 3){
                             //产品
-                            var evaluationList = [];
+                            let evaluationList = [];
                             evaluationList.push({
                                 'taskUserId': users[i].userId,
                                 'score': 0,
@@ -2334,14 +2334,14 @@
                         }
                     }
                     let myEvaluations = 0;
-                    this.evaluation = []
+                    this.evaluation = [];
                     for (let i = 0; i < users.length; i++){
-                        var user = users[i];
+                        let user = users[i];
                         if (user.evaluationResDTOS.length > 0) {
                             myEvaluations += 1;
                         }
-                        this.$set(this.showEvaluate,`${i}`,true)
-                        this.$set(this.checkBox,`${i}`,true)
+                        this.$set(this.showEvaluate,`${i}`,true);
+                        this.$set(this.checkBox,`${i}`,true);
                         user.showEvaluate = true;
                         user.evaluationList.forEach((item,index)=>{
                             this.$set(this.evaluation,`${i}_${index}`,item.score);
@@ -2350,7 +2350,7 @@
                     }
                     vm.evaluationStages = users;
                     if (myEvaluations>0) {
-                        this.isEvaluated = true
+                        this.isEvaluated = true;
                         vm.evaluationStages = vm.evaluationStages.filter(user=>{return user.evaluationResDTOS.length > 0})
                     }
                     this.addTaskEvaluationVisible = true;
@@ -2378,20 +2378,20 @@
                 this.designShow = true;
             },
             hasIntersection(index,taskUserId){
-                var checked = this.checkBox[`${index}`]
+                let checked = this.checkBox[`${index}`];
                 if (checked){
                     this.evaluationStages.forEach(user=>{
                         if (taskUserId === user.userId){
                             user.showEvaluate = true
                         }
-                    })
+                    });
                     this.showEvaluate[`${index}`] = true;
                 } else {
                     this.evaluationStages.forEach(user=>{
                         if (taskUserId === user.userId){
                             user.showEvaluate = false
                         }
-                    })
+                    });
                     this.showEvaluate[`${index}`] = false;
                 }
             },
@@ -2400,7 +2400,7 @@
                     if (taskUserId === user.userId){
                         user.showEvaluate = true
                     }
-                })
+                });
                 this.showEvaluate[`${index}`] = true;
             },
             minus(index,jobRole,taskUserId){
@@ -2409,16 +2409,16 @@
                     if (taskUserId === user.userId){
                         user.showEvaluate = false
                     }
-                })
+                });
                 this.showEvaluate[`${index}`] = false;
             },
             // 评价任务
             taskAssess() {
-                this.isSaving=true
+                this.isSaving=true;
                 http.zsyPostHttp('/task/comment', this.assessForm, (resp) => {
                     this.$message({ showClose: true,message: '评价成功',type: 'success'});
-                    this.showTaskComment = false
-                    this.commentStages = []
+                    this.showTaskComment = false;
+                    this.commentStages = [];
                     this.assessForm = {
                         taskId: '',
                         comments: []
@@ -2430,18 +2430,18 @@
             taskEvaluate(){
                 // this.isSaving=true
                 Object.keys(this.evaluation).forEach(key=>{
-                    let indexArr = key.split('_')
+                    let indexArr = key.split('_');
                     this.evaluationStages[indexArr[0]].evaluationList[indexArr[1]].score = this.evaluation[key]
-                })
-                var param = {};
+                });
+                let param = {};
                 param.evaluationUserReqDTOS = [];
                 param.taskId = this.evaluationForm.taskId;
-                var flag = true;
-                for (var j = 0;j<this.evaluationStages.length;j++){
-                    var user = this.evaluationStages[j]
+                let flag = true;
+                for (let j = 0;j<this.evaluationStages.length;j++){
+                    let user = this.evaluationStages[j];
                     if (user.showEvaluate){
-                        for (var i = 0;i < user.evaluationList.length;i++){
-                            var evaluation = user.evaluationList[i]
+                        for (let i = 0;i < user.evaluationList.length;i++){
+                            let evaluation = user.evaluationList[i];
                             if (evaluation.score === 0){
                                 this.$message({ showClose: true,message: '请评价全部评分项',type: 'error'});
                                 this.isSaving=false;
@@ -2452,12 +2452,12 @@
                         }
                     }
                 }
-                var isSerious = true;
+                let isSerious = true;
                 param.evaluationUserReqDTOS.forEach(evaluation=>{
-                    if (evaluation.score != 5){
+                    if (evaluation.score !== 5){
                         isSerious = false;
                     }
-                })
+                });
                 if (param.evaluationUserReqDTOS.length >0 && isSerious){
                     this.$message({ showClose: true,message: '请认真评价(不要随意全5星!)',type: 'error'});
                     return false;
@@ -2465,8 +2465,8 @@
                 if (flag){
                     http.zsyPostHttp('/evaluation/add', param, (resp) => {
                         this.$message({ showClose: true,message: '评价成功',type: 'success'});
-                        this.addTaskEvaluationVisible = false
-                        this.commentStages = []
+                        this.addTaskEvaluationVisible = false;
+                        this.commentStages = [];
                         this.assessForm = {
                             taskId: '',
                             comments: [],
@@ -2494,23 +2494,23 @@
             },
             // 保存修改单人任务
             saveModifyPrivateTaskForm() {
-                if (this.modifyPrivateTaskForm.projectId == '') {
+                if (this.modifyPrivateTaskForm.projectId === '') {
                     this.warnMsg("请选择项目");
                     return;
                 }
-                if (this.modifyPrivateTaskForm.endTime == '') {
+                if (this.modifyPrivateTaskForm.endTime === '') {
                     this.warnMsg("请选择结束时间");
                     return;
                 }
-                if (this.modifyPrivateTaskForm.taskHours == '') {
+                if (this.modifyPrivateTaskForm.taskHours === '') {
                     this.warnMsg("请输入工作量");
                     return;
                 }
-                if (this.modifyPrivateTaskForm.taskName.trim() == '') {
+                if (this.modifyPrivateTaskForm.taskName.trim() === '') {
                     this.warnMsg("请填写任务名称");
                     return;
                 }
-                if (this.modifyPrivateTaskForm.description.trim() == '') {
+                if (this.modifyPrivateTaskForm.description.trim() === '') {
                     this.warnMsg("请填写任务备注");
                     return;
                 }
@@ -2519,12 +2519,12 @@
                     this.warnMsg("请选择项目阶段");
                     return;
                 }
-                if (this.modifyPrivateTaskForm.tags.length == 0) {
+                if (this.modifyPrivateTaskForm.tags.length === 0) {
                     this.warnMsg("请选择至少一项标签");
                     return;
                 }
 
-                var isNum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.modifyPrivateTaskForm.taskHours);
+                let isNum = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.modifyPrivateTaskForm.taskHours);
                 if(!isNum){
                     this.$message({ showClose: true,message: '工作量填写错误',type: 'error'});
                     return false;
@@ -2533,21 +2533,21 @@
                     this.$message({ showClose: true,message: '工作量正确值应为0.1~8',type: 'error'});
                     return false;
                 }
-                if(moment(this.modifyPrivateTaskForm.endTime).millisecond()<moment(this.modifyPrivateTaskForm.beginTime).millisecond()||moment(this.modifyPrivateTaskForm.endTime).week()!=moment(this.modifyPrivateTaskForm.beginTime).week()){
+                if(moment(this.modifyPrivateTaskForm.endTime).millisecond()<moment(this.modifyPrivateTaskForm.beginTime).millisecond()||moment(this.modifyPrivateTaskForm.endTime).week()!==moment(this.modifyPrivateTaskForm.beginTime).week()){
                     this.$message({ showClose: true,message: '请检查日期，个人任务请勿跨周进行',type: 'error'});
                     return false;
                 }
 
                 this.modifyPrivateTaskForm.taskName = this.modifyPrivateTaskForm.taskName.trim();
-                this.modifyPrivateTaskForm.beginTime = moment(this.modifyPrivateTaskForm.beginTime).format('YYYY-MM-DD 23:00:00')
-                this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59')
+                this.modifyPrivateTaskForm.beginTime = moment(this.modifyPrivateTaskForm.beginTime).format('YYYY-MM-DD 23:00:00');
+                this.modifyPrivateTaskForm.endTime = moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59');
                 this.modifyPrivateTaskForm.taskUsers = [{
                     userId: this.modifyPrivateTaskForm.userId,
                     taskHours: this.modifyPrivateTaskForm.taskHours,
                     beginTime: moment(this.modifyPrivateTaskForm.beginTime).format('YYYY-MM-DD HH:00:00'),
                     endTime: moment(this.modifyPrivateTaskForm.endTime).format('YYYY-MM-DD 23:59:59'),
                     description: this.modifyPrivateTaskForm.description.trim()
-                }]
+                }];
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyPrivateTaskForm.id}`, this.modifyPrivateTaskForm, (resp) => {
                     this.$message({showClose: true, message: '任务修改成功',type: 'success'});
@@ -2597,13 +2597,13 @@
 
             //快捷备注
             addRemark(type,taskId){
-                if (type == 'design'){
+                if (type === 'design'){
                     this.modifyTaskForm.modifyDescription = '新增设计任务'
-                } else if (type == 'product'){
+                } else if (type === 'product'){
                     this.modifyTaskForm.modifyDescription = '新增产品任务'
-                } else if (type == 'develop'){
+                } else if (type === 'develop'){
                     this.modifyTaskForm.modifyDescription = '新增开发任务'
-                } else if (type == 'test'){
+                } else if (type === 'test'){
                     this.modifyTaskForm.modifyDescription = '新增测试任务'
                 }
                 this.modifyTask(taskId)
@@ -2678,7 +2678,7 @@
                 this.modifyTaskForm.taskUsers.forEach((item) => {
                     item.cssClass = ''
                 });
-                this.modifyTaskForm.taskUsers[index].cssClass = 'stepActive'
+                this.modifyTaskForm.taskUsers[index].cssClass = 'stepActive';
                 this.showAddDetail = true;
                 this.weekNumberTemp = stages[index].userWeeks
             },
@@ -2718,8 +2718,8 @@
             },
             deleteMember(index) {
                 this.modifyTaskForm.taskUsers.splice(index, 1);
-                if (this.modifyTaskForm.taskUsers.length == 0) {
-                    this.showAddDetail = false
+                if (this.modifyTaskForm.taskUsers.length === 0) {
+                    this.showAddDetail = false;
                     this.step = {
                         index: '',
                         stageId: '',
@@ -2832,9 +2832,9 @@
                     completeTime: '',
                     status: ''
                 };
-                this.otherStep.description=''
-                this.otherStep.status =''
-                this.otherStep.taskHours =''
+                this.otherStep.description='';
+                this.otherStep.status ='';
+                this.otherStep.taskHours ='';
                 this.stepTemp = {};
             },
             stepUserChange(val) {
@@ -2996,7 +2996,7 @@
                     // 刷新看板
                     //this.$root.eventBus.$emit("reloadBoard");
                     // 刷新列表
-                    vm.$emit('reload')
+                    vm.$emit('reload');
                     // 刷新看板
                     this.$root.eventBus.$emit('reloadBoard');
                     this.fetchUnreadNoticeNum();
@@ -3015,8 +3015,8 @@
             commentDetail(taskUserId) {
                 let vm = this;
                 this.taskDetail.users.forEach((user) => {
-                    if (user.id == taskUserId) {
-                        vm.taskCommentDetail = user
+                    if (user.id === taskUserId) {
+                        vm.taskCommentDetail = user;
                         return
                     }
                 })
@@ -3026,130 +3026,130 @@
                 this.taskUserName = userName;
                 let vm = this;
                 this.taskDetail.users.forEach((user) => {
-                    if (user.id == taskUserId) {
+                    if (user.id === taskUserId) {
                         vm.taskEvaluation = user.evaluationResDTOS;
-                        this.avgEvaluation = []
-                        var length = vm.taskEvaluation.length
+                        this.avgEvaluation = [];
+                        let length = vm.taskEvaluation.length;
                         //测试
                         if (vm.taskEvaluation.length>0){
-                            this.hasAvgEvalution = true
-                            if (jobRole == 0){
-                                var totalCommunicateScore = 0;
-                                var totalAttitudeScore = 0;
+                            this.hasAvgEvalution = true;
+                            if (jobRole === 0){
+                                let totalCommunicateScore = 0;
+                                let totalAttitudeScore = 0;
                                 vm.taskEvaluation.forEach(evaluation=>{
-                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score;
                                     totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'沟通',
                                     'score':Number((totalCommunicateScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'态度',
                                     'score':Number((totalAttitudeScore/length).toFixed(2))
                                 })
                             }
-                            else if (jobRole == 1){
-                                var totalCommunicateScore = 0;
-                                var totalAttitudeScore = 0;
-                                var totalQualityScore = 0;
-                                var totalEfficiencyScore = 0;
+                            else if (jobRole === 1){
+                                let totalCommunicateScore = 0;
+                                let totalAttitudeScore = 0;
+                                let totalQualityScore = 0;
+                                let totalEfficiencyScore = 0;
                                 vm.taskEvaluation.forEach(evaluation=>{
-                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
-                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
-                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score;
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score;
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score;
                                     totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'沟通',
                                     'score':Number((totalCommunicateScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'态度',
                                     'score':Number((totalAttitudeScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'效率',
                                     'score':Number((totalEfficiencyScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'质量',
                                     'score':Number((totalQualityScore/length).toFixed(2))
                                 })
                             }
-                            else if (jobRole == 5){
-                                var totalCommunicateScore = 0;
-                                var totalAttitudeScore = 0;
-                                var totalQualityScore = 0;
-                                var totalEfficiencyScore = 0;
+                            else if (jobRole === 5){
+                                let totalCommunicateScore = 0;
+                                let totalAttitudeScore = 0;
+                                let totalQualityScore = 0;
+                                let totalEfficiencyScore = 0;
                                 vm.taskEvaluation.forEach(evaluation=>{
-                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
-                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
-                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score;
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score;
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score;
                                     totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'沟通',
                                     'score':Number((totalCommunicateScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'态度',
                                     'score':Number((totalAttitudeScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'效率',
                                     'score':Number((totalEfficiencyScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'质量',
                                     'score':Number((totalQualityScore/length).toFixed(2))
                                 })
                             }
-                            else if (jobRole == 2){
-                                var totalCommunicateScore = 0;
-                                var totalAttitudeScore = 0;
-                                var totalDesignScore = 0;
+                            else if (jobRole === 2){
+                                let totalCommunicateScore = 0;
+                                let totalAttitudeScore = 0;
+                                let totalDesignScore = 0;
                                 vm.taskEvaluation.forEach(evaluation=>{
-                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
-                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score;
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score;
                                     totalDesignScore += evaluation.evaluationScoreResDTOS[2].score
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'沟通',
                                     'score':Number((totalCommunicateScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'态度',
                                     'score':Number((totalAttitudeScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'美感',
                                     'score':Number((totalDesignScore/length).toFixed(2))
                                 })
                             }
-                            else if (jobRole == 3){
-                                var totalCommunicateScore = 0;
-                                var totalAttitudeScore = 0;
-                                var totalEfficiencyScore = 0;
-                                var totalDocumentScore = 0;
+                            else if (jobRole === 3){
+                                let totalCommunicateScore = 0;
+                                let totalAttitudeScore = 0;
+                                let totalEfficiencyScore = 0;
+                                let totalDocumentScore = 0;
                                 vm.taskEvaluation.forEach(evaluation=>{
-                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
-                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
-                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score;
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score;
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[3].score;
                                     totalDocumentScore += evaluation.evaluationScoreResDTOS[2].score
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'沟通',
                                     'score':Number((totalCommunicateScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'态度',
                                     'score':Number((totalAttitudeScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'文档',
                                     'score':Number((totalDocumentScore/length).toFixed(2))
-                                })
+                                });
                                 this.avgEvaluation.push({
                                     'option':'效率',
                                     'score':Number((totalEfficiencyScore/length).toFixed(2))
@@ -3158,7 +3158,7 @@
                         }
                         return
                     }
-                })
+                });
                 this.showTaskEvaluationDetail = true
             },
             /** 编辑任务填写备注 **/
@@ -3171,9 +3171,9 @@
             },
             taskStepStatus(item, taskUserNum){
                 // const commented = item.commentNum > 0 && item.commentNum == taskUserNum - 1;
-                const commented = item.isEvaluated == 1;
+                const commented = item.isEvaluated === 1;
                 let className = 'in';
-                if (item.status == 1) {
+                if (item.status === 1) {
                     // 进行中
                     className = "in"
                 }else if(item.status>1 && !commented){
@@ -3187,8 +3187,8 @@
             },
             //评审任务
             examineTask(id,exam){
-                var examText
-                if(exam!='0'){
+                let examText;
+                if(exam!=='0'){
                     examText='确定评审完成?'
                 }else{
                     examText='确定取消评审?'
@@ -3200,12 +3200,12 @@
                 }).then(() => {
                     let vm = this;
                     http.zsyPutHttp('/task/examine/'+exam+'/'+id, {}, (resp) => {
-                        if(exam!='0'){
+                        if(exam!=='0'){
                             this.$message({ showClose: true,message: '评审成功',type: 'success'});
                         }else{
                             this.$message({ showClose: true,message: '取消评审成功',type: 'success'});
                         }
-                        vm.$emit('reload')
+                        vm.$emit('reload');
                         // 刷新看板
                         this.$root.eventBus.$emit('reloadBoard');
                         this.showTaskDetail = false;
@@ -3215,27 +3215,27 @@
             },
             //测试弹窗
             testTask(id, name, proNames){
-                this.showTaskDetail = false
-                this.testingVisible = true
-                this.testing.taskId = id
-                if(proNames && proNames != ""){
+                this.showTaskDetail = false;
+                this.testingVisible = true;
+                this.testing.taskId = id;
+                if(proNames && proNames !== ""){
                     this.testing.proName = proNames.toString()
                 }
 
                 this.testing.name = name
             },
             modifyTestTask(){
-                let sumPercent = 0
-                for(var i=0;i<this.testWeekNumber.length;i++){
-                    if(this.testWeekNumber[i].hours==''|| this.testWeekNumber[i].hours=== undefined){
-                        if(this.testWeekNumber[i].hoursTemp !== undefined &&this.testWeekNumber[i].hoursTemp!=''){
+                let sumPercent = 0;
+                for(let i=0;i<this.testWeekNumber.length;i++){
+                    if(this.testWeekNumber[i].hours===''|| this.testWeekNumber[i].hours=== undefined){
+                        if(this.testWeekNumber[i].hoursTemp !== undefined &&this.testWeekNumber[i].hoursTemp!==''){
                             this.testWeekNumber[i].hours = this.testWeekNumber[i].hoursTemp
                         }else{
                             this.testWeekNumber[i].hours = 0
                         }
                     }
-                    var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.testWeekNumber[i].hours);
-                    if(!ishours &&ishours!=0){
+                    let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.testWeekNumber[i].hours);
+                    if(!ishours){
                         this.errorMsg('百分比填写错误');
                         return false;
                     }
@@ -3249,20 +3249,20 @@
                     this.errorMsg('百分比总和应该为100%，请检查');
                     return
                 }
-                this.testing.beginTime = moment(this.testing.beginTime).format('YYYY-MM-DD HH:00:00')
-                this.testing.endTime = moment(this.testing.endTime).format('YYYY-MM-DD HH:00:00')
-                this.testing.weeks = this.testWeekNumber
+                this.testing.beginTime = moment(this.testing.beginTime).format('YYYY-MM-DD HH:00:00');
+                this.testing.endTime = moment(this.testing.endTime).format('YYYY-MM-DD HH:00:00');
+                this.testing.weeks = this.testWeekNumber;
                 http.zsyPostHttp('/task/test/add', this.testing, (resp) => {
                     this.$message({ showClose: true,message: '测试时间添加成功',type: 'success'});
-                    this.testing.weeks = []
-                    this.testing.beginTime = this.testing.endTime =this.testing.taskId =this.testing.name =this.testing.percent =''
+                    this.testing.weeks = [];
+                    this.testing.beginTime = this.testing.endTime =this.testing.taskId =this.testing.name =this.testing.percent ='';
                     this.testingVisible = false;
                 })
             },
             //暂停任务
             stopTask(id,status){
-                var examText
-                if(status!='0'){
+                let examText;
+                if(status!=='0'){
                     examText='确定启用任务?'
                 }else{
                     examText='确定暂停任务?'
@@ -3274,12 +3274,12 @@
                 }).then(() => {
                     let vm = this;
                     http.zsyPutHttp('/task/stop/'+status+'/'+id+"?desc="+ vm.modifyTaskForm.modifyDescription,{}, (resp) => {
-                        if(status!='0'){
+                        if(status!=='0'){
                             this.$message({ showClose: true,message: '启用成功',type: 'success'});
                         }else{
                             this.$message({ showClose: true,message: '暂停成功',type: 'success'});
                         }
-                        vm.$emit('reload')
+                        vm.$emit('reload');
                         // 刷新看板
                         this.$root.eventBus.$emit('reloadBoard');
                         this.showTaskDetail = false;
@@ -3296,11 +3296,11 @@
                 this.testWeekNumber = [];
                 let weekData='';
                 let param = this.testWeekNumber;
-                this.testing.beginWeek = moment(this.testing.beginTime).week()
-                this.testing.endWeek = moment(this.testing.endTime).week()
+                this.testing.beginWeek = moment(this.testing.beginTime).week();
+                this.testing.endWeek = moment(this.testing.endTime).week();
                 let beginYear = moment(this.testing.beginTime).year();
                 let endYear = moment(this.testing.endTime).year();
-                if(beginYear!=endYear){
+                if(beginYear!==endYear){
                     for(let i=this.testing.beginWeek;i<moment(this.testing.beginTime).weeksInYear()+1;i++){
                         weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
                         param.push(weekData)
@@ -3310,7 +3310,7 @@
                         param.push(weekData)
                     }
                 }
-                if(this.testing.beginWeek == this.testing.endWeek){
+                if(this.testing.beginWeek === this.testing.endWeek){
                     weekData = {'weekNumber':this.testing.beginWeek, 'hours': 100+'' ,'year':beginYear ,'range':moment().year(beginYear).week(this.testing.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.testing.beginWeek).endOf('week').format('MM-DD')};
                     param.push(weekData)
                 }else if(this.testing.endWeek - this.testing.beginWeek >1){
@@ -3318,7 +3318,7 @@
                         weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'range':moment().week(i).year(beginYear).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD')  };
                         param.push(weekData)
                     }
-                }else if(this.testing.endWeek - this.testing.beginWeek == 1){
+                }else if(this.testing.endWeek - this.testing.beginWeek === 1){
                     param.push( {'weekNumber':this.testing.beginWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.testing.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.testing.beginWeek).endOf('week').format('MM-DD')})
                     param.push( {'weekNumber':this.testing.endWeek, 'hours': '' ,'year':beginYear ,'range':moment().year(beginYear).week(this.testing.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.testing.endWeek).endOf('week').format('MM-DD')})
                 }
@@ -3365,13 +3365,13 @@
                 this.showFinishedTask = false
             },
             addTaskExpand(){
-                var ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.expandTime.hours);
+                let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.expandTime.hours);
                 if(!ishours){
                     this.errorMsg('时间填写错误');
                     return false;
                 }
 
-                this.expandTime.endTime= moment(this.expandTime.endTime).format('YYYY-MM-DD HH:00:00')
+                this.expandTime.endTime= moment(this.expandTime.endTime).format('YYYY-MM-DD HH:00:00');
                 http.zsyPostHttp('/task-expand/add', this.expandTime, (resp) => {
                     this.$message({ showClose: true,message: '任务时间延长申请成功',type: 'success'});
                     this.expandTimeVisible = false;
@@ -3381,10 +3381,10 @@
                 })
             },
             clearExpand(){
-                this.expandTime.name = ''
-                this.expandTime.beginTime= null
-                this.expandTime.endTime= null
-                this.expandTime.taskId= ''
+                this.expandTime.name = '';
+                this.expandTime.beginTime= null;
+                this.expandTime.endTime= null;
+                this.expandTime.taskId= '';
                 this.expandTime.hours = 0
             },
             //查询所有未读数量
@@ -3447,9 +3447,9 @@
                     this.taskTempDetail.beginWeek = moment(this.taskTempDetail.beginTime).week();
                     this.taskTempDetail.endWeek = moment(this.taskTempDetail.endTime).week();
 
-                    if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek + 1 != this.taskTempDetail.userWeekTempList.length){
+                    if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek + 1 !== this.taskTempDetail.userWeekTempList.length){
                         if ((endYear >= beginYear) && (this.taskTempDetail.endWeek >= this.taskTempDetail.beginWeek)){
-                            for(var i = 0;i<=this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek;i++){
+                            for(let i = 0;i<=this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek;i++){
                                 let weekData = {
                                     'weekHours':0,
                                     'weekNumber': i + this.taskTempDetail.beginWeek,
@@ -3479,12 +3479,12 @@
                 this.taskTempWeekNumber = [];
                 let weekData = '';
                 let param = this.taskTempWeekNumber;
-                this.taskTempDetail.beginWeek = moment(this.taskTempDetail.beginTime).week()
-                this.taskTempDetail.endWeek = moment(this.taskTempDetail.endTime).week()
+                this.taskTempDetail.beginWeek = moment(this.taskTempDetail.beginTime).week();
+                this.taskTempDetail.endWeek = moment(this.taskTempDetail.endTime).week();
                 let beginYear = moment(this.taskTempDetail.beginTime).year();
                 let endYear = moment(this.taskTempDetail.endTime).year();
                 let userWeeks = this.taskTempDetail.userWeekTempList;
-                if (beginYear != endYear) {
+                if (beginYear !== endYear) {
                     for (let i = this.taskTempDetail.beginWeek; i < moment(this.taskTempDetail.beginTime).weeksInYear() + 1; i++) {
                         http.zsyGetHttp('/userWeek/'+ this.taskTempDetail.taskId +'/' + this.taskTempDetail.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                             weekData = {
@@ -3511,7 +3511,7 @@
 
                     }
                 }
-                if (this.taskTempDetail.beginWeek == this.taskTempDetail.endWeek) {
+                if (this.taskTempDetail.beginWeek === this.taskTempDetail.endWeek) {
                     http.zsyGetHttp('/userWeek/'+ this.taskTempDetail.taskId +'/' + this.taskTempDetail.userId + '/' + beginYear + '/' +this.taskTempDetail.beginWeek , {}, (resp) => {
                         weekData = {
                             'weekHours':resp.data,
@@ -3536,7 +3536,7 @@
                             param.push(weekData)
                         })
                     }
-                } else if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek == 1) {
+                } else if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek === 1) {
 
                     http.zsyGetHttp('/userWeek/'+ this.taskTempDetail.taskId +'/' + this.taskTempDetail.userId + '/' + beginYear + '/' + this.taskTempDetail.beginWeek, {}, (resp) => {
                         param.push({
@@ -3546,7 +3546,7 @@
                             'year': beginYear,
                             'range': moment().year(beginYear).week(this.taskTempDetail.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskTempDetail.beginWeek).endOf('week').format('MM-DD')
                         })
-                    })
+                    });
                     http.zsyGetHttp('/userWeek/'+ this.taskTempDetail.taskId +'/' + this.taskTempDetail.userId + '/' + beginYear + '/' + this.taskTempDetail.endWeek, {}, (resp) => {
                         param.push({
                             'weekHours':resp.data,
@@ -3567,12 +3567,12 @@
                 this.taskUserWeekNumber = [];
                 let weekData = '';
                 let param = this.taskUserWeekNumber;
-                this.taskUser.beginWeek = moment(this.taskUser.beginTime).week()
-                this.taskUser.endWeek = moment(this.taskUser.endTime).week()
+                this.taskUser.beginWeek = moment(this.taskUser.beginTime).week();
+                this.taskUser.endWeek = moment(this.taskUser.endTime).week();
                 let beginYear = moment(this.taskUser.beginTime).year();
                 let endYear = moment(this.taskUser.endTime).year();
                 let userWeeks = this.taskUser.userWeeks;
-                if (beginYear != endYear) {
+                if (beginYear !== endYear) {
                     for (let i = this.taskUser.beginWeek; i < moment(this.taskUser.beginTime).weeksInYear() + 1; i++) {
                         http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                             weekData = {
@@ -3599,7 +3599,7 @@
 
                     }
                 }
-                if (this.taskUser.beginWeek == this.taskUser.endWeek) {
+                if (this.taskUser.beginWeek === this.taskUser.endWeek) {
                     http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' +this.taskUser.beginWeek , {}, (resp) => {
                         weekData = {
                             'weekHours':resp.data,
@@ -3624,7 +3624,7 @@
                             param.push(weekData)
                         })
                     }
-                } else if (this.taskUser.endWeek - this.taskUser.beginWeek == 1) {
+                } else if (this.taskUser.endWeek - this.taskUser.beginWeek === 1) {
 
                     http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + this.taskUser.beginWeek, {}, (resp) => {
                         param.push({
@@ -3634,7 +3634,7 @@
                             'year': beginYear,
                             'range': moment().year(beginYear).week(this.taskUser.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskUser.beginWeek).endOf('week').format('MM-DD')
                         })
-                    })
+                    });
                     http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + this.taskUser.endWeek, {}, (resp) => {
                         param.push({
                             'weekHours':resp.data,
@@ -3864,7 +3864,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         // this.taskAble = true;
-                        var param = this.modifyMyTaskForm;
+                        let param = this.modifyMyTaskForm;
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (this.modifyMyTaskReason == null || this.modifyMyTaskReason.trim() === ''){
@@ -4060,8 +4060,8 @@
         },
         created() {
             // 监听看板任务点击事件
-            var vm = this;
-            vm.$root.eventBus.$off('handleBoardClick')
+            let vm = this;
+            vm.$root.eventBus.$off('handleBoardClick');
             vm.$root.eventBus.$on("handleBoardClick", (taskId) => {
                 vm.showTaskDetail = true;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
@@ -4077,12 +4077,12 @@
                     this.weekNumber = [];
                     let weekData='';
                     let param = this.weekNumber;
-                    if (this.step.userId != '' && this.otherStep.taskHours != '' && this.step.beginTime != '' && this.step.endTime != ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
-                        this.weekTime.beginWeek = moment(this.step.beginTime).week()
-                        this.weekTime.endWeek = moment(this.step.endTime).week()
+                    if (this.step.userId !== '' && this.otherStep.taskHours !== '' && this.step.beginTime !== '' && this.step.endTime !== ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
+                        this.weekTime.beginWeek = moment(this.step.beginTime).week();
+                        this.weekTime.endWeek = moment(this.step.endTime).week();
                         let beginYear = moment(this.step.beginTime).year();
                         let endYear = moment(this.step.endTime).year();
-                        if(beginYear!=endYear){
+                        if(beginYear!==endYear){
                             for(let i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
                                 http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                                     weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
@@ -4097,7 +4097,7 @@
 
                             }
                         }
-                        if(this.weekTime.beginWeek == this.weekTime.endWeek){
+                        if(this.weekTime.beginWeek === this.weekTime.endWeek){
                             http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.otherStep.taskHours ,'weekHours': resp.data,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
                                 param.push(weekData)
@@ -4109,7 +4109,7 @@
                                     param.push(weekData)
                                 })
                             }
-                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek == 1){
+                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek === 1){
                             http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
                                 param.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear  ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
                             })
@@ -4128,15 +4128,15 @@
                     this.taskModifyWeekNumber = [];
                     let weekData='';
                     let param = this.taskModifyWeekNumber;
-                    if (this.modifyMyTaskForm.userId != '' && this.modifyMyTaskForm.workHours != ''
-                        && this.modifyMyTaskForm.beginTime != '' && this.modifyMyTaskForm.endTime != ''
+                    if (this.modifyMyTaskForm.userId !== '' && this.modifyMyTaskForm.workHours !== ''
+                        && this.modifyMyTaskForm.beginTime !== '' && this.modifyMyTaskForm.endTime !== ''
                         && (moment(this.modifyMyTaskForm.beginTime).isBefore(this.modifyMyTaskForm.endTime)
                             || moment(this.modifyMyTaskForm.beginTime).isSame(this.modifyMyTaskForm.endTime))) {
                         this.taskModifyWeekTime.beginWeek = moment(this.modifyMyTaskForm.beginTime).week()
                         this.taskModifyWeekTime.endWeek = moment(this.modifyMyTaskForm.endTime).week()
                         let beginYear = moment(this.modifyMyTaskForm.beginTime).year();
                         let endYear = moment(this.modifyMyTaskForm.endTime).year();
-                        if(beginYear!=endYear){
+                        if(beginYear!==endYear){
                             for(let i=this.taskModifyWeekTime.beginWeek;i<moment(this.taskModifyWeekTime.beginTime).weeksInYear()+1;i++){
                                 http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' + this.modifyMyTaskForm.userId + '/' + beginYear + '/' + i, {}, (resp) => {
                                     weekData = {
@@ -4165,7 +4165,7 @@
 
                             }
                         }
-                        if(this.taskModifyWeekTime.beginWeek == this.taskModifyWeekTime.endWeek){
+                        if(this.taskModifyWeekTime.beginWeek === this.taskModifyWeekTime.endWeek){
                             http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' +  this.modifyMyTaskForm.userId + '/' + beginYear + '/' + this.taskModifyWeekTime.beginWeek, {}, (resp) => {
                                 weekData = {
                                     'weekNumber':this.taskModifyWeekTime.beginWeek,
@@ -4191,7 +4191,7 @@
                                     param.push(weekData)
                                 })
                             }
-                        }else if(this.taskModifyWeekTime.endWeek - this.taskModifyWeekTime.beginWeek == 1){
+                        }else if(this.taskModifyWeekTime.endWeek - this.taskModifyWeekTime.beginWeek === 1){
                             http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' +  this.modifyMyTaskForm.userId + '/' + beginYear + '/' + this.taskModifyWeekTime.beginWeek, {}, (resp) => {
                                 param.push( {
                                     'weekNumber':this.taskModifyWeekTime.beginWeek,
@@ -4201,7 +4201,7 @@
                                     'range':moment().year(beginYear).week(this.taskModifyWeekTime.beginWeek)
                                         .startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.taskModifyWeekTime.beginWeek)
                                         .endOf('week').format('MM-DD')})
-                            })
+                            });
                             http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' + this.modifyMyTaskForm.userId + '/' + endYear + '/' + this.taskModifyWeekTime.endWeek, {}, (resp) => {
                                 param.push( {
                                     'weekNumber':this.taskModifyWeekTime.endWeek,
