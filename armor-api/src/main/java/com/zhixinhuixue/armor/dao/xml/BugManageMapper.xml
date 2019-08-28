@@ -188,8 +188,8 @@
     </select>
 
     <!--查询最后一个bug编号-->
-    <select id="selectLastBugNo" resultType="java.lang.Integer">
-        SELECT bug_no FROM bug_manage WHERE bug_no IS NOT NULL ORDER BY bug_no DESC LIMIT 1
+    <select id="selectLastBugNo" resultMap="OnlineBugMap">
+        SELECT * FROM bug_manage WHERE bug_no IS NOT NULL ORDER BY bug_no DESC LIMIT 1
     </select>
 
     <!--根据主键查询-->

@@ -261,11 +261,11 @@ public class ZSYBugService implements IZSYBugService {
         }
 
         //查询最后一个bug编号
-        int lastBugNo = bugManageMapper.selectLastBugNo();
+        OnlineBugManage lastBug = bugManageMapper.selectLastBugNo();
 
         OnlineBugManage bugManage = new OnlineBugManage();
-        if (lastBugNo > 0){
-            bugManage.setBugNo(lastBugNo+1);
+        if (lastBug != null && lastBug.getBugNo() > 0){
+            bugManage.setBugNo(lastBug.getBugNo()+1);
         }else {
             bugManage.setBugNo(1);
         }

@@ -122,7 +122,7 @@ public interface IZSYBugManageMapper {
      * @author sch
      * @return
      */
-    int selectLastBugNo();
+    OnlineBugManage selectLastBugNo();
 
     /**
      * 根据主键查询
