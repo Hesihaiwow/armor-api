@@ -69,11 +69,32 @@ public class OnlineBugResDTO {
     private String remark;
 
     /**
+     * bug编号
+     */
+    private Integer bugNo;
+    private String bugNoStr;
+
+    /**
      * 反馈系统
-     * @return
      */
     private Integer demandSystemId;
     private String demandSystemName;
+
+    public Integer getBugNo() {
+        return bugNo;
+    }
+
+    public void setBugNo(Integer bugNo) {
+        this.bugNo = bugNo;
+    }
+
+    public String getBugNoStr() {
+        return bugNoStr;
+    }
+
+    public void setBugNoStr(String bugNoStr) {
+        this.bugNoStr = bugNoStr;
+    }
 
     public Date getDiscoverTime() {
         return discoverTime;

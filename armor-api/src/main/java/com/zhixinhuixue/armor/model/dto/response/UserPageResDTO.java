@@ -38,11 +38,28 @@ public class UserPageResDTO {
     private Integer checkSort;
 
     private Integer level;
+    private String levelName;
+    private Integer isDelete;
 
+    public String getLevelName() {
+        return levelName;
+    }
+
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
+    }
     /**
      * 用户的创建任务审核人集合
      */
     private List<UserCheckPeopleResDTO> checkUsers;
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
 
     public Integer getLevel() {
         return level;

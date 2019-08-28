@@ -313,6 +313,57 @@ public class ZSYTaskService implements IZSYTaskService {
         checkUser();
 
         Task task = new Task();
+        if (!taskReqDTO.getStageId().equals(taskTemp.getStageId())){
+            //判断当前任务是否可以修改到设计中或开发中或测试中
+            //待设计
+            if (taskTemp.getStageId().equals(212754785051344891L)){
+                boolean canDrag = false;
+                List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                if (!CollectionUtils.isEmpty(userBos)){
+                    for (UserBo userBo : userBos) {
+                        if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
+                                || userBo.getJobRole().equals(ZSYJobRole.PRODUCT.getValue())){
+                            canDrag = true;
+                        }
+                    }
+                }
+                if (!canDrag){
+                    throw new ZSYServiceException("任务在当前阶段,没有相关任务人员存在,无法修改到下一阶段");
+                }
+            }
+            //待开发
+            else if (taskTemp.getStageId().equals(212754785051344890L)){
+                boolean canDrag = false;
+                List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                if (!CollectionUtils.isEmpty(userBos)){
+                    for (UserBo userBo : userBos) {
+                        if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
+                                || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
+                            canDrag = true;
+                        }
+                    }
+                }
+                if (!canDrag){
+                    throw new ZSYServiceException("任务在当前阶段,没有相关任务人员存在,无法修改到下一阶段");
+                }
+            }
+            //待测试
+            else if (taskTemp.getStageId().equals(212754785051344895L)){
+                boolean canDrag = false;
+                List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                if (!CollectionUtils.isEmpty(userBos)){
+                    for (UserBo userBo : userBos) {
+                        if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
+                            canDrag = true;
+                        }
+                    }
+                }
+                if (!canDrag){
+                    throw new ZSYServiceException("任务在当前阶段,没有相关任务人员存在,无法修改到下一阶段");
+                }
+            }
+        }
+
         //查询编辑任务时是否修改工作时间
         TaskDetailBO taskTempBo = taskMapper.selectTaskDetailByTaskId(taskId);
         if(taskTempBo.getTaskUsers().size()!=taskReqDTO.getTaskUsers().size()){
@@ -1671,6 +1722,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskListBOS.stream().forEach(taskListBO -> {
             if(!(taskListBO.getStatus()==ZSYTaskStatus.FINISHED.getValue()&&stage.getName().equals("已发布"))){//隐藏看板模式中已完成发布的任务避免太长引起混乱
                 TaskListResDTO taskListResDTO = new TaskListResDTO();
+                taskListResDTO.setCanDrag(true);
                 BeanUtils.copyProperties(taskListBO, taskListResDTO, "tags");
                 List<TaskTagResDTO> taskTagResDTOS = new ArrayList<>();
                 taskListBO.getTags().stream().forEach(tag -> {
@@ -1684,6 +1736,40 @@ public class ZSYTaskService implements IZSYTaskService {
                     taskListResDTO.setEndTime(taskListBO.getBeginTime());
                 }else if(stage.getName().indexOf("开发")!=-1 && taskListBO.getTestTime()!=null){
                     taskListResDTO.setEndTime(taskListBO.getTestTime());
+                }
+                //待设计
+                if (taskListBO.getStageId().equals(212754785051344891L)){
+                    taskListResDTO.setCanDrag(false);
+                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
+                    if (!CollectionUtils.isEmpty(userBos)){
+                        userBos.forEach(userBo -> {
+                            if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
+                                    || userBo.getJobRole().equals(ZSYJobRole.PRODUCT.getValue())){
+                                taskListResDTO.setCanDrag(true);
+                            }
+                        });
+                    }
+                }else if (taskListBO.getStageId().equals(212754785051344890L)){
+                    taskListResDTO.setCanDrag(false);
+                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
+                    if (!CollectionUtils.isEmpty(userBos)){
+                        userBos.forEach(userBo -> {
+                            if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
+                                    || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
+                                taskListResDTO.setCanDrag(true);
+                            }
+                        });
+                    }
+                }else if (taskListBO.getStageId().equals(212754785051344895L)){
+                    taskListResDTO.setCanDrag(false);
+                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
+                    if (!CollectionUtils.isEmpty(userBos)){
+                        userBos.forEach(userBo -> {
+                            if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
+                                taskListResDTO.setCanDrag(true);
+                            }
+                        });
+                    }
                 }
                 taskListResDTO.setTags(taskTagResDTOS);
                 list.add(taskListResDTO);

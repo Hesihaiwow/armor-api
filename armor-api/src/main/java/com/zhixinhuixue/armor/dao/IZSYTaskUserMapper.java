@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
 import com.zhixinhuixue.armor.model.bo.TaskUserBO;
+import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import org.apache.ibatis.annotations.Param;

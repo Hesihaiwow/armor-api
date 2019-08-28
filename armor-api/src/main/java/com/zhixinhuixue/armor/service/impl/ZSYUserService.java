@@ -26,9 +26,7 @@ import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
 import com.zhixinhuixue.armor.service.IZSYUserService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
-import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
-import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
+import com.zhixinhuixue.armor.source.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -196,20 +194,23 @@ public class ZSYUserService implements IZSYUserService {
     }
 
     @Override
-    public PageInfo<UserPageResDTO> userPage(long deptId, int pageIndex) {
+    public PageInfo<UserPageResDTO> userPage(QueryUserPageReqDTO reqDTO) {
         List<Long> deptIds = Lists.newArrayList();
-        DeptBo deptBo = departmentMapper.selectRootDept(deptId);
+        DeptBo deptBo = departmentMapper.selectRootDept(reqDTO.getDeptId());
         deptIds.add(deptBo.getId());
         deptIds.addAll(deepCopyDeptIds(deptBo.getChildren()));
 
-        PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
-        Page<UserBo> userBos = userMapper.selectPage(deptIds);
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageIndex()).orElse(1), ZSYConstants.PAGE_SIZE);
+        Page<UserBo> userBos = userMapper.selectPage(deptIds,reqDTO);
         Page<UserPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userBos, page);
         userBos.stream().forEach(userBo -> {
             UserPageResDTO userPageResDTO = new UserPageResDTO();
             BeanUtils.copyProperties(userBo, userPageResDTO);
             userPageResDTO.setDeptName(userBo.getDepartment().getName());
+            if (userBo.getLevel()!=null){
+                userPageResDTO.setLevelName(ZSYUserLevel.getName(userBo.getLevel()));
+            }
             List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserCheckPeopleByUserId(userBo.getId());
             List<UserCheckPeopleResDTO> checkPeopleResDTOS = new ArrayList<>();
             if (!CollectionUtils.isEmpty(userCheckPeopleBOS)){
@@ -498,11 +499,19 @@ public class ZSYUserService implements IZSYUserService {
 
     @Override
     public UserResDTO getUserById(Long userId) {
-        User user = userMapper.selectById(userId);
+        UserBo user = userMapper.selectUserBOById(userId);
+//        User user = userMapper.selectById(userId);
         UserResDTO userResDTO = new UserResDTO();
         if (user == null) {
             throw new ZSYServiceException(String.format("用户(%s)不存在", userId));
         }
+        userResDTO.setDeptName(user.getDepartment().getName());
+        userResDTO.setStatusName(ZSYUserStatus.getName(user.getStatus()));
+        userResDTO.setJobRoleName(ZSYJobRole.getName(user.getJobRole()));
+        if (user.getLevel() != null){
+            userResDTO.setLevelName(ZSYUserLevel.getName(user.getLevel()));
+        }
+        userResDTO.setUserRoleName(ZSYUserRole.getName(user.getUserRole()));
         List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserCheckPeopleByUserId(userId);
         List<UserCheckPeopleResDTO> checkPeopleResDTOS = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userCheckPeopleBOS)){

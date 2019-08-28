@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.DeptBo;
+import com.zhixinhuixue.armor.model.dto.request.QueryUserPageReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Department;
 import org.apache.ibatis.annotations.Param;
 

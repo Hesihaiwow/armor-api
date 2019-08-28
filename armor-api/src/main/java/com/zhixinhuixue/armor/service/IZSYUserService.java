@@ -36,11 +36,9 @@ public interface IZSYUserService {
 
     /**
      * 用户分页查询
-     * @param deptId 部门ID
-     * @param pageIndex 页码
      * @return
      */
-    PageInfo<UserPageResDTO> userPage(long deptId, int pageIndex);
+    PageInfo<UserPageResDTO> userPage(QueryUserPageReqDTO reqDTO);
 
     /**
      * 添加用户

@@ -4,22 +4,23 @@ package com.zhixinhuixue.armor.source.enums;
  * 用户角色
  * Created by Tate on 2017/8/7.
  */
-public enum ZSYJobRole {
+public enum ZSYUserLevel {
 
-    TEST(0, "测试"), PROGRAMER(1, "开发"),DESIGN(2, "设计"),PRODUCT(3,"产品"),OTHER(4,"其他"),ALGORITHM(5,"算法");
+    ONE(1, "一级"), TWO(2, "二级"),THREE(3, "三级"),FOUR(4,"四级"),FIVE(5,"五级"),
+    SIX(6,"六级"),SEVEN(7,"七级"),EIGHT(8,"八级"),NINE(9,"九级");
 
     private int value;
     private String name;
 
-    ZSYJobRole(int value, String name) {
+    ZSYUserLevel(int value, String name) {
         this.value = value;
         this.name = name;
     }
 
     public static String getName(int value) {
-        for (ZSYJobRole status : ZSYJobRole.values()) {
-            if (status.getValue() == value) {
-                return status.getName();
+        for (ZSYUserLevel level : ZSYUserLevel.values()) {
+            if (level.getValue() == value) {
+                return level.getName();
             }
         }
         return "";

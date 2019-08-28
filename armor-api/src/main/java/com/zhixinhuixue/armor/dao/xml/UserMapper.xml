@@ -163,13 +163,27 @@
   <!-- 用户列表(分页) -->
   <select id="selectPage" parameterType="java.util.List" resultMap="PageResultMap">
     SELECT * FROM `user`
-    WHERE is_delete = 0
-     <if test="list!=null">
+    WHERE 1 = 1
+     <if test="deptIds!=null">
        AND department_id IN
-       <foreach collection="list" open="(" separator="," close=")" item="item">
+       <foreach collection="deptIds" open="(" separator="," close=")" item="item">
          #{item}
        </foreach>
      </if>
+    <if test="reqDTO.jobRole != null">
+      AND `job_role` = #{reqDTO.jobRole}
+    </if>
+    <choose>
+      <when test="reqDTO.userType != null and reqDTO.userType == 1">
+        AND `is_delete` = 0 AND `status` = 0
+      </when>
+      <when test="reqDTO.userType != null and reqDTO.userType == 2">
+        AND `is_delete` = 0 AND `status` = 1
+      </when>
+      <otherwise>
+        AND 1 = 1
+      </otherwise>
+    </choose>
     ORDER BY user_role ASC ,create_time ASC
   </select>
 
@@ -217,6 +231,18 @@
     <select id="selectByName" resultMap="BaseResultMap">
       SELECT * FROM `user` WHERE `name` = #{name}
     </select>
-    <!-- sch -->
+
+  <!--查询任务人员信息-->
+    <select id="selectUsersByTask" resultMap="PageResultMap">
+        SELECT u.* FROM task_user tu LEFT JOIN user u
+        ON tu.`user_id` = u.`id`
+        WHERE tu.`task_id` = #{taskId}
+    </select>
+
+  <!--根据id查询-->
+  <select id="selectUserBOById" resultMap="PageResultMap">
+    SELECT * FROM `user` WHERE `id` = #{userId}
+  </select>
+  <!-- sch -->
 
 </mapper>

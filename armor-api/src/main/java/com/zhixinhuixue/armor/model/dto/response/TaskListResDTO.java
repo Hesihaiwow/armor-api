@@ -50,9 +50,19 @@ public class TaskListResDTO {
 
     private String projectImage;
 
+    //能否拖拽
+    private boolean canDrag;
+
     //任务超时人数
     private Integer delayNo;
 
+    public boolean isCanDrag() {
+        return canDrag;
+    }
+
+    public void setCanDrag(boolean canDrag) {
+        this.canDrag = canDrag;
+    }
 
     public Long getId() {
         return id;
