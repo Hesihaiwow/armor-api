@@ -236,7 +236,7 @@
                     that.stageList = res.data;
                     that.taskBoxWidth = that.stageList.length * 270 + "px";
                     that.stageList.forEach((stage) => {
-                        if(justMine===1){
+                        if(justMine==1){
                             // 获取任务
                             that.http.zsyGetHttp(`/task/tasksByStage/mine/${stage.id}`, {}, (res) => {
                                 let list = res.data;
