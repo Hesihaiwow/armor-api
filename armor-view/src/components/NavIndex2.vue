@@ -2279,21 +2279,19 @@
                 </el-form-item>
                 <span class="star" v-show="recheckForm.type === 0" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                 <el-form-item label="补打上班时间:" prop="beginTime" v-show="recheckForm.type === 0">
-                    <el-date-picker
+                    <el-time-picker
                             v-model="recheckForm.recheckInTime"
-                            type="datetime"
-                            format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="选择日期时间">
-                    </el-date-picker>
+                            type="time"
+                            placeholder="选择时间">
+                    </el-time-picker>
                 </el-form-item>
                 <span class="star" v-show="recheckForm.type === 1" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                 <el-form-item label="补打下班时间" prop="beginTime" v-show="recheckForm.type === 1">
-                    <el-date-picker
+                    <el-time-picker
                             v-model="recheckForm.recheckOutTime"
-                            type="datetime"
-                            format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="选择日期时间">
-                    </el-date-picker>
+                            type="time"
+                            placeholder="选择时间">
+                    </el-time-picker>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -6621,10 +6619,14 @@
                     if (valid) {
                         let form = this.recheckForm;
                         if (form.recheckInTime != null && form.recheckInTime !== ''){
-                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss')
+                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss');
+                            let inTime =this.recheckForm.date+' '+form.recheckInTime.substring(11);
+                            form.recheckInTime = inTime;
                         }
                         if(form.recheckOutTime != null && form.recheckOutTime !== ''){
-                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss')
+                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss');
+                            let outTime =this.recheckForm.date+' '+form.recheckOutTime.substring(11);
+                            form.recheckOutTime = outTime;
                         }
                         http.zsyPostHttp('/sign-in/resign-in/update/'+id, form, (resp) => {
                             this.$message({
@@ -6661,16 +6663,12 @@
                     if (valid) {
                         let form = this.recheckForm;
                         if (form.recheckInTime != null && form.recheckInTime !== ''){
-                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss')
-                        }
-                        if(form.recheckOutTime != null && form.recheckOutTime !== ''){
-                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss')
-                        }
-                        if(form.recheckInTime != null && form.recheckInTime != ''){
+                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss');
                             let inTime =this.recheckForm.date+' '+form.recheckInTime.substring(11);
                             form.recheckInTime = inTime;
                         }
-                        if (form.recheckOutTime != null && form.recheckOutTime != ''){
+                        if(form.recheckOutTime != null && form.recheckOutTime !== ''){
+                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss');
                             let outTime =this.recheckForm.date+' '+form.recheckOutTime.substring(11);
                             form.recheckOutTime = outTime;
                         }
@@ -6741,10 +6739,14 @@
                     if (valid) {
                         let form = this.recheckForm;
                         if (form.recheckInTime != null && form.recheckInTime !== ''){
-                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss')
+                            form.recheckInTime = moment(form.recheckInTime).format('YYYY-MM-DD HH:mm:ss');
+                            let inTime =this.recheckForm.date+' '+form.recheckInTime.substring(11);
+                            form.recheckInTime = inTime;
                         }
                         if(form.recheckOutTime != null && form.recheckOutTime !== ''){
-                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss')
+                            form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss');
+                            let outTime =this.recheckForm.date+' '+form.recheckOutTime.substring(11);
+                            form.recheckOutTime = outTime;
                         }
                         http.zsyPutHttp('/sign-in/resign-in/access/'+id, form, (resp) => {
                             this.$message({
@@ -6839,6 +6841,8 @@
                 this.recheckForm.recheckOutTime = recheck.recheckTime;
                 this.recheckForm.reason = recheck.reason;
                 this.recheckForm.type = recheck.type;
+                let dateStr = moment(recheck.recheckTime).format('YYYY-MM-DD');
+                this.recheckForm.date = dateStr;
                 this.editRecheckVisible = true;
             },
             showRecheck(recheck){
