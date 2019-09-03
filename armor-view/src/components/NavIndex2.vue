@@ -2299,7 +2299,7 @@
                            :loading="isSaving">立即修改</el-button>
                 <el-button type="danger" @click="deleteRecheck(recheckForm.id)"
                            :loading="isSaving">删除</el-button>
-                <el-button v-show="permit" type="success" @click="accessRecheck('recheckForm',recheckForm.id)"
+                <el-button v-show="userRole === 0" type="success" @click="accessRecheck('recheckForm',recheckForm.id)"
                            :loading="isSaving">审核</el-button>
             </span>
         </el-dialog>
@@ -2318,7 +2318,7 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button v-show="permit" type="danger" @click="deleteRecheck(recheckForm.id)"
+                <el-button v-show="userRole === 0" type="danger" @click="deleteRecheck(recheckForm.id)"
                            :loading="isSaving">删除</el-button>
             </span>
         </el-dialog>
