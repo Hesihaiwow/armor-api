@@ -6666,10 +6666,14 @@
                         if(form.recheckOutTime != null && form.recheckOutTime !== ''){
                             form.recheckOutTime = moment(form.recheckOutTime).format('YYYY-MM-DD HH:mm:ss')
                         }
-                        let inTime =this.recheckForm.date+' '+form.recheckInTime.substring(11);
-                        let outTime =this.recheckForm.date+' '+form.recheckOutTime.substring(11);
-                        form.recheckInTime = inTime;
-                        form.recheckOutTime = outTime;
+                        if(form.recheckInTime != null && form.recheckInTime != ''){
+                            let inTime =this.recheckForm.date+' '+form.recheckInTime.substring(11);
+                            form.recheckInTime = inTime;
+                        }
+                        if (form.recheckOutTime != null && form.recheckOutTime != ''){
+                            let outTime =this.recheckForm.date+' '+form.recheckOutTime.substring(11);
+                            form.recheckOutTime = outTime;
+                        }
                         http.zsyPostHttp('/sign-in/resign-in/add', form, (resp) => {
                             this.$message({
                                 showClose: true,
@@ -6761,7 +6765,8 @@
             },
             clearRecheckForm(){
                 this.recheckForm.reason = this.recheckForm.recheckInTime = this.recheckForm.recheckOutTime
-                    = this.recheckForm.userId = this.recheckForm.id = ''
+                    = this.recheckForm.userId = this.recheckForm.id = '';
+                this.$refs.recheckForm.resetFields();
             },
             closeRecheckForm(){
                 this.clearRecheckForm();
