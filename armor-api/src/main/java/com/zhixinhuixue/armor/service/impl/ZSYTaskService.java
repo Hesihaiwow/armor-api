@@ -315,8 +315,8 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         if (!taskReqDTO.getStageId().equals(taskTemp.getStageId())){
             //判断当前任务是否可以修改到设计中或开发中或测试中
-            //待设计
-            if (taskTemp.getStageId().equals(212754785051344891L)){
+            //待设计-->设计中
+            if (taskTemp.getStageId().equals(212754785051344891L) && taskReqDTO.getStageId().equals(212754785051344892L)){
                 boolean canDrag = false;
                 List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
                 if (!CollectionUtils.isEmpty(userBos)){
@@ -328,11 +328,11 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                 }
                 if (!canDrag){
-                    throw new ZSYServiceException("任务在当前阶段,没有相关任务人员存在,无法修改到下一阶段");
+                    throw new ZSYServiceException("任务在待设计阶段,没有产品或UI人员建任务,无法进入设计中阶段");
                 }
             }
-            //待开发
-            else if (taskTemp.getStageId().equals(212754785051344890L)){
+            //待开发-->开发中
+            else if (taskTemp.getStageId().equals(212754785051344890L) && taskReqDTO.getStageId().equals(212754785051344894L)){
                 boolean canDrag = false;
                 List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
                 if (!CollectionUtils.isEmpty(userBos)){
@@ -344,11 +344,11 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                 }
                 if (!canDrag){
-                    throw new ZSYServiceException("任务在当前阶段,没有相关任务人员存在,无法修改到下一阶段");
+                    throw new ZSYServiceException("任务在待开发阶段,没有开发人员建任务,无法进入开发中阶段");
                 }
             }
             //待测试
-            else if (taskTemp.getStageId().equals(212754785051344895L)){
+            else if (taskTemp.getStageId().equals(212754785051344895L) && taskReqDTO.getStageId().equals(212754785051344896L)){
                 boolean canDrag = false;
                 List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
                 if (!CollectionUtils.isEmpty(userBos)){
@@ -359,7 +359,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                 }
                 if (!canDrag){
-                    throw new ZSYServiceException("任务在当前阶段,没有相关任务人员存在,无法修改到下一阶段");
+                    throw new ZSYServiceException("任务在待测试阶段,没有测试人员建任务,无法进入测试中阶段");
                 }
             }
         }
