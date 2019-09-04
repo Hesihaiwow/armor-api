@@ -1110,9 +1110,16 @@ public class ZSYTaskService implements IZSYTaskService {
 
         //任务评审情况
         List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
+        List<TaskReviewResDTO> reviewResDTOS = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskReviewBOS)){
             taskDetailResDTO.setIsReview(true);
             taskDetailResDTO.setIsReviewStr("已评审");
+            taskReviewBOS.forEach(taskReviewBO -> {
+                TaskReviewResDTO resDTO = new TaskReviewResDTO();
+                BeanUtils.copyProperties(taskReviewBO,resDTO);
+                reviewResDTOS.add(resDTO);
+            });
+            taskDetailResDTO.setTaskReviewResDTOS(reviewResDTOS);
         }else {
             taskDetailResDTO.setIsReview(false);
             taskDetailResDTO.setIsReviewStr("未评审");
@@ -1120,13 +1127,21 @@ public class ZSYTaskService implements IZSYTaskService {
 
         //任务总结情况
         List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(taskId);
+        List<TaskSummaryResDTO> summaryResDTOS = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskSummaryBOS)){
             taskDetailResDTO.setIsSummarize(true);
             taskDetailResDTO.setIsSummarizeStr("已总结");
+            taskSummaryBOS.forEach(taskSummaryBO -> {
+                TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
+                BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                summaryResDTOS.add(resDTO);
+            });
+            taskDetailResDTO.setTaskSummaryResDTOS(summaryResDTOS);
         }else {
             taskDetailResDTO.setIsSummarize(false);
             taskDetailResDTO.setIsSummarizeStr("未总结");
         }
+
 
         return ZSYResult.success().data(taskDetailResDTO);
     }
@@ -2476,6 +2491,139 @@ public class ZSYTaskService implements IZSYTaskService {
         resDTO.setUserWeeks(userWeekResDTOList);
         return resDTO;
     }
+
+    /**
+     * 添加任务评审
+     * @author sch
+     */
+    @Override
+    @Transactional
+    public List<TaskReviewResDTO> addTaskReview(AddTaskReviewReqDTO reviewReqDTO) {
+        List<TaskReviewResDTO> list = new ArrayList<>();
+        Task task = taskMapper.selectByPrimaryKey(reviewReqDTO.getTaskId());
+        if (task == null){
+            throw new ZSYServiceException("当前任务不存在,请检查");
+        }
+        TaskReview review = new TaskReview();
+        review.setId(snowFlakeIDHelper.nextId());
+        review.setTaskId(reviewReqDTO.getTaskId());
+        review.setComment(reviewReqDTO.getComment().trim());
+        review.setSuggest(reviewReqDTO.getSuggest().trim());
+        review.setCreateTime(new Date());
+        review.setUpdateTime(new Date());
+        review.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        review.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        review.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        if (taskReviewMapper.insert(review) == 0){
+            throw new ZSYServiceException("添加任务评审失败");
+        }
+        List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(review.getTaskId());
+        if (!CollectionUtils.isEmpty(taskReviewBOS)){
+            taskReviewBOS.forEach(taskReviewBO -> {
+                TaskReviewResDTO resDTO = new TaskReviewResDTO();
+                BeanUtils.copyProperties(taskReviewBO,resDTO);
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 添加任务总结
+     * @author sch
+     */
+    @Override
+    @Transactional
+    public List<TaskSummaryResDTO> addTaskSummary(AddTaskSummaryReqDTO reqDTO) {
+        Task task = taskMapper.selectByPrimaryKey(reqDTO.getTaskId());
+        if (task == null){
+            throw new ZSYServiceException("当前任务不存在,请检查");
+        }
+        TaskSummary summary = new TaskSummary();
+        summary.setId(snowFlakeIDHelper.nextId());
+        summary.setTaskId(reqDTO.getTaskId());
+        summary.setComment(reqDTO.getComment().trim());
+        summary.setGain(reqDTO.getGain().trim());
+        summary.setCreateTime(new Date());
+        summary.setUpdateTime(new Date());
+        summary.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        summary.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        summary.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        if (taskSummaryMapper.insert(summary) == 0){
+            throw new ZSYServiceException("添加任务总结失败");
+        }
+        List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(reqDTO.getTaskId());
+        List<TaskSummaryResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskSummaryBOS)){
+            taskSummaryBOS.forEach(taskSummaryBO -> {
+                TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
+                BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 删除任务总结
+     * @author sch
+     * @param summaryId 总结id
+     */
+    @Override
+    @Transactional
+    public List<TaskSummaryResDTO> deleteTaskSummary(Long summaryId) {
+        TaskSummary summary = taskSummaryMapper.selectById(summaryId);
+        if (summary == null){
+            throw new ZSYServiceException("当前任务总结不存在,请检查");
+        }
+        summary.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
+        summary.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        summary.setUpdateTime(new Date());
+        if (taskSummaryMapper.update(summary) == 0){
+            throw new ZSYServiceException("删除任务总结失败");
+        }
+        List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(summary.getTaskId());
+        List<TaskSummaryResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskSummaryBOS)){
+            taskSummaryBOS.forEach(taskSummaryBO -> {
+                TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
+                BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 删除任务评审
+     * @param reviewId 评审id
+     * @author sch
+     */
+    @Override
+    @Transactional
+    public List<TaskReviewResDTO> deleteTaskReview(Long reviewId) {
+        TaskReview review = taskReviewMapper.selectById(reviewId);
+        if (review == null){
+            throw new ZSYServiceException("当前任务评审不存在,请检查");
+        }
+        review.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
+        review.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        review.setUpdateTime(new Date());
+        if (taskReviewMapper.update(review) == 0){
+            throw new ZSYServiceException("删除任务评审失败");
+        }
+        List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(review.getTaskId());
+        List<TaskReviewResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskReviewBOS)){
+            taskReviewBOS.forEach(taskReviewBO -> {
+                TaskReviewResDTO resDTO = new TaskReviewResDTO();
+                BeanUtils.copyProperties(taskReviewBO,resDTO);
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
 
     /**
      * 检查是否有主任务超时,有的话,新增通知并短信通知负责人

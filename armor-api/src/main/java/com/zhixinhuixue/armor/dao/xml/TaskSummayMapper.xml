@@ -21,12 +21,46 @@
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
         INSERT INTO `task_summary`
         (`id`,`task_id`,`comment`,`gain`,`create_by`,`update_by`,`create_time`,`update_time`,`is_delete`)
+        VALUES
         <foreach collection="list" separator="," item="item">
             (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.comment,jdbcType=VARCHAR}
             ,#{item.gain,jdbcType=VARCHAR},#{item.createBy,jdbcType=BIGINT},#{item.updateBy,jdbcType=BIGINT}
             ,#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP},#{item.isDelete,jdbcType=INTEGER})
         </foreach>
     </insert>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
+        INSERT INTO `task_summary`
+        (`id`,`task_id`,`comment`,`gain`,`create_by`,`update_by`,`create_time`,`update_time`,`is_delete`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{comment,jdbcType=VARCHAR}
+        ,#{gain,jdbcType=VARCHAR},#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT}
+        ,#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER})
+    </insert>
+
+    <!--更新-->
+    <update id="update" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
+        UPDATE `task_summary`
+        <set>
+            <if test="comment != null and comment !='' ">
+                `comment` = #{comment},
+            </if>
+            <if test="gain != null and gain != '' ">
+                `suggest` = #{suggest},
+            </if>
+            <if test="isDelete != null">
+                `is_delete` = #{isDelete},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                `update_time` = #{updateTime},
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
 
     <!--根据任务id删除总结-->
     <delete id="deleteByTask">
@@ -37,8 +71,13 @@
     <select id="selectListByTask" resultMap="BOMap">
         SELECT ts.*,u.name user_name FROM `task_summary` ts
         LEFT JOIN `user` u ON u.`id` = ts.`create_by`
-        WHERE ts.`task_id` = #{taskId}
+        WHERE ts.`task_id` = #{taskId} AND ts.`is_delete` = 0
         ORDER BY ts.`create_time` DESC
+    </select>
+
+    <!--根据主键查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `task_summary` WHERE `id` = #{summaryId}
     </select>
 
 
