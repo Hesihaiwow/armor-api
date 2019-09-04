@@ -44,6 +44,51 @@ public class TaskDetailResDTO {
 
     private Long createBy;
 
+
+    //能否评审
+    private boolean canReview;
+
+    //能否总结
+    private boolean canSummarize;
+
+    /**
+     * 是否已评审
+     */
+    private boolean isReview;
+    private String isReviewStr;
+
+    /**
+     * 是否已总结
+     */
+    private boolean isSummarize;
+    private String isSummarizeStr;
+
+    /**
+     * 任务评审详情
+     */
+    private List<TaskReviewResDTO> taskReviewResDTOS;
+
+    /**
+     * 任务总结详情
+     */
+    private List<TaskSummaryResDTO> taskSummaryResDTOS;
+
+    public boolean getCanReview() {
+        return canReview;
+    }
+
+    public void setCanReview(boolean canReview) {
+        this.canReview = canReview;
+    }
+
+    public boolean getCanSummarize() {
+        return canSummarize;
+    }
+
+    public void setCanSummarize(boolean canSummarize) {
+        this.canSummarize = canSummarize;
+    }
+
     /**
      * 我的任务级别
      */
@@ -88,6 +133,54 @@ public class TaskDetailResDTO {
      * 我的任务功能点
      */
     private List<TaskTempFunctionResDTO> myFunctionResDTOS;
+
+    public boolean getIsReview() {
+        return isReview;
+    }
+
+    public void setIsReview(boolean review) {
+        isReview = review;
+    }
+
+    public String getIsReviewStr() {
+        return isReviewStr;
+    }
+
+    public void setIsReviewStr(String isReviewStr) {
+        this.isReviewStr = isReviewStr;
+    }
+
+    public boolean getIsSummarize() {
+        return isSummarize;
+    }
+
+    public void setIsSummarize(boolean summarize) {
+        isSummarize = summarize;
+    }
+
+    public String getIsSummarizeStr() {
+        return isSummarizeStr;
+    }
+
+    public void setIsSummarizeStr(String isSummarizeStr) {
+        this.isSummarizeStr = isSummarizeStr;
+    }
+
+    public List<TaskReviewResDTO> getTaskReviewResDTOS() {
+        return taskReviewResDTOS;
+    }
+
+    public void setTaskReviewResDTOS(List<TaskReviewResDTO> taskReviewResDTOS) {
+        this.taskReviewResDTOS = taskReviewResDTOS;
+    }
+
+    public List<TaskSummaryResDTO> getTaskSummaryResDTOS() {
+        return taskSummaryResDTOS;
+    }
+
+    public void setTaskSummaryResDTOS(List<TaskSummaryResDTO> taskSummaryResDTOS) {
+        this.taskSummaryResDTOS = taskSummaryResDTOS;
+    }
 
     public List<TaskTempFunctionResDTO> getMyFunctionResDTOS() {
         return myFunctionResDTOS;

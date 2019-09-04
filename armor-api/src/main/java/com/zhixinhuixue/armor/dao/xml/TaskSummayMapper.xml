@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskSummaryMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskSummary">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="task_id" jdbcType="BIGINT" property="taskId" />
+        <result column="comment" jdbcType="VARCHAR" property="comment" />
+        <result column="gain" jdbcType="VARCHAR" property="gain" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TaskSummaryBO" extends="BaseResultMap">
+        <result column="user_name" property="createName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
+        INSERT INTO `task_summary`
+        (`id`,`task_id`,`comment`,`gain`,`create_by`,`update_by`,`create_time`,`update_time`,`is_delete`)
+        <foreach collection="list" separator="," item="item">
+            (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.comment,jdbcType=VARCHAR}
+            ,#{item.gain,jdbcType=VARCHAR},#{item.createBy,jdbcType=BIGINT},#{item.updateBy,jdbcType=BIGINT}
+            ,#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP},#{item.isDelete,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!--根据任务id删除总结-->
+    <delete id="deleteByTask">
+        DELETE FROM `task_summary` WHERE `task_id` = #{taskId}
+    </delete>
+
+    <!--根据任务id查询-->
+    <select id="selectListByTask" resultMap="BOMap">
+        SELECT ts.*,u.name user_name FROM `task_summary` ts
+        LEFT JOIN `user` u ON u.`id` = ts.`create_by`
+        WHERE ts.`task_id` = #{taskId}
+        ORDER BY ts.`create_time` DESC
+    </select>
+
+
+</mapper>

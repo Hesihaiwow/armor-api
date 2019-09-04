@@ -53,8 +53,30 @@ public class TaskListResDTO {
     //能否拖拽
     private boolean canDrag;
 
+    //能否评审
+    private boolean canReview;
+
+    //能否总结
+    private boolean canSummarize;
+
     //任务超时人数
     private Integer delayNo;
+
+    public boolean getCanReview() {
+        return canReview;
+    }
+
+    public void setCanReview(boolean canReview) {
+        this.canReview = canReview;
+    }
+
+    public boolean getCanSummarize() {
+        return canSummarize;
+    }
+
+    public void setCanSummarize(boolean canSummarize) {
+        this.canSummarize = canSummarize;
+    }
 
     public boolean isCanDrag() {
         return canDrag;

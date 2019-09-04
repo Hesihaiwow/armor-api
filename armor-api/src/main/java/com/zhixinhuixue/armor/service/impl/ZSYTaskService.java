@@ -114,6 +114,10 @@ public class ZSYTaskService implements IZSYTaskService {
     private IZSYTaskFunctionMapper taskFunctionMapper;
     @Autowired
     private IZSYTaskModifyFunctionMapper taskModifyFunctionMapper;
+    @Autowired
+    private IZSYTaskReviewMapper taskReviewMapper;
+    @Autowired
+    private IZSYTaskSummaryMapper taskSummaryMapper;
     // -- sch
 
 
@@ -572,6 +576,46 @@ public class ZSYTaskService implements IZSYTaskService {
             });
             taskTagMapper.insertList(taskTags);
         }
+
+        //删除原有的评审
+        taskReviewMapper.deleteByTask(taskId);
+        //插入任务评审
+        if (!CollectionUtils.isEmpty(taskReqDTO.getTaskReviewReqDTOS())){
+            List<TaskReview> taskReviewList = new ArrayList<>();
+            taskReqDTO.getTaskReviewReqDTOS().forEach(addTaskReviewReqDTO -> {
+                TaskReview taskReview = new TaskReview();
+                BeanUtils.copyProperties(addTaskReviewReqDTO,taskReview);
+                taskReview.setId(snowFlakeIDHelper.nextId());
+                taskReview.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+                taskReview.setCreateTime(new Date());
+                taskReview.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+                taskReview.setUpdateTime(new Date());
+                taskReview.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+                taskReviewList.add(taskReview);
+            });
+            taskReviewMapper.insertBatch(taskReviewList);
+        }
+
+        //删除原有的总结
+        taskSummaryMapper.deleteByTask(taskId);
+        //插入任务总结
+        List<AddTaskSummaryReqDTO> summaryReqDTOS = taskReqDTO.getTaskSummaryReqDTOS();
+        if (!CollectionUtils.isEmpty(summaryReqDTOS)){
+            List<TaskSummary> summaryList = new ArrayList<>();
+            summaryReqDTOS.forEach(addTaskSummaryReqDTO -> {
+                TaskSummary summary = new TaskSummary();
+                BeanUtils.copyProperties(addTaskSummaryReqDTO,summary);
+                summary.setId(snowFlakeIDHelper.nextId());
+                summary.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+                summary.setCreateTime(new Date());
+                summary.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+                summary.setUpdateTime(new Date());
+                summary.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+                summaryList.add(summary);
+            });
+            taskSummaryMapper.insertBatch(summaryList);
+        }
+
         // 插入日志
         taskLogMapper.insert(buildLog(ZSYTokenRequestContext.get().getUserName() + "修改了任务", taskReqDTO.getModifyDescription(), task.getId()));
 
@@ -1051,6 +1095,39 @@ public class ZSYTaskService implements IZSYTaskService {
             taskDetailResDTO.setMyTaskLevelName(collect.get(0).getTaskLevelName());
         }
         taskDetailResDTO.setProNames(proName);
+
+        taskDetailResDTO.setCanReview(false);
+        taskDetailResDTO.setCanSummarize(false);
+        //待设计和设计中
+        if (taskDetailBO.getStageId().equals(212754785051344891L) || taskDetailBO.getStageId().equals(212754785051344892L)){
+            taskDetailResDTO.setCanReview(true);
+        }
+
+        //已发布任务
+        if (taskDetailBO.getStageId().equals(212754785051344898L)){
+            taskDetailResDTO.setCanSummarize(true);
+        }
+
+        //任务评审情况
+        List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
+        if (!CollectionUtils.isEmpty(taskReviewBOS)){
+            taskDetailResDTO.setIsReview(true);
+            taskDetailResDTO.setIsReviewStr("已评审");
+        }else {
+            taskDetailResDTO.setIsReview(false);
+            taskDetailResDTO.setIsReviewStr("未评审");
+        }
+
+        //任务总结情况
+        List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(taskId);
+        if (!CollectionUtils.isEmpty(taskSummaryBOS)){
+            taskDetailResDTO.setIsSummarize(true);
+            taskDetailResDTO.setIsSummarizeStr("已总结");
+        }else {
+            taskDetailResDTO.setIsSummarize(false);
+            taskDetailResDTO.setIsSummarizeStr("未总结");
+        }
+
         return ZSYResult.success().data(taskDetailResDTO);
     }
 
@@ -1771,6 +1848,22 @@ public class ZSYTaskService implements IZSYTaskService {
                         });
                     }
                 }
+                taskListResDTO.setCanReview(false);
+                taskListResDTO.setCanSummarize(false);
+                //待设计和设计中
+                if (taskListBO.getStageId().equals(212754785051344891L) || taskListBO.getStageId().equals(212754785051344892L)){
+                    taskListResDTO.setCanReview(true);
+                    //任务评审情况
+                    List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskListBO.getId());
+                    if (CollectionUtils.isEmpty(taskReviewBOS)){
+                        taskListResDTO.setCanDrag(false);
+                    }
+                }
+
+                //已发布任务
+                if (taskListBO.getStageId().equals(212754785051344898L)){
+                    taskListResDTO.setCanSummarize(true);
+                }
                 taskListResDTO.setTags(taskTagResDTOS);
                 list.add(taskListResDTO);
             }
@@ -2304,6 +2397,23 @@ public class ZSYTaskService implements IZSYTaskService {
                         });
                     }
                 }
+                taskListResDTO.setCanReview(false);
+                taskListResDTO.setCanSummarize(false);
+                //待设计和设计中
+                if (taskListBO.getStageId().equals(212754785051344891L) || taskListBO.getStageId().equals(212754785051344892L)){
+                    taskListResDTO.setCanReview(true);
+                    //任务评审情况
+                    List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskListBO.getId());
+                    if (CollectionUtils.isEmpty(taskReviewBOS)){
+                        taskListResDTO.setCanDrag(false);
+                    }
+                }
+
+                //已发布任务
+                if (taskListBO.getStageId().equals(212754785051344898L)){
+                   taskListResDTO.setCanSummarize(true);
+                }
+
                 taskListResDTO.setTags(taskTagResDTOS);
                 list.add(taskListResDTO);
             }
