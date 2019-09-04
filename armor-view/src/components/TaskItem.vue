@@ -333,7 +333,8 @@
                 </div>
                 <div style="margin-top: 5px;float: left">设计完成时间：{{taskDetail.beginTime | formatDate}}</div>
                 <div style="margin-top: 5px;margin-left: 250px">开发完成时间：{{taskDetail.testTime | formatDate}}</div>
-                <div style="margin-top: 5px;">截止时间：{{taskDetail.endTime | formatDate}}</div>
+                <div style="margin-top: 5px;float: left">截止时间：{{taskDetail.endTime | formatDate}}</div>
+                <div style="margin-top: 5px;margin-left: 250px">是否评审：{{taskDetail.isReviewStr}}</div>
                 <!--<div style="margin-top: 5px;margin-left: 250px" v-show="taskDetail">我的任务级别: {{taskDetail.myTaskLevelName}}</div>-->
                 <div>标签：
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -387,7 +388,23 @@
 
 
             </el-form>
+            <!--<div v-if="addTaskReviewVisible">-->
+                <!--<div>-->
+                    <!--<div>-->
+                        <!--<div style="margin-left: -5px"><span class="star">*</span>任务描述：</div>-->
+                        <!--<div>-->
+                            <!--<el-input type="textarea" placeholder="添加任务描述" v-model="taskStep.description"-->
+                                      <!--:rows="2" style="width: 455px"></el-input>-->
+                        <!--</div>-->
+                        <!--<div style="margin-left: -5px"><span class="star">*</span>任务描述：</div>-->
+                        <!--<div>-->
+                            <!--<el-input type="textarea" placeholder="添加任务描述" v-model="taskStep.description"-->
+                                      <!--:rows="2" style="width: 455px"></el-input>-->
+                        <!--</div>-->
 
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
             <div class="trends" v-show="taskLog.list.length>0">
                 <div class="trends-title clearfix">
                     <b class="fl">动态</b>
@@ -400,7 +417,17 @@
                     </li>
                 </ul>
             </div>
+            <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status===2)">
+                <el-tooltip content="任务总结" placement="top" >
+                    <el-button type="primary"   v-show="permit && taskDetail.canSummarize"
+                               style="text-align: left">任务总结</el-button>
+                </el-tooltip>
+            </span>
             <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status===1 || taskDetail.status===0)">
+                <el-tooltip content="任务评审" placement="top" >
+                    <el-button type="primary"   v-show="permit && taskDetail.canReview"
+                               style="text-align: left">任务评审</el-button>
+                </el-tooltip>
                 <el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">
                     <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name,taskDetail.proNames)"  style="text-align: right">添加Bug修复时间</el-button>
                 </el-tooltip>
@@ -1821,6 +1848,8 @@
                     beginWeek:'',
                     endWeek:''
                 },
+                addTaskReviewVisible:false,
+                addTaskSummaryVisible:false,
 
             };
         },
