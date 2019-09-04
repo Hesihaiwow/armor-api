@@ -1971,7 +1971,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                 }
 
-                if (!taskMoveReqDTO.getTargetStageId().equals(originTask.getStageId())){
+                if (!targetTask.getStageId().equals(originTask.getStageId())){
                     //判断当前任务是否可以修改到设计中或开发中或测试中
                     //待设计往后面阶段移动
                     if (originTask.getStageId().equals(212754785051344891L)){
@@ -1991,11 +1991,11 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                     //待开发往后阶段移动
                     else if (originTask.getStageId().equals(212754785051344890L)){
-                        if (taskMoveReqDTO.getTargetStageId().equals(212754785051344894L)
-                                || taskMoveReqDTO.getTargetStageId().equals(212754785051344895L)
-                                || taskMoveReqDTO.getTargetStageId().equals(212754785051344896L)
-                                || taskMoveReqDTO.getTargetStageId().equals(212754785051344897L)
-                                || taskMoveReqDTO.getTargetStageId().equals(212754785051344898L)){
+                        if (targetTask.getStageId().equals(212754785051344894L)
+                                || targetTask.getStageId().equals(212754785051344895L)
+                                || targetTask.getStageId().equals(212754785051344896L)
+                                || targetTask.getStageId().equals(212754785051344897L)
+                                || targetTask.getStageId().equals(212754785051344898L)){
                             boolean canDrag = false;
                             List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
                             if (!CollectionUtils.isEmpty(userBos)){
@@ -2014,9 +2014,9 @@ public class ZSYTaskService implements IZSYTaskService {
                     }
                     //待测试
                     else if (originTask.getStageId().equals(212754785051344895L)){
-                        if (taskMoveReqDTO.getTargetStageId().equals(212754785051344896L)
-                                || taskMoveReqDTO.getTargetStageId().equals(212754785051344897L)
-                                || taskMoveReqDTO.getTargetStageId().equals(212754785051344898L)){
+                        if (targetTask.getStageId().equals(212754785051344896L)
+                                || targetTask.getStageId().equals(212754785051344897L)
+                                || targetTask.getStageId().equals(212754785051344898L)){
                             boolean canDrag = false;
                             List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
                             if (!CollectionUtils.isEmpty(userBos)){
