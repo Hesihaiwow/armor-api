@@ -318,7 +318,7 @@ public class ZSYTaskService implements IZSYTaskService {
             //待设计往后面阶段移动
             if (taskTemp.getStageId().equals(212754785051344891L)){
                 boolean canDrag = false;
-                List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
                 if (!CollectionUtils.isEmpty(userBos)){
                     for (UserBo userBo : userBos) {
                         if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
@@ -339,7 +339,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         || taskReqDTO.getStageId().equals(212754785051344897L)
                         || taskReqDTO.getStageId().equals(212754785051344898L)){
                     boolean canDrag = false;
-                    List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                    List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
                     if (!CollectionUtils.isEmpty(userBos)){
                         for (UserBo userBo : userBos) {
                             if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
@@ -360,7 +360,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         || taskReqDTO.getStageId().equals(212754785051344897L)
                         || taskReqDTO.getStageId().equals(212754785051344898L)){
                     boolean canDrag = false;
-                    List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                    List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
                     if (!CollectionUtils.isEmpty(userBos)){
                         for (UserBo userBo : userBos) {
                             if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
@@ -1862,7 +1862,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 //待设计往后面阶段移动
                 if (originTask.getStageId().equals(212754785051344891L)){
                     boolean canDrag = false;
-                    List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                    List<UserBo> userBos = userMapper.selectUsersByTask(originTask.getId());
                     if (!CollectionUtils.isEmpty(userBos)){
                         for (UserBo userBo : userBos) {
                             if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
@@ -1883,7 +1883,7 @@ public class ZSYTaskService implements IZSYTaskService {
                             || taskMoveReqDTO.getTargetStageId().equals(212754785051344897L)
                             || taskMoveReqDTO.getTargetStageId().equals(212754785051344898L)){
                         boolean canDrag = false;
-                        List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                        List<UserBo> userBos = userMapper.selectUsersByTask(originTask.getId());
                         if (!CollectionUtils.isEmpty(userBos)){
                             for (UserBo userBo : userBos) {
                                 if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
@@ -1904,7 +1904,7 @@ public class ZSYTaskService implements IZSYTaskService {
                             || taskMoveReqDTO.getTargetStageId().equals(212754785051344897L)
                             || taskMoveReqDTO.getTargetStageId().equals(212754785051344898L)){
                         boolean canDrag = false;
-                        List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
+                        List<UserBo> userBos = userMapper.selectUsersByTask(originTask.getId());
                         if (!CollectionUtils.isEmpty(userBos)){
                             for (UserBo userBo : userBos) {
                                 if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
