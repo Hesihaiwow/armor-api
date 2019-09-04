@@ -875,6 +875,7 @@
                 <el-form-item class="task-form-edit" label="" style="float: left;margin-left: 5px;margin-top: 5px">
                     <span style="width: 110px;margin-left: -80px"><span class="star">*</span>设计完成日期</span>
                     <el-date-picker style="width: 140px"
+                                    :disabled="userRole !== 0"
                             v-model="modifyTaskForm.beginTime"
                             type="date"
                             format="yyyy-MM-dd"
@@ -884,6 +885,7 @@
                 <el-form-item class="task-form-edit" label="" style="float: left;margin-left: -70px;margin-top: 5px">
                     <span style=""><span class="star">*</span>开发完成日期</span>
                     <el-date-picker style="width: 140px"
+                                    :disabled="userRole !== 0"
                             v-model="modifyTaskForm.testTime"
                             type="date"
                             format="yyyy-MM-dd"
@@ -893,6 +895,7 @@
                 <el-form-item class="task-form-edit" label="" style="margin-left: 420px;margin-top: 5px">
                     <span style=""><span class="star">*</span>截止日期</span>
                     <el-date-picker style="width: 140px"
+                                    :disabled="userRole !== 0"
                             v-model="modifyTaskForm.endTime"
                             type="date"
                             format="yyyy-MM-dd"
