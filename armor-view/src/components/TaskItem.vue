@@ -407,14 +407,16 @@
                         <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskReview.beginTime" type="date" format="yyyy-MM-dd"
-                                            placeholder="选择日期"></el-date-picker>
+                            <el-date-picker v-model="taskReview.beginTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择开始时间"></el-date-picker>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskReview.endTime" type="date" format="yyyy-MM-dd"
-                                            placeholder="选择日期"></el-date-picker>
+                            <el-date-picker v-model="taskReview.endTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择结束时间"></el-date-picker>
                         </div>
                     </div>
                 </div>
@@ -439,14 +441,16 @@
                         <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskSummary.beginTime" type="date" format="yyyy-MM-dd"
-                                            placeholder="选择日期"></el-date-picker>
+                            <el-date-picker v-model="taskSummary.beginTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择开始时间"></el-date-picker>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskSummary.endTime" type="date" format="yyyy-MM-dd"
-                                            placeholder="选择日期"></el-date-picker>
+                            <el-date-picker v-model="taskSummary.endTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择结束时间"></el-date-picker>
                         </div>
                     </div>
                 </div>
@@ -468,8 +472,9 @@
                                @click="deleteReview(item.id)">删除</a>
                             <div class="task-title-detail" v-show="item.persons!==''" ><em></em>评审人: {{item.persons}}</div>
                             <div class="task-title-detail" v-show="item.comment!==''" ><em></em>评审内容: {{item.comment}}</div>
-                            <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>评审开始时间: {{item.beginTime | formatDate}}</div>
-                            <div class="task-title-detail" v-show="item.endTime!==null" ><em></em>评审结束时间: {{item.endTime | formatDate}}</div>
+                            <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>评审开始时间: {{item.beginTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.endTime!==null" ><em></em>评审结束时间: {{item.endTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.reviewTimesStr!==''" ><em></em>评审时长: {{item.reviewTimesStr}}</div>
                         </div>
                         <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
                     </li>
@@ -488,8 +493,9 @@
                             @click="deleteSummary(item.id)">删除</a>
                             <div class="task-title-detail" v-show="item.comment!==''" ><em></em>总结内容: {{item.comment}}</div>
                             <div class="task-title-detail" v-show="item.gain!==''" ><em></em>任务收获: {{item.gain}}</div>
-                            <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>总结开始时间: {{item.beginTime | formatDate}}</div>
-                            <div class="task-title-detail" v-show="item.endTime!==null" ><em></em>总结结束时间: {{item.endTime | formatDate}}</div>
+                            <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>总结开始时间: {{item.beginTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.endTime!==null" ><em></em>总结结束时间: {{item.endTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.summaryTimesStr!==''" ><em></em>总结时长: {{item.summaryTimesStr}}</div>
                         </div>
                         <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
                     </li>
@@ -4230,8 +4236,8 @@
 
                 taskReviewForm.comment = this.taskReview.comment.trim();
                 taskReviewForm.persons = this.taskReview.persons.trim();
-                taskReviewForm.beginTime = moment(this.taskReview.beginTime).format('YYYY-MM-DD 00:00:00');
-                taskReviewForm.endTime = moment(this.taskReview.endTime).format('YYYY-MM-DD 23:59:59');
+                taskReviewForm.beginTime = moment(this.taskReview.beginTime).format('YYYY-MM-DD HH:mm:ss');
+                taskReviewForm.endTime = moment(this.taskReview.endTime).format('YYYY-MM-DD HH:mm:ss');
                 taskReviewForm.taskId = taskId;
                 // this.taskReviewList.push(taskReviewForm);
                 this.taskReview = {
@@ -4275,8 +4281,8 @@
                 let taskSummaryForm = {};
                 taskSummaryForm.comment = this.taskSummary.comment.trim();
                 taskSummaryForm.gain = this.taskSummary.gain.trim();
-                taskSummaryForm.beginTime = moment(this.taskSummary.beginTime).format('YYYY-MM-DD 00:00:00');
-                taskSummaryForm.endTime = moment(this.taskSummary.endTime).format('YYYY-MM-DD 23:59:59');
+                taskSummaryForm.beginTime = moment(this.taskSummary.beginTime).format('YYYY-MM-DD HH:mm:ss');
+                taskSummaryForm.endTime = moment(this.taskSummary.endTime).format('YYYY-MM-DD HH:mm:ss');
                 taskSummaryForm.taskId = taskId;
                 this.taskSummary = {
                     comment:'',
@@ -4288,6 +4294,13 @@
                 http.zsyPostHttp(`task/summary/add`,taskSummaryForm,(res)=>{
                     this.taskSummaryList = res.data;
                 })
+            },
+            getTime(time){
+                console.log(222)
+                const hours = this.addZero(parseInt(time/1000/60/60));
+                const mins = this.addZero(parseInt(time/1000/60%60));
+                const secs = this.addZero(parseInt(time/1000%60));
+                return hours+'h'+mins+'m'+secs+'s'
             },
             cancelAddTaskReview(){
                 this.addTaskReviewVisible = !this.addTaskReviewVisible;
