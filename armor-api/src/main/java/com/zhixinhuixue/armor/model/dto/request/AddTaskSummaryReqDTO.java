@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.model.dto.request;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * @author sch
@@ -27,6 +28,18 @@ public class AddTaskSummaryReqDTO {
     @NotBlank(message = "收获不能为空")
     private String gain;
 
+    /**
+     * 评审开始时间
+     */
+    @NotNull(message = "总结开始时间不能为空")
+    private Date beginTime;
+
+    /**
+     * 评审结束时间
+     */
+    @NotNull(message = "总结结束时间不能为空")
+    private Date endTime;
+
     public Long getTaskId() {
         return taskId;
     }
@@ -49,5 +62,21 @@ public class AddTaskSummaryReqDTO {
 
     public void setGain(String gain) {
         this.gain = gain;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }

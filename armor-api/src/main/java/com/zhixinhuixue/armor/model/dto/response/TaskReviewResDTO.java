@@ -24,9 +24,20 @@ public class TaskReviewResDTO {
     private String comment;
 
     /**
-     * 改进意见
+     * 评审人
      */
-    private String suggest;
+    private String persons;
+
+
+    /**
+     * 总结开始时间
+     */
+    private Date beginTime;
+
+    /**
+     * 总结结束时间
+     */
+    private Date endTime;
 
     /**
      * 创建人
@@ -71,12 +82,12 @@ public class TaskReviewResDTO {
         this.comment = comment;
     }
 
-    public String getSuggest() {
-        return suggest;
+    public String getPersons() {
+        return persons;
     }
 
-    public void setSuggest(String suggest) {
-        this.suggest = suggest;
+    public void setPersons(String persons) {
+        this.persons = persons;
     }
 
     public Long getCreateBy() {
@@ -101,5 +112,21 @@ public class TaskReviewResDTO {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }

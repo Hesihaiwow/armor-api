@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -28,6 +29,16 @@ public class TaskSummary {
      * 收获
      */
     private String gain;
+
+    /**
+     * 总结开始时间
+     */
+    private Date beginTime;
+
+    /**
+     * 总结结束时间
+     */
+    private Date endTime;
 
     /**
      * 创建人
@@ -124,5 +135,21 @@ public class TaskSummary {
 
     public void setIsDelete(Integer isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }

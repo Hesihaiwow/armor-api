@@ -5,7 +5,9 @@
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="task_id" jdbcType="BIGINT" property="taskId" />
         <result column="comment" jdbcType="VARCHAR" property="comment" />
-        <result column="suggest" jdbcType="VARCHAR" property="suggest" />
+        <result column="persons" jdbcType="VARCHAR" property="persons" />
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
         <result column="create_by" jdbcType="BIGINT" property="createBy" />
         <result column="update_by" jdbcType="BIGINT" property="updateBy" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -32,11 +34,13 @@
     <!--新增-->
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskReview">
         INSERT INTO `task_review`
-        (`id`,`task_id`,`comment`,`suggest`,`create_by`,`update_by`,`create_time`,`update_time`,`is_delete`)
+        (`id`,`task_id`,`comment`,`persons`,`create_by`,`update_by`,`create_time`
+        ,`update_time`,`is_delete`,`begin_time`,`end_time`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{comment,jdbcType=VARCHAR}
-        ,#{suggest,jdbcType=VARCHAR},#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT}
-        ,#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER})
+        ,#{persons,jdbcType=VARCHAR},#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT}
+        ,#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER}
+        ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP})
     </insert>
 
     <!--更新-->
@@ -46,8 +50,8 @@
             <if test="comment != null and comment !='' ">
                 `comment` = #{comment},
             </if>
-            <if test="suggest != null and suggest != '' ">
-                `suggest` = #{suggest},
+            <if test="persons != null and persons != '' ">
+                `persons` = #{persons},
             </if>
             <if test="isDelete != null">
                 `is_delete` = #{isDelete},
@@ -57,6 +61,12 @@
             </if>
             <if test="updateTime != null">
                 `update_time` = #{updateTime},
+            </if>
+            <if test="beginTime != null">
+                `begin_time` = #{beginTime},
+            </if>
+            <if test="endTime != null">
+                `end_time` = #{endTime},
             </if>
         </set>
         WHERE `id` = #{id}

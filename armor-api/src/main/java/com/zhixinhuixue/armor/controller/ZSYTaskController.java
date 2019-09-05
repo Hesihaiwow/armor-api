@@ -349,7 +349,7 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("删除任务总结")
-    @DeleteMapping("/review/summary/{summaryId}")
+    @DeleteMapping("/summary/delete/{summaryId}")
     public String deleteTaskSummary(@PathVariable("summaryId")Long summaryId){
         List<TaskSummaryResDTO> summaryResDTOS = taskService.deleteTaskSummary(summaryId);
         return ZSYResult.success().data(summaryResDTOS).build();

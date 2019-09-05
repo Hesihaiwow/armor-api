@@ -25,9 +25,19 @@ public class TaskReview {
     private String comment;
 
     /**
-     * 改进意见
+     * 评审人
      */
-    private String suggest;
+    private String persons;
+
+    /**
+     * 评审开始时间
+     */
+    private Date beginTime;
+
+    /**
+     * 评审结束时间
+     */
+    private Date endTime;
 
     /**
      * 创建人
@@ -78,12 +88,28 @@ public class TaskReview {
         this.comment = comment;
     }
 
-    public String getSuggest() {
-        return suggest;
+    public String getPersons() {
+        return persons;
     }
 
-    public void setSuggest(String suggest) {
-        this.suggest = suggest;
+    public void setPersons(String persons) {
+        this.persons = persons;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     public Long getCreateBy() {

@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.model.dto.request;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * @author sch
@@ -22,10 +23,22 @@ public class AddTaskReviewReqDTO {
     private String comment;
 
     /**
-     * 改进意见
+     * 评审人
      */
-    @NotBlank(message = "改进意见不能为空")
-    private String suggest;
+    @NotBlank(message = "评审人不能为空")
+    private String persons;
+
+    /**
+     * 评审开始时间
+     */
+    @NotNull(message = "评审开始时间不能为空")
+    private Date beginTime;
+
+    /**
+     * 评审结束时间
+     */
+    @NotNull(message = "评审结束时间不能为空")
+    private Date endTime;
 
     public Long getTaskId() {
         return taskId;
@@ -43,11 +56,27 @@ public class AddTaskReviewReqDTO {
         this.comment = comment;
     }
 
-    public String getSuggest() {
-        return suggest;
+    public String getPersons() {
+        return persons;
     }
 
-    public void setSuggest(String suggest) {
-        this.suggest = suggest;
+    public void setPersons(String persons) {
+        this.persons = persons;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }

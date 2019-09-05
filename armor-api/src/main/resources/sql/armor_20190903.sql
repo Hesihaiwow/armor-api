@@ -6,7 +6,9 @@ CREATE TABLE `task_review` (
   `id` bigint(20) NOT NULL,
   `task_id` bigint(20) NOT NULL COMMENT '任务id',
   `comment` varchar(256) DEFAULT NULL COMMENT '评审内容',
-  `suggest` varchar(256) DEFAULT NULL COMMENT '改进意见',
+  `persons` varchar(256) DEFAULT NULL COMMENT '评审人',
+  `begin_time` datetime NOT NULL COMMENT '评审开始时间',
+  `end_time` datetime NOT NULL COMMENT '评审结束时间',
   `create_by` bigint(20) NOT NULL COMMENT '创建人id',
   `update_by` bigint(20) NOT NULL COMMENT '更新人id',
   `create_time` datetime NOT NULL COMMENT '创建时间',
@@ -20,6 +22,8 @@ CREATE TABLE `task_summary` (
   `task_id` bigint(20) NOT NULL COMMENT '任务id',
   `comment` varchar(256) DEFAULT NULL COMMENT '总结内容',
   `gain` varchar(256) DEFAULT NULL COMMENT '收获',
+  `begin_time` datetime DEFAULT NULL COMMENT '总结开始时间',
+  `end_time` datetime DEFAULT NULL COMMENT '总结结束时间',
   `create_by` bigint(20) NOT NULL COMMENT '创建人id',
   `update_by` bigint(20) NOT NULL COMMENT '更新人id',
   `create_time` datetime NOT NULL COMMENT '创建时间',
@@ -27,5 +31,7 @@ CREATE TABLE `task_summary` (
   `is_delete` tinyint(1) NOT NULL COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='任务总结(已发布任务须总结)';
+
+
 
 
