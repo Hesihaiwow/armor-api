@@ -1147,6 +1147,12 @@ public class ZSYTaskService implements IZSYTaskService {
             taskReviewBOS.forEach(taskReviewBO -> {
                 TaskReviewResDTO resDTO = new TaskReviewResDTO();
                 BeanUtils.copyProperties(taskReviewBO,resDTO);
+                long timeMillis = taskReviewBO.getEndTime().getTime()-taskReviewBO.getBeginTime().getTime();
+                String hours = (timeMillis/1000/60/60)+"";
+                String mins = (timeMillis/1000/60%60)+"";
+                String secs = (timeMillis/1000%60)+"";
+                resDTO.setReviewTimesStr(hours+"h "+mins+"m "+secs+"s");
+                resDTO.setReviewTimes(timeMillis);
                 reviewResDTOS.add(resDTO);
             });
             taskDetailResDTO.setTaskReviewResDTOS(reviewResDTOS);
@@ -1164,6 +1170,12 @@ public class ZSYTaskService implements IZSYTaskService {
             taskSummaryBOS.forEach(taskSummaryBO -> {
                 TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
                 BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
+                resDTO.setSummaryTimes(timeMillis);
+                String hours = (timeMillis/1000/60/60)+"";
+                String mins = (timeMillis/1000/60%60)+"";
+                String secs = (timeMillis/1000%60)+"";
+                resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s");
                 summaryResDTOS.add(resDTO);
             });
             taskDetailResDTO.setTaskSummaryResDTOS(summaryResDTOS);
@@ -2678,6 +2690,12 @@ public class ZSYTaskService implements IZSYTaskService {
             taskReviewBOS.forEach(taskReviewBO -> {
                 TaskReviewResDTO resDTO = new TaskReviewResDTO();
                 BeanUtils.copyProperties(taskReviewBO,resDTO);
+                long timeMillis = taskReviewBO.getEndTime().getTime()-taskReviewBO.getBeginTime().getTime();
+                resDTO.setReviewTimes(timeMillis);
+                String hours = (timeMillis/1000/60/60)+"";
+                String mins = (timeMillis/1000/60%60)+"";
+                String secs = (timeMillis/1000%60)+"";
+                resDTO.setReviewTimesStr(hours+"h "+mins+"m "+secs+"s");
                 list.add(resDTO);
             });
         }
@@ -2716,6 +2734,12 @@ public class ZSYTaskService implements IZSYTaskService {
             taskSummaryBOS.forEach(taskSummaryBO -> {
                 TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
                 BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
+                resDTO.setSummaryTimes(timeMillis);
+                String hours = (timeMillis/1000/60/60)+"";
+                String mins = (timeMillis/1000/60%60)+"";
+                String secs = (timeMillis/1000%60)+"";
+                resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s ");
                 list.add(resDTO);
             });
         }
@@ -2747,6 +2771,12 @@ public class ZSYTaskService implements IZSYTaskService {
             taskSummaryBOS.forEach(taskSummaryBO -> {
                 TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
                 BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
+                resDTO.setSummaryTimes(timeMillis);
+                String hours = (timeMillis/1000/60/60)+"";
+                String mins = (timeMillis/1000/60%60)+"";
+                String secs = (timeMillis/1000%60)+"";
+                resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s");
                 list.add(resDTO);
             });
         }
@@ -2777,6 +2807,12 @@ public class ZSYTaskService implements IZSYTaskService {
             taskReviewBOS.forEach(taskReviewBO -> {
                 TaskReviewResDTO resDTO = new TaskReviewResDTO();
                 BeanUtils.copyProperties(taskReviewBO,resDTO);
+                long timeMillis = taskReviewBO.getEndTime().getTime()-taskReviewBO.getBeginTime().getTime();
+                resDTO.setReviewTimes(timeMillis);
+                String hours = (timeMillis/1000/60/60)+"";
+                String mins = (timeMillis/1000/60%60)+"";
+                String secs = (timeMillis/1000%60)+"";
+                resDTO.setReviewTimesStr(hours+"h "+mins+"m "+secs+"s");
                 list.add(resDTO);
             });
         }

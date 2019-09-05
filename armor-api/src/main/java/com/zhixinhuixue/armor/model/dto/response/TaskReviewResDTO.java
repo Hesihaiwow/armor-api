@@ -30,14 +30,20 @@ public class TaskReviewResDTO {
 
 
     /**
-     * 总结开始时间
+     * 评审开始时间
      */
     private Date beginTime;
 
     /**
-     * 总结结束时间
+     * 评审结束时间
      */
     private Date endTime;
+
+    /**
+     * 评审时长
+     */
+    private Long reviewTimes;
+    private String reviewTimesStr;
 
     /**
      * 创建人
@@ -49,6 +55,22 @@ public class TaskReviewResDTO {
      * 创建时间
      */
     private Date createTime;
+
+    public Long getReviewTimes() {
+        return reviewTimes;
+    }
+
+    public void setReviewTimes(Long reviewTimes) {
+        this.reviewTimes = reviewTimes;
+    }
+
+    public String getReviewTimesStr() {
+        return reviewTimesStr;
+    }
+
+    public void setReviewTimesStr(String reviewTimesStr) {
+        this.reviewTimesStr = reviewTimesStr;
+    }
 
     public Long getId() {
         return id;

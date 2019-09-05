@@ -40,6 +40,12 @@ public class TaskSummaryResDTO {
     private Date endTime;
 
     /**
+     * 总结时长
+     */
+    private Long summaryTimes;
+    private String summaryTimesStr;
+
+    /**
      * 创建人
      */
     private Long createBy;
@@ -49,6 +55,22 @@ public class TaskSummaryResDTO {
      * 创建时间
      */
     private Date createTime;
+
+    public String getSummaryTimesStr() {
+        return summaryTimesStr;
+    }
+
+    public void setSummaryTimesStr(String summaryTimesStr) {
+        this.summaryTimesStr = summaryTimesStr;
+    }
+
+    public Long getSummaryTimes() {
+        return summaryTimes;
+    }
+
+    public void setSummaryTimes(Long summaryTimes) {
+        this.summaryTimes = summaryTimes;
+    }
 
     public Long getId() {
         return id;
