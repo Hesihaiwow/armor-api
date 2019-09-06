@@ -61,18 +61,6 @@ public class TaskListResDTO {
 
     //任务超时人数
     private Integer delayNo;
-    /**
-     * 任务点击完成时间
-     */
-    private Date clickFinishTime;
-
-    public Date getClickFinishTime() {
-        return clickFinishTime;
-    }
-
-    public void setClickFinishTime(Date clickFinishTime) {
-        this.clickFinishTime = clickFinishTime;
-    }
 
     /**
      * 任务点击完成时间
