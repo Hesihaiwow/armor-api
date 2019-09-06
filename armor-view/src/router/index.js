@@ -1,9 +1,13 @@
+
+
 import Vue from 'vue'
 import Router from 'vue-router'
 import Index from '@/components/Index2'
 import Login from '@/components/Login'
+//manage
 import Task from '@/components/Task'
 import Project from '@/components/Project'
+//manage
 import Demand from '@/components/Demand3'
 import Intergral from '@/components/Intergral'
 import Organization from '@/components/Organization'
@@ -20,11 +24,11 @@ import Evaluation from '@/components/Evaluation'
 import TestExamples from '@/components/test-examples'
 import TestExamplesEdit from '@/components/test-examples/Edit'
 import TestExamplesLook from '@/components/test-examples/Look'
-
+import { cancelArr } from '../lib/Http'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
     routes: [
         {
             path: '/',
@@ -127,3 +131,13 @@ export default new Router({
         }
     ]
 })
+
+router.beforeEach((to, from, next) => {
+	cancelArr.forEach((ele,index)=>{
+		ele.cancel()
+		cancelArr.splice(index,1)
+	})
+	next()
+})
+
+export default router;
