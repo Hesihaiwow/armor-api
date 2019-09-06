@@ -4108,6 +4108,7 @@
             //创建个人任务
             createPrivateTask(){
                 // this.clearMultipleTask();
+                this.fetchProjectList();
                 this.createTaskVisible = false;
                 this.createPrivateTaskVisible = true;
             },
@@ -5482,16 +5483,20 @@
                 }
             },
             fetchProjectList() {
-                let vm = this;
-                http.zsyGetHttp('/project/list', {}, (resp) => {
-                    vm.projectList = resp.data
-                })
+                if (this.projectList == null || this.projectList === undefined || this.projectList.length === 0){
+                    let vm = this;
+                    http.zsyGetHttp('/project/list', {}, (resp) => {
+                        vm.projectList = resp.data
+                    })
+                }
             },
             fetchStageList() {
-                let vm = this;
-                http.zsyGetHttp('/stage/list', {}, (resp) => {
-                    vm.stageList = resp.data
-                })
+                if (this.stageList == null || this.stageList === undefined || this.stageList.length === 0){
+                    let vm = this;
+                    http.zsyGetHttp('/stage/list', {}, (resp) => {
+                        vm.stageList = resp.data
+                    })
+                }
             },
             fetchUserList() {
                 let vm = this;
@@ -5500,10 +5505,12 @@
                 })
             },
             fetchTagList() {
-                let vm = this;
-                http.zsyGetHttp('/tag/list', {}, (resp) => {
-                    vm.tagList = resp.data
-                })
+                if (this.tagList == null || this.tagList === undefined || this.tagList.length === 0){
+                    let vm = this;
+                    http.zsyGetHttp('/tag/list', {}, (resp) => {
+                        vm.tagList = resp.data
+                    })
+                }
             },
             handleFinishedPage(currentPage) {
                 this.finishedPage.pageNum = currentPage;
