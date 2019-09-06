@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.model.bo;
 import com.zhixinhuixue.armor.model.pojo.Tag;
 import com.zhixinhuixue.armor.model.pojo.Task;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +41,11 @@ public class TaskDetailBO extends Task {
     private String avatarUrl;
 
     /**
+     * 用户完成任务时间
+     */
+    private Date sonTaskCompleteTime;
+
+    /**
      * 当前用户是否已评价
      */
     private Integer isEvaluate;
@@ -53,6 +59,14 @@ public class TaskDetailBO extends Task {
      * 功能点
      */
     private List<TaskFunctionBO> functionBOS;
+
+    public Date getSonTaskCompleteTime() {
+        return sonTaskCompleteTime;
+    }
+
+    public void setSonTaskCompleteTime(Date sonTaskCompleteTime) {
+        this.sonTaskCompleteTime = sonTaskCompleteTime;
+    }
 
     public List<TaskFunctionBO> getFunctionBOS() {
         return functionBOS;

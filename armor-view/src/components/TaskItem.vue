@@ -334,6 +334,8 @@
                 <div style="margin-top: 5px;float: left">设计完成时间：{{taskDetail.beginTime | formatDate}}</div>
                 <div style="margin-top: 5px;margin-left: 250px">开发完成时间：{{taskDetail.testTime | formatDate}}</div>
                 <div style="margin-top: 5px;">截止时间：{{taskDetail.endTime | formatDate}}</div>
+                <div style="margin-top: 5px;float: left">是否评审：{{taskDetail.isReviewStr}}</div>
+                <div style="margin-top: 5px;margin-left: 250px">是否总结：{{taskDetail.isSummarizeStr}}</div>
                 <!--<div style="margin-top: 5px;margin-left: 250px" v-show="taskDetail">我的任务级别: {{taskDetail.myTaskLevelName}}</div>-->
                 <div>标签：
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
@@ -387,7 +389,118 @@
 
 
             </el-form>
+            <div v-if="addTaskReviewVisible" style="margin-bottom: 15px">
+                <div class="add-member-basic">
+                    <div class="add-member-basic-list clearfix" >
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审人：</div>
+                        <div class="add-member-basic-msg">
+                            <el-input type="textarea" placeholder="添加评审人" v-model="taskReview.persons"
+                                      :rows="1" style="width: 455px"></el-input>
+                        </div>
 
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审内容：</div>
+                        <div class="add-member-basic-msg">
+                            <el-input type="textarea" placeholder="添加任务评审内容" v-model="taskReview.comment"
+                                      :rows="2" style="width: 455px"></el-input>
+                        </div>
+
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <el-date-picker v-model="taskReview.beginTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择开始时间"></el-date-picker>
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <el-date-picker v-model="taskReview.endTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择结束时间"></el-date-picker>
+                        </div>
+                    </div>
+                </div>
+                <div class="ctpc-btns">
+                    <input type="button" class="ctpc-cancel" @click="cancelAddTaskReview" value="取消">
+                    <input type="button" class="ctpc-save" @click="saveAddTaskReview(taskDetail.id)" value="确定">
+                </div>
+            </div>
+            <div v-if="addTaskSummaryVisible" style="margin-bottom: 15px">
+                <div class="add-member-basic">
+                    <div class="add-member-basic-list clearfix" >
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>总结内容：</div>
+                        <div class="add-member-basic-msg">
+                            <el-input type="textarea" placeholder="添加任务总结内容" v-model="taskSummary.comment"
+                                      :rows="2" style="width: 455px"></el-input>
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>任务收获：</div>
+                        <div class="add-member-basic-msg">
+                            <el-input type="textarea" placeholder="添加任务收获" v-model="taskSummary.gain"
+                                      :rows="2" style="width: 455px"></el-input>
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <el-date-picker v-model="taskSummary.beginTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择开始时间"></el-date-picker>
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <el-date-picker v-model="taskSummary.endTime" type="datetime"
+                                            format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择结束时间"></el-date-picker>
+                        </div>
+                    </div>
+                </div>
+                <div class="ctpc-btns">
+                    <input type="button" class="ctpc-cancel" @click="cancelAddTaskSummary" value="取消">
+                    <input type="button" class="ctpc-save" @click="saveAddTaskSummary(taskDetail.id)" value="确定">
+                </div>
+            </div>
+            <div class="trends" v-show="taskReviewList !== undefined && taskReviewList.length>0" style="margin-bottom: 10px">
+                <div class="trends-title clearfix">
+                    <b class="fl">评审</b>
+                    <!--<a class="fr" href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>-->
+                </div>
+                <ul style="height: 100px; overflow: auto">
+                    <li v-for="(item,index) in taskReviewList" :key="index" class="clearfix">
+                        <div style="float: left;width: 350px;"> {{item.createName}}
+                            <a v-show="loginUserId === item.createBy || userRole === 0"
+                               style="margin-left: 20px;cursor: pointer;color: #20a0ff"
+                               @click="deleteReview(item.id)">删除</a>
+                            <div class="task-title-detail" v-show="item.persons!==''" ><em></em>评审人: {{item.persons}}</div>
+                            <div class="task-title-detail" v-show="item.comment!==''" ><em></em>评审内容: {{item.comment}}</div>
+                            <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>评审开始时间: {{item.beginTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.endTime!==null" ><em></em>评审结束时间: {{item.endTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.reviewTimesStr!==''" ><em></em>评审时长: {{item.reviewTimesStr}}</div>
+                        </div>
+                        <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="trends" v-show="taskSummaryList !== undefined && taskSummaryList.length>0" style="margin-bottom: 10px">
+                <div class="trends-title clearfix">
+                    <b class="fl">总结</b>
+                    <!--<a class="fr" href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>-->
+                </div>
+                <ul style="height: 100px; overflow: auto">
+                    <li v-for="(item,index) in taskSummaryList" :key="index" class="clearfix">
+                        <div style="float: left;width: 350px;"> {{item.createName}}
+                            <a v-show="loginUserId === item.createBy || userRole === 0"
+                               style="margin-left: 20px;cursor: pointer;color: #20a0ff"
+                            @click="deleteSummary(item.id)">删除</a>
+                            <div class="task-title-detail" v-show="item.comment!==''" ><em></em>总结内容: {{item.comment}}</div>
+                            <div class="task-title-detail" v-show="item.gain!==''" ><em></em>任务收获: {{item.gain}}</div>
+                            <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>总结开始时间: {{item.beginTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.endTime!==null" ><em></em>总结结束时间: {{item.endTime | formatTime}}</div>
+                            <div class="task-title-detail" v-show="item.summaryTimesStr!==''" ><em></em>总结时长: {{item.summaryTimesStr}}</div>
+                        </div>
+                        <span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>
+                    </li>
+                </ul>
+            </div>
             <div class="trends" v-show="taskLog.list.length>0">
                 <div class="trends-title clearfix">
                     <b class="fl">动态</b>
@@ -400,7 +513,18 @@
                     </li>
                 </ul>
             </div>
+            <span slot="footer" class="dialog-footer" v-show="(userRole ===0 || loginUserId === taskDetail.createBy) && (taskDetail.status===2) && taskDetail.canSummarize">
+                <el-tooltip content="任务总结" placement="top" >
+                    <el-button type="primary" @click="addTaskSummary"
+                               style="text-align: left">任务总结</el-button>
+                </el-tooltip>
+            </span>
+
             <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status===1 || taskDetail.status===0)">
+                <el-tooltip content="任务评审" placement="top" v-show="(userRole ===0 || loginUserId === taskDetail.createBy) && taskDetail.canReview">
+                    <el-button type="primary" @click="addTaskReview"
+                               style="text-align: left">任务评审</el-button>
+                </el-tooltip>
                 <el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">
                     <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name,taskDetail.proNames)"  style="text-align: right">添加Bug修复时间</el-button>
                 </el-tooltip>
@@ -525,7 +649,7 @@
                         <!--<i class="el-icon-minus" v-show="!isEvaluated" style="cursor: pointer" @click="minus(index,stage.jobRole,stage.userId)"></i>-->
                         <el-checkbox v-show="!isEvaluated"  v-model="checkBox[`${index}`]" @change="hasIntersection(index,stage.userId)" style="margin-right: 20px">任务有交集</el-checkbox>
                         <span class="amd-job-time">工作量：{{stage.taskHours}}小时</span>
-                        <span class="amd-during-time">截止：{{stage.completeTime | formatDate}}</span>
+                        <span class="amd-during-time">截止：{{stage.endTime | formatDate}}</span>
                         <span class="amd-name">{{stage.userName}}</span>
                         <span>{{stage.jobRoleName}}</span>
                     </div>
@@ -1824,6 +1948,22 @@
                     beginWeek:'',
                     endWeek:''
                 },
+                addTaskReviewVisible:false,
+                addTaskSummaryVisible:false,
+                taskReview:{
+                    comment:'',
+                    persons:'',
+                    beginTime:'',
+                    endTime:'',
+                },
+                taskSummary:{
+                    comment:'',
+                    gain:'',
+                    beginTime:'',
+                    endTime:'',
+                },
+                taskReviewList:[],
+                taskSummaryList:[],
 
             };
         },
@@ -2074,6 +2214,8 @@
                 this.finishForm.completeHours = '';
             },
             hideTaskDetail() {
+                this.addTaskReviewVisible = false;
+                this.addTaskSummaryVisible = false;
                 this.showTaskDetail = false;
                 this.taskDetail = {};
                 this.taskLog.list = [];
@@ -2084,7 +2226,11 @@
                 if (!this.isPrivate || this.taskStatus === 'auditSuccess') {
                     this.showTaskDetail = true;
                     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                        this.taskDetail = resp.data
+                        this.taskDetail = resp.data;
+                        this.taskReviewList = [];
+                        this.taskReviewList = resp.data.taskReviewResDTOS;
+                        this.taskSummaryList = [];
+                        this.taskSummaryList = resp.data.taskSummaryResDTOS;
                     });
                     this.getTaskLog(taskId)
                 }
@@ -3964,7 +4110,6 @@
                                 return false;
                             }
                             param.taskModifyFunctionList = taskModifyFunctionList;
-                            console.log(param.taskModifyFunctionList);
                         }
 
                         http.zsyPostHttp('/task-modify/add', param, (resp) => {
@@ -4060,6 +4205,143 @@
                 // let url = "http://zxhx-test.cn-bj.ufileos.com/zsy-ufile-service/df71d0bf-6a42-4a84-a55d-4e21288fa073.png";
                 window.open(url,'_blank')
             },
+            //添加任务评审
+            saveAddTaskReview(taskId){
+                if (this.taskReview.persons === undefined || this.taskReview.persons == null
+                    || this.taskReview.persons.trim() === '') {
+                    this.warnMsg("请填评审人");
+                    return;
+                }
+                if (this.taskReview.comment === undefined || this.taskReview.comment == null
+                    || this.taskReview.comment.trim() === '') {
+                    this.warnMsg("请填评审内容");
+                    return;
+                }
+                if (this.taskReview.beginTime === undefined || this.taskReview.beginTime == null
+                    || this.taskReview.beginTime === '') {
+                    this.warnMsg("请填评审开始时间");
+                    return;
+                }
+                if (this.taskReview.endTime === undefined || this.taskReview.endTime == null
+                    || this.taskReview.endTime === '') {
+                    this.warnMsg("请填评审结束时间");
+                    return;
+                }
+                if (moment(this.taskReview.beginTime).isAfter(moment(this.taskReview.endTime))) {
+                    this.warnMsg("开始时间不可在结束时间后面,请检查");
+                    return;
+                }
+                this.addTaskReviewVisible = !this.addTaskReviewVisible;
+                let taskReviewForm = {};
+
+                taskReviewForm.comment = this.taskReview.comment.trim();
+                taskReviewForm.persons = this.taskReview.persons.trim();
+                taskReviewForm.beginTime = moment(this.taskReview.beginTime).format('YYYY-MM-DD HH:mm:ss');
+                taskReviewForm.endTime = moment(this.taskReview.endTime).format('YYYY-MM-DD HH:mm:ss');
+                taskReviewForm.taskId = taskId;
+                // this.taskReviewList.push(taskReviewForm);
+                this.taskReview = {
+                    comment:'',
+                    persons:'',
+                    beginTime:'',
+                    endTime:'',
+                };
+                this.taskReviewList = [];
+                http.zsyPostHttp(`task/review/add`,taskReviewForm,(res)=>{
+                    this.taskReviewList = res.data;
+                })
+            },
+            //添加任务总结
+            saveAddTaskSummary(taskId){
+                if (this.taskSummary.comment === undefined || this.taskSummary.comment == null
+                    || this.taskSummary.comment.trim() === '') {
+                    this.warnMsg("请填总结内容");
+                    return;
+                }
+                if (this.taskSummary.gain === undefined || this.taskSummary.gain == null
+                    || this.taskSummary.gain.trim() === '') {
+                    this.warnMsg("请填任务收获");
+                    return;
+                }
+                if (this.taskSummary.beginTime === undefined || this.taskSummary.beginTime == null
+                    || this.taskSummary.beginTime === '') {
+                    this.warnMsg("请填总结开始时间");
+                    return;
+                }
+                if (this.taskSummary.endTime === undefined || this.taskSummary.endTime == null
+                    || this.taskSummary.endTime === '') {
+                    this.warnMsg("请填总结结束时间");
+                    return;
+                }
+                if (moment(this.taskSummary.beginTime).isAfter(moment(this.taskSummary.endTime))) {
+                    this.warnMsg("开始时间不可在结束时间后面,请检查");
+                    return;
+                }
+                this.addTaskSummaryVisible = !this.addTaskSummaryVisible;
+                let taskSummaryForm = {};
+                taskSummaryForm.comment = this.taskSummary.comment.trim();
+                taskSummaryForm.gain = this.taskSummary.gain.trim();
+                taskSummaryForm.beginTime = moment(this.taskSummary.beginTime).format('YYYY-MM-DD HH:mm:ss');
+                taskSummaryForm.endTime = moment(this.taskSummary.endTime).format('YYYY-MM-DD HH:mm:ss');
+                taskSummaryForm.taskId = taskId;
+                this.taskSummary = {
+                    comment:'',
+                    gain:'',
+                    beginTime:'',
+                    endTime:'',
+                };
+                this.taskSummaryList = [];
+                http.zsyPostHttp(`task/summary/add`,taskSummaryForm,(res)=>{
+                    this.taskSummaryList = res.data;
+                })
+            },
+            getTime(time){
+                console.log(222)
+                const hours = this.addZero(parseInt(time/1000/60/60));
+                const mins = this.addZero(parseInt(time/1000/60%60));
+                const secs = this.addZero(parseInt(time/1000%60));
+                return hours+'h'+mins+'m'+secs+'s'
+            },
+            cancelAddTaskReview(){
+                this.addTaskReviewVisible = !this.addTaskReviewVisible;
+                this.taskReview = {
+                    comment:'',
+                    persons:'',
+                    beginTime:'',
+                    endTime:'',
+                }
+            },
+            cancelAddTaskSummary(){
+                this.addTaskSummaryVisible = !this.addTaskSummaryVisible;
+                this.taskSummary = {
+                    comment:'',
+                    gain:'',
+                    beginTime:'',
+                    endTime:'',
+                }
+            },
+            //打开任务评审弹框
+            addTaskReview(){
+                this.addTaskReviewVisible = true;
+            },
+            //打开任务总结弹框
+            addTaskSummary(){
+                this.addTaskSummaryVisible = true;
+            },
+            //删除任务评审
+            deleteReview(id){
+                http.zsyDeleteHttp(`/task/review/delete/`+id,{},(res)=>{
+                    this.taskReviewList = [];
+                    this.taskReviewList = res.data;
+                })
+            },
+            //删除任务总结
+            deleteSummary(id){
+                http.zsyDeleteHttp(`/task/summary/delete/`+id,{},(res)=>{
+                    this.taskSummaryList = [];
+                    this.taskSummaryList = res.data;
+                })
+            }
         },
         created() {
             // 监听看板任务点击事件
@@ -4068,7 +4350,11 @@
             vm.$root.eventBus.$on("handleBoardClick", (taskId) => {
                 vm.showTaskDetail = true;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
-                    vm.taskDetail = resp.data
+                    vm.taskDetail = resp.data;
+                    vm.taskReviewList = [];
+                    vm.taskReviewList = resp.data.taskReviewResDTOS;
+                    vm.taskSummaryList = [];
+                    vm.taskSummaryList = resp.data.taskSummaryResDTOS;
                 });
                 vm.getTaskLog(taskId)
             });

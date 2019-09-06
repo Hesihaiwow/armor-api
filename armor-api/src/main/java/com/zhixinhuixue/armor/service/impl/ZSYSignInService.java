@@ -1980,13 +1980,11 @@ public class ZSYSignInService implements IZSYSignInService {
             resultMap.put(userId,signInResDTOS);
         });
         long time2 = System.currentTimeMillis();
-        System.out.println("查询时间: "+(time2-time1)+"ms");
         String url = getSignInExcel(dates, resultMap, signInUsers,yearAndMonth);
         logger.info("查询数据耗时: "+(time2-time1)+"ms");
         if (url == null){
             throw new ZSYServiceException("当前月份无数据,请选择正确月份");
         }
-        System.out.println("导出时间: "+(System.currentTimeMillis()-time2)+"ms");
         logger.info("导出时间: "+(System.currentTimeMillis()-time2)+"ms");
         return url;
     }

@@ -287,7 +287,6 @@ public class ZSYIntegralService implements IZSYIntegralService {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH)+1;
-        System.out.println("month = " + month);
         String seasonOneBeginStr = year+"-01-01 00:00:00";
         String seasonOneEndStr = year+"-03-31 23:59:59";
         String seasonTwoBeginStr = year+"-04-01 00:00:00";

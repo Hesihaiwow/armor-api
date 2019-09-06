@@ -57,6 +57,8 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+    @Autowired
+    private IZSYTaskSummaryMapper summaryMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskEvaluationService.class);
 
@@ -163,12 +165,15 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         if (!CollectionUtils.isEmpty(userIds)){
             //当评价人员不为空,检查有几人已完成评价
             if (!CollectionUtils.isEmpty(evaluatedUsers)){
+                //此时,所有人完成评价
                 if (userIds.size() == evaluatedUsers.size()){
-                    //此时,所有人完成评价
-                    commentCompleted = true;
+                    //查看当前任务是否有人总结
+                    List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskId);
+                    if (!CollectionUtils.isEmpty(taskSummaryBOS)){
+                        commentCompleted = true;
+                    }
                 }
             }
-            System.out.println(commentCompleted);
             if (commentCompleted){
                 // 计算积分
                 taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
@@ -180,18 +185,18 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                             integral += singleIntegral;
                         }
                     }
-                    BigDecimal avgIntegral = BigDecimal.valueOf(integral).multiply(BigDecimal.valueOf(taskUserBO.getTaskHours()))
-                            .divide(BigDecimal.valueOf(100))
-                            .divide(BigDecimal.valueOf(integrals.size()), 1, BigDecimal.ROUND_HALF_UP).setScale(1);
-                    UserIntegral userIntegral = new UserIntegral();
-                    userIntegral.setId(snowFlakeIDHelper.nextId());
-                    userIntegral.setTaskId(taskUserBO.getTaskId());
-                    userIntegral.setUserId(taskUserBO.getUserId());
-                    userIntegral.setIntegral(avgIntegral);
-                    userIntegral.setOrigin(1);
-                    userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
-                    userIntegral.setCreateTime(new Date());
-                    integralMapper.insert(userIntegral);
+//                    BigDecimal avgIntegral = BigDecimal.valueOf(integral).multiply(BigDecimal.valueOf(taskUserBO.getTaskHours()))
+//                            .divide(BigDecimal.valueOf(100))
+//                            .divide(BigDecimal.valueOf(integrals.size()), 1, BigDecimal.ROUND_HALF_UP).setScale(1);
+//                    UserIntegral userIntegral = new UserIntegral();
+//                    userIntegral.setId(snowFlakeIDHelper.nextId());
+//                    userIntegral.setTaskId(taskUserBO.getTaskId());
+//                    userIntegral.setUserId(taskUserBO.getUserId());
+//                    userIntegral.setIntegral(avgIntegral);
+//                    userIntegral.setOrigin(1);
+//                    userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
+//                    userIntegral.setCreateTime(new Date());
+//                    integralMapper.insert(userIntegral);
                     Task task = new Task();
                     task.setId(taskId);
                     task.setStatus(ZSYTaskStatus.FINISHED.getValue());
@@ -204,12 +209,12 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     taskUser.setStatus(ZSYTaskUserStatus.COMMENTED.getValue());
                     taskUserMapper.updateByPrimaryKeySelective(taskUser);
                     // 修改用户积分
-                    User userTemp = userMapper.selectById(taskUserBO.getUserId());
-                    BigDecimal currentIntegral = userTemp.getIntegral();
-                    User user = new User();
-                    user.setId(taskUserBO.getUserId());
-                    user.setIntegral(currentIntegral.add(avgIntegral));
-                    userMapper.updateSelectiveById(user);
+//                    User userTemp = userMapper.selectById(taskUserBO.getUserId());
+//                    BigDecimal currentIntegral = userTemp.getIntegral();
+//                    User user = new User();
+//                    user.setId(taskUserBO.getUserId());
+//                    user.setIntegral(currentIntegral.add(avgIntegral));
+//                    userMapper.updateSelectiveById(user);
 
                 });
             }
