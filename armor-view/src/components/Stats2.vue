@@ -1292,7 +1292,8 @@
     export default {
         components: {
             ElButton,
-            ElTabPane},
+            ElTabPane
+        },
         name: 'IntegralHistory',
         data() {
             return {
@@ -1812,7 +1813,6 @@
                 }
                 return 'total, pager'
             }
-
         },
         filters: {
             formatDate: function (value) {
@@ -2216,7 +2216,9 @@
             // sch --
             drawLine1(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart1'));
+                let dom = document.getElementById('myChart1');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2256,7 +2258,9 @@
             },
             drawLine2(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart2'));
+                let dom = document.getElementById('myChart2');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2296,7 +2300,9 @@
             },
             drawLine3(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart3'));
+                let dom = document.getElementById('myChart3');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2341,7 +2347,9 @@
             },
             drawLine6(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart6'));
+                let dom = document.getElementById('myChart6');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2381,7 +2389,9 @@
             },
             drawLine4(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart4'));
+                let dom = document.getElementById('myChart4');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2426,7 +2436,9 @@
             },
             drawLine5(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart5'));
+                let dom = document.getElementById('myChart5');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: { text: '年度请假分布',x:'center' },
@@ -2484,7 +2496,9 @@
             },
             drawLine7(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart7'));
+                let dom = document.getElementById('myChart7');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2548,7 +2562,9 @@
             },
             drawLine8(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart8'));
+                let dom = document.getElementById('myChart8');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2580,7 +2596,9 @@
             },
             drawLine9(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart9'));
+                let dom = document.getElementById('myChart9');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2617,7 +2635,9 @@
             },
             drawLine10(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart10'));
+                let dom = document.getElementById('myChart10');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2723,7 +2743,9 @@
                             fbData2.value = this.other;
                             fbData2.name = '其他';
                             this.feedbackData.push(fbData2);
-                            this.drawLine6()
+                            this.$nextTick(()=>{
+                                this.drawLine6()
+                            })
                         }
                     })
                 }
@@ -2737,8 +2759,10 @@
                             this.feedbackMonthList.forEach(feedbackNum=>{
                                 this.feedbackTotal = this.feedbackTotal + feedbackNum
                             });
-                            this.drawLine3();
-                            this.drawLine6()
+                            this.$nextTick(()=>{
+                                this.drawLine3();
+                                this.drawLine6()
+                            })
                         }
                     })
                 }
@@ -2752,7 +2776,9 @@
                             this.taskMonthList.forEach(taskNum=>{
                                 this.taskTotal = this.taskTotal + taskNum
                             });
-                            this.drawLine4()
+                            this.$nextTick(()=>{
+                                this.drawLine4()
+                            })
                         }
                     })
                 }
@@ -2764,7 +2790,10 @@
                         if (res){
                             this.vacationCountList = res.data.vacationCountList;
                             this.vacationTimeList = res.data.vacationTimeList;
-                            this.drawLine5()
+                        
+                            this.$nextTick(()=>{
+                                this.drawLine5()
+                            })
                         }
                     })
                 }
@@ -2794,7 +2823,9 @@
                                 this.taskLegend.push(project.projectName);
                                 this.projectTaskNum = this.projectTaskNum + project.taskNum
                             });
-                            this.drawLine2()
+                            this.$nextTick(()=>{
+                                this.drawLine2()
+                            })
                         }
                     })
                 }
@@ -2819,7 +2850,10 @@
                             tData.name = '普通';
                             this.taskData1.push(tData);
                             this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum;
-                            this.drawLine1()
+      
+                            this.$nextTick(()=>{
+                                this.drawLine1()
+                            })
                         }
                     })
                 }
@@ -3033,7 +3067,9 @@
                             this.diffStageAvgTime.push(res.data.avgProductTime);
                             this.diffStageAvgTime.push(res.data.avgDevelopTime);
                             this.diffStageAvgTime.push(res.data.avgTestTime);
-                            this.drawLine7()
+                            this.$nextTick(()=>{
+                                this.drawLine7()
+                            })
                         }
                     })
                 }
@@ -3461,7 +3497,9 @@
                         this.seriesDataList.push(seriesData)
                     });
                     if (this.permit){
-                        this.drawLine8()
+                        this.$nextTick(()=>{
+                            this.drawLine8()
+                        })
                     }
 
                 })
@@ -3480,7 +3518,9 @@
                         this.onlineBugTotalNum += bugUserMonth.bugNum;
                     });
                     if (this.permit){
-                        this.drawLine9()
+                        this.$nextTick(()=>{
+                            this.drawLine9()
+                        })
                     }
                 })
             },
@@ -3498,7 +3538,9 @@
                         this.onlineBugTotalNum3 += bugUserMonth.bugNum;
                     });
                     if (this.permit){
-                        this.drawLine10()
+                        this.$nextTick(()=>{
+                            this.drawLine10()
+                        })
                     }
                 })
             },

@@ -1593,6 +1593,7 @@
 
             //查询项目负责人
             fetchManagers(){
+                
                 http.zsyGetHttp('/user/managers',{},(res)=>{
                     this.managerList = res.data;
                 })
