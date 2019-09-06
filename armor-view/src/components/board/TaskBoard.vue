@@ -230,6 +230,7 @@
             },
             getData2() {
                 const justMine = window.localStorage.getItem("justMine");
+                const taskCreater = window.localStorage.getItem("taskCreater");
                 // 获取阶段
                 let that = this;
                 that.http.zsyGetHttp('/stage/list', {}, (res) => {
@@ -284,7 +285,8 @@
                                 that.$set(stage, 'tasks', list)
                             })
                         }else{
-                            that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
+                            that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}/`+taskCreater, {}, (res) => {
+                                window.localStorage.removeItem("taskCreater");
                                 let list = res.data;
                                 list.forEach((el) => {
                                     let endTime = '', today = moment().format('YYYY-MM-DD');

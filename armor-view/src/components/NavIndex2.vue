@@ -2943,7 +2943,7 @@
     export default {
         name: 'NavIndex',
         data() {
-            var validateEmpty = (rule, value, callback) => {
+            let validateEmpty = (rule, value, callback) => {
                 if (value.trim() === '') {
                     callback(new Error());
                 } else {
@@ -4115,25 +4115,23 @@
                 this.task.doing = [];
                 this.initSignInTime();
                 // this.fetchIntegral()
-                this.fetchTaskWaitAudit();
-                this.fetchProjectList();
-                this.fetchStageList();
-                this.fetchTagList();
-                this.fetchUserList();
-                this.fetchSignInUser();
+                // this.fetchProjectList();
+                // this.fetchStageList();
+                // this.fetchTagList();
+                // this.fetchUserList();
+                // this.fetchSignInUser();
                 //this.fetchApplyFailTask();
-                this.fetchTaskExpandDoing();
-                this.fetchTaskExpandSuccess();
+                // this.fetchTaskExpandDoing();
+                // this.fetchTaskExpandSuccess();
                 this.fetchUnreadNoticeNum();
                 this.fetchSignInData();
                 this.getLeaveList();
                 // this.fetchMultipleWait();
-                this.fetchUserLeaveList();
-                this.fetchUserLeavePassList();
                 this.fetchControlledPeople();
                 this.getExtraWorkStats();
                 // this.fetchTaskTempModuleList();
                 if (this.userRole === 0) {
+                    this.fetchTaskWaitAudit();
                     // this.fetchUserWeekHourStats()
                     // 所有审核通过的数据
                     this.fetchTaskAuditSuccess();
@@ -4152,27 +4150,29 @@
                 } else if (this.userRole>0&&this.userRole<3) {
                     // this.fetchMyHelpWaitList();
                     // this.fetchMyReviewSuccess();
-                    this.fetchAllMultipleTasks();
+                    this.fetchUserLeaveList();
+                    // this.fetchUserLeavePassList();
+                    // this.fetchAllMultipleTasks();
                     this.fetchTaskDoing();
-                    this.fetchTaskFinished();
+                    // this.fetchTaskFinished();
                     // this.fetchTaskWaitAssess();
                     // this.fetchTaskCommented();
                     this.fetchWaitEvaluate();
-                    this.fetchEvaluated();
+                    // this.fetchEvaluated();
                     this.fetchQuestionDoing();
-                    this.fetchQuestionCompleted();
+                    // this.fetchQuestionCompleted();
                     this.fetchMyRunningExtraWork();
-                    this.fetchMyCheckedExtraWork();
+                    // this.fetchMyCheckedExtraWork();
                     this.fetchMyRecheckWait();
-                    this.fetchMyRecheckPass();
+                    // this.fetchMyRecheckPass();
                     this.fetchMySignInData();
-                    this.fetchMultipleAccess();
+                    // this.fetchMultipleAccess();
                     this.fetchPersonalMultipleWait();
                     // this.fetchPersonalMultipleAccess();
                     this.fetchPersonalTaskModifyWait();
-                    this.fetchPersonalTaskModifyAccessed();
-                    this.fetchPersonalEvaluation();
-                    this.fetchWeekHourStats();
+                    // this.fetchPersonalTaskModifyAccessed();
+                    // this.fetchPersonalEvaluation();
+                    // this.fetchWeekHourStats();
                     this.fetchPersonalTaskIntegral();
                 }
 
@@ -4203,7 +4203,7 @@
                         let userId = helper.decodeToken().userId;
                         this.taskForm.endTime = moment(this.taskForm.endTime).toDate();
                         this.taskForm.beginTime = moment(this.taskForm.beginTime).toDate();
-                        var param = this.taskForm;
+                        let param = this.taskForm;
                         param.taskName = param.taskName.trim();
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
@@ -4427,7 +4427,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         // this.taskAble = true;
-                        var param = this.taskTempDetail;
+                        let param = this.taskTempDetail;
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (param.taskId == null || param.taskId === ''){
@@ -4542,7 +4542,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         // this.taskAble = true;
-                        var param = this.taskTempDetail;
+                        let param = this.taskTempDetail;
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (param.taskId == null || param.taskId === ''){
@@ -5689,7 +5689,7 @@
 
                     if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek + 1 !== this.taskTempDetail.userWeeks.length){
                         if ((endYear >= beginYear) && (this.taskTempDetail.endWeek >= this.taskTempDetail.beginWeek)){
-                            for(var i = 0;i<=this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek;i++){
+                            for(let i = 0;i<=this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek;i++){
                                 let weekData = {
                                     'weekHours':0,
                                     'weekNumber': i + this.taskTempDetail.beginWeek,
@@ -5879,7 +5879,7 @@
                 this.questionForm.beginTime = moment(this.questionForm.beginTime).toDate();
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        var param = this.questionForm;
+                        let param = this.questionForm;
                         param.name = param.name.trim();
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
@@ -5909,7 +5909,7 @@
                 this.questionForm.beginTime = moment(this.questionForm.beginTime).toDate();
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        var param = this.questionForm;
+                        let param = this.questionForm;
                         param.name = param.name.trim();
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
@@ -5955,7 +5955,7 @@
                 return isJPG && isLt2M;
             },
             upload(file) {
-                var data = new FormData();
+                let data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/upload/ucloud/image', data, (res) => {
                     this.questionForm.urlList.push(res.data.url)
@@ -6241,7 +6241,7 @@
             uploadRecordToMysql(file){
                 this.fullscreenLoading = true;
                 this.uploadToMysqlVisible = false;
-                var data = new FormData();
+                let data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/sign-in/upload/sign-in/repository',data,(res)=>{
                     this.$refs.record.clearFiles();
@@ -6269,7 +6269,7 @@
                 this.$refs.record.clearFiles();
             },
             uploadUserSortToMysql(file){
-                var data = new FormData();
+                let data = new FormData();
                 data.append('uploadFile', file.file);
                 http.zsyPostHttp('/sign-in/upload/user-sort/repository',data,(res)=>{
                     this.uploadUserSortToMysqlVisible = false;
@@ -6289,7 +6289,7 @@
                 this.$refs.usersort.clearFiles();
             },
             beforeRecordUpload(file) {
-                var suffix = file.name.substring(file.name.lastIndexOf(".")+1);
+                let suffix = file.name.substring(file.name.lastIndexOf(".")+1);
                 const isLt2M = file.size / 1024 / 1024 < 1;
                 const isDat = file.name.substring(file.name.lastIndexOf(".")+1) === "dat";
                 if (suffix !== "dat"){
@@ -6301,7 +6301,7 @@
                 return isDat && isLt2M;
             },
             beforeUserSortUpload(file) {
-                var suffix = file.name.substring(file.name.lastIndexOf(".")+1);
+                let suffix = file.name.substring(file.name.lastIndexOf(".")+1);
                 const isXls = file.name.substring(file.name.lastIndexOf(".")+1) === "xls";
                 const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
                 const isLt2M = file.size / 1024 / 1024 < 1;
@@ -7183,7 +7183,7 @@
 
                     if (this.taskModifyDetail.endWeek - this.taskModifyDetail.beginWeek + 1 !== this.taskModifyDetail.userWeekResDTOList.length){
                         if ((endYear >= beginYear) && (this.taskModifyDetail.endWeek >= this.taskModifyDetail.beginWeek)){
-                            for(var i = 0;i<=this.taskModifyDetail.endWeek - this.taskModifyDetail.beginWeek;i++){
+                            for(let i = 0;i<=this.taskModifyDetail.endWeek - this.taskModifyDetail.beginWeek;i++){
                                 let weekData = {
                                     'weekHours':0,
                                     'weekNumber': i + this.taskModifyDetail.beginWeek,
@@ -7609,7 +7609,7 @@
             },
             fetchUserWeekHourStats(userId){
                 if (userId != null && userId !== ''){
-                    var today = new Date();
+                    let today = new Date();
                     this.thisYear = today.getFullYear()+'年';
                     this.weekHourStatsList = [];
                     this.weekHourList = [];
