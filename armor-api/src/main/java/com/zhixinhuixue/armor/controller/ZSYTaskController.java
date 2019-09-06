@@ -189,9 +189,9 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("获取阶段下的任务")
-    @GetMapping("/tasksByStage/{stageId}")
-    public String getTasksByStage(@PathVariable("stageId") Long stageId) {
-        return ZSYResult.success().data(taskService.getTaskByStageId(stageId)).build();
+    @GetMapping("/tasksByStage/{stageId}/{userId}")
+    public String getTasksByStage(@PathVariable("stageId") Long stageId,@PathVariable("userId") Long userId) {
+        return ZSYResult.success().data(taskService.getTaskByStageId(stageId,userId)).build();
     }
 
     @ApiOperation("获取阶段下的任务")

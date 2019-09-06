@@ -1841,13 +1841,13 @@ public class ZSYTaskService implements IZSYTaskService {
      * @return
      */
     @Override
-    public List<TaskListResDTO> getTaskByStageId(Long stageId) {
+    public List<TaskListResDTO> getTaskByStageId(Long stageId,Long userId) {
         Stage stage = stageMapper.selectById(stageId);
         List<TaskListBO> taskListBOS = new ArrayList<>();
         if(stage.getName().equals("已发布")){
-            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),userId);
         }else{
-            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),userId);
         }
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
@@ -1922,9 +1922,9 @@ public class ZSYTaskService implements IZSYTaskService {
         Stage stage = stageMapper.selectById(stageId);
         List<TaskListBO> taskListBOS = new ArrayList<>();
         if(stage.getName().equals("已发布")){
-            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+            taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),null);
         }else{
-            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId());
+            taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),null);
         }
 //        List<TaskListBO> taskListBOS = taskMapper.selectTaskByStageTime(stageId,ZSYTokenRequestContext.get().getDepartmentId(),publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId()));
         List<TaskListResDTO> list = new ArrayList<>();

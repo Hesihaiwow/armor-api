@@ -345,6 +345,9 @@
          and t1.`type` = 2 and t1.stage_id = #{stageId}
          and t1.status != 3
          and t7.parent_id =#{departmentId}
+        <if test="userId != null and userId != 1">
+            and t1.create_by = #{userId}
+        </if>
          group by t1.`id`
          order by t1.sort ASC
     </select>
@@ -361,6 +364,9 @@
         and t1.`type` = 2 and t1.stage_id = #{stageId}
         and t1.status != 3
         and t7.parent_id =#{departmentId}
+        <if test="userId != null and userId != 1">
+            and t1.create_by = #{userId}
+        </if>
         group by t1.`id`
         order by t1.sort ASC
 
