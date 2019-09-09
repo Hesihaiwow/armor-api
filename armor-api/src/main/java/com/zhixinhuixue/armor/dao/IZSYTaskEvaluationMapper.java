@@ -144,4 +144,12 @@ public interface IZSYTaskEvaluationMapper {
      * @return
      */
     List<PersonTotalEvaBO> selectPersonalTotalEva(@Param("userId") Long userId, @Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
+
+    /**
+     * 查询当前用户当前任务的所有评价
+     * @author sch
+     * @param taskId 任务id
+     * @param userId 用户id
+     */
+    List<TaskEvaluation> selectListByTaskAndUser(@Param("taskId")Long taskId,@Param("userId")Long userId);
 }

@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
 import com.zhixinhuixue.armor.model.bo.TaskUserBO;
+import com.zhixinhuixue.armor.model.bo.TaskUserHoursBO;
 import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
@@ -96,6 +97,30 @@ public interface IZSYTaskUserMapper {
      * @return
      */
     List<TaskUser> selectByUserAndTime(@Param("userId")Long userId, @Param("beginTime")Date beginTime,@Param("endTime") Date endTime);
+
+    /**
+     * 查询2019-7 之后的没有功能点的多人任务
+     * @author sch
+     */
+    List<TaskUserHoursBO> selectWithoutFunctionMultiTask();
+
+    /**
+     * 查询2019-7月之后的 没有任务级别的个人任务
+     * @author sch
+     */
+    List<TaskUserHoursBO> selectWithoutTaskLevel();
+
+    /**
+     * 查询2019-7 之后的有功能点的而且已经结束的多人任务
+     * @author sch
+     */
+    List<TaskUserHoursBO> selectWithFunctionMultiTask();
+
+    /**
+     * 查询2019-7月之后的 有任务级别的而且已经完成的个人任务
+     * @author sch
+     */
+    List<TaskUserHoursBO> selectWithTaskLevel();
 
 //    List<Long> selectUserIdByTaskId(@Param("taskId")Long taskId);
     // -- sch

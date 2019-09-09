@@ -41,4 +41,12 @@ public interface IZSYTaskTempFunctionMapper {
      * @return
      */
     List<UserAndLevelBO> selectUserAndLevelByFunction(@Param("id")Long id);
+
+    /**
+     * 根据任务和用户查询功能点
+     * @author sch
+     * @param taskId 任务
+     * @param userId 用户
+     */
+    List<TaskTempFunction> selectListByTaskAndUser(@Param("taskId")Long taskId, @Param("userId")Long userId);
 }

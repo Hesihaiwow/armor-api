@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserTaskIntegralMapper">
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="task_id" jdbcType="BIGINT" property="taskId" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="integral" jdbcType="DECIMAL" property="integral" />
+        <result column="origin" jdbcType="INTEGER" property="origin" />
+        <result column="review_status" jdbcType="INTEGER" property="reviewStatus" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
+        INSERT INTO `user_task_integral`
+        (`id`,`user_id`,`task_id`,`integral`,`description`
+        ,`origin`,`review_status`,`create_by`,`create_time`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT}
+        ,#{integral,jdbcType=DECIMAL},#{description,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER}
+        ,#{reviewStatus,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
+        INSERT INTO `user_task_integral`
+        (`id`,`user_id`,`task_id`,`integral`,`description`
+        ,`origin`,`review_status`,`create_by`,`create_time`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
+            ,#{item.integral,jdbcType=DECIMAL},#{item.description,jdbcType=VARCHAR},#{item.origin,jdbcType=INTEGER}
+            ,#{item.reviewStatus,jdbcType=INTEGER},#{item.createBy,jdbcType=BIGINT},#{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--根据用户和任务查询积分-->
+    <select id="selectByUserAndTask" resultMap="BaseMap">
+        SELECT * FROM `user_task_integral` WHERE `user_id` = #{userId} AND `task_id` = #{taskId}
+    </select>
+
+    <!--根据用户和时间查询积分-->
+    <select id="selectListByUserAndTime" resultMap="BaseMap">
+        SELECT * FROM user_task_integral WHERE user_id = #{userId}
+        <if test="beginTime != null">
+            <![CDATA[AND create_time >= #{beginTime}]]>
+        </if>
+        <if test="endTime!=null" >
+            <![CDATA[AND create_time <= #{endTime}]]>
+        </if>
+    </select>
+
+</mapper>
