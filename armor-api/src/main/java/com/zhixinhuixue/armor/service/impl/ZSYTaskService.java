@@ -1128,60 +1128,62 @@ public class ZSYTaskService implements IZSYTaskService {
 
         taskDetailResDTO.setCanReview(false);
         taskDetailResDTO.setCanSummarize(false);
-        //待设计和设计中
-        if (taskDetailBO.getStageId().equals(212754785051344891L) || taskDetailBO.getStageId().equals(212754785051344892L)){
-            taskDetailResDTO.setCanReview(true);
-        }
+        if (taskDetailBO.getType() == 2){
+            //待设计和设计中
+            if (taskDetailBO.getStageId().equals(212754785051344891L) || taskDetailBO.getStageId().equals(212754785051344892L)){
+                taskDetailResDTO.setCanReview(true);
+            }
 
-        //已发布任务
-        if (taskDetailBO.getStageId().equals(212754785051344898L)){
-            taskDetailResDTO.setCanSummarize(true);
-        }
+            //已发布任务
+            if (taskDetailBO.getStageId().equals(212754785051344898L)){
+                taskDetailResDTO.setCanSummarize(true);
+            }
 
-        //任务评审情况
-        List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
-        List<TaskReviewResDTO> reviewResDTOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(taskReviewBOS)){
-            taskDetailResDTO.setIsReview(true);
-            taskDetailResDTO.setIsReviewStr("已评审");
-            taskReviewBOS.forEach(taskReviewBO -> {
-                TaskReviewResDTO resDTO = new TaskReviewResDTO();
-                BeanUtils.copyProperties(taskReviewBO,resDTO);
-                long timeMillis = taskReviewBO.getEndTime().getTime()-taskReviewBO.getBeginTime().getTime();
-                String hours = (timeMillis/1000/60/60)+"";
-                String mins = (timeMillis/1000/60%60)+"";
-                String secs = (timeMillis/1000%60)+"";
-                resDTO.setReviewTimesStr(hours+"h "+mins+"m "+secs+"s");
-                resDTO.setReviewTimes(timeMillis);
-                reviewResDTOS.add(resDTO);
-            });
-            taskDetailResDTO.setTaskReviewResDTOS(reviewResDTOS);
-        }else {
-            taskDetailResDTO.setIsReview(false);
-            taskDetailResDTO.setIsReviewStr("未评审");
-        }
+            //任务评审情况
+            List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
+            List<TaskReviewResDTO> reviewResDTOS = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(taskReviewBOS)){
+                taskDetailResDTO.setIsReview(true);
+                taskDetailResDTO.setIsReviewStr("已评审");
+                taskReviewBOS.forEach(taskReviewBO -> {
+                    TaskReviewResDTO resDTO = new TaskReviewResDTO();
+                    BeanUtils.copyProperties(taskReviewBO,resDTO);
+                    long timeMillis = taskReviewBO.getEndTime().getTime()-taskReviewBO.getBeginTime().getTime();
+                    String hours = (timeMillis/1000/60/60)+"";
+                    String mins = (timeMillis/1000/60%60)+"";
+                    String secs = (timeMillis/1000%60)+"";
+                    resDTO.setReviewTimesStr(hours+"h "+mins+"m "+secs+"s");
+                    resDTO.setReviewTimes(timeMillis);
+                    reviewResDTOS.add(resDTO);
+                });
+                taskDetailResDTO.setTaskReviewResDTOS(reviewResDTOS);
+            }else {
+                taskDetailResDTO.setIsReview(false);
+                taskDetailResDTO.setIsReviewStr("未评审");
+            }
 
-        //任务总结情况
-        List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(taskId);
-        List<TaskSummaryResDTO> summaryResDTOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(taskSummaryBOS)){
-            taskDetailResDTO.setIsSummarize(true);
-            taskDetailResDTO.setIsSummarizeStr("已总结");
-            taskSummaryBOS.forEach(taskSummaryBO -> {
-                TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
-                BeanUtils.copyProperties(taskSummaryBO,resDTO);
-                long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
-                resDTO.setSummaryTimes(timeMillis);
-                String hours = (timeMillis/1000/60/60)+"";
-                String mins = (timeMillis/1000/60%60)+"";
-                String secs = (timeMillis/1000%60)+"";
-                resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s");
-                summaryResDTOS.add(resDTO);
-            });
-            taskDetailResDTO.setTaskSummaryResDTOS(summaryResDTOS);
-        }else {
-            taskDetailResDTO.setIsSummarize(false);
-            taskDetailResDTO.setIsSummarizeStr("未总结");
+            //任务总结情况
+            List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(taskId);
+            List<TaskSummaryResDTO> summaryResDTOS = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(taskSummaryBOS)){
+                taskDetailResDTO.setIsSummarize(true);
+                taskDetailResDTO.setIsSummarizeStr("已总结");
+                taskSummaryBOS.forEach(taskSummaryBO -> {
+                    TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
+                    BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                    long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
+                    resDTO.setSummaryTimes(timeMillis);
+                    String hours = (timeMillis/1000/60/60)+"";
+                    String mins = (timeMillis/1000/60%60)+"";
+                    String secs = (timeMillis/1000%60)+"";
+                    resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s");
+                    summaryResDTOS.add(resDTO);
+                });
+                taskDetailResDTO.setTaskSummaryResDTOS(summaryResDTOS);
+            }else {
+                taskDetailResDTO.setIsSummarize(false);
+                taskDetailResDTO.setIsSummarizeStr("未总结");
+            }
         }
 
 
