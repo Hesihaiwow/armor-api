@@ -9,7 +9,7 @@
             <el-checkbox v-model="showMyTaskVisible" style="display: inline-block;margin-left: 10px" v-show="userRole < 2 && btnValStatus == 2" @change="showMyTask(showMyTaskVisible)">仅显示我负责的任务
             </el-checkbox>
             <!--<input type="button" value="本周发版计划" @click="showWeekPublishPlan"/>-->
-                <el-select v-show="userRole < 2 && btnValStatus == 2" v-model="createBy" clearable
+                <el-select v-show="btnValStatus == 2" v-model="createBy" clearable
                            placeholder="请选择负责人" @change="changeManager(createBy)"
                 size="small" style="width: 130px">
                     <el-option v-for="item in managerList" :key="item.id" :label="item.name"

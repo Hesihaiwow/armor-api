@@ -389,76 +389,76 @@
 
 
             </el-form>
-            <div v-if="addTaskReviewVisible" style="margin-bottom: 15px">
-                <div class="add-member-basic">
-                    <div class="add-member-basic-list clearfix" >
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审人：</div>
-                        <div class="add-member-basic-msg">
-                            <el-input type="textarea" placeholder="添加评审人" v-model="taskReview.persons"
-                                      :rows="1" style="width: 455px"></el-input>
-                        </div>
+            <!--<div v-if="addTaskReviewVisible" style="margin-bottom: 15px">-->
+                <!--<div class="add-member-basic">-->
+                    <!--<div class="add-member-basic-list clearfix" >-->
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审人：</div>-->
+                        <!--<div class="add-member-basic-msg">-->
+                            <!--<el-input type="textarea" placeholder="添加评审人" v-model="taskReview.persons"-->
+                                      <!--:rows="1" style="width: 455px"></el-input>-->
+                        <!--</div>-->
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审内容：</div>
-                        <div class="add-member-basic-msg">
-                            <el-input type="textarea" placeholder="添加任务评审内容" v-model="taskReview.comment"
-                                      :rows="2" style="width: 455px"></el-input>
-                        </div>
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审内容：</div>-->
+                        <!--<div class="add-member-basic-msg">-->
+                            <!--<el-input type="textarea" placeholder="添加任务评审内容" v-model="taskReview.comment"-->
+                                      <!--:rows="2" style="width: 455px"></el-input>-->
+                        <!--</div>-->
 
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：
-                        </div>
-                        <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskReview.beginTime" type="datetime"
-                                            format="yyyy-MM-dd HH:mm:ss"
-                                            placeholder="选择开始时间"></el-date-picker>
-                        </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：
-                        </div>
-                        <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskReview.endTime" type="datetime"
-                                            format="yyyy-MM-dd HH:mm:ss"
-                                            placeholder="选择结束时间"></el-date-picker>
-                        </div>
-                    </div>
-                </div>
-                <div class="ctpc-btns">
-                    <input type="button" class="ctpc-cancel" @click="cancelAddTaskReview" value="取消">
-                    <input type="button" class="ctpc-save" @click="saveAddTaskReview(taskDetail.id)" value="确定">
-                </div>
-            </div>
-            <div v-if="addTaskSummaryVisible" style="margin-bottom: 15px">
-                <div class="add-member-basic">
-                    <div class="add-member-basic-list clearfix" >
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>总结内容：</div>
-                        <div class="add-member-basic-msg">
-                            <el-input type="textarea" placeholder="添加任务总结内容" v-model="taskSummary.comment"
-                                      :rows="2" style="width: 455px"></el-input>
-                        </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>任务收获：</div>
-                        <div class="add-member-basic-msg">
-                            <el-input type="textarea" placeholder="添加任务收获" v-model="taskSummary.gain"
-                                      :rows="2" style="width: 455px"></el-input>
-                        </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：
-                        </div>
-                        <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskSummary.beginTime" type="datetime"
-                                            format="yyyy-MM-dd HH:mm:ss"
-                                            placeholder="选择开始时间"></el-date-picker>
-                        </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：
-                        </div>
-                        <div class="add-member-basic-msg fl">
-                            <el-date-picker v-model="taskSummary.endTime" type="datetime"
-                                            format="yyyy-MM-dd HH:mm:ss"
-                                            placeholder="选择结束时间"></el-date-picker>
-                        </div>
-                    </div>
-                </div>
-                <div class="ctpc-btns">
-                    <input type="button" class="ctpc-cancel" @click="cancelAddTaskSummary" value="取消">
-                    <input type="button" class="ctpc-save" @click="saveAddTaskSummary(taskDetail.id)" value="确定">
-                </div>
-            </div>
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-msg fl">-->
+                            <!--<el-date-picker v-model="taskReview.beginTime" type="datetime"-->
+                                            <!--format="yyyy-MM-dd HH:mm:ss"-->
+                                            <!--placeholder="选择开始时间"></el-date-picker>-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-msg fl">-->
+                            <!--<el-date-picker v-model="taskReview.endTime" type="datetime"-->
+                                            <!--format="yyyy-MM-dd HH:mm:ss"-->
+                                            <!--placeholder="选择结束时间"></el-date-picker>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="ctpc-btns">-->
+                    <!--<input type="button" class="ctpc-cancel" @click="cancelAddTaskReview" value="取消">-->
+                    <!--<input type="button" class="ctpc-save" @click="saveAddTaskReview(taskDetail.id)" value="确定">-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div v-if="addTaskSummaryVisible" style="margin-bottom: 15px">-->
+                <!--<div class="add-member-basic">-->
+                    <!--<div class="add-member-basic-list clearfix" >-->
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>总结内容：</div>-->
+                        <!--<div class="add-member-basic-msg">-->
+                            <!--<el-input type="textarea" placeholder="添加任务总结内容" v-model="taskSummary.comment"-->
+                                      <!--:rows="2" style="width: 455px"></el-input>-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>任务收获：</div>-->
+                        <!--<div class="add-member-basic-msg">-->
+                            <!--<el-input type="textarea" placeholder="添加任务收获" v-model="taskSummary.gain"-->
+                                      <!--:rows="2" style="width: 455px"></el-input>-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始日期：-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-msg fl">-->
+                            <!--<el-date-picker v-model="taskSummary.beginTime" type="datetime"-->
+                                            <!--format="yyyy-MM-dd HH:mm:ss"-->
+                                            <!--placeholder="选择开始时间"></el-date-picker>-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束日期：-->
+                        <!--</div>-->
+                        <!--<div class="add-member-basic-msg fl">-->
+                            <!--<el-date-picker v-model="taskSummary.endTime" type="datetime"-->
+                                            <!--format="yyyy-MM-dd HH:mm:ss"-->
+                                            <!--placeholder="选择结束时间"></el-date-picker>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="ctpc-btns">-->
+                    <!--<input type="button" class="ctpc-cancel" @click="cancelAddTaskSummary" value="取消">-->
+                    <!--<input type="button" class="ctpc-save" @click="saveAddTaskSummary(taskDetail.id)" value="确定">-->
+                <!--</div>-->
+            <!--</div>-->
             <div class="trends" v-show="taskReviewList !== undefined && taskReviewList.length>0" style="margin-bottom: 10px">
                 <div class="trends-title clearfix">
                     <b class="fl">评审</b>
@@ -491,8 +491,8 @@
                             <a v-show="loginUserId === item.createBy || userRole === 0"
                                style="margin-left: 20px;cursor: pointer;color: #20a0ff"
                             @click="deleteSummary(item.id)">删除</a>
-                            <div class="task-title-detail" v-show="item.comment!==''" ><em></em>总结内容: {{item.comment}}</div>
-                            <div class="task-title-detail" v-show="item.gain!==''" ><em></em>任务收获: {{item.gain}}</div>
+                            <div class="task-title-detail" v-show="item.comment!==''" ><em></em>遇到问题: {{item.comment}}</div>
+                            <div class="task-title-detail" v-show="item.gain!==''" ><em></em>解决方案: {{item.gain}}</div>
                             <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>总结开始时间: {{item.beginTime | formatTime}}</div>
                             <div class="task-title-detail" v-show="item.endTime!==null" ><em></em>总结结束时间: {{item.endTime | formatTime}}</div>
                             <div class="task-title-detail" v-show="item.summaryTimesStr!==''" ><em></em>总结时长: {{item.summaryTimesStr}}</div>
@@ -571,6 +571,88 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="modifyTask(taskDetail.id)">确 定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="填写任务评审" top="10%"
+                   :visible.sync="addTaskReviewVisible"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   custom-class="myDialog"
+                   @close="closeDialog"
+                   size="tiny">
+            <div class="add-member-basic">
+                <div class="add-member-basic-list clearfix" >
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审人：</div>
+                    <div class="add-member-basic-msg">
+                        <el-input type="textarea" placeholder="添加评审人" v-model="taskReview.persons"
+                                  :rows="1" style="width: 455px"></el-input>
+                    </div>
+
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>评审内容：</div>
+                    <div class="add-member-basic-msg">
+                        <el-input type="textarea" placeholder="添加任务评审内容" v-model="taskReview.comment"
+                                  :rows="2" style="width: 455px"></el-input>
+                    </div>
+
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>评审开始时间：
+                    </div>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker v-model="taskReview.beginTime" type="datetime"
+                                        format="yyyy-MM-dd HH:mm:ss"
+                                        placeholder="选择开始时间"></el-date-picker>
+                    </div>
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束时间：
+                    </div>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker v-model="taskReview.endTime" type="datetime"
+                                        format="yyyy-MM-dd HH:mm:ss"
+                                        placeholder="选择结束时间"></el-date-picker>
+                    </div>
+                </div>
+            </div>
+            <div class="ctpc-btns">
+                <input type="button" class="ctpc-cancel" @click="cancelAddTaskReview" value="取消">
+                <input type="button" class="ctpc-save" @click="saveAddTaskReview(taskDetail.id)" value="确定">
+            </div>
+        </el-dialog>
+        <el-dialog title="填写任务总结" top="10%"
+                   :visible.sync="addTaskSummaryVisible"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   custom-class="myDialog"
+                   @close="closeDialog"
+                   size="tiny">
+            <div class="add-member-basic">
+                <div class="add-member-basic-list clearfix" >
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>遇到问题：</div>
+                    <div class="add-member-basic-msg">
+                        <el-input type="textarea" placeholder="添加遇到问题" v-model="taskSummary.comment"
+                                  :rows="2" style="width: 455px"></el-input>
+                    </div>
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px"><span class="star">*</span>解决方案：</div>
+                    <div class="add-member-basic-msg">
+                        <el-input type="textarea" placeholder="添加解决方案" v-model="taskSummary.gain"
+                                  :rows="2" style="width: 455px"></el-input>
+                    </div>
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: -5px;float: left"><span class="star">*</span>总结开始时间：
+                    </div>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker v-model="taskSummary.beginTime" type="datetime"
+                                        format="yyyy-MM-dd HH:mm:ss"
+                                        placeholder="选择开始时间"></el-date-picker>
+                    </div>
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>总结结束时间：
+                    </div>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker v-model="taskSummary.endTime" type="datetime"
+                                        format="yyyy-MM-dd HH:mm:ss"
+                                        placeholder="选择结束时间"></el-date-picker>
+                    </div>
+                </div>
+            </div>
+            <div class="ctpc-btns">
+                <input type="button" class="ctpc-cancel" @click="cancelAddTaskSummary" value="取消">
+                <input type="button" class="ctpc-save" @click="saveAddTaskSummary(taskDetail.id)" value="确定">
             </div>
         </el-dialog>
         <el-dialog title="填写修改原因" top="10%"

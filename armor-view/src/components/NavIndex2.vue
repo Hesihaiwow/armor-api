@@ -492,7 +492,7 @@
                             <task-item :taskItems="task.doing" :isPrivate="true"
                                        taskStatus="TaskDoing" @reload="reload"
                                        :projectList="projectList"
-                                       :userList="userList"
+                                       :userList="checkInUsers"
                                        :stageList="stageList"
                                        :viewType="1"
                                        :tagList="tagList"></task-item>
@@ -500,7 +500,7 @@
                         <el-tab-pane label="已完成" name="completed">
                             <task-item :taskItems="task.finished" :isPrivate="true" taskStatus="finished"
                                        :projectList="projectList"
-                                       :userList="userList"
+                                       :userList="checkInUsers"
                                        :stageList="stageList"
                                        :viewType="1"
                                        :tagList="tagList"></task-item>
@@ -721,7 +721,7 @@
                 </div>
                 <p class="mic-title">我的线上问题</p>
                 <div class="my-task-detail">
-                    <el-tabs v-model="activeQuestionName" @tab-click="handleClick">
+                    <el-tabs v-model="activeQuestionName" @tab-click="handleClickMyOnlineQuestion">
                         <el-tab-pane label="待审核" name="wait">
                             <div class="task-lis" v-for="item in question.running" @click="item.reviewStatus === 1 ? editQuestion(item) : finishQuestion(item)">
                                 <div class="head-img"><img src="../assets/img/doing.png"></div>
@@ -796,12 +796,12 @@
                 </div>
                 <div>
                     <p class="mic-title">评价任务</p>
-                    <el-tabs v-model="assessActiveName" @tab-click="handleClick">
+                    <el-tabs v-model="assessActiveName" @tab-click="handleClickEvaluate">
                         <el-tab-pane label="待评价" name="waitAssess">
                             <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
                                        taskStatus="WaitAssess"
                                        :projectList="projectList"
-                                       :userList="userList"
+                                       :userList="checkInUsers"
                                        :stageList="stageList"
                                        :viewType="1"
                                        :tagList="tagList"></task-item>
@@ -810,7 +810,7 @@
                         <el-tab-pane label="已评价" name="commented">
                             <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
                                        :projectList="projectList"
-                                       :userList="userList"
+                                       :userList="checkInUsers"
                                        :stageList="stageList"
                                        :viewType="1"
                                        :tagList="tagList"></task-item>
@@ -889,7 +889,7 @@
                 <!--</div>-->
                 <div>
                     <p class="mic-title">任务修改申请</p>
-                    <el-tabs v-model="taskModifyTabsActiveName" @tab-click="handleClick">
+                    <el-tabs v-model="taskModifyTabsActiveName2" @tab-click="handleClickMyModify">
                         <el-tab-pane label="待审核" name="wait">
                             <div class="task-lis" v-for="modifyData in personalTaskModifyData.waitAssess" @click="getTaskModifyDetail(modifyData.id,modifyData.taskId,modifyData.userId)">
                                 <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
@@ -1105,7 +1105,7 @@
                         <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
                                    taskStatus="WaitAuditing"
                                    :projectList="projectList"
-                                   :userList="userList"
+                                   :userList="checkInUsers"
                                    :stageList="stageList"
                                    :viewType="1"
                                    :tagList="tagList"></task-item>
@@ -1123,7 +1123,7 @@
                         <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"
                                    taskStatus="auditSuccess"
                                    :projectList="projectList"
-                                   :userList="userList"
+                                   :userList="checkInUsers"
                                    :stageList="stageList"
                                    :viewType="1"
                                    :tagList="tagList"></task-item>
@@ -1943,7 +1943,7 @@
                 <el-form-item label="求助目标" prop="userId">
                     <el-select v-model="helpForm.userId" placeholder="成员列表">
                         <el-option
-                                v-for="item in userList"
+                                v-for="item in checkInUsers"
                                 :key="item.id"
                                 :label="item.name"
                                 :value="item.id">
@@ -2963,6 +2963,7 @@
                 auditHelpTabsActiveName: 'wait',
                 taskExpandTabsActiveName: 'wait',
                 taskModifyTabsActiveName: 'wait',
+                taskModifyTabsActiveName2: 'wait',
                 taskAble: false,
                 editHelpDetailVisible: false,
                 editHelpVisible: false,
@@ -4025,6 +4026,8 @@
                 // 点击进行中和已完成
                 if (tab.label === '测试中') {
                     this.fetchTaskTesting();
+                }else if (this.activeName === 'completed'){
+                    this.fetchTaskFinished();
                 }
             },
             handleClickLeave(){
@@ -4092,6 +4095,27 @@
                     this.fetchQuestionAccepted();
                 }
             },
+            handleClickMyOnlineQuestion(){
+               if (this.activeQuestionName === 'wait'){
+                 this.fetchQuestionDoing();
+               } else {
+                   this.fetchQuestionCompleted();
+               }
+            },
+            handleClickEvaluate(){
+              if (this.assessActiveName === 'waitAssess'){
+                  this.fetchWaitEvaluate();
+              }   else {
+                  this.fetchEvaluated();
+              }
+            },
+            handleClickMyModify(){
+                if (this.taskModifyTabsActiveName2 === 'wait'){
+                    this.fetchPersonalTaskModifyWait();
+                } else {
+                    this.fetchPersonalTaskModifyAccessed();
+                }
+            },
             createTaskClick() {
                 // 建任务
                 // this.clearPrivateTask()
@@ -4116,36 +4140,38 @@
                 this.task.doing = [];
                 this.initSignInTime();
                 // this.fetchIntegral()
-                // this.fetchProjectList();
-                // this.fetchStageList();
-                // this.fetchTagList();
+                this.fetchProjectList();
+                this.fetchStageList();
+                this.fetchTagList();
                 // this.fetchUserList();
-                // this.fetchSignInUser();
+                this.fetchSignInUser();
                 //this.fetchApplyFailTask();
                 // this.fetchTaskExpandDoing();
                 // this.fetchTaskExpandSuccess();
                 this.fetchUnreadNoticeNum();
+                this.fetchControlledPeople();
+
+                //人事查看相关统计
                 this.fetchSignInData();
                 this.getLeaveList();
-                // this.fetchMultipleWait();
-                this.fetchControlledPeople();
                 this.getExtraWorkStats();
+                // this.fetchMultipleWait();
                 // this.fetchTaskTempModuleList();
                 if (this.userRole === 0) {
                     this.fetchTaskWaitAudit();
                     // this.fetchUserWeekHourStats()
                     // 所有审核通过的数据
-                    this.fetchTaskAuditSuccess();
+                    // this.fetchTaskAuditSuccess();
                     //待审核的积分转移，审核通过的积分转移
                     // this.fetchHelpWaitAdmin()
                     // this.fetchHelpReviewAdmin()
-                    this.fetchQuestionAccepted();
+                    // this.fetchQuestionAccepted();
                     this.fetchQuestionWait();
                     this.fetchCheckingExtraWork();
-                    this.fetchCheckedExtraWork();
+                    // this.fetchCheckedExtraWork();
                     this.fetchRecheckWait();
-                    this.fetchRecheckPass();
-                    this.fetchMultipleAccess();
+                    // this.fetchRecheckPass();
+                    // this.fetchMultipleAccess();
                     this.fetchTaskModifyWait();
                     this.fetchTaskModifyAccessed();
                 } else if (this.userRole>0&&this.userRole<3) {
@@ -7987,7 +8013,7 @@
             },
             //查看任务
             fetchPersonalTaskIntegral(){
-                http.zsyGetHttp('/integral/personal',{},(res)=>{
+                http.zsyGetHttp('/user-task-integral/personal',{},(res)=>{
                     this.personalTaskIntegralData = res.data;
                     let items = [];
                     items.push({label: '', score: this.personalTaskIntegralData.monthIntegral, time: this.getDateString('month')});
