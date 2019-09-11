@@ -1,19 +1,30 @@
 package com.zhixinhuixue.armor.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TaskUserHoursBO;
+import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryPageBO;
+import com.zhixinhuixue.armor.model.bo.UserTaskIntegralListBO;
+import com.zhixinhuixue.armor.model.dto.request.AddUserTaskIntegralReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.UserTaskIntegralReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserIntegralHistoryPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.UserTaskIntegralListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserTaskIntegralResDTO;
-import com.zhixinhuixue.armor.model.pojo.TaskEvaluation;
-import com.zhixinhuixue.armor.model.pojo.TaskTempFunction;
-import com.zhixinhuixue.armor.model.pojo.User;
-import com.zhixinhuixue.armor.model.pojo.UserTaskIntegral;
+import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYUserTaskIntegralService;
+import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
+import com.zhixinhuixue.armor.source.enums.ZSYUserTaskIntegralOrigin;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +33,7 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author sch
@@ -77,7 +85,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     Integer userLevel = taskUser.getUserLevel();
 
                     //用戶级别系数
-                    BigDecimal userCoefficient = BigDecimal.ZERO;
+                    BigDecimal userCoefficient = BigDecimal.ONE;
                     if (userLevel == 1){
                         userCoefficient = BigDecimal.valueOf(0.9);
                     }else if (userLevel == 2){
@@ -98,13 +106,14 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                         userCoefficient = BigDecimal.valueOf(0.1);
                     }
                     //评分系数
-                    BigDecimal evaluateCoefficient = BigDecimal.ZERO;
+                    BigDecimal evaluateCoefficient = BigDecimal.ONE;
+                    BigDecimal avgScore = BigDecimal.ZERO;
                     //查询当前用户当前任务的所有评价
                     List<TaskEvaluation> evaluations = evaluationMapper.selectListByTaskAndUser(taskUser.getTaskId(), taskUser.getUserId());
                     if (!CollectionUtils.isEmpty(evaluations)){
                         double totalScore = evaluations.stream().mapToDouble(TaskEvaluation::getScore).sum();
-                        BigDecimal avgScore = BigDecimal.valueOf(totalScore)
-                                .divide(BigDecimal.valueOf(evaluations.size()),BigDecimal.ROUND_HALF_UP);
+                        avgScore = BigDecimal.valueOf(totalScore)
+                                .divide(BigDecimal.valueOf(evaluations.size()),2,BigDecimal.ROUND_HALF_UP);
                         if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
                             evaluateCoefficient = BigDecimal.valueOf(1);
                         }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
@@ -126,7 +135,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUser.getTaskId());
                     integral.setUserId(taskUser.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setOrigin(ZSYIntegralOrigin.SYSTEM.getValue());
+                    integral.setScore(avgScore);
+                    integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
                     integral.setDescription("多人任务积分");
                     integral.setReviewStatus(3);
                     integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
@@ -187,7 +197,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                         }
                     }
                     //用戶级别系数
-                    BigDecimal userCoefficient = BigDecimal.ZERO;
+                    BigDecimal userCoefficient = BigDecimal.ONE;
                     if (userLevel == 1){
                         userCoefficient = BigDecimal.valueOf(0.9);
                     }else if (userLevel == 2){
@@ -208,13 +218,14 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                         userCoefficient = BigDecimal.valueOf(0.1);
                     }
                     //评分系数
-                    BigDecimal evaluateCoefficient = BigDecimal.ZERO;
+                    BigDecimal evaluateCoefficient = BigDecimal.ONE;
+                    BigDecimal avgScore = BigDecimal.ZERO;
                     //查询当前用户当前任务的所有评价
                     List<TaskEvaluation> evaluations = evaluationMapper.selectListByTaskAndUser(taskUser.getTaskId(), taskUser.getUserId());
                     if (!CollectionUtils.isEmpty(evaluations)){
                         double totalScore = evaluations.stream().mapToDouble(TaskEvaluation::getScore).sum();
-                        BigDecimal avgScore = BigDecimal.valueOf(totalScore)
-                                .divide(BigDecimal.valueOf(evaluations.size()),BigDecimal.ROUND_HALF_UP);
+                        avgScore = BigDecimal.valueOf(totalScore)
+                                .divide(BigDecimal.valueOf(evaluations.size()),2,BigDecimal.ROUND_HALF_UP);
                         if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
                             evaluateCoefficient = BigDecimal.valueOf(1);
                         }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
@@ -236,7 +247,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUser.getTaskId());
                     integral.setUserId(taskUser.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setOrigin(ZSYIntegralOrigin.SYSTEM.getValue());
+                    integral.setScore(avgScore);
+                    integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
                     integral.setDescription("多人任务积分");
                     integral.setReviewStatus(3);
                     integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
@@ -276,7 +288,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 if (existIntegral == null){
                     Integer userLevel = taskUserHoursBO.getUserLevel();
                     //用戶级别系数
-                    BigDecimal userCoefficient = BigDecimal.ZERO;
+                    BigDecimal userCoefficient = BigDecimal.ONE;
                     if (userLevel == 1){
                         userCoefficient = BigDecimal.valueOf(0.9);
                     }else if (userLevel == 2){
@@ -304,7 +316,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUserHoursBO.getTaskId());
                     integral.setUserId(taskUserHoursBO.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setOrigin(ZSYIntegralOrigin.SYSTEM.getValue());
+                    integral.setScore(BigDecimal.ZERO);
+                    integral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
                     integral.setDescription("个人任务积分");
                     integral.setReviewStatus(3);
                     integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
@@ -346,7 +359,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 if (existIntegral == null){
                     Integer userLevel = taskUserHoursBO.getUserLevel();
                     //用戶级别系数
-                    BigDecimal userCoefficient = BigDecimal.ZERO;
+                    BigDecimal userCoefficient = BigDecimal.ONE;
                     if (userLevel == 1){
                         userCoefficient = BigDecimal.valueOf(0.9);
                     }else if (userLevel == 2){
@@ -387,7 +400,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUserHoursBO.getTaskId());
                     integral.setUserId(taskUserHoursBO.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setOrigin(ZSYIntegralOrigin.SYSTEM.getValue());
+                    integral.setScore(BigDecimal.ZERO);
+                    integral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
                     integral.setDescription("个人任务积分");
                     integral.setReviewStatus(3);
                     integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
@@ -520,5 +534,89 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
             e.printStackTrace();
         }
         return resDTO;
+    }
+
+    /**
+     * 查看积分列表
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public List<UserTaskIntegralListResDTO> getIntegralRank(UserTaskIntegralReqDTO reqDTO) {
+        List<UserTaskIntegralListBO> integralListBOS = userTaskIntegralMapper.selectByTimeRange(reqDTO,ZSYTokenRequestContext.get().getDepartmentId());
+        List<UserTaskIntegralListResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(integralListBOS)){
+            integralListBOS.forEach(integralListBO->{
+                UserTaskIntegralListResDTO resDTO = new UserTaskIntegralListResDTO();
+                BeanUtils.copyProperties(integralListBO,resDTO);
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 获取积分列数
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public Map getIntegralCount(UserTaskIntegralReqDTO reqDTO) {
+        int prev = userTaskIntegralMapper.getIntegralCount(null, reqDTO.getBeginTime(),ZSYTokenRequestContext.get().getDepartmentId());
+        int next = userTaskIntegralMapper.getIntegralCount(reqDTO.getEndTime(), null,ZSYTokenRequestContext.get().getDepartmentId());
+        Map map = new HashMap();
+        map.put("prev",prev);
+        map.put("next",next);
+        return map;
+    }
+
+    /**
+     * 获取用户积分历史
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public PageInfo<UserIntegralHistoryPageResDTO> getIntegralHistoryPage(UserTaskIntegralReqDTO reqDTO) {
+        if (reqDTO.getUserId() == null){
+            throw new ZSYServiceException("用户id为空,请检查");
+        }
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
+        Page<UserIntegralHistoryPageBO> userIntegralHistoryBOS =
+                userTaskIntegralMapper.getIntegralHistory(reqDTO.getUserId(), reqDTO.getBeginTime(), reqDTO.getEndTime());
+        Page<UserIntegralHistoryPageResDTO> page = new Page<>();
+        BeanUtils.copyProperties(userIntegralHistoryBOS, page);
+        userIntegralHistoryBOS.stream().forEach(userIntegralHistoryBO -> {
+            UserIntegralHistoryPageResDTO resDTO = new UserIntegralHistoryPageResDTO();
+            BeanUtils.copyProperties(userIntegralHistoryBO, resDTO);
+            resDTO.setCreateTime(userIntegralHistoryBO.getCreateTime());
+            page.add(resDTO);
+        });
+        PageInfo<UserIntegralHistoryPageResDTO> pageInfo = new PageInfo<>(page);
+        return pageInfo;
+    }
+
+    /**
+     * 添加积分
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public void addIntegral(AddUserTaskIntegralReqDTO reqDTO) {
+        if (ZSYTokenRequestContext.get().getUserRole() != ZSYUserRole.ADMINISTRATOR.getValue()){
+            throw new ZSYServiceException("当前用户无权限");
+        }
+        if (reqDTO.getUserId() == null){
+
+        }
+        UserTaskIntegral userIntegral = new UserTaskIntegral();
+        userIntegral.setId(snowFlakeIDHelper.nextId());
+        userIntegral.setCreateTime(new Date());
+        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        userIntegral.setIntegral(reqDTO.getIntegral());
+        userIntegral.setUserId(reqDTO.getUserId());
+        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        userIntegral.setDescription(reqDTO.getDescription());
+        userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.ARTIFICIAL.getValue());//手动添加
+        userTaskIntegralMapper.insert(userIntegral);
     }
 }

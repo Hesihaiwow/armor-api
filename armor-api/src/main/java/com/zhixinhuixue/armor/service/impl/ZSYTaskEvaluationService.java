@@ -59,6 +59,10 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
     private IZSYTaskSummaryMapper summaryMapper;
+    @Autowired
+    private IZSYTaskTempFunctionMapper functionMapper;
+    @Autowired
+    private IZSYUserTaskIntegralMapper userTaskIntegralMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ZSYTaskEvaluationService.class);
 
@@ -184,7 +188,7 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     }
                     List<EvaluationScoreBO> taskEvaluations = evaluationMapper.selectByTaskAndTaskUser(taskId,taskUserBO.getUserId(),null);
                     //用戶级别系数
-                    BigDecimal userCoefficient = BigDecimal.ZERO;
+                    BigDecimal userCoefficient = BigDecimal.ONE;
                     if (userLevel == 1){
                         userCoefficient = BigDecimal.valueOf(0.9);
                     }else if (userLevel == 2){
@@ -206,10 +210,11 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     }
 
                     //评分系数
-                    BigDecimal evaluateCoefficient = BigDecimal.ZERO;
+                    BigDecimal evaluateCoefficient = BigDecimal.ONE;
+                    BigDecimal avgScore = BigDecimal.ZERO;
                     if (!CollectionUtils.isEmpty(taskEvaluations)){
                         Double totalScore = taskEvaluations.stream().mapToDouble(EvaluationScoreBO::getScore).sum();
-                        BigDecimal avgScore = BigDecimal.valueOf(totalScore)
+                        avgScore = BigDecimal.valueOf(totalScore)
                                 .divide(BigDecimal.valueOf(taskEvaluations.size()),BigDecimal.ROUND_HALF_UP);
                         if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
                             evaluateCoefficient = BigDecimal.valueOf(1);
@@ -225,28 +230,50 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     }
 
                     //查询功能点计算积分
-
-                    List<Integer> integrals = taskEvaluations.stream().map(EvaluationScoreBO::getIntegral).collect(Collectors.toList());
-                    Integer integral = 0;
-                    if (!CollectionUtils.isEmpty(integrals)){
-                        for (Integer singleIntegral : integrals) {
-                            integral += singleIntegral;
+                    Integer originIntegral = 0;
+                    List<TaskTempFunction> functionList = functionMapper.selectListByTaskAndUser(taskUserBO.getTaskId(), taskUserBO.getUserId());
+                    if (!CollectionUtils.isEmpty(functionList)){
+                        for (TaskTempFunction function : functionList) {
+                            Integer level = function.getLevel();
+                            if (level == 1){
+                                originIntegral += 1;
+                            }else if (level == 2){
+                                originIntegral += 3;
+                            }else if (level == 3){
+                                originIntegral += 8;
+                            }else if (level == 4){
+                                originIntegral += 20;
+                            }else if (level == 5){
+                                originIntegral += 40;
+                            }
                         }
+                    }else {
+                        Double taskHours = taskUserBO.getTaskHours();
+                        int level1Counts = 0;
+                        int level2Counts = (int)Math.floor(taskHours/30);
+                        double leftHours = taskHours%30;
+                        if (leftHours<=10 && leftHours >1){
+                            level1Counts += 1;
+                        }else if (leftHours > 10){
+                            level2Counts += 1;
+                        }
+                        originIntegral = level1Counts+(level2Counts*3);
                     }
+                    BigDecimal userIntegral = BigDecimal.valueOf(originIntegral).multiply(userCoefficient).multiply(evaluateCoefficient)
+                            .setScale(2,BigDecimal.ROUND_HALF_UP);
+                    UserTaskIntegral integral = new UserTaskIntegral();
+                    integral.setId(snowFlakeIDHelper.nextId());
+                    integral.setTaskId(taskUserBO.getTaskId());
+                    integral.setUserId(taskUserBO.getUserId());
+                    integral.setIntegral(userIntegral);
+                    integral.setScore(avgScore);
+                    integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
+                    integral.setDescription("完成了多人任务：" + taskDetailBO.getName());
+                    integral.setReviewStatus(3);
+                    integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+                    integral.setCreateTime(new Date());
+                    userTaskIntegralMapper.insert(integral);
 
-
-//                    BigDecimal avgIntegral = BigDecimal.valueOf(integral).multiply(BigDecimal.valueOf(taskUserBO.getTaskHours()))
-//                            .divide(BigDecimal.valueOf(100))
-//                            .divide(BigDecimal.valueOf(integrals.size()), 1, BigDecimal.ROUND_HALF_UP).setScale(1);
-//                    UserIntegral userIntegral = new UserIntegral();
-//                    userIntegral.setId(snowFlakeIDHelper.nextId());
-//                    userIntegral.setTaskId(taskUserBO.getTaskId());
-//                    userIntegral.setUserId(taskUserBO.getUserId());
-//                    userIntegral.setIntegral(avgIntegral);
-//                    userIntegral.setOrigin(1);
-//                    userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
-//                    userIntegral.setCreateTime(new Date());
-//                    integralMapper.insert(userIntegral);
                     Task task = new Task();
                     task.setId(taskId);
                     task.setStatus(ZSYTaskStatus.FINISHED.getValue());

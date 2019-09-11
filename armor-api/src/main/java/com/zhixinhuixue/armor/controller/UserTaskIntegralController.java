@@ -1,14 +1,15 @@
 package com.zhixinhuixue.armor.controller;
 
+import com.zhixinhuixue.armor.model.dto.request.AddUserTaskIntegralReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.UserTaskIntegralReqDTO;
 import com.zhixinhuixue.armor.service.IZSYUserTaskIntegralService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * @author sch
@@ -53,5 +54,30 @@ public class UserTaskIntegralController {
     @GetMapping("/personal")
     public String getPersonalIntegral(){
         return ZSYResult.success().data(userTaskIntegralService.getPersonalIntegral()).build();
+    }
+
+    @ApiOperation("查看积分列表")
+    @PostMapping("/rank")
+    public String getIntegralRank(@RequestBody UserTaskIntegralReqDTO reqDTO){
+        return ZSYResult.success().data(userTaskIntegralService.getIntegralRank(reqDTO)).build();
+    }
+
+    @ApiOperation("获取积分列数")
+    @PostMapping("/count")
+    public String getIntegralCount(@RequestBody UserTaskIntegralReqDTO reqDTO){
+        return ZSYResult.success().data(userTaskIntegralService.getIntegralCount(reqDTO)).build();
+    }
+
+    @ApiOperation("获取用户积分历史")
+    @PostMapping("/history")
+    public String getIntegralHistoryPage(@RequestBody UserTaskIntegralReqDTO reqDTO){
+        return ZSYResult.success().data(userTaskIntegralService.getIntegralHistoryPage(reqDTO)).build();
+    }
+
+    @ApiOperation("添加积分")
+    @PostMapping("/add")
+    public String addIntegral(@Valid @RequestBody AddUserTaskIntegralReqDTO reqDTO){
+        userTaskIntegralService.addIntegral(reqDTO);
+        return ZSYResult.success().build();
     }
 }

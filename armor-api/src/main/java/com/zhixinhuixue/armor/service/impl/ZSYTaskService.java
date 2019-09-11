@@ -119,6 +119,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Autowired
     private IZSYTaskSummaryMapper taskSummaryMapper;
     @Autowired
+    private IZSYUserTaskIntegralMapper userTaskIntegralMapper;
     // -- sch
 
 
@@ -742,6 +743,9 @@ public class ZSYTaskService implements IZSYTaskService {
         if (userTemp == null || userTemp.getIsDelete() == 1) {
             throw new ZSYServiceException("用户不存在");
         }
+        if (userTemp.getLevel() == null){
+            throw new ZSYServiceException("用户暂无级别,请联系超管");
+        }
         Task taskTemp = taskMapper.selectByPrimaryKey(taskCompleteReqDTO.getTaskId());
         Optional.ofNullable(taskTemp).orElseThrow(() -> new ZSYServiceException("找不到任务,id:" + taskCompleteReqDTO.getTaskId()));
         TaskUser taskUserTemp = taskUserMapper.selectByPrimaryKey(taskCompleteReqDTO.getTaskUserId());
@@ -787,26 +791,48 @@ public class ZSYTaskService implements IZSYTaskService {
 
 
         // 插入评价
-        TaskComment taskComment = new TaskComment();
-        taskComment.setId(snowFlakeIDHelper.nextId());
-        taskComment.setTaskId(taskCompleteReqDTO.getTaskId());
-        taskComment.setTaskUserId(ZSYTokenRequestContext.get().getUserId());
-        taskComment.setGrade(ZSYIntegral.A.getName());// 默认评价为A
-        taskComment.setIntegral(ZSYIntegral.A.getValue());
-        taskComment.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-        taskComment.setCreateTime(new Date());
-        taskCommentMapper.insert(taskComment);
+//        TaskComment taskComment = new TaskComment();
+//        taskComment.setId(snowFlakeIDHelper.nextId());
+//        taskComment.setTaskId(taskCompleteReqDTO.getTaskId());
+//        taskComment.setTaskUserId(ZSYTokenRequestContext.get().getUserId());
+//        taskComment.setGrade(ZSYIntegral.A.getName());// 默认评价为A
+//        taskComment.setIntegral(ZSYIntegral.A.getValue());
+//        taskComment.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+//        taskComment.setCreateTime(new Date());
+//        taskCommentMapper.insert(taskComment);
 
+        Integer userLevel = userTemp.getLevel();
+        BigDecimal userCoefficient = BigDecimal.ONE;
+        if (userLevel == 1){
+            userCoefficient = BigDecimal.valueOf(0.9);
+        }else if (userLevel == 2){
+            userCoefficient = BigDecimal.valueOf(0.8);
+        }else if (userLevel == 3){
+            userCoefficient = BigDecimal.valueOf(0.7);
+        }else if (userLevel == 4){
+            userCoefficient = BigDecimal.valueOf(0.6);
+        }else if (userLevel == 5){
+            userCoefficient = BigDecimal.valueOf(0.5);
+        }else if (userLevel == 6){
+            userCoefficient = BigDecimal.valueOf(0.4);
+        }else if (userLevel == 7){
+            userCoefficient = BigDecimal.valueOf(0.3);
+        }else if (userLevel == 8){
+            userCoefficient = BigDecimal.valueOf(0.2);
+        }else if (userLevel == 9){
+            userCoefficient = BigDecimal.valueOf(0.1);
+        }
         // 插入积分记录
-        UserIntegral userIntegral = new UserIntegral();
+        UserTaskIntegral userIntegral = new UserTaskIntegral();
         userIntegral.setId(snowFlakeIDHelper.nextId());
         userIntegral.setTaskId(taskCompleteReqDTO.getTaskId());
         userIntegral.setUserId(ZSYTokenRequestContext.get().getUserId());
-        userIntegral.setIntegral(new BigDecimal(taskUserTemp.getTaskHours()));
+        userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        userIntegral.setIntegral(BigDecimal.valueOf(0.8).multiply(userCoefficient));
         userIntegral.setCreateTime(new Date());
-        userIntegral.setOrigin(1);
+        userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
         userIntegral.setDescription("完成了单人任务:" + taskTemp.getDescription());
-        userIntegralMapper.insert(userIntegral);
+        userTaskIntegralMapper.insert(userIntegral);
 
         // 修改用户积分
         BigDecimal currentIntegral = userTemp.getIntegral();
@@ -1128,60 +1154,62 @@ public class ZSYTaskService implements IZSYTaskService {
 
         taskDetailResDTO.setCanReview(false);
         taskDetailResDTO.setCanSummarize(false);
-        //待设计和设计中
-        if (taskDetailBO.getStageId().equals(212754785051344891L) || taskDetailBO.getStageId().equals(212754785051344892L)){
-            taskDetailResDTO.setCanReview(true);
-        }
+        if (taskDetailBO.getType() == 2){
+            //待设计和设计中
+            if (taskDetailBO.getStageId().equals(212754785051344891L) || taskDetailBO.getStageId().equals(212754785051344892L)){
+                taskDetailResDTO.setCanReview(true);
+            }
 
-        //已发布任务
-        if (taskDetailBO.getStageId().equals(212754785051344898L)){
-            taskDetailResDTO.setCanSummarize(true);
-        }
+            //已发布任务
+            if (taskDetailBO.getStageId().equals(212754785051344898L)){
+                taskDetailResDTO.setCanSummarize(true);
+            }
 
-        //任务评审情况
-        List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
-        List<TaskReviewResDTO> reviewResDTOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(taskReviewBOS)){
-            taskDetailResDTO.setIsReview(true);
-            taskDetailResDTO.setIsReviewStr("已评审");
-            taskReviewBOS.forEach(taskReviewBO -> {
-                TaskReviewResDTO resDTO = new TaskReviewResDTO();
-                BeanUtils.copyProperties(taskReviewBO,resDTO);
-                long timeMillis = taskReviewBO.getEndTime().getTime()-taskReviewBO.getBeginTime().getTime();
-                String hours = (timeMillis/1000/60/60)+"";
-                String mins = (timeMillis/1000/60%60)+"";
-                String secs = (timeMillis/1000%60)+"";
-                resDTO.setReviewTimesStr(hours+"h "+mins+"m "+secs+"s");
-                resDTO.setReviewTimes(timeMillis);
-                reviewResDTOS.add(resDTO);
-            });
-            taskDetailResDTO.setTaskReviewResDTOS(reviewResDTOS);
-        }else {
-            taskDetailResDTO.setIsReview(false);
-            taskDetailResDTO.setIsReviewStr("未评审");
-        }
+            //任务评审情况
+            List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
+            List<TaskReviewResDTO> reviewResDTOS = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(taskReviewBOS)){
+                taskDetailResDTO.setIsReview(true);
+                taskDetailResDTO.setIsReviewStr("已评审");
+                taskReviewBOS.forEach(taskReviewBO -> {
+                    TaskReviewResDTO resDTO = new TaskReviewResDTO();
+                    BeanUtils.copyProperties(taskReviewBO,resDTO);
+                    long timeMillis = taskReviewBO.getEndTime().getTime()-taskReviewBO.getBeginTime().getTime();
+                    String hours = (timeMillis/1000/60/60)+"";
+                    String mins = (timeMillis/1000/60%60)+"";
+                    String secs = (timeMillis/1000%60)+"";
+                    resDTO.setReviewTimesStr(hours+"h "+mins+"m "+secs+"s");
+                    resDTO.setReviewTimes(timeMillis);
+                    reviewResDTOS.add(resDTO);
+                });
+                taskDetailResDTO.setTaskReviewResDTOS(reviewResDTOS);
+            }else {
+                taskDetailResDTO.setIsReview(false);
+                taskDetailResDTO.setIsReviewStr("未评审");
+            }
 
-        //任务总结情况
-        List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(taskId);
-        List<TaskSummaryResDTO> summaryResDTOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(taskSummaryBOS)){
-            taskDetailResDTO.setIsSummarize(true);
-            taskDetailResDTO.setIsSummarizeStr("已总结");
-            taskSummaryBOS.forEach(taskSummaryBO -> {
-                TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
-                BeanUtils.copyProperties(taskSummaryBO,resDTO);
-                long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
-                resDTO.setSummaryTimes(timeMillis);
-                String hours = (timeMillis/1000/60/60)+"";
-                String mins = (timeMillis/1000/60%60)+"";
-                String secs = (timeMillis/1000%60)+"";
-                resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s");
-                summaryResDTOS.add(resDTO);
-            });
-            taskDetailResDTO.setTaskSummaryResDTOS(summaryResDTOS);
-        }else {
-            taskDetailResDTO.setIsSummarize(false);
-            taskDetailResDTO.setIsSummarizeStr("未总结");
+            //任务总结情况
+            List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(taskId);
+            List<TaskSummaryResDTO> summaryResDTOS = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(taskSummaryBOS)){
+                taskDetailResDTO.setIsSummarize(true);
+                taskDetailResDTO.setIsSummarizeStr("已总结");
+                taskSummaryBOS.forEach(taskSummaryBO -> {
+                    TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
+                    BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                    long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
+                    resDTO.setSummaryTimes(timeMillis);
+                    String hours = (timeMillis/1000/60/60)+"";
+                    String mins = (timeMillis/1000/60%60)+"";
+                    String secs = (timeMillis/1000%60)+"";
+                    resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s");
+                    summaryResDTOS.add(resDTO);
+                });
+                taskDetailResDTO.setTaskSummaryResDTOS(summaryResDTOS);
+            }else {
+                taskDetailResDTO.setIsSummarize(false);
+                taskDetailResDTO.setIsSummarizeStr("未总结");
+            }
         }
 
 
@@ -3257,26 +3285,99 @@ public class ZSYTaskService implements IZSYTaskService {
             if (commentCompleted){
                 // 计算积分
                 taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
+                    User user = userMapper.selectById(taskUserBO.getUserId());
+                    Integer userLevel = user.getLevel();
+                    if (userLevel==null){
+                        throw new ZSYServiceException("用户暂无级别,请检查");
+                    }
                     List<EvaluationScoreBO> taskEvaluations = evaluationMapper.selectByTaskAndTaskUser(taskId,taskUserBO.getUserId(),null);
-                    List<Integer> integrals = taskEvaluations.stream().map(EvaluationScoreBO::getIntegral).collect(Collectors.toList());
-                    Integer integral = 0;
-                    if (!CollectionUtils.isEmpty(integrals)){
-                        for (Integer singleIntegral : integrals) {
-                            integral += singleIntegral;
+                    //用戶级别系数
+                    BigDecimal userCoefficient = BigDecimal.ONE;
+                    if (userLevel == 1){
+                        userCoefficient = BigDecimal.valueOf(0.9);
+                    }else if (userLevel == 2){
+                        userCoefficient = BigDecimal.valueOf(0.8);
+                    }else if (userLevel == 3){
+                        userCoefficient = BigDecimal.valueOf(0.7);
+                    }else if (userLevel == 4){
+                        userCoefficient = BigDecimal.valueOf(0.6);
+                    }else if (userLevel == 5){
+                        userCoefficient = BigDecimal.valueOf(0.5);
+                    }else if (userLevel == 6){
+                        userCoefficient = BigDecimal.valueOf(0.4);
+                    }else if (userLevel == 7){
+                        userCoefficient = BigDecimal.valueOf(0.3);
+                    }else if (userLevel == 8){
+                        userCoefficient = BigDecimal.valueOf(0.2);
+                    }else if (userLevel == 9){
+                        userCoefficient = BigDecimal.valueOf(0.1);
+                    }
+
+                    //评分系数
+                    BigDecimal evaluateCoefficient = BigDecimal.ONE;
+                    BigDecimal avgScore = BigDecimal.ZERO;
+                    if (!CollectionUtils.isEmpty(taskEvaluations)){
+                        Double totalScore = taskEvaluations.stream().mapToDouble(EvaluationScoreBO::getScore).sum();
+                        avgScore = BigDecimal.valueOf(totalScore)
+                                .divide(BigDecimal.valueOf(taskEvaluations.size()),BigDecimal.ROUND_HALF_UP);
+                        if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
+                            evaluateCoefficient = BigDecimal.valueOf(1);
+                        }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
+                            evaluateCoefficient = BigDecimal.valueOf(0.9);
+                        }else if (avgScore.compareTo(BigDecimal.valueOf(4.6)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.3)) >= 0){
+                            evaluateCoefficient = BigDecimal.valueOf(0.8);
+                        }else if (avgScore.compareTo(BigDecimal.valueOf(4.3)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4)) >= 0){
+                            evaluateCoefficient = BigDecimal.valueOf(0.7);
+                        }else if (avgScore.compareTo(BigDecimal.valueOf(4)) < 0){
+                            evaluateCoefficient = BigDecimal.valueOf(0.6);
                         }
                     }
-//                    BigDecimal avgIntegral = BigDecimal.valueOf(integral).multiply(BigDecimal.valueOf(taskUserBO.getTaskHours()))
-//                            .divide(BigDecimal.valueOf(100))
-//                            .divide(BigDecimal.valueOf(integrals.size()), 1, BigDecimal.ROUND_HALF_UP).setScale(1);
-//                    UserIntegral userIntegral = new UserIntegral();
-//                    userIntegral.setId(snowFlakeIDHelper.nextId());
-//                    userIntegral.setTaskId(taskUserBO.getTaskId());
-//                    userIntegral.setUserId(taskUserBO.getUserId());
-//                    userIntegral.setIntegral(avgIntegral);
-//                    userIntegral.setOrigin(1);
-//                    userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
-//                    userIntegral.setCreateTime(new Date());
-//                    userIntegralMapper.insert(userIntegral);
+
+                    //查询功能点计算积分
+                    Integer originIntegral = 0;
+                    List<TaskTempFunction> functionList = taskTempFunctionMapper.selectListByTaskAndUser(taskUserBO.getTaskId(), taskUserBO.getUserId());
+                    if (!CollectionUtils.isEmpty(functionList)){
+                        for (TaskTempFunction function : functionList) {
+                            Integer level = function.getLevel();
+                            if (level == 1){
+                                originIntegral += 1;
+                            }else if (level == 2){
+                                originIntegral += 3;
+                            }else if (level == 3){
+                                originIntegral += 8;
+                            }else if (level == 4){
+                                originIntegral += 20;
+                            }else if (level == 5){
+                                originIntegral += 40;
+                            }
+                        }
+                    }else {
+                        Double taskHours = taskUserBO.getTaskHours();
+                        int level1Counts = 0;
+                        int level2Counts = (int)Math.floor(taskHours/30);
+                        double leftHours = taskHours%30;
+                        if (leftHours<=10 && leftHours >1){
+                            level1Counts += 1;
+                        }else if (leftHours > 10){
+                            level2Counts += 1;
+                        }
+                        originIntegral = level1Counts+(level2Counts*3);
+                    }
+                    BigDecimal userIntegral = BigDecimal.valueOf(originIntegral).multiply(userCoefficient).multiply(evaluateCoefficient)
+                            .setScale(2,BigDecimal.ROUND_HALF_UP);
+                    UserTaskIntegral integral = new UserTaskIntegral();
+                    integral.setId(snowFlakeIDHelper.nextId());
+                    integral.setTaskId(taskUserBO.getTaskId());
+                    integral.setUserId(taskUserBO.getUserId());
+                    integral.setIntegral(userIntegral);
+                    integral.setScore(avgScore);
+                    integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
+                    integral.setDescription("完成了多人任务：" + taskDetailBO.getName());
+                    integral.setReviewStatus(3);
+                    integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+                    integral.setCreateTime(new Date());
+                    userTaskIntegralMapper.insert(integral);
+
                     Task task = new Task();
                     task.setId(taskId);
                     task.setStatus(ZSYTaskStatus.FINISHED.getValue());

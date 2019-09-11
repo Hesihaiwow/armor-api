@@ -29,12 +29,17 @@ public class UserTaskIntegral {
     private BigDecimal integral;
 
     /**
+     * 评分
+     */
+    private BigDecimal score;
+
+    /**
      * 创建时间
      */
     private Date createTime;
 
     /**
-     * 来源(1:任务系统 2:手动录入 3:转移求助)
+     * 来源(1:多人任务 2:个人任务 3:手动录入)
      */
     private Integer origin;
 
@@ -52,6 +57,14 @@ public class UserTaskIntegral {
      * 审核状态   1:待审核 2:审核不通过 3:审核通过
      */
     private int reviewStatus;
+
+    public BigDecimal getScore() {
+        return score;
+    }
+
+    public void setScore(BigDecimal score) {
+        this.score = score;
+    }
 
     public Long getId() {
         return id;
