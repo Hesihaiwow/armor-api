@@ -3319,7 +3319,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     if (!CollectionUtils.isEmpty(taskEvaluations)){
                         Double totalScore = taskEvaluations.stream().mapToDouble(EvaluationScoreBO::getScore).sum();
                         avgScore = BigDecimal.valueOf(totalScore)
-                                .divide(BigDecimal.valueOf(taskEvaluations.size()),BigDecimal.ROUND_HALF_UP);
+                                .divide(BigDecimal.valueOf(taskEvaluations.size()),2,BigDecimal.ROUND_HALF_UP);
                         if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
                             evaluateCoefficient = BigDecimal.valueOf(1);
                         }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
