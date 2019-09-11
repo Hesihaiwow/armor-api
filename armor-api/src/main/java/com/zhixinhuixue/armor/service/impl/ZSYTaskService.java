@@ -801,7 +801,7 @@ public class ZSYTaskService implements IZSYTaskService {
 //        taskComment.setCreateTime(new Date());
 //        taskCommentMapper.insert(taskComment);
 
-        Integer taskLevel = taskUser.getTaskLevel();
+        Integer taskLevel = taskUserTemp.getTaskLevel();
         Integer originIntegral = 0;
         if (taskLevel != null){
             if (taskLevel == 1){
