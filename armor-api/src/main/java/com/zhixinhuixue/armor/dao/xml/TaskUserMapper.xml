@@ -18,7 +18,7 @@
 
     <sql id="Base_Column_List">
         id, task_id, user_id, task_hours, begin_time, end_time, description, complete_hours,
-        complete_time, status, create_time
+        complete_time, status, create_time,task_level
     </sql>
 
     <resultMap id="DetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskUserBO" extends="BaseResultMap">
