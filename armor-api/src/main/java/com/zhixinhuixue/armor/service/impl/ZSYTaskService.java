@@ -801,6 +801,21 @@ public class ZSYTaskService implements IZSYTaskService {
 //        taskComment.setCreateTime(new Date());
 //        taskCommentMapper.insert(taskComment);
 
+        Integer taskLevel = taskUser.getTaskLevel();
+        Integer originIntegral = 0;
+        if (taskLevel != null){
+            if (taskLevel == 1){
+                originIntegral = 1;
+            }else if (taskLevel == 2){
+                originIntegral = 3;
+            }else if (taskLevel == 3){
+                originIntegral = 8;
+            }else if (taskLevel == 4){
+                originIntegral = 20;
+            }else if (taskLevel == 5){
+                originIntegral = 40;
+            }
+        }
         Integer userLevel = userTemp.getLevel();
         BigDecimal userCoefficient = BigDecimal.ONE;
         if (userLevel == 1){
@@ -828,18 +843,19 @@ public class ZSYTaskService implements IZSYTaskService {
         userIntegral.setTaskId(taskCompleteReqDTO.getTaskId());
         userIntegral.setUserId(ZSYTokenRequestContext.get().getUserId());
         userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-        userIntegral.setIntegral(BigDecimal.valueOf(0.8).multiply(userCoefficient));
+        userIntegral.setIntegral(BigDecimal.valueOf(0.8).multiply(userCoefficient)
+                .multiply(BigDecimal.valueOf(originIntegral)).setScale(2,BigDecimal.ROUND_HALF_UP));
         userIntegral.setCreateTime(new Date());
         userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
         userIntegral.setDescription("完成了单人任务:" + taskTemp.getDescription());
         userTaskIntegralMapper.insert(userIntegral);
 
         // 修改用户积分
-        BigDecimal currentIntegral = userTemp.getIntegral();
-        User user = new User();
-        user.setId(ZSYTokenRequestContext.get().getUserId());
-        user.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
-        userMapper.updateSelectiveById(user);
+//        BigDecimal currentIntegral = userTemp.getIntegral();
+//        User user = new User();
+//        user.setId(ZSYTokenRequestContext.get().getUserId());
+//        user.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
+//        userMapper.updateSelectiveById(user);
         return ZSYResult.success();
     }
 
@@ -3363,7 +3379,8 @@ public class ZSYTaskService implements IZSYTaskService {
                         }
                         originIntegral = level1Counts+(level2Counts*3);
                     }
-                    BigDecimal userIntegral = BigDecimal.valueOf(originIntegral).multiply(userCoefficient).multiply(evaluateCoefficient)
+                    BigDecimal userIntegral = BigDecimal.valueOf(originIntegral).multiply(userCoefficient)
+                            .multiply(evaluateCoefficient)
                             .setScale(2,BigDecimal.ROUND_HALF_UP);
                     UserTaskIntegral integral = new UserTaskIntegral();
                     integral.setId(snowFlakeIDHelper.nextId());
