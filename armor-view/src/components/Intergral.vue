@@ -110,7 +110,7 @@
                   this.quarter= res.data;
                   this.countQuarterHistory(this.queryForm);
                   if(this.quarter.length<1){
-                    console.log(11)
+                    // console.log(11)
                   }
                 })
                 //   Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
