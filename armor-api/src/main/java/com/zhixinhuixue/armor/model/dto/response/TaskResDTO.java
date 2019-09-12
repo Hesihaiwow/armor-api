@@ -44,6 +44,11 @@ public class TaskResDTO {
 
     private Double userIntegral;
 
+    /**
+     * 任务积分
+     */
+    private Double taskIntegral;
+
     private String integralGrade;
 
     private String  projectImage;
@@ -64,6 +69,14 @@ public class TaskResDTO {
      * 任务用户
      */
     private List<TaskUserResDTO> taskUsers;
+
+    public Double getTaskIntegral() {
+        return taskIntegral;
+    }
+
+    public void setTaskIntegral(Double taskIntegral) {
+        this.taskIntegral = taskIntegral;
+    }
 
     public Date getSonTaskCompleteTime() {
         return sonTaskCompleteTime;

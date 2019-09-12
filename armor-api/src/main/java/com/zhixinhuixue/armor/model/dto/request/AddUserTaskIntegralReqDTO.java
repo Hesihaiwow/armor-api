@@ -15,7 +15,7 @@ public class AddUserTaskIntegralReqDTO {
     private Long userId;
 
     //积分修改备注
-    @Size(min = 0,max = 5,message = "项目描述长度在{min}~{max}之间")
+    @Size(min = 0,max = 1000,message = "积分描述长度在{min}~{max}之间")
 //    @Min(value = 0,message = "项目描述长度大于0")
 //    @Max(value = 5,message = "项目描述长度少于5")
     private String description;

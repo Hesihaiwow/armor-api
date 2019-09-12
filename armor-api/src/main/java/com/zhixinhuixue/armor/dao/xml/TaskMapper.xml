@@ -67,6 +67,7 @@
 
     <resultMap id="TaskFinishedResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <result column="task_integral" jdbcType="DECIMAL" property="taskIntegral"/>
         <result column="sonTaskCompleteTime" jdbcType="TIMESTAMP" property="sonTaskCompleteTime"/>
         <result column="projectImage" jdbcType="VARCHAR" property="projectImage"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
@@ -185,7 +186,7 @@
         left join project t3 on t1.project_id = t3.id
         left join `user` t4 on t1.create_by = t4.id
         left join `task_log` tl on tl.`task_id` = t1.`id` and tl.`title` LIKE '%阶段全部完成%'
-        where t1.`status` = 2 and t1.review_status = 3 AND  t1.`status` != 4
+        where t1.`status` = 2 and t1.review_status = 3 AND  t1.`status` != 3
         and t2.`status` >=2
         and t1.is_delete = 0
         and t2.user_id =#{userId}
@@ -195,10 +196,13 @@
 
     <!-- 查询已完成的任务，包含评价 -->
     <select id="selectFinishedTask" resultMap="TaskFinishedResultMap" parameterType="java.lang.Long">
-     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName, t3.image_url as projectImage, t2.user_id,t4.`name` as userName,t4.avatar_url,t2.complete_time sonTaskCompleteTime from task t1
+     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName, t3.image_url as projectImage, t2.user_id,
+     t4.`name` as userName,t4.avatar_url,t2.complete_time sonTaskCompleteTime ,uti.integral task_integral
+     from task t1
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
             left join `user` t4 on t1.create_by = t4.id
+            left join `user_task_integral` uti on uti.task_id = t1.id and uti.`user_id` = #{userId}
             where t1.review_status = 3 and t2.`status` &gt; 1 AND  t2.`status` != 4
             and t2.user_id = #{userId} and t1.is_delete = 0  order by sonTaskCompleteTime desc
     </select>
