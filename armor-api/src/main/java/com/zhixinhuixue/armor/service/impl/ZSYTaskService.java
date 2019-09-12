@@ -802,7 +802,7 @@ public class ZSYTaskService implements IZSYTaskService {
 //        taskCommentMapper.insert(taskComment);
 
         Integer taskLevel = taskUserTemp.getTaskLevel();
-        Integer originIntegral = 0;
+        Integer originIntegral = 1;
         if (taskLevel != null){
             if (taskLevel == 1){
                 originIntegral = 1;
@@ -1363,7 +1363,7 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setStatus(ZSYTaskStatus.COMPLETED.getValue());
-//        task.setCompleteTime(new Date());
+        task.setCompleteTime(new Date());
         task.setUpdateTime(new Date());
         // 将任务状态改为已完成（待评价）
         taskMapper.updateByPrimaryKeySelective(task);
@@ -1949,6 +1949,9 @@ public class ZSYTaskService implements IZSYTaskService {
 //                    }
 //                }
                 taskListResDTO.setTags(taskTagResDTOS);
+                if (taskListResDTO.getCompleteTime() == null && taskListResDTO.getEndTime() != null){
+                    taskListResDTO.setCompleteTime(taskListResDTO.getEndTime());
+                }
                 list.add(taskListResDTO);
             }
 

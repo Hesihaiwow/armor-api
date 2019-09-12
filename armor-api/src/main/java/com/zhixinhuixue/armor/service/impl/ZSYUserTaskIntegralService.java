@@ -132,7 +132,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUser.getTaskId());
                     integral.setUserId(taskUser.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setScore(avgScore);
+                    if (avgScore.compareTo(BigDecimal.ZERO) > 0){
+                        integral.setScore(avgScore);
+                    }
                     integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
                     integral.setDescription("多人任务积分");
                     integral.setReviewStatus(3);
@@ -244,7 +246,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUser.getTaskId());
                     integral.setUserId(taskUser.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setScore(avgScore);
+                    if (avgScore.compareTo(BigDecimal.ZERO) > 0){
+                        integral.setScore(avgScore);
+                    }
                     integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
                     integral.setDescription("多人任务积分");
                     integral.setReviewStatus(3);
@@ -313,7 +317,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUserHoursBO.getTaskId());
                     integral.setUserId(taskUserHoursBO.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setScore(BigDecimal.ZERO);
+//                    integral.setScore(BigDecimal.ZERO);
                     integral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
                     integral.setDescription("个人任务积分");
                     integral.setReviewStatus(3);
@@ -377,7 +381,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                         userCoefficient = BigDecimal.valueOf(0.1);
                     }
 
-                    Integer originIntegral = 0;
+                    Integer originIntegral = 1;
                     Integer taskLevel = taskUserHoursBO.getTaskLevel();
                     if (taskLevel == 1){
                         originIntegral = 1;
@@ -397,7 +401,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUserHoursBO.getTaskId());
                     integral.setUserId(taskUserHoursBO.getUserId());
                     integral.setIntegral(userIntegral);
-                    integral.setScore(BigDecimal.ZERO);
+//                    integral.setScore(BigDecimal.ZERO);
                     integral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
                     integral.setDescription("个人任务积分");
                     integral.setReviewStatus(3);
