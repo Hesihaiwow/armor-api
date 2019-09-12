@@ -35,9 +35,22 @@ public class TaskBO extends Task{
     private Double userIntegral;
 
     /**
+     * 任务积分
+     */
+    private Double taskIntegral;
+
+    /**
      * 任务用户
      */
     private List<TaskUser> taskUsers;
+
+    public Double getTaskIntegral() {
+        return taskIntegral;
+    }
+
+    public void setTaskIntegral(Double taskIntegral) {
+        this.taskIntegral = taskIntegral;
+    }
 
     public Date getSonTaskCompleteTime() {
         return sonTaskCompleteTime;

@@ -62,10 +62,10 @@
                 <el-button @click="applyModifyMyTask(task)">申请修改任务</el-button>
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
-            <!--<div class="task-data-show" v-show="isPrivate && task.status==3 && taskStatus!='WaitAssess'">-->
-                <!--<span class="task-score">+{{task.userIntegral}}</span>-->
-                <!--<span class="task-level first" v-show="task.type==2">{{task.integralGrade}}</span>-->
-            <!--</div>-->
+            <div class="task-data-show" v-show="task.status === 3 && task.taskIntegral !== undefined">
+                <span class="task-score">+{{task.taskIntegral}}</span>
+                <!--<span class="task-level first" v-show="task.type==2">{{task.taskIntegral}}</span>-->
+            </div>
             <div class="" v-show="!isPrivate && task.status===1&& taskStatus!=='WaitAssess'">
                 <span class="mark-stage">{{task.stageName}}</span>
             </div>
@@ -4378,7 +4378,6 @@
                 })
             },
             getTime(time){
-                console.log(222)
                 const hours = this.addZero(parseInt(time/1000/60/60));
                 const mins = this.addZero(parseInt(time/1000/60%60));
                 const secs = this.addZero(parseInt(time/1000%60));

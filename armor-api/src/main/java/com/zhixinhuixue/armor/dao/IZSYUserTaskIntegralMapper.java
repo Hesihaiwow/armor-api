@@ -21,7 +21,7 @@ public interface IZSYUserTaskIntegralMapper {
      * @param userId 用户id
      * @param taskId 任务id
      */
-    UserTaskIntegral selectByUserAndTask(@Param("userId") Long userId, @Param("taskId") Long taskId);
+    List<UserTaskIntegral> selectByUserAndTask(@Param("userId") Long userId, @Param("taskId") Long taskId);
 
     /**
      * 新增

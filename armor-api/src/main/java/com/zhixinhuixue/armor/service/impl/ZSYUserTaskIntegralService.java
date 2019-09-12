@@ -66,8 +66,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     throw new ZSYServiceException("用户暂无级别,请检查");
                 }
                 //校验是否已存在
-                UserTaskIntegral existIntegral = userTaskIntegralMapper.selectByUserAndTask(taskUser.getUserId(),taskUser.getTaskId());
-                if (existIntegral == null){
+                List<UserTaskIntegral> existIntegrals = userTaskIntegralMapper.selectByUserAndTask(taskUser.getUserId(),taskUser.getTaskId());
+                if (CollectionUtils.isEmpty(existIntegrals)){
                     Double taskHours = taskUser.getTaskHours();
                     int level1Counts = 0;
                     int level2Counts = (int)Math.floor(taskHours/30);
@@ -172,8 +172,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     throw new ZSYServiceException("用户暂无级别,请检查");
                 }
                 //校验是否已存在
-                UserTaskIntegral existIntegral = userTaskIntegralMapper.selectByUserAndTask(taskUser.getUserId(),taskUser.getTaskId());
-                if (existIntegral == null){
+                List<UserTaskIntegral> existIntegrals = userTaskIntegralMapper.selectByUserAndTask(taskUser.getUserId(),taskUser.getTaskId());
+                if (CollectionUtils.isEmpty(existIntegrals)){
                     Integer originIntegral = 0;
                     Integer userLevel = taskUser.getUserLevel();
 
@@ -285,8 +285,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     throw new ZSYServiceException("用户暂无级别,请检查");
                 }
                 //校验是否已存在
-                UserTaskIntegral existIntegral = userTaskIntegralMapper.selectByUserAndTask(taskUserHoursBO.getUserId(),taskUserHoursBO.getTaskId());
-                if (existIntegral == null){
+                List<UserTaskIntegral> existIntegrals = userTaskIntegralMapper.selectByUserAndTask(taskUserHoursBO.getUserId(),taskUserHoursBO.getTaskId());
+                if (CollectionUtils.isEmpty(existIntegrals)){
                     Integer userLevel = taskUserHoursBO.getUserLevel();
                     //用戶级别系数
                     BigDecimal userCoefficient = BigDecimal.ONE;
@@ -356,8 +356,8 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     throw new ZSYServiceException("用户暂无级别,请检查");
                 }
                 //校验是否已存在
-                UserTaskIntegral existIntegral = userTaskIntegralMapper.selectByUserAndTask(taskUserHoursBO.getUserId(),taskUserHoursBO.getTaskId());
-                if (existIntegral == null){
+                List<UserTaskIntegral> existIntegrals = userTaskIntegralMapper.selectByUserAndTask(taskUserHoursBO.getUserId(),taskUserHoursBO.getTaskId());
+                if (CollectionUtils.isEmpty(existIntegrals)){
                     Integer userLevel = taskUserHoursBO.getUserLevel();
                     //用戶级别系数
                     BigDecimal userCoefficient = BigDecimal.ONE;
