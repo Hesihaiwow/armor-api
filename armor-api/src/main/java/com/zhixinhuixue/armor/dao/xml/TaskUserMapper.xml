@@ -197,7 +197,7 @@
         LEFT JOIN task_temp  tt ON tt.task_id = t.id AND tt.review_status = 2
         LEFT JOIN task_temp_function ttf ON ttf.tt_id = tt.id
         LEFT JOIN `user` u ON u.id = tu.`user_id`
-        WHERE tu.begin_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NULL
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NULL
         GROUP BY tu.id;
     </select>
 
@@ -208,7 +208,7 @@
         FROM task_user tu
         LEFT JOIN task t ON t.id = tu.task_id
         LEFT JOIN `user` u ON u.id = tu.`user_id`
-        WHERE tu.begin_time >= '2019-07-01 00:00:00' AND t.type = 1 AND tu.task_level IS NULL
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 1 AND tu.task_level IS NULL
         GROUP BY tu.id;
     </select>
 
@@ -221,7 +221,7 @@
         LEFT JOIN task_temp  tt ON tt.task_id = t.id AND tt.review_status = 2
         LEFT JOIN task_temp_function ttf ON ttf.tt_id = tt.id
         LEFT JOIN `user` u ON u.id = tu.`user_id`
-        WHERE tu.begin_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NOT NULL AND t.`status` = 3
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NOT NULL AND t.`status` = 3
         GROUP BY tu.id;
     </select>
 
@@ -232,7 +232,7 @@
         FROM task_user tu
         LEFT JOIN task t ON t.id = tu.task_id
         LEFT JOIN `user` u ON u.id = tu.`user_id`
-        WHERE tu.begin_time >= '2019-07-01 00:00:00' AND t.type = 1 AND tu.task_level IS NOT NULL AND t.`status` = 3
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 1 AND tu.task_level IS NOT NULL AND t.`status` = 3
         GROUP BY tu.id;
     </select>
     <!--  sch  -->

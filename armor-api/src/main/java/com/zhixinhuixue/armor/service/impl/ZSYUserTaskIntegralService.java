@@ -20,10 +20,7 @@ import com.zhixinhuixue.armor.model.dto.response.UserTaskIntegralResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYUserTaskIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
-import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
-import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
-import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
-import com.zhixinhuixue.armor.source.enums.ZSYUserTaskIntegralOrigin;
+import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -606,7 +603,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
             throw new ZSYServiceException("当前用户无权限");
         }
         if (reqDTO.getUserId() == null){
-
+            throw new ZSYServiceException("用户id不能为空");
         }
         UserTaskIntegral userIntegral = new UserTaskIntegral();
         userIntegral.setId(snowFlakeIDHelper.nextId());
@@ -617,6 +614,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
         userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         userIntegral.setDescription(reqDTO.getDescription());
         userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.ARTIFICIAL.getValue());//手动添加
+        userIntegral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
         userTaskIntegralMapper.insert(userIntegral);
     }
 }

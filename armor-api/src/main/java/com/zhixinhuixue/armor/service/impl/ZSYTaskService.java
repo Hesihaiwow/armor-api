@@ -848,6 +848,7 @@ public class ZSYTaskService implements IZSYTaskService {
         userIntegral.setCreateTime(new Date());
         userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
         userIntegral.setDescription("完成了单人任务:" + taskTemp.getDescription());
+        userIntegral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
         userTaskIntegralMapper.insert(userIntegral);
 
         // 修改用户积分
