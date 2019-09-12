@@ -1621,6 +1621,9 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskTagResDTOS.add(taskTagResDTO);
             });
             taskListResDTO.setTags(taskTagResDTOS);
+            if (taskListResDTO.getCompleteTime() == null && taskListResDTO.getEndTime() != null){
+                taskListResDTO.setCompleteTime(taskListResDTO.getEndTime());
+            }
             list.add(taskListResDTO);
         });
         long time3 = System.currentTimeMillis();
@@ -1949,9 +1952,6 @@ public class ZSYTaskService implements IZSYTaskService {
 //                    }
 //                }
                 taskListResDTO.setTags(taskTagResDTOS);
-                if (taskListResDTO.getCompleteTime() == null && taskListResDTO.getEndTime() != null){
-                    taskListResDTO.setCompleteTime(taskListResDTO.getEndTime());
-                }
                 list.add(taskListResDTO);
             }
 
