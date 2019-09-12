@@ -4123,6 +4123,7 @@
             },
             //创建多人任务
             createMultipleTask(){
+                this.fetchAllMultipleTasks();
                 this.createTaskVisible = false;
                 this.clearMultipleTask();
                 this.taskFunctionData = [];
@@ -4179,7 +4180,6 @@
                     // this.fetchMyReviewSuccess();
                     this.fetchUserLeaveList();
                     // this.fetchUserLeavePassList();
-                    // this.fetchAllMultipleTasks();
                     this.fetchTaskDoing();
                     // this.fetchTaskFinished();
                     // this.fetchTaskWaitAssess();
