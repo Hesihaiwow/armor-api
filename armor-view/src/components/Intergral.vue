@@ -6,15 +6,15 @@
               <el-table-column label="季度排名" align="center" :render-header="createQuarterHistory">
                 <el-table-column prop="id" label="排名" align="center">
                   <template scope="scope">
-                    <div v-if="scope.row.id=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.id"></div>
-                    <div v-if="scope.row.id=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.id"></div>
-                    <div v-if="scope.row.id=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.id"></div>
-                    <div v-if="scope.row.id>'3'">{{scope.row.id}}</div>
+                    <div v-if="scope.row.sort=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.sort"></div>
+                    <div v-if="scope.row.sort=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.sort"></div>
+                    <div v-if="scope.row.sort=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.sort"></div>
+                    <div v-if="scope.row.sort>'3'">{{scope.row.sort}}</div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="name" label="成员" align="center">
+                <el-table-column prop="userName" label="成员" align="center">
                   <template scope="scope">
-                    <el-button @click.native.prevent="clicklHistory(scope.$index, quarter)" type="text" size="small">{{ scope.row.name }}</el-button>
+                    <el-button @click.native.prevent="clicklHistory(scope.$index, quarter)" type="text" size="small">{{ scope.row.userName }}</el-button>
                   </template>
                 </el-table-column>
                 <el-table-column prop="integral" label="积分" align="center"></el-table-column>
@@ -26,15 +26,15 @@
             <el-table-column label="年度排名" align="center" :render-header="createYearHistory">
               <el-table-column prop="id" label="排名" align="center">
                 <template scope="scope">
-                  <div v-if="scope.row.id=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.id"></div>
-                  <div v-if="scope.row.id=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.id"></div>
-                  <div v-if="scope.row.id=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.id"></div>
-                  <div v-if="scope.row.id>'3'">{{scope.row.id}}</div>
+                  <div v-if="scope.row.sort=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.sort"></div>
+                  <div v-if="scope.row.sort=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.sort"></div>
+                  <div v-if="scope.row.sort=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.sort"></div>
+                  <div v-if="scope.row.sort>'3'">{{scope.row.sort}}</div>
                 </template>
               </el-table-column>
-              <el-table-column prop="name" label="成员" align="center">
+              <el-table-column prop="userName" label="成员" align="center">
                 <template scope="scope">
-                  <el-button @click.native.prevent="clicklHistory(scope.$index, year)" type="text" size="small">{{ scope.row.name }}</el-button>
+                  <el-button @click.native.prevent="clicklHistory(scope.$index, year)" type="text" size="small">{{ scope.row.userName }}</el-button>
                 </template>
               </el-table-column>
               <el-table-column prop="integral" label="积分" align="center" type="danger">
@@ -61,11 +61,13 @@
             return {
                 queryForm: {
                     startTime: '',
-                    endTime: ''
+                    beginTime: '',
+                    endTime: '',
                 },
                 yearForm: {
                   startTime: '',
-                  endTime: ''
+                    beginTime: '',
+                    endTime: '',
                 },
                 yearList:{
                     curYear:'',
@@ -104,19 +106,30 @@
             integralPage(date) {
               if(date=="quarter"){//本季度
                 this.getDateString("quarter");
-                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                Http.zsyPostHttp(`/user-task-integral/rank`,this.queryForm, (res) => {
                   this.quarter= res.data;
                   this.countQuarterHistory(this.queryForm);
                   if(this.quarter.length<1){
                     console.log(11)
                   }
                 })
+                //   Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                //   this.quarter= res.data;
+                //   this.countQuarterHistory(this.queryForm);
+                //   if(this.quarter.length<1){
+                //     console.log(11)
+                //   }
+                // })
               }else if(date=="year"){//今年
                 this.getDateString("year");
-                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.yearForm, (res) => {
+                Http.zsyPostHttp(`/user-task-integral/rank`,this.yearForm, (res) => {
                   this.year= res.data;
                   this.countYearHistory(this.yearForm);
                 })
+                //   Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.yearForm, (res) => {
+                //   this.year= res.data;
+                //   this.countYearHistory(this.yearForm);
+                // })
               }
             },
             //获取本年,季度,月的开始结束日期
@@ -126,7 +139,8 @@
                 let curYear = now.getFullYear();
                 let startMonth = 0;
                 if (date == "month") {//本月的开始结束时间
-                    this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
+                    // this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
+                    this.queryForm.beginTime = this.localeTimeString(new Date(curYear, curMonth, 1));
                     this.queryForm.endTime = this.localeTimeString(new Date(curYear, curMonth + 1, 1));//下月第一天0点
                 } else if (date == "quarter") {//本季度的开始结束时间
                     if (curMonth >= 0 && curMonth <= 2) {
@@ -138,11 +152,13 @@
                     } else if (curMonth >= 9 && curMonth <= 11) {
                         startMonth = 9;
                     }
-                    this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
+                    // this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
+                    this.queryForm.beginTime = this.localeTimeString(new Date(curYear, startMonth, 1));
                     this.queryForm.endTime = this.localeTimeString(new Date(curYear, startMonth + 3, 1));//下季度第一天0点
                     this.quarterTime = this.localeStringTime(new Date(curYear, startMonth, 1))+'—'+ this.localeStringTime(new Date(curYear, startMonth + 3, 1)-1);
                 } else if (date == "year") {//本年的开始结束时间
-                    this.yearForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
+                    // this.yearForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
+                    this.yearForm.beginTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
                     this.yearForm.endTime = this.localeTimeString(new Date(now.getFullYear() + 1, 0, 1));
                     this.yearTime = this.localeStringTime(new Date(curYear, 0, 1))+'—'+ this.localeStringTime(new Date(curYear+1,0,1)-1);
                 }
@@ -175,7 +191,8 @@
                 }
             },
             countYearHistory(time){
-                Http.zsyGetHttp('/integral/count',time, (res) => {
+                // Http.zsyPostHttp('/integral/count',time, (res) => {
+                Http.zsyPostHttp('/user-task-integral/count',time, (res) => {
                     if(res.data.prev==0){
                         this.yearShow.prev = 'none'
                     }else{
@@ -189,7 +206,8 @@
                 })
             },
             countQuarterHistory(time){
-                Http.zsyGetHttp('/integral/count',time, (res) => {
+                // Http.zsyGetHttp('/integral/count',time, (res) => {
+                Http.zsyPostHttp('/user-task-integral/count',time, (res) => {
                     if(res.data.prev==0){
                         this.quarterShow.prev = 'none'
                     }else{
@@ -204,41 +222,45 @@
             },
             prevQuarterHistory(){
                 var currQuarter = new Date(this.quarterTime.split('—')[0])
-                this.queryForm.endTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth(),1);
-                this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()-3,1);
-                this.quarterTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
-                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                this.queryForm.endTime = this.localeTimeString(new Date(currQuarter.getFullYear(),currQuarter.getMonth(),1));
+                // this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()-3,1);
+                this.queryForm.beginTime = this.localeTimeString(new Date(currQuarter.getFullYear(),currQuarter.getMonth()-3,1));
+                this.quarterTime = this.localeStringTime(this.queryForm.beginTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
+                Http.zsyPostHttp(`user-task-integral/rank`,this.queryForm, (res) => {
                     this.quarter= res.data;
                     this.countQuarterHistory(this.queryForm);
                 })
             },
             nextQuarterHistory(){
                 var currQuarter = new Date(this.quarterTime.split('—')[1])
-                this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()+1,1);
-                this.queryForm.endTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()+4,1);
-                this.quarterTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
-                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                // this.queryForm.startTime = new Date(currQuarter.getFullYear(),currQuarter.getMonth()+1,1);
+                this.queryForm.beginTime = this.localeTimeString(new Date(currQuarter.getFullYear(),currQuarter.getMonth()+1,1));
+                this.queryForm.endTime = this.localeTimeString(new Date(currQuarter.getFullYear(),currQuarter.getMonth()+4,1));
+                this.quarterTime = this.localeStringTime(this.queryForm.beginTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
+                Http.zsyPostHttp(`user-task-integral/rank`,this.queryForm, (res) => {
                     this.quarter= res.data;
                     this.countQuarterHistory(this.queryForm);
                 })
             },
             prevYearHistory(){
                 var currQuarter = new Date(this.yearTime.split('—')[0])
-                this.queryForm.endTime = new Date(currQuarter.getFullYear(),0,1);
-                this.queryForm.startTime = new Date(currQuarter.getFullYear()-1,0,1);
-                this.yearTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
-                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                this.queryForm.endTime = this.localeTimeString(new Date(currQuarter.getFullYear(),0,1));
+                // this.queryForm.startTime = new Date(currQuarter.getFullYear()-1,0,1);
+                this.queryForm.beginTime = this.localeTimeString(new Date(currQuarter.getFullYear()-1,0,1));
+                this.yearTime = this.localeStringTime(this.queryForm.beginTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
+                Http.zsyPostHttp(`user-task-integral/rank`,this.queryForm, (res) => {
                     this.year= res.data;
                     this.countYearHistory(this.queryForm);
                 })
             },
             nextYearHistory(){
-                var currQuarter = new Date(this.yearTime.split('—')[1])
-                this.queryForm.startTime = new Date(currQuarter.getFullYear()+1,0,1);
-                this.queryForm.endTime = new Date(currQuarter.getFullYear()+2,0,1);
-                this.yearTime = this.localeStringTime(this.queryForm.startTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
+                var currQuarter = new Date(this.yearTime.split('—')[1]);
+                this.queryForm.startTime = this.localeTimeString(new Date(currQuarter.getFullYear()+1,0,1));
+                // this.queryForm.startTime = new Date(currQuarter.getFullYear()+1,0,1);
+                this.queryForm.endTime = this.localeTimeString(new Date(currQuarter.getFullYear()+2,0,1));
+                this.yearTime = this.localeStringTime(this.queryForm.beginTime)+'—'+ this.localeStringTime(new Date(this.queryForm.endTime)-1);
 
-                Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
+                Http.zsyPostHttp(`user-task-integral/rank`,this.queryForm, (res) => {
                     this.year= res.data;
                     this.countYearHistory(this.queryForm);
                 })

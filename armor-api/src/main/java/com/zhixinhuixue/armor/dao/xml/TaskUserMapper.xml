@@ -18,7 +18,7 @@
 
     <sql id="Base_Column_List">
         id, task_id, user_id, task_hours, begin_time, end_time, description, complete_hours,
-        complete_time, status, create_time
+        complete_time, status, create_time,task_level
     </sql>
 
     <resultMap id="DetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskUserBO" extends="BaseResultMap">
@@ -37,6 +37,18 @@
     <resultMap id="personResultMap" type="com.zhixinhuixue.armor.model.bo.PersonTaskBO" extends="BaseResultMap">
         <result column="taskName" jdbcType="VARCHAR" property="taskName"/>
         <result column="taskDescription" jdbcType="VARCHAR" property="taskDescription"/>
+    </resultMap>
+
+    <resultMap id="TaskUserHoursMap" type="com.zhixinhuixue.armor.model.bo.TaskUserHoursBO">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_level" property="userLevel" jdbcType="INTEGER"/>
+        <result column="task_level" property="taskLevel" jdbcType="INTEGER"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="task_type" property="taskType" jdbcType="INTEGER"/>
+        <result column="task_hours" jdbcType="INTEGER" property="taskHours"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
     </resultMap>
 
     <!-- 根据task_id查询详情 -->
@@ -174,6 +186,54 @@
         <![CDATA[ AND tu.complete_time >= #{beginTime}]]>
         <![CDATA[ AND tu.complete_time <= #{endTime}]]>
         AND t.is_delete = 0 AND t.review_status = 3 AND t.type = 1 AND tu.`status` > 1;
+    </select>
+
+    <!--查询2019-7 之后的没有功能点的多人任务-->
+    <select id="selectWithoutFunctionMultiTask" resultMap="TaskUserHoursMap">
+        SELECT tu.id,tu.task_id,tu.user_id,tu.task_hours,t.type task_type,u.level user_level,
+        tu.`create_time`,tu.`complete_time`,tu.task_level
+        FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        LEFT JOIN task_temp  tt ON tt.task_id = t.id AND tt.review_status = 2
+        LEFT JOIN task_temp_function ttf ON ttf.tt_id = tt.id
+        LEFT JOIN `user` u ON u.id = tu.`user_id`
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NULL
+        GROUP BY tu.id;
+    </select>
+
+    <!--查询2019-7月之后的 没有任务级别的个人任务-->
+    <select id="selectWithoutTaskLevel" resultMap="TaskUserHoursMap">
+        SELECT tu.id,tu.task_id,tu.user_id,tu.task_hours,t.type task_type,u.level user_level,
+        tu.`create_time`,tu.`complete_time`,tu.task_level
+        FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        LEFT JOIN `user` u ON u.id = tu.`user_id`
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 1 AND tu.task_level IS NULL
+        GROUP BY tu.id;
+    </select>
+
+    <!--查询2019-7 之后的有功能点的而且已经结束的多人任务-->
+    <select id="selectWithFunctionMultiTask" resultMap="TaskUserHoursMap">
+        SELECT tu.id,tu.task_id,tu.user_id,tu.task_hours,t.type task_type,u.`level` user_level,
+        tu.create_time,tu.complete_time,tu.task_level
+        FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        LEFT JOIN task_temp  tt ON tt.task_id = t.id AND tt.review_status = 2
+        LEFT JOIN task_temp_function ttf ON ttf.tt_id = tt.id
+        LEFT JOIN `user` u ON u.id = tu.`user_id`
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NOT NULL AND t.`status` = 3
+        GROUP BY tu.id;
+    </select>
+
+    <!--查询2019-7月之后的 有任务级别的而且已经完成的个人任务-->
+    <select id="selectWithTaskLevel" resultMap="TaskUserHoursMap">
+        SELECT tu.id,tu.task_id,tu.user_id,tu.task_hours,t.type task_type,u.`level` user_level,
+        tu.create_time,tu.complete_time,tu.task_level
+        FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        LEFT JOIN `user` u ON u.id = tu.`user_id`
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 1 AND tu.task_level IS NOT NULL AND t.`status` = 3
+        GROUP BY tu.id;
     </select>
     <!--  sch  -->
 </mapper>

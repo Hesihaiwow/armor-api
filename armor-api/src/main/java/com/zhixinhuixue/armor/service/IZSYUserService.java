@@ -131,5 +131,11 @@ public interface IZSYUserService {
      */
     List<EffectUserResDTO> getControlledPeopleList(Long checkUserId);
 
+    /**
+     * 查看项目管理者
+     * @author sch
+     */
+    List<EffectUserResDTO> getProductManagers();
+
     // -- sch
 }

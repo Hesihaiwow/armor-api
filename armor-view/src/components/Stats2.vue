@@ -1,6 +1,6 @@
 <template>
     <div class="stats-con">
-        <el-tabs v-model="activeName" @tab-click="" style="position:relative;margin-bottom: 20px;">
+        <el-tabs v-model="activeName" @tab-click="handleClick" style="position:relative;margin-bottom: 20px;">
             <el-tab-pane label="任务统计" name="stat"  style="">
                 <el-table :data="statsData" >
                     <el-table-column prop="name" label="成员" align="center" ></el-table-column>
@@ -58,8 +58,8 @@
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
                         <el-select v-model="bugReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                            <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
+                            <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                       :value="item.userId"></el-option>
                         </el-select>
                     </div>
                     <div class="add-member-basic-msg fl" >
@@ -147,8 +147,8 @@
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
                         <el-select v-model="oldBugReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                            <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
+                            <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                       :value="item.userId"></el-option>
                         </el-select>
                     </div>
                     <div class="add-member-basic-msg fl" >
@@ -358,8 +358,8 @@
             <el-tab-pane label="个人任务" name="personal">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="persanalForm.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <div class="add-member-basic-msg fl"><el-date-picker
@@ -428,8 +428,8 @@
             <el-tab-pane label="请假统计" name="leave"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <div class="add-member-basic-msg fl"><el-date-picker
@@ -720,8 +720,8 @@
             <el-tab-pane label="加班统计" name="eWork"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="extraWorkReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <!--<span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>-->
@@ -1292,7 +1292,8 @@
     export default {
         components: {
             ElButton,
-            ElTabPane},
+            ElTabPane
+        },
         name: 'IntegralHistory',
         data() {
             return {
@@ -1732,40 +1733,38 @@
             }
         },
         beforeMount:function () {
-            this.getEnv();
             this.getStats(this.statsPage.currentPage);
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "stats");
-            this.fetchUserList();
+            // this.fetchUserList();
             this.fetchSignInUser();
-            this.fetchProjectList();
-            this.fetchProjectList();
-            // this.getBugList();
-            this.fetchBugPage();
-            this.fetchOldBugPage();
-            this.getLeaveList();
-            this.fetchAnnualTaskByPriority();
-            this.fetchAnnualProjectTaskNum();
-            this.fetchEveryMonthFeedback();
-            this.fetchEveryMonthTask();
-            this.fetchEveryMonthVacation();
-            this.fetchAnnualVacation();
-            this.fetchAnnualFeedback();
-            this.fetchPersonVacation();
-            this.fetchDiffStageTaskTime();
-            this.fetchTop10MostTimeTask();
-            this.initSignInTime();
-            this.fetchSignInData();
-            this.fetchDiffTypeBugNum();
             this.fetchDemandSystem();
-            this.fetchMantisBugStatsGroupByUser();
-            this.fetchBugWeekGroupByUser();
-            this.fetchOnlineBugGroupByUser();
-            this.fetchBugStatsGroupByTask();
-            this.fetchOnlineBugGroupByDeveloper();
-            this.initTime();
             this.fetchPlatformList();
-            this.getExtraWorkStats();
+            // this.fetchProjectList();
+            // this.getBugList();
+            // this.fetchBugPage();
+            // this.fetchOldBugPage();
+            // this.getLeaveList();
+            // this.fetchAnnualTaskByPriority();
+            // this.fetchAnnualProjectTaskNum();
+            // this.fetchEveryMonthFeedback();
+            // this.fetchEveryMonthTask();
+            // this.fetchEveryMonthVacation();
+            // this.fetchAnnualVacation();
+            // this.fetchAnnualFeedback();
+            // this.fetchPersonVacation();
+            // this.fetchDiffStageTaskTime();
+            // this.fetchTop10MostTimeTask();
+            // this.initSignInTime();
+            // this.fetchSignInData();
+            // this.fetchDiffTypeBugNum();
+            // this.fetchMantisBugStatsGroupByUser();
+            // this.fetchBugWeekGroupByUser();
+            // this.fetchOnlineBugGroupByUser();
+            // this.fetchBugStatsGroupByTask();
+            // this.fetchOnlineBugGroupByDeveloper();
+            // this.initTime();
+            // this.getExtraWorkStats();
         },
         computed: {
             permit() {
@@ -1812,7 +1811,6 @@
                 }
                 return 'total, pager'
             }
-
         },
         filters: {
             formatDate: function (value) {
@@ -1837,6 +1835,47 @@
             },
         },
         methods: {
+            handleClick(){
+              if (this.activeName === 'stat'){
+                  this.getStats();
+              }else if (this.activeName === 'weekPublish'){
+                  this.initTime();
+              } else if (this.activeName === 'bug'){
+                  // this.fetchSignInUser();
+                  this.fetchBugPage();
+                  this.fetchOldBugPage();
+              } else if (this.activeName === 'mantisBug'){
+                  this.getEnv();
+                  this.fetchMantisBugStatsGroupByUser();
+                  this.fetchBugWeekGroupByUser();
+                  this.fetchOnlineBugGroupByUser();
+                  this.fetchBugStatsGroupByTask();
+                  this.fetchOnlineBugGroupByDeveloper();
+              } else if (this.activeName === 'personal'){
+                    // this.fetchSignInUser();
+              } else if (this.activeName === 'week'){
+
+              } else if (this.activeName === 'leave'){
+                    this.getLeaveList();
+              } else if (this.activeName === 'task'){
+                  this.fetchAnnualTaskByPriority();
+                  this.fetchAnnualProjectTaskNum();
+                  this.fetchEveryMonthFeedback();
+                  this.fetchEveryMonthTask();
+                  this.fetchEveryMonthVacation();
+                  this.fetchAnnualVacation();
+                  this.fetchAnnualFeedback();
+                  this.fetchDiffStageTaskTime();
+                  this.fetchTop10MostTimeTask();
+              } else if (this.activeName === 'personalLeave'){
+                  this.fetchPersonVacation();
+              } else if (this.activeName === 'signIn'){
+                  this.initSignInTime();
+                  this.fetchSignInData();
+              } else if (this.activeName === 'eWork'){
+                  this.getExtraWorkStats();
+              }
+            },
             getStats(currentPage){
                 Http.zsyGetHttp(`/stats/list`, {}, (resp) => {
                     this.statsData =  resp.data;
@@ -2216,7 +2255,9 @@
             // sch --
             drawLine1(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart1'));
+                let dom = document.getElementById('myChart1');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2256,7 +2297,9 @@
             },
             drawLine2(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart2'));
+                let dom = document.getElementById('myChart2');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2296,7 +2339,9 @@
             },
             drawLine3(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart3'));
+                let dom = document.getElementById('myChart3');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2341,7 +2386,9 @@
             },
             drawLine6(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart6'));
+                let dom = document.getElementById('myChart6');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2381,7 +2428,9 @@
             },
             drawLine4(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart4'));
+                let dom = document.getElementById('myChart4');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2426,7 +2475,9 @@
             },
             drawLine5(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart5'));
+                let dom = document.getElementById('myChart5');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: { text: '年度请假分布',x:'center' },
@@ -2484,7 +2535,9 @@
             },
             drawLine7(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart7'));
+                let dom = document.getElementById('myChart7');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2548,7 +2601,9 @@
             },
             drawLine8(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart8'));
+                let dom = document.getElementById('myChart8');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2580,7 +2635,9 @@
             },
             drawLine9(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart9'));
+                let dom = document.getElementById('myChart9');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2617,7 +2674,9 @@
             },
             drawLine10(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart10'));
+                let dom = document.getElementById('myChart10');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2710,6 +2769,8 @@
             //查询年度需求
             fetchAnnualFeedback(){
                 if (this.admin){
+                    this.feedbackTotal = 0;
+                    this.feedbackData = [];
                     Http.zsyPostHttp('/data/annual/feedback-num',this.fbReqDTO,(res)=>{
                         if (res){
                             this.fbTotalCount = res.data.totalNum;
@@ -2723,7 +2784,9 @@
                             fbData2.value = this.other;
                             fbData2.name = '其他';
                             this.feedbackData.push(fbData2);
-                            this.drawLine6()
+                            this.$nextTick(()=>{
+                                this.drawLine6()
+                            })
                         }
                     })
                 }
@@ -2731,14 +2794,17 @@
             //查询年度每个月的需求数
             fetchEveryMonthFeedback(){
                 if (this.admin){
+                    this.feedbackMonthList = [];
                     Http.zsyPostHttp('/data/annual/feedback/month',this.fbReqDTO,(res)=>{
                         if (res){
                             this.feedbackMonthList = res.data;
                             this.feedbackMonthList.forEach(feedbackNum=>{
                                 this.feedbackTotal = this.feedbackTotal + feedbackNum
                             });
-                            this.drawLine3();
-                            this.drawLine6()
+                            this.$nextTick(()=>{
+                                this.drawLine3();
+                                this.drawLine6()
+                            })
                         }
                     })
                 }
@@ -2746,13 +2812,17 @@
             //查询年度每月完成的任务数
             fetchEveryMonthTask(){
                 if (this.admin){
+                    this.taskTotal = 0;
+                    this.taskMonthList = [];
                     Http.zsyPostHttp('/data/annual/task/month',this.taskMonthReqDTO,(res)=>{
                         if (res){
                             this.taskMonthList = res.data;
                             this.taskMonthList.forEach(taskNum=>{
                                 this.taskTotal = this.taskTotal + taskNum
                             });
-                            this.drawLine4()
+                            this.$nextTick(()=>{
+                                this.drawLine4()
+                            })
                         }
                     })
                 }
@@ -2760,11 +2830,16 @@
             //年度 每月请假次数和时长集合
             fetchEveryMonthVacation(){
                 if (this.admin){
+                    this.vacationCountList = [];
+                    this.vacationTimeList = [];
                     Http.zsyPostHttp('/data/annual/vacation/month',this.vacationReqDTO,(res)=>{
                         if (res){
                             this.vacationCountList = res.data.vacationCountList;
                             this.vacationTimeList = res.data.vacationTimeList;
-                            this.drawLine5()
+                        
+                            this.$nextTick(()=>{
+                                this.drawLine5()
+                            })
                         }
                     })
                 }
@@ -2783,6 +2858,8 @@
             //查询年度各个项目对应的任务数
             fetchAnnualProjectTaskNum(){
                 if (this.admin){
+                    this.taskData2 = [];
+                    this.projectTaskNum = 0;
                     Http.zsyPostHttp('/data/annual/task/project-task',this.taskReqDTO,(res) =>{
                         if (res){
                             this.projectTaskList = res.data;
@@ -2794,7 +2871,9 @@
                                 this.taskLegend.push(project.projectName);
                                 this.projectTaskNum = this.projectTaskNum + project.taskNum
                             });
-                            this.drawLine2()
+                            this.$nextTick(()=>{
+                                this.drawLine2()
+                            })
                         }
                     })
                 }
@@ -2802,6 +2881,8 @@
             //根据优先级查询年度任务完成数
             fetchAnnualTaskByPriority(){
                 if (this.admin){
+                    this.taskData1 = [];
+
                     Http.zsyPostHttp('data/annual/task/priority',this.taskReqDTO,(res)=>{
                         if (res){
                             this.priorityTask = res.data;
@@ -2819,7 +2900,10 @@
                             tData.name = '普通';
                             this.taskData1.push(tData);
                             this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum;
-                            this.drawLine1()
+      
+                            this.$nextTick(()=>{
+                                this.drawLine1()
+                            })
                         }
                     })
                 }
@@ -3020,6 +3104,9 @@
             //查询年度已完成任务总耗时(设计,产品,开发,测试)
             fetchDiffStageTaskTime(){
                 if (this.admin){
+                    this.taskTimeData.totalTaskTime = 0;
+                    this.diffStageTime = [];
+                    this.diffStageAvgTime = [];
                     Http.zsyPostHttp('/data/annual/diff-stage/task-time',this.taskTimeReqDTO,(res)=>{
                         if (res){
                             this.taskTimeData = res.data;
@@ -3033,7 +3120,9 @@
                             this.diffStageAvgTime.push(res.data.avgProductTime);
                             this.diffStageAvgTime.push(res.data.avgDevelopTime);
                             this.diffStageAvgTime.push(res.data.avgTestTime);
-                            this.drawLine7()
+                            this.$nextTick(()=>{
+                                this.drawLine7()
+                            })
                         }
                     })
                 }
@@ -3041,6 +3130,7 @@
 
             //查询耗时前十名的多人任务
             fetchTop10MostTimeTask(){
+                this.top10TaskList = [];
                 Http.zsyPostHttp('/data/annual/most-time-task/top10',this.taskTimeReqDTO,(res)=>{
                     if (res){
                         this.top10TaskList = res.data.taskList;
@@ -3446,6 +3536,8 @@
                 }
             },
             fetchBugWeekGroupByUser(){
+                this.mantisUserBugWeekList = [];
+                this.seriesDataList = [];
                 Http.zsyPostHttp('/mantis-bug/bug-week/user',this.mantisBugReqDTO2,(res)=>{
                     this.mantisUserBugWeekList = res.data;
 
@@ -3461,12 +3553,18 @@
                         this.seriesDataList.push(seriesData)
                     });
                     if (this.permit){
-                        this.drawLine8()
+                        this.$nextTick(()=>{
+                            this.drawLine8()
+                        })
                     }
 
                 })
             },
             fetchOnlineBugGroupByUser(){
+                this.onlineBugTotalNum = 0;
+                this.mantisUserBugMonthList = [];
+                this.seriesDataList2 = [];
+                this.onlineBugUserList = [];
                 Http.zsyPostHttp('/mantis-bug/online-bug/user',this.mantisBugReqDTO3,(res)=>{
                     this.mantisUserBugMonthList = res.data;
 
@@ -3480,11 +3578,17 @@
                         this.onlineBugTotalNum += bugUserMonth.bugNum;
                     });
                     if (this.permit){
-                        this.drawLine9()
+                        this.$nextTick(()=>{
+                            this.drawLine9()
+                        })
                     }
                 })
             },
             fetchOnlineBugGroupByDeveloper(){
+                this.mantisDeveloperBugMonthList = [];
+                this.seriesDataList3 = [];
+                this.onlineBugDeveloperList = [];
+                this.onlineBugTotalNum3 = 0;
                 Http.zsyPostHttp('/mantis-bug/online-bug/develop',this.mantisBugReqDTO3,(res)=>{
                     this.mantisDeveloperBugMonthList = res.data;
 
@@ -3498,7 +3602,9 @@
                         this.onlineBugTotalNum3 += bugUserMonth.bugNum;
                     });
                     if (this.permit){
-                        this.drawLine10()
+                        this.$nextTick(()=>{
+                            this.drawLine10()
+                        })
                     }
                 })
             },

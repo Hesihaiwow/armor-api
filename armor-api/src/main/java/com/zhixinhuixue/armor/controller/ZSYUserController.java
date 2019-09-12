@@ -184,5 +184,11 @@ public class ZSYUserController extends ZSYController {
     public String getControlledPeopleList(@PathVariable("checkUserId")Long checkUserId){
         return ZSYResult.success().data(userService.getControlledPeopleList(checkUserId)).build();
     }
+
+    @ApiOperation("查询项目管理者")
+    @GetMapping("/managers")
+    public String getProductManagers(){
+        return ZSYResult.success().data(userService.getProductManagers()).build();
+    }
     // -- sch
 }

@@ -1,7 +1,8 @@
 // http
 import Axios from 'axios'
 import { Message } from 'element-ui';
-
+const cancelArr=[];
+export { cancelArr }
 export default {
     //请求基础路径
     API_ROOT: function () {
@@ -10,7 +11,7 @@ export default {
         } else if (process.env.NODE_ENV === 'testing') {
             return 'http://zsy.dev.xueping.com/armor2/api';
         } else {
-            return 'http://localhost:10012/armor/api';
+            return 'http://192.168.1.78:10012/armor/api';
         }
     },
     //所有请求URI
@@ -55,6 +56,9 @@ export default {
         config.timeout = _this.TIME_OUT;
         config.responseType = _this.RESPONSE_TYPE;
         config.headers = { 'Authorization': "Bearer " + window.localStorage.getItem("token") };
+        config.cancelToken = new Axios.CancelToken(cancel => {
+            cancelArr.push({cancel})
+         })
         Axios(config).then((response) => {
             let res = response.data;
             if (res.errCode != "00") {
@@ -79,6 +83,7 @@ export default {
             };
         }).catch((err) => {
             _catch && _catch(err);
+            if(!err.message)return;
             if (err.message.indexOf("Network Error") != -1) {
                 Message.error('网络异常,请检查您的网络连接,请稍后重试.');
             } else if (err.message.indexOf("timeout") != -1) {
@@ -86,7 +91,7 @@ export default {
             } else if (err.message.indexOf("code 503") != -1) {
                 Message.error('当前服务不可用');
             } else {
-                console.debug(err);
+                console.info(err);
                 Message.error('系统异常');
             }
         })

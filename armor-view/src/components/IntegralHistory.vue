@@ -5,7 +5,7 @@
       :style="tabActive(index)">{{list.name}}
       </div>
       <div class="fl menu-list" v-show="diyStyle">
-      <el-date-picker v-model="queryForm.startTime" type="date" placeholder="选择日期"></el-date-picker>
+      <el-date-picker v-model="queryForm.beginTime" type="date" placeholder="选择日期"></el-date-picker>
       <span class="div-line">-</span>
       <el-date-picker v-model="queryForm.endTime" type="date" placeholder="选择日期"></el-date-picker>
       <img src="../assets/img/u1221.png" alt="" @click="integralDate()" class="serch-btn">
@@ -14,7 +14,7 @@
       <el-button @click="backButton()" size="large" style="float: right;position: relative;bottom: 12PX; right: 200PX;">返回上页</el-button>
     </div>
     <el-table :data="historyData" stripe style="width: 100%;bottom:20px">
-      <el-table-column prop="name" label="成员" align="center" width="100px" ></el-table-column>
+      <el-table-column prop="userName" label="成员" align="center" width="100px" ></el-table-column>
       <el-table-column prop="integral" label="积分" align="center" >
         <template scope="scope">
           <el-tag
@@ -32,10 +32,10 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="grade" label="评价" align="center" width="100px" >
+      <el-table-column prop="score" label="评价" align="center" width="100px" >
         <template scope="scope">
-          <el-button type="text" @click="scope.row.type =='2'?commentDetail(scope.$index,historyData):''" v-show="permit">{{scope.row.grade}}</el-button>
-          <div type="text" v-show="!permit">{{scope.row.grade}}</div>
+          <!--<el-button type="text" @click="scope.row.type =='2'?commentDetail(scope.$index,historyData):''" v-show="permit">{{scope.row.grade}}</el-button>-->
+          <div type="text">{{scope.row.score}}</div>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="完成时间" align="center" width="200px"></el-table-column>
@@ -48,7 +48,8 @@
       :layout="historyPage.layout"
       :total="historyPage.totals">
     </el-pagination>
-    <el-dialog  title="新增个人积分记录"  size="tiny"  :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="editIntegralVisible">
+    <el-dialog  title="新增个人积分记录"  size="tiny"  :close-on-click-modal="false"
+                :close-on-press-escape="false" :visible.sync="editIntegralVisible">
       <el-form :model="integralForm" :rules="rules" ref="integralForm" label-width="80px">
         <el-form-item label="积分加减" prop="integral">
         <el-input v-model="integralForm.integral"></el-input>
@@ -101,7 +102,9 @@
         historyData: [],
         queryForm: {
           startTime: '',
-          endTime: ''
+          endTime: '',
+          userId: '',
+          pageNum: 1,
         },
         editIntegralVisible:false,
         showTaskCommentDetail:false,
@@ -216,26 +219,43 @@
       },
       integralHistory(currentPage) {//查询积分历史记录
         this.integralForm.userId = this.$route.query.userId;
-        Http.zsyGetHttp('/integral/history/' + this.integralForm.userId + '/' + currentPage, this.queryForm, (res) => {
+        this.queryForm.userId = this.$route.query.userId;
+        this.queryForm.pageNum = currentPage;
+        Http.zsyPostHttp('/user-task-integral/history', this.queryForm, (res) => {
           let list = res.data.list;
+          // for (var i = 0; i < list.length; i++) {
+          //   if (list[i].origin == 2) {
+          //     list[i].origin = "手动录入";
+          //     list[i].createTime = this.localeTimeString(list[i].createTime);
+          //   } else if(list[i].origin == 3) {
+          //       list[i].origin = "转移求助";
+          //       list[i].createTime = this.localeTimeString(list[i].createTime);
+          //   }else if(list[i].origin == 4) {
+          //       list[i].origin = "Bug处理结果";
+          //       list[i].createTime = this.localeTimeString(list[i].createTime);
+          //   }else{
+          //           list[i].createTime = this.localeTimeString(list[i].createTime);
+          //           if(list[i].type!=1){
+          //               list[i].origin = "任务系统-多人任务";
+          //           }else{
+          //               list[i].origin = "任务系统-单人任务";
+          //               list[i].grade = "";
+          //           }
+          //   }
+          // }
           for (var i = 0; i < list.length; i++) {
-            if (list[i].origin == 2) {
+            if (list[i].origin == 3) {
               list[i].origin = "手动录入";
               list[i].createTime = this.localeTimeString(list[i].createTime);
-            } else if(list[i].origin == 3) {
-                list[i].origin = "转移求助";
+            } else if(list[i].origin == 1) {
+                list[i].origin = "任务系统-多人任务";
                 list[i].createTime = this.localeTimeString(list[i].createTime);
             }else if(list[i].origin == 4) {
                 list[i].origin = "Bug处理结果";
                 list[i].createTime = this.localeTimeString(list[i].createTime);
             }else{
-                    list[i].createTime = this.localeTimeString(list[i].createTime);
-                    if(list[i].type!=1){
-                        list[i].origin = "任务系统-多人任务";
-                    }else{
-                        list[i].origin = "任务系统-单人任务";
-                        list[i].grade = "";
-                    }
+                list[i].origin = "任务系统-单人任务";
+                list[i].createTime = this.localeTimeString(list[i].createTime);
             }
           }
           if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
@@ -259,7 +279,8 @@
                 });
                 return false;
             }
-            Http.zsyPostHttp('/integral/add', this.integralForm, (res) => {
+            // Http.zsyPostHttp('/integral/add', this.integralForm, (res) => {
+            Http.zsyPostHttp('/user-task-integral/add', this.integralForm, (res) => {
               this.$message({
                   showClose: true,
                   message: '积分添加成功',
@@ -275,7 +296,7 @@
         });
       },
       cancelIntegral() {
-        this.editIntegralVisible = false
+        this.editIntegralVisible = false;
         this.integralForm.description = '';
         this.integralForm.integral = '';
       },
@@ -288,7 +309,8 @@
       },
       //根据自定义时间进行查询
       integralDate() {
-        this.queryForm.startTime = this.localeTimeString(this.queryForm.startTime);
+        // this.queryForm.startTime = this.localeTimeString(this.queryForm.startTime);
+        this.queryForm.beginTime = this.localeTimeString(this.queryForm.beginTime);
         if (this.queryForm.endTime != null && this.queryForm.endTime != "") {
           this.queryForm.endTime = this.localeTimeString(new Date(this.queryForm.endTime).getTime() + 86399000);//结束时间加入23:59:59
         }
@@ -299,10 +321,10 @@
         let now = new Date();
         let curMonth = now.getMonth();
         let curYear = now.getFullYear();
-        ;
         let startMonth = 0;
         if (date == "month") {//本月的开始结束时间
-          this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
+          // this.queryForm.startTime = this.localeTimeString(new Date(curYear, curMonth, 1));
+          this.queryForm.beginTime = this.localeTimeString(new Date(curYear, curMonth, 1));
           this.queryForm.endTime = this.localeTimeString(new Date(curYear, curMonth + 1, 1));//下月第一天0点
         } else if (date == "quarter") {//本季度的开始结束时间
           if (curMonth >= 0 && curMonth <= 2) {
@@ -314,10 +336,12 @@
           } else if (curMonth >= 9 && curMonth <= 11) {
             startMonth = 9;
           }
-          this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
+          // this.queryForm.startTime = this.localeTimeString(new Date(curYear, startMonth, 1));
+          this.queryForm.beginTime = this.localeTimeString(new Date(curYear, startMonth, 1));
           this.queryForm.endTime = this.localeTimeString(new Date(curYear, startMonth + 3, 1));//下季度第一天0点
         } else if (date == "year") {//本年的开始结束时间
-          this.queryForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
+          // this.queryForm.startTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
+          this.queryForm.beginTime = this.localeTimeString(new Date(now.getFullYear(), 0, 1));
           this.queryForm.endTime = this.localeTimeString(new Date(now.getFullYear() + 1, 0, 1));
         }
       },

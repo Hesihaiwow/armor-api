@@ -9,6 +9,12 @@
             <el-checkbox v-model="showMyTaskVisible" style="display: inline-block;margin-left: 10px" v-show="userRole < 2 && btnValStatus == 2" @change="showMyTask(showMyTaskVisible)">仅显示我负责的任务
             </el-checkbox>
             <!--<input type="button" value="本周发版计划" @click="showWeekPublishPlan"/>-->
+                <el-select v-show="btnValStatus == 2" v-model="createBy" clearable
+                           placeholder="请选择负责人" @change="changeManager(createBy)"
+                size="small" style="width: 130px">
+                    <el-option v-for="item in managerList" :key="item.id" :label="item.name"
+                               :value="item.id"></el-option>
+                </el-select>
         </div>
 
         <div class="task-con">
@@ -45,7 +51,7 @@
                             <div class="task-top-list fl">
                                 <span class="ttl-name">创建人</span>
                                 <el-select clearable v-model="form.createBy" placeholder="请选择">
-                                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in managerList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -204,6 +210,7 @@
                 publishHide:true,
                 projectList: [],
                 userList: [],
+                managerList: [],
                 stageList: [],
                 tagList: [],
                 publishTime:'',
@@ -277,9 +284,16 @@
                 pickerWeek:{
                     firstDayOfWeek:1
                 },
+                createBy:''
             };
         },
         created() {
+            const taskCreater = window.localStorage.getItem("taskCreater");
+            if (taskCreater === undefined || taskCreater == null || taskCreater === '') {
+                window.localStorage.setItem("taskCreater",1);
+            }
+
+
             if(typeof (this.$route.params.userId) !="undefined"){
                 this.form.userId = this.$route.params.userId;
                 this.form.type = '';
@@ -313,16 +327,19 @@
                 this.btnValStatus = viewType
             }
             // -- sch
-            this.fetchProjectList()
-            this.fetchUserList()
-            this.fetchStageList()
-            this.fetchTagList()
-            this.fetchTaskList()
-            this.getPublishTime()
-            this.initTime()
+            this.fetchProjectList();
+            this.fetchUserList();
+            this.fetchManagers();
+            this.fetchStageList();
+            this.fetchTagList();
+            this.fetchTaskList();
+            this.getPublishTime();
+            this.initTime();
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "task");
-
+            if (taskCreater !== undefined && taskCreater != null && taskCreater != 1) {
+                this.createBy = taskCreater;
+            }
 
         },
 
@@ -503,6 +520,11 @@
                     vm.userList = resp.data
                 })
             },
+            fetchManagers(){
+                http.zsyGetHttp('/user/managers',{},(res)=>{
+                    this.managerList = res.data;
+                })
+            },
             fetchStageList() {
                 let vm = this
                 http.zsyGetHttp('/stage/list', {}, (resp) => {
@@ -521,10 +543,10 @@
                 this.fetchTaskList();
             },
             fetchTaskList() {
-                this.loading = true
-                this.taskItems = []
-                let vm = this
-                let param = {}
+                this.loading = true;
+                this.taskItems = [];
+                let vm = this;
+                let param = {};
                 param['pageNum'] = this.page.pageNum || 1;
                 param['pageSize'] = this.page.pageSize;
                 if (this.form.taskId !== '') {
@@ -560,17 +582,17 @@
                 param['type'] = this.form.type;
                 param['sort'] = this.form.sort;
                 http.zsyPostHttp('/task/public/master/all', param, (resp) => {
-                    const list = resp.data.list
+                    const list = resp.data.list;
                     list.forEach((el) => {
-                        let endTime = '',today = moment().format('YYYY-MM-DD')
+                        let endTime = '',today = moment().format('YYYY-MM-DD');
                         if (el.status == 1 || el.status == 0) {
                             endTime = el.endTime
                         } else {
                             endTime = el.completeTime
                         }
-                        endTime = moment(endTime).format('YYYY-MM-DD')
-                        const diffDays = moment(today).diff(moment(endTime), 'days')
-                        let endColor = '', endText = ''
+                        endTime = moment(endTime).format('YYYY-MM-DD');
+                        const diffDays = moment(today).diff(moment(endTime), 'days');
+                        let endColor = '', endText = '';
                         endText = moment(endTime).calendar(null, {
                             sameDay: '[今天]',
                             nextDay: '[明天]',
@@ -578,7 +600,7 @@
                             lastDay: '[昨天]',
                             lastWeek: 'L',
                             sameElse: 'L'
-                        })
+                        });
                         if (el.status == 1) {
 
                             if (diffDays == 0) {
@@ -606,11 +628,11 @@
                             el.borderClass = 'red-border'
                         }
 
-                    })
-                    vm.loading = false
-                    vm.taskItems = resp.data.list
-                    vm.page.pageNum = resp.data.pageNum
-                    vm.page.pageSize = 5
+                    });
+                    vm.loading = false;
+                    vm.taskItems = resp.data.list;
+                    vm.page.pageNum = resp.data.pageNum;
+                    vm.page.pageSize = 5;
                     vm.page.total = resp.data.total
                 })
                 // 刷新看板
@@ -621,7 +643,8 @@
             //显示我的任务
             showMyTask(flag){
                 if (flag){
-                    this.fetchMyTaskByStageId()
+                    this.fetchMyTaskByStageId();
+                    window.localStorage.removeItem("taskCreater")
                 }else {
                     this.fetchTaskByStageId()
                 }
@@ -660,6 +683,14 @@
 
                 this.weekPublishReqDTO.beginTime = begin;
                 this.weekPublishReqDTO.endTime = end;
+            },
+            changeManager(userId){
+                if (userId != null && userId !== undefined && userId !==''){
+                    window.localStorage.setItem("taskCreater",userId);
+                }else {
+                    window.localStorage.setItem("taskCreater",1);
+                }
+                this.$router.go(0)
             }
             // -- sch
         },

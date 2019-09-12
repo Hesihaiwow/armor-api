@@ -180,7 +180,7 @@ public interface IZSYTaskService {
      * @param stageId
      * @return
      */
-    List<TaskListResDTO> getTaskByStageId(Long stageId);
+    List<TaskListResDTO> getTaskByStageId(Long stageId,Long userId);
 
     /**
      * 获取阶段下的任务

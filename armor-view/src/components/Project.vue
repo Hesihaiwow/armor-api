@@ -1,6 +1,6 @@
 <template>
   <div class="project-con">
-    <el-tabs v-model="activeName" @tab-click="">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
         <div v-if="isAdmin">
             <el-tab-pane label="标签管理" name="tag"  style="line-height:50px">
                 <el-tag
@@ -249,7 +249,7 @@
         activeName:"project",
         activeNames: 1,
         editProjectVisible:false,
-        inputVisible:true,
+        // inputVisible:true,
         addPlatformVisible:false,
         addStageVisible:false,
         editStageVisible:false,
@@ -291,10 +291,10 @@
       //选中项目tab
       this.$root.eventBus.$emit("handleTabSelected", "project");
       this.projectList();
-      this.fetchTagList();
-      this.fetchStageList();
-      this.fetchPlatformList();
-      this.fetchTaskTempModuleList();
+      // this.fetchTagList();
+      // this.fetchStageList();
+      // this.fetchPlatformList();
+      // this.fetchTaskTempModuleList();
     },
     computed: {
         //是否有权限
@@ -306,6 +306,19 @@
         }
     },
     methods: {
+        handleClick(){
+          if (this.activeName === 'project'){
+              this.projectList();
+          }  else if (this.activeName === 'taskTempModule') {
+              this.fetchTaskTempModuleList();
+          }else if (this.activeName === 'platform') {
+              this.fetchPlatformList();
+          }else if (this.activeName === 'stage') {
+              this.fetchStageList()
+          }else if (this.activeName === 'tag') {
+              this.fetchTagList();
+          }
+        },
       deleteWindow(){//删除项目弹出框
           this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
             confirmButtonText: '确定',
@@ -373,7 +386,7 @@
         }
       },
       saveProject(){
-          this.isSaving = true
+          this.isSaving = true;
           if(this.saveAdd()){
             Http.zsyPostHttp(Http.API_URI.ADDPROJECT,this.project,(res)=>{
               this.successMsg("项目添加成功");

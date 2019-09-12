@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserTaskIntegralMapper">
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="task_id" jdbcType="BIGINT" property="taskId" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="integral" jdbcType="DECIMAL" property="integral" />
+        <result column="score" jdbcType="DECIMAL" property="score" />
+        <result column="origin" jdbcType="INTEGER" property="origin" />
+        <result column="review_status" jdbcType="INTEGER" property="reviewStatus" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.UserTaskIntegralListBO" extends="BaseMap">
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+    </resultMap>
+    
+    <resultMap id="HistoryBOMap" type="com.zhixinhuixue.armor.model.bo.UserIntegralHistoryPageBO" extends="BaseMap">
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="task_hours" property="taskHours" jdbcType="DECIMAL"/>
+        <result column="task_type" property="taskType" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
+        INSERT INTO `user_task_integral`
+        (`id`,`user_id`,`task_id`,`integral`,`description`
+        ,`origin`,`review_status`,`create_by`,`create_time`,`score`)
+        VALUES
+        (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT}
+        ,#{integral,jdbcType=DECIMAL},#{description,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER}
+        ,#{reviewStatus,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP}
+        ,#{score,jdbcType=DECIMAL})
+    </insert>
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
+        INSERT INTO `user_task_integral`
+        (`id`,`user_id`,`task_id`,`integral`,`description`
+        ,`origin`,`review_status`,`create_by`,`create_time`
+        ,`score`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
+            ,#{item.integral,jdbcType=DECIMAL},#{item.description,jdbcType=VARCHAR},#{item.origin,jdbcType=INTEGER}
+            ,#{item.reviewStatus,jdbcType=INTEGER},#{item.createBy,jdbcType=BIGINT},#{item.createTime,jdbcType=TIMESTAMP}
+            ,#{item.score,jdbcType=DECIMAL})
+        </foreach>
+    </insert>
+
+    <!--根据用户和任务查询积分-->
+    <select id="selectByUserAndTask" resultMap="BaseMap">
+        SELECT * FROM `user_task_integral` WHERE `user_id` = #{userId} AND `task_id` = #{taskId}
+    </select>
+
+    <!--根据用户和时间查询积分-->
+    <select id="selectListByUserAndTime" resultMap="BaseMap">
+        SELECT * FROM user_task_integral WHERE user_id = #{userId}
+        <if test="beginTime != null">
+            <![CDATA[AND create_time >= #{beginTime}]]>
+        </if>
+        <if test="endTime!=null" >
+            <![CDATA[AND create_time <= #{endTime}]]>
+        </if>
+    </select>
+
+    <!--查看积分排序-->
+    <select id="selectByTimeRange" resultMap="BOMap">
+        SELECT (@rowid := @rowid+1) AS sort,`integral`,`name` as user_name,`user_id` FROM(
+        SELECT sum(case when (i.review_status!=1  or i.review_status is null) then i.integral else 0 end) as integral, u.name, i.user_id
+        FROM user_task_integral i,`user` u
+        LEFT JOIN department d on u.department_id = d.id
+        <where>
+            i.user_id = u.id AND d.parent_id =#{deptId} AND u.status = 0
+            <if test="reqDTO.beginTime!=null">
+                <![CDATA[AND i.create_time >= #{reqDTO.beginTime}]]>
+            </if>
+            <if test="reqDTO.endTime!=null" >
+                <![CDATA[AND i.create_time <#{reqDTO.endTime}]]>
+            </if>
+        </where>
+        GROUP BY i.user_id
+        ORDER BY integral DESC)as a,
+        (SELECT (@rowid:=0))as b
+    </select>
+
+    <!--积分列数-->
+    <select id="getIntegralCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) From user_task_integral i
+        LEFT JOIN `user` u on u.id = i.user_id
+        LEFT JOIN department d on u.department_id = d.id
+        WHERE d.parent_id =#{deptId} AND u.status = 0 AND
+        <if test="beginTime!=null">
+            <![CDATA[ i.create_time >= #{beginTime}]]>
+        </if>
+        <if test="endTime!=null" >
+            <![CDATA[  i.create_time <=#{endTime}]]>
+        </if>
+    </select>
+    
+    <!--获取用户积分历史-->
+    <select id="getIntegralHistory" resultMap="HistoryBOMap">
+        SELECT t1.* from
+        (SELECT i.integral, u.name user_name, i.origin, i.score,
+        i.create_time, i.task_id, i.description, t.type task_type, h.task_hours, h.id user_id
+        FROM user_task_integral i
+        LEFT JOIN `user` u ON i.user_id = u.id
+        LEFT JOIN task t ON i.task_id = t.id
+        LEFT JOIN task_user h ON i.task_id = h.task_id AND h.user_id = i.user_id
+        <where>
+            i.user_id = #{userId,jdbcType=BIGINT}  AND (i.review_status != 1  or i.review_status is null) AND u.status = 0
+            <if test="beginTime!=null">
+                <![CDATA[AND i.create_time >= #{beginTime}]]>
+            </if>
+            <if test="endTime!=null" >
+                <![CDATA[AND i.create_time <#{endTime}]]>
+            </if>
+        </where>
+        GROUP BY i.id
+        ORDER BY i.create_time DESC) t1
+    </select>
+
+</mapper>

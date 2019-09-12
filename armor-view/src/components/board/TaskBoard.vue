@@ -8,21 +8,21 @@
                     <li class="clearfix" :class="task.borderClass" draggable='true' @dragstart='drag($event,task.canDrag)'
                         v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id"
                         :createBy="task.createBy" >
-                        <div class="trans" v-show="task.examine===1"></div>
+                        <div class="trans" v-show="task.examine==1"></div>
                         <div class="fl complate" data-title="" >
                         </div>
                         <div class="fl task-name">
                             <div style="font-size: 16px;padding: 12px 0">{{task.name}}</div>
-                            <div v-if="item.name==='已发布'&&task.status===3">
+                            <div v-if="item.name=='已发布'&&task.status==3">
                                 <span class="tips purple" >{{task.endText}}</span>
                             </div>
-                            <div v-else-if="task.status===0">
+                            <div v-else-if="task.status==0">
                                 <span class="tips grey">任务暂停</span>
                             </div>
                             <div v-else="">
                                 <span class="tips" :class="task.endColor">{{task.endText}}</span>
                             </div>
-                            <div style="border-top: 5px;padding: 2px"><span v-if="task.status===1&&task.delayNo!==0" class="tips orange">超时人数:{{task.delayNo}}</span></div>
+                            <div style="border-top: 5px;padding: 2px"><span v-if="task.status==1&&task.delayNo!==0" class="tips orange">超时人数:{{task.delayNo}}</span></div>
                         </div>
                         <div class="master-info fr ellipsis">
                             <img v-if="task.avatarUrl && task.avatarUrl!==''" :src="task.avatarUrl" :alt="task.userName">
@@ -35,7 +35,7 @@
     </div>
 </template>
 <script>
-    let dom;
+    var dom;
     import moment from 'moment';
     import helper from '../../lib/Helper'
     import move from '../../lib/move'
@@ -54,11 +54,11 @@
         },
         computed: {
             loginUserRole() {
-                let userRole = helper.decodeToken().userRole;
+                var userRole = helper.decodeToken().userRole;
                 return userRole;
             },
             loginUserId() {
-                let userId = helper.decodeToken().userId;
+                var userId = helper.decodeToken().userId;
                 return userId;
             },
         },
@@ -66,8 +66,8 @@
             drag: function (event,canDrag) {
                 console.log(canDrag);
                 // 自己创建的任务及超管才可以拖动任务
-                let taskCreateBy = event.currentTarget.getAttribute('createby');
-                if((this.loginUserId === taskCreateBy || this.loginUserRole===0) && canDrag ){
+                var taskCreateBy = event.currentTarget.getAttribute('createby');
+                if((this.loginUserId == taskCreateBy || this.loginUserRole==0) && canDrag ){
                     dom = event.currentTarget;
                 }else{
                     event.preventDefault();
@@ -75,14 +75,14 @@
                 }
             },
             drop: function (event) {
-                let stageId = '', originId = dom.getAttribute('taskid'), targetId = '', vm = this;
+                var stageId = '', originId = dom.getAttribute('taskid'), targetId = '', vm = this;
                 event.preventDefault();
-                if (event.target.tagName.toLowerCase() === "li") {
+                if (event.target.tagName.toLowerCase() == "li") {
                     targetId = event.target.getAttribute('taskid');
-                } else if (event.target.tagName.toLowerCase() === "ul") {
+                } else if (event.target.tagName.toLowerCase() == "ul") {
                     stageId = event.target.getAttribute('stageid');
                 } else {
-                    let li = this.findParent(event.target);
+                    var li = this.findParent(event.target);
                     targetId = li.getAttribute('taskid');
                 }
 
@@ -91,12 +91,12 @@
                     targetId: targetId,
                     targetStageId: stageId
                 }, (res) => {
-                    if (event.target.tagName.toLowerCase() === "li") {
+                    if (event.target.tagName.toLowerCase() == "li") {
                         event.target.parentNode.insertBefore(dom, event.target);
-                    } else if (event.target.tagName.toLowerCase() === "ul") {
+                    } else if (event.target.tagName.toLowerCase() == "ul") {
                         event.target.appendChild(dom);
                     } else {
-                        let li = vm.findParent(event.target);
+                        var li = vm.findParent(event.target);
                         li.parentNode.insertBefore(dom, li);
                     }
                     vm.getData2();
@@ -125,25 +125,25 @@
             getData() {
                 const publishType = window.localStorage.getItem("publishType");
                 // 获取阶段
-                let that = this;
+                var that = this;
                 that.http.zsyGetHttp('/stage/list', {}, (res) => {
                     that.stageList = res.data;
                     that.taskBoxWidth = that.stageList.length * 270 + "px";
                     that.stageList.forEach((stage) => {
-                        if(publishType===1){
+                        if(publishType==1){
                             // 获取任务
                             that.http.zsyGetHttp(`/task/tasksByStageTime/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD');
-                                    if (el.status === 1) {
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
+                                    if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
                                         endTime = el.completeTime
                                     }
                                     endTime = moment(endTime).format('YYYY-MM-DD');
                                     const diffDays = moment(today).diff(moment(endTime), 'days');
-                                    let endColor = '', endText = '';
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -152,8 +152,8 @@
                                         lastWeek: 'L',
                                         sameElse: 'L'
                                     });
-                                    if (el.status === 1) {
-                                        if (diffDays === 0) {
+                                    if (el.status == 1) {
+                                        if (diffDays == 0) {
                                             endColor = 'orange'
                                         } else if (diffDays > 0) {
                                             endColor = 'red'
@@ -169,9 +169,9 @@
                                     el['endText'] = endText;
 
                                     // 优先级样式
-                                    if (el.priority === 2) {
+                                    if (el.priority == 2) {
                                         el.borderClass = 'orange-border'
-                                    } else if (el.priority === 3) {
+                                    } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
                                 });
@@ -179,17 +179,17 @@
                             })
                         }else{
                             that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD');
-                                    if (el.status === 1) {
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
+                                    if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
                                         endTime = el.completeTime
                                     }
                                     endTime = moment(endTime).format('YYYY-MM-DD');
                                     const diffDays = moment(today).diff(moment(endTime), 'days');
-                                    let endColor = '', endText = '';
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -198,8 +198,8 @@
                                         lastWeek: 'L',
                                         sameElse: 'L'
                                     });
-                                    if (el.status === 1) {
-                                        if (diffDays === 0) {
+                                    if (el.status == 1) {
+                                        if (diffDays == 0) {
                                             endColor = 'orange'
                                         } else if (diffDays > 0) {
                                             endColor = 'red'
@@ -215,9 +215,9 @@
                                     el['endText'] = endText;
 
                                     // 优先级样式
-                                    if (el.priority === 2) {
+                                    if (el.priority == 2) {
                                         el.borderClass = 'orange-border'
-                                    } else if (el.priority === 3) {
+                                    } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
                                 });
@@ -230,8 +230,14 @@
             },
             getData2() {
                 const justMine = window.localStorage.getItem("justMine");
+                var taskCreater = window.localStorage.getItem("taskCreater");
+                if (taskCreater === undefined || taskCreater == null || taskCreater === '') {
+                    window.localStorage.setItem("taskCreater",1);
+                    taskCreater = window.localStorage.getItem("taskCreater");
+                }
+                console.log(taskCreater)
                 // 获取阶段
-                let that = this;
+                var that = this;
                 that.http.zsyGetHttp('/stage/list', {}, (res) => {
                     that.stageList = res.data;
                     that.taskBoxWidth = that.stageList.length * 270 + "px";
@@ -239,17 +245,17 @@
                         if(justMine==1){
                             // 获取任务
                             that.http.zsyGetHttp(`/task/tasksByStage/mine/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD');
-                                    if (el.status === 1) {
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
+                                    if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
                                         endTime = el.clickFinishTime
                                     }
                                     endTime = moment(endTime).format('YYYY-MM-DD');
                                     const diffDays = moment(today).diff(moment(endTime), 'days');
-                                    let endColor = '', endText = '';
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -258,8 +264,8 @@
                                         lastWeek: 'L',
                                         sameElse: 'L'
                                     });
-                                    if (el.status === 1) {
-                                        if (diffDays === 0) {
+                                    if (el.status == 1) {
+                                        if (diffDays == 0) {
                                             endColor = 'orange'
                                         } else if (diffDays > 0) {
                                             endColor = 'red'
@@ -275,27 +281,28 @@
                                     el['endText'] = endText;
 
                                     // 优先级样式
-                                    if (el.priority === 2) {
+                                    if (el.priority == 2) {
                                         el.borderClass = 'orange-border'
-                                    } else if (el.priority === 3) {
+                                    } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
                                 });
                                 that.$set(stage, 'tasks', list)
                             })
                         }else{
-                            that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                            that.http.zsyGetHttp(`/task/tasksByStage/`+taskCreater+`/${stage.id}`, {}, (res) => {
+                                window.localStorage.removeItem("taskCreater");
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD');
-                                    if (el.status === 1) {
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
+                                    if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
                                         endTime = el.clickFinishTime
                                     }
                                     endTime = moment(endTime).format('YYYY-MM-DD');
                                     const diffDays = moment(today).diff(moment(endTime), 'days');
-                                    let endColor = '', endText = '';
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -304,8 +311,8 @@
                                         lastWeek: 'L',
                                         sameElse: 'L'
                                     });
-                                    if (el.status === 1) {
-                                        if (diffDays === 0) {
+                                    if (el.status == 1) {
+                                        if (diffDays == 0) {
                                             endColor = 'orange'
                                         } else if (diffDays > 0) {
                                             endColor = 'red'
@@ -321,9 +328,9 @@
                                     el['endText'] = endText
 
                                     // 优先级样式
-                                    if (el.priority === 2) {
+                                    if (el.priority == 2) {
                                         el.borderClass = 'orange-border'
-                                    } else if (el.priority === 3) {
+                                    } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
                                 });
@@ -335,29 +342,29 @@
                 });
             },
             drugList(){
-                let vm = this;
-                if(this.$parent.btnValStatus === 2){
-                    let oUl=document.getElementById('task-board-list');
-                    /*let oUl = document.queryselector(".task-board-list");
-                     let aLi = document.queryselectorAll(".task-list");*/
-                    let aLi=oUl.children;
-                    let zIndex=2;
+                var vm = this;
+                if(this.$parent.btnValStatus == 2){
+                    var oUl=document.getElementById('task-board-list');
+                    /*var oUl = document.queryselector(".task-board-list");
+                     var aLi = document.queryselectorAll(".task-list");*/
+                    var aLi=oUl.children;
+                    var zIndex=2;
                     //0.布局转换
-                    let aPos=[];
+                    var aPos=[];
 
-                    for(let i=0;i<aLi.length;i++){
+                    for(var i=0;i<aLi.length;i++){
                         aPos.push({left:aLi[i].offsetLeft,top:aLi[i].offsetTop});
                         aLi[i].style.left=aPos[i].left+'px';
                         aLi[i].style.top=aPos[i].top+'px';
                     }
-                    for(let i=0;i<aLi.length;i++){
+                    for(var i=0;i<aLi.length;i++){
                         aLi[i].style.position='absolute';
                         aLi[i].style.margin=0;
                         aLi[i].index=i;
                     }
 
                     //1.拖拽
-                    for(let i=0;i<aLi.length;i++){
+                    for(var i=0;i<aLi.length;i++){
                         drag(aLi[i].children[0],aLi[i]);//拖拽每一个图标
                     }
                 }else{
@@ -370,25 +377,25 @@
                         return
                     }
                     obj.onmousedown=function(ev){
-                        let oEvt=ev||event;
-                        let disX=oEvt.clientX-objBox.offsetLeft;
-                        let disY=oEvt.clientY-objBox.offsetTop;
+                        var oEvt=ev||event;
+                        var disX=oEvt.clientX-objBox.offsetLeft;
+                        var disY=oEvt.clientY-objBox.offsetTop;
                         objBox.style.zIndex=zIndex++;
                         clearInterval(objBox.timer);
                         document.onmousemove=function(ev){
-                            let oEvt=ev||event;
+                            var oEvt=ev||event;
                             objBox.style.left=oEvt.clientX-disX+'px';
                             objBox.style.top=oEvt.clientY-disY+'px';
 
                             //2.move时碰撞
-                            let nearObj=findNearest(objBox);
+                            var nearObj=findNearest(objBox);
                             if(nearObj && nearObj!==objBox){//撞到了
                                 //动所有的房客
                                 //交换索引，所有房客
                                 //'所有'有条件的
-                                let n=objBox.index;
-                                let m=nearObj.index;
-                                for(let i=0;i<aLi.length;i++){
+                                var n=objBox.index;
+                                var m=nearObj.index;
+                                for(var i=0;i<aLi.length;i++){
                                     //n<aLi[i].index<=m
                                     //m<=aLi[i].index<n
                                     if(aLi[i].index>n && aLi[i].index<=m){
@@ -415,41 +422,41 @@
                     };
                 }
                 function findNearest(obj){
-                    let minDis=99999999;
-                    let minIndex=-1;
-                    for(let i=0;i<aLi.length;i++){
+                    var minDis=99999999;
+                    var minIndex=-1;
+                    for(var i=0;i<aLi.length;i++){
                         //if(obj==aLi[i]) continue;
                         if(collTest(obj,aLi[i])){   //撞到的房子
                             //还要找最近
 
-                            let dis=getDis(obj,aLi[i]);//取出来的也是obj1到房子的距离
+                            var dis=getDis(obj,aLi[i]);//取出来的也是obj1到房子的距离
                             if(dis<minDis){
                                 minDis=dis;
                                 minIndex=i;
                             }
                         }
                     }
-                    if(minIndex===-1){
+                    if(minIndex==-1){
                         return null;
                     }else{
                         return aLi[minIndex];   //就返房客出去
                     }
                 }
                 function getDis(obj1,obj2){
-                    let a=aPos[obj2.index].left-obj1.offsetLeft;
-                    let b=aPos[obj2.index].top-obj1.offsetTop;
+                    var a=aPos[obj2.index].left-obj1.offsetLeft;
+                    var b=aPos[obj2.index].top-obj1.offsetTop;
                     return Math.sqrt(a*a+b*b);
                 }
                 function collTest(obj1,obj2){//obj1对象和obj2的位置（房子)撞
-                    let l1=obj1.offsetLeft;
-                    let t1=obj1.offsetTop;
-                    let r1=obj1.offsetLeft+obj1.offsetWidth;
-                    let b1=obj1.offsetTop+obj1.offsetHeight;
+                    var l1=obj1.offsetLeft;
+                    var t1=obj1.offsetTop;
+                    var r1=obj1.offsetLeft+obj1.offsetWidth;
+                    var b1=obj1.offsetTop+obj1.offsetHeight;
 
-                    let l2=aPos[obj2.index].left;
-                    let t2=aPos[obj2.index].top;
-                    let r2=aPos[obj2.index].left+obj2.offsetWidth;
-                    let b2=aPos[obj2.index].top+obj2.offsetHeight;
+                    var l2=aPos[obj2.index].left;
+                    var t2=aPos[obj2.index].top;
+                    var r2=aPos[obj2.index].left+obj2.offsetWidth;
+                    var b2=aPos[obj2.index].top+obj2.offsetHeight;
 
                     if(l1>r2||t1>b2||r1<l2||b1<t2){
                         return  false;
@@ -459,11 +466,11 @@
                 }
             },
             dragStage(stage,index) {
-                let num = 0;
-                if(index ===this.stageList.length){//移到最后
+                var num = 0;
+                if(index ==this.stageList.length){//移到最后
                     num = 1;
                 }
-                if(index === 0){//移到第一个
+                if(index == 0){//移到第一个
                     num = 2;
                 }
                 this.http.zsyPutHttp('/stage/move', {
@@ -476,11 +483,15 @@
             }
         },
         created() {
+            const taskCreater = window.localStorage.getItem("taskCreater");
+            if (taskCreater === undefined || taskCreater == null || taskCreater === '') {
+                window.localStorage.setItem("taskCreater",1);
+            }
             this.getData2();
         },
         beforeMount() {
-            let vm = this;
-            if(this.loginUserRole===0 ){
+            var vm = this;
+            if(this.loginUserRole==0 ){
                 this.cursor = 'move';
             }
             this.$root.eventBus.$on("reloadBoard", () => {

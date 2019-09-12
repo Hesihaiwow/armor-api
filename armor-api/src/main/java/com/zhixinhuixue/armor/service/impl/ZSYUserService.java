@@ -608,5 +608,24 @@ public class ZSYUserService implements IZSYUserService {
         return controlledPeoples;
     }
 
+    /**
+     * 查看项目管理者
+     * @author sch
+     */
+    @Override
+    public List<EffectUserResDTO> getProductManagers() {
+        List<User> users = userMapper.selectManagers();
+        List<EffectUserResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(users)){
+            users.forEach(user -> {
+                EffectUserResDTO resDTO = new EffectUserResDTO();
+                resDTO.setId(user.getId());
+                resDTO.setName(user.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
     // -- sch
 }

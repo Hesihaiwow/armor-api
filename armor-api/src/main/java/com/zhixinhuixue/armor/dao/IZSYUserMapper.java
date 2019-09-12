@@ -160,5 +160,12 @@ public interface IZSYUserMapper {
      * @return
      */
     UserBo selectUserBOById(@Param("userId")Long userId);
+
+    /**
+     * 查询项目管理者
+     * @author sch
+     * @return
+     */
+    List<User> selectManagers();
     // -- sch
 }

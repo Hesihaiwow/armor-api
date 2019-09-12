@@ -199,7 +199,7 @@
                                 <span class="ttl-name" style="margin-left: -15px;">负责人:</span>
                                 <el-select clearable filterable no-match-text=" " v-model="chargeMan1" placeholder="请选择"
                                            size="small" style="width:100px;margin-left: -50px">
-                                    <el-option v-for="item in chargeManList2" :key="item.id" :label="item.name"
+                                    <el-option v-for="item in managerList" :key="item.id" :label="item.name"
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
@@ -1000,7 +1000,7 @@
                         </div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="taskStep.createBy" clearable placeholder="请选择">
-                                <el-option v-for="item in chargeManList2" :key="item.id" :label="item.name"
+                                <el-option v-for="item in managerList" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -1180,6 +1180,7 @@
                     {id: 0, name: '未读'},
                     {id: 1, name: '已读'},
                 ],
+                managerList: [],
                 originList: [],
                 introducerList: [],
                 demandData: [],
@@ -1436,6 +1437,7 @@
 
         },
         beforeMount: function () {
+            this.fetchManagers();
             this.fetchNewDemandList();
             this.getDefaultSessionScreenData();
             this.fetchIntroducerList();
@@ -1586,6 +1588,14 @@
                 let vm = this;
                 http.zsyGetHttp('/user/effective', {}, (resp) => {
                     vm.chargeManList2 = resp.data
+                })
+            },
+
+            //查询项目负责人
+            fetchManagers(){
+                
+                http.zsyGetHttp('/user/managers',{},(res)=>{
+                    this.managerList = res.data;
                 })
             },
 

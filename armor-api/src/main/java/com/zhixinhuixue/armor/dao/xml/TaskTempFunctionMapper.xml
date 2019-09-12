@@ -56,5 +56,11 @@
         WHERE ttf.function_id = #{id} AND tt.review_status = 2;
     </select>
 
+    <!--根据任务和用户查询功能点-->
+    <select id="selectListByTaskAndUser" resultMap="BaseResultMap">
+        SELECT * FROM task_temp_function WHERE tt_id IN
+        (SELECT id FROM task_temp WHERE task_id = #{taskId} AND user_id = #{userId})
+    </select>
+
 
 </mapper>

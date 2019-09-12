@@ -208,4 +208,9 @@
         SELECT IFNULL(SUM(score),0) total_score,COUNT(*) total_num FROM task_evaluation
         WHERE task_id = #{taskId} AND task_user_id = #{userId}
     </select>
+
+    <!--查询当前用户当前任务的所有评价-->
+    <select id="selectListByTaskAndUser" resultMap="BaseMap">
+        SELECT * FROM task_evaluation WHERE task_id = #{taskId} AND task_user_id = #{userId};
+    </select>
 </mapper>
