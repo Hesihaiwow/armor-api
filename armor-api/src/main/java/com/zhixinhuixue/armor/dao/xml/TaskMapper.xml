@@ -659,6 +659,7 @@
         <if test="reqDTO.isTesting == true ">
             AND t.stage_id = 212754785051344896
         </if>
+        GROUP BY t.id
     </select>
     <!-- sch -->
 </mapper>
