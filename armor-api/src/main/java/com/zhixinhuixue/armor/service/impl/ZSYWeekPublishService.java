@@ -92,7 +92,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
         if (!CollectionUtils.isEmpty(weekPublishTaskResDTOList)){
             for (WeekPublishTaskResDTO task : weekPublishTaskResDTOList) {
                 //校验是否存在
-                WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(task.getTaskId());
+                WeekPublishPlan exist = weekPublishPlanMapper.selectById(task.getWppId());
                 if (exist == null){
                     WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
                     weekPublishPlan.setId(snowFlakeIDHelper.nextId());
@@ -115,7 +115,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
     @Override
     @Transactional
     public void edit(WeekPublishEditReqDTO reqDTO) {
-        WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(reqDTO.getTaskId());
+        WeekPublishPlan exist = weekPublishPlanMapper.selectById(reqDTO.getId());
         if (exist == null){
             throw new ZSYServiceException("当前周发版计划任务不存在,请检查");
         }

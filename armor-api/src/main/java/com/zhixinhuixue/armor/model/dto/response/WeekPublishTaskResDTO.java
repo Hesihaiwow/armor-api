@@ -11,6 +11,11 @@ import java.util.List;
  */
 public class WeekPublishTaskResDTO {
     /**
+     * 计划id
+     */
+    private Long wppId;
+
+    /**
      * 任务id
      */
     private Long taskId;
@@ -56,6 +61,14 @@ public class WeekPublishTaskResDTO {
      * 任务发布情况
      */
     private String condition;
+
+    public Long getWppId() {
+        return wppId;
+    }
+
+    public void setWppId(Long wppId) {
+        this.wppId = wppId;
+    }
 
     public Long getTaskId() {
         return taskId;

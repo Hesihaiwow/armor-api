@@ -11,6 +11,12 @@ import java.util.List;
  * @DATE 2019/6/11 9:52
  */
 public class WeekPublishTaskBO {
+
+    /**
+     * 计划id
+     */
+    private Long wppId;
+
     /**
      * 任务id
      */
@@ -51,6 +57,14 @@ public class WeekPublishTaskBO {
      * 任务发布情况
      */
     private String condition;
+
+    public Long getWppId() {
+        return wppId;
+    }
+
+    public void setWppId(Long wppId) {
+        this.wppId = wppId;
+    }
 
     public Long getTaskId() {
         return taskId;
