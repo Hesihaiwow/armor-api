@@ -51,7 +51,6 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
     public List<WeekPublishTaskResDTO> list(WeekPublishQueryReqDTO reqDTO) {
         List<WeekPublishTaskBO> weekPublishTaskBOS = taskMapper.selectWeekPublishTask(reqDTO);
         List<WeekPublishTaskResDTO> weekPublishTaskResDTOList = new ArrayList<>();
-        List<WeekPublishTaskResDTO> filterList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(weekPublishTaskBOS)){
             weekPublishTaskBOS.stream().forEach(weekPublishTaskBO -> {
                 WeekPublishTaskResDTO resDTO = new WeekPublishTaskResDTO();
@@ -89,7 +88,6 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 resDTO.setTesters(testers);
                 weekPublishTaskResDTOList.add(resDTO);
             });
-            filterList = weekPublishTaskResDTOList.stream().distinct().collect(Collectors.toList());
         }
         //插入到周发版计划表
         if (!CollectionUtils.isEmpty(weekPublishTaskResDTOList)){
