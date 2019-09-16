@@ -41,9 +41,9 @@
                         <template scope="scope">
                             <el-tooltip content="点击更改状态" placement="top">
                                 <i class="el-icon-circle-check" v-if="scope.row.canOnline===1"
-                                   @click="updateCanOnline(scope.row.canOnline,scope.row.taskId)" style="cursor: pointer"></i>
+                                   @click="updateCanOnline(scope.row.canOnline,scope.row.wppId)" style="cursor: pointer"></i>
                                 <i class="el-icon-circle-close" v-else style="cursor: pointer"
-                                   @click="updateCanOnline(scope.row.canOnline,scope.row.taskId)"></i>
+                                   @click="updateCanOnline(scope.row.canOnline,scope.row.wppId)"></i>
                             </el-tooltip>
                         </template>
                     </el-table-column>
@@ -939,8 +939,8 @@
                             <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                             <div class="add-member-basic-msg fl">
                                 <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
-                                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
+                                    <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                               :value="item.userId"></el-option>
                                 </el-select>
                             </div>
                             <!--<div class="add-member-basic-menu add-member-basic-time fl">积分：-->
@@ -1115,8 +1115,8 @@
                         <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
-                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
+                                <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                           :value="item.userId"></el-option>
                             </el-select>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
@@ -1709,6 +1709,7 @@
                     isTesting:false
                 },
                 weekPublish:{
+                    id:'',
                     taskId:'',
                     canOnline:null,
                     condition:'',
@@ -2144,11 +2145,19 @@
                     vm.projectForm = resp.data
                 })
             },
+            // stepUserChange(val) {
+            //     let vm = this;
+            //     this.userList.forEach((user) => {
+            //         if (user.id === val) {
+            //             vm.addMemberIndex.userName = user.name
+            //         }
+            //     })
+            // },
             stepUserChange(val) {
                 let vm = this;
-                this.userList.forEach((user) => {
-                    if (user.id === val) {
-                        vm.addMemberIndex.userName = user.name
+                this.checkInUsers.forEach((user) => {
+                    if (user.userId === val) {
+                        vm.addMemberIndex.userName = user.userName
                     }
                 })
             },
@@ -3693,13 +3702,14 @@
                     }
                 })
             },
-            updateCanOnline(canOnline,taskId){
+            updateCanOnline(canOnline,id){
+                console.log(id)
                   if (canOnline === 0){
                       this.weekPublish.canOnline = 1;
-                      this.weekPublish.taskId = taskId;
+                      this.weekPublish.id = id;
                   } else if (canOnline === 1){
                       this.weekPublish.canOnline = 0;
-                      this.weekPublish.taskId = taskId;
+                      this.weekPublish.id = id;
                   }
                   this.saveEditWeekPublish()
             },
