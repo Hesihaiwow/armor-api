@@ -3703,7 +3703,6 @@
                 })
             },
             updateCanOnline(canOnline,id){
-                console.log(id)
                   if (canOnline === 0){
                       this.weekPublish.canOnline = 1;
                       this.weekPublish.id = id;
