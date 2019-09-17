@@ -815,8 +815,8 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             }
             if (ZSYTaskStage.TESTING.getValue().equals(taskTemp.getStageId())){
                 //校验是否已经存在
-                WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(taskTemp.getId());
-                if (exist == null){
+                List<WeekPublishPlan> exist = weekPublishPlanMapper.selectByTaskId(taskTemp.getId());
+                if (CollectionUtils.isEmpty(exist)){
                     WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
                     weekPublishPlan.setId(snowFlakeIDHelper.nextId());
                     weekPublishPlan.setTaskId(taskTemp.getId());

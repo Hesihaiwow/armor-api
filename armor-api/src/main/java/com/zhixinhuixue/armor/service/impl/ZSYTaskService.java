@@ -496,8 +496,8 @@ public class ZSYTaskService implements IZSYTaskService {
             //移动到测试中阶段
 
             //校验是否已经存在
-            WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(task.getId());
-            if (exist == null){
+            List<WeekPublishPlan> exist = weekPublishPlanMapper.selectByTaskId(task.getId());
+            if (CollectionUtils.isEmpty(exist)){
                 WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
                 weekPublishPlan.setId(snowFlakeIDHelper.nextId());
                 weekPublishPlan.setTaskId(task.getId());
@@ -2146,8 +2146,8 @@ public class ZSYTaskService implements IZSYTaskService {
                     //移动到测试中阶段
 
                     //校验是否已经存在
-                    WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(task.getId());
-                    if (exist == null){
+                    List<WeekPublishPlan> exist = weekPublishPlanMapper.selectByTaskId(task.getId());
+                    if (CollectionUtils.isEmpty(exist)){
                         WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
                         weekPublishPlan.setId(snowFlakeIDHelper.nextId());
                         weekPublishPlan.setTaskId(task.getId());
