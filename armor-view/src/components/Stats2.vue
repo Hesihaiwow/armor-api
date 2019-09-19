@@ -3675,12 +3675,12 @@
                 // 本周日的日期
                 date.setDate(date.getDate() + 6);
                 let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
-
                 this.weekPublishReqDTO.beginTime = begin;
                 this.weekPublishReqDTO.endTime = end;
-                this.fetchWeekPublishPlan()
+                // this.fetchWeekPublishPlan(this.weekPublishReqDTO)
             },
             editWeekPublish(weekPublish){
+                this.weekPublish.id = weekPublish.wppId;
                 this.weekPublish.taskId = weekPublish.taskId;
                 this.weekPublish.condition = weekPublish.condition;
                 weekPublish.platformResDTOS.forEach(platform=>{
@@ -3714,7 +3714,8 @@
             },
             changeWeekPublishTime(){
                 if (this.weekPublishReqDTO.date != null && this.weekPublishReqDTO.date !== '') {
-                    let date = this.weekPublishReqDTO.date;
+                    let date = new Date();
+                    this.weekPublishReqDTO.date = date;
                     // 本周一的日期
                     date.setDate(date.getDate() - date.getDay() + 1);
                     let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
