@@ -653,7 +653,7 @@
         FROM task t
         LEFT JOIN user u ON u.id = t.create_by
         LEFT JOIN week_publish_plan wpp ON wpp.task_id = t.id
-        WHERE t.is_delete = 0 AND t.review_status = 3 AND t.type = 2 and t.status = 1
+        WHERE t.is_delete = 0 AND t.review_status = 3 AND t.type = 2
         <![CDATA[  AND  t.end_time >= #{reqDTO.beginTime} ]]>
         <![CDATA[  AND  t.end_time <= #{reqDTO.endTime} ]]>
         <if test="reqDTO.isTesting == true ">
