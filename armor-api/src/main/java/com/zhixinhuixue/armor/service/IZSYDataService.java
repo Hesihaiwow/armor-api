@@ -165,4 +165,11 @@ public interface IZSYDataService {
      * @return
      */
     List<WeekHourStatsResDTO> getUserWeekHourStats(Long userId);
+
+    /**
+     * 查询任务负责人负责任务相关信息
+     * @author sch
+     * @return
+     */
+    PrincipalTaskNumResDTO getPrincipalTaskStats();
 }

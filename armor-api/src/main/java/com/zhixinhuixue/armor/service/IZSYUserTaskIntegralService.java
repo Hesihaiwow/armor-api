@@ -72,4 +72,16 @@ public interface IZSYUserTaskIntegralService {
      * @param reqDTO 参数
      */
     void addIntegral(AddUserTaskIntegralReqDTO reqDTO);
+
+    /**
+     * 统计7月之后的有功能点的且已评价多人任务积分(已完成,没结束)
+     * @author sch
+     */
+    void updateAfterJulyWithEvaluation();
+
+    /**
+     * 统计7月之后的没有功能点的且已评价多人任务积分(已完成,没结束)
+     * @author sch
+     */
+    void updateAfterJulyWithoutEvaluation();
 }

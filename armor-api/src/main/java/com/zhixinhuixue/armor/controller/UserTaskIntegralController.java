@@ -36,6 +36,21 @@ public class UserTaskIntegralController {
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("统计7月之后的有功能点的且已评价多人任务积分(已完成,没结束)")
+    @PostMapping("/multi-task/with-evaluation/update")
+    public String updateAfterJulyWithEvaluation(){
+        userTaskIntegralService.updateAfterJulyWithEvaluation();
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("统计7月之后的没有功能点的且已评价多人任务积分(已完成,没结束)")
+    @PostMapping("/multi-task/without-evaluation/update")
+    public String updateAfterJulyWithoutEvaluation(){
+        userTaskIntegralService.updateAfterJulyWithoutEvaluation();
+        return ZSYResult.success().build();
+    }
+
+
     @ApiOperation("统计7月之后的有功能点的已完成的多人任务积分")
     @PostMapping("/multi-task/finished/update")
     public String updateAfterJulyFinished(){

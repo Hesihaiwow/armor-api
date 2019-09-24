@@ -239,5 +239,35 @@
         AND t.`status` = 3 AND t.`is_delete` = 0 AND t.`review_status` = 3
         GROUP BY tu.id;
     </select>
+
+    <!--统计7月之后的有功能点的且已评价多人任务积分(已完成,没结束)-->
+    <select id="selectWithEvaluationMultiTask" resultMap="TaskUserHoursMap">
+        SELECT t.name,tu.id,tu.task_id,tu.user_id,tu.task_hours,t.type task_type,u.level user_level,
+        tu.`create_time`,tu.`complete_time`,tu.task_level
+        FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        LEFT JOIN task_temp  tt ON tt.task_id = t.id AND tt.review_status = 2
+        LEFT JOIN task_temp_function ttf ON ttf.tt_id = tt.id
+        LEFT JOIN `user` u ON u.id = tu.`user_id`
+		LEFT JOIN task_evaluation te on te.task_id = tu.task_id AND te.task_user_id = tu.user_id
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NOT NULL
+        AND t.`status` = 2 AND t.`is_delete` = 0 AND t.`review_status` = 3 AND te.id IS NOT NULL
+        GROUP BY tu.id;
+    </select>
+
+    <!--统计7月之后的没有功能点的且已评价多人任务积分(已完成,没结束)-->
+    <select id="selectWithoutEvaluationMultiTask" resultMap="TaskUserHoursMap">
+        SELECT tu.id,tu.task_id,tu.user_id,tu.task_hours,t.type task_type,u.level user_level,
+        tu.`create_time`,tu.`complete_time`,tu.task_level
+        FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        LEFT JOIN task_temp  tt ON tt.task_id = t.id AND tt.review_status = 2
+        LEFT JOIN task_temp_function ttf ON ttf.tt_id = tt.id
+        LEFT JOIN `user` u ON u.id = tu.`user_id`
+        LEFT JOIN task_evaluation te on te.task_id = tu.task_id AND te.task_user_id = tu.user_id
+        WHERE tu.end_time >= '2019-07-01 00:00:00' AND t.type = 2 AND ttf.id IS NULL
+        AND t.`status` = 2 AND t.`is_delete` = 0 AND t.`review_status` = 3 AND te.id IS NOT NULL
+        GROUP BY tu.id;
+    </select>
     <!--  sch  -->
 </mapper>

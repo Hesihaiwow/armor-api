@@ -661,5 +661,10 @@
         </if>
         GROUP BY t.id
     </select>
+
+    <!--查询当前负责的进行中的任务-->
+    <select id="selectDoingListByUser" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `create_by` = #{userId}
+    </select>
     <!-- sch -->
 </mapper>

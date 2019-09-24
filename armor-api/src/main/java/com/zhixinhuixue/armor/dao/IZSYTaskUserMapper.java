@@ -122,6 +122,18 @@ public interface IZSYTaskUserMapper {
      */
     List<TaskUserHoursBO> selectWithTaskLevel();
 
+    /**
+     * 统计7月之后的有功能点的且已评价多人任务积分(已完成,没结束)
+     * @author sch
+     */
+    List<TaskUserHoursBO> selectWithEvaluationMultiTask();
+
+    /**
+     * 统计7月之后的没有功能点的且已评价多人任务积分(已完成,没结束)
+     * @author sch
+     */
+    List<TaskUserHoursBO> selectWithoutEvaluationMultiTask();
+
 //    List<Long> selectUserIdByTaskId(@Param("taskId")Long taskId);
     // -- sch
 }

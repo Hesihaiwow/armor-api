@@ -166,4 +166,10 @@ public class ZSYDataController {
         return ZSYResult.success().data(zsyDataService.getUserWeekHourStats(userId)).build();
     }
 
+    @ApiOperation("查询任务负责人负责任务相关信息")
+    @GetMapping("/principal-task-stats")
+    public String getPrincipalTaskStats(){
+        return ZSYResult.success().data(zsyDataService.getPrincipalTaskStats()).build();
+    }
+
 }
