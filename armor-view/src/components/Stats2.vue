@@ -25,17 +25,37 @@
                             :picker-options="pickerWeek"
                             type="week"
                             format="yyyy 第 WW 周"
-                            @change="changeWeekPublishTime"
                             placeholder="选择周">
                     </el-date-picker>
                 </div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getWPLastWeek()">第{{lastWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getWPCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getWPNextWeek()">第{{nextWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>
                 <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
                 <el-table :data="weekPublishData" border>
                     <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
-                    <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="200"></el-table-column>
+                    <el-table-column label="设计截止时间" align="center" width="175">
+                        <template scope="scope">
+                            <span>{{scope.row.beginTime | formatTime}}</span><span>( 设计时长(天): {{scope.row.designDays}})</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>
                     <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
+                    <el-table-column label="开发截止时间" align="center" width="175">
+                        <template scope="scope">
+                            <span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatTime}}</span>
+                            <span v-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatTime}}</span>
+                            <span>( 开发时长(天): {{scope.row.developDays}})</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
+                    <el-table-column label="截止时间" align="center" width="175">
+                        <template scope="scope">
+                            <span>{{scope.row.endTime | formatTime}}</span><span>( 测试时长(天): {{scope.row.testDays}})</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="platforms" label="需要发布平台" align="center" width="130"></el-table-column>
                     <el-table-column label="是否可以发布上线" align="center" width="100">
                         <template scope="scope">
@@ -47,7 +67,7 @@
                             </el-tooltip>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="condition" label="任务发布情况" align="center"></el-table-column>
+                    <el-table-column prop="condition" label="任务发布情况" align="center" width="200"></el-table-column>
                     <el-table-column label="操作" width="80" align="center">
                         <template scope="scope">
                             <el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>
@@ -884,8 +904,8 @@
                         </div>
                     </div>
                     <div style="margin-top: 10px;float: left;margin-left: 10px">
-                        <div  style="display: inline">反馈系统</div>
-                        <div style="display: inline;margin-left: 40px">
+                        <div  style="display: inline"><span class="star">*</span>反馈系统</div>
+                        <div style="display: inline;margin-left: 30px">
                             <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择">
                                 <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
@@ -1382,6 +1402,8 @@
                 },
                 userWeekData:[],
                 currentWeek:moment().week(),
+                lastWeek:moment().week()-1,
+                nextWeek:moment().week()+1,
                 pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -1842,7 +1864,7 @@
               if (this.activeName === 'stat'){
                   this.getStats();
               }else if (this.activeName === 'weekPublish'){
-                  this.initTime();
+                  // this.initTime();
               } else if (this.activeName === 'bug'){
                   // this.fetchSignInUser();
                   this.fetchBugPage();
@@ -2974,6 +2996,21 @@
                     this.isSaving = false;
                     return
                 }
+                if (this.onlineBugForm.type == null || this.onlineBugForm.type === ''){
+                    this.errorMsg("问题类型不能为空");
+                    this.isSaving = false;
+                    return
+                }
+                if (this.onlineBugForm.isSolved == null || this.onlineBugForm.isSolved === ''){
+                    this.errorMsg("是否解决不能为空");
+                    this.isSaving = false;
+                    return
+                }
+                if (this.onlineBugForm.demandSystemId == null || this.onlineBugForm.demandSystemId === ''){
+                    this.errorMsg("反馈系统不能为空");
+                    this.isSaving = false;
+                    return
+                }
                 if (this.onlineBugForm.description == null || this.onlineBugForm.description === ''){
                     this.errorMsg("问题描述不能为空");
                     this.isSaving = false;
@@ -3796,7 +3833,47 @@
                     this.extraWorkReqDTO.endTime = moment(this.ewEndTime).format('YYYY-MM-DD 23:59:59');
                 }
                 this.getExtraWorkStats()
-            }
+            },
+            getWPCurrentWeek(){
+                this.weekPublishReqDTO.date=moment().toDate();
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 1);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+                // this.fetchWeekPublishPlan();
+            },
+            getWPLastWeek(){
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() - 6);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+                this.weekPublishReqDTO.date = date;
+            },
+            getWPNextWeek(){
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 8);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+                this.weekPublishReqDTO.date = date;
+            },
             // -- sch
         }
     }

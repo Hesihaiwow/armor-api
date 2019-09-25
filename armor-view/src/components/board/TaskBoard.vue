@@ -64,7 +64,6 @@
         },
         methods: {
             drag: function (event,canDrag) {
-                console.log(canDrag);
                 // 自己创建的任务及超管才可以拖动任务
                 var taskCreateBy = event.currentTarget.getAttribute('createby');
                 if((this.loginUserId == taskCreateBy || this.loginUserRole==0) && canDrag ){
@@ -235,7 +234,6 @@
                     window.localStorage.setItem("taskCreater",1);
                     taskCreater = window.localStorage.getItem("taskCreater");
                 }
-                console.log(taskCreater)
                 // 获取阶段
                 var that = this;
                 that.http.zsyGetHttp('/stage/list', {}, (res) => {

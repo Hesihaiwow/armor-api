@@ -62,7 +62,7 @@
                 <el-button @click="applyModifyMyTask(task)">申请修改任务</el-button>
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
-            <div class="task-data-show" v-show="task.status === 3 && task.taskIntegral !== undefined">
+            <div class="task-data-show" v-show="task.status > 1 && task.taskIntegral !== undefined">
                 <span class="task-score">+{{task.taskIntegral}}</span>
                 <!--<span class="task-level first" v-show="task.type==2">{{task.taskIntegral}}</span>-->
             </div>
@@ -3170,6 +3170,15 @@
                 }
                 if (this.modifyTaskForm.endTime==null || this.modifyTaskForm.endTime === '') {
                     this.warnMsg("请选择截止日期");
+                    return;
+                }
+                if (moment(this.modifyTaskForm.beginTime).isAfter(moment(this.modifyTaskForm.testTime))
+                    || moment(this.modifyTaskForm.beginTime).isAfter(moment(this.modifyTaskForm.endTime))) {
+                    this.warnMsg("设计截止时间不可在开发截止时间或任务截止时间之后,请检查");
+                    return;
+                }
+                if (moment(this.modifyTaskForm.testTime).isAfter(moment(this.modifyTaskForm.endTime))) {
+                    this.warnMsg("开发截止时间不可在任务截止时间之后,请检查");
                     return;
                 }
                 if (this.modifyTaskForm.stageId === '') {

@@ -16,22 +16,56 @@
                        style="margin-left: 20px">导出考勤记录</el-button>
         </div>
         <div v-show="userRole === 0" style="margin-top: 10px">
+                <span style="font-size: 18px;color: black">项目管理者负责任务</span>
+                <el-table :data="principalAllTaskList" border style="width: 1100px">
+                    <el-table-column prop="userName" label="负责人" align="center" width="100"></el-table-column>
+                    <el-table-column prop="chargeTaskNum" label="负责任务数(进行中)" align="center" sortable></el-table-column>
+                    <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center" sortable width="140"></el-table-column>
+                    <el-table-column prop="summarizeTaskNum" label="待总结任务数" align="center" sortable width="140"></el-table-column>
+                    <el-table-column prop="delayedTaskNum" label="已超时任务数" align="center" sortable width="140">
+                        <template scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font></template>
+                    </el-table-column>
+                    <el-table-column prop="aboutDelayTaskNum" label="即将超时任务数" align="center" sortable>
+                        <template scope="scope"><font style="color: orange">{{scope.row.aboutDelayTaskNum}}</font></template>
+                    </el-table-column>
+                    <el-table-column prop="messageFee" label="需缴纳短信费" align="center" sortable width="140">
+                        <template scope="scope"><font style="color: red">{{scope.row.messageFee}}</font></template>
+                    </el-table-column>
+                </el-table>
+        </div>
+        <div v-show="userRole === 0" style="margin-top: 10px">
             <span style="font-size: 18px;color: black">员工周工作量</span>
-                <div class="add-member-basic-msg" style="margin-top: 5px;">
-                    <el-select v-model="weekHourUserId" clearable filterable placeholder="筛选用户" @change="fetchUserWeekHourStats(weekHourUserId)" style="width: 150px">
-                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
-                                   :value="item.userId"></el-option>
-                    </el-select>
-                </div>
-                <div id="myChart2" :style="{width:'1100px',height:'250px',marginTop:'10px'}" v-show="weekHourStatsList.length>0"></div>
-                <div v-show="weekHourStatsList.length===0" class="empty">
-                    <h2>暂无数据</h2>
-                </div>
+            <div class="add-member-basic-msg" style="margin-top: 5px;">
+                <el-select v-model="weekHourUserId" clearable filterable placeholder="筛选用户" @change="fetchUserWeekHourStats(weekHourUserId)" style="width: 150px">
+                    <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                               :value="item.userId"></el-option>
+                </el-select>
+            </div>
+            <div id="myChart2" :style="{width:'1100px',height:'250px',marginTop:'10px'}" v-show="weekHourStatsList.length>0"></div>
+            <div v-show="weekHourStatsList.length===0" class="empty">
+                <h2>暂无数据</h2>
+            </div>
         </div>
         <div class="my-integral-con" v-show="userRole>0 && userRole < 3" style="width: 1300px;margin-bottom: 10px">
             <p class="mic-title">我的统计</p>
             <div class="my-task-detail hh">
                 <el-tabs v-model="tabName" @tab-click="handleClickTab">
+                    <el-tab-pane label="负责任务" name="task" v-if="userRole == 1">
+                        <el-table :data="principalTaskList" border style="width: 1100px">
+                            <el-table-column prop="chargeTaskNum" label="负责任务数(进行中)" align="center"></el-table-column>
+                            <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center"></el-table-column>
+                            <el-table-column prop="summarizeTaskNum" label="待总结任务数" align="center"></el-table-column>
+                            <el-table-column prop="delayedTaskNum" label="已超时任务数" align="center">
+                                <template scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font></template>
+                            </el-table-column>
+                            <el-table-column prop="aboutDelayTaskNum" label="即将超时任务数" align="center">
+                                <template scope="scope"><font style="color: orange">{{scope.row.aboutDelayTaskNum}}</font></template>
+                            </el-table-column>
+                            <el-table-column prop="messageFee" label="需缴纳短信费" align="center">
+                                <template scope="scope"><font style="color: red">{{scope.row.messageFee}}</font></template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
                     <el-tab-pane label="任务积分" name="integral">
                         <div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"
                         @click="integralBasicVisible=true">
@@ -3689,7 +3723,11 @@
                 },
                 jobRoleName:'',
                 userAndLevelData:[],
-                showUserAndLevelVisible:false
+                showUserAndLevelVisible:false,
+                principalTaskList:[],
+                principalAllTaskList:[],
+                principalId:'',
+                managerList:[],
                 // -- sch
             };
         },
@@ -4159,6 +4197,7 @@
                 // this.fetchMultipleWait();
                 // this.fetchTaskTempModuleList();
                 if (this.userRole === 0) {
+                    this.fetchAllPrincipalTask();
                     this.fetchTaskWaitAudit();
                     // this.fetchUserWeekHourStats()
                     // 所有审核通过的数据
@@ -4200,7 +4239,13 @@
                     // this.fetchPersonalTaskModifyAccessed();
                     // this.fetchPersonalEvaluation();
                     // this.fetchWeekHourStats();
-                    this.fetchPersonalTaskIntegral();
+                    if (this.userRole>1){
+                        this.fetchPersonalTaskIntegral();
+                    } else {
+                        this.fetchPrincipalTask();
+                        this.tabName = 'task';
+                    }
+
                 }
 
             },
@@ -8009,6 +8054,8 @@
                     this.fetchWeekHourStats();
                 } else if (this.tabName === 'evaluation'){
                     this.fetchPersonalEvaluation();
+                }else if (this.tabName === 'task'){
+                    this.fetchPrincipalTask()
                 }
             },
             //查看任务
@@ -8022,6 +8069,16 @@
                     items.push({label: '', score: this.personalTaskIntegralData.yearIntegral, time: this.getDateString('year')});
                     this.taskIntegralItem = items;
                     this.developVisible = this.personalTaskIntegralData.developRole;
+                })
+            },
+            fetchPrincipalTask(){
+                http.zsyGetHttp('/data/principal-task-stats',{},(res)=>{
+                    this.principalTaskList = res.data;
+                })
+            },
+            fetchAllPrincipalTask(){
+                http.zsyGetHttp('/data/principal-task-stats/all',{},(res)=>{
+                    this.principalAllTaskList = res.data;
                 })
             }
             // -- sch
