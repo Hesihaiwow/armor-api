@@ -319,85 +319,88 @@ public class ZSYTaskService implements IZSYTaskService {
         checkUser();
 
         Task task = new Task();
-        if (!taskReqDTO.getStageId().equals(taskTemp.getStageId())){
-            //判断当前任务是否可以修改到设计中或开发中或测试中
-            //待设计往后面阶段移动
-            if (taskTemp.getStageId().equals(212754785051344891L)){
-                boolean canDrag = false;
-                List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
-                if (!CollectionUtils.isEmpty(userBos)){
-                    for (UserBo userBo : userBos) {
-                        if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
-                                || userBo.getJobRole().equals(ZSYJobRole.PRODUCT.getValue())){
-                            canDrag = true;
+        if (taskTemp.getType() == 2){
+            if (!taskReqDTO.getStageId().equals(taskTemp.getStageId())){
+                //判断当前任务是否可以修改到设计中或开发中或测试中
+                //待设计往后面阶段移动
+                if (taskTemp.getStageId().equals(212754785051344891L)){
+                    boolean canDrag = false;
+                    List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
+                    if (!CollectionUtils.isEmpty(userBos)){
+                        for (UserBo userBo : userBos) {
+                            if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
+                                    || userBo.getJobRole().equals(ZSYJobRole.PRODUCT.getValue())){
+                                canDrag = true;
+                            }
+                        }
+                    }
+                    if (!canDrag){
+                        throw new ZSYServiceException("任务在待设计阶段,没有产品或UI人员建任务,无法移动到后面阶段");
+                    }
+                }
+                //待开发往后阶段移动
+                else if (taskTemp.getStageId().equals(212754785051344890L)){
+                    if (taskReqDTO.getStageId().equals(212754785051344894L)
+                            || taskReqDTO.getStageId().equals(212754785051344895L)
+                            || taskReqDTO.getStageId().equals(212754785051344896L)
+                            || taskReqDTO.getStageId().equals(212754785051344897L)
+                            || taskReqDTO.getStageId().equals(212754785051344898L)){
+                        boolean canDrag = false;
+                        List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
+                        if (!CollectionUtils.isEmpty(userBos)){
+                            for (UserBo userBo : userBos) {
+                                if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
+                                        || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
+                                    canDrag = true;
+                                }
+                            }
+                        }
+                        if (!canDrag){
+                            throw new ZSYServiceException("任务在待开发阶段,没有开发人员建任务,无法移动到后面阶段");
+                        }
+                    }
+
+                }
+                //待测试
+                else if (taskTemp.getStageId().equals(212754785051344895L)){
+                    if (taskReqDTO.getStageId().equals(212754785051344896L)
+                            || taskReqDTO.getStageId().equals(212754785051344897L)
+                            || taskReqDTO.getStageId().equals(212754785051344898L)){
+                        boolean canDrag = false;
+                        List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
+                        if (!CollectionUtils.isEmpty(userBos)){
+                            for (UserBo userBo : userBos) {
+                                if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
+                                    canDrag = true;
+                                }
+                            }
+                        }
+                        if (!canDrag){
+                            throw new ZSYServiceException("任务在待测试阶段,没有测试人员建任务,无法移动到后面阶段");
                         }
                     }
                 }
-                if (!canDrag){
-                    throw new ZSYServiceException("任务在待设计阶段,没有产品或UI人员建任务,无法移动到后面阶段");
-                }
             }
-            //待开发往后阶段移动
-            else if (taskTemp.getStageId().equals(212754785051344890L)){
-                if (taskReqDTO.getStageId().equals(212754785051344894L)
+            //待设计,设计中拖到待开发及后面阶段   必须先填任务评审
+            if (taskTemp.getStageId().equals(212754785051344891L) || taskTemp.getStageId().equals(212754785051344892L)){
+                if (taskReqDTO.getStageId().equals(212754785051344890L)
+                        || taskReqDTO.getStageId().equals(212754785051344894L)
                         || taskReqDTO.getStageId().equals(212754785051344895L)
                         || taskReqDTO.getStageId().equals(212754785051344896L)
                         || taskReqDTO.getStageId().equals(212754785051344897L)
                         || taskReqDTO.getStageId().equals(212754785051344898L)){
-                    boolean canDrag = false;
-                    List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
-                    if (!CollectionUtils.isEmpty(userBos)){
-                        for (UserBo userBo : userBos) {
-                            if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
-                                    || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
-                                canDrag = true;
-                            }
-                        }
+                    boolean isReview = false;
+                    List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
+                    if (!CollectionUtils.isEmpty(taskReviewBOS)){
+                        isReview = true;
                     }
-                    if (!canDrag){
-                        throw new ZSYServiceException("任务在待开发阶段,没有开发人员建任务,无法移动到后面阶段");
+                    if (!isReview){
+                        throw new ZSYServiceException("任务在设计相关阶段,因没有填写任务评审,无法移动到待开发及后面的阶段");
                     }
                 }
+            }
+        }
 
-            }
-            //待测试
-            else if (taskTemp.getStageId().equals(212754785051344895L)){
-                if (taskReqDTO.getStageId().equals(212754785051344896L)
-                        || taskReqDTO.getStageId().equals(212754785051344897L)
-                        || taskReqDTO.getStageId().equals(212754785051344898L)){
-                    boolean canDrag = false;
-                    List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
-                    if (!CollectionUtils.isEmpty(userBos)){
-                        for (UserBo userBo : userBos) {
-                            if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
-                                canDrag = true;
-                            }
-                        }
-                    }
-                    if (!canDrag){
-                        throw new ZSYServiceException("任务在待测试阶段,没有测试人员建任务,无法移动到后面阶段");
-                    }
-                }
-            }
-        }
-        //待设计,设计中拖到待开发及后面阶段   必须先填任务评审
-        if (taskTemp.getStageId().equals(212754785051344891L) || taskTemp.getStageId().equals(212754785051344892L)){
-            if (taskReqDTO.getStageId().equals(212754785051344890L)
-                    || taskReqDTO.getStageId().equals(212754785051344894L)
-                    || taskReqDTO.getStageId().equals(212754785051344895L)
-                    || taskReqDTO.getStageId().equals(212754785051344896L)
-                    || taskReqDTO.getStageId().equals(212754785051344897L)
-                    || taskReqDTO.getStageId().equals(212754785051344898L)){
-                boolean isReview = false;
-                List<TaskReviewBO> taskReviewBOS = taskReviewMapper.selectListByTask(taskId);
-                if (!CollectionUtils.isEmpty(taskReviewBOS)){
-                    isReview = true;
-                }
-                if (!isReview){
-                    throw new ZSYServiceException("任务在设计相关阶段,因没有填写任务评审,无法移动到待开发及后面的阶段");
-                }
-            }
-        }
 
         //查询编辑任务时是否修改工作时间
         TaskDetailBO taskTempBo = taskMapper.selectTaskDetailByTaskId(taskId);
