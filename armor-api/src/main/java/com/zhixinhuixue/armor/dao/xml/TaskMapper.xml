@@ -103,6 +103,9 @@
         <result column="name" property="taskName" jdbcType="VARCHAR"/>
         <result column="create_by" property="createBy" jdbcType="BIGINT"/>
         <result column="user_name" property="createByName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"/>
+        <result column="test_time" property="testTime" jdbcType="TIMESTAMP"/>
         <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
         <result column="can_online" property="canOnline" jdbcType="INTEGER"/>
         <result column="condition" property="condition" jdbcType="VARCHAR"/>
@@ -649,7 +652,8 @@
 
     <!--查询即将发版任务(测试中)-->
     <select id="selectWeekPublishTask" resultMap="WeekPublishTaskMap">
-        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition,wpp.id wpp_id
+        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition,wpp.id wpp_id,
+        t.create_time,t.begin_time,t.test_time
         FROM task t
         LEFT JOIN user u ON u.id = t.create_by
         LEFT JOIN week_publish_plan wpp ON wpp.task_id = t.id

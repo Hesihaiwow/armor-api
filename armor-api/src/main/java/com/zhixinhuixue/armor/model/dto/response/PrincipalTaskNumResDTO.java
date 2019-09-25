@@ -9,6 +9,12 @@ import java.math.BigDecimal;
  * 任务负责人   负责任务数量统计
  */
 public class PrincipalTaskNumResDTO {
+
+    /**
+     * 负责人
+     */
+    private String userName;
+
     /**
      * 当前负责任务数
      */
@@ -38,6 +44,14 @@ public class PrincipalTaskNumResDTO {
      * 需缴纳短信费
      */
     private BigDecimal messageFee;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public Integer getChargeTaskNum() {
         return chargeTaskNum;
