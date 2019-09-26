@@ -46,7 +46,8 @@
                     <el-table-column label="开发截止时间" align="center" width="175">
                         <template scope="scope">
                             <span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatDate1}}</span>
-                            <span v-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatDate1}}</span>
+                            <span v-else-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatDate1}}</span>
+                            <span v-else>{{scope.row.testTime | formatDate1}}</span>
                             <span>({{scope.row.developDays}})</span>
                         </template>
                     </el-table-column>
