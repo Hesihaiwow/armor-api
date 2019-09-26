@@ -374,7 +374,13 @@
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status===3"
                            @click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>
                         <el-tooltip placement="top">
-                            <div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>
+                            <div slot="content">
+                                {{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}
+                                <div v-if="item.functionStrs !== undefined && item.functionStrs.length > 0">
+                                    <div>功能点:</div>
+                                    <div v-for="functionStr in item.functionStrs">{{functionStr}}</div>
+                                </div>
+                            </div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
                         </el-tooltip>
                         <span v-if="item.proTest && !taskDetail.testing" class="fl ctpc-member-end-time" style="margin-left:20px;color: #66ccff">测试中</span>

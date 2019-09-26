@@ -36,24 +36,24 @@
                 <el-table :data="weekPublishData" border>
                     <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="200"></el-table-column>
+                    <el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>
                     <el-table-column label="设计截止时间" align="center" width="175">
                         <template scope="scope">
-                            <span>{{scope.row.beginTime | formatTime}}</span><span>( 设计时长(天): {{scope.row.designDays}})</span>
+                            <span>{{scope.row.beginTime | formatDate1}}</span><span> ({{scope.row.designDays}})</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>
                     <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
                     <el-table-column label="开发截止时间" align="center" width="175">
                         <template scope="scope">
-                            <span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatTime}}</span>
-                            <span v-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatTime}}</span>
-                            <span>( 开发时长(天): {{scope.row.developDays}})</span>
+                            <span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatDate1}}</span>
+                            <span v-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatDate1}}</span>
+                            <span>({{scope.row.developDays}})</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
                     <el-table-column label="截止时间" align="center" width="175">
                         <template scope="scope">
-                            <span>{{scope.row.endTime | formatTime}}</span><span>( 测试时长(天): {{scope.row.testDays}})</span>
+                            <span>{{scope.row.endTime | formatDate1}}</span><span> ({{scope.row.testDays}})</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="platforms" label="需要发布平台" align="center" width="130"></el-table-column>
@@ -61,8 +61,8 @@
                         <template scope="scope">
                             <el-tooltip content="点击更改状态" placement="top">
                                 <i class="el-icon-circle-check" v-if="scope.row.canOnline===1"
-                                   @click="updateCanOnline(scope.row.canOnline,scope.row.wppId)" style="cursor: pointer"></i>
-                                <i class="el-icon-circle-close" v-else style="cursor: pointer"
+                                   @click="updateCanOnline(scope.row.canOnline,scope.row.wppId)" style="cursor: pointer;color: lawngreen"></i>
+                                <i class="el-icon-circle-close" v-else style="cursor: pointer;color: red;"
                                    @click="updateCanOnline(scope.row.canOnline,scope.row.wppId)"></i>
                             </el-tooltip>
                         </template>
