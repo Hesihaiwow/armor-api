@@ -1099,6 +1099,7 @@ public class ZSYTaskService implements IZSYTaskService {
             TaskTemp taskTemp = taskTempMapper.selectByUserAndTask(taskUserBO.getUserId(), taskId);
             List<TaskTempFunctionResDTO> functionResDTOS = new ArrayList<>();
             List<TaskTempFunctionBO> functionBOS = new ArrayList<>();
+            List<String> functionStrs = new ArrayList<>();
             if (taskTemp != null){
                 functionBOS = taskTempFunctionMapper.selectListByTtId(taskTemp.getId());
                 if (!CollectionUtils.isEmpty(functionBOS)){
@@ -1118,10 +1119,13 @@ public class ZSYTaskService implements IZSYTaskService {
                         }else if (level == 5){
                             resDTO.setLevelName("五级");
                         }
+                        String functionStr = "【"+resDTO.getModuleName()+"】"+functionBO.getFunction()+"【"+FunctionAction.getName(functionBO.getAction())+"】  "+resDTO.getLevelName();
+                        functionStrs.add(functionStr);
                         functionResDTOS.add(resDTO);
                     });
                 }
             }
+            taskUserResDTO.setFunctionStrs(functionStrs);
             taskUserResDTO.setFunctionResDTOList(functionResDTOS);
             // -- sch
             BeanUtils.copyProperties(taskUserBO, taskUserResDTO);
