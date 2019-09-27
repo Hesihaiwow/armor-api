@@ -75,7 +75,7 @@
                                 <span class="ttl-name">截止日期</span>
                                 <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
                                                 placeholder="选择日期"
-                                                @change="timeChange"></el-date-picker>
+                                                @change="timeChange" autocomplete="off"></el-date-picker>
                             </div>
                         </div>
                     </div>

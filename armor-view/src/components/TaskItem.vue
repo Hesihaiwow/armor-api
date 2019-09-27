@@ -605,14 +605,16 @@
                     <div class="add-member-basic-msg fl">
                         <el-date-picker v-model="taskReview.beginTime" type="datetime"
                                         format="yyyy-MM-dd HH:mm:ss"
-                                        placeholder="选择开始时间"></el-date-picker>
+                                        placeholder="选择开始时间"
+                                        autocomplete="off"></el-date-picker>
                     </div>
                     <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束时间：
                     </div>
                     <div class="add-member-basic-msg fl">
                         <el-date-picker v-model="taskReview.endTime" type="datetime"
                                         format="yyyy-MM-dd HH:mm:ss"
-                                        placeholder="选择结束时间"></el-date-picker>
+                                        placeholder="选择结束时间"
+                        autocomplete="off"></el-date-picker>
                     </div>
                 </div>
             </div>

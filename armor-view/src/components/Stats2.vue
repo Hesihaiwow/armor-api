@@ -35,7 +35,7 @@
                 <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
                 <el-table :data="weekPublishData" border>
                     <el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>
-                    <el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed=""></el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>
                     <el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>
                     <el-table-column label="设计截止时间" align="center" width="175">
                         <template scope="scope">
