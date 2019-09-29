@@ -3239,16 +3239,22 @@
                 param.testTime = moment(param.testTime).format('YYYY-MM-DD 23:59:59');
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
-                    this.$message({ showClose: true,message: '任务修改成功',type: 'success'});
-                    this.hideTaskModify();
-                    // 刷新看板
-                    //this.$root.eventBus.$emit("reloadBoard");
-                    // 刷新列表
-                    vm.$emit('reload');
-                    // 刷新看板
-                    this.$root.eventBus.$emit('reloadBoard');
-                    this.fetchUnreadNoticeNum();
-                    this.clearFunctionForm();
+                    this.$message({ showClose: true,message: '任务修改成功',type: 'success',duration:500,onClose:()=>{
+                        this.hideTaskModify();
+                        //window.localStorage.removeItem("taskCreater")
+                        // 刷新看板
+                        //this.$root.eventBus.$emit("reloadBoard");
+                        // 刷新列表
+                        vm.$emit('reload');
+                        // 刷新看板
+                        this.$root.eventBus.$emit('reloadBoard');
+
+                        this.$root.eventBus.$emit('filterTask');
+
+                        this.fetchUnreadNoticeNum();
+                        this.clearFunctionForm();
+                    }});
+
                 });
                 this.showCreateTask = false;
 

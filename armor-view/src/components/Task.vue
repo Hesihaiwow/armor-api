@@ -292,8 +292,6 @@
             if (taskCreater === undefined || taskCreater == null || taskCreater === '') {
                 window.localStorage.setItem("taskCreater",1);
             }
-
-
             if(typeof (this.$route.params.userId) !="undefined"){
                 this.form.userId = this.$route.params.userId;
                 this.form.type = '';
@@ -337,6 +335,10 @@
             this.initTime();
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "task");
+            //
+            this.$root.eventBus.$on('filterTask',()=>{
+                this.changeManager(this.createBy)
+            })
             if (taskCreater !== undefined && taskCreater != null && taskCreater != 1) {
                 this.createBy = taskCreater;
             }
@@ -690,7 +692,7 @@
                 }else {
                     window.localStorage.setItem("taskCreater",1);
                 }
-                this.$router.go(0)
+                this.$router.go(0);
             }
             // -- sch
         },
