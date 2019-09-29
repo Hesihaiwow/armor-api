@@ -4214,6 +4214,7 @@
                     // this.fetchMultipleAccess();
                     this.fetchTaskModifyWait();
                     this.fetchTaskModifyAccessed();
+                    this.fetchUserLeaveList();
                 } else if (this.userRole>0&&this.userRole<3) {
                     // this.fetchMyHelpWaitList();
                     // this.fetchMyReviewSuccess();
