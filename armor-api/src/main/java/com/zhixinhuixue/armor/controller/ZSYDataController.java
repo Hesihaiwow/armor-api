@@ -172,4 +172,10 @@ public class ZSYDataController {
         return ZSYResult.success().data(zsyDataService.getPrincipalTaskStats()).build();
     }
 
+    @ApiOperation("超管查看所有负责人负责任务数")
+    @GetMapping("/principal-task-stats/all")
+    public String getAllPrincipalTaskStats(){
+        return ZSYResult.success().data(zsyDataService.getAllPrincipalTaskStats()).build();
+    }
+
 }

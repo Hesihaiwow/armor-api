@@ -62,7 +62,7 @@
                 <el-button @click="applyModifyMyTask(task)">申请修改任务</el-button>
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
-            <div class="task-data-show" v-show="task.status === 3 && task.taskIntegral !== undefined">
+            <div class="task-data-show" v-show="task.status > 1 && task.taskIntegral !== undefined">
                 <span class="task-score">+{{task.taskIntegral}}</span>
                 <!--<span class="task-level first" v-show="task.type==2">{{task.taskIntegral}}</span>-->
             </div>
@@ -374,7 +374,13 @@
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status===3"
                            @click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>
                         <el-tooltip placement="top">
-                            <div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>
+                            <div slot="content">
+                                {{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}
+                                <div v-if="item.functionStrs !== undefined && item.functionStrs.length > 0">
+                                    <div>功能点:</div>
+                                    <div v-for="functionStr in item.functionStrs">{{functionStr}}</div>
+                                </div>
+                            </div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>
                         </el-tooltip>
                         <span v-if="item.proTest && !taskDetail.testing" class="fl ctpc-member-end-time" style="margin-left:20px;color: #66ccff">测试中</span>
@@ -599,14 +605,16 @@
                     <div class="add-member-basic-msg fl">
                         <el-date-picker v-model="taskReview.beginTime" type="datetime"
                                         format="yyyy-MM-dd HH:mm:ss"
-                                        placeholder="选择开始时间"></el-date-picker>
+                                        placeholder="选择开始时间"
+                                        autocomplete="off"></el-date-picker>
                     </div>
                     <div class="add-member-basic-menu add-member-basic-time fl" style="width: 110px;margin-left: 37px"><span class="star">*</span>评审结束时间：
                     </div>
                     <div class="add-member-basic-msg fl">
                         <el-date-picker v-model="taskReview.endTime" type="datetime"
                                         format="yyyy-MM-dd HH:mm:ss"
-                                        placeholder="选择结束时间"></el-date-picker>
+                                        placeholder="选择结束时间"
+                        autocomplete="off"></el-date-picker>
                     </div>
                 </div>
             </div>
@@ -3172,6 +3180,15 @@
                     this.warnMsg("请选择截止日期");
                     return;
                 }
+                if (moment(this.modifyTaskForm.beginTime).isAfter(moment(this.modifyTaskForm.testTime))
+                    || moment(this.modifyTaskForm.beginTime).isAfter(moment(this.modifyTaskForm.endTime))) {
+                    this.warnMsg("设计截止时间不可在开发截止时间或任务截止时间之后,请检查");
+                    return;
+                }
+                if (moment(this.modifyTaskForm.testTime).isAfter(moment(this.modifyTaskForm.endTime))) {
+                    this.warnMsg("开发截止时间不可在任务截止时间之后,请检查");
+                    return;
+                }
                 if (this.modifyTaskForm.stageId === '') {
                     this.warnMsg("请选择项目阶段");
                     return;
@@ -3222,16 +3239,22 @@
                 param.testTime = moment(param.testTime).format('YYYY-MM-DD 23:59:59');
                 let vm = this;
                 http.zsyPutHttp(`/task/modify/${this.modifyTaskForm.id}`, param, (resp) => {
-                    this.$message({ showClose: true,message: '任务修改成功',type: 'success'});
-                    this.hideTaskModify();
-                    // 刷新看板
-                    //this.$root.eventBus.$emit("reloadBoard");
-                    // 刷新列表
-                    vm.$emit('reload');
-                    // 刷新看板
-                    this.$root.eventBus.$emit('reloadBoard');
-                    this.fetchUnreadNoticeNum();
-                    this.clearFunctionForm();
+                    this.$message({ showClose: true,message: '任务修改成功',type: 'success',duration:500,onClose:()=>{
+                        this.hideTaskModify();
+                        //window.localStorage.removeItem("taskCreater")
+                        // 刷新看板
+                        //this.$root.eventBus.$emit("reloadBoard");
+                        // 刷新列表
+                        vm.$emit('reload');
+                        // 刷新看板
+                        this.$root.eventBus.$emit('reloadBoard');
+
+                        this.$root.eventBus.$emit('filterTask');
+
+                        this.fetchUnreadNoticeNum();
+                        this.clearFunctionForm();
+                    }});
+
                 });
                 this.showCreateTask = false;
 

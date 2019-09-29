@@ -103,6 +103,9 @@
         <result column="name" property="taskName" jdbcType="VARCHAR"/>
         <result column="create_by" property="createBy" jdbcType="BIGINT"/>
         <result column="user_name" property="createByName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"/>
+        <result column="test_time" property="testTime" jdbcType="TIMESTAMP"/>
         <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
         <result column="can_online" property="canOnline" jdbcType="INTEGER"/>
         <result column="condition" property="condition" jdbcType="VARCHAR"/>
@@ -593,6 +596,7 @@
         LEFT JOIN `task_log` tl ON tl.`task_id` = t1.`id` AND tl.`title` LIKE '%阶段全部完成%'
         where t1.review_status = 3 and t1.is_delete = 0
         and t1.`type` = 2 and t1.stage_id = #{stageId}
+        and t1.status != 3
         and t7.parent_id =#{departmentId}
         and t1.create_by = #{userId}
         group by t1.`id`
@@ -649,7 +653,8 @@
 
     <!--查询即将发版任务(测试中)-->
     <select id="selectWeekPublishTask" resultMap="WeekPublishTaskMap">
-        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition,wpp.id wpp_id
+        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition,wpp.id wpp_id,
+        t.create_time,t.begin_time,t.test_time
         FROM task t
         LEFT JOIN user u ON u.id = t.create_by
         LEFT JOIN week_publish_plan wpp ON wpp.task_id = t.id
@@ -664,7 +669,7 @@
 
     <!--查询当前负责的进行中的任务-->
     <select id="selectDoingListByUser" resultMap="BaseResultMap">
-        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `create_by` = #{userId}
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `create_by` = #{userId}
     </select>
     <!-- sch -->
 </mapper>

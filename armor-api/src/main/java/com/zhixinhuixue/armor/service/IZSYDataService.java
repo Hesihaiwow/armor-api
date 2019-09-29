@@ -169,7 +169,12 @@ public interface IZSYDataService {
     /**
      * 查询任务负责人负责任务相关信息
      * @author sch
-     * @return
      */
-    PrincipalTaskNumResDTO getPrincipalTaskStats();
+    List<PrincipalTaskNumResDTO> getPrincipalTaskStats();
+
+    /**
+     * 超管查看所有负责人负责任务数
+     * @author sch
+     */
+    List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats();
 }

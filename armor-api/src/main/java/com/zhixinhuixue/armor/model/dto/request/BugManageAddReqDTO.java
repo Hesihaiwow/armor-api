@@ -61,6 +61,7 @@ public class BugManageAddReqDTO {
     /**
      * 反馈系统
      */
+    @NotNull(message = "反馈系统不能为空")
     private Integer demandSystemId;
     private String demandSystemName;
 

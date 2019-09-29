@@ -39,6 +39,21 @@ public class WeekPublishTaskBO {
     private List<Long> userIds;
 
     /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 设计截止时间(开发开始时间)
+     */
+    private Date beginTime;
+
+    /**
+     * 开发截止时间(测试开始时间)
+     */
+    private Date testTime;
+
+    /**
      * 截止时间
      */
     private Date endTime;
@@ -57,6 +72,30 @@ public class WeekPublishTaskBO {
      * 任务发布情况
      */
     private String condition;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(Date testTime) {
+        this.testTime = testTime;
+    }
 
     public Long getWppId() {
         return wppId;
