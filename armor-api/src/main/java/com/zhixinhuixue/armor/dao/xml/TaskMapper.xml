@@ -596,6 +596,7 @@
         LEFT JOIN `task_log` tl ON tl.`task_id` = t1.`id` AND tl.`title` LIKE '%阶段全部完成%'
         where t1.review_status = 3 and t1.is_delete = 0
         and t1.`type` = 2 and t1.stage_id = #{stageId}
+        and t1.status != 3
         and t7.parent_id =#{departmentId}
         and t1.create_by = #{userId}
         group by t1.`id`
