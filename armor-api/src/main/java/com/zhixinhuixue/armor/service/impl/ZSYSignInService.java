@@ -22,6 +22,7 @@ import com.zhixinhuixue.armor.service.IZSYSignInService;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYQinuOssProperty;
+import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import com.zhixinhuixue.armor.source.enums.ZSYSignInType;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import jxl.Sheet;
@@ -73,6 +74,8 @@ public class ZSYSignInService implements IZSYSignInService {
     private IZSYExtraWorkMapper extraWorkMapper;
     @Autowired
     private ZSYQinuOssProperty qinuOssProperty;
+    @Autowired
+    private ZSYUFileProperties uFileProperties;
     private static final Logger logger = LoggerFactory.getLogger(ZSYSignInService.class);
 
     /**
@@ -2363,7 +2366,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     num += 5;
                 }
                 workbook.write(os);
-                return ZSYQinuHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel", qinuOssProperty);
+                return ZSYQinuHelper.uploadToUfile(os.toByteArray(), fileName, "application/vnd.ms-excel",uFileProperties);
             }catch (Exception e){
                 e.printStackTrace();
                 logger.error("导出表失败: "+e);
