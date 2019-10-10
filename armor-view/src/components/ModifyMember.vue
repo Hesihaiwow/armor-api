@@ -93,6 +93,12 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">工号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="modifyForm.jobNumber" placeholder="请输入工号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">用户状态</div>
         <div class="ftp-msg fl">
           <el-select class="w280" v-model="modifyForm.status" placeholder="请选择状态">
@@ -152,6 +158,7 @@
           checkSort:'',
           departmentId:'',
           status:'',
+            jobNumber:'',
           email:'',
             checkUserList:[],
         },
@@ -232,6 +239,7 @@
             this.modifyForm.email=res.data.email;
             this.modifyForm.departmentId=res.data.departmentId;
             this.modifyForm.checkSort=res.data.checkSort;
+            this.modifyForm.jobNumber=res.data.jobNumber;
             this.modifyForm.checkUserList = res.data.checkUsers;
             if(this.modifyForm.checkUserList != null && this.modifyForm.checkUserList != [] && this.modifyForm.checkUserList.length > 0){
                 this.num = this.modifyForm.checkUserList.length
@@ -259,6 +267,7 @@
         this.modifyForm.jobRole='';
         this.modifyForm.level='';
         this.modifyForm.checkSort='';
+        this.modifyForm.jobNumber='';
         this.num = 1;
         this.checkUserIdList = [];
       },
@@ -302,6 +311,10 @@
           }
           if (Helper.trim(this.modifyForm.checkSort)==''){
               this.warnMsg("请选择用户考勤序号");
+              return;
+          }
+          if (Helper.trim(this.modifyForm.jobNumber)==''){
+              this.warnMsg("请输入用户工号");
               return;
           }
           var checkUsers = this.modifyForm.checkUserList;

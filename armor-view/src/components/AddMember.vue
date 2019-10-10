@@ -80,6 +80,12 @@
         </div>
       </div>
       <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">工号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addForm.jobNumber" placeholder="请输入员工工号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
         <div class="ftp-menus fl">审核人</div>
         <div class="ftp-msg fl">
           <div v-for="i in num"><span style="margin-right: 20px">{{i}}</span>
@@ -123,6 +129,7 @@
           level:'',
           departmentId:'',
           checkSort:'',
+            jobNumber:'',
           email:'',
             checkUserList:[]
         },
@@ -199,6 +206,7 @@
         this.addForm.jobRole='';
         this.addForm.level='';
         this.addForm.checkSort='';
+        this.addForm.jobNumber='';
         this.num = 1;
         this.checkUserIdList = [];
       },
@@ -238,6 +246,10 @@
         }
           if (Helper.trim(this.addForm.checkSort)==''){
               this.warnMsg("请选择用户考勤序号");
+              return;
+          }
+          if (Helper.trim(this.addForm.jobNumber)==''){
+              this.warnMsg("请输入用户工号");
               return;
           }
           var checkUsers = this.addForm.checkUserList;

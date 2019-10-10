@@ -194,6 +194,7 @@
                 <el-form-item class="task-form" label="所属部门：" prop="deptName">{{userInfo.deptName}}</el-form-item>
                 <el-form-item class="task-form" label="用户权限：" prop="userRoleName">{{userInfo.userRoleName}}</el-form-item>
                 <el-form-item class="task-form" label="考勤序号：" prop="checkSort">{{userInfo.checkSort}}</el-form-item>
+                <el-form-item class="task-form" label="工号：" prop="checkSort">{{userInfo.jobNumber}}</el-form-item>
                 <el-form-item class="task-form" label="用户状态：" prop="statusName">{{userInfo.statusName}}</el-form-item>
             </el-form>
         </el-dialog>
@@ -299,6 +300,7 @@
                     deptName:'',
                     userRoleName:'',
                     checkSort:'',
+                    jobNumber:'',
                     statusName:'',
                 },
                 showUserInfoVisible:false

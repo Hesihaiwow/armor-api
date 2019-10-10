@@ -216,6 +216,7 @@
                 </div>
                 <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
                 <el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
+                <el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>
                 <el-table :data="signInData" border>
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template scope="scope">
@@ -446,7 +447,7 @@
                 </div>
                 <div v-show="showTaskReviewTabVisible">
                     <p class="mic-title">多人任务审核</p>
-                    <el-tabs v-model="taskTempActiveName2" @tab-click="handleClick">
+                    <el-tabs v-model="taskTempActiveName2" @tab-click="handleClickMultiTask">
                         <el-tab-pane label="待审核" name="wait">
                             <div class="task-lis" v-for="item in taskTemp.waitAssess2" @click="getTaskTempDetail(item)">
                                 <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
@@ -684,6 +685,7 @@
                     </div>
                     <el-button type="primary" @click="selectMySignInData" style="margin-left: 10px" size="small">查询</el-button>
                     <el-button type="primary" @click="showPersonalTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
+                    <span @click="showRestHoursDetail" style="font-size: 15px;cursor: pointer;text-decoration: underline">剩余调休(截止上月底): {{myRestHours}}H</span>
                     <el-table :data="signInData" border>
                         <el-table-column prop="date" label="日期" align="center" width="120">
                             <template scope="scope">
@@ -1775,7 +1777,7 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveQuestionInfo('questionForm')">立即创建</el-button>
+            <el-button type="primary" @click="saveQuestionInfo('questionForm')" :disabled="questionAble">立即创建</el-button>
             <el-button @click="createQuestionVisible = false">取 消</el-button>
           </span>
         </el-dialog>
@@ -1849,7 +1851,7 @@
 
             </el-form>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="editQuestionInfo('questionForm')">修改</el-button>
+            <el-button type="primary" @click="editQuestionInfo('questionForm')" :disabled="questionAble">修改</el-button>
             <el-button @click="editQuestionVisible = false">取 消</el-button>
           </span>
         </el-dialog>
@@ -2083,7 +2085,7 @@
                     <el-date-picker
                             v-model="leaveForm.beginTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:00:00"
+                            format="yyyy-MM-dd HH:mm:00"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -2092,7 +2094,7 @@
                     <el-date-picker
                             v-model="leaveForm.endTime"
                             type="datetime"
-                            format="yyyy-MM-dd HH:00:00"
+                            format="yyyy-MM-dd HH:mm:00"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -2467,7 +2469,80 @@
                 <el-button type="success" @click="fetchTotalEWorkTime">查询</el-button>
             </span>
         </el-dialog>
-
+        <el-dialog title="修改用户调休时长" :visible.sync="modifyUserRestHoursVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   @close="closeRestHoursDialog">
+            <el-select v-model="restHoursUserId" clearable filterable   placeholder="筛选用户" @change="fetchUserRestHours">
+                <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                           :value="item.userId"></el-option>
+            </el-select>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{restHoursUserName}}</span></div>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">
+                <span style="margin-left: 0px">截止上月底调休时长: </span>
+                <el-input style="width:100px;margin-left: 22px" v-model="restHours" :maxlength="5" type="number"></el-input>
+                <span style="margin-left: 0px;cursor: pointer;text-decoration: underline"
+                @click="showUserRestHoursLog">查看详情</span>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <!--<el-button type="primary" @click="fetchUserRestHours">查询</el-button>-->
+                <el-button type="primary" @click="modifyUserRestHours" :loading="restHourLoading">修改</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog title="用户调休使用日志" :visible.sync="myRestHoursDetailVisible" class="rest-hour-log"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="small"
+                   width="800px">
+            <el-table :data="myRestHoursLogData" border>
+                <el-table-column type="index" label="序号" align="center" width="80">
+                    <template scope="scope">
+                        {{(myRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
+                <el-table-column prop="content" label="事由" align="center"></el-table-column>
+                <el-table-column prop="recordTime" label="记录日期"  width="150"  align="center">
+                    <template scope="scope">
+                        <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination
+                        @current-change="myRestHoursLogHandleCurrentChange"
+                        :current-page.sync="myRestHoursLogPage.pageNum"
+                        :page-size="myRestHoursLogPage.pageSize"
+                        :layout="myRestHoursLogsPageLayout"
+                        :total="myRestHoursLogPage.total">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <el-dialog title="用户调休使用日志" :visible.sync="userRestHoursDetailVisible" class="rest-hour-log"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="small"
+                   width="800px">
+            <el-table :data="userRestHoursLogData" border>
+                <el-table-column type="index" label="序号" align="center" width="80">
+                    <template scope="scope">
+                        {{(userRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="userName" label="用户" align="center" width="100"></el-table-column>
+                <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
+                <el-table-column prop="content" label="事由" align="center"></el-table-column>
+                <el-table-column prop="recordTime" label="记录日期"  width="150"  align="center">
+                    <template scope="scope">
+                        <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination
+                        @current-change="userRestHoursLogHandleCurrentChange"
+                        :current-page.sync="userRestHoursLogPage.pageNum"
+                        :page-size="userRestHoursLogPage.pageSize"
+                        :layout="userRestHoursLogsPageLayout"
+                        :total="userRestHoursLogPage.total">
+                </el-pagination>
+            </div>
+        </el-dialog>
         <el-dialog title="新增多人任务" :visible.sync="createMultipleTaskVisible" custom-class="myDialog"
                    :close-on-click-modal="false"
                    :close-on-press-escape="false"
@@ -2708,7 +2783,7 @@
                 <div v-show="taskTempAble" style="float: left;">开始时间: {{taskTempDetail.beginTime | formatDate}}</div>
                 <div v-show="taskTempAble" style="float: left;margin-left: 20px;">截止: {{taskTempDetail.endTime | formatDate}}</div>
                 <div v-show="taskTempAble" style="margin-left: 350px">任务时长: {{taskTempDetail.workHours}}小时</div>
-                <!--<div v-show="taskTempAble" style="margin-left: 0px">任务级别: {{taskTempDetail.taskLevelName}}</div>-->
+                <div v-show="taskTempAble" style="margin-left: 0px">任务级别: {{taskTempDetail.taskLevelName}}</div>
                 <el-form-item v-show="!taskTempAble" class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
                     <el-date-picker @change="changeTime"
                                     v-model="taskTempDetail.beginTime"
@@ -2729,17 +2804,17 @@
                     </el-date-picker>
                 </el-form-item>
 
-                <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：">
-                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 20%"></el-input>
+                <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：" style="float: left">
+                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 40%"></el-input>
                     小时
                 </el-form-item>
 
-                <!--<el-form-item v-show="!taskTempAble" class="task-form" label="任务级别: " style="margin-left: 285px">-->
-                    <!--<el-select v-model="taskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">-->
-                        <!--<el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"-->
-                                   <!--:value="item.id"></el-option>-->
-                    <!--</el-select>-->
-                <!--</el-form-item>-->
+                <el-form-item v-show="!taskTempAble" class="task-form" label="任务级别: " style="margin-left: 285px">
+                    <el-select v-model="taskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">
+                        <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
                 <div v-for="(item,index) in sortWeekTempNumber" v-show="!taskTempAble">
                         <div class="add-member-basic-list clearfix">
                             <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
@@ -2764,11 +2839,11 @@
             <span slot="footer" class="dialog-footer">
                 <div v-if="userRole === 0">
                     <el-button type="danger" v-show="taskTempDetail.isChecked === 0" @click="deleteMultipleTask(taskTempDetail.id)">删除申请</el-button>
-                    <el-button type="success" v-show="taskTempDetail.isChecked === 0" @click="acceptMultipleTask(taskTempDetail.id,'editTaskTempForm')">申请通过</el-button>
+                    <el-button type="success" v-show="taskTempDetail.isChecked === 0" @click="acceptMultipleTask(taskTempDetail.id,'editTaskTempForm')" :loading="accessTaskTempLoading">申请通过</el-button>
                 </div>
                 <div v-else>
                      <el-button type="danger" v-show="taskTempDetail.isChecked === 0" @click="deleteMultipleTask(taskTempDetail.id)">删除申请</el-button>
-                     <el-button type="success" v-show="taskTempDetail.isChecked === 0" @click="acceptMultipleTask(taskTempDetail.id,'editTaskTempForm')">申请通过</el-button>
+                     <el-button type="success" v-show="taskTempDetail.isChecked === 0" @click="acceptMultipleTask(taskTempDetail.id,'editTaskTempForm')" :loading="accessTaskTempLoading">申请通过</el-button>
                 </div>
             </span>
         </el-dialog>
@@ -2940,11 +3015,13 @@
             <span slot="footer" class="dialog-footer">
                 <div v-if="userRole === 0">
                     <el-button type="danger" @click="deleteTaskModify(taskModifyDetail.id)">删除申请</el-button>
-                    <el-button type="success" v-show="taskModifyDetail.reviewStatus === 1" @click="accessTaskModify(taskModifyDetail.id,'editTaskModifyForm')">申请通过</el-button>
+                    <el-button type="success" v-show="taskModifyDetail.reviewStatus === 1" @click="accessTaskModify(taskModifyDetail.id,'editTaskModifyForm')"
+                    :loading="isSaving">申请通过</el-button>
                 </div>
                 <div v-else>
                      <el-button type="danger" v-show="taskModifyDetail.reviewStatus === 1" @click="deleteTaskModify(taskModifyDetail.id)">删除申请</el-button>
-                     <el-button type="primary" v-show="taskModifyDetail.reviewStatus === 1" @click="editTaskModify(taskModifyDetail.id,'editTaskModifyForm')">修改申请</el-button>
+                     <el-button type="primary" v-show="taskModifyDetail.reviewStatus === 1" @click="editTaskModify(taskModifyDetail.id,'editTaskModifyForm')"
+                                :loading="isSaving">修改申请</el-button>
                 </div>
             </span>
         </el-dialog>
@@ -3443,6 +3520,36 @@
                 workMonth3:'',
                 eWorkTimeUserId:'',
                 eWorkTimeUserName:'',
+
+                //修改调休时间
+                modifyUserRestHoursVisible: false,
+                restHoursUserId:'',
+                restHoursUserName:'',
+                restHours:0,
+                restHourLoading: false,
+                myRestHours:0,
+                myRestHoursDetailVisible: false,
+                myRestHoursLogData:[],
+                myRestHoursLogReqDTO:{
+                    userId:'',
+                    pageNum:1
+                },
+                myRestHoursLogPage:{
+                    pageNum: 1,
+                    pageSize: 10,
+                    total: 0
+                },
+                userRestHoursLogData:[],
+                userRestHoursDetailVisible: false,
+                userRestHoursLogReqDTO:{
+                    userId:'',
+                    pageNum:1
+                },
+                userRestHoursLogPage:{
+                    pageNum: 1,
+                    pageSize: 10,
+                    total: 0
+                },
                 workMonths:[
                     {id:1,name:'一月'},
                     {id:2,name:'二月'},
@@ -3531,6 +3638,7 @@
                 taskTempAble:false,
                 taskTempWeekNumber:[],
                 taskWeekNumberTemp:[],
+                accessTaskTempLoading:false,
                 taskTempDetail:{
                     id:null,
                     taskId:null,
@@ -4016,6 +4124,18 @@
                 }
                 return 'total, pager'
             },
+            myRestHoursLogsPageLayout() {
+                if (this.myRestHoursLogPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            userRestHoursLogsPageLayout() {
+                if (this.userRestHoursLogPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             leavePageLayout() {
                 if (this.leaveFormPage.total > 0) {
                     return 'total, prev, pager, next'
@@ -4233,6 +4353,7 @@
                     this.fetchMyRecheckWait();
                     // this.fetchMyRecheckPass();
                     this.fetchMySignInData();
+                    this.fetchMyRestHours();
                     // this.fetchMultipleAccess();
                     this.fetchPersonalMultipleWait();
                     // this.fetchPersonalMultipleAccess();
@@ -4396,30 +4517,35 @@
                 let vm = this;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        // this.taskAble = true;
+                        this.taskAble = true;
                         let param = this.taskTempForm;
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (param.taskId == null || param.taskId === ''){
                             this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (this.description == null || this.description.trim() === ''){
                             this.$message({showClose: true, message: '任务描述不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (param.beginTime == null || param.beginTime === ''){
                             this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (param.endTime == null || param.endTime === ''){
                             this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         //任务是设计相关阶段时
                         if (this.taskDetail.stageId === '212754785051344891' || this.taskDetail.stageId === '212754785051344892'){
                             if (!(moment(this.taskTempForm.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
+                                this.taskAble = false;
                                 return false;
                             }
                         }
@@ -4427,6 +4553,7 @@
                         if (this.taskDetail.stageId === '212754785051344890' || this.taskDetail.stageId === '212754785051344894'){
                             if (!(moment(this.taskTempForm.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
+                                this.taskAble = false;
                                 return false;
                             }
                         }
@@ -4434,15 +4561,18 @@
                         if (this.taskDetail.stageId === '212754785051344895' || this.taskDetail.stageId === '212754785051344896'){
                             if (!(moment(this.taskTempForm.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
+                                this.taskAble = false;
                                 return false;
                             }
                         }
                         if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (param.workHours.trim() < 0.1) {
                             this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         // param.workHours = Number(param.workHours)
@@ -4462,6 +4592,7 @@
                             vm.reload()
                         });
                     } else {
+                        this.taskAble = false;
                         return false;
                     }
                 }, err => {
@@ -4499,30 +4630,35 @@
                 let vm = this;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        // this.taskAble = true;
+                        this.taskAble = true;
                         let param = this.taskTempDetail;
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (param.taskId == null || param.taskId === ''){
                             this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (this.description == null || this.description.trim() === ''){
                             this.$message({showClose: true, message: '任务描述不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (param.beginTime == null || param.beginTime === ''){
                             this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (param.endTime == null || param.endTime === ''){
                             this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         //任务是设计相关阶段时
                         if (this.taskDetail.stageId === '212754785051344891' || this.taskDetail.stageId === '212754785051344892'){
                             if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
+                                this.taskAble = false;
                                 return false;
                             }
                         }
@@ -4530,6 +4666,7 @@
                         if (this.taskDetail.stageId === '212754785051344890' || this.taskDetail.stageId === '212754785051344894'){
                             if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
+                                this.taskAble = false;
                                 return false;
                             }
                         }
@@ -4537,16 +4674,19 @@
                         if (this.taskDetail.stageId === '212754785051344895' || this.taskDetail.stageId === '212754785051344896'){
                             if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
+                                this.taskAble = false;
                                 return false;
                             }
                         }
                         param.workHours = String(param.workHours);
                         if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         if (param.workHours < 0.1) {
                             this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            this.taskAble = false;
                             return false;
                         }
                         // param.workHours = Number(param.workHours)
@@ -4560,6 +4700,7 @@
                             vm.reload()
                         });
                     } else {
+                        this.taskAble = false;
                         return false;
                     }
                 }, err => {
@@ -4586,7 +4727,7 @@
               this.functionLevelList = [];
             },
             acceptMultipleTask(id,formName){
-
+                this.accessTaskTempLoading = true;
                 let sumHours=0;
                 for(let i=0;i<this.taskTempWeekNumber.length;i++){
                     if(this.taskTempWeekNumber[i].hours===''|| this.taskTempWeekNumber[i].hours=== undefined){
@@ -4599,16 +4740,19 @@
                     let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.taskTempWeekNumber[i].hours);
                     if(!ishours){
                         this.errorMsg('工作量填写错误');
+                        this.accessTaskTempLoading = false;
                         return false;
                     }
                     if(this.taskTempWeekNumber[i].hours>99999.9||this.taskTempWeekNumber[i].hours<0){
                         this.errorMsg('工作量正确值应为0~99999.9');
+                        this.accessTaskTempLoading = false;
                         return false;
                     }
                     sumHours +=  parseFloat(this.taskTempWeekNumber[i].hours)
                 }
                 if(sumHours!=this.taskTempDetail.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
+                    this.accessTaskTempLoading = false;
                     return
                 }
                 this.taskTempDetail.userWeeks = this.taskTempWeekNumber;
@@ -4620,24 +4764,29 @@
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (param.taskId == null || param.taskId === ''){
                             this.$message({showClose: true, message: '关联任务不能为空', type: 'error'});
+                            this.accessTaskTempLoading = false;
                             return false;
                         }
                         if (this.description == null || this.description.trim() === ''){
                             this.$message({showClose: true, message: '任务描述不能为空', type: 'error'});
+                            this.accessTaskTempLoading = false;
                             return false;
                         }
                         if (param.beginTime == null || param.beginTime === ''){
                             this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            this.accessTaskTempLoading = false;
                             return false;
                         }
                         if (param.endTime == null || param.endTime === ''){
                             this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            this.accessTaskTempLoading = false;
                             return false;
                         }
                         //任务是设计相关阶段时
                         if (this.taskDetail.stageId === '212754785051344891' || this.taskDetail.stageId === '212754785051344892'){
                             if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
+                                this.accessTaskTempLoading = false;
                                 return false;
                             }
                         }
@@ -4645,6 +4794,7 @@
                         if (this.taskDetail.stageId === '212754785051344890' || this.taskDetail.stageId === '212754785051344894'){
                             if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
+                                this.accessTaskTempLoading = false;
                                 return false;
                             }
                         }
@@ -4652,20 +4802,24 @@
                         if (this.taskDetail.stageId === '212754785051344895' || this.taskDetail.stageId === '212754785051344896'){
                             if (!(moment(this.taskTempDetail.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
+                                this.accessTaskTempLoading = false;
                                 return false;
                             }
                         }
-                        // if (param.taskLevel === undefined || param.taskLevel === null || param.taskLevel === '') {
-                        //     this.$message({showClose: true, message: '请选择任务级别', type: 'error'});
-                        //     return false;
-                        // }
+                        if (param.taskLevel === undefined || param.taskLevel === null || param.taskLevel === '') {
+                            this.$message({showClose: true, message: '请选择任务级别', type: 'error'});
+                            this.accessTaskTempLoading = false;
+                            return false;
+                        }
                         param.workHours = String(param.workHours);
                         if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.accessTaskTempLoading = false;
                             return false;
                         }
                         if (param.workHours < 0.1) {
                             this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            this.accessTaskTempLoading = false;
                             return false;
                         }
                         param.description = this.description;
@@ -4687,10 +4841,12 @@
                                     let level = taskTempFunction.level;
                                     if (functionId === undefined || functionId === null || functionId ===''){
                                         this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                        this.accessTaskTempLoading = false;
                                         return false;
                                     }
                                     if (level === undefined || level === null || level === ''){
                                         this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                        this.accessTaskTempLoading = false;
                                         return false;
                                     }
                                 }
@@ -4712,12 +4868,14 @@
                             }
                             if (param.taskTempFunctionList.length>newArr.length){
                                 this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                this.accessTaskTempLoading = false;
                                 return false;
                             }
                         }
 
                         http.zsyPutHttp(`/task-temp/access`, param, (resp) => {
                             this.$message({showClose: true, message: '审核成功', type: 'success'});
+                            this.accessTaskTempLoading = false;
                             this.taskTempDetailVisible = false;
                             this.$refs[formName].resetFields();
                             param.taskTempFunctionList = [];
@@ -4728,6 +4886,12 @@
                             this.reload();
                             this.fetchPendingTaskTemp();
                         },(err)=>{
+                            param.taskTempFunctionList = [];
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                        },error=>{
+                            this.accessTaskTempLoading = false;
+                            this.taskAble = false;
                             param.taskTempFunctionList = [];
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
@@ -5326,8 +5490,8 @@
                         this.leaveForm.endTime = moment(this.leaveForm.endTime).toDate();
 
                         let form = this.leaveForm;
-                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:00:00');
-                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:00:00');
+                        form.beginTime = moment(form.beginTime).format('YYYY-MM-DD HH:mm:00');
+                        form.endTime = moment(form.endTime).format('YYYY-MM-DD HH:mm:00');
                         if (this.weekTime.beginWeek !== this.weekTime.endWeek || moment(form.beginTime).isAfter(moment(form.endTime)) || moment(form.beginTime).isSame(moment(form.endTime))) {
                             this.$message({showClose: true, message: '请假日期有误,请检查(请假时间不能跨周、相同)', type: 'warning'});
                             return false;
@@ -5911,7 +6075,6 @@
             //编辑问题
             editQuestion(item){
                 // this.fetchQuestionDoing()
-                this.acceptedQuestionVisible = false;
                 this.checkQuestionVisible = false;
                 this.editQuestionVisible = true;
                 this.questionForm.oqrId = item.oqrId;
@@ -5922,6 +6085,7 @@
                 this.questionForm.description = item.description;
                 this.questionForm.workHour = String(item.workHour);
                 this.questionForm.urlList = item.urlList == null ? []:item.urlList;
+                this.acceptedQuestionVisible = false;
             },
             //审核问题
             checkQuestion(item){
@@ -5964,6 +6128,7 @@
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                         if (param.workHour.length !== parseFloat(param.workHour).toString().length || parseFloat(param.workHour) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.questionAble = false;
                             return false;
                         }
                         http.zsyPostHttp('/question/add', param, (resp) => {
@@ -5974,9 +6139,12 @@
                             vm.reload()
                         });
                     } else {
+                        this.questionAble = false;
                         return false;
                     }
                 }, err => {
+                    this.questionAble = false
+                },error=>{
                     this.questionAble = false
                 });
             },
@@ -5995,6 +6163,7 @@
                         param.oqrId = this.questionForm.oqrId;
                         if (param.workHour.length !== parseFloat(param.workHour).toString().length || parseFloat(param.workHour) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.questionAble = false;
                             return false;
                         }
                         http.zsyPutHttp('/question/update', param, (resp) => {
@@ -6005,10 +6174,13 @@
                             vm.reload()
                         });
                     } else {
+                        this.questionAble = false;
                         return false;
                     }
                 }, err => {
                     this.questionAble = false
+                },error=>{
+                    this.questionAble = false;
                 });
             },
             handlePictureCardPreview(file) {
@@ -6610,6 +6782,69 @@
                 this.eWorkTimeReqDTO2.yearAndMonth = '';
 
             },
+            closeRestHoursDialog(){
+                this.restHours = 0;
+                this.restHoursUserId = '';
+                this.restHoursUserName = '';
+            },
+            fetchUserRestHours(){
+              if (this.restHoursUserId != null && this.restHoursUserId !== undefined && this.restHoursUserId !==  ''){
+                  http.zsyGetHttp('/user/'+this.restHoursUserId,{},(res)=>{
+                     this.restHoursUserName = res.data.name;
+                     this.restHours = res.data.restHours;
+                  });
+              }
+            },
+            //管理员重置用户调休时间
+            modifyUserRestHours(){
+                this.restHourLoading = true;
+              if (this.restHoursUserId == null || this.restHoursUserId === undefined || this.restHoursUserId === ''){
+                  this.$message({
+                      showClose: true,
+                      message: '请选择要修改的用户',
+                      type: 'warning'
+                  });
+                  this.restHourLoading = false;
+                  return false;
+              }
+              if (this.restHours == null || this.restHours === undefined){
+                  this.$message({
+                      showClose: true,
+                      message: '请填写调休时长',
+                      type: 'warning'
+                  });
+                  this.restHourLoading = false;
+                  return false;
+              }
+                if (this.restHours > 9999 || this.restHours < 0) {
+                    this.$message({showClose: true, message: '调休时长正确值应为0.1~9999', type: 'error'});
+                    this.restHourLoading = false;
+                    return false;
+                }
+
+                let reqDTO = {
+                    userId:this.restHoursUserId,
+                    restHours:this.restHours
+                };
+                http.zsyPostHttp('/user/rest-hours/update',reqDTO,res=>{
+                    if (res.errMsg == "执行成功"){
+                        this.$message({
+                            showClose: true,
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        this.restHourLoading = false;
+                        // this.modifyUserRestHoursVisible = false;
+                    }else {
+                        this.restHourLoading = false;
+                        // this.modifyUserRestHoursVisible = false;
+                    }
+                },err=>{
+
+                },errrr=>{
+                    this.restHourLoading = false;
+                })
+            },
             fetchMySignInData(){
                 if (this.userRole < 3 && this.userRole > 0){
                     http.zsyPostHttp('/sign-in/page/personal',this.mySignInReqDTO,(res)=>{
@@ -6632,6 +6867,46 @@
                         }
                     })
                 }
+            },
+            //用户查看剩余调休时间
+            fetchMyRestHours(){
+                if (this.userRole < 3 && this.userRole > 0){
+                    http.zsyGetHttp('/sign-in/rest-hours/'+this.userId,{},res=>{
+                        this.myRestHours = res.data.restHours;
+                    })
+                }
+            },
+            //用户查看调休时间修改日志
+            showRestHoursDetail(){
+                http.zsyPostHttp('/sign-in/rest-hours-log/personal/page',this.myRestHoursLogReqDTO,res=>{
+                    this.myRestHoursLogData = res.data.list;
+                    this.myRestHoursLogPage.total = res.data.total;
+                    this.myRestHoursDetailVisible = true;
+                })
+            },
+            showUserRestHoursLog(){
+                if (this.restHoursUserId != null && this.restHoursUserId !== undefined && this.restHoursUserId !==  '') {
+                    this.userRestHoursLogReqDTO.userId = this.restHoursUserId;
+                    http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO,res=>{
+                        this.userRestHoursLogData = res.data.list;
+                        this.userRestHoursLogPage.total = res.data.total;
+                        this.userRestHoursDetailVisible = true;
+                    })
+                }else {
+                    this.$message({
+                        showClose: true,
+                        message: '请选择用户',
+                        type: 'warning'
+                    });
+                }
+            },
+            myRestHoursLogHandleCurrentChange(currentPage){
+                this.myRestHoursLogReqDTO.pageNum = currentPage;
+                this.showRestHoursDetail();
+            },
+            userRestHoursLogHandleCurrentChange(currentPage){
+                this.userRestHoursLogReqDTO.pageNum = currentPage;
+                this.showUserRestHoursLog();
             },
             signInHandleCurrentChange(currentPage){
                 this.signInPage.pageNum = currentPage;
@@ -7346,33 +7621,40 @@
                 let vm = this;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.isSaving = true;
                         let param = this.taskModifyDetail;
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (this.modifyMyTaskReason == null || this.modifyMyTaskReason.trim() === ''){
                             this.$message({showClose: true, message: '修改原因不能为空', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (this.modifyMyTaskDescription == null || this.modifyMyTaskDescription.trim() === ''){
                             this.$message({showClose: true, message: '新的任务描述不能为空', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (param.beginTime == null || param.beginTime === ''){
                             this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (param.endTime == null || param.endTime === ''){
                             this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if((moment(param.beginTime).isAfter(moment(param.endTime)))){
                             this.$message({showClose: true, message: '开始时间不能在截止时间后面', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         //任务是设计相关阶段时
                         if (this.taskDetail.stageId === '212754785051344891' || this.taskDetail.stageId === '212754785051344892'){
                             if (!(moment(this.taskModifyDetail.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
                         }
@@ -7380,6 +7662,7 @@
                         if (this.taskDetail.stageId === '212754785051344890' || this.taskDetail.stageId === '212754785051344894'){
                             if (!(moment(this.taskModifyDetail.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
                         }
@@ -7387,16 +7670,19 @@
                         if (this.taskDetail.stageId === '212754785051344895' || this.taskDetail.stageId === '212754785051344896'){
                             if (!(moment(this.taskModifyDetail.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
                         }
                         param.workHours = String(param.workHours);
                         if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (param.workHours < 0.1) {
                             this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         param.reason = this.modifyMyTaskReason;
@@ -7419,10 +7705,12 @@
                                 let level = taskModifyFunction.level;
                                 if (functionId === undefined || functionId === null || functionId === ''){
                                     this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                    this.isSaving = false;
                                     return false;
                                 }
                                 if (level === undefined || level === null || level === ''){
                                     this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                    this.isSaving = false;
                                     return false;
                                 }
                             }
@@ -7444,6 +7732,7 @@
                             }
                             if (param.taskModifyFunctionList.length>newArr.length){
                                 this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
 
@@ -7452,6 +7741,7 @@
                         http.zsyPutHttp('/task-modify/update', param, (resp) => {
                             this.showTaskModifyDetailVisible = false;
                             this.$message({showClose: true, message: '更新任务修改申请成功', type: 'success'});
+                            this.isSaving = false;
                             this.$refs[formName].resetFields();
                             this.clearEditTaskModifyForm();
                             this.taskFunctionList = [];
@@ -7460,14 +7750,17 @@
                             this.fetchPersonalTaskModifyWait();
                             this.fetchPersonalTaskModifyAccessed();
                         },err=>{
+                            this.isSaving = false;
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
                             param.taskModifyFunctionList = [];
                         });
                     } else {
+                        this.isSaving = false;
                         return false;
                     }
                 }, err => {
+                    this.isSaving = false;
                 });
             },
             accessTaskModify(id,formName){
@@ -7501,29 +7794,35 @@
 
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.isSaving = true;
                         let param = this.taskModifyDetail;
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (this.modifyMyTaskReason == null || this.modifyMyTaskReason.trim() === ''){
                             this.$message({showClose: true, message: '修改原因不能为空', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (param.beginTime == null || param.beginTime === ''){
                             this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (param.endTime == null || param.endTime === ''){
                             this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if((moment(param.beginTime).isAfter(moment(param.endTime)))){
                             this.$message({showClose: true, message: '开始时间不能在截止时间后面', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         //任务是设计相关阶段时
                         if (this.taskDetail.stageId === '212754785051344891' || this.taskDetail.stageId === '212754785051344892'){
                             if (!(moment(this.taskModifyDetail.endTime)).isBefore((moment(this.taskDetail.beginTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务设计完成时间', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
                         }
@@ -7531,6 +7830,7 @@
                         if (this.taskDetail.stageId === '212754785051344890' || this.taskDetail.stageId === '212754785051344894'){
                             if (!(moment(this.taskModifyDetail.endTime)).isBefore((moment(this.taskDetail.testTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务开发完成时间', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
                         }
@@ -7538,16 +7838,19 @@
                         if (this.taskDetail.stageId === '212754785051344895' || this.taskDetail.stageId === '212754785051344896'){
                             if (!(moment(this.taskModifyDetail.endTime)).isBefore((moment(this.taskDetail.endTime)))) {
                                 this.$message({showClose: true, message: '截止时间不能超过任务截止时间', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
                         }
                         param.workHours = String(param.workHours);
                         if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (param.workHours < 0.1) {
                             this.$message({showClose: true, message: '工作量正确值应为0.1~8', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         param.reason = this.modifyMyTaskReason;
@@ -7569,10 +7872,12 @@
                                 let level = taskModifyFunction.level;
                                 if (functionId === undefined || functionId === null || functionId === ''){
                                     this.$message({showClose: true, message: '关联任务功能点不能为空,请检查', type: 'error'});
+                                    this.isSaving = false;
                                     return false;
                                 }
                                 if (level === undefined || level === null || level === ''){
                                     this.$message({showClose: true, message: '功能点复杂度不能为空,请检查', type: 'error'});
+                                    this.isSaving = false;
                                     return false;
                                 }
                             }
@@ -7594,12 +7899,14 @@
                             }
                             if (param.taskModifyFunctionList.length>newArr.length){
                                 this.$message({showClose: true, message: '功能点不可重复选择', type: 'error'});
+                                this.isSaving = false;
                                 return false;
                             }
                         }
                         http.zsyPutHttp('/task-modify/review', param, (resp) => {
                             this.showTaskModifyDetailVisible = false;
                             this.$message({showClose: true, message: '审核通过', type: 'success'});
+                            this.isSaving = false;
                             this.$refs[formName].resetFields();
                             this.clearEditTaskModifyForm();
                             this.taskFunctionList = [];
@@ -7608,14 +7915,17 @@
                             this.fetchTaskModifyWait();
                             this.fetchTaskModifyAccessed();
                         },err=>{
+                            this.isSaving = false;
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
                             param.taskModifyFunctionList = [];
                         });
                     } else {
+                        this.isSaving = false;
                         return false;
                     }
                 }, err => {
+                    this.isSaving = false;
                 });
             },
             clearEditTaskModifyForm(){
@@ -8494,5 +8804,8 @@
     .steps-body {
         display: flex;
         flex-direction: row;
+    }
+    .rest-hour-log .el-dialog--tiny {
+        width: 45%;
     }
 </style>
