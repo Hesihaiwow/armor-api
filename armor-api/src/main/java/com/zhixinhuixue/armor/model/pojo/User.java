@@ -5,41 +5,121 @@ import java.util.Date;
 
 public class User {
 
+    /**
+     * 主键
+     */
     private Long id;
 
+    /**
+     * 姓名
+     */
     private String name;
 
+    /**
+     * 账户
+     */
     private String account;
 
+    /**
+     * 密码
+     */
     private String password;
 
+    /**
+     * 手机号
+     */
     private String phone;
 
+    /**
+     * 最后登录时间
+     */
     private Date lastLogin;
 
+    /**
+     * 部门id
+     */
     private Long departmentId;
 
+    /**
+     * 用户职位
+     */
     private String jobName;
 
+    /**
+     * '角色(0:测试, 1:开发, 2:设计, 3:产品, 4:其他, 5:算法工程师)',
+     */
     private Integer jobRole;
 
+    /**
+     * 积分
+     */
     private BigDecimal integral;
 
+    /**
+     * 状态  0:可用 1:不可用
+     */
     private Integer status;
 
+    /**
+     * 创建时间
+     */
     private Date createTime;
 
+    /**
+     * 是否删除  0:未删除  1:已删除
+     */
     private Integer isDelete;
 
+    /**
+     * 0:超级管理员;1:项目管理者;2:普通成员
+     */
     private Integer userRole;
 
+    /**
+     * 头像
+     */
     private String avatarUrl;
 
+    /**
+     * 邮箱
+     */
     private String email;
 
+    /**
+     * 考勤续航
+     */
     private Integer checkSort;
 
+    /**
+     * 工号
+     */
+    private String jobNumber;
+
+    /**
+     * 调休时长
+     */
+    private BigDecimal restHours;
+
+    /**
+     * 用户级别
+     */
     private Integer level;
+
+    public String getJobNumber() {
+        return jobNumber;
+    }
+
+    public void setJobNumber(String jobNumber) {
+        this.jobNumber = jobNumber;
+    }
+
+    public BigDecimal getRestHours() {
+        return restHours;
+    }
+
+    public void setRestHours(BigDecimal restHours) {
+        this.restHours = restHours;
+    }
 
     public Integer getLevel() {
         return level;

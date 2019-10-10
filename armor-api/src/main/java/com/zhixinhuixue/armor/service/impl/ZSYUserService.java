@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
+import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
@@ -15,7 +16,6 @@ import com.zhixinhuixue.armor.helper.*;
 import com.zhixinhuixue.armor.model.bo.DeptBo;
 import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.bo.UserCheckPeopleBO;
-import com.zhixinhuixue.armor.model.dto.request.UserCheckPeopleReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserCheckPeopleResDTO;
@@ -23,6 +23,7 @@ import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
+import com.zhixinhuixue.armor.model.pojo.UserRestHoursLog;
 import com.zhixinhuixue.armor.service.IZSYUserService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -40,7 +41,10 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -76,6 +80,9 @@ public class ZSYUserService implements IZSYUserService {
 
     @Autowired
     private IZSYDepartmentMapper departmentMapper;
+
+    @Autowired
+    private IZSYRestHoursLogMapper restHoursLogMapper;
 
     @Override
     @Transactional
@@ -255,6 +262,7 @@ public class ZSYUserService implements IZSYUserService {
 
         User user = new User();
         BeanUtils.copyProperties(userReqDTO, user);
+        user.setJobNumber(userReqDTO.getJobNumber().trim());
         user.setId(snowFlakeIDHelper.nextId());
         user.setCreateTime(new Date());
         user.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
@@ -300,6 +308,7 @@ public class ZSYUserService implements IZSYUserService {
         User user = new User();
         BeanUtils.copyProperties(userReqDTO, user);
         user.setId(userReqDTO.getUserId());
+        user.setJobNumber(userReqDTO.getJobNumber().trim());
         if (userMapper.updateSelectiveById(user) == 0) {
             throw new ZSYServiceException("更新用户失败");
         }
@@ -625,6 +634,33 @@ public class ZSYUserService implements IZSYUserService {
             });
         }
         return list;
+    }
+
+    /**
+     * 修改用户调休时间
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public void updateUserRestHours(EditUserRestHoursReqDTO reqDTO) {
+        User user = userMapper.selectById(reqDTO.getUserId());
+        if (user == null){
+            throw new ZSYServiceException("用户不存在");
+        }
+        user.setRestHours(reqDTO.getRestHours());
+        userMapper.updateSelectiveById(user);
+
+        //新增调休日志
+        UserRestHoursLog restHoursLog = new UserRestHoursLog();
+        restHoursLog.setId(snowFlakeIDHelper.nextId());
+        restHoursLog.setUserId(user.getId());
+        restHoursLog.setUserName(user.getName());
+        restHoursLog.setRestHours(reqDTO.getRestHours());
+        restHoursLog.setType(ZSYRestHoursType.MANUAL.getValue());
+        restHoursLog.setContent("管理员手动重置");
+        restHoursLog.setCreateTime(new Date());
+        restHoursLog.setRecordTime(new Date());
+        restHoursLogMapper.insert(restHoursLog);
     }
 
     // -- sch

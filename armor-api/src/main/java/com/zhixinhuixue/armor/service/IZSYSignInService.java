@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zhixinhuixue.armor.model.dto.request.QueryRestHoursLogReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
@@ -122,4 +123,25 @@ public interface IZSYSignInService {
      * @return
      */
     List<SignInUser> getSignInUsers();
+
+    /**
+     * 个人查看调休时间
+     * @author sch
+     * @param userId 用户id
+     */
+    RestHoursResDTO getPersonalRestHours(Long userId);
+
+    /**
+     * 个人查看调休修改日志
+     * @author sch
+     * @param reqDTO 条件
+     */
+    PageInfo<RestHoursLogPageResDTO> getPersonalRestHoursLogPage(QueryRestHoursLogReqDTO reqDTO);
+
+    /**
+     * 管理员查看用户调休修改日志
+     * @author sch
+     * @param reqDTO 条件
+     */
+    PageInfo<RestHoursLogPageResDTO> getUserRestHoursLogPage(QueryRestHoursLogReqDTO reqDTO);
 }

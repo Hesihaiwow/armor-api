@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper">
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserRestHoursLog">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="leave_id" jdbcType="BIGINT" property="leaveId" />
+    <result column="rest_hours" jdbcType="DECIMAL" property="restHours" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
+  </resultMap>
+
+  <!--新增-->
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserRestHoursLog">
+    INSERT INTO `user_rest_hours_log`
+    (`id`,`user_id`,`user_name`,`leave_id`,`rest_hours`,`type`,`content`,`create_time`,`record_time`)
+    VALUES
+    (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{userName,jdbcType=VARCHAR}
+    ,#{leaveId,jdbcType=BIGINT},#{restHours,jdbcType=DECIMAL},#{type,jdbcType=INTEGER}
+    ,#{content,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{recordTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--分页查询用户调休修改日志-->
+  <select id="selectUserRestHoursLogPage" resultMap="BaseResultMap">
+     SELECT * FROM `user_rest_hours_log` WHERE `user_id` = #{userId}
+     ORDER BY `record_time` DESC
+  </select>
+
+</mapper>

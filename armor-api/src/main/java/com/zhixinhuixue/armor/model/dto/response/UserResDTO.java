@@ -4,6 +4,7 @@ package com.zhixinhuixue.armor.model.dto.response;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -82,9 +83,35 @@ public class UserResDTO {
     private String levelName;
 
     /**
+     * 工号
+     */
+    private String jobNumber;
+
+    /**
+     * 调休时长
+     */
+    private BigDecimal restHours;
+
+    /**
      * 创建任务审核人集合
      */
     private List<UserCheckPeopleResDTO> checkUsers;
+
+    public String getJobNumber() {
+        return jobNumber;
+    }
+
+    public void setJobNumber(String jobNumber) {
+        this.jobNumber = jobNumber;
+    }
+
+    public BigDecimal getRestHours() {
+        return restHours;
+    }
+
+    public void setRestHours(BigDecimal restHours) {
+        this.restHours = restHours;
+    }
 
     public String getDeptName() {
         return deptName;

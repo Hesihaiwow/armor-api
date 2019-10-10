@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -42,8 +44,12 @@ public class UserReqDTO {
     @NotNull(message = "用户考勤序号不能为空")
     private Integer checkSort;
 
-    @Size(min = 6,max = 16,message = "用户职位字符长度在{min}~{max}之间")
+    @Size(min = 6,max = 16,message = "密码长度在{min}~{max}之间")
     private String password;
+
+    @NotBlank(message = "员工工号不能为空")
+    @Size(min = 1,max = 10,message = "工号长度在{min}~{max}之间")
+    private String jobNumber;
 
     private Integer status;
 
@@ -53,6 +59,14 @@ public class UserReqDTO {
     @Pattern(regexp = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}",message = "邮箱格式错误")
     @NotNull(message = "邮箱不能为空")
     private String email;
+
+    public String getJobNumber() {
+        return jobNumber;
+    }
+
+    public void setJobNumber(String jobNumber) {
+        this.jobNumber = jobNumber;
+    }
 
     public Integer getLevel() {
         return level;

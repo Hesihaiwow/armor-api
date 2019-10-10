@@ -47,7 +47,7 @@ public interface IZSYUserService {
     void addUser(UserReqDTO userReqDTO);
 
     /**
-     * 添加用户
+     * 编辑用户
      * @param userReqDTO 用户信息
      */
     void modifyUser(UserReqDTO userReqDTO);
@@ -136,6 +136,13 @@ public interface IZSYUserService {
      * @author sch
      */
     List<EffectUserResDTO> getProductManagers();
+
+    /**
+     * 修改用户调休时间
+     * @author sch
+     * @param reqDTO 参数
+     */
+    void updateUserRestHours(EditUserRestHoursReqDTO reqDTO);
 
     // -- sch
 }

@@ -21,6 +21,8 @@
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="check_sort" property="checkSort" jdbcType="INTEGER"/>
     <result column="level" property="level" jdbcType="INTEGER"/>
+    <result column="job_number" property="jobNumber" jdbcType="VARCHAR"/>
+    <result column="rest_hours" property="restHours" jdbcType="DECIMAL"/>
   </resultMap>
 
   <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.UserBo" extends="BaseResultMap">
@@ -45,13 +47,14 @@
     insert into `user` (id, `name`, account,
     password, phone, last_login,
     department_id, job_name,job_role, integral,
-    status, create_time, is_delete,user_role,email,check_sort,`level`
+    status, create_time, is_delete,user_role,email,check_sort,`level`,`job_number`
     )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
     #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{lastLogin,jdbcType=TIMESTAMP},
     #{departmentId,jdbcType=BIGINT}, #{jobName,jdbcType=VARCHAR}, #{jobRole,jdbcType=INTEGER}, #{integral,jdbcType=DECIMAL},
     #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER},
-    #{userRole,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR},#{checkSort,jdbcType=INTEGER},#{level,jdbcType=INTEGER})
+    #{userRole,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR},#{checkSort,jdbcType=INTEGER},#{level,jdbcType=INTEGER},
+    #{jobNumber,jdbcType=VARCHAR})
   </insert>
 
   <!--批量插入用户创建任务审核人-->
@@ -155,6 +158,12 @@
       </if>
       <if test="level != null and level != ''">
         `level` = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="jobNumber != null and jobNumber != ''">
+        `job_number` = #{jobNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="restHours != null">
+        `rest_hours` = #{restHours,jdbcType=DECIMAL},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -190,5 +190,12 @@ public class ZSYUserController extends ZSYController {
     public String getProductManagers(){
         return ZSYResult.success().data(userService.getProductManagers()).build();
     }
+
+    @ApiOperation("修改用户调休时间")
+    @PostMapping("/rest-hours/update")
+    public String updateUserRestHours(@Valid @RequestBody EditUserRestHoursReqDTO reqDTO){
+        userService.updateUserRestHours(reqDTO);
+        return ZSYResult.success().build();
+    }
     // -- sch
 }

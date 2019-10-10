@@ -5,7 +5,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserLeaveMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
@@ -15,16 +17,20 @@ import com.zhixinhuixue.armor.model.dto.request.UserLeaveListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserLeaveReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserLeaveResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserWeekResDTO;
+import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserLeave;
+import com.zhixinhuixue.armor.model.pojo.UserRestHoursLog;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import com.zhixinhuixue.armor.service.IZSYUserLeaveService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYUserLeaveType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +49,12 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+
+    @Autowired
+    private IZSYUserMapper userMapper;
+
+    @Autowired
+    private IZSYRestHoursLogMapper restHoursLogMapper;
 
     /**
      * 添加请假记录
@@ -204,12 +216,26 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     @Override
     public void passLeave(Long id) {
         UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id);
+        User user = userMapper.selectById(userLeaveBO.getUserId());
         UserLeave userLeave = new UserLeave();
         BeanUtils.copyProperties(userLeaveBO,userLeave);
         userLeave.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
         if(userLeaveMapper.updateLeave(userLeave)==0){
             throw new ZSYServiceException("更新审核信息失败");
         }
+        //新增调休日志
+        UserRestHoursLog restHoursLog = new UserRestHoursLog();
+        restHoursLog.setId(snowFlakeIDHelper.nextId());
+        restHoursLog.setUserId(user.getId());
+        restHoursLog.setLeaveId(userLeaveBO.getId());
+        restHoursLog.setUserName(user.getName());
+        restHoursLog.setRestHours(BigDecimal.ZERO.subtract(userLeaveBO.getHours()));
+        restHoursLog.setType(ZSYRestHoursType.LEAVE.getValue());
+        restHoursLog.setContent(userLeaveBO.getDescription());
+        restHoursLog.setCreateTime(new Date());
+        restHoursLog.setRecordTime(userLeaveBO.getBeginTime());
+        restHoursLogMapper.insert(restHoursLog);
+
     }
 }
 

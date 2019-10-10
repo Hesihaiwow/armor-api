@@ -41,6 +41,19 @@ public class UserPageResDTO {
     private String levelName;
     private Integer isDelete;
 
+    /**
+     * 工号
+     */
+    private String jobNumber;
+
+    public String getJobNumber() {
+        return jobNumber;
+    }
+
+    public void setJobNumber(String jobNumber) {
+        this.jobNumber = jobNumber;
+    }
+
     public String getLevelName() {
         return levelName;
     }

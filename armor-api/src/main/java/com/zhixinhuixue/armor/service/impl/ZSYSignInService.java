@@ -4,25 +4,20 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYExtraWorkMapper;
-import com.zhixinhuixue.armor.dao.IZSYSignInMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserLeaveMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.SignInBO;
+import com.zhixinhuixue.armor.model.dto.request.QueryRestHoursLogReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInQueryDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYSignInService;
-import com.zhixinhuixue.armor.source.ArmorPageInfo;
-import com.zhixinhuixue.armor.source.ZSYConstants;
-import com.zhixinhuixue.armor.source.ZSYQinuOssProperty;
-import com.zhixinhuixue.armor.source.ZSYUFileProperties;
+import com.zhixinhuixue.armor.source.*;
 import com.zhixinhuixue.armor.source.enums.ZSYSignInType;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import jxl.Sheet;
@@ -76,6 +71,8 @@ public class ZSYSignInService implements IZSYSignInService {
     private ZSYQinuOssProperty qinuOssProperty;
     @Autowired
     private ZSYUFileProperties uFileProperties;
+    @Autowired
+    private IZSYRestHoursLogMapper restHoursLogMapper;
     private static final Logger logger = LoggerFactory.getLogger(ZSYSignInService.class);
 
     /**
@@ -2010,6 +2007,71 @@ public class ZSYSignInService implements IZSYSignInService {
             });
         }
         return signInUsers;
+    }
+
+    /**
+     * 个人查看调休时间
+     * @param userId 用户id
+     */
+    @Override
+    public RestHoursResDTO getPersonalRestHours(Long userId) {
+        User user = userMapper.selectById(userId);
+        if (user == null){
+            throw new ZSYServiceException("当前用户不存在");
+        }
+        RestHoursResDTO resDTO = new RestHoursResDTO();
+        resDTO.setUserId(user.getId());
+        resDTO.setUserName(user.getName());
+        resDTO.setRestHours(user.getRestHours());
+        return resDTO;
+    }
+
+    /**
+     * 个人查看调休修改日志
+     * @author sch
+     * @param reqDTO 条件
+     */
+    @Override
+    public PageInfo<RestHoursLogPageResDTO> getPersonalRestHoursLogPage(QueryRestHoursLogReqDTO reqDTO) {
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        Page<UserRestHoursLog> restHoursLogs = restHoursLogMapper.selectUserRestHoursLogPage(userId);
+        Page<RestHoursLogPageResDTO> page = new Page<>();
+        BeanUtils.copyProperties(restHoursLogs,page);
+        if (!CollectionUtils.isEmpty(restHoursLogs)){
+            restHoursLogs.forEach(restHoursLog->{
+                RestHoursLogPageResDTO resDTO = new RestHoursLogPageResDTO();
+                BeanUtils.copyProperties(restHoursLog,resDTO);
+                page.add(resDTO);
+            });
+        }
+        return new PageInfo<>(page);
+    }
+
+    /**
+     * 管理员查看用户调休修改日志
+     * @author sch
+     * @param reqDTO 条件
+     */
+    @Override
+    public PageInfo<RestHoursLogPageResDTO> getUserRestHoursLogPage(QueryRestHoursLogReqDTO reqDTO) {
+        Long userId = reqDTO.getUserId();
+        if (userId == null){
+            throw new ZSYServiceException("用户id不能为空");
+        }
+
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        Page<UserRestHoursLog> restHoursLogs = restHoursLogMapper.selectUserRestHoursLogPage(userId);
+        Page<RestHoursLogPageResDTO> page = new Page<>();
+        BeanUtils.copyProperties(restHoursLogs,page);
+        if (!CollectionUtils.isEmpty(restHoursLogs)){
+            restHoursLogs.forEach(restHoursLog->{
+                RestHoursLogPageResDTO resDTO = new RestHoursLogPageResDTO();
+                BeanUtils.copyProperties(restHoursLog,resDTO);
+                page.add(resDTO);
+            });
+        }
+        return new PageInfo<>(page);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.model.dto.request.QueryRestHoursLogReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.YearAndMonthReqDTO;
@@ -12,6 +13,7 @@ import com.zhixinhuixue.armor.model.dto.response.TotalExtraHoursResDTO;
 import com.zhixinhuixue.armor.service.IZSYSignInService;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,5 +156,23 @@ public class ZSYSignInController {
     @GetMapping("/users")
     public String getSignInUsers(){
         return ZSYResult.success().data(signInService.getSignInUsers()).build();
+    }
+
+    @ApiOperation("个人查看剩余调休")
+    @GetMapping("/rest-hours/{userId}")
+    public String getPersonalRestHours(@PathVariable("userId")Long userId){
+        return ZSYResult.success().data(signInService.getPersonalRestHours(userId)).build();
+    }
+
+    @ApiOperation("个人查看调休修改日志")
+    @PostMapping("/rest-hours-log/personal/page")
+    public String getPersonalRestHoursLogPage(@RequestBody QueryRestHoursLogReqDTO reqDTO){
+        return ZSYResult.success().data(signInService.getPersonalRestHoursLogPage(reqDTO)).build();
+    }
+
+    @ApiOperation("管理员查看用户调休修改日志")
+    @PostMapping("/rest-hours-log/page")
+    public String getUserRestHoursLogPage(@RequestBody QueryRestHoursLogReqDTO reqDTO){
+        return ZSYResult.success().data(signInService.getUserRestHoursLogPage(reqDTO)).build();
     }
 }

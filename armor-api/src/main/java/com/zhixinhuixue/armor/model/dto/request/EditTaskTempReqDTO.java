@@ -56,7 +56,7 @@ public class EditTaskTempReqDTO {
     /**
      * 任务级别
      */
-//    @NotNull(message = "任务级别不能为空")
+    @NotNull(message = "任务级别不能为空")
     private Integer taskLevel;
 
     /**
