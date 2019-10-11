@@ -26,6 +26,9 @@ import TestExamplesEdit from '@/components/test-examples/Edit'
 import TestExamplesLook from '@/components/test-examples/Look'
 import { cancelArr } from '../lib/Http'
 
+import bug from '@/components/bug-system/Index.vue'
+import NewBug from '@/components/bug-system/NewBug.vue'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -126,7 +129,22 @@ const router = new Router({
                             component: TestExamplesLook
                         }
                     ]
-                }
+                },
+                {
+                    path:'bug',
+                    component:bug,
+                    children:[
+                        {
+                            path: 'NewBug',
+                            component: NewBug
+                        },
+                        {
+                            path: 'look',
+                            component: TestExamplesLook
+                        }
+                    ]
+                },
+
             ]
         }
     ]

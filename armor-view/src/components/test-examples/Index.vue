@@ -4,7 +4,9 @@
             <Tree :task-id="taskId"></Tree>
         </div>
         <div class="main">
-            <div class="upload-box" v-if="isIndex">
+            <div class="btn-box" v-if="isIndex">
+                <router-link :to="{ path: 'bug', query: { id: taskId }}" class="btn-bug"><el-button type="primary" size="small">Bug管理</el-button></router-link>
+
                 <el-upload
                         class="upload-demo"
                         ref="record"
@@ -107,10 +109,16 @@
             padding: 20px;
             background-color: #fff;
             border-left: 2px solid #cccccc;
-            .upload-box{
+            .btn-box{
+                position: relative;
                 padding: 20px 0;
                 text-align: right;
                 background-color: #fff;
+                .btn-bug{
+                    position: absolute;
+                    right: 120px;
+                    top: 22px;
+                }
             }
         }
 
