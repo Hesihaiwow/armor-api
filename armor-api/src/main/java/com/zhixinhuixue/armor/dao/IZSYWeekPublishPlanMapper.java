@@ -26,7 +26,7 @@ public interface IZSYWeekPublishPlanMapper {
      * @param taskId
      * @return
      */
-    WeekPublishPlan selectByTaskId(@Param("taskId") Long taskId);
+    List<WeekPublishPlan> selectByTaskId(@Param("taskId") Long taskId);
 
     /**
      * 根据主键查询

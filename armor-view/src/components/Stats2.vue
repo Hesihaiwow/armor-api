@@ -1,6 +1,6 @@
 <template>
     <div class="stats-con">
-        <el-tabs v-model="activeName" @tab-click="" style="position:relative;margin-bottom: 20px;">
+        <el-tabs v-model="activeName" @tab-click="handleClick" style="position:relative;margin-bottom: 20px;">
             <el-tab-pane label="任务统计" name="stat"  style="">
                 <el-table :data="statsData" >
                     <el-table-column prop="name" label="成员" align="center" ></el-table-column>
@@ -25,28 +25,50 @@
                             :picker-options="pickerWeek"
                             type="week"
                             format="yyyy 第 WW 周"
-                            @change="changeWeekPublishTime"
                             placeholder="选择周">
                     </el-date-picker>
                 </div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getWPLastWeek()">第{{lastWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getWPCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getWPNextWeek()">第{{nextWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>
                 <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
                 <el-table :data="weekPublishData" border>
-                    <el-table-column prop="taskName" label="任务名称" align="center"></el-table-column>
+                    <el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>
                     <el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>
+                    <el-table-column label="设计截止时间" align="center" width="175">
+                        <template scope="scope">
+                            <span>{{scope.row.beginTime | formatDate1}}</span><span> ({{scope.row.designDays}})</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
+                    <el-table-column label="开发截止时间" align="center" width="175">
+                        <template scope="scope">
+                            <span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatDate1}}</span>
+                            <span v-else-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatDate1}}</span>
+                            <span v-else>{{scope.row.testTime | formatDate1}}</span>
+                            <span>({{scope.row.developDays}})</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
+                    <el-table-column label="截止时间" align="center" width="175">
+                        <template scope="scope">
+                            <span>{{scope.row.endTime | formatDate1}}</span><span> ({{scope.row.testDays}})</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="platforms" label="需要发布平台" align="center" width="130"></el-table-column>
                     <el-table-column label="是否可以发布上线" align="center" width="100">
                         <template scope="scope">
                             <el-tooltip content="点击更改状态" placement="top">
-                                <i class="el-icon-circle-check" v-if="scope.row.canOnline==1"
-                                   @click="updateCanOnline(scope.row.canOnline,scope.row.taskId)" style="cursor: pointer"></i>
-                                <i class="el-icon-circle-close" v-else style="cursor: pointer"
-                                   @click="updateCanOnline(scope.row.canOnline,scope.row.taskId)"></i>
+                                <i class="el-icon-circle-check" v-if="scope.row.canOnline===1"
+                                   @click="updateCanOnline(scope.row.canOnline,scope.row.wppId)" style="cursor: pointer;color: lawngreen"></i>
+                                <i class="el-icon-circle-close" v-else style="cursor: pointer;color: red;"
+                                   @click="updateCanOnline(scope.row.canOnline,scope.row.wppId)"></i>
                             </el-tooltip>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="condition" label="任务发布情况" align="center"></el-table-column>
+                    <el-table-column prop="condition" label="任务发布情况" align="center" width="200"></el-table-column>
                     <el-table-column label="操作" width="80" align="center">
                         <template scope="scope">
                             <el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>
@@ -58,8 +80,8 @@
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
                         <el-select v-model="bugReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                            <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
+                            <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                       :value="item.userId"></el-option>
                         </el-select>
                     </div>
                     <div class="add-member-basic-msg fl" >
@@ -90,12 +112,13 @@
                         <span style="margin-right: 10px">协助: {{BugNumData.assistanceNum}}</span>
                     </div>
                     <el-table :data="bugPage" border>
-                        <el-table-column type="index" label="序号" align="center" width="80">
+                        <el-table-column type="index" label="序号" align="center" width="60">
                             <template scope="scope">
                                 {{(bugReqDTO.pageNum-1)*10 + scope.$index + 1}}
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
+                        <el-table-column prop="bugNoStr" label="bug编号" align="center" width="110"></el-table-column>
                         <el-table-column prop="createTime" label="反馈日期"  width="115">
                             <template scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
@@ -113,17 +136,17 @@
                         <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
                         <el-table-column prop="type" label="问题类型" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.type == 0">bug</span>
-                                <span v-if="scope.row.type == 1">优化</span>
-                                <span v-if="scope.row.type == 2">协助</span>
+                                <span v-if="scope.row.type === 0">bug</span>
+                                <span v-if="scope.row.type === 1">优化</span>
+                                <span v-if="scope.row.type === 2">协助</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>
                         <el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>
                         <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.isSolved == 0">未解决</span>
-                                <span v-if="scope.row.isSolved == 1">已解决</span>
+                                <span v-if="scope.row.isSolved === 0">未解决</span>
+                                <span v-if="scope.row.isSolved === 1">已解决</span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
@@ -146,8 +169,8 @@
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
                         <el-select v-model="oldBugReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                            <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
+                            <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                       :value="item.userId"></el-option>
                         </el-select>
                     </div>
                     <div class="add-member-basic-msg fl" >
@@ -195,17 +218,17 @@
                         <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
                         <el-table-column prop="type" label="问题类型" align="center" width="110">
                             <template scope="scope">
-                                <span v-if="scope.row.type == 0">bug</span>
-                                <span v-if="scope.row.type == 1">优化</span>
-                                <span v-if="scope.row.type == 2">协助</span>
+                                <span v-if="scope.row.type === 0">bug</span>
+                                <span v-if="scope.row.type === 1">优化</span>
+                                <span v-if="scope.row.type === 2">协助</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>
                         <el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>
                         <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.isSolved == 0">未解决</span>
-                                <span v-if="scope.row.isSolved == 1">已解决</span>
+                                <span v-if="scope.row.isSolved === 0">未解决</span>
+                                <span v-if="scope.row.isSolved === 1">已解决</span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
@@ -238,7 +261,7 @@
                     </el-date-picker></div>
                     <el-row>
                         <el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" style="margin-left: 700px;margin-top: -5px;" @click="importBugVisible = true">导入bug信息</el-button>
-                        <el-button type="primary" style="margin-top: -5px" v-show="environment == 'dev' || environment == 'test'" @click="selectMantisProject">导出bug信息</el-button>
+                        <el-button type="primary" style="margin-top: -5px" v-show="environment === 'dev' || environment === 'test'" @click="selectMantisProject">导出bug信息</el-button>
                     </el-row>
                     <el-table :data="taskBugStatsList" border>
                         <el-table-column prop="taskName" label="任务名称" align="center">
@@ -323,7 +346,7 @@
                         <el-table-column label="线上bug统计">
                             <template scope="scope">
                                 <div v-for="demandSystem in scope.row.onlineBugCategoryNumResDTOList">
-                                    <span v-if="demandSystem.isInCharge == 1" style="color: red">{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>
+                                    <span v-if="demandSystem.isInCharge === 1" style="color: red">{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>
                                     <span v-else>{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>
                                 </div>
                             </template>
@@ -357,8 +380,8 @@
             <el-tab-pane label="个人任务" name="personal">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="persanalForm.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <div class="add-member-basic-msg fl"><el-date-picker
@@ -374,7 +397,7 @@
                     <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="150">
                         <template scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPersonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="taskDescription" label="任务描述" align="center" ></el-table-column>
@@ -407,7 +430,7 @@
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="80" >
                         <template scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonStats(sco.row.userId)">{{sco.row.userName}}</a>
+                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPersonStats(sco.row.userId)">{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center">
@@ -427,8 +450,8 @@
             <el-tab-pane label="请假统计" name="leave"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <div class="add-member-basic-msg fl"><el-date-picker
@@ -656,12 +679,12 @@
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template scope="scope">
                             {{scope.row.date | formatDate2}}{{scope.row.weekday}}
-                            <span v-show="scope.row.isWeekend == 1" style="color: #3da7f5">(周末)</span>
+                            <span v-show="scope.row.isWeekend === 1" style="color: #3da7f5">(周末)</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="110">
                         <template scope="scope">
-                            <span style="color: red" v-if="scope.row.isForget == 1">(漏)</span>{{scope.row.userName}}
+                            <span style="color: red" v-if="scope.row.isForget === 1">(漏)</span>{{scope.row.userName}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkTimeList" label="打卡记录" align="left">
@@ -671,22 +694,22 @@
                     </el-table-column>
                     <el-table-column prop="checkInTime" label="上班时间" align="center" width="120" >
                         <template scope="scope">
-                            <span style="color: red" v-if="scope.row.isRecheckIn == 1">(补)</span>
-                            <span v-if="scope.row.isCheckInAfterTen == 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
+                            <span style="color: red" v-if="scope.row.isRecheckIn === 1">(补)</span>
+                            <span v-if="scope.row.isCheckInAfterTen === 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
                             <span v-else>{{scope.row.checkInTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120" >
                         <template scope="scope">
-                            <span style="color: red" v-if="scope.row.isRecheckOut == 1">(补)</span>
-                            <span style="color: green" v-if="scope.row.isWorkToNextDay == 1">(+1)</span>
-                            <span v-if="scope.row.isCheckOutBeforeSix == 1" style="color: red">{{scope.row.checkOutTime | formatTime2}}</span>
+                            <span style="color: red" v-if="scope.row.isRecheckOut === 1">(补)</span>
+                            <span style="color: green" v-if="scope.row.isWorkToNextDay === 1">(+1)</span>
+                            <span v-if="scope.row.isCheckOutBeforeSix === 1" style="color: red">{{scope.row.checkOutTime | formatTime2}}</span>
                             <span v-else>{{scope.row.checkOutTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="workTime" label="上班时长" align="center" width="120" >
                         <template scope="scope">
-                            <span v-if="scope.row.lessThanNine == 1" style="color: red">{{scope.row.workTime}}</span>
+                            <span v-if="scope.row.lessThanNine === 1" style="color: red">{{scope.row.workTime}}</span>
                             <span v-else>{{scope.row.workTime}}</span>
                         </template>
                     </el-table-column>
@@ -719,8 +742,8 @@
             <el-tab-pane label="加班统计" name="eWork"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="extraWorkReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
                     </el-select>
                 </div>
                 <!--<span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>-->
@@ -882,8 +905,8 @@
                         </div>
                     </div>
                     <div style="margin-top: 10px;float: left;margin-left: 10px">
-                        <div  style="display: inline">反馈系统</div>
-                        <div style="display: inline;margin-left: 40px">
+                        <div  style="display: inline"><span class="star">*</span>反馈系统</div>
+                        <div style="display: inline;margin-left: 30px">
                             <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择">
                                 <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
@@ -924,7 +947,7 @@
                 <div class="ctpc-member-con">
                     <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
+                        <!--<span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>-->
                         <span style="position: absolute;right: 10px;">
                                 <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
                             <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
@@ -937,15 +960,15 @@
                             <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                             <div class="add-member-basic-msg fl">
                                 <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
-                                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
+                                    <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                               :value="item.userId"></el-option>
                                 </el-select>
                             </div>
-                            <div class="add-member-basic-menu add-member-basic-time fl">积分：
-                            </div>
-                            <div class="add-member-basic-msg fl">
-                                <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
-                            </div>
+                            <!--<div class="add-member-basic-menu add-member-basic-time fl">积分：-->
+                            <!--</div>-->
+                            <!--<div class="add-member-basic-msg fl">-->
+                                <!--<input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">-->
+                            <!--</div>-->
                         </div>
                     </div>
                     <div class="ctpc-btns">
@@ -1113,8 +1136,8 @@
                         <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                         <div class="add-member-basic-msg fl">
                             <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
-                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
+                                <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                           :value="item.userId"></el-option>
                             </el-select>
                         </div>
                         <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
@@ -1151,15 +1174,15 @@
                 <el-form-item class="task-form" label="问题描述：">{{bugDetailForm.description}}</el-form-item>
                 <el-form-item class="task-form" label="问题类型：">
                     <template scope="scope">
-                        <span v-if="bugDetailForm.type == 0">bug</span>
-                        <span v-if="bugDetailForm.type == 1">优化</span>
-                        <span v-if="bugDetailForm.type == 2">协助</span>
+                        <span v-if="bugDetailForm.type === 0">bug</span>
+                        <span v-if="bugDetailForm.type === 1">优化</span>
+                        <span v-if="bugDetailForm.type === 2">协助</span>
                     </template>
                 </el-form-item>
                 <el-form-item class="task-form" label="是否解决：">
                     <template scope="scope">
-                        <span v-if="bugDetailForm.isSolved == 0">未解决</span>
-                        <span v-if="bugDetailForm.isSolved == 1">已解决</span>
+                        <span v-if="bugDetailForm.isSolved === 0">未解决</span>
+                        <span v-if="bugDetailForm.isSolved === 1">已解决</span>
                     </template>
                 </el-form-item>
                 <el-form-item class="task-form" label="备注：">
@@ -1197,7 +1220,7 @@
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
                 <el-form-item class="task-form"  label="优先级："><span v-for="item in priorityList"
-                                                                    v-if="item.value == taskDetail.priority">{{item.label}}</span>
+                                                                    v-if="item.value === taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
                 <el-form-item class="task-form" label="开始时间：">{{taskDetail.createTime | formatDate2}}</el-form-item>
                 <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate2}}</el-form-item>
@@ -1252,7 +1275,7 @@
             </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button v-loading.fullscreen.lock="fullscreenLoading"
-                           element-loading-text="拼命导入中,请稍后"
+                           element-loading-text="拼命导出中,请稍后"
                            element-loading-spinner="el-icon-loading"
                            element-loading-background="rgba(0, 0, 0, 0.8)"
                            type="primary" @click="exportBugInfo">导出</el-button>
@@ -1283,18 +1306,16 @@
 </template>
 <script>
     import Http from '../lib/Http'
-    import Helper from '../lib/Helper'
     import ElButton from "../../node_modules/element-ui/packages/button/src/button";
-    import ElDialog from "../../node_modules/element-ui/packages/dialog/src/component";
     import moment from 'moment';
     import helper from '../lib/Helper'
     import ElTabPane from "../../node_modules/element-ui/packages/tabs/src/tab-pane";
-    import Task from "./Task"
 
     export default {
         components: {
             ElButton,
-            ElTabPane},
+            ElTabPane
+        },
         name: 'IntegralHistory',
         data() {
             return {
@@ -1382,6 +1403,8 @@
                 },
                 userWeekData:[],
                 currentWeek:moment().week(),
+                lastWeek:moment().week()-1,
+                nextWeek:moment().week()+1,
                 pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -1417,22 +1440,22 @@
                 },
 
                 // sch --
-                whichYear1:'2018',
-                whichYear2:'2018',
-                whichYear4:'2018',
-                whichYear5:'2018',
-                whichYear7:'2018',
+                whichYear1:'2019',
+                whichYear2:'2019',
+                whichYear4:'2019',
+                whichYear5:'2019',
+                whichYear7:'2019',
                 taskReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 fbReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 taskMonthReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 taskTimeReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 taskData1:[],
                 taskData2:[],
@@ -1455,7 +1478,7 @@
                 taskTotal:0,
 
                 vacationReqDTO:{
-                    whichYear:'2018'
+                    whichYear:'2019'
                 },
                 vacationData:{
                     totalCount:0,
@@ -1696,13 +1719,13 @@
                         roleName: '其他'
                     }
                 ],
-                fullscreenLoading:false,
                 urlList:[],
                 environment:'',
                 importBugVisible:false,
 
                 showWeekPublishPlanVisible: false,
                 editWeekPublishVisible: false,
+                weekPublishDate:'',
                 weekPublishReqDTO:{
                     date:'',
                     beginTime:'',
@@ -1710,6 +1733,7 @@
                     isTesting:false
                 },
                 weekPublish:{
+                    id:'',
                     taskId:'',
                     canOnline:null,
                     condition:'',
@@ -1735,40 +1759,38 @@
             }
         },
         beforeMount:function () {
-            this.getEnv();
             this.getStats(this.statsPage.currentPage);
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "stats");
-            this.fetchUserList();
+            // this.fetchUserList();
             this.fetchSignInUser();
-            this.fetchProjectList();
-            this.fetchProjectList();
-            // this.getBugList();
-            this.fetchBugPage();
-            this.fetchOldBugPage();
-            this.getLeaveList();
-            this.fetchAnnualTaskByPriority();
-            this.fetchAnnualProjectTaskNum();
-            this.fetchEveryMonthFeedback();
-            this.fetchEveryMonthTask();
-            this.fetchEveryMonthVacation();
-            this.fetchAnnualVacation();
-            this.fetchAnnualFeedback();
-            this.fetchPersonVacation();
-            this.fetchDiffStageTaskTime();
-            this.fetchTop10MostTimeTask();
-            this.initSignInTime();
-            this.fetchSignInData();
-            this.fetchDiffTypeBugNum();
             this.fetchDemandSystem();
-            this.fetchMantisBugStatsGroupByUser();
-            this.fetchBugWeekGroupByUser();
-            this.fetchOnlineBugGroupByUser();
-            this.fetchBugStatsGroupByTask();
-            this.fetchOnlineBugGroupByDeveloper();
-            this.initTime();
             this.fetchPlatformList();
-            this.getExtraWorkStats();
+            // this.fetchProjectList();
+            // this.getBugList();
+            // this.fetchBugPage();
+            // this.fetchOldBugPage();
+            // this.getLeaveList();
+            // this.fetchAnnualTaskByPriority();
+            // this.fetchAnnualProjectTaskNum();
+            // this.fetchEveryMonthFeedback();
+            // this.fetchEveryMonthTask();
+            // this.fetchEveryMonthVacation();
+            // this.fetchAnnualVacation();
+            // this.fetchAnnualFeedback();
+            // this.fetchPersonVacation();
+            // this.fetchDiffStageTaskTime();
+            // this.fetchTop10MostTimeTask();
+            // this.initSignInTime();
+            // this.fetchSignInData();
+            // this.fetchDiffTypeBugNum();
+            // this.fetchMantisBugStatsGroupByUser();
+            // this.fetchBugWeekGroupByUser();
+            // this.fetchOnlineBugGroupByUser();
+            // this.fetchBugStatsGroupByTask();
+            // this.fetchOnlineBugGroupByDeveloper();
+            // this.initTime();
+            // this.getExtraWorkStats();
         },
         computed: {
             permit() {
@@ -1815,7 +1837,6 @@
                 }
                 return 'total, pager'
             }
-
         },
         filters: {
             formatDate: function (value) {
@@ -1840,6 +1861,47 @@
             },
         },
         methods: {
+            handleClick(){
+              if (this.activeName === 'stat'){
+                  this.getStats();
+              }else if (this.activeName === 'weekPublish'){
+                  // this.initTime();
+              } else if (this.activeName === 'bug'){
+                  // this.fetchSignInUser();
+                  this.fetchBugPage();
+                  this.fetchOldBugPage();
+              } else if (this.activeName === 'mantisBug'){
+                  this.getEnv();
+                  this.fetchMantisBugStatsGroupByUser();
+                  this.fetchBugWeekGroupByUser();
+                  this.fetchOnlineBugGroupByUser();
+                  this.fetchBugStatsGroupByTask();
+                  this.fetchOnlineBugGroupByDeveloper();
+              } else if (this.activeName === 'personal'){
+                    // this.fetchSignInUser();
+              } else if (this.activeName === 'week'){
+
+              } else if (this.activeName === 'leave'){
+                    this.getLeaveList();
+              } else if (this.activeName === 'task'){
+                  this.fetchAnnualTaskByPriority();
+                  this.fetchAnnualProjectTaskNum();
+                  this.fetchEveryMonthFeedback();
+                  this.fetchEveryMonthTask();
+                  this.fetchEveryMonthVacation();
+                  this.fetchAnnualVacation();
+                  this.fetchAnnualFeedback();
+                  this.fetchDiffStageTaskTime();
+                  this.fetchTop10MostTimeTask();
+              } else if (this.activeName === 'personalLeave'){
+                  this.fetchPersonVacation();
+              } else if (this.activeName === 'signIn'){
+                  this.initSignInTime();
+                  this.fetchSignInData();
+              } else if (this.activeName === 'eWork'){
+                  this.getExtraWorkStats();
+              }
+            },
             getStats(currentPage){
                 Http.zsyGetHttp(`/stats/list`, {}, (resp) => {
                     this.statsData =  resp.data;
@@ -1851,7 +1913,7 @@
             getTask(index){
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
             },
-            getPesonTask(taskId){
+            getPersonTask(taskId){
                 this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
             },
             getBugList(){
@@ -1868,9 +1930,9 @@
             },
             bugTimeChange(time) {
                 // 选择结束时间
-                time = time.split(' - ')
-                if (time && time.length == 2) {
-                    this.bugList.startTime = `${time[0]} 00:00:00`
+                time = time.split(' - ');
+                if (time && time.length === 2) {
+                    this.bugList.startTime = `${time[0]} 00:00:00`;
                     this.bugList.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.bugList.startTime = this.bugList.endTime = this.bugDaterange = ''
@@ -1878,9 +1940,9 @@
             },
             bugTimeChange1(time) {
                 // 选择结束时间
-                time = time.split(' - ')
-                if (time && time.length == 2) {
-                    this.bugReqDTO.startTime = `${time[0]} 00:00:00`
+                time = time.split(' - ');
+                if (time && time.length === 2) {
+                    this.bugReqDTO.startTime = `${time[0]} 00:00:00`;
                     this.bugReqDTO.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.bugReqDTO.startTime = this.bugReqDTO.endTime = this.bugDaterange = ''
@@ -1888,9 +1950,9 @@
             },
             bugTimeChange2(time) {
                 // 选择结束时间
-                time = time.split(' - ')
-                if (time && time.length == 2) {
-                    this.oldBugReqDTO.startTime = `${time[0]} 00:00:00`
+                time = time.split(' - ');
+                if (time && time.length === 2) {
+                    this.oldBugReqDTO.startTime = `${time[0]} 00:00:00`;
                     this.oldBugReqDTO.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.oldBugReqDTO.startTime = this.oldBugReqDTO.endTime = this.bugDaterange2 = ''
@@ -1898,9 +1960,9 @@
             },
             leaveTimeChange(time) {
                 // 选择结束时间
-                time = time.split(' - ')
-                if (time && time.length == 2) {
-                    this.leaveList.beginTime = `${time[0]} 00:00:00`
+                time = time.split(' - ');
+                if (time && time.length === 2) {
+                    this.leaveList.beginTime = `${time[0]} 00:00:00`;
                     this.leaveList.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.leaveList.beginTime = this.leaveList.endTime = this.leaveDaterange = ''
@@ -1908,9 +1970,9 @@
             },
             timeChange(time) {
                 // 选择结束时间
-                time = time.split(' 至 ')
-                if (time && time.length == 2) {
-                    this.persanalForm.startTime = `${time[0]} 00:00:00`
+                time = time.split(' 至 ');
+                if (time && time.length === 2) {
+                    this.persanalForm.startTime = `${time[0]} 00:00:00`;
                     this.persanalForm.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.persanalForm.startTime = this.persanalForm.endTime = this.daterange =  ''
@@ -1926,15 +1988,16 @@
             },
             saveBugForm(){
                 this.isSaving = true
-                if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
+                if (this.bugForm.projectId === ''||this.bugForm.description === ''
+                    ||this.bugForm.createTime === ''||this.bugForm.processTime === '') {
                     this.errorMsg('请将问题信息填写完整');
                     return
                 }
-                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
-                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss');
+                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss');
                 let param = this.bugForm;
-                param.projectId = param.projectId.trim()
-                param.description = param.description.trim()
+                param.projectId = param.projectId.trim();
+                param.description = param.description.trim();
                 param['bugUsers'] = this.bugUsers;
                 Http.zsyPostHttp('/bug/add', param, (resp) => {
                     this.$message({
@@ -1944,7 +2007,7 @@
                     });
                     this.bugForm.projectId = this.bugForm.description = '';
                     this.bugForm.createTime = this.bugForm.processTime = '';
-                    this.createBugSolvingVisible = false
+                    this.createBugSolvingVisible = false;
                     this.bugUsers = [];
                     this.fetchDiffTypeBugNum();
                     this.getBugList();
@@ -1953,15 +2016,16 @@
 
             },
             editBugForm(id){
-                if (this.bugForm.projectId == ''||this.bugForm.description == ''||this.bugForm.createTime == ''||this.bugForm.processTime == '') {
+                if (this.bugForm.projectId === ''||this.bugForm.description === ''
+                    ||this.bugForm.createTime === ''||this.bugForm.processTime === '') {
                     this.errorMsg('请将问题信息填写完整');
                     return
                 }
-                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss')
-                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss');
+                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss');
                 let param = this.bugForm;
-                param.projectId = param.projectId.trim()
-                param.description = param.description.trim()
+                param.projectId = param.projectId.trim();
+                param.description = param.description.trim();
                 param['bugUsers'] = this.bugUsers;
                 Http.zsyPutHttp('/bug/update/'+this.modifyId, param, (resp) => {
                     this.$message({
@@ -1971,7 +2035,7 @@
                     });
                     this.bugForm.projectId = this.bugForm.description = '';
                     this.bugForm.createTime = this.bugForm.processTime = '';
-                    this.updateBugSolvingVisible = false
+                    this.updateBugSolvingVisible = false;
                     this.bugUsers = [];
                     this.getBugList();
                     this.fetchDiffTypeBugNum();
@@ -1982,7 +2046,7 @@
                 this.createBugSolvingVisible = true;
                 this.bugForm.description = this.bugForm.projectId = this.bugForm.createTime = this.bugForm.processTime = '';
                 this.bugUsers = [];
-                this.showAddDetail = false
+                this.showAddDetail = false;
                 this.addMemberIndex = {
                     index: '',
                     userId: '',
@@ -1991,16 +2055,17 @@
                 }
             },
             saveAddMember(){
-                if (this.addMemberIndex.userId == ''||this.addMemberIndex.integral === '') {
+                this.addMemberIndex.integral = 0;
+                if (this.addMemberIndex.userId === ''||this.addMemberIndex.integral === '') {
                     this.errorMsg('请将积分信息填写完整');
                     return
                 }
                 this.showAddDetail = !this.showAddDetail;
                 if (this.addMemberIndex.index === '') {
-                    let bugUser = {}
-                    bugUser.userId = this.addMemberIndex.userId
-                    bugUser.userName = this.addMemberIndex.userName
-                    bugUser.integral = this.addMemberIndex.integral
+                    let bugUser = {};
+                    bugUser.userId = this.addMemberIndex.userId;
+                    bugUser.userName = this.addMemberIndex.userName;
+                    bugUser.integral = this.addMemberIndex.integral;
                     this.bugUsers.push(bugUser)
                 } else {
                     // 取消css
@@ -2012,7 +2077,7 @@
                     userId: '',
                     userName: '',
                     integral: 0,
-                }
+                };
                 this.stepTemp = {}
 
             },
@@ -2021,19 +2086,19 @@
                     userId: stages[index].userId,
                     userName: stages[index].userName,
                     integral: stages[index].integral,
-                }
+                };
                 this.bugUsers.forEach((item) => {
                     item.cssClass = ''
-                })
-                this.bugUsers[index].cssClass = 'stepActive'
-                this.addMemberIndex = stages[index]
-                this.addMemberIndex.index = index
+                });
+                this.bugUsers[index].cssClass = 'stepActive';
+                this.addMemberIndex = stages[index];
+                this.addMemberIndex.index = index;
                 this.showAddDetail = true;
             },
             deleteMember(index) {
                 this.bugUsers.splice(index, 1);
-                if (this.bugUsers.length == 0) {
-                    this.showAddDetail = false
+                if (this.bugUsers.length === 0) {
+                    this.showAddDetail = false;
                     this.addMemberIndex = {
                         index: '',
                         userId: '',
@@ -2083,31 +2148,40 @@
                             message: 'Bug处理结果删除成功',
                             type: 'success'
                         });
-                    })
-                    this.bugDetailVisible = false;
-                    this.fetchBugPage();
-                    this.changeMonth2();
-                    this.changeMonth1();
+                        this.bugDetailVisible = false;
+                        this.fetchBugPage();
+                        this.changeMonth2();
+                        this.changeMonth1();
+                    });
+
                 }).catch(() => {
                 });
             },
             fetchUserList() {
-                let vm = this
+                let vm = this;
                 Http.zsyGetHttp('/user/effective', {}, (resp) => {
                     vm.userList = resp.data
                 })
             },
             fetchProjectList() {
-                let vm = this
+                let vm = this;
                 Http.zsyGetHttp('/project/list', {}, (resp) => {
                     vm.projectForm = resp.data
                 })
             },
+            // stepUserChange(val) {
+            //     let vm = this;
+            //     this.userList.forEach((user) => {
+            //         if (user.id === val) {
+            //             vm.addMemberIndex.userName = user.name
+            //         }
+            //     })
+            // },
             stepUserChange(val) {
                 let vm = this;
-                this.userList.forEach((user) => {
-                    if (user.id === val) {
-                        vm.addMemberIndex.userName = user.name
+                this.checkInUsers.forEach((user) => {
+                    if (user.userId === val) {
+                        vm.addMemberIndex.userName = user.userName
                     }
                 })
             },
@@ -2115,7 +2189,7 @@
                 this.bugDetailVisible = true;
                 Http.zsyGetHttp('/bug/detail/'+row.id, null, (resp) => {
                     this.bugDetailForm = resp.data
-                })
+                });
                 this.modifyId = row.id;
             },
             handleCurrentChange(currentPage){
@@ -2139,11 +2213,11 @@
                 this.getExtraWorkStats();
             },
             isDecimal(str) {
-                var regu = /^[-]{0,1}[0-9]{1,}$/;
+                let regu = /^[-]{0,1}[0-9]{1,}$/;
                 if (regu.test(str)) {
                     return true;
                 }
-                var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
+                let re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
                 if (re.test(str)) {
                     if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
                     return true;
@@ -2186,10 +2260,10 @@
                 return sums;
             },
             getUserWeekStats(){
-                if(this.userWeekForm.date!=''){
-                    this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss')
-                    this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week()
-                    if(this.userWeekForm.date!=''){
+                if(this.userWeekForm.date!==''){
+                    this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD HH:mm:ss');
+                    this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week();
+                    if(this.userWeekForm.date!==''){
                         Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
                             this.userWeekData = resp.data;
                         })
@@ -2202,8 +2276,8 @@
 
 
             },
-            getPesonStats(id){
-                this.activeName='personal'
+            getPersonStats(id){
+                this.activeName='personal';
                 this.persanalForm.userId = id;
                 this.persanalForm.startTime = moment(this.userWeekForm.date).startOf('week').format("YYYY-MM-DD 00:00:00");
                 this.persanalForm.endTime =  moment(this.userWeekForm.date).endOf('week').format("YYYY-MM-DD 23:59:59");
@@ -2215,7 +2289,9 @@
             // sch --
             drawLine1(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart1'))
+                let dom = document.getElementById('myChart1');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2255,7 +2331,9 @@
             },
             drawLine2(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart2'))
+                let dom = document.getElementById('myChart2');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2295,7 +2373,9 @@
             },
             drawLine3(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart3'))
+                let dom = document.getElementById('myChart3');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2340,7 +2420,9 @@
             },
             drawLine6(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart6'))
+                let dom = document.getElementById('myChart6');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2380,7 +2462,9 @@
             },
             drawLine4(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart4'))
+                let dom = document.getElementById('myChart4');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2425,7 +2509,9 @@
             },
             drawLine5(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart5'))
+                let dom = document.getElementById('myChart5');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: { text: '年度请假分布',x:'center' },
@@ -2483,7 +2569,9 @@
             },
             drawLine7(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart7'))
+                let dom = document.getElementById('myChart7');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2547,7 +2635,9 @@
             },
             drawLine8(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart8'))
+                let dom = document.getElementById('myChart8');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2579,7 +2669,9 @@
             },
             drawLine9(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart9'))
+                let dom = document.getElementById('myChart9');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2616,7 +2708,9 @@
             },
             drawLine10(){
                 // 基于准备好的dom，初始化echarts实例
-                let myChart = this.$echarts.init(document.getElementById('myChart10'))
+                let dom = document.getElementById('myChart10');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
@@ -2653,7 +2747,7 @@
             },
             selectTaskByYear(){
                 if(this.whichYear1){
-                    this.taskReqDTO.whichYear = moment(this.whichYear1).format("YYYY-MM-DD")
+                    this.taskReqDTO.whichYear = moment(this.whichYear1).format("YYYY-MM-DD");
                     this.taskReqDTO.whichYear = this.taskReqDTO.whichYear.substring(0,4)
                 }
                 // if (Number(this.taskReqDTO.whichYear) < )
@@ -2665,8 +2759,8 @@
             },
             selectTaskTimeByYear(){
               if (this.whichYear7){
-                  this.taskTimeReqDTO.whichYear = moment(this.whichYear7).format("YYYY-MM-DD")
-                  this.taskTimeReqDTO.whichYear = this.taskTimeReqDTO.whichYear.substring(0,4)
+                  this.taskTimeReqDTO.whichYear = moment(this.whichYear7).format("YYYY-MM-DD");
+                  this.taskTimeReqDTO.whichYear = this.taskTimeReqDTO.whichYear.substring(0,4);
                   // this.taskTimeData = {};
                   this.taskTimeData.totalTaskTime = 0;
                   this.diffStageTime = [];
@@ -2678,7 +2772,7 @@
             },
             selectTaskByYear4(){
                 if(this.whichYear4){
-                    this.taskMonthReqDTO.whichYear = moment(this.whichYear4).format("YYYY-MM-DD")
+                    this.taskMonthReqDTO.whichYear = moment(this.whichYear4).format("YYYY-MM-DD");
                     this.taskMonthReqDTO.whichYear = this.taskMonthReqDTO.whichYear.substring(0,4)
                 }
                 this.taskTotal = 0;
@@ -2687,7 +2781,7 @@
             },
             selectVacationByYear(){
                 if (this.whichYear5){
-                    this.vacationReqDTO.whichYear = moment(this.whichYear5).format("YYYY-MM-DD")
+                    this.vacationReqDTO.whichYear = moment(this.whichYear5).format("YYYY-MM-DD");
                     this.vacationReqDTO.whichYear = this.vacationReqDTO.whichYear.substring(0,4)
                 }
                 this.vacationCountList = [];
@@ -2697,7 +2791,7 @@
             },
             selectFeedbackByYear(){
               if (this.whichYear2){
-                  this.fbReqDTO.whichYear = moment(this.whichYear2).format("YYYY-MM-DD")
+                  this.fbReqDTO.whichYear = moment(this.whichYear2).format("YYYY-MM-DD");
                   this.fbReqDTO.whichYear = this.fbReqDTO.whichYear.substring(0,4)
               }
               this.feedbackMonthList = [];
@@ -2709,6 +2803,8 @@
             //查询年度需求
             fetchAnnualFeedback(){
                 if (this.admin){
+                    this.feedbackTotal = 0;
+                    this.feedbackData = [];
                     Http.zsyPostHttp('/data/annual/feedback-num',this.fbReqDTO,(res)=>{
                         if (res){
                             this.fbTotalCount = res.data.totalNum;
@@ -2717,12 +2813,14 @@
                             const fbData = {};
                             fbData.value = this.fromCoach;
                             fbData.name = '学管端';
-                            this.feedbackData.push(fbData)
+                            this.feedbackData.push(fbData);
                             const fbData2 = {};
                             fbData2.value = this.other;
                             fbData2.name = '其他';
-                            this.feedbackData.push(fbData2)
-                            this.drawLine6()
+                            this.feedbackData.push(fbData2);
+                            this.$nextTick(()=>{
+                                this.drawLine6()
+                            })
                         }
                     })
                 }
@@ -2730,14 +2828,17 @@
             //查询年度每个月的需求数
             fetchEveryMonthFeedback(){
                 if (this.admin){
+                    this.feedbackMonthList = [];
                     Http.zsyPostHttp('/data/annual/feedback/month',this.fbReqDTO,(res)=>{
                         if (res){
                             this.feedbackMonthList = res.data;
                             this.feedbackMonthList.forEach(feedbackNum=>{
                                 this.feedbackTotal = this.feedbackTotal + feedbackNum
+                            });
+                            this.$nextTick(()=>{
+                                this.drawLine3();
+                                this.drawLine6()
                             })
-                            this.drawLine3()
-                            this.drawLine6()
                         }
                     })
                 }
@@ -2745,13 +2846,17 @@
             //查询年度每月完成的任务数
             fetchEveryMonthTask(){
                 if (this.admin){
+                    this.taskTotal = 0;
+                    this.taskMonthList = [];
                     Http.zsyPostHttp('/data/annual/task/month',this.taskMonthReqDTO,(res)=>{
                         if (res){
                             this.taskMonthList = res.data;
                             this.taskMonthList.forEach(taskNum=>{
                                 this.taskTotal = this.taskTotal + taskNum
+                            });
+                            this.$nextTick(()=>{
+                                this.drawLine4()
                             })
-                            this.drawLine4()
                         }
                     })
                 }
@@ -2759,11 +2864,16 @@
             //年度 每月请假次数和时长集合
             fetchEveryMonthVacation(){
                 if (this.admin){
+                    this.vacationCountList = [];
+                    this.vacationTimeList = [];
                     Http.zsyPostHttp('/data/annual/vacation/month',this.vacationReqDTO,(res)=>{
                         if (res){
                             this.vacationCountList = res.data.vacationCountList;
                             this.vacationTimeList = res.data.vacationTimeList;
-                            this.drawLine5()
+                        
+                            this.$nextTick(()=>{
+                                this.drawLine5()
+                            })
                         }
                     })
                 }
@@ -2782,18 +2892,22 @@
             //查询年度各个项目对应的任务数
             fetchAnnualProjectTaskNum(){
                 if (this.admin){
+                    this.taskData2 = [];
+                    this.projectTaskNum = 0;
                     Http.zsyPostHttp('/data/annual/task/project-task',this.taskReqDTO,(res) =>{
                         if (res){
-                            this.projectTaskList = res.data
+                            this.projectTaskList = res.data;
                             this.projectTaskList.forEach(project =>{
                                 const tData = {};
                                 tData.value = project.taskNum;
                                 tData.name = project.projectName;
-                                this.taskData2.push(tData)
-                                this.taskLegend.push(project.projectName)
+                                this.taskData2.push(tData);
+                                this.taskLegend.push(project.projectName);
                                 this.projectTaskNum = this.projectTaskNum + project.taskNum
+                            });
+                            this.$nextTick(()=>{
+                                this.drawLine2()
                             })
-                            this.drawLine2()
                         }
                     })
                 }
@@ -2801,9 +2915,11 @@
             //根据优先级查询年度任务完成数
             fetchAnnualTaskByPriority(){
                 if (this.admin){
+                    this.taskData1 = [];
+
                     Http.zsyPostHttp('data/annual/task/priority',this.taskReqDTO,(res)=>{
                         if (res){
-                            this.priorityTask = res.data
+                            this.priorityTask = res.data;
                             const tData3 = {};
                             tData3.value = this.priorityTask.veryUrgentNum;
                             tData3.name = '非常紧急';
@@ -2817,8 +2933,11 @@
                             tData.value = this.priorityTask.normalNum;
                             tData.name = '普通';
                             this.taskData1.push(tData);
-                            this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum
-                            this.drawLine1()
+                            this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum;
+      
+                            this.$nextTick(()=>{
+                                this.drawLine1()
+                            })
                         }
                     })
                 }
@@ -2861,7 +2980,7 @@
                 this.onlineBugForm.type = 0;
                 this.onlineBugForm.isSolved = 0;
                 this.bugUsers = [];
-                this.showAddDetail = false
+                this.showAddDetail = false;
                 this.addMemberIndex = {
                     index: '',
                     userId: '',
@@ -2872,35 +2991,50 @@
 
             //保存新增bug
             saveOnlineBugForm(){
-                this.isSaving = true
-                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin == ''){
+                this.isSaving = true;
+                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin === ''){
                     this.errorMsg("反馈人不能为空");
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.description == null || this.onlineBugForm.description == ''){
+                if (this.onlineBugForm.type == null || this.onlineBugForm.type === ''){
+                    this.errorMsg("问题类型不能为空");
+                    this.isSaving = false;
+                    return
+                }
+                if (this.onlineBugForm.isSolved == null || this.onlineBugForm.isSolved === ''){
+                    this.errorMsg("是否解决不能为空");
+                    this.isSaving = false;
+                    return
+                }
+                if (this.onlineBugForm.demandSystemId == null || this.onlineBugForm.demandSystemId === ''){
+                    this.errorMsg("反馈系统不能为空");
+                    this.isSaving = false;
+                    return
+                }
+                if (this.onlineBugForm.description == null || this.onlineBugForm.description === ''){
                     this.errorMsg("问题描述不能为空");
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime == ''){
+                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime === ''){
                     this.errorMsg("反馈时间不能为空");
                     this.isSaving = false;
                     return
                 }
-                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss')
+                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss');
                 if (this.onlineBugForm.processTime) {
                     this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
                 }
                 let param = this.onlineBugForm;
-                if (param.demandSystemId != null && param.demandSystemId != ''){
-                    var demandSystems = this.demandSystemList.filter(demandSystem1=>
+                if (param.demandSystemId != null && param.demandSystemId !== ''){
+                    let demandSystems = this.demandSystemList.filter(demandSystem1=>
                         demandSystem1.id === param.demandSystemId
-                    )
+                    );
                     param.demandSystemName = demandSystems[0].name
                 }
-                param.projectId = param.projectId.trim()
-                param.description = param.description.trim()
+                param.projectId = param.projectId.trim();
+                param.description = param.description.trim();
                 param['bugUsers'] = this.bugUsers;
                 Http.zsyPostHttp('/bug/add-bug', param, (resp) => {
                     this.$message({
@@ -2910,7 +3044,7 @@
                     });
                     this.onlineBugForm.projectId = this.onlineBugForm.description = this.onlineBugForm.demandSystemId = this.onlineBugForm.demandSystemName = '';
                     this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
-                    this.createBugSolvingVisible1 = false
+                    this.createBugSolvingVisible1 = false;
                     this.bugUsers = [];
                     this.fetchBugPage();
                     this.changeMonth1();
@@ -2927,29 +3061,29 @@
                 })
             },
             editBugForm1(){
-                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin == ''){
+                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin === ''){
                     this.errorMsg("反馈人不能为空");
                     return
                 }
-                if (this.onlineBugForm.description == null || this.onlineBugForm.description == ''){
+                if (this.onlineBugForm.description == null || this.onlineBugForm.description === ''){
                     this.errorMsg("问题描述不能为空");
                     return
                 }
-                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime == ''){
+                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime === ''){
                     this.errorMsg("反馈时间不能为空");
                     return
                 }
-                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss')
-                if (this.onlineBugForm.processTime != null && this.onlineBugForm.processTime != '') {
+                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss');
+                if (this.onlineBugForm.processTime != null && this.onlineBugForm.processTime !== '') {
                     this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
                 }
                 let param = this.onlineBugForm;
-                param.description = param.description.trim()
+                param.description = param.description.trim();
                 param['bugUsers'] = this.bugUsers;
-                if (param.demandSystemId != null && param.demandSystemId != ''){
-                    var demandSystems = this.demandSystemList.filter(demandSystem1=>
+                if (param.demandSystemId != null && param.demandSystemId !== ''){
+                    let demandSystems = this.demandSystemList.filter(demandSystem1=>
                         demandSystem1.id === param.demandSystemId
-                    )
+                    );
                     param.demandSystemName = demandSystems[0].name
                 }
                 Http.zsyPutHttp('/bug/update-bug/'+this.modifyId, param, (resp) => {
@@ -2960,7 +3094,7 @@
                     });
                     this.onlineBugForm.projectId = this.onlineBugForm.description = this.onlineBugForm.demandSystemId = this.onlineBugForm.demandSystemName = '';
                     this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
-                    this.updateBugSolvingVisible1 = false
+                    this.updateBugSolvingVisible1 = false;
                     this.bugUsers = [];
                     this.fetchBugPage();
                     this.changeMonth1();
@@ -2990,7 +3124,7 @@
                       this.bugPage = res.data.list;
                       this.bugFormPage.total = res.data.total
                   }
-              })
+              });
                 this.fetchDiffTypeBugNum()
             },
             //分页查询bug(老数据)
@@ -3019,6 +3153,9 @@
             //查询年度已完成任务总耗时(设计,产品,开发,测试)
             fetchDiffStageTaskTime(){
                 if (this.admin){
+                    this.taskTimeData.totalTaskTime = 0;
+                    this.diffStageTime = [];
+                    this.diffStageAvgTime = [];
                     Http.zsyPostHttp('/data/annual/diff-stage/task-time',this.taskTimeReqDTO,(res)=>{
                         if (res){
                             this.taskTimeData = res.data;
@@ -3032,7 +3169,9 @@
                             this.diffStageAvgTime.push(res.data.avgProductTime);
                             this.diffStageAvgTime.push(res.data.avgDevelopTime);
                             this.diffStageAvgTime.push(res.data.avgTestTime);
-                            this.drawLine7()
+                            this.$nextTick(()=>{
+                                this.drawLine7()
+                            })
                         }
                     })
                 }
@@ -3040,6 +3179,7 @@
 
             //查询耗时前十名的多人任务
             fetchTop10MostTimeTask(){
+                this.top10TaskList = [];
                 Http.zsyPostHttp('/data/annual/most-time-task/top10',this.taskTimeReqDTO,(res)=>{
                     if (res){
                         this.top10TaskList = res.data.taskList;
@@ -3058,7 +3198,7 @@
 
             //跳转到任务
             toTask(taskId){
-                if (taskId != null && taskId != '') {
+                if (taskId != null && taskId !== '') {
                     this.$router.push({name: 'taskListFormComments', params: {taskId: taskId}})
                 }
             },
@@ -3077,23 +3217,23 @@
             //考勤
             signInTimeChange(time) {
                 // 选择结束时间
-                time = time.split(' - ')
-                if (time && time.length == 2) {
-                    this.signInReqDTO.beginTime = `${time[0]} 00:00:00`
+                time = time.split(' - ');
+                if (time && time.length === 2) {
+                    this.signInReqDTO.beginTime = `${time[0]} 00:00:00`;
                     this.signInReqDTO.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.signInReqDTO.beginTime = this.signInReqDTO.endTime = this.signInDaterange = ''
                 }
             },
             initSignInTime(){
-                var date1 = new Date();
-                var time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
-                var date2 = new Date(date1);
-                var date3 = new Date(date1);
+                let date1 = new Date();
+                let time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
+                let date2 = new Date(date1);
+                let date3 = new Date(date1);
                 date3.setDate(date1.getDate() - 1);
                 date2.setDate(date1.getDate() - 7);
-                var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
-                var time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
+                let time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
+                let time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
                 // this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
                 // this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
                 this.signInReqDTO.beginTime = time2 + ' 00:00:00';
@@ -3101,10 +3241,10 @@
 
             },
             selectSignInData(){
-                if (this.signInReqDTO.beginTime != null && this.signInReqDTO.beginTime != ''){
+                if (this.signInReqDTO.beginTime != null && this.signInReqDTO.beginTime !== ''){
                     this.signInReqDTO.beginTime = moment(this.signInReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
                 }
-                if (this.signInReqDTO.endTime != null && this.signInReqDTO.endTime != '') {
+                if (this.signInReqDTO.endTime != null && this.signInReqDTO.endTime !== '') {
                     this.signInReqDTO.endTime = moment(this.signInReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
                 }
 
@@ -3125,10 +3265,10 @@
                                 if(signIn.eWorkTime){
                                     signIn.eWorkTime = this.getTime(signIn.eWorkTime);
                                 }
-                                var checkTimeStr = '';
+                                let checkTimeStr = '';
                                 signIn.checkTimeList.forEach(checkTime => {
                                     checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
-                                })
+                                });
                                 signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
                             })
                         }
@@ -3145,10 +3285,10 @@
                                 if(signIn.eWorkTime){
                                     signIn.eWorkTime = this.getTime(signIn.eWorkTime);
                                 }
-                                var checkTimeStr = '';
+                                let checkTimeStr = '';
                                 signIn.checkTimeList.forEach(checkTime => {
                                     checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
-                                })
+                                });
                                 signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
                             })
                         }
@@ -3181,7 +3321,7 @@
                 this.eWorkTimeReqDTO1.yearAndMonth = '';
             },
             fetchTotalEWorkTime(){
-                if (this.eWorkTimeUserId == null || this.eWorkTimeUserId == ''){
+                if (this.eWorkTimeUserId == null || this.eWorkTimeUserId === ''){
                     this.$message({
                         showClose: true,
                         message: '请选择查询的用户',
@@ -3189,7 +3329,7 @@
                     });
                     return false;
                 }
-                if (this.workMonth1 != null && this.workMonth1 != ''){
+                if (this.workMonth1 != null && this.workMonth1 !== ''){
                     const month = this.workMonth1;
                     const year = moment(new Date()).format('YYYY');
                     const yearAndMonth = year+"-"+this.addZero(month);
@@ -3233,13 +3373,13 @@
                 }))
             },
             changeMonth1(){
-                if (this.yearMonth1 != null && this.yearMonth1 != ''){
-                    let today = new Date(this.yearMonth1)
-                    var month=today.getMonth();
-                    var nextMonth=++month;
-                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    var oneDay=1000*60*60*24;
-                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                if (this.yearMonth1 != null && this.yearMonth1 !== ''){
+                    let today = new Date(this.yearMonth1);
+                    let month=today.getMonth();
+                    let nextMonth=++month;
+                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    let oneDay=1000*60*60*24;
+                    let dateString=new Date(nextMonthFirstDay-oneDay);
                      //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth1).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
@@ -3253,13 +3393,13 @@
                 }
             },
             changeMonth2(){
-                if (this.yearMonth2 != null && this.yearMonth2 != ''){
-                    let today = new Date(this.yearMonth2)
-                    var month=today.getMonth();
-                    var nextMonth=++month;
-                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    var oneDay=1000*60*60*24;
-                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                if (this.yearMonth2 != null && this.yearMonth2 !== ''){
+                    let today = new Date(this.yearMonth2);
+                    let month=today.getMonth();
+                    let nextMonth=++month;
+                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    let oneDay=1000*60*60*24;
+                    let dateString=new Date(nextMonthFirstDay-oneDay);
                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth2).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
@@ -3294,13 +3434,13 @@
                 }
             },
             changeMonth3(){
-                if (this.yearMonth3 != null && this.yearMonth3 != ''){
-                    let today = new Date(this.yearMonth3)
-                    var month=today.getMonth();
-                    var nextMonth=++month;
-                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    var oneDay=1000*60*60*24;
-                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                if (this.yearMonth3 != null && this.yearMonth3 !== ''){
+                    let today = new Date(this.yearMonth3);
+                    let month=today.getMonth();
+                    let nextMonth=++month;
+                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    let oneDay=1000*60*60*24;
+                    let dateString=new Date(nextMonthFirstDay-oneDay);
                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth3).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
@@ -3314,13 +3454,13 @@
                 }
             },
             changeMonth4(){
-                if (this.yearMonth4 != null && this.yearMonth4 != ''){
-                    let today = new Date(this.yearMonth4)
-                    var month=today.getMonth();
-                    var nextMonth=++month;
-                    var nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    var oneDay=1000*60*60*24;
-                    var dateString=new Date(nextMonthFirstDay-oneDay);
+                if (this.yearMonth4 != null && this.yearMonth4 !== ''){
+                    let today = new Date(this.yearMonth4);
+                    let month=today.getMonth();
+                    let nextMonth=++month;
+                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
+                    let oneDay=1000*60*60*24;
+                    let dateString=new Date(nextMonthFirstDay-oneDay);
                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth4).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
@@ -3338,14 +3478,14 @@
                 }
             },
             changeWeek(){
-              if (this.yearWeek != null && this.yearWeek != ''){
-                  var weekFisrt = new Date(this.yearWeek);
-                  var time1=weekFisrt.getFullYear()+"-"+(weekFisrt.getMonth()+1)+"-"+weekFisrt.getDate();//time1表示当前时间
-                  var date2 = new Date(weekFisrt);
+              if (this.yearWeek != null && this.yearWeek !== ''){
+                  let weekFisrt = new Date(this.yearWeek);
+                  let time1=weekFisrt.getFullYear()+"-"+(weekFisrt.getMonth()+1)+"-"+weekFisrt.getDate();//time1表示当前时间
+                  let date2 = new Date(weekFisrt);
                   date2.setDate(weekFisrt.getDate() + 6);
-                  var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
-                  var beginTime = time1+' 00:00:00';
-                  var endTime = time2+' 23:59:59';
+                  let time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
+                  let beginTime = time1+' 00:00:00';
+                  let endTime = time2+' 23:59:59';
                   this.mantisUserBugWeekList = [];
                   this.seriesDataList = [];
                   this.mantisBugReqDTO2.beginTime = beginTime;
@@ -3369,10 +3509,10 @@
             importBugInfo(file){
                 this.fullscreenLoading = true;
                 this.importBugVisible = false;
-                var data = new FormData();
+                let data = new FormData();
                 data.append('uploadFile', file.file);
                 Http.zsyPostHttp('/mantis-bug/import',data,(res)=> {
-                    if (res.errMsg == "执行成功") {
+                    if (res.errMsg === "执行成功") {
                         this.$refs.bugData.clearFiles();
                         this.$message({
                             showClose: true,
@@ -3403,17 +3543,17 @@
                 })
             },
             exportBugInfo(){
-                if (this.mantisProject != null &&  this.mantisProject != ''){
+                if (this.mantisProject != null &&  this.mantisProject !== ''){
                     this.selectMantisProjectVisible = false;
-                    var project = this.mantisProjectList.filter(mantisProject=>(mantisProject.id === this.mantisProject))[0]
+                    let project = this.mantisProjectList.filter(mantisProject=>(mantisProject.id === this.mantisProject))[0];
                     this.$confirm('确认导出 <'+project.name+'> 的bug信息?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
                         this.fullscreenLoading = true;
-                        Http.zsyGetHttp('/mantis-bug/export/'+this.mantisProject,{},(res=>{
-                            if (res.errMsg == '执行成功'){
+                        Http.zsyGetHttp('/mantis-bug/export/'+this.mantisProject,{},(res)=>{
+                            if (res.errMsg === '执行成功'){
                                 this.$message({
                                     showClose: true,
                                     message: '导出成功',
@@ -3425,7 +3565,14 @@
                                     window.open (url)
                                 })
                             }
-                        }))
+                        },err=>{
+                            this.fullscreenLoading = false;
+                            this.$message({
+                                showClose: true,
+                                message: err.errMsg,
+                                type: 'error'
+                            });
+                        })
                     }).catch(() => {
                     });
                 } else {
@@ -3438,59 +3585,75 @@
                 }
             },
             fetchBugWeekGroupByUser(){
+                this.mantisUserBugWeekList = [];
+                this.seriesDataList = [];
                 Http.zsyPostHttp('/mantis-bug/bug-week/user',this.mantisBugReqDTO2,(res)=>{
                     this.mantisUserBugWeekList = res.data;
 
                     this.mantisUserBugWeekList.forEach(bugWeek=>{
                         this.dateList = bugWeek.dateStrList;
                         this.weekdayList = bugWeek.weekdayList;
-                        this.userNameList.push(bugWeek.userName)
-                        var seriesData = {
+                        this.userNameList.push(bugWeek.userName);
+                        let seriesData = {
                             'name':bugWeek.userName,
                             'type':'line',
                             'data':bugWeek.bugNumList
-                        }
+                        };
                         this.seriesDataList.push(seriesData)
-                    })
+                    });
                     if (this.permit){
-                        this.drawLine8()
+                        this.$nextTick(()=>{
+                            this.drawLine8()
+                        })
                     }
 
                 })
             },
             fetchOnlineBugGroupByUser(){
+                this.onlineBugTotalNum = 0;
+                this.mantisUserBugMonthList = [];
+                this.seriesDataList2 = [];
+                this.onlineBugUserList = [];
                 Http.zsyPostHttp('/mantis-bug/online-bug/user',this.mantisBugReqDTO3,(res)=>{
                     this.mantisUserBugMonthList = res.data;
 
                     this.mantisUserBugMonthList.forEach(bugUserMonth=>{
-                        var bugUserMonthData = {
+                        let bugUserMonthData = {
                             'name': bugUserMonth.userName+'('+ bugUserMonth.bugNum+')',
                             'value': bugUserMonth.bugNum
-                        }
+                        };
                         this.onlineBugUserList.push(bugUserMonth.userName+'('+ bugUserMonth.bugNum+')');
                         this.seriesDataList2.push(bugUserMonthData);
                         this.onlineBugTotalNum += bugUserMonth.bugNum;
-                    })
+                    });
                     if (this.permit){
-                        this.drawLine9()
+                        this.$nextTick(()=>{
+                            this.drawLine9()
+                        })
                     }
                 })
             },
             fetchOnlineBugGroupByDeveloper(){
+                this.mantisDeveloperBugMonthList = [];
+                this.seriesDataList3 = [];
+                this.onlineBugDeveloperList = [];
+                this.onlineBugTotalNum3 = 0;
                 Http.zsyPostHttp('/mantis-bug/online-bug/develop',this.mantisBugReqDTO3,(res)=>{
                     this.mantisDeveloperBugMonthList = res.data;
 
                     this.mantisDeveloperBugMonthList.forEach(bugUserMonth=>{
-                        var bugUserMonthData = {
+                        let bugUserMonthData = {
                             'name': bugUserMonth.userName+'('+ bugUserMonth.bugNum+')',
                             'value': bugUserMonth.bugNum
-                        }
+                        };
                         this.onlineBugDeveloperList.push(bugUserMonth.userName+'('+ bugUserMonth.bugNum+')');
                         this.seriesDataList3.push(bugUserMonthData);
                         this.onlineBugTotalNum3 += bugUserMonth.bugNum;
-                    })
+                    });
                     if (this.permit){
-                        this.drawLine10()
+                        this.$nextTick(()=>{
+                            this.drawLine10()
+                        })
                     }
                 })
             },
@@ -3513,9 +3676,9 @@
 
             },
             beforeUpload(file) {
-                var suffix = file.name.substring(file.name.lastIndexOf(".")+1)
-                const isXls = file.name.substring(file.name.lastIndexOf(".")+1) == "xls";
-                const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                let suffix = file.name.substring(file.name.lastIndexOf(".")+1);
+                const isXls = file.name.substring(file.name.lastIndexOf(".")+1) === "xls";
+                const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
                 const isLt2M = file.size / 1024 / 1024 < 2;
                 // if ("xls" != suffix) {
                 //     this.$message.error('上传文件只能是".xls"格式!');
@@ -3542,26 +3705,25 @@
                 })
             },
             initTime(){
-                var date = new Date();
-                this.weekPublishReqDTO.date = date
+                let date = new Date();
                 // 本周一的日期
                 date.setDate(date.getDate() - date.getDay() + 1);
-                var begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
 
                 // 本周日的日期
                 date.setDate(date.getDate() + 6);
-                var end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
-
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
                 this.weekPublishReqDTO.beginTime = begin;
                 this.weekPublishReqDTO.endTime = end;
                 this.fetchWeekPublishPlan()
             },
             editWeekPublish(weekPublish){
+                this.weekPublish.id = weekPublish.wppId;
                 this.weekPublish.taskId = weekPublish.taskId;
                 this.weekPublish.condition = weekPublish.condition;
                 weekPublish.platformResDTOS.forEach(platform=>{
                     this.weekPublish.platforms.push(platform.id)
-                })
+                });
                 this.editWeekPublishVisible = true;
             },
             saveEditWeekPublish(){
@@ -3578,26 +3740,26 @@
                     }
                 })
             },
-            updateCanOnline(canOnline,taskId){
+            updateCanOnline(canOnline,id){
                   if (canOnline === 0){
                       this.weekPublish.canOnline = 1;
-                      this.weekPublish.taskId = taskId;
+                      this.weekPublish.id = id;
                   } else if (canOnline === 1){
                       this.weekPublish.canOnline = 0;
-                      this.weekPublish.taskId = taskId;
+                      this.weekPublish.id = id;
                   }
                   this.saveEditWeekPublish()
             },
             changeWeekPublishTime(){
-                if (this.weekPublishReqDTO.date != null && this.weekPublishReqDTO.date != '') {
-                    var date = this.weekPublishReqDTO.date;
+                if (this.weekPublishReqDTO.date != null && this.weekPublishReqDTO.date !== '') {
+                    let date = this.weekPublishReqDTO.date;
                     // 本周一的日期
                     date.setDate(date.getDate() - date.getDay() + 1);
-                    var begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+                    let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
 
                     // 本周日的日期
                     date.setDate(date.getDate() + 6);
-                    var end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                    let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
 
                     this.weekPublishReqDTO.beginTime = begin;
                     this.weekPublishReqDTO.endTime = end;
@@ -3618,12 +3780,12 @@
             addFormTagId(platformId, num, $event) {
                 if (this.hasClass($event.currentTarget, 'active')) {
                     this.removeClass($event.currentTarget, 'active');
-                    if (num == 1) {
+                    if (num === 1) {
                         this.weekPublish.platforms.splice(this.findIndex(this.weekPublish.platforms, platformId), 1);
                     }
                 } else {
                     this.addClass($event.currentTarget, 'active');
-                    if (num == 1) {
+                    if (num === 1) {
                         this.weekPublish.platforms.push(platformId);
                     }
                 }
@@ -3636,13 +3798,13 @@
             },
             removeClass(obj, cls) {
                 if (this.hasClass(obj, cls)) {
-                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                    let reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
                     obj.className = obj.className.replace(reg, ' ');
                 }
             },
             findIndex(arr, val) {
-                for (var i = 0; i < arr.length; i++) {
-                    if (arr[i] == val) {
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i] === val) {
                         return i;
                     }
                 }
@@ -3672,7 +3834,47 @@
                     this.extraWorkReqDTO.endTime = moment(this.ewEndTime).format('YYYY-MM-DD 23:59:59');
                 }
                 this.getExtraWorkStats()
-            }
+            },
+            getWPCurrentWeek(){
+                this.weekPublishReqDTO.date=moment().toDate();
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 1);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+                // this.fetchWeekPublishPlan();
+            },
+            getWPLastWeek(){
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() - 6);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+                this.weekPublishReqDTO.date = date;
+            },
+            getWPNextWeek(){
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 8);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.weekPublishReqDTO.beginTime = begin;
+                this.weekPublishReqDTO.endTime = end;
+                this.weekPublishReqDTO.date = date;
+            },
             // -- sch
         }
     }

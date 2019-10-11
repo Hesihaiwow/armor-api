@@ -35,6 +35,7 @@ public class UserResDTO {
      * 部门
      */
     private Long departmentId;
+    private String deptName;
 
     /**
      * 用户职位
@@ -45,16 +46,19 @@ public class UserResDTO {
      * 状态
      */
     private Integer status;
+    private String statusName;
 
     /**
      * 用户权限
      */
     private Integer userRole;
+    private String userRoleName;
 
     /**
      * 角色
      */
     private Integer jobRole;
+    private String jobRoleName;
 
     /**
      * 头像
@@ -75,11 +79,44 @@ public class UserResDTO {
      * 级别
      */
     private Integer level;
+    private String levelName;
 
     /**
      * 创建任务审核人集合
      */
     private List<UserCheckPeopleResDTO> checkUsers;
+
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public void setUserRoleName(String userRoleName) {
+        this.userRoleName = userRoleName;
+    }
+
+    public String getJobRoleName() {
+        return jobRoleName;
+    }
+
+    public void setJobRoleName(String jobRoleName) {
+        this.jobRoleName = jobRoleName;
+    }
+
+    public String getLevelName() {
+        return levelName;
+    }
+
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
+    }
 
     public Integer getLevel() {
         return level;

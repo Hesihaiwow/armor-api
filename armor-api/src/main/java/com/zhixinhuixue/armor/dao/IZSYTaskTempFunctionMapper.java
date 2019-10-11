@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.TaskTempFunctionBO;
+import com.zhixinhuixue.armor.model.bo.UserAndLevelBO;
 import com.zhixinhuixue.armor.model.pojo.TaskTempFunction;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,4 +34,19 @@ public interface IZSYTaskTempFunctionMapper {
      * @return
      */
     List<TaskTempFunctionBO> selectListByTtId(@Param("ttId")Long ttId);
+
+    /**
+     * 查询用户对应功能点等级
+     * @param id
+     * @return
+     */
+    List<UserAndLevelBO> selectUserAndLevelByFunction(@Param("id")Long id);
+
+    /**
+     * 根据任务和用户查询功能点
+     * @author sch
+     * @param taskId 任务
+     * @param userId 用户
+     */
+    List<TaskTempFunction> selectListByTaskAndUser(@Param("taskId")Long taskId, @Param("userId")Long userId);
 }

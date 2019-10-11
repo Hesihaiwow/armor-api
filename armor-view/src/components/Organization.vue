@@ -9,7 +9,25 @@
                @node-click="handleNodeClick" />
     </div>
     <div class="department-member fl">
-      <div class="dm-title">成员<span class="add-department" @click="addUserDlgShow">+</span></div>
+      <div class="dm-title" style="">
+        成员
+        <el-select v-model="queryForm.jobRole" placeholder="请选择角色" @change="changeJobRole(queryForm.jobRole)" clearable>
+          <el-option
+          v-for="item in jobRoleList"
+          :key="item.roleId"
+          :label="item.roleName"
+          :value="item.roleId"></el-option>
+        </el-select>
+        <el-select v-model="queryForm.userType" placeholder="请选择用户类型" @change="changeUserType(queryForm.userType)" clearable>
+          <el-option
+                  v-for="item in userTypeList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"></el-option>
+        </el-select>
+        <span class="add-department" @click="addUserDlgShow">+</span>
+      </div>
+      <!--<div class="dm-title" style="width: 50%;">成员<span class="add-department" @click="addUserDlgShow">+</span></div>-->
       <div class="white-bg">
         <div class="department-member-table">
           <el-table :data="tableData" stripe style="width: 100%">
@@ -17,14 +35,15 @@
             <el-table-column prop="account" label="用户名" width="100" align="center"></el-table-column>
             <el-table-column prop="jobName" label="职位" width="100" align="center"></el-table-column>
             <el-table-column prop="phone" label="手机号" width="116" align="center"></el-table-column>
-            <el-table-column prop="createTime" label="创建日期" width="106" align="center"></el-table-column>
+            <el-table-column prop="levelName" label="级别" width="116" align="center"></el-table-column>
+            <!--<el-table-column prop="createTime" label="创建日期" width="106" align="center"></el-table-column>-->
             <el-table-column prop="lastLogin" label="最后登录" width="106" align="center"></el-table-column>
             <el-table-column prop="operate" label="操作" align="center">
               <template scope="scope">
                 <!-- <el-button type="text" size="small" @click.native.prevent="authorityOpt(scope.$index, tableData)">权限</el-button> -->
                 <el-button type="text" size="small" @click.native.prevent="modifyUserDlgShow(scope.$index)">编辑</el-button>
                 <el-button type="text" size="small" @click.native.prevent="resetUserPwdDlgShow(scope.$index)">重置密码</el-button>
-                <el-button type="text" size="small" @click.native.prevent="deleteUserDlgShow(scope.$index)">删除</el-button>
+                <el-button type="text" size="small" v-show="scope.row.isDelete===0" @click.native.prevent="deleteUserDlgShow(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -79,8 +98,36 @@
                 //查询表单
                 queryForm: {
                   pageIndex: 1,
-                  deptId: ''
+                  deptId: '',
+                  jobRole: '',
+                  userType: 1,
                 },
+                userTypeList:[
+                    {id:0,name:'全部用户'},
+                    {id:1,name:'正常用户'},
+                    {id:2,name:'冻结用户'},
+                ],
+                jobRoleList:[
+                    {
+                        roleId: 1,
+                        roleName: '开发'
+                    }, {
+                        roleId: 0,
+                        roleName: '测试'
+                    }, {
+                        roleId: 2,
+                        roleName: '设计'
+                    }, {
+                        roleId: 3,
+                        roleName: '产品'
+                    },{
+                        roleId: 5,
+                        roleName: '算法工程师'
+                    },{
+                        roleId: 4,
+                        roleName: '其他'
+                    }
+                ],
                 //分页信息
                 pagination: {
                     total: 0,
@@ -90,10 +137,7 @@
                 //部门树结构数据
                 departmentTree: [],
                 //部门树结构父子传递字段
-                defaultProps: {
-                    children: 'children',
-                    label: 'label'
-                },
+
                 //分页表数据
                 tableData: [],
                 editStatusIndex: '',
@@ -129,9 +173,9 @@
             },
             //用户按部门分页查询
             userPaging(deptId,pageIndex) {
-                Http.zsyGetHttp(`/user/page/${deptId}/${pageIndex}`,null,(res)=>{
-                    this.queryForm.pageIndex = pageIndex;
                     this.queryForm.deptId = deptId;
+                    this.queryForm.pageIndex = pageIndex;
+                Http.zsyPostHttp(`/user/page`,this.queryForm,(res)=>{
                     this.tableData = res.data.list;
                     this.pagination.pageSize = res.data.pageSize;
                     this.pagination.total = res.data.total;
@@ -210,6 +254,15 @@
             //添加用户成功,刷新用户数据
             handleUserDataRefresh () {
                 this.userPaging(this.queryForm.deptId,this.queryForm.pageIndex);
+            },
+            //根据不同角色查询
+            changeJobRole(jobRole){
+                this.userPaging(this.queryForm.deptId,1)
+            },
+
+            //根据不同用户类型查询
+            changeUserType(userType){
+                this.userPaging(this.queryForm.deptId,1)
             }
         },
         components: {

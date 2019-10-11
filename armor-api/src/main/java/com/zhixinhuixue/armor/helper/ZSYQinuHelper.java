@@ -8,6 +8,12 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.source.ZSYQinuOssProperty;
+import com.zhixinhuixue.armor.source.ZSYUFileProperties;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
@@ -43,7 +49,51 @@ public class ZSYQinuHelper {
         }
     }
 
+    /**
+     * 上传到ufile
+     * @param uploadFile
+     * @param fileName
+     * @param contentType
+     * @return
+     */
+    public static String uploadToUfile(byte[] uploadFile, String fileName, String contentType,ZSYUFileProperties uFileProperties) {
+        //构造一个带指定Zone对象的配置类
+        try{
+            String url = getUploadUrl(fileName,uFileProperties);
+            RequestBody requestBody = MultipartBody.create(MediaType.get(contentType), uploadFile);
+            Request request = new Request.Builder()
+                    .header(OKHttpHelper.HTTP_REQUEST_HEAD, authorization(contentType,fileName,uFileProperties))
+                    .url(url).put(requestBody).build();
+            OKHttpHelper.handleResponse(request, OKHttpHelper.getClient());
+            return url;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ZSYServiceException(e.getMessage());
+        }
+    }
 
+    /**
+     * 获取文件上传路径
+     * @param fileName 文件名
+     * @return
+     */
+    public static String getUploadUrl(String fileName,ZSYUFileProperties uFileProperties){
+        return String.format("http://%s%s/%s",uFileProperties.getBucketName(),uFileProperties.getUploadProxySuffix(),fileName);
+    }
+
+    /**
+     * ufile接口权限加密
+     * @return
+     */
+    private static String authorization(String contentType,String fileName,ZSYUFileProperties uFileProperties){
+        String httpMethod = "PUT";
+        String contentMD5 = "";
+        String date = "";
+        String resource = "/" + uFileProperties.getBucketName() + "/" + fileName;
+        String stringToSign = httpMethod + "\n" + contentMD5 + "\n" + contentType + "\n" + date + "\n" + resource;
+        String signature = HmacSHA1Helper.sign(uFileProperties.getPrivateKey(), stringToSign);
+        return String.format("UCloud %s:%s",uFileProperties.getPublicKey(),signature);
+    }
     /**
      * 获取qiniu服务器文件地址
      *

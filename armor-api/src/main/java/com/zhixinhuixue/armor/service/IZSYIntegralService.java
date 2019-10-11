@@ -3,10 +3,7 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.IntegralResDTO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralPageResDTO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralReviewResDTO;
-import com.zhixinhuixue.armor.model.dto.response.UserIntegralResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 
 import java.util.List;
 import java.util.Map;
@@ -86,4 +83,8 @@ public interface IZSYIntegralService {
      */
     void passReview(Long id);
 
+    /**
+     * 查询用户任务积分
+     */
+    UserTaskIntegralResDTO getPersonalIntegral();
 }

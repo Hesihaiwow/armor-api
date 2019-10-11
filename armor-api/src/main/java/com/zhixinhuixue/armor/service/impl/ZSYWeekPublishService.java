@@ -16,14 +16,19 @@ import com.zhixinhuixue.armor.model.pojo.WeekPublishPlan;
 import com.zhixinhuixue.armor.model.pojo.WeekPublishPlanPlatform;
 import com.zhixinhuixue.armor.service.IZSYWeekPublishService;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author sch
@@ -85,6 +90,43 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 }
                 resDTO.setDevelopers(developers);
                 resDTO.setTesters(testers);
+                resDTO.setTestTimeColor(0);
+                resDTO.setDesignDays(0);
+                resDTO.setDevelopDays(0);
+                resDTO.setTestDays(0);
+                Date createTime = weekPublishTaskBO.getCreateTime();
+                Date beginTime = weekPublishTaskBO.getBeginTime();
+                Date testTime = weekPublishTaskBO.getTestTime();
+                Date endTime = weekPublishTaskBO.getEndTime();
+                //创建---设计结束  共用天数
+                if (createTime != null && beginTime != null){
+                    Integer workDays = getWorkDays(createTime, beginTime);
+                    resDTO.setDesignDays(workDays);
+                }
+
+                //开发开始---开发结束  共用天数
+                if (beginTime != null && testTime != null){
+                    Integer workDays = getWorkDays(beginTime, testTime);
+                    resDTO.setDevelopDays(workDays);
+                }
+
+                //测试开始---测试结束
+                if (testTime != null && endTime != null){
+                    Integer workDays = getWorkDays(testTime, endTime);
+                    resDTO.setTestDays(workDays);
+                }
+
+                if (testTime != null){
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(testTime);
+                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                    if (dayOfWeek == 2 || dayOfWeek == 3 || dayOfWeek == 4){
+                        resDTO.setTestTimeColor(1);
+                    }else if (dayOfWeek == 5){
+                        resDTO.setTestTimeColor(2);
+                    }
+                }
+
                 weekPublishTaskResDTOList.add(resDTO);
             });
         }
@@ -92,7 +134,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
         if (!CollectionUtils.isEmpty(weekPublishTaskResDTOList)){
             for (WeekPublishTaskResDTO task : weekPublishTaskResDTOList) {
                 //校验是否存在
-                WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(task.getTaskId());
+                WeekPublishPlan exist = weekPublishPlanMapper.selectById(task.getWppId());
                 if (exist == null){
                     WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
                     weekPublishPlan.setId(snowFlakeIDHelper.nextId());
@@ -107,6 +149,23 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
         return weekPublishTaskResDTOList;
     }
 
+    private Integer getWorkDays(Date beginTime, Date endTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(beginTime);
+        int beginTimeYear = calendar.get(Calendar.YEAR);
+        int beginTimeMonth = calendar.get(Calendar.MONTH) + 1;
+        int beginTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        calendar.setTime(endTime);
+        int endTimeYear = calendar.get(Calendar.YEAR);
+        int endTimeMonth = calendar.get(Calendar.MONTH) + 1;
+        int endTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+        LocalDate start = LocalDate.of(beginTimeYear, beginTimeMonth, beginTimeDay);
+        LocalDate end = LocalDate.of(endTimeYear, endTimeMonth, endTimeDay);
+        Integer workDays = (int)(end.toEpochDay() - start.toEpochDay() + 1);
+        return workDays;
+    }
+
     /**
      * 编辑
      * @author sch
@@ -115,7 +174,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
     @Override
     @Transactional
     public void edit(WeekPublishEditReqDTO reqDTO) {
-        WeekPublishPlan exist = weekPublishPlanMapper.selectByTaskId(reqDTO.getTaskId());
+        WeekPublishPlan exist = weekPublishPlanMapper.selectById(reqDTO.getId());
         if (exist == null){
             throw new ZSYServiceException("当前周发版计划任务不存在,请检查");
         }

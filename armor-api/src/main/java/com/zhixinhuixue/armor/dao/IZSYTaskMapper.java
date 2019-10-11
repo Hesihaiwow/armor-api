@@ -137,14 +137,16 @@ public interface IZSYTaskMapper {
      * @param stageId
      * @return
      */
-    List<TaskListBO> selectTaskByStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId);
+    List<TaskListBO> selectTaskByStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId,
+                                         @Param("userId") Long userId);
 
     /**
      * 查询阶段任务
      * @param stageId
      * @return
      */
-    List<TaskListBO> selectTaskByEndStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId);
+    List<TaskListBO> selectTaskByEndStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId,
+                                            @Param("userId") Long userId);
 
 
     /**
@@ -268,4 +270,12 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<WeekPublishTaskBO> selectWeekPublishTask(@Param("reqDTO") WeekPublishQueryReqDTO reqDTO);
+
+    /**
+     * 查询当前负责的进行中的任务
+     * @author sch
+     * @param userId 用户ID
+     * @return
+     */
+    List<Task> selectDoingListByUser(@Param("userId") Long userId);
 }

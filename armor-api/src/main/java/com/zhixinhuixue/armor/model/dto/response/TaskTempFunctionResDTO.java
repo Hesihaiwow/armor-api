@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import java.util.List;
+
 /**
  * @author sch
  * @DATE 2019/7/30 13:56
@@ -37,6 +39,16 @@ public class TaskTempFunctionResDTO {
      */
     private Integer action;
     private String actionName;
+
+    private List<UserAndLevelResDTO> userAndLevelResDTOS;
+
+    public List<UserAndLevelResDTO> getUserAndLevelResDTOS() {
+        return userAndLevelResDTOS;
+    }
+
+    public void setUserAndLevelResDTOS(List<UserAndLevelResDTO> userAndLevelResDTOS) {
+        this.userAndLevelResDTOS = userAndLevelResDTOS;
+    }
 
     public Long getFunctionId() {
         return functionId;

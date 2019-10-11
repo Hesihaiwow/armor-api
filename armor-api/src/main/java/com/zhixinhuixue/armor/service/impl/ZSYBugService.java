@@ -24,6 +24,7 @@ import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
@@ -127,6 +128,24 @@ public class ZSYBugService implements IZSYBugService {
                 if (onlineBugBO.getType() == null){
                     onlineBugResDTO.setType(0);
                 }
+                String bugNoStr = "";
+                Integer bugNo = onlineBugBO.getBugNo();
+                if (bugNo!=null && bugNo>0){
+                    if (bugNo<10){
+                        bugNoStr = "00000"+bugNo;
+                    }else if (bugNo<100){
+                        bugNoStr = "0000"+bugNo;
+                    }else if (bugNo<1000){
+                        bugNoStr = "000"+bugNo;
+                    }else if (bugNo<10000){
+                        bugNoStr = "00"+bugNo;
+                    }else if (bugNo<100000){
+                        bugNoStr = "0"+bugNo;
+                    }else {
+                        bugNoStr = ""+bugNo;
+                    }
+                }
+                onlineBugResDTO.setBugNoStr(bugNoStr);
                 page.add(onlineBugResDTO);
             });
         }
@@ -241,7 +260,15 @@ public class ZSYBugService implements IZSYBugService {
             }
         }
 
+        //查询最后一个bug编号
+        OnlineBugManage lastBug = bugManageMapper.selectLastBugNo();
+
         OnlineBugManage bugManage = new OnlineBugManage();
+        if (lastBug != null && lastBug.getBugNo() > 0){
+            bugManage.setBugNo(lastBug.getBugNo()+1);
+        }else {
+            bugManage.setBugNo(1);
+        }
         bugManage.setId(snowFlakeIDHelper.nextId());
         bugManage.setCreateTime(new Date());
         bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
@@ -584,7 +611,12 @@ public class ZSYBugService implements IZSYBugService {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.EMPLOYEE.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
         }
-        if (bugManageMapper.deleteById(id) == 0) {
+        OnlineBugManage bugManage = bugManageMapper.selectById(id);
+        if (bugManage==null){
+            throw new ZSYServiceException("当前bug不存在,请检查");
+        }
+        bugManage.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
+        if (bugManageMapper.updateBugManager(bugManage) == 0) {
             throw new ZSYServiceException("删除Bug处理记录失败");
         }
 

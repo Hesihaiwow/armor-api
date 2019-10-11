@@ -103,6 +103,32 @@ public class TaskReqDTO {
 //    @NotNull(message = "任务功能点不能为空")
     private List<TaskFunctionReqDTO> functionReqDTOS;
 
+    /**
+     * 任务评审
+     */
+    private List<AddTaskReviewReqDTO> taskReviewReqDTOS;
+
+    /**
+     * 任务总结
+     */
+    private List<AddTaskSummaryReqDTO> taskSummaryReqDTOS;
+
+    public List<AddTaskReviewReqDTO> getTaskReviewReqDTOS() {
+        return taskReviewReqDTOS;
+    }
+
+    public void setTaskReviewReqDTOS(List<AddTaskReviewReqDTO> taskReviewReqDTOS) {
+        this.taskReviewReqDTOS = taskReviewReqDTOS;
+    }
+
+    public List<AddTaskSummaryReqDTO> getTaskSummaryReqDTOS() {
+        return taskSummaryReqDTOS;
+    }
+
+    public void setTaskSummaryReqDTOS(List<AddTaskSummaryReqDTO> taskSummaryReqDTOS) {
+        this.taskSummaryReqDTOS = taskSummaryReqDTOS;
+    }
+
     public List<TaskFunctionReqDTO> getFunctionReqDTOS() {
         return functionReqDTOS;
     }

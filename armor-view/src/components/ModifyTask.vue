@@ -297,9 +297,7 @@
                 })
             },
             show() {
-                console.log("进来了")
-                console.log(this.taskId)
-                this.fetchTaskDetail()
+                this.fetchTaskDetail();
                 this.showModifyTask = true;
             },
             hide() {
@@ -341,8 +339,7 @@
                 if (this.taskId=='') {
                     return
                 }
-                console.log(this.taskId)
-                let vm = this
+                let vm = this;
                 http.zsyGetHttp(`/task/detail/${this.taskId}`, {}, (resp) => {
                     console.log(resp)
                     vm.taskForm.description = resp.data.description;

@@ -15,6 +15,15 @@
         <result column="action" jdbcType="INTEGER" property="action"/>
     </resultMap>
 
+    <resultMap id="UserAndLevelMap" type="com.zhixinhuixue.armor.model.bo.UserAndLevelBO">
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="job_name" property="jobName" jdbcType="VARCHAR"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+        <result column="function_id" property="functionId" jdbcType="BIGINT"/>
+        <result column="function" property="function" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <!--批量新增-->
     <insert id="insertBatch">
         INSERT INTO `task_temp_function`
@@ -36,6 +45,21 @@
         LEFT JOIN `task_function` tf ON ttf.`function_id` = tf.`id`
         LEFT JOIN `task_temp_module` ttm ON ttm.`id` = tf.`module_id`
         WHERE `tt_id` = #{ttId}
+    </select>
+
+    <!--查询用户对应功能点等级-->
+    <select id="selectUserAndLevelByFunction" resultMap="UserAndLevelMap">
+        SELECT u.id user_id,u.`name` user_name,u.job_name,ttf.function_id,tt2.`function`,ttf.`level` FROM task_temp_function ttf
+        LEFT JOIN task_temp tt ON tt.`id` = ttf.`tt_id`
+        LEFT JOIN `user` u ON u.id = tt.user_id
+        LEFT JOIN task_function tt2 ON tt2.id = ttf.function_id
+        WHERE ttf.function_id = #{id} AND tt.review_status = 2;
+    </select>
+
+    <!--根据任务和用户查询功能点-->
+    <select id="selectListByTaskAndUser" resultMap="BaseResultMap">
+        SELECT * FROM task_temp_function WHERE tt_id IN
+        (SELECT id FROM task_temp WHERE task_id = #{taskId} AND user_id = #{userId})
     </select>
 
 

@@ -180,7 +180,7 @@ public interface IZSYTaskService {
      * @param stageId
      * @return
      */
-    List<TaskListResDTO> getTaskByStageId(Long stageId);
+    List<TaskListResDTO> getTaskByStageId(Long stageId,Long userId);
 
     /**
      * 获取阶段下的任务
@@ -305,6 +305,32 @@ public interface IZSYTaskService {
      * @return
      */
     TaskUserBaseInfoResDTO getTaskUserByTaskAndUsr(Long taskId, Long userId);
+
+    /**
+     * 添加任务评审
+     * @author sch
+     */
+    List<TaskReviewResDTO> addTaskReview(AddTaskReviewReqDTO reviewReqDTO);
+
+    /**
+     * 添加任务总结
+     * @author sch
+     */
+    List<TaskSummaryResDTO> addTaskSummary(AddTaskSummaryReqDTO reqDTO);
+
+    /**
+     * 删除任务评审
+     * @param reviewId 评审id
+     * @author sch
+     */
+    List<TaskReviewResDTO> deleteTaskReview(Long reviewId);
+
+    /**
+     * 删除任务总结
+     * @author sch
+     * @param summaryId 总结id
+     */
+    List<TaskSummaryResDTO> deleteTaskSummary(Long summaryId);
 
 
     // -- sch

@@ -41,40 +41,60 @@ public class OnlineBugManage {
 
     /**
      * 反馈人
-     * @return
      */
     private String origin;
 
     /**
      * 账号信息
-     * @return
      */
     private String accountInfo;
 
     /**
      * 类型
-     * @return
      */
     private Integer type;
 
     /**
+     * bug编号
+     */
+    private Integer bugNo;
+
+    /**
+     * 是否删除
+     */
+    private Integer isDelete;
+
+    /**
      * 反馈系统
-     * @return
      */
     private Integer demandSystemId;
     private String demandSystemName;
 
     /**
      * 是否解决
-     * @return
      */
     private Integer isSolved;
 
     /**
      * 备注
-     * @return
      */
     private String remark;
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public Integer getBugNo() {
+        return bugNo;
+    }
+
+    public void setBugNo(Integer bugNo) {
+        this.bugNo = bugNo;
+    }
 
     public Date getDiscoverTime() {
         return discoverTime;

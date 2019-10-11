@@ -36,11 +36,9 @@ public interface IZSYUserService {
 
     /**
      * 用户分页查询
-     * @param deptId 部门ID
-     * @param pageIndex 页码
      * @return
      */
-    PageInfo<UserPageResDTO> userPage(long deptId, int pageIndex);
+    PageInfo<UserPageResDTO> userPage(QueryUserPageReqDTO reqDTO);
 
     /**
      * 添加用户
@@ -132,6 +130,12 @@ public interface IZSYUserService {
      * @return
      */
     List<EffectUserResDTO> getControlledPeopleList(Long checkUserId);
+
+    /**
+     * 查看项目管理者
+     * @author sch
+     */
+    List<EffectUserResDTO> getProductManagers();
 
     // -- sch
 }

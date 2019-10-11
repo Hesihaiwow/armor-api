@@ -200,4 +200,13 @@ public class ZSYIntegralController extends ZSYController{
         integralService.passReview(id);
         return ZSYResult.success().build();
     }
+
+    // sch --
+    @ApiOperation("个人积分信息")
+    @GetMapping("/personal")
+    public String getPersonalIntegral(){
+        return ZSYResult.success().data(integralService.getPersonalIntegral()).build();
+    }
+    // -- sch
+
 }

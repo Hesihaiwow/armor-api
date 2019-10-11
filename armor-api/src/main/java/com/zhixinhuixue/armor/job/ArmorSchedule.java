@@ -16,7 +16,7 @@ public class ArmorSchedule {
     /**
      * 每10分钟执行一次,将评价完成的任务结算积分
      */
-    @Scheduled(fixedRate = 600000)
+//    @Scheduled(fixedRate = 600000)
     public void sendNotCachedZsyServiceToRedis() {
         taskService.syncSettlementTask();
     }

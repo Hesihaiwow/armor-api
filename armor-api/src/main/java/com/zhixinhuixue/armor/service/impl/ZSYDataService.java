@@ -6,21 +6,16 @@ import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.*;
-import com.zhixinhuixue.armor.model.dto.response.AnnualFeedbackInTypeResDTO;
-import com.zhixinhuixue.armor.model.dto.response.ProjectTaskResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskTotalHoursResDTO;
 import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import com.zhixinhuixue.armor.service.IZSYDataService;
-import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYFeedbackType;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskPriority;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
-import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +49,11 @@ public class ZSYDataService implements IZSYDataService {
 
     @Autowired
     private IZSYUserLeaveMapper userLeaveMapper;
+
+    @Autowired
+    private IZSYTaskReviewMapper reviewMapper;
+    @Autowired
+    private IZSYTaskSummaryMapper summaryMapper;
 
     /**
      * 年度需求总数(学管端,其他)
@@ -544,6 +545,262 @@ public class ZSYDataService implements IZSYDataService {
         return list;
     }
 
+    /**
+     * 查询任务负责人负责任务相关信息
+     * @author sch
+     * @return
+     */
+    @Override
+    public List<PrincipalTaskNumResDTO> getPrincipalTaskStats() {
+        Integer userRole = ZSYTokenRequestContext.get().getUserRole();
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        if (userRole > ZSYUserRole.PROJECT_MANAGER.getValue()){
+            throw new ZSYServiceException("当前用户暂无权限");
+        }
+        PrincipalTaskNumResDTO resDTO = new PrincipalTaskNumResDTO();
+        List<PrincipalTaskNumResDTO> list = new ArrayList<>();
+        Integer chargeTaskNum = 0;
+        Integer reviewTaskNum = 0;
+        Integer summarizeTaskNum = 0;
+        Integer delayedTaskNum = 0;
+        Integer delayedDesignTaskNum = 0;
+        Integer delayedDevelopTaskNum = 0;
+        Integer delayedTestTaskNum = 0;
+        Integer aboutDelayTaskNum = 0;
+        Integer aboutDelayDesignTaskNum = 0;
+        Integer aboutDelayDevelopTaskNum = 0;
+        Integer aboutDelayTestTaskNum = 0;
+        BigDecimal messageFee = BigDecimal.ZERO;
+        //查询当前负责的进行中的任务
+        List<Task> taskList = taskMapper.selectDoingListByUser(userId);
+
+        if (!CollectionUtils.isEmpty(taskList)){
+            chargeTaskNum = taskList.size();
+
+            //待评审任务
+            List<Task> reviewTaskList = taskList.stream()
+                    .filter(task -> task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L))
+                    .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(reviewTaskList)){
+                for (Task task : reviewTaskList) {
+                    List<TaskReviewBO> taskReviewBOS = reviewMapper.selectListByTask(task.getId());
+                    if (CollectionUtils.isEmpty(taskReviewBOS)){
+                        reviewTaskNum += 1;
+                    }
+                }
+            }
+
+            for (Task task : taskList) {
+                //设计相关阶段
+                if (task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L)){
+//                    if (task.getBeginTime() != null && task.getBeginTime().compareTo(new Date()) < 0){
+//                        delayedDesignTaskNum += 1;
+//                    }
+
+                    if (task.getBeginTime() != null){
+//                        long time = task.getBeginTime().getTime();
+//                        long time1 = new Date().getTime();
+//                        BigDecimal cha = BigDecimal.valueOf(time-time1).divide(BigDecimal.valueOf(86400000),2,BigDecimal.ROUND_HALF_UP);
+//                        if (cha.compareTo(BigDecimal.ZERO)>=0 && cha.compareTo(BigDecimal.valueOf(3))<0){
+//                            aboutDelayDesignTaskNum += 1;
+//                        }
+                        Integer workDays = getWorkDays(new Date(),task.getBeginTime());
+                        if (workDays >= 1 && workDays <= 2){
+                            aboutDelayDesignTaskNum += 1;
+                        }
+                        if (workDays < 1){
+                            delayedDesignTaskNum += 1;
+                        }
+
+                    }
+                }
+                //开发相关阶段
+                else if (task.getStageId().equals(212754785051344890L) || task.getStageId().equals(212754785051344894L)){
+//                    if (task.getTestTime() != null && task.getTestTime().compareTo(new Date()) < 0){
+//                        delayedDevelopTaskNum += 1;
+//                    }
+
+                    if (task.getTestTime() != null){
+//                        long time = task.getTestTime().getTime();
+//                        long time1 = new Date().getTime();
+//                        BigDecimal cha = BigDecimal.valueOf(time-time1).divide(BigDecimal.valueOf(86400000),2,BigDecimal.ROUND_HALF_UP);
+//                        if (cha.compareTo(BigDecimal.ZERO)>=0 && cha.compareTo(BigDecimal.valueOf(3))<0){
+//                            aboutDelayDevelopTaskNum += 1;
+//                        }
+                        Integer workDays = getWorkDays(new Date(),task.getTestTime());
+                        if (workDays >= 1 && workDays <= 2){
+                            aboutDelayDevelopTaskNum += 1;
+                        }
+                        if (workDays<1){
+                            delayedDevelopTaskNum += 1;
+                        }
+                    }
+                }
+                //其他阶段
+                else {
+//                    if (task.getEndTime() != null && task.getEndTime().compareTo(new Date()) < 0){
+//                        delayedTestTaskNum += 1;
+//                    }
+
+                    if (task.getEndTime() != null){
+//                        long time = task.getEndTime().getTime();
+//                        long time1 = new Date().getTime();
+//                        BigDecimal cha = BigDecimal.valueOf(time-time1).divide(BigDecimal.valueOf(86400000),2,BigDecimal.ROUND_HALF_UP);
+//                        if (cha.compareTo(BigDecimal.ZERO)>=0 && cha.compareTo(BigDecimal.valueOf(3))<0){
+//                            aboutDelayTestTaskNum += 1;
+//                        }
+                        Integer workDays = getWorkDays(new Date(),task.getEndTime());
+                        if (workDays >= 1 && workDays <= 2){
+                            aboutDelayTestTaskNum += 1;
+                        }
+                        if (workDays<1){
+                            delayedTestTaskNum += 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        //待发布任务
+        List<TaskListBO> summarizeTaskList =
+                taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), userId);
+        if (!CollectionUtils.isEmpty(summarizeTaskList)){
+            summarizeTaskList = summarizeTaskList.stream().filter(taskListBO -> taskListBO.getStatus() > 1).collect(Collectors.toList());
+            for (TaskListBO taskListBO : summarizeTaskList) {
+                List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskListBO.getId());
+                if (CollectionUtils.isEmpty(taskSummaryBOS)){
+                    summarizeTaskNum += 1;
+                }
+            }
+        }
+
+        delayedTaskNum = delayedDesignTaskNum + delayedDevelopTaskNum + delayedTestTaskNum;
+        aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum +aboutDelayTestTaskNum;
+        messageFee = BigDecimal.valueOf(delayedTaskNum).multiply(BigDecimal.ONE);
+
+        resDTO.setChargeTaskNum(chargeTaskNum);
+        resDTO.setReviewTaskNum(reviewTaskNum);
+        resDTO.setSummarizeTaskNum(summarizeTaskNum);
+        resDTO.setDelayedTaskNum(delayedTaskNum);
+        resDTO.setAboutDelayTaskNum(aboutDelayTaskNum);
+        resDTO.setMessageFee(messageFee);
+        list.add(resDTO);
+        return list;
+    }
+
+    /**
+     * 超管查看所有负责人负责任务数
+     * @author sch
+     */
+    @Override
+    public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats() {
+        List<User> users = userMapper.selectManagers();
+        List<PrincipalTaskNumResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(users)){
+            users.forEach(user -> {
+                PrincipalTaskNumResDTO resDTO = new PrincipalTaskNumResDTO();
+                Integer chargeTaskNum = 0;
+                Integer reviewTaskNum = 0;
+                Integer summarizeTaskNum = 0;
+                Integer delayedTaskNum = 0;
+                Integer delayedDesignTaskNum = 0;
+                Integer delayedDevelopTaskNum = 0;
+                Integer delayedTestTaskNum = 0;
+                Integer aboutDelayTaskNum = 0;
+                Integer aboutDelayDesignTaskNum = 0;
+                Integer aboutDelayDevelopTaskNum = 0;
+                Integer aboutDelayTestTaskNum = 0;
+                BigDecimal messageFee = BigDecimal.ZERO;
+                //查询当前负责的进行中的任务
+                List<Task> taskList = taskMapper.selectDoingListByUser(user.getId());
+
+                if (!CollectionUtils.isEmpty(taskList)){
+                    chargeTaskNum = taskList.size();
+
+                    //待评审任务
+                    List<Task> reviewTaskList = taskList.stream()
+                            .filter(task -> task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L))
+                            .collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(reviewTaskList)){
+                        for (Task task : reviewTaskList) {
+                            List<TaskReviewBO> taskReviewBOS = reviewMapper.selectListByTask(task.getId());
+                            if (CollectionUtils.isEmpty(taskReviewBOS)){
+                                reviewTaskNum += 1;
+                            }
+                        }
+                    }
+
+                    for (Task task : taskList) {
+                        //设计相关阶段
+                        if (task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L)){
+                            if (task.getBeginTime() != null){
+                                Integer workDays = getWorkDays(new Date(), task.getBeginTime());
+                                if (workDays < 1){
+                                    delayedDesignTaskNum += 1;
+                                }
+                                if (workDays >= 1 && workDays <= 2){
+                                    aboutDelayDesignTaskNum += 1;
+                                }
+                            }
+
+                        }
+                        //开发相关阶段
+                        else if (task.getStageId().equals(212754785051344890L) || task.getStageId().equals(212754785051344894L)){
+                            if (task.getTestTime() != null){
+                                Integer workDays = getWorkDays(new Date(), task.getTestTime());
+                                if (workDays < 1){
+                                    delayedDevelopTaskNum += 1;
+                                }
+                                if (workDays >= 1 && workDays <= 2){
+                                    aboutDelayDevelopTaskNum += 1;
+                                }
+                            }
+                        }
+                        //其他阶段
+                        else {
+                            if (task.getEndTime() != null){
+                                Integer workDays = getWorkDays(new Date(), task.getEndTime());
+                                if (workDays < 1){
+                                    delayedTestTaskNum += 1;
+                                }
+                                if (workDays >= 1 && workDays <= 2){
+                                    aboutDelayTestTaskNum += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //待发布任务
+                List<TaskListBO> summarizeTaskList =
+                        taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), user.getId());
+                if (!CollectionUtils.isEmpty(summarizeTaskList)){
+                    summarizeTaskList = summarizeTaskList.stream().filter(taskListBO -> taskListBO.getStatus() > 1).collect(Collectors.toList());
+                    for (TaskListBO taskListBO : summarizeTaskList) {
+                        List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskListBO.getId());
+                        if (CollectionUtils.isEmpty(taskSummaryBOS)){
+                            summarizeTaskNum += 1;
+                        }
+                    }
+                }
+
+                delayedTaskNum = delayedDesignTaskNum + delayedDevelopTaskNum + delayedTestTaskNum;
+                aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum +aboutDelayTestTaskNum;
+                messageFee = BigDecimal.valueOf(delayedTaskNum).multiply(BigDecimal.ONE);
+
+                resDTO.setChargeTaskNum(chargeTaskNum);
+                resDTO.setReviewTaskNum(reviewTaskNum);
+                resDTO.setSummarizeTaskNum(summarizeTaskNum);
+                resDTO.setDelayedTaskNum(delayedTaskNum);
+                resDTO.setAboutDelayTaskNum(aboutDelayTaskNum);
+                resDTO.setMessageFee(messageFee);
+                resDTO.setUserName(user.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
 
     /**
      * 年度每月需求总数
@@ -749,6 +1006,29 @@ public class ZSYDataService implements IZSYDataService {
         }
     }
 
+
+    /**
+     * 获取两个日期之间的天数
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    private Integer getWorkDays(Date beginTime, Date endTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(beginTime);
+        int beginTimeYear = calendar.get(Calendar.YEAR);
+        int beginTimeMonth = calendar.get(Calendar.MONTH) + 1;
+        int beginTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        calendar.setTime(endTime);
+        int endTimeYear = calendar.get(Calendar.YEAR);
+        int endTimeMonth = calendar.get(Calendar.MONTH) + 1;
+        int endTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+        LocalDate start = LocalDate.of(beginTimeYear, beginTimeMonth, beginTimeDay);
+        LocalDate end = LocalDate.of(endTimeYear, endTimeMonth, endTimeDay);
+        Integer workDays = (int)(end.toEpochDay() - start.toEpochDay() + 1);
+        return workDays;
+    }
 
     /**
      * 获取开始时间

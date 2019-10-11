@@ -50,9 +50,54 @@ public class TaskListResDTO {
 
     private String projectImage;
 
+    //能否拖拽
+    private boolean canDrag;
+
+    //能否评审
+    private boolean canReview;
+
+    //能否总结
+    private boolean canSummarize;
+
     //任务超时人数
     private Integer delayNo;
 
+    /**
+     * 任务点击完成时间
+     */
+    private Date clickFinishTime;
+
+    public Date getClickFinishTime() {
+        return clickFinishTime;
+    }
+
+    public void setClickFinishTime(Date clickFinishTime) {
+        this.clickFinishTime = clickFinishTime;
+    }
+
+    public boolean getCanReview() {
+        return canReview;
+    }
+
+    public void setCanReview(boolean canReview) {
+        this.canReview = canReview;
+    }
+
+    public boolean getCanSummarize() {
+        return canSummarize;
+    }
+
+    public void setCanSummarize(boolean canSummarize) {
+        this.canSummarize = canSummarize;
+    }
+
+    public boolean isCanDrag() {
+        return canDrag;
+    }
+
+    public void setCanDrag(boolean canDrag) {
+        this.canDrag = canDrag;
+    }
 
     public Long getId() {
         return id;

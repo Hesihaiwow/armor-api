@@ -36,10 +36,11 @@
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
         <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
+        <result column="clickFinishTime" jdbcType="TIMESTAMP" property="clickFinishTime"/>
         <collection property="tags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
-                    ofType="com.zhixinhuixue.armor.model.pojo.Tag"></collection>
+                    ofType="com.zhixinhuixue.armor.model.pojo.Tag"/>
         <collection property="delayNo" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskMapper.countDelayUser"
-                    ofType="java.lang.Integer"></collection>
+                    ofType="java.lang.Integer"/>
     </resultMap>
 
     <resultMap id="TaskResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
@@ -66,6 +67,8 @@
 
     <resultMap id="TaskFinishedResultMap" type="com.zhixinhuixue.armor.model.bo.TaskBO" extends="BaseResultMap">
         <result column="projectName" jdbcType="VARCHAR" property="projectName"/>
+        <result column="task_integral" jdbcType="DECIMAL" property="taskIntegral"/>
+        <result column="sonTaskCompleteTime" jdbcType="TIMESTAMP" property="sonTaskCompleteTime"/>
         <result column="projectImage" jdbcType="VARCHAR" property="projectImage"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
         <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
@@ -82,6 +85,7 @@
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
         <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <result column="stageName" jdbcType="VARCHAR" property="stageName"/>
+        <result column="sonTaskCompleteTime" jdbcType="TIMESTAMP" property="sonTaskCompleteTime"/>
         <collection property="taskTags" column="id" select="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper.selectByTaskId"
                     ofType="com.zhixinhuixue.armor.model.pojo.Tag"/>
         <collection property="taskUsers" column="id"
@@ -94,13 +98,17 @@
     </resultMap>
 
     <resultMap id="WeekPublishTaskMap" type="com.zhixinhuixue.armor.model.bo.WeekPublishTaskBO">
-        <result column="id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="name" property="taskName" jdbcType="VARCHAR"></result>
-        <result column="create_by" property="createBy" jdbcType="BIGINT"></result>
-        <result column="user_name" property="createByName" jdbcType="VARCHAR"></result>
-        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
-        <result column="can_online" property="canOnline" jdbcType="INTEGER"></result>
-        <result column="condition" property="condition" jdbcType="VARCHAR"></result>
+        <result column="wpp_id" property="wppId" jdbcType="BIGINT"/>
+        <result column="id" property="taskId" jdbcType="BIGINT"/>
+        <result column="name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="user_name" property="createByName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"/>
+        <result column="test_time" property="testTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="can_online" property="canOnline" jdbcType="INTEGER"/>
+        <result column="condition" property="condition" jdbcType="VARCHAR"/>
         <collection property="userIds" column="taskId=id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper.selectUserIdByTaskId"
                     ofType="java.lang.Long"/>
@@ -110,11 +118,14 @@
     </resultMap>
     <!-- 查询任务详情 -->
     <select id="selectTaskDetailByTaskId" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
-        select t1.*,t2.`name` as projectName,t3.`name` as stageName,t4.name as userName from task t1
+        select t1.*,t2.`name` as projectName,t3.`name` as stageName,t4.name as userName
+         ,tl.create_time as sonTaskCompleteTime from task t1
         left join project t2 on t1.project_id = t2.id
         left JOIN stage t3 on t1.stage_id = t3.id
-        left join user t4 on t4.id = t1.create_by
+        left join `user` t4 on t4.id = t1.create_by
+        left join `task_log` tl on tl.`task_id` = t1.`id` and tl.`title` LIKE '%阶段全部完成%'
         where t1.id = #{taskId} and t1.is_delete = 0
+        group by t1.`id`
     </select>
 
     <select id="selectTaskDetailByTaskId1" resultMap="TaskDetailResultMap">
@@ -173,25 +184,31 @@
 
     <!-- 查询还未评价完的任务 -->
     <select id="selectAllNotClosed" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
-         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t3.image_url as projectImage, t4.`name` as userName,t2.user_id,t4.avatar_url from task t1
+         select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName,t3.image_url as projectImage,
+         t4.`name` as userName,t2.user_id,t4.avatar_url,tl.create_time as sonTaskCompleteTime from task t1
         join task_user t2 on t1.id = t2.task_id
         left join project t3 on t1.project_id = t3.id
         left join `user` t4 on t1.create_by = t4.id
-        where t1.`status` = 2 and t1.review_status = 3 AND  t1.`status` != 4
+        left join `task_log` tl on tl.`task_id` = t1.`id` and tl.`title` LIKE '%阶段全部完成%'
+        where t1.`status` = 2 and t1.review_status = 3 AND  t1.`status` != 3
         and t2.`status` >=2
         and t1.is_delete = 0
-        and user_id =#{userId}
+        and t2.user_id =#{userId}
+        group by t1.`id`
         order by t1.create_time desc
     </select>
 
     <!-- 查询已完成的任务，包含评价 -->
     <select id="selectFinishedTask" resultMap="TaskFinishedResultMap" parameterType="java.lang.Long">
-     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName, t3.image_url as projectImage, t2.user_id,t4.`name` as userName,t4.avatar_url from task t1
+     select DISTINCT t1.id as ex_id, t1.*,t3.name as projectName, t3.image_url as projectImage, t2.user_id,
+     t4.`name` as userName,t4.avatar_url,t2.complete_time sonTaskCompleteTime ,uti.integral task_integral
+     from task t1
             join task_user t2 on t1.id = t2.task_id
             left join project t3 on t1.project_id = t3.id
             left join `user` t4 on t1.create_by = t4.id
+            left join `user_task_integral` uti on uti.task_id = t1.id and uti.`user_id` = #{userId}
             where t1.review_status = 3 and t2.`status` &gt; 1 AND  t2.`status` != 4
-            and t2.user_id = #{userId} and t1.is_delete = 0  order by t1.create_time desc
+            and t2.user_id = #{userId} and t1.is_delete = 0  order by sonTaskCompleteTime desc
     </select>
 
     <!-- 查询用户完成任务后的积分 -->
@@ -324,28 +341,44 @@
 
     <!-- 查询阶段下的任务 -->
     <select id="selectTaskByStageId" resultMap="PageResultMap" parameterType="java.util.Map">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage,
+         t5.`name` as stageName,t6.`name` as userName,t6.avatar_url ,tl.create_time as clickFinishTime
+         from task t1
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
+        LEFT JOIN `task_log` tl ON tl.`task_id` = t1.`id` AND tl.`title` LIKE '%阶段全部完成%'
          where t1.review_status = 3 and t1.is_delete = 0
          and t1.`type` = 2 and t1.stage_id = #{stageId}
          and t1.status != 3
          and t7.parent_id =#{departmentId}
+        <if test="userId != null and userId != 1">
+            and t1.create_by = #{userId}
+        </if>
+         group by t1.`id`
          order by t1.sort ASC
     </select>
     <select id="selectTaskByEndStageId" resultMap="PageResultMap" parameterType="java.util.Map">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage,
+        t5.`name` as stageName,t6.`name` as userName,t6.avatar_url ,tl.create_time as clickFinishTime
+        from task t1
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
+        LEFT JOIN `task_log` tl ON tl.`task_id` = t1.`id` AND tl.`title` LIKE '%阶段全部完成%'
         where t1.review_status = 3 and t1.is_delete = 0
         and t1.`type` = 2 and t1.stage_id = #{stageId}
         and t1.status != 3
         and t7.parent_id =#{departmentId}
+        <if test="userId != null and userId != 1">
+            and t1.create_by = #{userId}
+        </if>
+        group by t1.`id`
         order by t1.sort ASC
+
+
     </select>
 
     <!-- 查询阶段下的任务 -->
@@ -530,34 +563,43 @@
 
     <!--通过stageId查询我的已发布任务-->
     <select id="selectMyTaskByStageId" resultMap="PageResultMap">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage,
+        t5.`name` as stageName,t6.`name` as userName,t6.avatar_url,tl.create_time as clickFinishTime
+         from task t1
         left join task_user t2 on t1.id =t2.task_id
         left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
+        LEFT JOIN `task_log` tl ON tl.`task_id` = t1.`id` AND tl.`title` LIKE '%阶段全部完成%'
          where t1.review_status = 3 and t1.is_delete = 0
          and t1.`type` = 2 and t1.stage_id = #{stageId}
          and t1.status != 3
          and t7.parent_id =#{departmentId}
          and t1.create_by = #{userId}
+         group by t1.`id`
          order by t1.sort ASC
     </select>
 
     <!--通过stageId查询我的任务-->
     <select id="selectMyTaskByEndStageId" resultMap="PageResultMap">
-        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage, t5.`name` as stageName,t6.`name` as userName,t6.avatar_url from task t1
+        select DISTINCT(t1.id) as dist, t1.*, t4.`name` as projectName, t4.image_url as projectImage,
+        t5.`name` as stageName,t6.`name` as userName,t6.avatar_url,tl.create_time as clickFinishTime
+         from task t1
         left join task_user t2 on t1.id =t2.task_id
         left join task_tag t3 on t1.id = t3.task_id
         left join project t4 on t1.project_id = t4.id
         left JOIN stage t5 on t1.stage_id = t5.id
         left join `user` t6 on t1.create_by = t6.id
         left join department t7 on t6.department_id = t7.id
+        LEFT JOIN `task_log` tl ON tl.`task_id` = t1.`id` AND tl.`title` LIKE '%阶段全部完成%'
         where t1.review_status = 3 and t1.is_delete = 0
         and t1.`type` = 2 and t1.stage_id = #{stageId}
+        and t1.status != 3
         and t7.parent_id =#{departmentId}
         and t1.create_by = #{userId}
+        group by t1.`id`
         order by t1.sort ASC
     </select>
 
@@ -611,7 +653,8 @@
 
     <!--查询即将发版任务(测试中)-->
     <select id="selectWeekPublishTask" resultMap="WeekPublishTaskMap">
-        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition
+        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition,wpp.id wpp_id,
+        t.create_time,t.begin_time,t.test_time
         FROM task t
         LEFT JOIN user u ON u.id = t.create_by
         LEFT JOIN week_publish_plan wpp ON wpp.task_id = t.id
@@ -621,6 +664,12 @@
         <if test="reqDTO.isTesting == true ">
             AND t.stage_id = 212754785051344896
         </if>
+        GROUP BY t.id
+    </select>
+
+    <!--查询当前负责的进行中的任务-->
+    <select id="selectDoingListByUser" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `create_by` = #{userId}
     </select>
     <!-- sch -->
 </mapper>

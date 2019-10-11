@@ -3,6 +3,8 @@ package com.zhixinhuixue.armor.controller;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.TaskListResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskReviewResDTO;
+import com.zhixinhuixue.armor.model.dto.response.TaskSummaryResDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -187,9 +189,9 @@ public class ZSYTaskController extends ZSYController {
     }
 
     @ApiOperation("获取阶段下的任务")
-    @GetMapping("/tasksByStage/{stageId}")
-    public String getTasksByStage(@PathVariable("stageId") Long stageId) {
-        return ZSYResult.success().data(taskService.getTaskByStageId(stageId)).build();
+    @GetMapping("/tasksByStage/{userId}/{stageId}")
+    public String getTasksByStage(@PathVariable("stageId") Long stageId,@PathVariable("userId") Long userId) {
+        return ZSYResult.success().data(taskService.getTaskByStageId(stageId,userId)).build();
     }
 
     @ApiOperation("获取阶段下的任务")
@@ -323,6 +325,34 @@ public class ZSYTaskController extends ZSYController {
     @GetMapping("/task-user/{taskId}/{userId}")
     public String getTaskUserByTaskAndUsr(@PathVariable("taskId")Long taskId,@PathVariable("userId")Long userId){
         return ZSYResult.success().data(taskService.getTaskUserByTaskAndUsr(taskId,userId)).build();
+    }
+
+    @ApiOperation("添加任务评审")
+    @PostMapping("/review/add")
+    public String addTaskReview(@Valid @RequestBody AddTaskReviewReqDTO reviewReqDTO){
+        List<TaskReviewResDTO> reviewResDTOS = taskService.addTaskReview(reviewReqDTO);
+        return ZSYResult.success().data(reviewResDTOS).build();
+    }
+
+    @ApiOperation("添加任务总结")
+    @PostMapping("/summary/add")
+    public String addTaskSummary(@Valid @RequestBody AddTaskSummaryReqDTO reqDTO){
+        List<TaskSummaryResDTO> summaryResDTOS = taskService.addTaskSummary(reqDTO);
+        return ZSYResult.success().data(summaryResDTOS).build();
+    }
+
+    @ApiOperation("删除任务评审")
+    @DeleteMapping("/review/delete/{reviewId}")
+    public String deleteTaskReview(@PathVariable("reviewId")Long reviewId){
+        List<TaskReviewResDTO> reviewResDTOS = taskService.deleteTaskReview(reviewId);
+        return ZSYResult.success().data(reviewResDTOS).build();
+    }
+
+    @ApiOperation("删除任务总结")
+    @DeleteMapping("/summary/delete/{summaryId}")
+    public String deleteTaskSummary(@PathVariable("summaryId")Long summaryId){
+        List<TaskSummaryResDTO> summaryResDTOS = taskService.deleteTaskSummary(summaryId);
+        return ZSYResult.success().data(summaryResDTOS).build();
     }
     // -- sch
 }

@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.model.bo;
 import com.zhixinhuixue.armor.model.pojo.Tag;
 import com.zhixinhuixue.armor.model.pojo.Task;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,6 +18,19 @@ public class TaskListBO extends Task {
     private String stageName;
     private List<Tag> tags;
     private int delayNo;//任务超时人数
+
+    /**
+     * 任务点击完成时间
+     */
+    private Date clickFinishTime;
+
+    public Date getClickFinishTime() {
+        return clickFinishTime;
+    }
+
+    public void setClickFinishTime(Date clickFinishTime) {
+        this.clickFinishTime = clickFinishTime;
+    }
 
     public String getProjectName() {
         return projectName;

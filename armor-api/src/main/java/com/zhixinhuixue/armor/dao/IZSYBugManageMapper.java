@@ -116,4 +116,19 @@ public interface IZSYBugManageMapper {
      * @return
      */
     int updateStatusBatch(@Param("list") List<OnlineBugManage> list);
+
+    /**
+     * 查询最后一个bug编号
+     * @author sch
+     * @return
+     */
+    OnlineBugManage selectLastBugNo();
+
+    /**
+     * 根据主键查询
+     * @author sch
+     * @param id 主键
+     * @return
+     */
+    OnlineBugManage selectById(@Param("id") Long id);
 }

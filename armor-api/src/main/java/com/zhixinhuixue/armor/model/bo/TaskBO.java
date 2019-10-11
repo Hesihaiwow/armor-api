@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.model.bo;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,14 +25,40 @@ public class TaskBO extends Task{
     private String projectImage;
 
     /**
+     * 用户完成任务时间
+     */
+    private Date sonTaskCompleteTime;
+
+    /**
      * 用户积分
      */
     private Double userIntegral;
 
     /**
+     * 任务积分
+     */
+    private Double taskIntegral;
+
+    /**
      * 任务用户
      */
     private List<TaskUser> taskUsers;
+
+    public Double getTaskIntegral() {
+        return taskIntegral;
+    }
+
+    public void setTaskIntegral(Double taskIntegral) {
+        this.taskIntegral = taskIntegral;
+    }
+
+    public Date getSonTaskCompleteTime() {
+        return sonTaskCompleteTime;
+    }
+
+    public void setSonTaskCompleteTime(Date sonTaskCompleteTime) {
+        this.sonTaskCompleteTime = sonTaskCompleteTime;
+    }
 
     public Double getUserIntegral() {
         return userIntegral;

@@ -36,7 +36,7 @@
                 `condition` = #{condition,jdbcType=VARCHAR},
             </if>
         </set>
-        where `task_id` = #{taskId,jdbcType=BIGINT}
+        where `id` = #{id,jdbcType=BIGINT}
     </update>
 
     <!--删除原来的task-platform-->

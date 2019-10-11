@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.dao;
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.bo.UserCheckPeopleBO;
+import com.zhixinhuixue.armor.model.dto.request.QueryUserPageReqDTO;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
 import org.apache.ibatis.annotations.Param;
@@ -72,7 +73,7 @@ public interface IZSYUserMapper {
      * @param deptIds 部门ID
      * @return
      */
-    Page<UserBo> selectPage(List<Long> deptIds);
+    Page<UserBo> selectPage(@Param("deptIds") List<Long> deptIds, @Param("reqDTO") QueryUserPageReqDTO reqDTO);
 
 
     /**
@@ -143,5 +144,28 @@ public interface IZSYUserMapper {
      * @return
      */
     User selectByName(@Param("name") String name);
+
+    /**
+     * 查询任务人员信息
+     * @author sch
+     * @param taskId 任务id
+     * @return
+     */
+    List<UserBo> selectUsersByTask(@Param("taskId") Long taskId);
+
+    /**
+     * 根据id查询
+     * @author sch
+     * @param userId 用户id
+     * @return
+     */
+    UserBo selectUserBOById(@Param("userId")Long userId);
+
+    /**
+     * 查询项目管理者
+     * @author sch
+     * @return
+     */
+    List<User> selectManagers();
     // -- sch
 }

@@ -16,13 +16,15 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="discover_time" jdbcType="TIMESTAMP" property="discoverTime" />
         <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
-        <result column="origin" property="origin" jdbcType="VARCHAR"></result>
-        <result column="account_info" property="accountInfo" jdbcType="VARCHAR"></result>
-        <result column="type" property="type" jdbcType="INTEGER"></result>
-        <result column="is_solved" property="isSolved" jdbcType="INTEGER"></result>
-        <result column="demand_system_id" property="demandSystemId" jdbcType="INTEGER"></result>
-        <result column="demand_system" property="demandSystemName" jdbcType="VARCHAR"></result>
-        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="origin" property="origin" jdbcType="VARCHAR"/>
+        <result column="account_info" property="accountInfo" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="is_solved" property="isSolved" jdbcType="INTEGER"/>
+        <result column="demand_system_id" property="demandSystemId" jdbcType="INTEGER"/>
+        <result column="demand_system" property="demandSystemName" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="bug_no" property="bugNo" jdbcType="INTEGER"/>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
     </resultMap>
 
     <resultMap id="OnlineBugBOPageMap" type="com.zhixinhuixue.armor.model.bo.OnlineBugBO" extends="OnlineBugMap">
@@ -42,7 +44,7 @@
     <resultMap id="DetailResultMap" type="com.zhixinhuixue.armor.model.bo.BugManageBO" extends="BaseResultMap">
         <collection property="bugUsers" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYBugUserMapper.selectDetailByBugId"
-                    ofType="com.zhixinhuixue.armor.model.bo.BugUserBo">
+                    ofType="com.zhixinhuixue.armor.model.bo.BugUserBO">
         </collection>
     </resultMap>
     
@@ -57,11 +59,11 @@
     <insert id="insertBugManager" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineBugManage">
         INSERT INTO `bug_manage`
         (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`
-        ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`)
+        ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`,`bug_no`)
         VALUES
         (#{id,jdbcType=BIGINT},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{discoverTime,jdbcType=TIMESTAMP},#{processTime,jdbcType=TIMESTAMP},
         #{origin,jdbcType=VARCHAR},#{accountInfo,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{isSolved,jdbcType=INTEGER}
-        ,#{remark,jdbcType=VARCHAR},#{demandSystemName,jdbcType=VARCHAR},#{demandSystemId,jdbcType=INTEGER})
+        ,#{remark,jdbcType=VARCHAR},#{demandSystemName,jdbcType=VARCHAR},#{demandSystemId,jdbcType=INTEGER},#{bugNo,jdbcType=INTEGER})
     </insert>
 
 
@@ -185,6 +187,16 @@
         SELECT * FROM `bug_manage` WHERE `is_solved` IS NULL
     </select>
 
+    <!--查询最后一个bug编号-->
+    <select id="selectLastBugNo" resultMap="OnlineBugMap">
+        SELECT * FROM bug_manage WHERE bug_no IS NOT NULL ORDER BY bug_no DESC LIMIT 1
+    </select>
+
+    <!--根据主键查询-->
+    <select id="selectById" resultMap="OnlineBugMap">
+        SELECT * FROM `bug_manage` WHERE `id` = #{id}
+    </select>
+
     <!-- 删除Bug处理记录  -->
     <delete id="deleteById" parameterType="java.lang.Long">
         delete from bug_manage where id = #{id}
@@ -199,19 +211,45 @@
 
     <!--更新线上bug-->
     <update id="updateBugManager" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineBugManage">
-        UPDATE `bug_manage` SET
-        `description` = #{description,jdbcType=VARCHAR},
-        `project_id` = #{projectId,jdbcType=BIGINT},
-        `create_time` = #{createTime,jdbcType=TIMESTAMP},
-        `discover_time` = #{discoverTime,jdbcType=TIMESTAMP},
-        `process_time` = #{processTime,jdbcType=TIMESTAMP},
-        `origin` = #{origin,jdbcType=VARCHAR},
-        `account_info` = #{accountInfo,jdbcType=VARCHAR},
-        `type` = #{type,jdbcType=INTEGER},
-        `is_solved` = #{isSolved,jdbcType=INTEGER},
-        `remark` = #{remark,jdbcType=VARCHAR},
-        `demand_system` = #{demandSystemName,jdbcType=VARCHAR},
-        `demand_system_id` = #{demandSystemId,jdbcType=INTEGER}
+        UPDATE `bug_manage`
+        <set>
+            <if test="description != null">
+                `description` = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="projectId != null">
+                `project_id` = #{projectId,jdbcType=BIGINT},
+            </if>
+            <if test="discoverTime != null">
+                `discover_time` = #{discoverTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="processTime != null">
+                `process_time` = #{processTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="origin != null and origin != '' ">
+                `origin` = #{origin,jdbcType=VARCHAR},
+            </if>
+            <if test="accountInfo != null">
+                `account_info` = #{accountInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="isSolved != null">
+                `is_solved` = #{isSolved,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="demandSystemId != null">
+                `demand_system_id` = #{demandSystemId,jdbcType=INTEGER},
+            </if>
+            <if test="demandSystemName != null">
+                `demand_system` = #{demandSystemName,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                `is_delete` = #{isDelete,jdbcType=INTEGER},
+            </if>
+        </set>
         WHERE id=#{id,jdbcType=BIGINT};
     </update>
 

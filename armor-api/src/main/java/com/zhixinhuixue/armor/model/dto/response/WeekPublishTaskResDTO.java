@@ -11,6 +11,11 @@ import java.util.List;
  */
 public class WeekPublishTaskResDTO {
     /**
+     * 计划id
+     */
+    private Long wppId;
+
+    /**
      * 任务id
      */
     private Long taskId;
@@ -37,9 +42,44 @@ public class WeekPublishTaskResDTO {
     private String testers;
 
     /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 设计截止时间(开发开始时间)
+     */
+    private Date beginTime;
+
+    /**
+     * 开发截止时间(测试开始时间)
+     */
+    private Date testTime;
+
+    /**
+     * 开发完成时间颜色(周一,二,三为橙色--1, 周四为红色--2)
+     */
+    private Integer testTimeColor;
+
+    /**
      * 截止时间
      */
     private Date endTime;
+
+    /**
+     * 设计需要时长(天)
+     */
+    private Integer designDays;
+
+    /**
+     * 开发需要时长(天)
+     */
+    private Integer developDays;
+
+    /**
+     * 测试需要时长(天)
+     */
+    private Integer testDays;
 
     /**
      * 需要发布的平台
@@ -56,6 +96,70 @@ public class WeekPublishTaskResDTO {
      * 任务发布情况
      */
     private String condition;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(Date testTime) {
+        this.testTime = testTime;
+    }
+
+    public Integer getTestTimeColor() {
+        return testTimeColor;
+    }
+
+    public void setTestTimeColor(Integer testTimeColor) {
+        this.testTimeColor = testTimeColor;
+    }
+
+    public Integer getDesignDays() {
+        return designDays;
+    }
+
+    public void setDesignDays(Integer designDays) {
+        this.designDays = designDays;
+    }
+
+    public Integer getDevelopDays() {
+        return developDays;
+    }
+
+    public void setDevelopDays(Integer developDays) {
+        this.developDays = developDays;
+    }
+
+    public Integer getTestDays() {
+        return testDays;
+    }
+
+    public void setTestDays(Integer testDays) {
+        this.testDays = testDays;
+    }
+
+    public Long getWppId() {
+        return wppId;
+    }
+
+    public void setWppId(Long wppId) {
+        this.wppId = wppId;
+    }
 
     public Long getTaskId() {
         return taskId;

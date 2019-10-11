@@ -5,7 +5,7 @@
                  @dragover='allowDrop($event)'  >
                 <header :data-id="item.id" :style="'cursor: '+cursor" >{{item.name}} · {{item.tasks ? item.tasks.length : 0}}</header>
                 <ul class="task-item" :stageId="item.id">
-                    <li class="clearfix" :class="task.borderClass" draggable='true' @dragstart='drag($event)'
+                    <li class="clearfix" :class="task.borderClass" draggable='true' @dragstart='drag($event,task.canDrag)'
                         v-for="(task,keyTask) in item.tasks" @click="handleTaskItemClick(task.id)" :taskId="task.id"
                         :createBy="task.createBy" >
                         <div class="trans" v-show="task.examine==1"></div>
@@ -22,10 +22,10 @@
                             <div v-else="">
                                 <span class="tips" :class="task.endColor">{{task.endText}}</span>
                             </div>
-                            <div style="border-top: 5px;padding: 2px"><span v-if="task.status==1&&task.delayNo!=0" class="tips orange">超时人数:{{task.delayNo}}</span></div>
+                            <div style="border-top: 5px;padding: 2px"><span v-if="task.status==1&&task.delayNo!==0" class="tips orange">超时人数:{{task.delayNo}}</span></div>
                         </div>
                         <div class="master-info fr ellipsis">
-                            <img v-if="task.avatarUrl && task.avatarUrl!=''" :src="task.avatarUrl" :alt="task.userName">
+                            <img v-if="task.avatarUrl && task.avatarUrl!==''" :src="task.avatarUrl" :alt="task.userName">
                             <span v-else="">{{task.userName}}</span>
                         </div>
                     </li>
@@ -54,19 +54,19 @@
         },
         computed: {
             loginUserRole() {
-                let userRole = helper.decodeToken().userRole;
+                var userRole = helper.decodeToken().userRole;
                 return userRole;
             },
             loginUserId() {
-                let userId = helper.decodeToken().userId;
+                var userId = helper.decodeToken().userId;
                 return userId;
             },
         },
         methods: {
-            drag: function (event) {
+            drag: function (event,canDrag) {
                 // 自己创建的任务及超管才可以拖动任务
-                let taskCreateBy = event.currentTarget.getAttribute('createby');
-                if(this.loginUserId === taskCreateBy || this.loginUserRole===0 ){
+                var taskCreateBy = event.currentTarget.getAttribute('createby');
+                if((this.loginUserId == taskCreateBy || this.loginUserRole==0) && canDrag ){
                     dom = event.currentTarget;
                 }else{
                     event.preventDefault();
@@ -74,14 +74,14 @@
                 }
             },
             drop: function (event) {
-                let stageId = '', originId = dom.getAttribute('taskid'), targetId = '', vm = this;
+                var stageId = '', originId = dom.getAttribute('taskid'), targetId = '', vm = this;
                 event.preventDefault();
                 if (event.target.tagName.toLowerCase() == "li") {
                     targetId = event.target.getAttribute('taskid');
                 } else if (event.target.tagName.toLowerCase() == "ul") {
                     stageId = event.target.getAttribute('stageid');
                 } else {
-                    let li = this.findParent(event.target);
+                    var li = this.findParent(event.target);
                     targetId = li.getAttribute('taskid');
                 }
 
@@ -95,7 +95,7 @@
                     } else if (event.target.tagName.toLowerCase() == "ul") {
                         event.target.appendChild(dom);
                     } else {
-                        let li = vm.findParent(event.target);
+                        var li = vm.findParent(event.target);
                         li.parentNode.insertBefore(dom, li);
                     }
                     vm.getData2();
@@ -113,7 +113,7 @@
                 event.preventDefault();
             },
             findParent(obj) {
-                while (obj.parentNode && obj.tagName.toLowerCase() != "li") {
+                while (obj.parentNode && obj.tagName.toLowerCase() !== "li") {
                     obj = obj.parentNode;
                 }
                 return obj;
@@ -122,9 +122,9 @@
                 this.$root.eventBus.$emit("handleBoardClick", taskId);
             },
             getData() {
-                const publishType = window.localStorage.getItem("publishType")
+                const publishType = window.localStorage.getItem("publishType");
                 // 获取阶段
-                let that = this;
+                var that = this;
                 that.http.zsyGetHttp('/stage/list', {}, (res) => {
                     that.stageList = res.data;
                     that.taskBoxWidth = that.stageList.length * 270 + "px";
@@ -132,17 +132,17 @@
                         if(publishType==1){
                             // 获取任务
                             that.http.zsyGetHttp(`/task/tasksByStageTime/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD')
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
                                     if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
                                         endTime = el.completeTime
                                     }
-                                    endTime = moment(endTime).format('YYYY-MM-DD')
-                                    const diffDays = moment(today).diff(moment(endTime), 'days')
-                                    let endColor = '', endText = ''
+                                    endTime = moment(endTime).format('YYYY-MM-DD');
+                                    const diffDays = moment(today).diff(moment(endTime), 'days');
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -150,7 +150,7 @@
                                         lastDay: '[昨天]',
                                         lastWeek: 'L',
                                         sameElse: 'L'
-                                    })
+                                    });
                                     if (el.status == 1) {
                                         if (diffDays == 0) {
                                             endColor = 'orange'
@@ -161,11 +161,11 @@
                                         }
                                         endText += ' 截止'
                                     } else {
-                                        endColor = 'green'
+                                        endColor = 'green';
                                         endText += ' 完成'
                                     }
-                                    el['endColor'] = endColor
-                                    el['endText'] = endText
+                                    el['endColor'] = endColor;
+                                    el['endText'] = endText;
 
                                     // 优先级样式
                                     if (el.priority == 2) {
@@ -173,22 +173,22 @@
                                     } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
-                                })
+                                });
                                 that.$set(stage, 'tasks', list)
                             })
                         }else{
                             that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD')
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
                                     if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
                                         endTime = el.completeTime
                                     }
-                                    endTime = moment(endTime).format('YYYY-MM-DD')
-                                    const diffDays = moment(today).diff(moment(endTime), 'days')
-                                    let endColor = '', endText = ''
+                                    endTime = moment(endTime).format('YYYY-MM-DD');
+                                    const diffDays = moment(today).diff(moment(endTime), 'days');
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -196,7 +196,7 @@
                                         lastDay: '[昨天]',
                                         lastWeek: 'L',
                                         sameElse: 'L'
-                                    })
+                                    });
                                     if (el.status == 1) {
                                         if (diffDays == 0) {
                                             endColor = 'orange'
@@ -207,11 +207,11 @@
                                         }
                                         endText += ' 截止'
                                     } else {
-                                        endColor = 'green'
+                                        endColor = 'green';
                                         endText += ' 完成'
                                     }
-                                    el['endColor'] = endColor
-                                    el['endText'] = endText
+                                    el['endColor'] = endColor;
+                                    el['endText'] = endText;
 
                                     // 优先级样式
                                     if (el.priority == 2) {
@@ -219,7 +219,7 @@
                                     } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
-                                })
+                                });
                                 that.$set(stage, 'tasks', list)
                             })
                         }
@@ -228,9 +228,14 @@
                 });
             },
             getData2() {
-                const justMine = window.localStorage.getItem("justMine")
+                const justMine = window.localStorage.getItem("justMine");
+                var taskCreater = window.localStorage.getItem("taskCreater");
+                if (taskCreater === undefined || taskCreater == null || taskCreater === '') {
+                    window.localStorage.setItem("taskCreater",1);
+                    taskCreater = window.localStorage.getItem("taskCreater");
+                }
                 // 获取阶段
-                let that = this;
+                var that = this;
                 that.http.zsyGetHttp('/stage/list', {}, (res) => {
                     that.stageList = res.data;
                     that.taskBoxWidth = that.stageList.length * 270 + "px";
@@ -238,17 +243,17 @@
                         if(justMine==1){
                             // 获取任务
                             that.http.zsyGetHttp(`/task/tasksByStage/mine/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD')
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
                                     if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
-                                        endTime = el.completeTime
+                                        endTime = el.clickFinishTime
                                     }
-                                    endTime = moment(endTime).format('YYYY-MM-DD')
-                                    const diffDays = moment(today).diff(moment(endTime), 'days')
-                                    let endColor = '', endText = ''
+                                    endTime = moment(endTime).format('YYYY-MM-DD');
+                                    const diffDays = moment(today).diff(moment(endTime), 'days');
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -256,7 +261,7 @@
                                         lastDay: '[昨天]',
                                         lastWeek: 'L',
                                         sameElse: 'L'
-                                    })
+                                    });
                                     if (el.status == 1) {
                                         if (diffDays == 0) {
                                             endColor = 'orange'
@@ -267,11 +272,11 @@
                                         }
                                         endText += ' 截止'
                                     } else {
-                                        endColor = 'green'
+                                        endColor = 'green';
                                         endText += ' 完成'
                                     }
-                                    el['endColor'] = endColor
-                                    el['endText'] = endText
+                                    el['endColor'] = endColor;
+                                    el['endText'] = endText;
 
                                     // 优先级样式
                                     if (el.priority == 2) {
@@ -279,22 +284,23 @@
                                     } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
-                                })
+                                });
                                 that.$set(stage, 'tasks', list)
                             })
                         }else{
-                            that.http.zsyGetHttp(`/task/tasksByStage/${stage.id}`, {}, (res) => {
-                                let list = res.data;
+                            that.http.zsyGetHttp(`/task/tasksByStage/`+taskCreater+`/${stage.id}`, {}, (res) => {
+                                window.localStorage.removeItem("taskCreater");
+                                var list = res.data;
                                 list.forEach((el) => {
-                                    let endTime = '', today = moment().format('YYYY-MM-DD')
+                                    var endTime = '', today = moment().format('YYYY-MM-DD');
                                     if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
-                                        endTime = el.completeTime
+                                        endTime = el.clickFinishTime
                                     }
-                                    endTime = moment(endTime).format('YYYY-MM-DD')
-                                    const diffDays = moment(today).diff(moment(endTime), 'days')
-                                    let endColor = '', endText = ''
+                                    endTime = moment(endTime).format('YYYY-MM-DD');
+                                    const diffDays = moment(today).diff(moment(endTime), 'days');
+                                    var endColor = '', endText = '';
                                     endText = moment(endTime).calendar(null, {
                                         sameDay: '[今天]',
                                         nextDay: '[明天]',
@@ -302,7 +308,7 @@
                                         lastDay: '[昨天]',
                                         lastWeek: 'L',
                                         sameElse: 'L'
-                                    })
+                                    });
                                     if (el.status == 1) {
                                         if (diffDays == 0) {
                                             endColor = 'orange'
@@ -313,7 +319,7 @@
                                         }
                                         endText += ' 截止'
                                     } else {
-                                        endColor = 'green'
+                                        endColor = 'green';
                                         endText += ' 完成'
                                     }
                                     el['endColor'] = endColor
@@ -325,7 +331,7 @@
                                     } else if (el.priority == 3) {
                                         el.borderClass = 'red-border'
                                     }
-                                })
+                                });
                                 that.$set(stage, 'tasks', list)
                             })
                         }
@@ -334,7 +340,7 @@
                 });
             },
             drugList(){
-                let vm = this;
+                var vm = this;
                 if(this.$parent.btnValStatus == 2){
                     var oUl=document.getElementById('task-board-list');
                     /*var oUl = document.queryselector(".task-board-list");
@@ -381,7 +387,7 @@
 
                             //2.move时碰撞
                             var nearObj=findNearest(objBox);
-                            if(nearObj && nearObj!=objBox){//撞到了
+                            if(nearObj && nearObj!==objBox){//撞到了
                                 //动所有的房客
                                 //交换索引，所有房客
                                 //'所有'有条件的
@@ -435,7 +441,7 @@
                     }
                 }
                 function getDis(obj1,obj2){
-                    var a=aPos[obj2.index].left-obj1.offsetLeft
+                    var a=aPos[obj2.index].left-obj1.offsetLeft;
                     var b=aPos[obj2.index].top-obj1.offsetTop;
                     return Math.sqrt(a*a+b*b);
                 }
@@ -475,10 +481,14 @@
             }
         },
         created() {
+            const taskCreater = window.localStorage.getItem("taskCreater");
+            if (taskCreater === undefined || taskCreater == null || taskCreater === '') {
+                window.localStorage.setItem("taskCreater",1);
+            }
             this.getData2();
         },
         beforeMount() {
-            let vm = this;
+            var vm = this;
             if(this.loginUserRole==0 ){
                 this.cursor = 'move';
             }

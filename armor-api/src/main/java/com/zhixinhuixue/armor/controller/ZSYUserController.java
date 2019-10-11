@@ -62,9 +62,9 @@ public class ZSYUserController extends ZSYController {
             @ApiImplicitParam(name = "deptId", value = "部门ID", required = true, paramType = "path", dataType = "long"),
             @ApiImplicitParam(name = "pageIndex", value = "页码", required = true, paramType = "path", dataType = "int")
     })
-    @GetMapping("/page/{deptId}/{pageIndex}")
-    public String paging(@PathVariable("deptId") Long deptId, @PathVariable("pageIndex") Integer pageIndex) {
-        PageInfo<UserPageResDTO> pageInfo = userService.userPage(deptId, pageIndex);
+    @PostMapping("/page")
+    public String paging(@RequestBody QueryUserPageReqDTO reqDTO) {
+        PageInfo<UserPageResDTO> pageInfo = userService.userPage(reqDTO);
         return ZSYResult.success().data(pageInfo).build();
     }
 
@@ -183,6 +183,12 @@ public class ZSYUserController extends ZSYController {
     @GetMapping("/controlled-people/{checkUserId}")
     public String getControlledPeopleList(@PathVariable("checkUserId")Long checkUserId){
         return ZSYResult.success().data(userService.getControlledPeopleList(checkUserId)).build();
+    }
+
+    @ApiOperation("查询项目管理者")
+    @GetMapping("/managers")
+    public String getProductManagers(){
+        return ZSYResult.success().data(userService.getProductManagers()).build();
     }
     // -- sch
 }
