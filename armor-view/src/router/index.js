@@ -133,16 +133,10 @@ const router = new Router({
                 {
                     path:'bug',
                     component:bug,
-                    children:[
-                        {
-                            path: 'NewBug',
-                            component: NewBug
-                        },
-                        {
-                            path: 'look',
-                            component: TestExamplesLook
-                        }
-                    ]
+                },
+                {
+                    path: 'NewBug',
+                    component: NewBug
                 },
 
             ]
