@@ -55,7 +55,7 @@
         </div>
         <div class="btn-box">
             <el-button type="primary">创建</el-button>
-            <el-button>取消</el-button>
+            <el-button @click="goBack">取消</el-button>
 
         </div>
     </div>
