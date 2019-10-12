@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="editor">
         <vue-editor v-model="content" :editor-toolbar="customToolbar" />
     </div>
 </template>
@@ -14,7 +14,7 @@
                 customToolbar:[
                     [{'header': [false,1,2,3,4,5,6]},"bold","underline"],
                     [{'align': 'center'}, {'align': 'justify'}, {'align': 'right'}],
-                    [{ list: "ordered" },{indent:"+1"},{indent:"-1"},{'color':"[]"},{'background':"[]"}],
+                    [{ list: "ordered" },{indent:"+1"},{indent:"-1"},{'color':[]},{'background':[]}],
                     ["link","image", "code-block"]
                 ],
                 content:'',
@@ -23,6 +23,8 @@
     }
 </script>
 
-<style scoped>
-
+<style >
+   .editor strong{
+        font-weight: bold;
+    }
 </style>

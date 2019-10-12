@@ -53,6 +53,11 @@
                 <editor />
             </div>
         </div>
+        <div class="btn-box">
+            <el-button type="primary">创建</el-button>
+            <el-button>取消</el-button>
+
+        </div>
     </div>
 </template>
 
@@ -129,6 +134,7 @@
         }
         .right{
             margin-left: 20px;
+            width: 60%;
             .name{
                 font-size: 16px;
                 line-height: 30px;
@@ -137,5 +143,10 @@
         }
 
     }
+    .btn-box{
+        margin-top: 20px;
+        text-align: center;
+    }
+
 }
 </style>
