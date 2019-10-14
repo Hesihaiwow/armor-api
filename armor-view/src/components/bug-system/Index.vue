@@ -5,7 +5,7 @@
                 <span class="name">项目名称</span>
             </div>
             <div class="right fr">
-                <router-link :to="{ path: 'NewBug', query: { id: taskId }}"><el-button type="primary">新建BUG</el-button></router-link>
+                <router-link :to="{ path: '/index/NewBug', query: { id: taskId }}"><el-button type="primary">新建BUG</el-button></router-link>
             </div>
         </div>
         <div class="con">
@@ -34,26 +34,11 @@
         data(){
             return {
                 taskId:'11',
-                tableData:[
-                    {
-                        id:1234456,
-                        name: 'bug标题',
-                        type: 1,
-                        give:'王小虎',
-                        date: '2016-05-04 10:36:08',
-                    },
-                ]
+
             }
         },
         methods: {
-            tableRowClassName({row, rowIndex}) {
-                if (rowIndex === 1) {
-                    return 'warning-row';
-                } else if (rowIndex === 3) {
-                    return 'success-row';
-                }
-                return '';
-            }
+
         },
     }
 </script>

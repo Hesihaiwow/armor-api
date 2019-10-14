@@ -14,14 +14,19 @@
                             label="标题">
                     </el-table-column>
                     <el-table-column
-                            prop="state"
                             label="状态"
                             width="80">
+                        <template scope="scope">
+                            <span>{{ stateToWords(scope.row.state) }}</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
-                            prop="type"
                             label="类型"
-                            width="80">
+                            width="100">
+
+                        <template scope="scope">
+                            <span>{{ typeToWords(scope.row.type) }}</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                             prop="give"
@@ -44,12 +49,20 @@
         name: "List",
         data(){
             return {
-                listName:'',
+                listName:'所有的BUG',
                 getData:{
                     id:'222',
                     listType:1,
             },
                 tableData:[
+                    {
+                        id:1234456,
+                        name: 'bug标题',
+                        state: 1,
+                        type:1,
+                        give:'王小虎',
+                        date: '2016-05-04 10:36:08',
+                    },
                     {
                         id:1234456,
                         name: 'bug标题',
@@ -86,6 +99,8 @@
                     case 3:
                         this.listName = '已解决的BUG'
                         break
+                    default:
+                        this.listName = '所有的BUG'
                 }
             },
             tableRowClassName({row, rowIndex}) {
@@ -95,6 +110,28 @@
                     return 'success-row';
                 }
                 return '';
+            },
+            stateToWords(val) {
+                if (val === 1) {
+                    return '已分配';
+                } else if (val === 2) {
+                    return '已解决';
+                } else if (val === 3) {
+                    return '已关闭';
+                } else if (val === 4) {
+                    return '打回';
+                }
+            },
+            typeToWords(val) {
+                if (val === 1) {
+                    return '严重错误';
+                } else if (val === 2) {
+                    return '主要错误';
+                } else if (val === 3) {
+                    return '一般错误';
+                } else if (val === 4) {
+                    return '建议';
+                }
             }
         },
 
