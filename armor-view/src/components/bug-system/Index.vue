@@ -5,6 +5,10 @@
                 <span class="name">项目名称</span>
             </div>
             <div class="right fr">
+                <el-radio-group v-model="radio1" style="margin-right: 40px;margin-top: -1px;">
+                    <el-radio-button label="1">仅看自己</el-radio-button>
+                    <el-radio-button label="2">看所有人</el-radio-button>
+                </el-radio-group>
                 <router-link :to="{ path: '/index/NewBug', query: { id: taskId }}"><el-button type="primary">新建BUG</el-button></router-link>
             </div>
         </div>
@@ -20,7 +24,7 @@
                     <router-link :to="{ path: '/index/bug/list', query: { id: taskId,listType:2 }}" ><span class="color-warning">待确认的BUG(共 1 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { id: taskId,listType:3 }}" ><span class="color-success">已解决的BUG(共 1 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { id: taskId,listType:3 }}" ><span class="color-success">已关闭的BUG(共 1 条)</span></router-link>
                 </div>
             </div>
             <router-view></router-view>
@@ -34,7 +38,7 @@
         data(){
             return {
                 taskId:'11',
-
+                radio1:'1',
             }
         },
         methods: {

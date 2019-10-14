@@ -32,7 +32,12 @@
                     </el-table-column>
                     <el-table-column
                             prop="give"
-                            label="分配人"
+                            label="提交人"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="give"
+                            label="处理人"
                             width="120">
                     </el-table-column>
                     <el-table-column
