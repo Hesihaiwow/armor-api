@@ -10,8 +10,11 @@
                         style="width: 100%"
                         :row-class-name="tableRowClassName">
                     <el-table-column
-                            prop="name"
                             label="标题">
+                        <template scope="scope">
+                            <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.id }}">{{scope.row.name}}</router-link>
+
+                        </template>
                     </el-table-column>
                     <el-table-column
                             label="状态"
@@ -23,7 +26,6 @@
                     <el-table-column
                             label="类型"
                             width="100">
-
                         <template scope="scope">
                             <span>{{ typeToWords(scope.row.type) }}</span>
                         </template>
@@ -64,7 +66,7 @@
                         date: '2016-05-04 10:36:08',
                     },
                     {
-                        id:1234456,
+                        id:2234456,
                         name: 'bug标题',
                         state: 1,
                         type:1,

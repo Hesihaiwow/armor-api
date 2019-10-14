@@ -29,7 +29,7 @@ import { cancelArr } from '../lib/Http'
 import bug from '@/components/bug-system/Index.vue'
 import NewBug from '@/components/bug-system/NewBug.vue'
 import BugList from '@/components/bug-system/List.vue'
-
+import BugDetails from '@/components/bug-system/Details.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -136,6 +136,10 @@ const router = new Router({
                         {
                             path: 'list',
                             component: BugList
+                        },
+                        {
+                            path:'details',
+                            component: BugDetails
                         }
                     ]
                 },
