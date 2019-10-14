@@ -77,7 +77,28 @@
                     <div class="item">
                         <p class="name">处理历史</p>
                         <div class="content">
-
+                            <el-table
+                                    :data="HistoryData"
+                                    stripe
+                                    style="width: 100%">
+                                <el-table-column
+                                        prop="date"
+                                        label="日期"
+                                        width="180">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="name"
+                                        label="账号">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="Event"
+                                        label="事件">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="handle"
+                                        label="处理人">
+                                </el-table-column>
+                            </el-table>
                         </div>
                     </div>
 
@@ -120,6 +141,14 @@
                 bugData:{
                   is:false,
                 },
+                HistoryData:[
+                    {
+                        Event:'ddddd',
+                        name:'uuu',
+                        handle:'王小虎->666',
+                        date: '2016-05-04 10:36:08',
+                    }
+                ],
                 input:'',
                 radio1:'',
                 options: [{
