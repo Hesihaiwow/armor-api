@@ -223,6 +223,12 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         if(userLeaveMapper.updateLeave(userLeave)==0){
             throw new ZSYServiceException("更新审核信息失败");
         }
+        if (userLeave.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
+            //减少调休时间
+            user.setRestHours(user.getRestHours().subtract(userLeave.getHours()));
+            userMapper.updateSelectiveById(user);
+        }
+
         //新增调休日志
         UserRestHoursLog restHoursLog = new UserRestHoursLog();
         restHoursLog.setId(snowFlakeIDHelper.nextId());

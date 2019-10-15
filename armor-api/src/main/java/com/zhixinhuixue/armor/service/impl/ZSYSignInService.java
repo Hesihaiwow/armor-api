@@ -10,14 +10,12 @@ import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.SignInBO;
-import com.zhixinhuixue.armor.model.dto.request.QueryRestHoursLogReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.ResignInReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.SignInQueryDTO;
-import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYSignInService;
 import com.zhixinhuixue.armor.source.*;
+import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
 import com.zhixinhuixue.armor.source.enums.ZSYSignInType;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import jxl.Sheet;
@@ -44,6 +42,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2072,6 +2071,64 @@ public class ZSYSignInService implements IZSYSignInService {
             });
         }
         return new PageInfo<>(page);
+    }
+
+    /**
+     * 查看所有人调休时间
+     * @param reqDTO 条件
+     */
+    @Override
+    public List<UserRestHoursListResDTO> getUserRestHoursList(QueryUserRestHoursReqDTO reqDTO) {
+        //查询用户剩余调休
+        List<User> users = userMapper.selectUserRestHours(reqDTO.getJobRole(),reqDTO.getUserId());
+        List<UserRestHoursListResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(users)){
+            users.forEach(user -> {
+                UserRestHoursListResDTO resDTO = new UserRestHoursListResDTO();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                int year = calendar.get(Calendar.YEAR);
+                String endDate = year+"-12-31 23:59:59";
+                resDTO.setEndDate(endDate);
+                resDTO.setLeftRestHours(user.getRestHours());
+                //查询请假扣除
+                BigDecimal goneRestHours = restHoursLogMapper.selectUsedHours(user.getId());
+                resDTO.setGoneRestHours(BigDecimal.ZERO.subtract(goneRestHours));
+                resDTO.setTotalRestHours(user.getRestHours().subtract(goneRestHours));
+                resDTO.setUserId(user.getId());
+                resDTO.setUserName(user.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 手动新增调休
+     * @param reqDTO  参数
+     */
+    @Override
+    @Transactional
+    public void addUserRestHoursLog(AddUserRestHourLogReqDTO reqDTO) {
+        User user = userMapper.selectById(reqDTO.getUserId());
+        if (user == null){
+            throw new ZSYServiceException("当前用户 不存在");
+        }
+        //修改用户剩余调休
+        user.setRestHours(user.getRestHours().add(reqDTO.getRestHour()));
+        userMapper.updateSelectiveById(user);
+
+        //创建日志
+        UserRestHoursLog userRestHoursLog = new UserRestHoursLog();
+        userRestHoursLog.setId(snowFlakeIDHelper.nextId());
+        userRestHoursLog.setRecordTime(new Date());
+        userRestHoursLog.setCreateTime(new Date());
+        userRestHoursLog.setContent(reqDTO.getContent().trim());
+        userRestHoursLog.setRestHours(reqDTO.getRestHour());
+        userRestHoursLog.setType(ZSYRestHoursType.MANUAL.getValue());
+        userRestHoursLog.setUserId(user.getId());
+        userRestHoursLog.setUserName(user.getName());
+        restHoursLogMapper.insert(userRestHoursLog);
     }
 
     /**

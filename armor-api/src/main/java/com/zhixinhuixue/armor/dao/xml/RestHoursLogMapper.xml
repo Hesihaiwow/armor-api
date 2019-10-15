@@ -29,4 +29,9 @@
      ORDER BY `record_time` DESC
   </select>
 
+  <!--查询请假扣除调休时间-->
+    <select id="selectUsedHours" resultType="java.math.BigDecimal">
+      SELECT IFNULL(SUM(`rest_hours`),0) FROM `user_rest_hours_log` WHERE `user_id` = #{userId} AND `rest_hours` &lt; 0
+    </select>
+
 </mapper>

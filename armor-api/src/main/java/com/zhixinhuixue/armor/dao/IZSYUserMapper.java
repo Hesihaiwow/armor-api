@@ -8,6 +8,7 @@ import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface IZSYUserMapper {
@@ -167,5 +168,12 @@ public interface IZSYUserMapper {
      * @return
      */
     List<User> selectManagers();
+
+    /**
+     * 查询用户剩余调休
+     * @param jobRole 角色
+     * @param userId  用户id
+     */
+    List<User> selectUserRestHours(@Param("jobRole") Integer jobRole, @Param("userId") Long userId);
     // -- sch
 }

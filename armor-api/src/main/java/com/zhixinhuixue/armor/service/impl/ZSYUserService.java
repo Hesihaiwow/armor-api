@@ -642,6 +642,7 @@ public class ZSYUserService implements IZSYUserService {
      * @param reqDTO 参数
      */
     @Override
+    @Transactional
     public void updateUserRestHours(EditUserRestHoursReqDTO reqDTO) {
         User user = userMapper.selectById(reqDTO.getUserId());
         if (user == null){

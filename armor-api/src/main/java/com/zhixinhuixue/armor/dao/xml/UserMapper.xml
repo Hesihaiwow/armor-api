@@ -258,6 +258,17 @@
     SELECT * FROM `user` WHERE `user_role` IN (0,1) AND `is_delete` = 0 AND `status` = 0
     ORDER BY `create_time` ASC
   </select>
+
+  <!--查询用户剩余调休-->
+  <select id="selectUserRestHours" resultMap="BaseResultMap">
+    SELECT * FROM `user` WHERE `is_delete` = 0 AND `status` = 0
+    <if test="jobRole  != null">
+        AND `job_role`= #{jobRole}
+    </if>
+    <if test="userId">
+        AND `id`= #{userId}
+    </if>
+  </select>
   <!-- sch -->
 
 </mapper>

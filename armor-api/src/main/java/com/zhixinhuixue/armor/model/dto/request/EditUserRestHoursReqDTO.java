@@ -20,8 +20,8 @@ public class EditUserRestHoursReqDTO {
      * 调休时长
      */
     @NotNull(message = "调休时长不能为空")
-    @Min(value = 0,message = "工时不能小于0")
-    @Max(value = 99999,message = "工时不能大于{value}")
+    @Min(value = 0,message = "调休时长不能小于0")
+    @Max(value = 9999,message = "调休时长不能大于{value}")
     private BigDecimal restHours;
 
     public Long getUserId() {
