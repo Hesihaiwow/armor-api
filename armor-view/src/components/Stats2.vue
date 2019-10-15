@@ -806,6 +806,41 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
+            <el-tab-pane label="调休统计" name="restHours" v-if="admin">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="restHourReqDTO.jobRole" clearable filterable   placeholder="筛选角色">
+                        <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
+                                   :value="item.roleId"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="restHourReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchAllUsersRestHours" class="search-btn"></div>
+                <el-table :data="restHoursData" border  >
+                    <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="100">
+                        <template scope="sco">
+                            <a style="color:#20a0ff;cursor: pointer;" @click="showUserRestHoursLog2(sco.row.userId)" >{{sco.row.userName}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="totalRestHours" label="总调休" sortable align="center">
+                        <template scope="sco">
+                            <div style="white-space: pre-wrap;text-align: left">{{sco.row.totalRestHours}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="goneRestHours" label="已用调休"  sortable>
+                        <template scope="scope">
+                            <span type="text">{{scope.row.goneRestHours}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="leftRestHours" label="剩余调休" sortable></el-table-column>
+                    <el-table-column prop="endDate" label="截止日期"  width="200"></el-table-column>
+                </el-table>
+            </el-tab-pane>
         </el-tabs>
         <el-dialog
                 title="创建Bug处理结果"
@@ -1313,8 +1348,8 @@
             <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">
                 <span style="margin-left: 0px">截止上月底调休时长: </span>
                 <el-input style="width:100px;margin-left: 22px" v-model="restHours" :maxlength="5" type="number"></el-input>
-                <span style="margin-left: 0px;cursor: pointer;text-decoration: underline"
-                      @click="showUserRestHoursLog">查看详情</span>
+                <!--<span style="margin-left: 0px;cursor: pointer;text-decoration: underline"-->
+                      <!--@click="showUserRestHoursLog">查看详情</span>-->
             </div>
             <span slot="footer" class="dialog-footer">
                 <!--<el-button type="primary" @click="fetchUserRestHours">查询</el-button>-->
@@ -1333,7 +1368,7 @@
                 <el-table-column prop="userName" label="用户" align="center" width="100"></el-table-column>
                 <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
                 <el-table-column prop="content" label="事由" align="center"></el-table-column>
-                <el-table-column prop="recordTime" label="记录日期"  width="150"  align="center">
+                <el-table-column prop="recordTime" label="记录日期"  width="200"  align="center">
                     <template scope="scope">
                         <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
                     </template>
@@ -1348,6 +1383,52 @@
                         :total="userRestHoursLogPage.total">
                 </el-pagination>
             </div>
+        </el-dialog>
+        <el-dialog title="用户调休使用日志" :visible.sync="userRestHoursDetailVisible2" class="rest-hour-log"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="small"
+                   width="800px">
+            <div>
+                <el-button type="primary" @click="addRestHoursLog">手动新增调休记录</el-button>
+            </div>
+            <el-table :data="userRestHoursLogData2" border>
+                <el-table-column type="index" label="序号" align="center" width="80">
+                    <template scope="scope">
+                        {{(userRestHoursLogPage2.pageNum-1)*10 + scope.$index + 1}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="userName" label="用户" align="center" width="100"></el-table-column>
+                <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
+                <el-table-column prop="content" label="事由" align="center"></el-table-column>
+                <el-table-column prop="recordTime" label="记录日期"  width="200"  align="center">
+                    <template scope="scope">
+                        <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination
+                        @current-change="userRestHoursLogHandleCurrentChange2"
+                        :current-page.sync="userRestHoursLogPage2.pageNum"
+                        :page-size="userRestHoursLogPage2.pageSize"
+                        :layout="userRestHoursLogsPageLayout2"
+                        :total="userRestHoursLogPage2.total">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <el-dialog  title="新增个人调休记录"  size="tiny"  :close-on-click-modal="false"
+                    :close-on-press-escape="false" :visible.sync="editRestHoursVisible">
+            <el-form :model="userRestHoursLogForm"  ref="userRestHoursLogForm" label-width="80px">
+                <el-form-item label="调休加减" prop="restHour">
+                    <el-input v-model="userRestHoursLogForm.restHour" type="number" :maxlength="5"></el-input>
+                </el-form-item>
+                <el-form-item label="调休备注" prop="restHour">
+                    <el-input type="textarea" v-model="userRestHoursLogForm.content" :rows="3"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" :loading="restHourLoading" @click="saveAddRestHoursLog">立即创建</el-button>
+                <el-button @click="cancelAddRestHoursLog" type="error">取 消</el-button>
+            </span>
         </el-dialog>
     </div>
 </template>
@@ -1819,6 +1900,28 @@
                     pageSize: 10,
                     total: 0
                 },
+                restHourReqDTO:{
+                    jobRole:'',
+                    userId:''
+                },
+                restHoursData:[],
+                userRestHoursLogData2:[],
+                userRestHoursDetailVisible2: false,
+                userRestHoursLogPage2:{
+                    pageNum: 1,
+                    pageSize: 10,
+                    total: 0
+                },
+                userRestHoursLogReqDTO2:{
+                    userId:'',
+                    pageNum:1
+                },
+                userRestHoursLogForm:{
+                    restHour:0,
+                    content:'',
+                    userId:null
+                },
+                editRestHoursVisible: false,
                 // -- sch
             }
         },
@@ -1907,6 +2010,12 @@
                 }
                 return 'total, pager'
             },
+            userRestHoursLogsPageLayout2() {
+                if (this.userRestHoursLogPage2.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
         },
         filters: {
             formatDate: function (value) {
@@ -1915,7 +2024,7 @@
             },
             formatDate1: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY/MM/DD');
+                return moment(value).format('YYYY年MM月DD日');
             },
             formatDate2: function (value) {
                 if (!value) return '';
@@ -1970,6 +2079,8 @@
                   this.fetchSignInData();
               } else if (this.activeName === 'eWork'){
                   this.getExtraWorkStats();
+              }else if (this.activeName === 'restHours'){
+                  this.fetchAllUsersRestHours();
               }
             },
             getStats(currentPage){
@@ -4026,11 +4137,108 @@
                     });
                 }
             },
-
+            showUserRestHoursLog2(userId){
+                if (userId != null && userId !== undefined && userId !== '') {
+                    this.userRestHoursLogReqDTO2.userId = userId;
+                    Http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO2,res=>{
+                        this.userRestHoursLogData2 = res.data.list;
+                        this.userRestHoursLogPage2.total = res.data.total;
+                        this.userRestHoursDetailVisible2 = true;
+                    })
+                }else {
+                    this.$message({
+                        showClose: true,
+                        message: '请选择用户',
+                        type: 'warning'
+                    });
+                }
+            },
             userRestHoursLogHandleCurrentChange(currentPage){
                 this.userRestHoursLogReqDTO.pageNum = currentPage;
                 this.showUserRestHoursLog();
             },
+            userRestHoursLogHandleCurrentChange2(currentPage){
+                this.userRestHoursLogReqDTO2.pageNum = currentPage;
+                this.showUserRestHoursLog2(this.userRestHoursLogReqDTO2.userId);
+            },
+
+            //查看用户调休
+            fetchAllUsersRestHours(){
+                Http.zsyPostHttp('sign-in/rest-hours/list',this.restHourReqDTO,res=>{
+                    this.restHoursData = res.data;
+                })
+            },
+            //手动 新增调休记录
+            addRestHoursLog(){
+                this.userRestHoursDetailVisible2 = false;
+                this.editRestHoursVisible = true;
+            },
+            //保存修改调休日志
+            saveAddRestHoursLog(){
+                this.restHourLoading = true;
+                this.userRestHoursLogForm.userId = this.userRestHoursLogReqDTO2.userId;
+                if (this.userRestHoursLogForm.userId == null || this.userRestHoursLogForm.userId === undefined
+                    || this.userRestHoursLogForm.userId === ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请选择用户',
+                        type: 'warning'
+                    });
+                    this.restHourLoading = false;
+                    return false;
+                }
+                if (this.userRestHoursLogForm.restHour == null || this.userRestHoursLogForm.restHour === undefined
+                || this.userRestHoursLogForm.restHour === ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请填写调休时长',
+                        type: 'warning'
+                    });
+                    this.restHourLoading = false;
+                    return false;
+                }
+                if (this.userRestHoursLogForm.restHour > 9999 || this.userRestHoursLogForm.restHour < 1) {
+                    this.$message({showClose: true, message: '调休时长正确值应为1~9999', type: 'warning'});
+                    this.restHourLoading = false;
+                    return false;
+                }
+                if (this.userRestHoursLogForm.content == null || this.userRestHoursLogForm.content === undefined
+                || this.userRestHoursLogForm.content.trim() === ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请填写事由',
+                        type: 'warning'
+                    });
+                    this.restHourLoading = false;
+                    return false;
+                }
+                Http.zsyPostHttp('/sign-in/rest-hours-log/add',this.userRestHoursLogForm,res=>{
+                    if (res.errMsg == "执行成功"){
+                        this.$message({
+                            showClose: true,
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        this.restHourLoading = false;
+                        this.editRestHoursVisible = false;
+                        this.fetchAllUsersRestHours()
+                    }else {
+                        this.restHourLoading = false;
+                        this.editRestHoursVisible = false;
+                    }
+                },err=>{
+                    this.restHourLoading = false;
+                },error=>{
+                    this.restHourLoading = false;
+                })
+            },
+            //取消添加
+            cancelAddRestHoursLog(){
+                this.userRestHoursLogForm.userId = null;
+                this.userRestHoursLogForm.restHour = 0;
+                this.userRestHoursLogForm.content = '';
+                this.editRestHoursVisible = false;
+            }
             // -- sch
         }
     }
