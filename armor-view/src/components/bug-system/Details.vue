@@ -13,63 +13,63 @@
                     <div class="item">
                         <p class="name">标题</p>
                         <div class="content">
-                            <p class="text" v-show="!bugData.is">标题</p>
-                            <el-input v-show="bugData.is" v-model="input" placeholder="请输入内容"></el-input>
+                            <p class="text" v-show="!bugData.isCreater===1">{{bugData.title}}</p>
+                            <el-input v-show="bugData.isCreater===1" v-model="bugData.title" placeholder="请输入内容"></el-input>
                         </div>
                     </div>
                     <div class="item">
                         <p class="name">创建时间</p>
                         <div class="content">
-                            <p class="text">创建时间</p>
+                            <p class="text">{{bugData.createTime | formatDate }}</p>
                         </div>
                     </div>
                     <div class="item">
                         <p class="name">出现频率</p>
-                        <div class="content" v-show="!bugData.is">
-                            <p class="text">{{frequencyToWords(1)}}</p>
+                        <div class="content" v-show="!bugData.isCreater===1">
+                            <p class="text">{{frequencyToWords(bugData.frequency)}}</p>
                         </div>
-                        <div class="content" v-show="bugData.is">
-                            <el-radio v-model="radio1" label="1" border>固定重现</el-radio>
-                            <el-radio v-model="radio1" label="2" border>测试随机</el-radio>
-                            <el-radio v-model="radio1" label="3" border>无法重现</el-radio>
+                        <div class="content" v-show="bugData.isCreater===1">
+                            <el-radio v-model="bugData.frequency" label=1 border>固定重现</el-radio>
+                            <el-radio v-model="bugData.frequency" label=2 border>测试随机</el-radio>
+                            <el-radio v-model="bugData.frequency" label=3 border>无法重现</el-radio>
                         </div>
                     </div>
                     <div class="item">
                         <p class="name">类型</p>
-                        <div class="content" v-show="!bugData.is">
-                            <p class="text">{{typeToWords(1)}}</p>
+                        <div class="content" v-show="!bugData.isCreater===1">
+                            <p class="text">{{typeToWords(bugData.status)}}</p>
                         </div>
-                        <div class="content" v-show="bugData.is">
-                            <el-radio v-model="radio1" label="1" border>严重错误</el-radio>
-                            <el-radio v-model="radio1" label="2" border>主要错误</el-radio>
-                            <el-radio v-model="radio1" label="3" border>一般错误</el-radio>
-                            <el-radio v-model="radio1" label="4" border>建议</el-radio>
+                        <div class="content" v-show="bugData.isCreater===1">
+                            <el-radio v-model="upData.severity" label=4 border>严重错误</el-radio>
+                            <el-radio v-model="upData.severity" label=3 border>主要错误</el-radio>
+                            <el-radio v-model="upData.severity" label=2 border>一般错误</el-radio>
+                            <el-radio v-model="upData.severity" label=1 border>建议</el-radio>
                         </div>
                     </div>
                     <div class="item">
                         <p class="name">状态</p>
                         <div class="content">
-                            <el-radio v-model="radio1" label="1" border>已分配</el-radio>
-                            <el-radio v-model="radio1" label="2" border>已解决</el-radio>
-                            <el-radio v-model="radio1" label="3" border>已关闭</el-radio>
-                            <el-radio v-model="radio1" label="4" border>打回</el-radio>
+                            <el-radio v-model="upData.status" label=1 border>已分配</el-radio>
+                            <el-radio v-model="upData.status" label=2 border>已解决</el-radio>
+                            <el-radio v-model="upData.status" label=3 border>已关闭</el-radio>
+                            <el-radio v-model="upData.status" label=4 border>打回</el-radio>
                         </div>
                     </div>
                     <div class="item">
                         <p class="name">提交人</p>
                         <div class="content">
-                            <p class="text">提交人</p>
+                            <p class="text">{{bugData.createName}}</p>
                         </div>
                     </div>
                     <div class="item">
                         <p class="name">处理人</p>
                         <div class="content">
-                            <el-select  v-model="value" filterable placeholder="请选择">
+                            <el-select  v-model="upData.handlerId" filterable placeholder="请选择">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
+                                        v-for="item in handlerEr"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -106,8 +106,8 @@
                 <div class="right">
                     <div class="text-box">
                         <p class="name">描述与截图</p>
-                        <div v-show="!bugData.is" class="text">描述与截图</div>
-                        <editor v-show="bugData.is" />
+                        <div v-show="!bugData.isCreater===1" class="text">描述与截图</div>
+                        <editor v-show="bugData.isCreater===1" />
                     </div>
                     <div class="text-box">
                         <p class="name">张三备注</p>
@@ -132,15 +132,26 @@
 </template>
 
 <script>
+    import http from '../../lib/Http'
     import editor from "./Editor.vue";
+    import moment from 'moment';
+    moment.locale('zh-cn');
     export default {
         name: "Details",
         components: { editor },
         data(){
             return {
-                bugData:{
-                  is:false,
+                upData:{
+                    tbId:0,
+                    handlerId:0,
+                    frequency:1,
+                    severity:1,
+                    status:1,
                 },
+                bugData:{
+                    status:'1'
+                },
+                handlerEr: [],
                 HistoryData:[
                     {
                         Event:'ddddd',
@@ -151,27 +162,32 @@
                 ],
                 input:'',
                 radio1:'',
-                options: [{
-                    value: '选项1',
-                    label: '黄金糕'
-                }, {
-                    value: '选项2',
-                    label: '双皮奶'
-                }, {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                }, {
-                    value: '选项4',
-                    label: '龙须面'
-                }, {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }],
                 value: '',
                 content:'',
             }
         },
+        created() {
+            this.getDefaultDatas();
+        },
+        filters:{
+            formatDate: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY/MM/DD HH:mm:ss');
+            },
+        },
         methods:{
+            getDefaultDatas(){
+                this.upData.tbId = this.$route.query.id;
+                this.upData.taskId = this.$route.query.taskId;
+                http.zsyGetHttp(`/task-bug/detail/${this.upData.tbId}`, {}, (res) => {
+                    this.bugData = res.data;
+                    this.upData.handlerId = res.data.handlerId;
+                });
+                http.zsyGetHttp(`/task-bug/users/${this.upData.taskId}`, {}, (res) => {
+                    this.handlerEr = res.data;
+                })
+
+            },
             goBack(){
                 this.$router.go(-1)
             },
@@ -255,7 +271,7 @@
                     font-weight: 700;
                 }
                 .text-box{
-                    margin-top: 20px;
+                    margin-bottom: 20px;
                     .text{
                         min-height: 36px;
                         padding: 10px;

@@ -6,80 +6,87 @@
             </div>
             <div class="table-box">
                 <el-table
-                        :data="tableData"
+                        :data="tableData.list"
                         style="width: 100%"
                         :row-class-name="tableRowClassName">
                     <el-table-column
                             label="标题">
                         <template scope="scope">
-                            <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.id }}">{{scope.row.name}}</router-link>
+                            <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId,taskId:upData.taskId }}">{{scope.row.title}}</router-link>
 
                         </template>
                     </el-table-column>
                     <el-table-column
+                            prop="statusName"
                             label="状态"
                             width="80">
-                        <template scope="scope">
-                            <span>{{ stateToWords(scope.row.state) }}</span>
-                        </template>
                     </el-table-column>
                     <el-table-column
                             label="类型"
                             width="100">
                         <template scope="scope">
-                            <span>{{ typeToWords(scope.row.type) }}</span>
+                            <span>{{ typeToWords(scope.row.status) }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column
-                            prop="give"
+                            prop="createName"
                             label="提交人"
                             width="120">
                     </el-table-column>
                     <el-table-column
-                            prop="give"
+                            prop="handlerName"
                             label="处理人"
                             width="120">
                     </el-table-column>
                     <el-table-column
-                            prop="date"
                             label="时间"
                             width="180">
+                        <template scope="scope">
+                            <span>{{ scope.row.createTime | formatDate }}</span>
+                        </template>
                     </el-table-column>
                 </el-table>
             </div>
         </el-card>
+        <div class="pagination-box">
+            <el-pagination
+                    background
+                    @current-change="handleCurrentChange"
+                    layout="prev, pager, next"
+                    :total="tableData.total"
+                    :page-size="tableData.pageSize">
+            </el-pagination>
+        </div>
     </div>
 </template>
 
 <script>
+    import http from '../../lib/Http'
+    import moment from 'moment';
+    moment.locale('zh-cn');
     export default {
         name: "List",
         data(){
             return {
+                upData:{
+                    taskId:'',
+                    selectAll:0,
+                    pageNum: 1,
+                    status: 1
+                },
                 listName:'所有的BUG',
-                getData:{
-                    id:'222',
-                    listType:1,
-            },
-                tableData:[
-                    {
-                        id:1234456,
-                        name: 'bug标题',
-                        state: 1,
-                        type:1,
-                        give:'王小虎',
-                        date: '2016-05-04 10:36:08',
-                    },
-                    {
-                        id:2234456,
-                        name: 'bug标题',
-                        state: 1,
-                        type:1,
-                        give:'王小虎',
-                        date: '2016-05-04 10:36:08',
-                    },
-                ]
+                tableData:{
+                    total:0,
+                    list:[],
+                    pageSize:10,
+                }
             }
+        },
+        filters:{
+            formatDate: function (value) {
+                if (!value) return '';
+                return moment(value).format('YYYY/MM/DD HH:mm:ss');
+            },
         },
         watch:{
             $route(to,from){
@@ -91,9 +98,10 @@
         },
         methods:{
             getDefaultDatas(){
-                this.getData.id = this.$route.query.id;
-                this.getData.listType = this.$route.query.listType;
-                switch (this.getData.listType) {
+                this.upData.taskId = this.$route.query.id;
+                this.upData.status = this.$route.query.listType||1;
+                this.upData.selectAll = this.$route.query.selectAll||0;
+                switch (this.upData.status) {
                     case 0:
                         this.listName = '所有的BUG'
                         break
@@ -104,11 +112,20 @@
                         this.listName = '待确认的BUG'
                         break
                     case 3:
-                        this.listName = '已解决的BUG'
+                        this.listName = '已关闭的BUG'
                         break
-                    default:
-                        this.listName = '所有的BUG'
                 }
+                this.getList();
+            },
+            getList(){
+                http.zsyPostHttp('/task-bug/page', this.upData, (res) => {
+                    this.tableData = res.data;
+                })
+            },
+            // 试卷列表分页
+            handleCurrentChange (val) {
+                this.upData.pageNum = val;
+                this.getList();
             },
             tableRowClassName({row, rowIndex}) {
                 if (rowIndex === 1) {
@@ -146,5 +163,8 @@
 </script>
 
 <style scoped>
-
+.pagination-box{
+    margin-top: 30px;
+    text-align: center;
+}
 </style>
