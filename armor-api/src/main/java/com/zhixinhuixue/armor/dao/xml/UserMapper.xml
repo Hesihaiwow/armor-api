@@ -249,6 +249,13 @@
     SELECT * FROM `user` WHERE `user_role` IN (0,1) AND `is_delete` = 0 AND `status` = 0
     ORDER BY `create_time` ASC
   </select>
-  <!-- sch -->
+
+  <!--根据任务id,查询相关人员-->
+    <select id="selectTaskUsers" resultMap="BaseResultMap">
+       SELECT u.* FROM `task_user` tu
+       LEFT JOIN `user` u ON u.`id` = tu.`user_id`
+       WHERE tu.`task_id` = #{taskId}
+    </select>
+    <!-- sch -->
 
 </mapper>

@@ -167,5 +167,12 @@ public interface IZSYUserMapper {
      * @return
      */
     List<User> selectManagers();
+
+    /**
+     * 根据任务id,查询相关人员
+     * @author sch
+     * @param taskId 任务id
+     */
+    List<User> selectTaskUsers(@Param("taskId") Long taskId);
     // -- sch
 }
