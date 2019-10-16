@@ -829,16 +829,16 @@
                     </el-table-column>
                     <el-table-column prop="totalRestHours" label="总调休" sortable align="center">
                         <template scope="sco">
-                            <div style="white-space: pre-wrap;text-align: left">{{sco.row.totalRestHours}}</div>
+                            <div style="white-space: pre-wrap;text-align: center">{{sco.row.totalRestHours}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="goneRestHours" label="已用调休"  sortable>
+                    <el-table-column prop="goneRestHours" label="已用调休"  sortable  align="center">
                         <template scope="scope">
                             <span type="text">{{scope.row.goneRestHours}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="leftRestHours" label="剩余调休" sortable></el-table-column>
-                    <el-table-column prop="endDate" label="截止日期"  width="200"></el-table-column>
+                    <el-table-column prop="leftRestHours" label="剩余调休" sortable align="center"></el-table-column>
+                    <el-table-column prop="endDate" label="截止日期"  width="200" align="center"></el-table-column>
                 </el-table>
             </el-tab-pane>
         </el-tabs>
@@ -1416,7 +1416,8 @@
             </div>
         </el-dialog>
         <el-dialog  title="新增个人调休记录"  size="tiny"  :close-on-click-modal="false"
-                    :close-on-press-escape="false" :visible.sync="editRestHoursVisible">
+                    :close-on-press-escape="false" :visible.sync="editRestHoursVisible"
+        @close="cancelAddRestHoursLog">
             <el-form :model="userRestHoursLogForm"  ref="userRestHoursLogForm" label-width="80px">
                 <el-form-item label="调休加减" prop="restHour">
                     <el-input v-model="userRestHoursLogForm.restHour" type="number" :maxlength="5"></el-input>
@@ -4197,8 +4198,8 @@
                     this.restHourLoading = false;
                     return false;
                 }
-                if (this.userRestHoursLogForm.restHour > 9999 || this.userRestHoursLogForm.restHour < 1) {
-                    this.$message({showClose: true, message: '调休时长正确值应为1~9999', type: 'warning'});
+                if (this.userRestHoursLogForm.restHour > 999 || this.userRestHoursLogForm.restHour < -999) {
+                    this.$message({showClose: true, message: '调休时长正确值应为-999~999', type: 'warning'});
                     this.restHourLoading = false;
                     return false;
                 }
@@ -4227,6 +4228,11 @@
                         this.editRestHoursVisible = false;
                     }
                 },err=>{
+                    this.$message({
+                        showClose: true,
+                        message: err.errMsg,
+                        type: 'error'
+                    });
                     this.restHourLoading = false;
                 },error=>{
                     this.restHourLoading = false;
