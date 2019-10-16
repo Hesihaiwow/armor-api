@@ -112,8 +112,8 @@
                         <editor v-show="bugData.isCreater===1" :content="bugData.description" v-on:change="getEditordescription"  />
                     </div>
                     <div class="text-box" v-for="item in bugData.remarkResDTOS">
-                        <p class="name">{{item.createName}}    {{item.createTime | formatDate}}</p>
-                        <div class="text">{{item.remark}}</div>
+                        <p class="name">{{item.createName}}  {{item.createTime | formatDate}}</p>
+                        <div class="text" v-html="item.remark"></div>
                     </div>
                     <div class="text-box">
                         <p class="name">添加备注</p>
