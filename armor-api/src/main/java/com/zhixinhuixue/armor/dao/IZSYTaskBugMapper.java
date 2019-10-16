@@ -48,5 +48,5 @@ public interface IZSYTaskBugMapper {
      * @param status 状态
      * @param userId 用户id
      */
-    Integer selectTaskBugNum(@Param("status")Integer status, @Param("userId")Long userId);
+    Integer selectTaskBugNum(@Param("status")Integer status, @Param("userId")Long userId, @Param("taskId")Long taskId);
 }

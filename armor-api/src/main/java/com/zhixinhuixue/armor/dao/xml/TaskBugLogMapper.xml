@@ -20,7 +20,7 @@
 
     <!--根据任务bugId查询日志-->
     <select id="selectLogListByTbId" resultMap="BaseResultMap">
-        SELECT * FROM `task_bug_log` WHERE `tb_id` = #{tbId}
+        SELECT * FROM `task_bug_log` WHERE `tb_id` = #{tbId} ORDER BY `create_time` DESC
     </select>
 
 

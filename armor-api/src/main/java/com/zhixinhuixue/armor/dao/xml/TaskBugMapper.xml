@@ -94,8 +94,9 @@
             </otherwise>
         </choose>
         <if test="userId != null">
-            AND tb.`create_by` = #{userId} OR tb.`handler_id` = #{userId}
+            AND (tb.`create_by` = #{userId} OR tb.`handler_id` = #{userId})
         </if>
+        ORDER BY tb.`create_time` DESC
     </select>
 
     <!--根据主键查询-->
@@ -116,6 +117,9 @@
     <select id="selectTaskBugNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM `task_bug`
         WHERE `is_delete` = 0
+        <if test="taskId!= null">
+            AND `task_id` = #{taskId}
+        </if>
         <choose>
             <when test="status != null and status == 2">
                 AND `status` IN (1,4)
@@ -131,7 +135,7 @@
             </otherwise>
         </choose>
         <if test="userId != null">
-            AND `create_by` = #{userId} OR `handler_id` = #{userId}
+            AND (`create_by` = #{userId} OR `handler_id` = #{userId})
         </if>
     </select>
 

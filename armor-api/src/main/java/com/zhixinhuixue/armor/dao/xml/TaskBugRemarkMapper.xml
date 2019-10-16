@@ -26,6 +26,7 @@
         SELECT tbr.*,u.name create_name FROM `task_bug_remark` tbr
         LEFT JOIN `user`  u ON u.`id` = tbr.`create_by`
         WHERE tbr.`tb_id` = #{tbId}
+        ORDER BY tbr.`create_time` DESC
     </select>
 
 

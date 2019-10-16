@@ -277,21 +277,21 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         TaskBugNumResDTO resDTO = new TaskBugNumResDTO();
         Long userId = ZSYTokenRequestContext.get().getUserId();
         Integer selectAll = reqDTO.getSelectAll();
-
+        Long taskId = reqDTO.getTaskId();
         Integer totalNum = 0;
         Integer notSolvedNum = 0;
         Integer solvedNum = 0;
         Integer closedNum = 0;
         if (selectAll == 0){
-            totalNum = taskBugMapper.selectTaskBugNum(1,userId);
-            notSolvedNum = taskBugMapper.selectTaskBugNum(2,userId);
-            solvedNum = taskBugMapper.selectTaskBugNum(3,userId);
-            closedNum = taskBugMapper.selectTaskBugNum(4,userId);
+            totalNum = taskBugMapper.selectTaskBugNum(1,userId,taskId);
+            notSolvedNum = taskBugMapper.selectTaskBugNum(2,userId,taskId);
+            solvedNum = taskBugMapper.selectTaskBugNum(3,userId,taskId);
+            closedNum = taskBugMapper.selectTaskBugNum(4,userId,taskId);
         }else {
-            totalNum = taskBugMapper.selectTaskBugNum(1,null);
-            notSolvedNum = taskBugMapper.selectTaskBugNum(2,null);
-            solvedNum = taskBugMapper.selectTaskBugNum(3,null);
-            closedNum = taskBugMapper.selectTaskBugNum(4,null);
+            totalNum = taskBugMapper.selectTaskBugNum(1,null,taskId);
+            notSolvedNum = taskBugMapper.selectTaskBugNum(2,null,taskId);
+            solvedNum = taskBugMapper.selectTaskBugNum(3,null,taskId);
+            closedNum = taskBugMapper.selectTaskBugNum(4,null,taskId);
         }
         resDTO.setTotalNum(totalNum);
         resDTO.setClosedNum(closedNum);
