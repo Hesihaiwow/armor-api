@@ -13,7 +13,7 @@
                     <div class="item">
                         <p class="name">标题</p>
                         <div class="content">
-                            <p class="text" v-show="!bugData.isCreater===1">{{bugData.title}}</p>
+                            <p class="text" v-show="bugData.isCreater===0">{{bugData.title}}</p>
                             <el-input v-show="bugData.isCreater===1" v-model="upData.title" placeholder="请输入内容"></el-input>
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                     </div>
                     <div class="item">
                         <p class="name">出现频率</p>
-                        <div class="content" v-show="!bugData.isCreater===1">
+                        <div class="content" v-show="bugData.isCreater===0">
                             <p class="text">{{frequencyToWords(bugData.frequency)}}</p>
                         </div>
                         <div class="content" v-show="bugData.isCreater===1">
@@ -36,7 +36,7 @@
                     </div>
                     <div class="item">
                         <p class="name">类型</p>
-                        <div class="content" v-show="!bugData.isCreater===1">
+                        <div class="content" v-show="bugData.isCreater===0">
                             <p class="text">{{typeToWords(bugData.status)}}</p>
                         </div>
                         <div class="content" v-show="bugData.isCreater===1">
@@ -108,7 +108,7 @@
                 <div class="right">
                     <div class="text-box">
                         <p class="name">描述与截图</p>
-                        <div v-show="!bugData.isCreater===1" class="text">描述与截图</div>
+                        <div v-show="bugData.isCreater===0" class="text" v-html="bugData.description"></div>
                         <editor v-show="bugData.isCreater===1" :content="bugData.description" v-on:change="getEditordescription"  />
                     </div>
                     <div class="text-box" v-for="item in bugData.remarkResDTOS">
