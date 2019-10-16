@@ -15,16 +15,16 @@
         <div class="con">
             <div class="bug-msg">
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { id: upData.taskId,listType:0,selectAll:upData.selectAll }}" ><span class="color-info">所有的BUG(共 {{num.totalNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:0,selectAll:upData.selectAll }}" ><span class="color-info">所有的BUG(共 {{num.totalNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { id: upData.taskId,listType:1,selectAll:upData.selectAll }}" ><span class="color-danger">待处理的BUG(共 {{num.notSolvedNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:1,selectAll:upData.selectAll }}" ><span class="color-danger">待处理的BUG(共 {{num.notSolvedNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { id: upData.taskId,listType:2,selectAll:upData.selectAll }}" ><span class="color-warning">待确认的BUG(共 {{num.solvedNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:2,selectAll:upData.selectAll }}" ><span class="color-warning">待确认的BUG(共 {{num.solvedNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { id: upData.taskId,listType:3,selectAll:upData.selectAll }}" ><span class="color-success">已关闭的BUG(共 {{num.closedNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:3,selectAll:upData.selectAll }}" ><span class="color-success">已关闭的BUG(共 {{num.closedNum}} 条)</span></router-link>
                 </div>
             </div>
             <router-view></router-view>
@@ -56,7 +56,7 @@
         },
         methods: {
             getDefaultDatas(){
-                this.upData.taskId = this.$route.query.id;
+                this.upData.taskId = this.$route.query.taskId;
 
                 http.zsyPostHttp('/task-bug/num', this.upData, (res) => {
                     this.num = res.data;

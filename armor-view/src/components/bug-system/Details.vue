@@ -14,7 +14,7 @@
                         <p class="name">标题</p>
                         <div class="content">
                             <p class="text" v-show="!bugData.isCreater===1">{{bugData.title}}</p>
-                            <el-input v-show="bugData.isCreater===1" v-model="bugData.title" placeholder="请输入内容"></el-input>
+                            <el-input v-show="bugData.isCreater===1" v-model="upData.title" placeholder="请输入内容"></el-input>
                         </div>
                     </div>
                     <div class="item">
@@ -29,9 +29,9 @@
                             <p class="text">{{frequencyToWords(bugData.frequency)}}</p>
                         </div>
                         <div class="content" v-show="bugData.isCreater===1">
-                            <el-radio v-model="bugData.frequency" label=1 border>固定重现</el-radio>
-                            <el-radio v-model="bugData.frequency" label=2 border>测试随机</el-radio>
-                            <el-radio v-model="bugData.frequency" label=3 border>无法重现</el-radio>
+                            <el-radio v-model="bugData.frequency" :label="1" border>固定重现</el-radio>
+                            <el-radio v-model="bugData.frequency" :label="2" border>测试随机</el-radio>
+                            <el-radio v-model="bugData.frequency" :label="3" border>无法重现</el-radio>
                         </div>
                     </div>
                     <div class="item">
@@ -40,19 +40,19 @@
                             <p class="text">{{typeToWords(bugData.status)}}</p>
                         </div>
                         <div class="content" v-show="bugData.isCreater===1">
-                            <el-radio v-model="upData.severity" label=4 border>严重错误</el-radio>
-                            <el-radio v-model="upData.severity" label=3 border>主要错误</el-radio>
-                            <el-radio v-model="upData.severity" label=2 border>一般错误</el-radio>
-                            <el-radio v-model="upData.severity" label=1 border>建议</el-radio>
+                            <el-radio v-model="upData.severity" :label="4" border>严重错误</el-radio>
+                            <el-radio v-model="upData.severity" :label="3" border>主要错误</el-radio>
+                            <el-radio v-model="upData.severity" :label="2" border>一般错误</el-radio>
+                            <el-radio v-model="upData.severity" :label="1" border>建议</el-radio>
                         </div>
                     </div>
                     <div class="item">
                         <p class="name">状态</p>
                         <div class="content">
-                            <el-radio v-model="upData.status" label=1 border>已分配</el-radio>
-                            <el-radio v-model="upData.status" label=2 border>已解决</el-radio>
-                            <el-radio v-model="upData.status" label=3 border>已关闭</el-radio>
-                            <el-radio v-model="upData.status" label=4 border>打回</el-radio>
+                            <el-radio v-model="upData.status" :label="1" border>已分配</el-radio>
+                            <el-radio v-model="upData.status" :label="2" border>已解决</el-radio>
+                            <el-radio v-model="upData.status" :label="3" border>已关闭</el-radio>
+                            <el-radio v-model="upData.status" :label="4" border>打回</el-radio>
                         </div>
                     </div>
                     <div class="item">
@@ -78,26 +78,28 @@
                         <p class="name">处理历史</p>
                         <div class="content">
                             <el-table
-                                    :data="HistoryData"
+                                    :data="bugData.logResDTOList"
                                     stripe
                                     style="width: 100%">
                                 <el-table-column
-                                        prop="date"
                                         label="日期"
                                         width="180">
+                                    <template scope="scope">
+                                        <span>{{ scope.row.createTime | formatDate }}</span>
+                                    </template>
                                 </el-table-column>
+                                <!--<el-table-column-->
+                                        <!--prop="name"-->
+                                        <!--label="账号">-->
+                                <!--</el-table-column>-->
                                 <el-table-column
-                                        prop="name"
-                                        label="账号">
-                                </el-table-column>
-                                <el-table-column
-                                        prop="Event"
+                                        prop="content"
                                         label="事件">
                                 </el-table-column>
-                                <el-table-column
-                                        prop="handle"
-                                        label="处理人">
-                                </el-table-column>
+                                <!--<el-table-column-->
+                                        <!--prop="handle"-->
+                                        <!--label="处理人">-->
+                                <!--</el-table-column>-->
                             </el-table>
                         </div>
                     </div>
@@ -107,24 +109,20 @@
                     <div class="text-box">
                         <p class="name">描述与截图</p>
                         <div v-show="!bugData.isCreater===1" class="text">描述与截图</div>
-                        <editor v-show="bugData.isCreater===1" />
+                        <editor v-show="bugData.isCreater===1" :content="bugData.description" v-on:change="getEditordescription"  />
                     </div>
-                    <div class="text-box">
-                        <p class="name">张三备注</p>
-                        <div class="text">55555555</div>
-                    </div>
-                    <div class="text-box">
-                        <p class="name">李四备注</p>
-                        <div class="text">6666666666</div>
+                    <div class="text-box" v-for="item in bugData.remarkResDTOS">
+                        <p class="name">{{item.createName}}    {{item.createTime | formatDate}}</p>
+                        <div class="text">{{item.remark}}</div>
                     </div>
                     <div class="text-box">
                         <p class="name">添加备注</p>
-                        <editor />
+                        <editor :content="upData.remark" v-on:change="getEditorremark" />
                     </div>
                 </div>
             </div>
             <div class="btn-box">
-                <el-button type="primary">提交</el-button>
+                <el-button type="primary" @click="save">提交</el-button>
                 <el-button @click="goBack">取消</el-button>
 
             </div>
@@ -147,9 +145,11 @@
                     frequency:1,
                     severity:1,
                     status:1,
+                    remark:''
                 },
                 bugData:{
-                    status:'1'
+                    status:'1',
+                    description:''
                 },
                 handlerEr: [],
                 HistoryData:[
@@ -182,6 +182,10 @@
                 http.zsyGetHttp(`/task-bug/detail/${this.upData.tbId}`, {}, (res) => {
                     this.bugData = res.data;
                     this.upData.handlerId = res.data.handlerId;
+                    this.upData.frequency = res.data.frequency;
+                    this.upData.severity = res.data.severity;
+                    this.upData.status = res.data.status;
+                    this.upData.title =  res.data.title;
                 });
                 http.zsyGetHttp(`/task-bug/users/${this.upData.taskId}`, {}, (res) => {
                     this.handlerEr = res.data;
@@ -211,6 +215,22 @@
                     return '建议';
                 }
             },
+            getEditordescription(val){
+                this.upData.description = val
+            },
+            getEditorremark(val){
+                this.upData.remark = val
+            },
+            save(){
+
+                http.zsyPutHttp(`/task-bug/edit`, this.upData, (res) => {
+                    this.$message({
+                        message: '修改成功',
+                        type: 'success'
+                    });
+                    this.goBack();
+                })
+            }
 
         }
     }

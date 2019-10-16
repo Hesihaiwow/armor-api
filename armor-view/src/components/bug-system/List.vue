@@ -98,7 +98,7 @@
         },
         methods:{
             getDefaultDatas(){
-                this.upData.taskId = this.$route.query.id;
+                this.upData.taskId = this.$route.query.taskId;
                 this.upData.status = this.$route.query.listType||1;
                 this.upData.selectAll = this.$route.query.selectAll||0;
                 switch (this.upData.status) {

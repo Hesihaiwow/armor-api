@@ -87,7 +87,7 @@
         },
         methods:{
             getDefaultDatas(){
-                this.upBugData.taskId = this.$route.query.id;
+                this.upBugData.taskId = this.$route.query.taskId;
                 http.zsyGetHttp(`/task-bug/users/${this.upBugData.taskId}`, {}, (res) => {
                     this.handlerEr = res.data;
                 })
@@ -102,7 +102,7 @@
             save(){
                 console.log(this.upBugData)
 
-                http.zsyPostHttp(`task-bug/add`, this.upBugData, (res) => {
+                http.zsyPostHttp(`/task-bug/add`, this.upBugData, (res) => {
                     this.$message({
                         message: '创建成功',
                         type: 'success'
