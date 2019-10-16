@@ -51,6 +51,11 @@
 
             }
         },
+        watch:{
+            $route(to,from){
+                this.getDefaultDatas();
+            }
+        },
         created() {
             this.getDefaultDatas();
         },
@@ -60,10 +65,13 @@
 
                 http.zsyPostHttp('/task-bug/num', this.upData, (res) => {
                     this.num = res.data;
+                    console.log(99)
+                },()=>{
+                    console.log(11)
                 })
+                console.log(66)
             },
             rout(){
-                this.getDefaultDatas();
                 this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll}});
             }
         },
