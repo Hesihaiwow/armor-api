@@ -20,8 +20,8 @@ public class AddUserRestHourLogReqDTO {
     private Long userId;
 
     @NotNull(message = "调休时长不能为空")
-    @Min(value = 1,message = "调休时长不能小于0")
-    @Max(value = 9999,message = "调休时长不能大于{value}")
+    @Min(value = -999,message = "调休时长不能小于{value}")
+    @Max(value = 999,message = "调休时长不能大于{value}")
     private BigDecimal restHour;
 
     @NotBlank(message = "调休事由不能为空")
