@@ -5,7 +5,7 @@
         </div>
         <div class="main">
             <div class="btn-box" v-if="isIndex">
-                <router-link :to="{ path: 'bug', query: { id: taskId }}" class="btn-bug"><el-button type="primary" size="small">Bug管理</el-button></router-link>
+                <router-link :to="{ path: 'bug', query: { taskId: taskId }}" class="btn-bug"><el-button type="primary" size="small">Bug管理</el-button></router-link>
 
                 <el-upload
                         class="upload-demo"

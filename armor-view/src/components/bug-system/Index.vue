@@ -5,87 +5,63 @@
                 <span class="name">项目名称</span>
             </div>
             <div class="right fr">
-                <router-link :to="{ path: 'NewBug', query: { id: taskId }}"><el-button type="primary">新建BUG</el-button></router-link>
+                <el-radio-group v-model="upData.selectAll" style="margin-right: 40px;margin-top: -1px;">
+                    <el-radio-button label="0">查看个人</el-radio-button>
+                    <el-radio-button label="1">查看全部</el-radio-button>
+                </el-radio-group>
+                <router-link :to="{ path: '/index/NewBug', query: { id: upData.taskId }}"><el-button type="primary">新建BUG</el-button></router-link>
             </div>
         </div>
         <div class="con">
             <div class="bug-msg">
                 <div>
-                    <router-link :to="{ path: 'NewBug', query: { id: taskId }}" ><span class="color-info">所有的BUG(共 1 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:0,selectAll:upData.selectAll }}" ><span class="color-info">所有的BUG(共 {{num.totalNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: 'NewBug', query: { id: taskId }}" ><span class="color-danger">待处理的BUG(共 1 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:1,selectAll:upData.selectAll }}" ><span class="color-danger">待处理的BUG(共 {{num.notSolvedNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: 'NewBug', query: { id: taskId }}" ><span class="color-warning">待确认的BUG(共 1 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:2,selectAll:upData.selectAll }}" ><span class="color-warning">待确认的BUG(共 {{num.solvedNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: 'NewBug', query: { id: taskId }}" ><span class="color-success">已解决的BUG(共 1 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:3,selectAll:upData.selectAll }}" ><span class="color-success">已关闭的BUG(共 {{num.closedNum}} 条)</span></router-link>
                 </div>
             </div>
-            <div class="bug-new-list">
-                <el-card class="box-card">
-                    <div slot="header" class="clearfix">
-                        <span>最新BUG</span>
-                    </div>
-                    <div class="table-box">
-                        <el-table
-                                :data="tableData"
-                                style="width: 100%"
-                                :row-class-name="tableRowClassName">
-                            <el-table-column
-                                    prop="name"
-                                    label="标题">
-                            </el-table-column>
-                            <el-table-column
-                                    prop="type"
-                                    label="状态"
-                                    width="80">
-                            </el-table-column>
-                            <el-table-column
-                                    prop="give"
-                                    label="分配人"
-                                    width="120">
-                            </el-table-column>
-                            <el-table-column
-                                    prop="date"
-                                    label="时间"
-                                    width="180">
-                            </el-table-column>
-                        </el-table>
-                    </div>
-                </el-card>
-            </div>
+            <router-view></router-view>
         </div>
     </div>
 </template>
 
 <script>
+    import http from '../../lib/Http'
     export default {
         name: "Index",
         data(){
             return {
-                taskId:'11',
-                tableData:[
-                    {
-                        id:1234456,
-                        name: 'bug标题',
-                        type: 1,
-                        give:'王小虎',
-                        date: '2016-05-04 10:36:08',
-                    },
-                ]
+                upData:{
+                    taskId:'',
+                    selectAll:'0',
+                },
+                num:{
+                    closedNum: 0,
+                    notSolvedNum: 0,
+                    solvedNum: 0,
+                    totalNum: 0,
+                }
+
             }
         },
+        created() {
+            this.getDefaultDatas();
+        },
         methods: {
-            tableRowClassName({row, rowIndex}) {
-                if (rowIndex === 1) {
-                    return 'warning-row';
-                } else if (rowIndex === 3) {
-                    return 'success-row';
-                }
-                return '';
-            }
+            getDefaultDatas(){
+                this.upData.taskId = this.$route.query.taskId;
+
+                http.zsyPostHttp('/task-bug/num', this.upData, (res) => {
+                    this.num = res.data;
+                })
+            },
         },
     }
 </script>
