@@ -23,4 +23,10 @@ public interface IZSYTaskBugRemarkMapper {
      * @return
      */
     List<TaskBugRemarkBO> selectListByTbId(@Param("tbId") Long tbId);
+
+    /**
+     * 删除备注
+     * @param tbId bugId
+     */
+    void deleteByTbId(@Param("tbId") Long tbId);
 }

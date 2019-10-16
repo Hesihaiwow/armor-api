@@ -150,7 +150,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             throw new ZSYServiceException("修改任务bug失败");
         }
 
-        if (reqDTO.getRemark() != null){
+        if (reqDTO.getRemark() != null && reqDTO.getRemark().trim() != ""){
             TaskBugRemark taskBugRemark = new TaskBugRemark();
             taskBugRemark.setTbrId(snowFlakeIDHelper.nextId());
             taskBugRemark.setTbId(taskBug.getTbId());
@@ -188,7 +188,8 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         }
         taskBug.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
         taskBugMapper.updateById(taskBug);
-
+        //删除备注
+        remarkMapper.deleteByTbId(tbId);
         //插入日志
         TaskBugLog taskBugLog = new TaskBugLog();
         taskBugLog.setTblId(snowFlakeIDHelper.nextId());

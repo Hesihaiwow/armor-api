@@ -21,6 +21,11 @@
         ,#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP})
     </insert>
 
+    <!--删除备注-->
+    <delete id="deleteByTbId">
+        DELETE FROM `task_bug_remark` WHERE `tb_id`= #{tbId}
+    </delete>
+
     <!--查询备注集合-->
     <select id="selectListByTbId" resultMap="BOMap">
         SELECT tbr.*,u.name create_name FROM `task_bug_remark` tbr
