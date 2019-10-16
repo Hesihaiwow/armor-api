@@ -19,3 +19,9 @@ CREATE TABLE `user_rest_hours_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='调休日志';
 
+ALTER TABLE `user_rest_hours_log`
+MODIFY COLUMN `type`  tinyint(2) NOT NULL DEFAULT 0 COMMENT '类型(1:手动修改, 2:请假扣除,3: 日常加班 , 4:加班申请)' AFTER `rest_hours`,
+ADD COLUMN `year`  int(4) NOT NULL COMMENT '年份' AFTER `content`;
+
+
+
