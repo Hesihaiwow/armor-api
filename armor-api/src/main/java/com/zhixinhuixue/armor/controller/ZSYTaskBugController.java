@@ -28,7 +28,7 @@ public class ZSYTaskBugController {
     @ApiOperation("分页查看任务bug")
     @PostMapping("/page")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "成功", response = TaskBugPageResDTO.class)})
-    public String getTaskBugPage(@RequestBody QueryTaskBugPageReqDTO reqDTO){
+    public String getTaskBugPage(@Valid @RequestBody QueryTaskBugPageReqDTO reqDTO){
         return ZSYResult.success().data(taskBugService.getTaskBugPage(reqDTO)).build();
     }
 
@@ -71,7 +71,7 @@ public class ZSYTaskBugController {
 
     @ApiOperation("查询任务数量")
     @PostMapping("/num")
-    public String getTaskBugNum(@RequestBody QueryTaskBugPageReqDTO reqDTO){
+    public String getTaskBugNum(@Valid @RequestBody QueryTaskBugPageReqDTO reqDTO){
         return ZSYResult.success().data(taskBugService.getTaskBugNum(reqDTO)).build();
     }
 }

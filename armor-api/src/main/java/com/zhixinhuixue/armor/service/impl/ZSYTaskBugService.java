@@ -16,6 +16,8 @@ import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.enums.TaskBugFrequency;
+import com.zhixinhuixue.armor.source.enums.TaskBugSeverity;
 import com.zhixinhuixue.armor.source.enums.TaskBugStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
 import org.springframework.beans.BeanUtils;
@@ -216,7 +218,8 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             resDTO.setIsCreater(0);
         }
         resDTO.setStatusName(TaskBugStatus.getName(taskBugBO.getStatus()));
-
+        resDTO.setSeverityName(TaskBugSeverity.getName(taskBugBO.getSeverity()));
+        resDTO.setFrequencyName(TaskBugFrequency.getName(taskBugBO.getFrequency()));
         //查询备注
         List<TaskBugRemarkBO> remarkBOS = remarkMapper.selectListByTbId(tbId);
         List<TaskBugRemarkResDTO> remarkResDTOS = new ArrayList<>();

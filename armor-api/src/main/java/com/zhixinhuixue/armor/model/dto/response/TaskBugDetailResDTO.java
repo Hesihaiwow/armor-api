@@ -58,6 +58,20 @@ public class TaskBugDetailResDTO {
     private String statusName;
 
     /**
+     * 频率
+     */
+    private Integer frequency;
+    @ApiModelProperty("频率")
+    private String frequencyName;
+
+    /**
+     * 严重程度
+     */
+    private Integer severity;
+    @ApiModelProperty("严重程度")
+    private String severityName;
+
+    /**
      * 是否为创建人
      */
     @ApiModelProperty("是否为创建人")
@@ -74,6 +88,38 @@ public class TaskBugDetailResDTO {
      */
     @ApiModelProperty("日志集合")
     private List<TaskBugLogResDTO> logResDTOList;
+
+    public Integer getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(Integer frequency) {
+        this.frequency = frequency;
+    }
+
+    public String getFrequencyName() {
+        return frequencyName;
+    }
+
+    public void setFrequencyName(String frequencyName) {
+        this.frequencyName = frequencyName;
+    }
+
+    public Integer getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(Integer severity) {
+        this.severity = severity;
+    }
+
+    public String getSeverityName() {
+        return severityName;
+    }
+
+    public void setSeverityName(String severityName) {
+        this.severityName = severityName;
+    }
 
     public List<TaskBugRemarkResDTO> getRemarkResDTOS() {
         return remarkResDTOS;

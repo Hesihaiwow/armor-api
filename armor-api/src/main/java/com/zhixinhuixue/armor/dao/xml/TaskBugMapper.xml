@@ -81,13 +81,13 @@
         </if>
         <choose>
             <when test="reqDTO.status != null and reqDTO.status == 2">
-                AND `status` IN (1,4)
+                AND tb.`status` IN (1,4)
             </when>
             <when test="reqDTO.status != null and reqDTO.status == 3">
-                AND `status` = 2
+                AND tb.`status` = 2
             </when>
             <when test="reqDTO.status != null and reqDTO.status == 4">
-                AND `status` = 3
+                AND tb.`status` = 3
             </when>
             <otherwise>
                 AND 1 = 1
@@ -116,9 +116,6 @@
     <select id="selectTaskBugNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM `task_bug`
         WHERE `is_delete` = 0
-        <if test="userId != null">
-            AND `create_by` = #{userId} OR `handler_id` = #{userId}
-        </if>
         <choose>
             <when test="status != null and status == 2">
                 AND `status` IN (1,4)
@@ -133,6 +130,9 @@
                 AND 1 = 1
             </otherwise>
         </choose>
+        <if test="userId != null">
+            AND `create_by` = #{userId} OR `handler_id` = #{userId}
+        </if>
     </select>
 
 
