@@ -5,6 +5,10 @@
                 <span class="name">{{taskName}}</span>
             </div>
             <div class="right fr">
+                <el-radio-group v-model="isTaskAll" style="margin-right: 40px;margin-top: -1px;" @change="taskChange">
+                    <el-radio-button label="0">当前任务</el-radio-button>
+                    <el-radio-button label="1">全部任务</el-radio-button>
+                </el-radio-group>
                 <el-radio-group v-model="upData.selectAll" style="margin-right: 40px;margin-top: -1px;" @change="rout">
                     <el-radio-button label="0">查看个人</el-radio-button>
                     <el-radio-button label="1">查看全部</el-radio-button>
@@ -38,6 +42,7 @@
         name: "Index",
         data(){
             return {
+                isTaskAll:0,
                 taskName:'',
                 upData:{
                     taskId:'',
@@ -59,6 +64,7 @@
         },
         created() {
             this.getDefaultDatas();
+            this.setSessionScreenData();
         },
         methods: {
             getDefaultDatas(){
@@ -75,6 +81,28 @@
             },
             rout(){
                 this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll,taskName:this.taskName}});
+            },
+            // 缓存试卷列表请求数据
+            setSessionScreenData() {
+                let taskData = {
+                    taskId:0,
+                    taskName:''
+                }
+                taskData.taskId = this.$route.query.taskId;
+                taskData.taskName = this.$route.query.taskName;
+                sessionStorage.taskData = JSON.stringify(taskData);
+            },
+            taskChange(val){
+                console.log(val);
+                if(val===1){
+                    this.upData.taskId = 0;
+                    this.taskName = '全部任务';
+
+                }else {
+                    this.upData.taskId =  sessionStorage.taskData.taskId;
+                    this.upData.taskName =  sessionStorage.taskData.taskName;
+                }
+                this.rout();
             }
         },
     }

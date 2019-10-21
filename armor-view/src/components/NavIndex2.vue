@@ -582,7 +582,11 @@
                                         {{(myTaskBugPageNum-1)*10 + scope.$index + 1}}
                                     </template>
                                 </el-table-column>
-                                <el-table-column prop="title" label="标题" align="center"></el-table-column>
+                                <el-table-column prop="title" label="标题" align="center">
+                                    <template scope="scope">
+                                        <span><router-link :to="{ path: 'bug', query: { taskId: scope.row.taskId,taskName:scope.row.taskName }}" class="btn-bug">{{scope.row.title }}</router-link></span>
+                                    </template>
+                                </el-table-column>
                                 <el-table-column prop="statusName" label="状态" align="center" width="110"></el-table-column>
                                 <el-table-column prop="severityName" label="严重程度" align="center" width="120"></el-table-column>
                                 <el-table-column prop="createName" label="提交人" align="center" width="120" ></el-table-column>
