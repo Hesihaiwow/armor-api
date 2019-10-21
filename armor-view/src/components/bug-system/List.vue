@@ -27,11 +27,9 @@
                             width="80">
                     </el-table-column>
                     <el-table-column
+                            prop="severityName"
                             label="类型"
-                            width="100">
-                        <template scope="scope">
-                            <span>{{ typeToWords(scope.row.status) }}</span>
-                        </template>
+                            width="110">
                     </el-table-column>
                     <el-table-column
                             prop="createName"

@@ -60,7 +60,7 @@
             </div>
             <div class="task-mark"  v-show="isPrivate && task.status===1 && !task.expand && taskStatus==='TaskDoing'  && task.reviewStatus === 3 && task.type === 2" style="margin-right: 20px;">
                 <el-button @click.stop="applyModifyMyTask(task)">申请修改任务</el-button>
-                <el-button v-show="userInfo.jobRole === 0" @click.stop="toBug">提bug</el-button>
+                <el-button v-show="userInfo.jobRole === 0" @click.stop="toBug(task)">提BUG</el-button>
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
             <div class="task-data-show" v-show="task.status > 1 && task.taskIntegral !== undefined">
@@ -3626,8 +3626,8 @@
                 });
             },
             //跳转到bug页面
-            toBug(){
-
+            toBug(val){
+                this.$router.push({ path: '/index/NewBug', query: { taskId: val.id }});
             },
             //申请修改任务
             applyModifyMyTask(task){
