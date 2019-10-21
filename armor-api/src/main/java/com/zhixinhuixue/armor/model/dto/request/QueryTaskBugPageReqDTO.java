@@ -14,7 +14,7 @@ public class QueryTaskBugPageReqDTO {
     /**
      * 关联任务
      */
-    @NotNull(message = "关联任务id不能为空")
+//    @NotNull(message = "关联任务id不能为空")
     @ApiModelProperty("任务Id")
     private Long taskId;
 
@@ -36,6 +36,19 @@ public class QueryTaskBugPageReqDTO {
     @ApiModelProperty("是否查看全部(0:查看个人(默认), 1:查看全部)")
     @NotNull(message = "是否查看全部不能为空")
     private Integer selectAll;
+
+    /**
+     * 是否查看所有任务
+     */
+    private Integer allTask;
+
+    public Integer getAllTask() {
+        return allTask;
+    }
+
+    public void setAllTask(Integer allTask) {
+        this.allTask = allTask;
+    }
 
     public Long getTaskId() {
         return taskId;

@@ -17,6 +17,9 @@ public class TaskBugPageResDTO {
     @ApiModelProperty("任务bugId")
     private Long tbId;
 
+    private Long taskId;
+    private String taskName;
+
     /**
      * 摘要
      */
@@ -58,6 +61,22 @@ public class TaskBugPageResDTO {
 
     private Integer severity;
     private String severityName;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
 
     public Integer getSeverity() {
         return severity;

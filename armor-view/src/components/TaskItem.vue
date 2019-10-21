@@ -59,7 +59,8 @@
                 </div>
             </div>
             <div class="task-mark"  v-show="isPrivate && task.status===1 && !task.expand && taskStatus==='TaskDoing'  && task.reviewStatus === 3 && task.type === 2" style="margin-right: 20px;">
-                <el-button @click="applyModifyMyTask(task)">申请修改任务</el-button>
+                <el-button @click.stop="applyModifyMyTask(task)">申请修改任务</el-button>
+                <el-button v-show="userInfo.jobRole === 0" @click.stop="toBug">提bug</el-button>
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
             <div class="task-data-show" v-show="task.status > 1 && task.taskIntegral !== undefined">
@@ -1768,6 +1769,7 @@
             tagList: Array,
             userList: Array,
             viewType:'',
+            jobRole:''
         },
         data() {
             let validateEmpty = (rule, value, callback) => {
@@ -1864,6 +1866,9 @@
                 testShow: true,
                 finishTaskBtn: true,
                 taskDetail: {},
+                userInfo:{
+                    jobRole:0
+                },
                 personTaskFunctionList:[],
                 privateTaskLevel:'',
                 actionList:[
@@ -2172,6 +2177,10 @@
                 }
                 return _.orderBy(this.taskModifyWeekNumber, 'weekNumber')
             },
+            userId(){
+                let userId = helper.decodeToken().userId;
+                return userId;
+            },
         },
         filters: {
             formatDate: function (value) {
@@ -2184,6 +2193,30 @@
             }
         },
         methods: {
+            //查询用户
+            fetchUserInfo(userId){
+                http.zsyGetHttp('/user/'+userId,{},(res)=>{
+                    this.userInfo = res.data;
+                    // let jobRole = this.userInfo.jobRole;
+                    // let jobRoleName = '';
+                    // if (jobRole !== undefined && jobRole !== null && jobRole !== ''){
+                    //     if (jobRole === 0){
+                    //         jobRoleName = '测试';
+                    //     } else if(jobRole === 1){
+                    //         jobRoleName = '开发';
+                    //     }else if (jobRole === 2){
+                    //         jobRoleName = '设计';
+                    //     } else if (jobRole === 3){
+                    //         jobRoleName = '产品';
+                    //     } else if (jobRole === 5){
+                    //         jobRoleName = '算法工程师';
+                    //     } else if (jobRole === 4){
+                    //         jobRoleName = '其他';
+                    //     }
+                    // }
+                    // this.user = jobRoleName;
+                })
+            },
             fetchProjectList() {
                 let vm = this;
                 http.zsyGetHttp('/project/list', {}, (resp) => {
@@ -3592,6 +3625,10 @@
                     type: 'error'
                 });
             },
+            //跳转到bug页面
+            toBug(){
+
+            },
             //申请修改任务
             applyModifyMyTask(task){
                 let taskId = task.taskUsers[0].taskId;
@@ -4462,6 +4499,7 @@
                 });
                 vm.getTaskLog(taskId)
             });
+            this.fetchUserInfo(this.userId)
         },
         watch:{
             step:{
