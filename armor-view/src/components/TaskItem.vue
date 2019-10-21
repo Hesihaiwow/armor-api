@@ -313,7 +313,7 @@
                 size="tiny"
                 :before-close="hideTaskDetail">
             <el-form>
-                <div>任务名称: <router-link :to="{ path: 'testExamples', query: { id: taskDetail.id }}">{{taskDetail.name}}</router-link></div>
+                <div>任务名称: <router-link :to="{ path: 'testExamples', query: { id: taskDetail.id ,taskName:taskDetail.name}}">{{taskDetail.name}}</router-link></div>
                 <div>任务负责人: {{taskDetail.userName}}</div>
                 <div style="margin-top: 5px">关联文档:
                     <a  v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"

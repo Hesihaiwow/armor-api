@@ -1,18 +1,23 @@
 <template>
     <div class="bug-list">
         <el-card class="box-card">
-            <div slot="header" class="clearfix">
-                <span>{{listName}}</span>
-            </div>
+            <!--<div slot="header" class="clearfix">-->
+                <!--<span>{{listName}}</span>-->
+            <!--</div>-->
             <div class="table-box">
                 <el-table
                         :data="tableData.list"
                         style="width: 100%"
                         :row-class-name="tableRowClassName">
                     <el-table-column
+                            type="index"
+                            label="序号"
+                            width="70">
+                    </el-table-column>
+                    <el-table-column
                             label="标题">
                         <template scope="scope">
-                            <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId,taskId:upData.taskId }}">{{scope.row.title}}</router-link>
+                            <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId,taskId:upData.taskId,taskName:taskName }}">{{scope.row.title}}</router-link>
 
                         </template>
                     </el-table-column>
@@ -101,6 +106,7 @@
                 this.upData.taskId = this.$route.query.taskId;
                 this.upData.status = this.$route.query.listType||1;
                 this.upData.selectAll = this.$route.query.selectAll||0;
+                this.taskName = this.$route.query.taskName;
                 switch (this.upData.status) {
                     case 0:
                         this.listName = '所有的BUG'
