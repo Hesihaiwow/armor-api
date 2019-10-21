@@ -139,7 +139,7 @@ public interface IZSYSignInMapper {
      * @param checkTime
      * @return
      */
-    SignIn selectSignInByUserAndTime(@Param("userId") Long userId, @Param("checkTime") Date checkTime);
+    List<SignIn> selectSignInByUserAndTime(@Param("userId") Long userId, @Param("checkTime") Date checkTime);
 
     /**
      * 根据userId和checkTime时间段查询考勤记录
