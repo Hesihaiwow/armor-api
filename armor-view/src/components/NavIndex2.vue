@@ -575,6 +575,34 @@
                             <task-item :taskItems="task.applyFail" :isPrivate="true"
                                        taskStatus="ApplyFail" @reload="reload"></task-item>
                         </el-tab-pane>-->
+                        <el-tab-pane label="任务bug" name="taskBug">
+                            <el-table :data="myTaskBugData" border>
+                                <el-table-column type="index" label="序号" align="center" width="80">
+                                    <template scope="scope">
+                                        {{(myTaskBugPageNum-1)*10 + scope.$index + 1}}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="title" label="标题" align="center"></el-table-column>
+                                <el-table-column prop="statusName" label="状态" align="center" width="110"></el-table-column>
+                                <el-table-column prop="severityName" label="严重程度" align="center" width="120"></el-table-column>
+                                <el-table-column prop="createName" label="提交人" align="center" width="120" ></el-table-column>
+                                <el-table-column prop="handlerName" label="处理人" align="center" width="120" ></el-table-column>
+                                <el-table-column prop="createTime" label="提交时间" align="center" width="120" >
+                                    <template scope="scope">
+                                        <span>{{scope.row.createTime | formatDate2}}</span>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="pagination">
+                                <el-pagination
+                                        @current-change="myTaskBugHandleCurrentChange"
+                                        :current-page.sync="myTaskBugPageNum"
+                                        :page-size="myTaskBugPage.pageSize"
+                                        :layout="myTaskBugPageLayout"
+                                        :total="myTaskBugPage.total">
+                                </el-pagination>
+                            </div>
+                        </el-tab-pane>
                     </el-tabs>
                 </div>
                 <!--<p class="mic-title">多人任务申请</p>-->
@@ -3728,6 +3756,12 @@
                 principalAllTaskList:[],
                 principalId:'',
                 managerList:[],
+                myTaskBugData:[],
+                myTaskBugPage:{
+                    pageSize:10,
+                    total:0
+                },
+                myTaskBugPageNum:1
                 // -- sch
             };
         },
@@ -4033,6 +4067,12 @@
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
+            },
+            myTaskBugPageLayout() {
+                if (this.myTaskBugPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
             }
         },
         filters: {
@@ -4066,6 +4106,8 @@
                     this.fetchTaskTesting();
                 }else if (this.activeName === 'completed'){
                     this.fetchTaskFinished();
+                }else if (this.activeName === 'taskBug'){
+                    this.fetchMyTaskBugPage()
                 }
             },
             handleClickLeave(){
@@ -6645,6 +6687,10 @@
                 this.extraWorkReqDTO.pageNum = currentPage;
                 this.getExtraWorkStats();
             },
+            myTaskBugHandleCurrentChange(currentPage){
+                this.myTaskBugPageNum = currentPage;
+                this.fetchMyTaskBugPage();
+            },
             //格式化时间
             getTime(time){
                 const hours = this.addZero(parseInt(time/1000/60/60));
@@ -8080,6 +8126,13 @@
             fetchAllPrincipalTask(){
                 http.zsyGetHttp('/data/principal-task-stats/all',{},(res)=>{
                     this.principalAllTaskList = res.data;
+                })
+            },
+            //查询我的任务bug
+            fetchMyTaskBugPage(){
+                http.zsyGetHttp('/task-bug/personal/page/'+this.myTaskBugPageNum,{},res=>{
+                    this.myTaskBugData = res.data.list;
+                    this.myTaskBugPage.total = res.data.total;
                 })
             }
             // -- sch
