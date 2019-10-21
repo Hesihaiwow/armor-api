@@ -675,7 +675,7 @@
                 </div>
                 <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
                 <el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
-                <el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>
+                <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
                 <el-table :data="signInData" border>
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template scope="scope">
