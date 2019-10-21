@@ -250,7 +250,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 for( int j = 0 ; j <= lastCellNum ; j++ ){
                     cell = row.getCell(j);
                     if( cell != null ){
-//						cell.setCellType(CellType.STRING);
+						cell.setCellType(CellType.STRING);
                         String cellValue = cell.getStringCellValue();
                         fields.add(cellValue);
                     }
@@ -352,7 +352,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     for( int j = 0 ; j <= lastCellNum ; j++ ){
                         cell = row2.getCell(j);
                         if( cell != null ){
-//						cell.setCellType(CellType.STRING);
+						cell.setCellType(CellType.STRING);
                             String cellValue = cell.getStringCellValue();
                             checkTimeList.add(cellValue);
                         }

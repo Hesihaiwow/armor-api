@@ -74,76 +74,76 @@ public class ZSYArmorApplicationTests {
 		System.out.println("相差天数"+(end.toEpochDay() - start.toEpochDay() + 1));
 	}
 
-	@Test
-	public void read(){
-		File file = new File("D:\\test.xlsx");
-		String suffix = "." + getUploadSuffix(file.getName());
-		if (!isExcel(suffix)){
-			throw new ZSYServiceException("只能上传Excel");
-		}
-		Workbook book = null;
-		try {
-			String file_dir = file.getAbsolutePath();
-			book = getExcelWorkbook(file_dir);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Sheet sheet = getSheetByNum(book,0);
-		int lastRowNum = sheet.getLastRowNum();
-
-
-		List<String> fields = new ArrayList<>();
-		Row row = null;
-		row = sheet.getRow(0);
-		if( row != null ){
-			int lastCellNum = row.getLastCellNum();
-			Cell cell = null;
-			for( int j = 0 ; j <= lastCellNum ; j++ ){
-				cell = row.getCell(j);
-				if( cell != null ){
-//						cell.setCellType(CellType.STRING);
-					String cellValue = cell.getStringCellValue();
-					fields.add(cellValue);
-				}
-			}
-		}
-		String dateStr = fields.get(0);
-		String dateStr1 = dateStr.substring(11, 21);
-		String dateStr2 = dateStr.substring(24);
-		System.out.println("dateStr1 = " + dateStr1);
-		System.out.println("dateStr2 = " + dateStr2);
-
-		List<List<String>> userCheckList = new ArrayList<>();
-		for(int i = 3 ; i <= lastRowNum ; i++){
-			List<String> checkTimeList = new ArrayList<>();
-			Row row2 = null;
-			row2 = sheet.getRow(i);
-			if( row2 != null ){
-				int lastCellNum = row2.getLastCellNum();
-				Cell cell = null;
-				for( int j = 0 ; j <= lastCellNum ; j++ ){
-					cell = row2.getCell(j);
-					if( cell != null ){
-//						cell.setCellType(CellType.STRING);
-						String cellValue = cell.getStringCellValue();
-						checkTimeList.add(cellValue);
-					}
-				}
-			}
-			userCheckList.add(checkTimeList);
-//			fields.forEach(s -> System.out.println("s = " + s));
-		}
-
-		for (List<String> userCheck : userCheckList) {
-			String[] split = userCheck.get(12).split("  \n");
-			System.out.println("user = " + userCheck.get(0)+" "+userCheck.get(2)+" "
-					+split[0].trim()+" "+split[1].trim()
-			+" "+userCheck.get(12).length());
+//	@Test
+//	public void read(){
+//		File file = new File("D:\\test.xlsx");
+//		String suffix = "." + getUploadSuffix(file.getName());
+//		if (!isExcel(suffix)){
+//			throw new ZSYServiceException("只能上传Excel");
+//		}
+//		Workbook book = null;
+//		try {
+//			String file_dir = file.getAbsolutePath();
+//			book = getExcelWorkbook(file_dir);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		Sheet sheet = getSheetByNum(book,0);
+//		int lastRowNum = sheet.getLastRowNum();
+//
+//
+//		List<String> fields = new ArrayList<>();
+//		Row row = null;
+//		row = sheet.getRow(0);
+//		if( row != null ){
+//			int lastCellNum = row.getLastCellNum();
+//			Cell cell = null;
+//			for( int j = 0 ; j <= lastCellNum ; j++ ){
+//				cell = row.getCell(j);
+//				if( cell != null ){
+////						cell.setCellType(CellType.STRING);
+//					String cellValue = cell.getStringCellValue();
+//					fields.add(cellValue);
+//				}
+//			}
+//		}
+//		String dateStr = fields.get(0);
+//		String dateStr1 = dateStr.substring(11, 21);
+//		String dateStr2 = dateStr.substring(24);
+//		System.out.println("dateStr1 = " + dateStr1);
+//		System.out.println("dateStr2 = " + dateStr2);
+//
+//		List<List<String>> userCheckList = new ArrayList<>();
+//		for(int i = 3 ; i <= lastRowNum ; i++){
+//			List<String> checkTimeList = new ArrayList<>();
+//			Row row2 = null;
+//			row2 = sheet.getRow(i);
+//			if( row2 != null ){
+//				int lastCellNum = row2.getLastCellNum();
+//				Cell cell = null;
+//				for( int j = 0 ; j <= lastCellNum ; j++ ){
+//					cell = row2.getCell(j);
+//					if( cell != null ){
+////						cell.setCellType(CellType.STRING);
+//						String cellValue = cell.getStringCellValue();
+//						checkTimeList.add(cellValue);
+//					}
+//				}
+//			}
+//			userCheckList.add(checkTimeList);
+////			fields.forEach(s -> System.out.println("s = " + s));
+//		}
+//
+//		for (List<String> userCheck : userCheckList) {
+//			String[] split = userCheck.get(12).split("  \n");
 //			System.out.println("user = " + userCheck.get(0)+" "+userCheck.get(2)+" "
-//					+userCheck.get(12).substring(0,5)+" "+userCheck.get(12).substring(8,13)
+//					+split[0].trim()+" "+split[1].trim()
 //			+" "+userCheck.get(12).length());
-		}
-	}
+////			System.out.println("user = " + userCheck.get(0)+" "+userCheck.get(2)+" "
+////					+userCheck.get(12).substring(0,5)+" "+userCheck.get(12).substring(8,13)
+////			+" "+userCheck.get(12).length());
+//		}
+//	}
 
 	/**
 	 * 获取上传文件后缀名
