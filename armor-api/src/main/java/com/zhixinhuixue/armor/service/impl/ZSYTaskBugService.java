@@ -72,6 +72,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             taskBugBOS.forEach(taskBugBO -> {
                 TaskBugPageResDTO resDTO = new TaskBugPageResDTO();
                 BeanUtils.copyProperties(taskBugBO,resDTO);
+                resDTO.setSeverityName(TaskBugSeverity.getName(taskBugBO.getSeverity()));
                 resDTO.setStatusName(TaskBugStatus.getName(taskBugBO.getStatus()));
                 page.add(resDTO);
             });
@@ -299,5 +300,29 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         resDTO.setNotSolvedNum(notSolvedNum);
         resDTO.setSolvedNum(solvedNum);
         return resDTO;
+    }
+
+    /**
+     * 个人主页显示bug分页
+     * @param pageNum 页码
+     */
+    @Override
+    public PageInfo<TaskBugPageResDTO> getPersonalBugPage(Integer pageNum) {
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        QueryTaskBugPageReqDTO reqDTO = new QueryTaskBugPageReqDTO();
+        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE);
+        Page<TaskBugBO> taskBugBOS = taskBugMapper.selectPage(reqDTO,userId);
+        Page<TaskBugPageResDTO> page = new Page<>();
+        BeanUtils.copyProperties(taskBugBOS,page);
+        if (!CollectionUtils.isEmpty(taskBugBOS)){
+            taskBugBOS.forEach(taskBugBO -> {
+                TaskBugPageResDTO resDTO = new TaskBugPageResDTO();
+                BeanUtils.copyProperties(taskBugBO,resDTO);
+                resDTO.setStatusName(TaskBugStatus.getName(taskBugBO.getStatus()));
+                resDTO.setSeverityName(TaskBugSeverity.getName(taskBugBO.getSeverity()));
+                page.add(resDTO);
+            });
+        }
+        return new PageInfo<>(page);
     }
 }

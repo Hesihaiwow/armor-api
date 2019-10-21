@@ -56,6 +56,25 @@ public class TaskBugPageResDTO {
     private Integer status;
     private String statusName;
 
+    private Integer severity;
+    private String severityName;
+
+    public Integer getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(Integer severity) {
+        this.severity = severity;
+    }
+
+    public String getSeverityName() {
+        return severityName;
+    }
+
+    public void setSeverityName(String severityName) {
+        this.severityName = severityName;
+    }
+
     public Long getTbId() {
         return tbId;
     }

@@ -60,4 +60,10 @@ public interface IZSYTaskBugService {
      * @param reqDTO 条件
      */
     TaskBugNumResDTO getTaskBugNum(QueryTaskBugPageReqDTO reqDTO);
+
+    /**
+     * 个人主页显示bug分页
+     * @param pageNum 页码
+     */
+    PageInfo<TaskBugPageResDTO> getPersonalBugPage(Integer pageNum);
 }

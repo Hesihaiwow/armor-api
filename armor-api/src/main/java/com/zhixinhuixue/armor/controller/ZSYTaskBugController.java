@@ -74,4 +74,10 @@ public class ZSYTaskBugController {
     public String getTaskBugNum(@Valid @RequestBody QueryTaskBugPageReqDTO reqDTO){
         return ZSYResult.success().data(taskBugService.getTaskBugNum(reqDTO)).build();
     }
+
+    @ApiOperation("个人主页显示bug分页")
+    @GetMapping("/personal/page/{pageNum}")
+    public String getPersonalBugPage(@PathVariable("pageNum")Integer pageNum){
+        return ZSYResult.success().data(taskBugService.getPersonalBugPage(pageNum)).build();
+    }
 }
