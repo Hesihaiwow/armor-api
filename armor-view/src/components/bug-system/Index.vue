@@ -75,7 +75,7 @@
                     this.num = res.data;
                     // console.log(99)
                 },()=>{
-                    console.log(11)
+                    // console.log(11)
                 })
                 // console.log(66)
             },
@@ -93,7 +93,7 @@
                 sessionStorage.taskData = JSON.stringify(taskData);
             },
             taskChange(val){
-                console.log(val);
+                // console.log(val);
                 if(val===1){
                     this.upData.taskId = 0;
                     this.taskName = '全部任务';
