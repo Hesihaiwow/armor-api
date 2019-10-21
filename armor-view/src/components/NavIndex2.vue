@@ -3105,7 +3105,7 @@
             </el-table>
         </el-dialog>
 
-        <el-dialog  title="新增个人调休记录"  size="tiny"  :close-on-click-modal="false"
+        <el-dialog  title="新增个人/加班调休记录"  size="tiny"  :close-on-click-modal="false"
                     :close-on-press-escape="false" :visible.sync="editRestHoursVisible">
             <el-form :model="userRestHoursLogForm"  ref="userRestHoursLogForm" label-width="80px">
                 <el-form-item label="用户 ">
@@ -3117,13 +3117,13 @@
                 <el-form-item label="调休备注" prop="restHour">
                     <el-input type="textarea" v-model="userRestHoursLogForm.content" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item label="录入时间" prop="recordTime">
+                <el-form-item label="录入日期" prop="recordTime">
                     <el-date-picker
                             v-model="userRestHoursLogForm.recordTime"
-                            type="datetime"
-                            format="yyyy-MM-dd HH:mm:00"
+                            type="date"
+                            format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd HH:mm:00"
-                            placeholder="选择录入时间">
+                            placeholder="选择录入日期">
                     </el-date-picker>
                 </el-form-item>
             </el-form>

@@ -740,7 +740,7 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="加班统计" name="eWork"  style="" v-if="admin" >
+            <el-tab-pane label="加班申请统计" name="eWork"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="extraWorkReqDTO.userId" clearable filterable   placeholder="筛选用户">
                         <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
@@ -806,7 +806,7 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="调休统计" name="restHours" v-if="admin">
+            <el-tab-pane label="加班调休统计" name="restHours" v-if="admin">
                 <div class="add-member-basic-msg fl" >
                     <el-date-picker
                             v-model="restHourYear"
@@ -1395,7 +1395,7 @@
         <el-dialog title="用户调休使用日志" :visible.sync="userRestHoursDetailVisible2" class="rest-hour-log"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="small"
                    width="800px">
-            <div>
+            <div style="margin-bottom: 10px">
                 <el-button type="primary" @click="addRestHoursLog">手动新增调休记录</el-button>
             </div>
             <el-table :data="userRestHoursLogData2" border>
@@ -1423,7 +1423,7 @@
                 </el-pagination>
             </div>
         </el-dialog>
-        <el-dialog  title="新增个人调休记录"  size="tiny"  :close-on-click-modal="false"
+        <el-dialog  title="新增个人加班/调休记录"  size="tiny"  :close-on-click-modal="false"
                     :close-on-press-escape="false" :visible.sync="editRestHoursVisible"
         @close="cancelAddRestHoursLog">
             <el-form :model="userRestHoursLogForm"  ref="userRestHoursLogForm" label-width="80px">
@@ -1436,13 +1436,13 @@
                 <el-form-item label="调休备注" prop="content">
                     <el-input type="textarea" v-model="userRestHoursLogForm.content" :rows="3"></el-input>
                 </el-form-item>
-                <el-form-item label="录入时间" prop="recordTime">
+                <el-form-item label="录入日期" prop="recordTime">
                     <el-date-picker
                             v-model="userRestHoursLogForm.recordTime"
-                            type="datetime"
-                            format="yyyy-MM-dd HH:mm:00"
+                            type="date"
+                            format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd HH:mm:00"
-                            placeholder="选择录入时间">
+                            placeholder="选择录入日期">
                     </el-date-picker>
                 </el-form-item>
             </el-form>
@@ -4563,7 +4563,7 @@
     }
 
     .stats-con {
-        width: 1200px;
+        width: 1300px;
         font-size: 14px;
         background: #fff;
         padding: 30px 0;
