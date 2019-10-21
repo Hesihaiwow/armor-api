@@ -7,6 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author sch
@@ -27,6 +28,17 @@ public class AddUserRestHourLogReqDTO {
     @NotBlank(message = "调休事由不能为空")
     @Size(min = 1,max = 500,message = "事由长度在{min}~{max}之间")
     private String content;
+
+    @NotNull(message = "录入时间不能为空")
+    private Date recordTime;
+
+    public Date getRecordTime() {
+        return recordTime;
+    }
+
+    public void setRecordTime(Date recordTime) {
+        this.recordTime = recordTime;
+    }
 
     public Long getUserId() {
         return userId;

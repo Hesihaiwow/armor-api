@@ -56,6 +56,7 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
         <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="job_number" jdbcType="VARCHAR" property="jobNumber" />
     </resultMap>
 
     <resultMap id="BaseSignInMap" type="com.zhixinhuixue.armor.model.pojo.SignIn">
@@ -272,7 +273,7 @@
 
     <!--查询有效打卡人员-->
     <select id="selectEffectUsers" resultMap="BaseUserMap">
-        select * from `user` where `is_delete` = 0  and `status` = 0 and `check_sort` > 0
+        select * from `user` where `is_delete` = 0  and `status` = 0 and `job_number` is not null
     </select>
 
     <!--查询当月所有人的考勤记录-->

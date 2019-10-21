@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -225,22 +226,28 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         }
         if (userLeave.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
             //减少调休时间
-            user.setRestHours(user.getRestHours().subtract(userLeave.getHours()));
-            userMapper.updateSelectiveById(user);
+//            user.setRestHours(user.getRestHours().subtract(userLeave.getHours()));
+//            userMapper.updateSelectiveById(user);
+
+
+            //新增调休日志
+            UserRestHoursLog restHoursLog = new UserRestHoursLog();
+            restHoursLog.setId(snowFlakeIDHelper.nextId());
+            restHoursLog.setUserId(user.getId());
+            restHoursLog.setLeaveId(userLeaveBO.getId());
+            restHoursLog.setUserName(user.getName());
+            restHoursLog.setRestHours(BigDecimal.ZERO.subtract(userLeaveBO.getHours()));
+            restHoursLog.setType(ZSYRestHoursType.LEAVE.getValue());
+            restHoursLog.setContent(userLeaveBO.getDescription());
+            restHoursLog.setCreateTime(new Date());
+            restHoursLog.setRecordTime(userLeaveBO.getBeginTime());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(userLeave.getBeginTime());
+            int year = calendar.get(Calendar.YEAR);
+            restHoursLog.setYear(year);
+            restHoursLogMapper.insert(restHoursLog);
         }
 
-        //新增调休日志
-        UserRestHoursLog restHoursLog = new UserRestHoursLog();
-        restHoursLog.setId(snowFlakeIDHelper.nextId());
-        restHoursLog.setUserId(user.getId());
-        restHoursLog.setLeaveId(userLeaveBO.getId());
-        restHoursLog.setUserName(user.getName());
-        restHoursLog.setRestHours(BigDecimal.ZERO.subtract(userLeaveBO.getHours()));
-        restHoursLog.setType(ZSYRestHoursType.LEAVE.getValue());
-        restHoursLog.setContent(userLeaveBO.getDescription());
-        restHoursLog.setCreateTime(new Date());
-        restHoursLog.setRecordTime(userLeaveBO.getBeginTime());
-        restHoursLogMapper.insert(restHoursLog);
 
     }
 }

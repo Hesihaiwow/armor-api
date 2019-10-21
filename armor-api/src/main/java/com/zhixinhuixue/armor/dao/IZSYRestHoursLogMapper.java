@@ -5,6 +5,7 @@ import com.zhixinhuixue.armor.model.pojo.UserRestHoursLog;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author sch
@@ -30,5 +31,18 @@ public interface IZSYRestHoursLogMapper {
      * 查询请假扣除调休时间
      * @param userId 用户id
      */
-    BigDecimal selectUsedHours(@Param("userId") Long userId);
+    BigDecimal selectUsedHours(@Param("userId") Long userId, @Param("year") int year);
+
+    /**
+     * 查询总的调休时间
+     * @param userId 用户
+     * @param year 年份
+     */
+    BigDecimal selectTotalRestHours(@Param("userId") Long userId, @Param("year") int year);
+
+    /**
+     * 批量新增
+     * @param list 集合
+     */
+    void insertBatch(@Param("list") List<UserRestHoursLog> list);
 }

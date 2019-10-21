@@ -27,6 +27,11 @@ public class UserRestHoursLog {
     private Long leaveId;
 
     /**
+     * 加班申请id
+     */
+    private Long ewId;
+
+    /**
      * 调休时长(正数为增加,负数是减少)
      */
     private BigDecimal restHours;
@@ -50,6 +55,27 @@ public class UserRestHoursLog {
      * 记录时间
      */
     private Date recordTime;
+
+    /**
+     * 记录时间
+     */
+    private Integer year;
+
+    public Long getEwId() {
+        return ewId;
+    }
+
+    public void setEwId(Long ewId) {
+        this.ewId = ewId;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
 
     public Long getId() {
         return id;

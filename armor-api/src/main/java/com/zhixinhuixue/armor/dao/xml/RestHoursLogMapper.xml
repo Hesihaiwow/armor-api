@@ -6,9 +6,11 @@
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="leave_id" jdbcType="BIGINT" property="leaveId" />
+    <result column="ew_id" jdbcType="BIGINT" property="ewId" />
     <result column="rest_hours" jdbcType="DECIMAL" property="restHours" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="year" jdbcType="INTEGER" property="year" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="record_time" jdbcType="TIMESTAMP" property="recordTime" />
   </resultMap>
@@ -16,14 +18,28 @@
   <!--新增-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserRestHoursLog">
     INSERT INTO `user_rest_hours_log`
-    (`id`,`user_id`,`user_name`,`leave_id`,`rest_hours`,`type`,`content`,`create_time`,`record_time`)
+    (`id`,`user_id`,`user_name`,`leave_id`,`rest_hours`,`type`,`content`,`create_time`,`record_time`,`year`,`ew_id`)
     VALUES
     (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{userName,jdbcType=VARCHAR}
     ,#{leaveId,jdbcType=BIGINT},#{restHours,jdbcType=DECIMAL},#{type,jdbcType=INTEGER}
-    ,#{content,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{recordTime,jdbcType=TIMESTAMP})
+    ,#{content,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{recordTime,jdbcType=TIMESTAMP}
+    ,#{year,jdbcType=INTEGER},#{ewId,jdbcType=BIGINT})
   </insert>
 
-  <!--分页查询用户调休修改日志-->
+  <!--批量新增-->
+    <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserRestHoursLog">
+      INSERT INTO `user_rest_hours_log`
+      (`id`,`user_id`,`user_name`,`leave_id`,`rest_hours`,`type`,`content`,`create_time`,`record_time`,`year`,`ew_id`)
+      VALUES
+      <foreach collection="list" item="item" separator=",">
+        (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.userName,jdbcType=VARCHAR}
+        ,#{item.leaveId,jdbcType=BIGINT},#{item.restHours,jdbcType=DECIMAL},#{item.type,jdbcType=INTEGER}
+        ,#{item.content,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},#{item.recordTime,jdbcType=TIMESTAMP}
+        ,#{item.year,jdbcType=INTEGER},#{item.ewId,jdbcType=BIGINT})
+      </foreach>
+    </insert>
+
+    <!--分页查询用户调休修改日志-->
   <select id="selectUserRestHoursLogPage" resultMap="BaseResultMap">
      SELECT * FROM `user_rest_hours_log` WHERE `user_id` = #{userId}
      ORDER BY `record_time` DESC
@@ -31,7 +47,14 @@
 
   <!--查询请假扣除调休时间-->
     <select id="selectUsedHours" resultType="java.math.BigDecimal">
-      SELECT IFNULL(SUM(`rest_hours`),0) FROM `user_rest_hours_log` WHERE `user_id` = #{userId} AND `rest_hours` &lt; 0
+      SELECT IFNULL(SUM(`rest_hours`),0) FROM `user_rest_hours_log`
+      WHERE `user_id` = #{userId} AND `rest_hours` &lt; 0 AND `year` = #{year}
     </select>
+
+  <!--查询总的调休时间-->
+  <select id="selectTotalRestHours" resultType="java.math.BigDecimal">
+      SELECT IFNULL(SUM(`rest_hours`),0) FROM `user_rest_hours_log`
+      WHERE `user_id` = #{userId} AND `rest_hours` > 0 AND `year` = #{year}
+  </select>
 
 </mapper>

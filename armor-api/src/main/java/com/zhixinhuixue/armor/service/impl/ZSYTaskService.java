@@ -2826,6 +2826,10 @@ public class ZSYTaskService implements IZSYTaskService {
         resDTO.setEndTime(taskUser.getEndTime());
         resDTO.setTaskHours(taskUser.getTaskHours());
         resDTO.setDescription(taskUser.getDescription());
+        if (taskUser.getTaskLevel() != null){
+            resDTO.setTaskLevel(taskUser.getTaskLevel());
+            resDTO.setTaskLevelName(TaskLevel.getName(taskUser.getTaskLevel()));
+        }
         List<UserWeek> userWeeks = userWeekMaper.selectByTaskAndUser(taskId,userId);
         List<UserWeekResDTO> userWeekResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userWeeks)){

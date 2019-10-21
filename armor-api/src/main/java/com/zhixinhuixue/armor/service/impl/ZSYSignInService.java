@@ -14,7 +14,10 @@ import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYSignInService;
-import com.zhixinhuixue.armor.source.*;
+import com.zhixinhuixue.armor.source.ArmorPageInfo;
+import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.ZSYQinuOssProperty;
+import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
 import com.zhixinhuixue.armor.source.enums.ZSYSignInType;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
@@ -23,10 +26,7 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.CheckedOutputStream;
+
+import static com.zhixinhuixue.armor.service.impl.ZSYMantisBugService.getExcelWorkbook;
+import static com.zhixinhuixue.armor.service.impl.ZSYMantisBugService.getSheetByNum;
 
 /**
  * @author SCH
@@ -110,9 +112,9 @@ public class ZSYSignInService implements IZSYSignInService {
      * 上传.dat的打卡记录文件到库
      * @param uploadFile
      */
-    @Override
+//    @Override
     @Transactional
-    public void uploadToMysql(MultipartFile uploadFile) {
+    public void uploadToMysql2(MultipartFile uploadFile) {
         String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
         List<User> users = signInMapper.selectEffectUsers();
         Map<Integer,Long> userMap = new HashMap<>();
@@ -221,106 +223,325 @@ public class ZSYSignInService implements IZSYSignInService {
             }
         }
     }
-//    public void uploadToMysql(MultipartFile uploadFile) {
-//        String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
-//        if (!".dat".equals(suffix)){
-//            throw new ZSYServiceException("文件必须是.dat后缀");
-//        }
-//        BufferedReader br = null;
-//        try {
-//            InputStreamReader inputStreamReader = new InputStreamReader(uploadFile.getInputStream());
-//            br = new BufferedReader(inputStreamReader);
-//            String str;
-//            List<SignIn> signIns = new ArrayList<>();
-//            SignIn lastRecord = signInMapper.selectSingInLastRecord();
-//            SignIn firstRecord = signInMapper.selectSingInFirstRecord();
-//            //如果有最后一条记录,且当前这天的考勤时间是最后一条之后的
-//            if (lastRecord != null && firstRecord != null){
-//                while((str=br.readLine())!=null){//按行读取
-//                    String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
-//                    String time = str.substring(10, 29);
-//                    String trim = sort.trim();
-//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                    Date checkTime = sdf.parse(time);
-//                    if (checkTime.after(lastRecord.getCheckTime()) || checkTime.before(firstRecord.getCheckTime())){
-//                        User user = signInMapper.selectUserBySort(Integer.valueOf(trim));
-//                        if (user != null){
-//                            SignIn signIn = new SignIn();
-//                            signIn.setId(snowFlakeIDHelper.nextId());
-//                            signIn.setUserId(user.getId());
-//                            signIn.setCheckTime(checkTime);
-//                            signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
-//                            signIns.add(signIn);
-//                        }
-//                    }
-//                }
-//            }
-//            //如果没有最后一条记录,则全部都是新的
-//            else {
-//                while((str=br.readLine())!=null){//按行读取
-//                    String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
-//                    String time = str.substring(10, 29);
-//                    String trim = sort.trim();
-//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                    Date checkTime = sdf.parse(time);
-//                    User user = signInMapper.selectUserBySort(Integer.valueOf(trim));
-//                    if (user != null){
-//                        SignIn signIn = new SignIn();
-//                        signIn.setId(snowFlakeIDHelper.nextId());
-//                        signIn.setUserId(user.getId());
-//                        signIn.setCheckTime(checkTime);
-//                        signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
-//                        signIns.add(signIn);
-//                    }
-//                }
-//            }
-//            if (!CollectionUtils.isEmpty(signIns) && signInMapper.insertSignInBatch(signIns) == 0){
-//                throw new ZSYServiceException("批量导入考勤打卡记录失败");
-//            }
-//            List<User> users = signInMapper.selectEffectUsers();
-//            if (!CollectionUtils.isEmpty(signIns)){
-//                List<String> daysBetweenTwoDate =
-//                        DateHelper.getDaysBetweenTwoDate(signIns.get(0).getCheckTime(), signIns.get(signIns.size() - 1).getCheckTime());
-//                Date firstDate = signIns.get(0).getCheckTime();
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.setTime(firstDate);
-//                calendar.add(Calendar.DATE,-1);
-//                List<SignIn> signInList = new ArrayList<>();
-//                for (int i=0;i < daysBetweenTwoDate.size();i ++){
-//                    calendar.add(Calendar.DATE,1);
-//                    String prefix = sdf.format(calendar.getTime());
-//                    Date today0 = sdf2.parse(prefix + " 00:00:00");
-//                    Date today23 = sdf2.parse(prefix + " 23:59:59");
-//                    for (User user : users) {
-//                        SignIn existSignIn = signInMapper.selectSignInByUserAndTimeRange(user.getId(),today0,today23);
-//                        if (existSignIn == null){
-//                            SignIn signIn = new SignIn();
-//                            signIn.setId(snowFlakeIDHelper.nextId());
-//                            signIn.setUserId(user.getId());
-//                            signIn.setType(2);
-//                            signIn.setCheckTime(today0);
-//                            signInList.add(signIn);
-//                        }
-//                    }
-//                }
-//                if (!CollectionUtils.isEmpty(signInList)){
-//                    signInMapper.insertSignInBatch(signInList);
-//                }
-//            }
-//        } catch (IOException e) {
-//            throw new ZSYServiceException("上传考勤记录到数据库失败!");
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                br.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+
+    @Override
+    @Transactional
+    public void uploadToMysql(MultipartFile uploadFile) {
+        String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
+        if (!isExcel(suffix)){
+            throw new ZSYServiceException("只能上传Excel");
+        }
+        org.apache.poi.ss.usermodel.Workbook book = null;
+        try {
+            File file = multipartFileToFile(uploadFile);
+            String file_dir = file.getAbsolutePath();
+            book = getExcelWorkbook(file_dir);
+
+            org.apache.poi.ss.usermodel.Sheet sheet = getSheetByNum(book,0);
+            int lastRowNum = sheet.getLastRowNum();
+
+
+            List<String> fields = new ArrayList<>();
+            Row row = null;
+            row = sheet.getRow(0);
+            if( row != null ){
+                int lastCellNum = row.getLastCellNum();
+                Cell cell = null;
+                for( int j = 0 ; j <= lastCellNum ; j++ ){
+                    cell = row.getCell(j);
+                    if( cell != null ){
+//						cell.setCellType(CellType.STRING);
+                        String cellValue = cell.getStringCellValue();
+                        fields.add(cellValue);
+                    }
+                }
+            }
+            SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar calendar = Calendar.getInstance();
+            String dateStr = fields.get(0);
+            if (dateStr==null || dateStr.trim().equals("")){
+                throw new ZSYServiceException("上传文件内容出错或没有数据,请检查.error1");
+            }
+            if (dateStr.length()<34){
+                throw new ZSYServiceException("上传文件内容出错或没有数据,请检查.error2");
+            }
+            String dateStr1 = dateStr.substring(11, 21);
+            String dateStr2 = dateStr.substring(24);
+            if (dateStr1.equals("")){
+                throw new ZSYServiceException("上传文件内容出错或没有数据,请检查.error3");
+            }
+            if (dateStr2.equals("")){
+                throw new ZSYServiceException("上传文件内容出错或没有数据,请检查.error4");
+            }
+
+            //查询有工号的人员
+            List<User> users = signInMapper.selectEffectUsers();
+            Map<String,Long> userMap = new HashMap<>();
+            Map<String,String> nameMap = new HashMap<>();
+            for (User user : users) {
+                userMap.put(user.getJobNumber(),user.getId());
+                nameMap.put(user.getJobNumber(),user.getName());
+            }
+            Date beginDate = dateSDF.parse(dateStr1);
+            Date beginDate2 = null;
+            Date endDate = dateSDF.parse(dateStr2);
+            calendar.setTime(beginDate);
+            int beginTimeYear = calendar.get(Calendar.YEAR);
+            int beginTimeMonth = calendar.get(Calendar.MONTH) + 1;
+            int beginTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+            LocalDate start = LocalDate.of(beginTimeYear, beginTimeMonth, beginTimeDay);
+
+            calendar.setTime(endDate);
+            int endTimeYear = calendar.get(Calendar.YEAR);
+            int endTimeMonth = calendar.get(Calendar.MONTH) + 1;
+            int endTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+            LocalDate end = LocalDate.of(endTimeYear, endTimeMonth, endTimeDay);
+            Integer checkDays = (int)(end.toEpochDay() - start.toEpochDay() + 1);
+            if (checkDays<1){
+                throw new ZSYServiceException("获取Excel表格第一行日期信息有误");
+            }
+            //查询最后一条考勤记录
+            SignIn lastRecord = signInMapper.selectSingInLastRecord();
+            //如果有,那么此次只导入这条记录之后的数据
+            Integer lastToBegin  = 0;
+            if (lastRecord  != null){
+                //Excel的开始日期在最后一条记录之前的 情况
+                if (beginDate.compareTo(lastRecord.getCheckTime()) <= 0){
+                    //Excel的截止日期也在最后一条记录之前
+                    if (endDate.compareTo(lastRecord.getCheckTime())<=0){
+                        throw new ZSYServiceException("此次导入数据,已存在,请检查导入日期");
+                    }
+                    //Excel的截止日期也在最后一条记录之后,此次导入只需导入后面的数据
+                    else {
+                        calendar.setTime(lastRecord.getCheckTime());
+                        calendar.add(Calendar.DAY_OF_MONTH,1);
+                        beginDate2 = calendar.getTime();
+                        int beginTimeYear2 = calendar.get(Calendar.YEAR);
+                        int beginTimeMonth2 = calendar.get(Calendar.MONTH) + 1;
+                        int beginTimeDay2 = calendar.get(Calendar.DAY_OF_MONTH);
+                        LocalDate start2 = LocalDate.of(beginTimeYear2, beginTimeMonth2, beginTimeDay2);
+                        checkDays = (int)(end.toEpochDay() - start2.toEpochDay() + 1);
+                    }
+                }
+
+                //Excel的开始日期在最后一条记录之后
+                else {
+                    calendar.setTime(lastRecord.getCheckTime());
+                    int beginTimeYear4 = calendar.get(Calendar.YEAR);
+                    int beginTimeMonth4 = calendar.get(Calendar.MONTH) + 1;
+                    int beginTimeDay4 = calendar.get(Calendar.DAY_OF_MONTH);
+                    LocalDate start4 = LocalDate.of(beginTimeYear4, beginTimeMonth4, beginTimeDay4);
+
+                    calendar.setTime(beginDate);
+                    int endTimeYear4 = calendar.get(Calendar.YEAR);
+                    int endTimeMonth4 = calendar.get(Calendar.MONTH) + 1;
+                    int endTimeDay4 = calendar.get(Calendar.DAY_OF_MONTH);
+                    LocalDate end4 = LocalDate.of(endTimeYear4, endTimeMonth4, endTimeDay4);
+                    lastToBegin = (int)(end4.toEpochDay() - start4.toEpochDay()-1);
+                }
+            }
+            List<List<String>> userCheckList = new ArrayList<>();
+            for(int i = 3 ; i <= lastRowNum ; i++){
+                List<String> checkTimeList = new ArrayList<>();
+                Row row2 = null;
+                row2 = sheet.getRow(i);
+                if( row2 != null ){
+                    int lastCellNum = row2.getLastCellNum();
+                    Cell cell = null;
+                    for( int j = 0 ; j <= lastCellNum ; j++ ){
+                        cell = row2.getCell(j);
+                        if( cell != null ){
+//						cell.setCellType(CellType.STRING);
+                            String cellValue = cell.getStringCellValue();
+                            checkTimeList.add(cellValue);
+                        }
+                    }
+                }
+                userCheckList.add(checkTimeList);
+            }
+
+            if (CollectionUtils.isEmpty(userCheckList)){
+                throw new ZSYServiceException("表格暂无数据");
+            }
+            //遍历Excel,按用户准备数据
+            List<SignIn> totalList = new ArrayList<>();
+            for (List<String> userCheck : userCheckList) {
+                List<SignIn> signInList = new ArrayList<>();
+                String userName = nameMap.get(userCheck.get(2));
+                if (!CollectionUtils.isEmpty(userCheck)){
+                    String jobNumber = userCheck.get(2);
+                    Long userId = userMap.get(jobNumber);
+                    //能匹配到,就准备数据
+                    if (userId != null){
+                        for (int i = 0;i<checkDays;i++){
+                            String checkTimeStr  = null;
+                            String format = null;
+                            if (beginDate2  != null){
+                                //计算beginDate2和beginDate直接的天数
+                                calendar.setTime(beginDate);
+                                int beginTimeYear3 = calendar.get(Calendar.YEAR);
+                                int beginTimeMonth3 = calendar.get(Calendar.MONTH) + 1;
+                                int beginTimeDay3 = calendar.get(Calendar.DAY_OF_MONTH);
+                                LocalDate start3 = LocalDate.of(beginTimeYear3, beginTimeMonth3, beginTimeDay3);
+
+                                calendar.setTime(beginDate2);
+                                int endTimeYear3 = calendar.get(Calendar.YEAR);
+                                int endTimeMonth3 = calendar.get(Calendar.MONTH) + 1;
+                                int endTimeDay3 = calendar.get(Calendar.DAY_OF_MONTH);
+                                LocalDate end3 = LocalDate.of(endTimeYear3, endTimeMonth3, endTimeDay3);
+                                Integer dayRange = (int)(end3.toEpochDay() - start3.toEpochDay());
+                                calendar.setTime(beginDate2);
+                                calendar.add(Calendar.DAY_OF_MONTH,i);
+
+                                format = dateSDF.format(calendar.getTime());
+                                checkTimeStr = userCheck.get(5 + dayRange + i);
+                            }else {
+                                calendar.setTime(beginDate);
+                                calendar.add(Calendar.DAY_OF_MONTH,i);
+                                checkTimeStr = userCheck.get(5 + i);
+                                format = dateSDF.format(calendar.getTime());
+                            }
+                            if (checkTimeStr != null && !checkTimeStr.trim().equals("")){
+                                String[] checkTimeList = checkTimeStr.split("  \n");
+
+                                for (int j=0;j<checkTimeList.length;j++){
+                                    String singleCheckTimeStr = format + " " + checkTimeList[j].trim()+":00";
+                                    SignIn signIn = new SignIn();
+                                    signIn.setId(snowFlakeIDHelper.nextId());
+                                    signIn.setCheckTime(timeSDF.parse(singleCheckTimeStr));
+                                    signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
+                                    signIn.setUserId(userId);
+                                    signInList.add(signIn);
+                                }
+                            }else {
+                                String singleCheckTimeStr = format + " 00:00:00";
+                                SignIn signIn = new SignIn();
+                                signIn.setId(snowFlakeIDHelper.nextId());
+                                signIn.setCheckTime(timeSDF.parse(singleCheckTimeStr));
+                                signIn.setType(ZSYSignInType.MANUAL.getValue());
+                                signIn.setUserId(userId);
+                                signInList.add(signIn);
+                            }
+                        }
+                        //上一条记录到此次导入的第一天直接的数据
+                        if (lastToBegin > 0){
+                            for (int k = 0;k<lastToBegin;k++){
+                                calendar.setTime(beginDate);
+                                calendar.add(Calendar.DAY_OF_MONTH,-(k+1));
+                                Date time = calendar.getTime();
+                                String format = dateSDF.format(time);
+                                Date checkTime = timeSDF.parse(format + " 00:00:00");
+                                SignIn signIn = new SignIn();
+                                signIn.setId(snowFlakeIDHelper.nextId());
+                                signIn.setUserId(userId);
+                                signIn.setType(ZSYSignInType.MANUAL.getValue());
+                                signIn.setCheckTime(checkTime);
+                                signInList.add(signIn);
+                            }
+                        }
+                        totalList.addAll(signInList);
+                    }else {
+                        throw new ZSYServiceException("工号: "+jobNumber+" 的用户没有匹配上,请让管理员查看");
+                    }
+                }
+//                System.out.println(userName+" 的signInList = " + signInList.size());
+//                System.out.println("+++++++++++++++++++++++++++++++++++++++++");
+//                System.out.println("user = " + userCheck.get(0)+" "+userCheck.get(2)+" "
+//                        +userCheck.get(12).substring(0,5)+" "+userCheck.get(12).substring(userCheck.get(12).length()-7,userCheck.get(12).length()-2));
+            }
+            if (!CollectionUtils.isEmpty(totalList)){
+                if (signInMapper.insertSignInBatch(totalList)==0){
+                    throw new ZSYServiceException("导入考勤记录失败");
+                }
+                List<UserRestHoursLog> totalRestHourList = new ArrayList<>();
+                for (List<String> userCheck : userCheckList) {
+                    String userName = nameMap.get(userCheck.get(2));
+                    Long userId = userMap.get(userCheck.get(2));
+                    Date checkDate = null;
+                    //按日期查找当天打卡时间,判断是否要增加 调休
+                    if (beginDate2 != null){
+                        checkDate=beginDate2;
+
+                    }else {
+                        checkDate=beginDate;
+                    }
+                    List<UserRestHoursLog> restHoursLogList = new ArrayList<>();
+                    for (int x = 0;x<checkDays;x++){
+                        calendar.setTime(checkDate);
+                        calendar.add(Calendar.DAY_OF_MONTH,x);
+                        String checkDateStr = dateSDF.format(calendar.getTime());
+                        Date startTime = timeSDF.parse(checkDateStr + " 07:00:00");
+                        Date endTime = timeSDF.parse(checkDateStr + " 23:59:59");
+                        Date today15 = timeSDF.parse(checkDateStr + " 15:00:00");
+                        calendar.setTime(startTime);
+                        calendar.add(Calendar.DAY_OF_MONTH,1);
+                        Date nextDate = calendar.getTime();
+                        String nextDateStr = dateSDF.format(nextDate);
+                        Date nextSeven = timeSDF.parse(nextDateStr + " 07:00:00");
+                        //查询当天的考勤记录
+                        List<SignIn> todayList = totalList.stream()
+                                .filter(signIn -> (signIn.getCheckTime().compareTo(startTime) >= 0) && (signIn.getCheckTime().compareTo(endTime) <= 0)
+                                && signIn.getUserId().equals(userId) && signIn.getType() != 2)
+                                .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
+                        //查询第二天 7点前的记录
+                        List<SignIn> nextBeforSeven = totalList.stream()
+                                .filter(signIn -> ((signIn.getCheckTime().compareTo(nextSeven) < 0)) && (signIn.getCheckTime().compareTo(endTime) > 0)
+                                        && signIn.getUserId().equals(userId) && signIn.getType() != 2)
+                                .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
+                        Date checkInTime  = null;
+                        Date checkOutTime =  null;
+                        //当天的考勤不为空 且 第一条记录是在15点之前 那么 这条记录就是当天的 上班时间
+                        if (!CollectionUtils.isEmpty(todayList) && today15.compareTo(todayList.get(0).getCheckTime())>0){
+                            checkInTime = todayList.get(0).getCheckTime();
+                            //如果第二天 7点之前有打卡,   第一条为  前一天的 下班卡
+                            if (!CollectionUtils.isEmpty(nextBeforSeven)){
+                                checkOutTime = nextBeforSeven.get(0).getCheckTime();
+                            }else {
+                                //如果 今天的最后一条记录是再15点之后 就是 今天的下班卡
+                                if (todayList.get(todayList.size()-1).getCheckTime().compareTo(today15)>0){
+                                    checkOutTime = todayList.get(todayList.size()-1).getCheckTime();
+                                }
+                            }
+                        }
+
+
+
+                        if (checkInTime!=null &&  checkOutTime!=null){
+                            Long workTimeMillis = checkOutTime.getTime() - checkInTime.getTime();
+                            if (workTimeMillis > 9*3600*1000){
+                                Long eworkTimeMillis = workTimeMillis - (9*3600*1000);
+                                double restHour= eworkTimeMillis/(3600*1000);
+                                if (restHour>=1){
+                                    UserRestHoursLog restHoursLog = new UserRestHoursLog();
+                                    restHoursLog.setId(snowFlakeIDHelper.nextId());
+                                    restHoursLog.setUserId(userId);
+                                    restHoursLog.setUserName(userName);
+                                    restHoursLog.setRestHours(BigDecimal.valueOf(restHour));
+                                    restHoursLog.setType(ZSYRestHoursType.EXTRA.getValue());
+                                    restHoursLog.setContent(checkDateStr+" 日常加班累计调休");
+                                    restHoursLog.setYear(calendar.get(Calendar.YEAR));
+                                    restHoursLog.setCreateTime(new Date());
+                                    restHoursLog.setRecordTime(checkInTime);
+                                    restHoursLogList.add(restHoursLog);
+                                }
+                            }
+                        }
+                    }
+                    totalRestHourList.addAll(restHoursLogList);
+//                    System.out.println(userName+"  的restHoursLogList = " + restHoursLogList.size());
+                }
+                if (!CollectionUtils.isEmpty(totalRestHourList)){
+                    restHoursLogMapper.insertBatch(totalRestHourList);
+                }
+                System.out.println("totalList = " + totalRestHourList.size());
+            }
+
+        } catch (Exception e) {
+            throw new ZSYServiceException(e.getMessage());
+        }
+
+    }
 
     /**
      * 导入记录的最后一条记录打卡时间
@@ -397,8 +618,8 @@ public class ZSYSignInService implements IZSYSignInService {
                 Date fifteen = null;
                 try {
                     today0 = sdf.parse(prefix + " 00:00:00");
-                    today10 = sdf.parse(prefix + " 10:01:00");
-                    today18 = sdf.parse(prefix + " 18:00:00");
+                    today10 = sdf.parse(prefix + " 09:31:00");
+                    today18 = sdf.parse(prefix + " 18:30:00");
                     today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
                     nextSeven = sdf.parse(nextPrefix + " 07:00:00");
@@ -518,8 +739,8 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -561,8 +782,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -600,8 +821,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -651,7 +872,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     resDTO.setLeaveTime(BigDecimal.ZERO);
                 }
                 if (resDTO.getWorkTime() != null){
-                    if (resDTO.getWorkTime() > 8.5*60*60*1000){
+                    if (resDTO.getWorkTime() > 9*60*60*1000){
                         resDTO.setLessThanNine(0);
                     }else {
                         resDTO.setLessThanNine(1);
@@ -766,8 +987,8 @@ public class ZSYSignInService implements IZSYSignInService {
                 Date today23 = null;
                 try {
                     today0 = sdf.parse(prefix + " 00:00:00");
-                    today10 = sdf.parse(prefix + " 10:01:00");
-                    today18 = sdf.parse(prefix + " 18:00:00");
+                    today10 = sdf.parse(prefix + " 09:31:00");
+                    today18 = sdf.parse(prefix + " 18:30:00");
                     today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
                     nextSeven = sdf.parse(nextPrefix + " 07:00:00");
@@ -887,8 +1108,8 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -930,8 +1151,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -969,8 +1190,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -1020,7 +1241,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     resDTO.setLeaveTime(BigDecimal.ZERO);
                 }
                 if (resDTO.getWorkTime() != null){
-                    if (resDTO.getWorkTime() > 8.5*60*60*1000){
+                    if (resDTO.getWorkTime() > 9*60*60*1000){
                         resDTO.setLessThanNine(0);
                     }else {
                         resDTO.setLessThanNine(1);
@@ -1438,8 +1659,8 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -1464,8 +1685,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -1481,8 +1702,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -1629,8 +1850,8 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -1655,8 +1876,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -1672,8 +1893,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                 - dateList.get(0).getTime();
                         resDTO.setWorkTime(workTimeMillis);
                         //当工作时长大于10小时,计算为加班时间
-                        if (workTimeMillis != null && workTimeMillis > 10*60*60*1000){
-                            Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                        if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                            Long eWorkTime = workTimeMillis - (1000*60*60*9);
                             resDTO.setEWorkTime(eWorkTime);
                         }else {
                             resDTO.setEWorkTime(null);
@@ -1701,6 +1922,9 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     public String excelSignInData(String yearAndMonth){
+        if (yearAndMonth == null || yearAndMonth.trim().equals("")){
+            throw new ZSYServiceException("请选择月份");
+        }
         long time1 = System.currentTimeMillis();
         //查询给定年月的所有考勤记录
         List<SignInBO> signInBOS = signInMapper.selectAllSignInByMonth(yearAndMonth);
@@ -1825,8 +2049,8 @@ public class ZSYSignInService implements IZSYSignInService {
                             }
                             resDTO.setWorkTime(workTimeMillis);
                             //当工作时长大于10小时,计算为加班时间
-                            if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
-                                Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                            if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                                Long eWorkTime = workTimeMillis - (1000*60*60*9);
                                 resDTO.setEWorkTime(eWorkTime);
                             }else {
                                 resDTO.setEWorkTime(null);
@@ -1852,8 +2076,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                     - dateList.get(0).getTime();
                             resDTO.setWorkTime(workTimeMillis);
                             //当工作时长大于10小时,计算为加班时间
-                            if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
-                                Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                            if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                                Long eWorkTime = workTimeMillis - (1000*60*60*9);
                                 resDTO.setEWorkTime(eWorkTime);
                             }else {
                                 resDTO.setEWorkTime(null);
@@ -1869,8 +2093,8 @@ public class ZSYSignInService implements IZSYSignInService {
                                     - dateList.get(0).getTime();
                             resDTO.setWorkTime(workTimeMillis);
                             //当工作时长大于10小时,计算为加班时间
-                            if (workTimeMillis != null && workTimeMillis > 9.5*60*60*1000){
-                                Long eWorkTime = workTimeMillis - (1000*60*60*10);
+                            if (workTimeMillis != null && workTimeMillis > 9*60*60*1000){
+                                Long eWorkTime = workTimeMillis - (1000*60*60*9);
                                 resDTO.setEWorkTime(eWorkTime);
                             }else {
                                 resDTO.setEWorkTime(null);
@@ -2013,7 +2237,8 @@ public class ZSYSignInService implements IZSYSignInService {
      * @param userId 用户id
      */
     @Override
-    public RestHoursResDTO getPersonalRestHours(Long userId) {
+    public List<RestHoursResDTO> getPersonalRestHours(Long userId) {
+        List<RestHoursResDTO> list = new ArrayList<>();
         User user = userMapper.selectById(userId);
         if (user == null){
             throw new ZSYServiceException("当前用户不存在");
@@ -2021,8 +2246,16 @@ public class ZSYSignInService implements IZSYSignInService {
         RestHoursResDTO resDTO = new RestHoursResDTO();
         resDTO.setUserId(user.getId());
         resDTO.setUserName(user.getName());
-        resDTO.setRestHours(user.getRestHours());
-        return resDTO;
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        BigDecimal totalRestHours = restHoursLogMapper.selectTotalRestHours(userId, instance.get(Calendar.YEAR));
+        BigDecimal goneRestHours = restHoursLogMapper.selectUsedHours(userId, instance.get(Calendar.YEAR));
+        resDTO.setTotalRestHours(totalRestHours);
+        resDTO.setGoneRestHours(BigDecimal.ZERO.subtract(goneRestHours));
+        resDTO.setLeftRestHours(totalRestHours.add(goneRestHours));
+        resDTO.setEndDate(instance.get(Calendar.YEAR)+"-12-31");
+        list.add(resDTO);
+        return list;
     }
 
     /**
@@ -2087,14 +2320,19 @@ public class ZSYSignInService implements IZSYSignInService {
                 UserRestHoursListResDTO resDTO = new UserRestHoursListResDTO();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
-                int year = calendar.get(Calendar.YEAR);
+                Integer year = calendar.get(Calendar.YEAR);
+                if (reqDTO.getYear() != null){
+                    year = reqDTO.getYear();
+                }
                 String endDate = year+"-12-31 23:59:59";
                 resDTO.setEndDate(endDate);
-                resDTO.setLeftRestHours(user.getRestHours());
                 //查询请假扣除
-                BigDecimal goneRestHours = restHoursLogMapper.selectUsedHours(user.getId());
+                BigDecimal goneRestHours = restHoursLogMapper.selectUsedHours(user.getId(),year);
+                //查询总调休
+                BigDecimal totalRestHours = restHoursLogMapper.selectTotalRestHours(user.getId(),year);
+                resDTO.setLeftRestHours(totalRestHours.add(goneRestHours));
                 resDTO.setGoneRestHours(BigDecimal.ZERO.subtract(goneRestHours));
-                resDTO.setTotalRestHours(user.getRestHours().subtract(goneRestHours));
+                resDTO.setTotalRestHours(totalRestHours);
                 resDTO.setUserId(user.getId());
                 resDTO.setUserName(user.getName());
                 list.add(resDTO);
@@ -2112,7 +2350,7 @@ public class ZSYSignInService implements IZSYSignInService {
     public void addUserRestHoursLog(AddUserRestHourLogReqDTO reqDTO) {
         User user = userMapper.selectById(reqDTO.getUserId());
         if (user == null){
-            throw new ZSYServiceException("当前用户 不存在");
+            throw new ZSYServiceException("当前用户不存在");
         }
         //修改用户剩余调休
         user.setRestHours(user.getRestHours().add(reqDTO.getRestHour()));
@@ -2121,13 +2359,17 @@ public class ZSYSignInService implements IZSYSignInService {
         //创建日志
         UserRestHoursLog userRestHoursLog = new UserRestHoursLog();
         userRestHoursLog.setId(snowFlakeIDHelper.nextId());
-        userRestHoursLog.setRecordTime(new Date());
+        userRestHoursLog.setRecordTime(reqDTO.getRecordTime());
         userRestHoursLog.setCreateTime(new Date());
         userRestHoursLog.setContent(reqDTO.getContent().trim());
         userRestHoursLog.setRestHours(reqDTO.getRestHour());
         userRestHoursLog.setType(ZSYRestHoursType.MANUAL.getValue());
         userRestHoursLog.setUserId(user.getId());
         userRestHoursLog.setUserName(user.getName());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(reqDTO.getRecordTime());
+        int year = calendar.get(Calendar.YEAR);
+        userRestHoursLog.setYear(year);
         restHoursLogMapper.insert(userRestHoursLog);
     }
 
@@ -2405,7 +2647,7 @@ public class ZSYSignInService implements IZSYSignInService {
                         Long eWorkTime = signInResDTOS.get(signInResDTOS.size() - 1 - i).getEWorkTime();
                         double eWorkHour = 0;
                         if (eWorkTime != null){
-                            eWorkTime = eWorkTime + 30*60*1000;
+//                            eWorkTime = eWorkTime + 30*60*1000;
                             Long hour = eWorkTime /1000/60/60;
                             Long mins = eWorkTime/1000/60%60;
                             Double afterPoint = 0.0;
@@ -2415,14 +2657,15 @@ public class ZSYSignInService implements IZSYSignInService {
                             if (mins>=55 && mins <= 60){
                                 afterPoint = 1.0;
                             }
-                            eWorkHour = hour+afterPoint;
+                            eWorkHour = hour;
                             totalEWorkHours = totalEWorkHours + eWorkHour;
                             row4Celli.setCellStyle(style7);
-                            if (eWorkHour>=0.5){
+                            if (eWorkHour>=1){
                                 eWorkDays += 1;
                                 row4Celli.setCellStyle(style6);
+                                row3Celli.setCellStyle(style6);
                             }
-                            row3Celli.setCellStyle(style6);
+
                             row4Celli.setCellValue(eWorkHour);
 
                         }else {
@@ -2456,7 +2699,7 @@ public class ZSYSignInService implements IZSYSignInService {
                                 if (mins>=55 && mins <= 60){
                                     afterPoint = 1.0;
                                 }
-                                eWorkHour = hour+afterPoint;
+                                eWorkHour = hour;
                                 row4Celli.setCellValue(eWorkHour);
                             }else {
                                 row3Celli.setCellValue("00:00:00");

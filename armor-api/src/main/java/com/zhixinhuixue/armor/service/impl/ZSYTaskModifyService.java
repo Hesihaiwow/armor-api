@@ -20,6 +20,7 @@ import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYTaskModifyService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.FunctionAction;
+import com.zhixinhuixue.armor.source.enums.TaskLevel;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +111,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             taskModify.setReviewStatus(1);
             taskModify.setTaskId(taskId);
             taskModify.setUserId(userId);
+            taskModify.setTaskLevel(addTaskModifyReqDTO.getTaskLevel());
 
             List<TaskTempFunctionReqDTO> taskModifyFunctionList = addTaskModifyReqDTO.getTaskModifyFunctionList();
             List<TaskModifyFunction> functionList = new ArrayList<>();
@@ -197,6 +199,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 resDTO.setUserName(modifyBO.getUserName());
                 resDTO.setBeginTime(modifyBO.getBeginTime());
                 resDTO.setEndTime(modifyBO.getEndTime());
+                Integer taskLevel = modifyBO.getTaskLevel();
+                if (taskLevel != null){{
+                    resDTO.setTaskLevel(taskLevel);
+                    resDTO.setTaskLevelName(TaskLevel.getName(taskLevel));
+                }}
                 modifyListResDTOList.add(resDTO);
             });
         }
@@ -228,6 +235,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 resDTO.setUserName(modifyBO.getUserName());
                 resDTO.setBeginTime(modifyBO.getBeginTime());
                 resDTO.setEndTime(modifyBO.getEndTime());
+                Integer taskLevel = modifyBO.getTaskLevel();
+                if (taskLevel != null){
+                    resDTO.setTaskLevel(taskLevel);
+                    resDTO.setTaskLevelName(TaskLevel.getName(taskLevel));
+                }
                 modifyListResDTOPage.add(resDTO);
             });
         }
@@ -259,6 +271,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 resDTO.setUserName(modifyBO.getUserName());
                 resDTO.setBeginTime(modifyBO.getBeginTime());
                 resDTO.setEndTime(modifyBO.getEndTime());
+                Integer taskLevel = modifyBO.getTaskLevel();
+                if (taskLevel != null){{
+                    resDTO.setTaskLevel(taskLevel);
+                    resDTO.setTaskLevelName(TaskLevel.getName(taskLevel));
+                }}
                 modifyListResDTOList.add(resDTO);
             });
         }
@@ -293,6 +310,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 resDTO.setUserName(modifyBO.getUserName());
                 resDTO.setBeginTime(modifyBO.getBeginTime());
                 resDTO.setEndTime(modifyBO.getEndTime());
+                Integer taskLevel = modifyBO.getTaskLevel();
+                if (taskLevel != null){{
+                    resDTO.setTaskLevel(taskLevel);
+                    resDTO.setTaskLevelName(TaskLevel.getName(taskLevel));
+                }}
                 modifyListResDTOPage.add(resDTO);
             });
         }
@@ -334,12 +356,14 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             taskModify.setWorkHours(editTaskModifyReqDTO.getWorkHours());
             taskModify.setReviewStatus(2);
             taskModify.setReviewTime(new Date());
+            taskModify.setTaskLevel(editTaskModifyReqDTO.getTaskLevel());
 
             TaskUser taskUser = taskUserMapper.selectByTaskAndUser(taskId,userId);
             taskUser.setTaskHours(taskModify.getWorkHours().doubleValue());
             taskUser.setDescription(taskModify.getDescription());
             taskUser.setBeginTime(taskModify.getBeginTime());
             taskUser.setEndTime(taskModify.getEndTime());
+            taskUser.setTaskLevel(editTaskModifyReqDTO.getTaskLevel());
 
             //删除原来的周工时分配
             userWeekMapper.deleteByTaskIdAndUserId(taskId,userId);
@@ -528,7 +552,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             }
             taskModifyDetailResDTO.setOldFunctionResDTOList(functionResDTOList);
         }
-
+        Integer taskLevel = taskModifyDetailBO.getTaskLevel();
+        if (taskLevel != null){
+            taskModifyDetailResDTO.setTaskLevel(taskLevel);
+            taskModifyDetailResDTO.setTaskLevelName(TaskLevel.getName(taskLevel));
+        }
         return taskModifyDetailResDTO;
     }
 
@@ -570,6 +598,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             taskModify.setBeginTime(editTaskModifyReqDTO.getBeginTime());
             taskModify.setEndTime(editTaskModifyReqDTO.getEndTime());
             taskModify.setWorkHours(editTaskModifyReqDTO.getWorkHours());
+            taskModify.setTaskLevel(editTaskModifyReqDTO.getTaskLevel());
 
             userWeeks.stream().forEach(userWeekReqDTO -> {
                 TaskModifyUserWeek taskModifyUserWeek = new TaskModifyUserWeek();

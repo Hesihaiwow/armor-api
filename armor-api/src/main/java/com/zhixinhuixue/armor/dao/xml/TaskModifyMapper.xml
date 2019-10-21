@@ -3,30 +3,31 @@
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskModifyMapper">
 
     <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskModify">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
-        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
-        <result column="work_hours" property="workHours" jdbcType="DECIMAL"></result>
-        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
-        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
-        <result column="review_time" property="reviewTime" jdbcType="TIMESTAMP"></result>
-        <result column="type" property="type" jdbcType="INTEGER"></result>
-        <result column="status" property="status" jdbcType="INTEGER"></result>
-        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
-        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
-        <result column="description" property="description" jdbcType="VARCHAR"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="work_hours" property="workHours" jdbcType="DECIMAL"/>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="review_time" property="reviewTime" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="task_level" property="taskLevel" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="TaskModifyBOMap" type="com.zhixinhuixue.armor.model.bo.TaskModifyBO" extends="BaseMap">
-        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
-        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
-        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"></result>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="TaskModifyDetailMap" type="com.zhixinhuixue.armor.model.bo.TaskModifyDetailBO" extends="BaseMap">
-        <result column="task_name" property="taskName" jdbcType="VARCHAR"></result>
-        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <collection property="taskModifyUserWeeks" column="tmId = id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskModifyUserWeekMapper.selectByTmId"
                     ofType="com.zhixinhuixue.armor.model.pojo.TaskModifyUserWeek"/>
@@ -39,12 +40,12 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskModify">
         INSERT INTO `task_modify_table`
         (`id`,`task_id`,`user_id`,`work_hours`,`type`,`status`,`reason`,`review_status`
-        ,`begin_time`,`end_time`,`create_time`,`review_time`,`description`)
+        ,`begin_time`,`end_time`,`create_time`,`review_time`,`description`,`task_level`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{workHours,jdbcType=DECIMAL}
         ,#{type,jdbcType=INTEGER},#{status,jdbcType=INTEGER},#{reason,jdbcType=VARCHAR},#{reviewStatus,jdbcType=INTEGER}
         ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{reviewTime,jdbcType=TIMESTAMP}
-        ,#{description,jdbcType=VARCHAR})
+        ,#{description,jdbcType=VARCHAR},#{taskLevel,jdbcType=INTEGER})
     </insert>
 
     <!--更新任务修改申请-->
@@ -71,6 +72,9 @@
             </if>
             <if test="reviewTime != null">
                 `review_time` = #{reviewTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="taskLevel != null">
+                `task_level` = #{taskLevel,jdbcType=INTEGER},
             </if>
         </set>
         WHERE `id` = #{id}

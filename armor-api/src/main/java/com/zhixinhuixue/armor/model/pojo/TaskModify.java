@@ -45,6 +45,11 @@ public class TaskModify {
     private Integer type;
 
     /**
+     * 任务级别
+     */
+    private Integer taskLevel;
+
+    /**
      * 状态(0:待审核,1:审核通过)
      */
     private Integer status;
@@ -73,6 +78,14 @@ public class TaskModify {
      * 原因
      */
     private String reason;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
 
     public String getDescription() {
         return description;

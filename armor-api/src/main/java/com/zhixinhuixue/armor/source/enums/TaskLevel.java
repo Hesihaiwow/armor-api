@@ -2,24 +2,24 @@ package com.zhixinhuixue.armor.source.enums;
 
 /**
  * @author SCH
- * @date 2019/2/22 13:56
- * 打卡签到类型
+ * @date 2019/10/10 09:56
+ * 调休修改类型
  */
-public enum ZSYSignInType {
+public enum TaskLevel {
 
-    NORMAL_SIGN(0,"正常"),RE_SIGN(1,"补打卡"),MANUAL(2,"手动补录");
+    ONE(1,"一级"),TWO(2,"二级"),THREE(3,"三级"),FOUR(4,"四级"),FIVE(5,"五级");
     private int value;
     private String name;
 
-    ZSYSignInType(int value, String name) {
+    TaskLevel(int value, String name) {
         this.value = value;
         this.name = name;
     }
 
     public static String getName(int value) {
-        for (ZSYSignInType signInType : ZSYSignInType.values()) {
-            if (signInType.getValue() == value) {
-                return signInType.getName();
+        for (TaskLevel level : TaskLevel.values()) {
+            if (level.getValue() == value) {
+                return level.getName();
             }
         }
         return "";

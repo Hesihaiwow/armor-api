@@ -11,9 +11,22 @@ public class QueryUserRestHoursReqDTO {
     private Integer jobRole;
 
     /**
+     * 年份
+     */
+    private Integer year;
+
+    /**
      * 用户
      */
     private Long userId;
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
 
     public Integer getJobRole() {
         return jobRole;

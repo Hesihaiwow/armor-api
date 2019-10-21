@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYExtraWorkMapper;
+import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
 import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
@@ -12,12 +13,10 @@ import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.AddExtraWorkReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExtraWorkDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExtraWorkResDTO;
-import com.zhixinhuixue.armor.model.pojo.ExtraWork;
-import com.zhixinhuixue.armor.model.pojo.ExtraWorkTask;
-import com.zhixinhuixue.armor.model.pojo.Task;
-import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYExtraWorkService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author SCH
@@ -45,6 +42,8 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
     private IZSYTaskMapper taskMapper;
+    @Autowired
+    private IZSYRestHoursLogMapper restHoursLogMapper;
 
     /**
      * 新增加班申请
@@ -177,6 +176,23 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         if (extraWorkMapper.updateExtraWorkById(extraWork,ewId) == 0){
             throw new ZSYServiceException("通过加班申请失败");
         }
+        User user = userMapper.selectById(extraWork.getUserId());
+        //插入调休日志
+        UserRestHoursLog restHoursLog = new UserRestHoursLog();
+        restHoursLog.setId(snowFlakeIDHelper.nextId());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(extraWork.getBeginTime());
+        int year = calendar.get(Calendar.YEAR);
+        restHoursLog.setYear(year);
+        restHoursLog.setUserId(user.getId());
+        restHoursLog.setUserName(user.getName());
+        restHoursLog.setType(ZSYRestHoursType.EWORK.getValue());
+        restHoursLog.setRestHours(BigDecimal.valueOf(extraWork.getWorkHours()));
+        restHoursLog.setContent(extraWork.getReason());
+        restHoursLog.setEwId(ewId);
+        restHoursLog.setCreateTime(new Date());
+        restHoursLog.setRecordTime(extraWork.getBeginTime());
+        restHoursLogMapper.insert(restHoursLog);
     }
 
     /**

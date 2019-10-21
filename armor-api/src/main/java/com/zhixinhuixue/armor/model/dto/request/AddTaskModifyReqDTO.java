@@ -41,6 +41,9 @@ public class AddTaskModifyReqDTO {
 //    @Size(min = 1,max = 255,message = "任务描述必须在{min}~{max}之间")
     private String description;
 
+    @NotNull(message = "任务级别不能为空")
+    private Integer taskLevel;
+
     @NotNull(message = "任务周工时不能为空")
     private List<UserWeekReqDTO> userWeeks;
 
@@ -52,6 +55,14 @@ public class AddTaskModifyReqDTO {
 
     public void setTaskModifyFunctionList(List<TaskTempFunctionReqDTO> taskModifyFunctionList) {
         this.taskModifyFunctionList = taskModifyFunctionList;
+    }
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
     }
 
     public String getDescription() {

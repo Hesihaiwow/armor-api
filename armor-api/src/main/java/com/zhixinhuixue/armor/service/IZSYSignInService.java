@@ -127,7 +127,7 @@ public interface IZSYSignInService {
      * @author sch
      * @param userId 用户id
      */
-    RestHoursResDTO getPersonalRestHours(Long userId);
+    List<RestHoursResDTO> getPersonalRestHours(Long userId);
 
     /**
      * 个人查看调休修改日志

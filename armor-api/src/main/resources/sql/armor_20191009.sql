@@ -23,5 +23,16 @@ ALTER TABLE `user_rest_hours_log`
 MODIFY COLUMN `type`  tinyint(2) NOT NULL DEFAULT 0 COMMENT '类型(1:手动修改, 2:请假扣除,3: 日常加班 , 4:加班申请)' AFTER `rest_hours`,
 ADD COLUMN `year`  int(4) NOT NULL COMMENT '年份' AFTER `content`;
 
+ALTER TABLE `user_rest_hours_log`
+ADD COLUMN `ew_id`  bigint(20) NULL DEFAULT NULL COMMENT '加班申请id' AFTER `leave_id`;
+
+ALTER TABLE `task_modify_table`
+ADD COLUMN `task_level`  tinyint(2) NULL DEFAULT NULL COMMENT '任务级别' AFTER `description`;
+
+ALTER TABLE `sign_in`
+MODIFY COLUMN `type`  int(1) NOT NULL COMMENT '状态(0:正常打卡, 1:补打卡, 2:手动补录)' AFTER `user_id`;
+
+
+
 
 

@@ -7,7 +7,7 @@ package com.zhixinhuixue.armor.source.enums;
  */
 public enum ZSYRestHoursType {
 
-    MANUAL(1,"手动修改"),LEAVE(2,"请假扣除"),EXTRA(3,"加班累加");
+    MANUAL(1,"手动修改"),LEAVE(2,"请假扣除"),EXTRA(3,"日常加班累加"),EWORK(4,"加班申请累加");
     private int value;
     private String name;
 

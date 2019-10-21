@@ -45,9 +45,31 @@ public class TaskUserBaseInfoResDTO {
     private String description;
 
     /**
+     * 任务级别
+     */
+    private Integer taskLevel;
+    private String taskLevelName;
+
+    /**
      * 周工作量
      */
     private List<UserWeekResDTO> userWeeks;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
+
+    public String getTaskLevelName() {
+        return taskLevelName;
+    }
+
+    public void setTaskLevelName(String taskLevelName) {
+        this.taskLevelName = taskLevelName;
+    }
 
     public String getUserName() {
         return userName;

@@ -14,9 +14,24 @@ public class RestHoursResDTO {
     private String userName;
 
     /**
-     * 调休时间
+     * 总的调休
      */
-    private BigDecimal restHours;
+    private BigDecimal totalRestHours;
+
+    /**
+     * 可用调休
+     */
+    private BigDecimal leftRestHours;
+
+    /**
+     * 已用调休
+     */
+    private BigDecimal goneRestHours;
+
+    /**
+     * 到期日
+     */
+    private String endDate;
 
     public Long getUserId() {
         return userId;
@@ -34,11 +49,35 @@ public class RestHoursResDTO {
         this.userName = userName;
     }
 
-    public BigDecimal getRestHours() {
-        return restHours;
+    public BigDecimal getTotalRestHours() {
+        return totalRestHours;
     }
 
-    public void setRestHours(BigDecimal restHours) {
-        this.restHours = restHours;
+    public void setTotalRestHours(BigDecimal totalRestHours) {
+        this.totalRestHours = totalRestHours;
+    }
+
+    public BigDecimal getLeftRestHours() {
+        return leftRestHours;
+    }
+
+    public void setLeftRestHours(BigDecimal leftRestHours) {
+        this.leftRestHours = leftRestHours;
+    }
+
+    public BigDecimal getGoneRestHours() {
+        return goneRestHours;
+    }
+
+    public void setGoneRestHours(BigDecimal goneRestHours) {
+        this.goneRestHours = goneRestHours;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 }

@@ -45,6 +45,28 @@ public class TaskModifyListResDTO {
      */
     private String reason;
 
+    /**
+     * 任务级别
+     */
+    private Integer taskLevel;
+    private String taskLevelName;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
+
+    public String getTaskLevelName() {
+        return taskLevelName;
+    }
+
+    public void setTaskLevelName(String taskLevelName) {
+        this.taskLevelName = taskLevelName;
+    }
+
     public String getDescription() {
         return description;
     }

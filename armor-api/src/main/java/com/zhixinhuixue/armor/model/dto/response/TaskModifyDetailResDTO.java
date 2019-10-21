@@ -62,6 +62,12 @@ public class TaskModifyDetailResDTO {
     private Date endTime;
 
     /**
+     * 任务级别
+     */
+    private Integer taskLevel;
+    private String taskLevelName;
+
+    /**
      * 功能点
      */
     private List<TaskModifyFunctionResDTO> functionResDTOList;
@@ -71,6 +77,22 @@ public class TaskModifyDetailResDTO {
      * 周工时分配
      */
     private List<UserWeekResDTO> userWeekResDTOList;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
+
+    public String getTaskLevelName() {
+        return taskLevelName;
+    }
+
+    public void setTaskLevelName(String taskLevelName) {
+        this.taskLevelName = taskLevelName;
+    }
 
     public List<TaskTempFunctionResDTO> getOldFunctionResDTOList() {
         return oldFunctionResDTOList;
