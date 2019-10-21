@@ -100,7 +100,7 @@
                 this.upBugData.description = val
             },
             save(){
-                console.log(this.upBugData)
+                // console.log(this.upBugData)
 
                 http.zsyPostHttp(`/task-bug/add`, this.upBugData, (res) => {
                     this.$message({

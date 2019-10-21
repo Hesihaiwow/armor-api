@@ -2,7 +2,7 @@
     <div class="bug-index">
         <div class="title">
             <div class="left fl">
-                <span class="name">项目名称</span>
+                <span class="name">{{taskName}}</span>
             </div>
             <div class="right fr">
                 <el-radio-group v-model="upData.selectAll" style="margin-right: 40px;margin-top: -1px;" @change="rout">
@@ -15,16 +15,16 @@
         <div class="con">
             <div class="bug-msg">
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:1,selectAll:upData.selectAll }}" ><span class="color-info">所有的BUG(共 {{num.totalNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:1,selectAll:upData.selectAll,taskName:taskName }}" ><span class="color-info">所有的BUG(共 {{num.totalNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:2,selectAll:upData.selectAll }}" ><span class="color-danger">待处理的BUG(共 {{num.notSolvedNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:2,selectAll:upData.selectAll,taskName:taskName }}" ><span class="color-danger">待处理的BUG(共 {{num.notSolvedNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:3,selectAll:upData.selectAll }}" ><span class="color-warning">待确认的BUG(共 {{num.solvedNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:3,selectAll:upData.selectAll,taskName:taskName }}" ><span class="color-warning">待确认的BUG(共 {{num.solvedNum}} 条)</span></router-link>
                 </div>
                 <div>
-                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:4,selectAll:upData.selectAll }}" ><span class="color-success">已关闭的BUG(共 {{num.closedNum}} 条)</span></router-link>
+                    <router-link :to="{ path: '/index/bug/list', query: { taskId: upData.taskId,listType:4,selectAll:upData.selectAll,taskName:taskName}}" ><span class="color-success">已关闭的BUG(共 {{num.closedNum}} 条)</span></router-link>
                 </div>
             </div>
             <router-view></router-view>
@@ -38,6 +38,7 @@
         name: "Index",
         data(){
             return {
+                taskName:'',
                 upData:{
                     taskId:'',
                     selectAll:'0',
@@ -62,17 +63,18 @@
         methods: {
             getDefaultDatas(){
                 this.upData.taskId = this.$route.query.taskId;
+                this.taskName = this.$route.query.taskName;
 
                 http.zsyPostHttp('/task-bug/num', this.upData, (res) => {
                     this.num = res.data;
-                    console.log(99)
+                    // console.log(99)
                 },()=>{
                     console.log(11)
                 })
-                console.log(66)
+                // console.log(66)
             },
             rout(){
-                this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll}});
+                this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll,taskName:this.taskName}});
             }
         },
     }
@@ -108,6 +110,7 @@
         margin-top: 50px;
         .bug-msg{
             display: flex;
+            margin-bottom: 30px;
             >div{
                 flex: 1;
                 font-size: 18px;

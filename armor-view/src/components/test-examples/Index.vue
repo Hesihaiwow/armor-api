@@ -5,7 +5,7 @@
         </div>
         <div class="main">
             <div class="btn-box" v-if="isIndex">
-                <router-link :to="{ path: 'bug', query: { taskId: taskId }}" class="btn-bug"><el-button type="primary" size="small">Bug管理</el-button></router-link>
+                <router-link :to="{ path: 'bug', query: { taskId: taskId,taskName:taskName }}" class="btn-bug"><el-button type="primary" size="small">Bug管理</el-button></router-link>
 
                 <el-upload
                         class="upload-demo"
@@ -35,6 +35,7 @@
         data(){
           return{
               taskId:'',
+              taskName:'',
               isIndex:true,
           }
         },
@@ -44,6 +45,7 @@
         methods:{
             getDefaultData(){
                 this.taskId=this.$route.query.id;
+                this.taskName = this.$route.query.taskName;
                 // console.log( this.$router.history.current.path,111);
                let e =  this.$router.history.current.path.indexOf('/edit');
                 let l =  this.$router.history.current.path.indexOf('/look');
