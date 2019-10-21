@@ -304,7 +304,7 @@
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="100">
                         <template scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;" @click="showUserRestHoursLog(sco.row.userId)" >{{sco.row.userName}}</a>
+                            <a style="color:#20a0ff;cursor: pointer;" @click="showUserRestHoursLog(sco.row.userId,sco.row.userName)" >{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="totalRestHours" label="总调休" sortable align="center">
@@ -699,6 +699,24 @@
                         <!--</el-tab-pane>-->
                     <!--</el-tabs>-->
                 <!--</div>-->
+                <p class="mic-title">我的调休</p>
+                <div class="my-task-detail" style="width: 1100px">
+                    <el-table :data="myRestHours" border>
+                        <el-table-column prop="totalRestHours" label="总调休" align="center" >
+                        </el-table-column>
+                        <el-table-column prop="goneRestHours" label="已用调休" align="center">
+                        </el-table-column>
+                        <el-table-column prop="leftRestHours" label="剩余调休" align="center">
+                        </el-table-column>
+                        <el-table-column prop="endDate" label="截止日期" align="center">
+                        </el-table-column>
+                        <el-table-column label="操作" align="center" width="150">
+                            <template scope="scope">
+                                <a style="color: blue;cursor: pointer"  @click="showRestHoursDetail">查看调休日志</a>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
                 <p class="mic-title">我的考勤</p>
                 <div class="my-task-detail" style="width: 1200px">
                     <div class="add-member-basic-msg fl">
@@ -724,7 +742,7 @@
                     </div>
                     <el-button type="primary" @click="selectMySignInData" style="margin-left: 10px" size="small">查询</el-button>
                     <el-button type="primary" @click="showPersonalTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
-                    <span @click="showRestHoursDetail" style="font-size: 15px;cursor: pointer;text-decoration: underline">剩余调休(截止上月底): {{myRestHours}}H</span>
+                    <!--<span @click="showRestHoursDetail" style="font-size: 15px;cursor: pointer;text-decoration: underline">剩余调休(截止上月底): {{myRestHours}}H</span>-->
                     <el-table :data="signInData" border>
                         <el-table-column prop="date" label="日期" align="center" width="120">
                             <template scope="scope">
@@ -2444,7 +2462,7 @@
                     :before-upload="beforeRecordUpload"
                     :http-request="uploadRecordToMysql">
                 <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传.dat文件，且不超过1MB</div>
+                <!--<div slot="tip" class="el-upload__tip">只能上传.dat文件，且不超过1MB</div>-->
             </el-upload>
         </el-dialog>
 
@@ -2934,8 +2952,9 @@
                 </el-table>
             </div>
             <div style="float: left;margin-top: 3px">开始时间: {{taskUser.beginTime | formatDate}}</div>
-            <div style="float: left;margin-top: 3px;margin-left: 10px;">截止时间: {{taskUser.endTime | formatDate}}</div>
-            <div style="margin-top: 3px;margin-left: 310px">任务时长: {{taskUser.taskHours}}小时</div>
+            <div style="margin-top: 3px;margin-left: 250px;">截止时间: {{taskUser.endTime | formatDate}}</div>
+            <div style="float: left;margin-top: 3px;">任务时长: {{taskUser.taskHours}}小时</div>
+            <div style="margin-left: 250px;margin-top: 3px">任务级别: {{taskUser.taskLevelName}}</div>
             <div v-for="(item,index) in sortUserWeekNumber">
                 <div class="add-member-basic-list clearfix">
                     <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
@@ -3013,7 +3032,7 @@
                     </el-date-picker>
                 </el-form-item>
 
-                <el-form-item v-show="taskModifyDetail.reviewStatus === 2" class="task-form" label="截止时间：" label-width="82px" style="float: left">
+                <el-form-item v-show="taskModifyDetail.reviewStatus === 2" class="task-form" label="截止时间：" label-width="82px" style="margin-left: 250px">
                     {{taskModifyDetail.endTime | formatDate}}
                 </el-form-item>
                 <el-form-item v-show="taskModifyDetail.reviewStatus === 1" class="task-form" label="截止时间：" style="margin-left: 285px">
@@ -3025,12 +3044,21 @@
                     </el-date-picker>
                 </el-form-item>
 
-                <el-form-item v-show="taskModifyDetail.reviewStatus === 2" class="task-form" label="任务时长：" style="margin-left: 405px">
+                <el-form-item v-show="taskModifyDetail.reviewStatus === 2" class="task-form" label="任务时长：" style="float: left;margin-left: -120px" label-width="200px">
                     {{taskModifyDetail.workHours}} 小时
                 </el-form-item>
-                <el-form-item v-show="taskModifyDetail.reviewStatus === 1" class="task-form" label="任务时长：">
+                <el-form-item v-show="taskModifyDetail.reviewStatus === 1" class="task-form" label="任务时长：" style="float: left">
                     <el-input v-model="taskModifyDetail.workHours" style="width: 20%"></el-input>
                     小时
+                </el-form-item>
+                <el-form-item  v-show="taskModifyDetail.reviewStatus === 1" class="task-form" label="任务级别:  " style="margin-left: 285px">
+                    <el-select v-model="taskModifyDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">
+                        <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item  v-show="taskModifyDetail.reviewStatus === 2" class="task-form" label="任务级别:  " style="margin-left: 250px">
+                    {{taskModifyDetail.taskLevelName}}
                 </el-form-item>
 
                 <div v-for="(item,index) in sortTaskModifyWeekNumber" v-show="taskModifyDetail.reviewStatus === 1">
@@ -3080,11 +3108,23 @@
         <el-dialog  title="新增个人调休记录"  size="tiny"  :close-on-click-modal="false"
                     :close-on-press-escape="false" :visible.sync="editRestHoursVisible">
             <el-form :model="userRestHoursLogForm"  ref="userRestHoursLogForm" label-width="80px">
+                <el-form-item label="用户 ">
+                    <span>{{this.userRestHoursLogReqDTO.userName}}</span>
+                </el-form-item>
                 <el-form-item label="调休加减" prop="restHour">
                     <el-input v-model="userRestHoursLogForm.restHour" type="number" :maxlength="5"></el-input>
                 </el-form-item>
                 <el-form-item label="调休备注" prop="restHour">
                     <el-input type="textarea" v-model="userRestHoursLogForm.content" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="录入时间" prop="recordTime">
+                    <el-date-picker
+                            v-model="userRestHoursLogForm.recordTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:00"
+                            value-format="yyyy-MM-dd HH:mm:00"
+                            placeholder="选择录入时间">
+                    </el-date-picker>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -3585,7 +3625,7 @@
                 restHoursUserName:'',
                 restHours:0,
                 restHourLoading: false,
-                myRestHours:0,
+                myRestHours:[],
                 myRestHoursDetailVisible: false,
                 myRestHoursLogData:[],
                 myRestHoursLogReqDTO:{
@@ -3601,6 +3641,7 @@
                 userRestHoursDetailVisible: false,
                 userRestHoursLogReqDTO:{
                     userId:'',
+                    userName:'',
                     pageNum:1
                 },
                 userRestHoursLogPage:{
@@ -3616,6 +3657,7 @@
                 userRestHoursLogForm:{
                     restHour:0,
                     content:'',
+                    recordTime:'',
                     userId:null
                 },
                 editRestHoursVisible: false,
@@ -3844,6 +3886,7 @@
                     createTime:'',
                     beginTime:'',
                     endTime:'',
+                    taskLevel:'',
                     userWeekResDTOList:[],
                     functionResDTOList:[],
                     oldFunctionResDTOList:[],
@@ -5630,6 +5673,12 @@
 
                 })
             },
+            //获取两个日期间隔天数
+            getDiff(s1,s2) {
+                var days = s2.getTime() - s1.getTime();
+                var time = parseInt(days / (1000 * 60 * 60 * 24));
+                return time;
+            },
             saveExtraWork(formName) {
                 this.isSaving = true;
                 if (this.extraWorkForm.reason == null || this.extraWorkForm.reason === ''){
@@ -5652,9 +5701,11 @@
                     this.isSaving = false;
                     return false;
                 }
-                let day1 = new Date(this.extraWorkForm.beginTime).getDay();
-                let day2 = new Date(this.extraWorkForm.endTime).getDay();
-                if (day2 - day1 > 0){
+                let beginDayStr = String(moment(this.extraWorkForm.beginTime).format('YYYY-MM-DD HH:mm:ss'))
+                let endDayStr = String(moment(this.extraWorkForm.endTime).format('YYYY-MM-DD HH:mm:ss'))
+                const days = this.getDiff(new Date(beginDayStr.substring(0,10)+" 00:00:00")
+                    ,new Date(endDayStr.substring(0,10)+" 23:59:59"));
+                if (days > 0){
                     this.$message({showClose: true, message: '加班申请不能跨天', type: 'error'});
                     this.isSaving = false;
                     return false;
@@ -5674,10 +5725,12 @@
                         let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.extraWorkForm.workHours);
                         if (!ishours) {
                             this.$message({showClose: true, message: '加班时长填写错误', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         if (this.extraWorkForm.workHours > 99999.9 || this.extraWorkForm.workHours < 0) {
                             this.$message({showClose: true, message: '加班时长正确值应为0~99999.9', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         this.extraWorkForm.beginTime = moment(this.extraWorkForm.beginTime).toDate();
@@ -6637,16 +6690,17 @@
                 this.$refs.usersort.clearFiles();
             },
             beforeRecordUpload(file) {
-                let suffix = file.name.substring(file.name.lastIndexOf(".")+1);
-                const isLt2M = file.size / 1024 / 1024 < 1;
-                const isDat = file.name.substring(file.name.lastIndexOf(".")+1) === "dat";
-                if (suffix !== "dat"){
-                    this.$message.error('上传文件只能是".dat"格式!');
-                }
+                // let suffix = file.name.substring(file.name.lastIndexOf(".")+1);
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                // const isDat = file.name.substring(file.name.lastIndexOf(".")+1) === "dat";
+                // if (suffix !== "dat"){
+                //     this.$message.error('上传文件只能是".dat"格式!');
+                // }
                 if (!isLt2M) {
-                    this.$message.error('上传文件大小不能超过 1MB!');
+                    this.$message.error('上传文件大小不能超过 2MB!');
                 }
-                return isDat && isLt2M;
+                return isLt2M;
+                // return isDat && isLt2M;
             },
             beforeUserSortUpload(file) {
                 let suffix = file.name.substring(file.name.lastIndexOf(".")+1);
@@ -6969,7 +7023,7 @@
             fetchMyRestHours(){
                 if (this.userRole < 3 && this.userRole > 0){
                     http.zsyGetHttp('/sign-in/rest-hours/'+this.userId,{},res=>{
-                        this.myRestHours = res.data.restHours;
+                        this.myRestHours = res.data;
                     })
                 }
             },
@@ -6981,9 +7035,10 @@
                     this.myRestHoursDetailVisible = true;
                 })
             },
-            showUserRestHoursLog(userId){
+            showUserRestHoursLog(userId,userName){
                 if (userId != null && userId !== undefined && userId !==  '') {
                     this.userRestHoursLogReqDTO.userId = userId;
+                    this.userRestHoursLogReqDTO.userName = userName;
                     http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO,res=>{
                         this.userRestHoursLogData = res.data.list;
                         this.userRestHoursLogPage.total = res.data.total;
@@ -8539,6 +8594,17 @@
                     this.restHourLoading = false;
                     return false;
                 }
+                if (this.userRestHoursLogForm.recordTime == null || this.userRestHoursLogForm.recordTime === undefined) {
+                    this.$message({
+                        showClose: true,
+                        message: '请选择录入时间',
+                        type: 'warning'
+                    });
+                    this.restHourLoading = false;
+                    return false;
+                }
+                this.userRestHoursLogForm.recordTime = moment(this.userRestHoursLogForm.recordTime).format("YYYY-MM-DD HH:mm:00");
+
                 http.zsyPostHttp('/sign-in/rest-hours-log/add',this.userRestHoursLogForm,res=>{
                     if (res.errMsg == "执行成功"){
                         this.$message({
@@ -8562,6 +8628,7 @@
             //取消添加
             cancelAddRestHoursLog(){
                 this.userRestHoursLogForm.userId = null;
+                this.userRestHoursLogForm.recordTime = null;
                 this.userRestHoursLogForm.restHour = 0;
                 this.userRestHoursLogForm.content = '';
                 this.editRestHoursVisible = false;

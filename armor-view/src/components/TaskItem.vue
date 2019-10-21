@@ -1545,8 +1545,10 @@
                     </el-table>
                 </div>
                 <div style="float: left;margin-top: 3px">开始时间: {{taskUser.beginTime | formatDate}}</div>
-                <div style="float: left;margin-top: 3px;margin-left: 10px;">截止时间: {{taskUser.endTime | formatDate}}</div>
-                <div style="margin-top: 3px;margin-left: 310px">任务时长: {{taskUser.taskHours}}小时</div>
+                <div style="margin-top: 3px;margin-left: 250px;">截止时间: {{taskUser.endTime | formatDate}}</div>
+                <div style="float: left;margin-top: 3px;">任务时长: {{taskUser.taskHours}}小时</div>
+                <div style="margin-top: 3px;margin-left: 250px">任务级别: {{taskUser.taskLevelName}}</div>
+
                 <div v-for="(item,index) in sortUserWeekNumber">
                     <div class="add-member-basic-list clearfix">
                         <div class="fl" style="margin-left: 5px">第{{item.weekNumber}}周工作量({{item.range}})：</div>
@@ -1611,9 +1613,15 @@
                                     >
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item class="task-form" label="任务时长：">
-                    <el-input v-model="modifyMyTaskForm.workHours"  style="width: 20%"></el-input>
+                <el-form-item class="task-form" label="任务时长：" style="float: left;margin-left: 0px">
+                    <el-input v-model="modifyMyTaskForm.workHours"  style="width: 40%"></el-input>
                     小时
+                </el-form-item>
+                <el-form-item class="task-form" label="任务级别:  " style="margin-left: 285px">
+                    <el-select v-model="modifyMyTaskForm.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">
+                        <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <div v-for="(item,index) in sortTaskModifyWeekNumber">
                     <div class="add-member-basic-list clearfix">
@@ -1919,6 +1927,7 @@
                     beginTime:'',
                     endTime:'',
                     workHours:'',
+                    taskLevel:'',
                     userWeeks:[]
                 },
                 taskModifyWeekNumber:[],
@@ -4175,7 +4184,11 @@
                             }
                             param.taskModifyFunctionList = taskModifyFunctionList;
                         }
-
+                        if (param.taskLevel === undefined || param.taskLevel === null || param.taskLevel === '') {
+                            this.$message({showClose: true, message: '请选择任务级别', type: 'error'});
+                            this.isSaving = false;
+                            return false;
+                        }
                         http.zsyPostHttp('/task-modify/add', param, (resp) => {
                             this.modifyMyTaskVisible = false;
                             this.$message({showClose: true, message: '添加任务修改申请成功', type: 'success'});

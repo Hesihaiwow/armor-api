@@ -808,6 +808,14 @@
             </el-tab-pane>
             <el-tab-pane label="调休统计" name="restHours" v-if="admin">
                 <div class="add-member-basic-msg fl" >
+                    <el-date-picker
+                            v-model="restHourYear"
+                            align="right"
+                            type="year"
+                            placeholder="选择年份">
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl" >
                     <el-select v-model="restHourReqDTO.jobRole" clearable filterable   placeholder="筛选角色">
                         <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
                                    :value="item.roleId"></el-option>
@@ -824,7 +832,7 @@
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="100">
                         <template scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;" @click="showUserRestHoursLog2(sco.row.userId)" >{{sco.row.userName}}</a>
+                            <a style="color:#20a0ff;cursor: pointer;" @click="showUserRestHoursLog2(sco.row.userId,sco.row.userName)" >{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="totalRestHours" label="总调休" sortable align="center">
@@ -1419,11 +1427,23 @@
                     :close-on-press-escape="false" :visible.sync="editRestHoursVisible"
         @close="cancelAddRestHoursLog">
             <el-form :model="userRestHoursLogForm"  ref="userRestHoursLogForm" label-width="80px">
+                <el-form-item label="用户 ">
+                    <span>{{this.userRestHoursLogReqDTO2.userName}}</span>
+                </el-form-item>
                 <el-form-item label="调休加减" prop="restHour">
                     <el-input v-model="userRestHoursLogForm.restHour" type="number" :maxlength="5"></el-input>
                 </el-form-item>
-                <el-form-item label="调休备注" prop="restHour">
+                <el-form-item label="调休备注" prop="content">
                     <el-input type="textarea" v-model="userRestHoursLogForm.content" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="录入时间" prop="recordTime">
+                    <el-date-picker
+                            v-model="userRestHoursLogForm.recordTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:00"
+                            value-format="yyyy-MM-dd HH:mm:00"
+                            placeholder="选择录入时间">
+                    </el-date-picker>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -1901,7 +1921,9 @@
                     pageSize: 10,
                     total: 0
                 },
+                restHourYear:'',
                 restHourReqDTO:{
+                    year:'',
                     jobRole:'',
                     userId:''
                 },
@@ -1915,12 +1937,14 @@
                 },
                 userRestHoursLogReqDTO2:{
                     userId:'',
+                    userName:'',
                     pageNum:1
                 },
                 userRestHoursLogForm:{
                     restHour:0,
                     content:'',
-                    userId:null
+                    userId:null,
+                    recordTime:null
                 },
                 editRestHoursVisible: false,
                 // -- sch
@@ -4138,9 +4162,10 @@
                     });
                 }
             },
-            showUserRestHoursLog2(userId){
+            showUserRestHoursLog2(userId,userName){
                 if (userId != null && userId !== undefined && userId !== '') {
                     this.userRestHoursLogReqDTO2.userId = userId;
+                    this.userRestHoursLogReqDTO2.userName = userName;
                     Http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO2,res=>{
                         this.userRestHoursLogData2 = res.data.list;
                         this.userRestHoursLogPage2.total = res.data.total;
@@ -4165,6 +4190,12 @@
 
             //查看用户调休
             fetchAllUsersRestHours(){
+                if (this.restHourYear != null && this.restHourYear  !== undefined && this.restHourYear !== ''){
+                    this.restHourReqDTO.year = moment(this.restHourYear).format("YYYY-MM-DD");
+                    this.restHourReqDTO.year = this.restHourReqDTO.year.substring(0,4);
+                }else {
+                    this.restHourReqDTO.year = null
+                }
                 Http.zsyPostHttp('sign-in/rest-hours/list',this.restHourReqDTO,res=>{
                     this.restHoursData = res.data;
                 })
@@ -4213,6 +4244,16 @@
                     this.restHourLoading = false;
                     return false;
                 }
+                if (this.userRestHoursLogForm.recordTime == null || this.userRestHoursLogForm.recordTime === undefined) {
+                    this.$message({
+                        showClose: true,
+                        message: '请选择录入时间',
+                        type: 'warning'
+                    });
+                    this.restHourLoading = false;
+                    return false;
+                }
+                this.userRestHoursLogForm.recordTime = moment(this.userRestHoursLogForm.recordTime).format("YYYY-MM-DD HH:mm:00");
                 Http.zsyPostHttp('/sign-in/rest-hours-log/add',this.userRestHoursLogForm,res=>{
                     if (res.errMsg == "执行成功"){
                         this.$message({
@@ -4241,9 +4282,11 @@
             //取消添加
             cancelAddRestHoursLog(){
                 this.userRestHoursLogForm.userId = null;
+                this.userRestHoursLogForm.recordTime = null;
                 this.userRestHoursLogForm.restHour = 0;
                 this.userRestHoursLogForm.content = '';
                 this.editRestHoursVisible = false;
+                this.restHourLoading = false;
             }
             // -- sch
         }
