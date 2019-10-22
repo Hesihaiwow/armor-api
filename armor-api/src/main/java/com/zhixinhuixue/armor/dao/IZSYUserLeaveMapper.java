@@ -46,4 +46,11 @@ public interface IZSYUserLeaveMapper {
      * @return
      */
     Double selectWeekLeaveHoursByUser(@Param("userId")Long userId, @Param("firstDay")Date firstDay, @Param("lastDay")Date lastDay);
+
+    /**
+     * 查询10月的请假
+     * @param beginStr 开始
+     * @param endStr 截止
+     */
+    List<UserLeave> selectListByTime(@Param("beginStr") String beginStr, @Param("endStr")String endStr);
 }

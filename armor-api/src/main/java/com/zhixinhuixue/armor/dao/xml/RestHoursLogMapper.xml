@@ -39,7 +39,29 @@
       </foreach>
     </insert>
 
-    <!--分页查询用户调休修改日志-->
+  <!--修改调休日志-->
+  <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.UserRestHoursLog">
+     UPDATE `user_rest_hours_log`
+     <set>
+       <if test="restHours != null">
+          `rest_hours` =  #{restHours},
+       </if>
+       <if test="content != null and content != ''">
+         `content` =  #{content},
+       </if>
+       <if test="recordTime != null">
+         `record_time` =  #{recordTime},
+       </if>
+     </set>
+    WHERE `id` = #{id}
+  </update>
+
+  <!--删除调休日志-->
+  <delete id="deleteById">
+    DELETE FROM  `user_rest_hours_log` WHERE `id` = #{logId}
+  </delete>
+
+  <!--分页查询用户调休修改日志-->
   <select id="selectUserRestHoursLogPage" resultMap="BaseResultMap">
      SELECT * FROM `user_rest_hours_log` WHERE `user_id` = #{userId}
      ORDER BY `record_time` DESC
@@ -56,5 +78,10 @@
       SELECT IFNULL(SUM(`rest_hours`),0) FROM `user_rest_hours_log`
       WHERE `user_id` = #{userId} AND `rest_hours` > 0 AND `year` = #{year}
   </select>
+
+  <!--根据id查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+      SELECT * FROM  `user_rest_hours_log` WHERE `id` = #{logId}
+    </select>
 
 </mapper>

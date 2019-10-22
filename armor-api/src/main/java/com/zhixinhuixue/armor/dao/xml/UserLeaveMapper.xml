@@ -79,7 +79,12 @@
       <![CDATA[ AND  end_time <= #{lastDay,jdbcType=TIMESTAMP} ]]>
   </select>
 
-  <update id="updateLeave">
+  <!--查询10月的请假-->
+    <select id="selectListByTime" resultMap="BaseResultMap">
+      SELECT * FROM `user_leave` WHERE `review_status` = 3 AND `begin_time` >= #{beginStr} AND `begin_time` &lt; #{endStr}
+    </select>
+
+    <update id="updateLeave">
     UPDATE user_leave
         <set>
          description= #{description,jdbcType=BIGINT}, hours= #{hours,jdbcType=DECIMAL},

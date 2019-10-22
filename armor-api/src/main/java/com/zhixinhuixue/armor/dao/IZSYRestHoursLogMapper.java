@@ -45,4 +45,23 @@ public interface IZSYRestHoursLogMapper {
      * @param list 集合
      */
     void insertBatch(@Param("list") List<UserRestHoursLog> list);
+
+    /**
+     * 根据id查询
+     * @param logId 日志id
+     * @return
+     */
+    UserRestHoursLog selectById(@Param("logId") Long logId);
+
+    /**
+     * 删除调休日志
+     * @param logId 日志id
+     */
+    void deleteById(@Param("logId") Long logId);
+
+    /**
+     * 修改调休日志
+     * @param restHoursLog 日志
+     */
+    int updateById(UserRestHoursLog restHoursLog);
 }

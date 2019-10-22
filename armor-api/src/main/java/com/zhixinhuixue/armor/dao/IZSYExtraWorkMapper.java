@@ -1,10 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
-import com.zhixinhuixue.armor.model.pojo.ExtraWork;
-import com.zhixinhuixue.armor.model.pojo.ExtraWorkTask;
-import com.zhixinhuixue.armor.model.pojo.Task;
-import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -102,4 +99,12 @@ public interface IZSYExtraWorkMapper {
      * @return
      */
     Float selectEWorkHours(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
+
+    /**
+     * 查询10月份之间  审核通过的加班申请
+     * @param beginStr
+     * @param endStr
+     * @return
+     */
+    List<ExtraWork> selectListByTime(@Param("beginStr") String beginStr,@Param("endStr")  String endStr);
 }

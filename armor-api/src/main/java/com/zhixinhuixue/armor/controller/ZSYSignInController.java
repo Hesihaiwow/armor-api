@@ -186,4 +186,25 @@ public class ZSYSignInController {
         signInService.addUserRestHoursLog(reqDTO);
         return ZSYResult.success().build();
     }
+
+    @ApiOperation("编辑调休日志")
+    @PutMapping("/rest-hours-log/update")
+    public String editUserRestHoursLog(@Valid @RequestBody EditUserRestHourLogReqDTO reqDTO){
+        signInService.editUserRestHoursLog(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("删除调休日志")
+    @DeleteMapping("/rest-hours-log/delete/{logId}")
+    public String deleteRestHoursLog(@PathVariable("logId")Long logId){
+        signInService.deleteRestHoursLog(logId);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("更新2019年10月的请假和加班产生的调休变化")
+    @PutMapping("/reset")
+    public String updateLeaveAndEWork(){
+        signInService.updateLeaveAndEWork();
+        return ZSYResult.success().build();
+    }
 }

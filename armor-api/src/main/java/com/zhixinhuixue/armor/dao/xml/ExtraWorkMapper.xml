@@ -145,4 +145,11 @@
         <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
         <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
     </select>
+
+    <!--查询10月份之间  审核通过的加班申请-->
+    <select id="selectListByTime" resultMap="BaseExtraWork">
+        SELECT * FROM `extra_work` WHERE `review_status` = 2 AND `is_delete` = 0
+        AND `begin_time` >= #{beginStr}
+        AND `begin_time` &lt; #{endStr}
+    </select>
 </mapper>

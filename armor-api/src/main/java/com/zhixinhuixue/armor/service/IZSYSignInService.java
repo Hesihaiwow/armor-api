@@ -154,4 +154,21 @@ public interface IZSYSignInService {
      * @param reqDTO  参数
      */
     void addUserRestHoursLog(AddUserRestHourLogReqDTO reqDTO);
+
+    /**
+     * 更新2019年10月的请假和加班产生的调休变化
+     */
+    void updateLeaveAndEWork();
+
+    /**
+     * 删除调休日志
+     * @param logId 日志id
+     */
+    void deleteRestHoursLog(Long logId);
+
+    /**
+     * 编辑调休日志
+     * @param reqDTO 参数
+     */
+    void editUserRestHoursLog(EditUserRestHourLogReqDTO reqDTO);
 }

@@ -2374,6 +2374,98 @@ public class ZSYSignInService implements IZSYSignInService {
     }
 
     /**
+     * 更新2019年10月的请假和加班产生的调休变化
+     */
+    @Override
+    @Transactional
+    public void updateLeaveAndEWork() {
+        //查询10月份之间  审核通过的请假
+        String beginStr = "2019-10-01 00:00:00";
+        String endStr = "2019-11-01 00:00:00";
+        List<UserRestHoursLog> userRestHoursLogList = new ArrayList<>();
+        List<UserLeave> leaveList = userLeaveMapper.selectListByTime(beginStr,endStr);
+        if (!CollectionUtils.isEmpty(leaveList)){
+            System.out.println("leaveList = " + leaveList.size());
+            for (UserLeave userLeave : leaveList) {
+                User user = userMapper.selectById(userLeave.getUserId());
+                UserRestHoursLog restHoursLog = new UserRestHoursLog();
+                restHoursLog.setId(snowFlakeIDHelper.nextId());
+                restHoursLog.setUserId(userLeave.getUserId());
+                restHoursLog.setUserName(user.getName());
+                restHoursLog.setLeaveId(userLeave.getId());
+                restHoursLog.setRestHours(userLeave.getHours());
+                restHoursLog.setType(ZSYRestHoursType.LEAVE.getValue());
+                restHoursLog.setContent(userLeave.getDescription());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(userLeave.getBeginTime());
+                restHoursLog.setYear(calendar.get(Calendar.YEAR));
+                restHoursLog.setRecordTime(userLeave.getBeginTime());
+                restHoursLog.setCreateTime(new Date());
+                userRestHoursLogList.add(restHoursLog);
+            }
+        }
+        //查询10月份之间  审核通过的加班申请
+        List<ExtraWork> extraWorkList = extraWorkMapper.selectListByTime(beginStr,endStr);
+        if (!CollectionUtils.isEmpty(extraWorkList)){
+            System.out.println("extraWorkList = " + extraWorkList.size());
+            for (ExtraWork extraWork : extraWorkList) {
+                User user = userMapper.selectById(extraWork.getUserId());
+                UserRestHoursLog restHoursLog = new UserRestHoursLog();
+                restHoursLog.setId(snowFlakeIDHelper.nextId());
+                restHoursLog.setUserId(extraWork.getUserId());
+                restHoursLog.setUserName(user.getName());
+                restHoursLog.setEwId(extraWork.getId());
+                restHoursLog.setRestHours(BigDecimal.valueOf(extraWork.getWorkHours()));
+                restHoursLog.setType(ZSYRestHoursType.EWORK.getValue());
+                restHoursLog.setContent(extraWork.getReason());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(extraWork.getBeginTime());
+                restHoursLog.setYear(calendar.get(Calendar.YEAR));
+                restHoursLog.setRecordTime(extraWork.getBeginTime());
+                restHoursLog.setCreateTime(new Date());
+                userRestHoursLogList.add(restHoursLog);
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(userRestHoursLogList)){
+            restHoursLogMapper.insertBatch(userRestHoursLogList);
+        }
+    }
+
+    /**
+     * 删除调休日志
+     * @param logId 日志id
+     */
+    @Override
+    @Transactional
+    public void deleteRestHoursLog(Long logId) {
+        UserRestHoursLog restHoursLog = restHoursLogMapper.selectById(logId);
+        if (restHoursLog == null){
+            throw new ZSYServiceException("当前调休记录不存在,请检查");
+        }
+        restHoursLogMapper.deleteById(logId);
+    }
+
+    /**
+     * 编辑调休日志
+     * @param reqDTO 参数
+     */
+    @Override
+    @Transactional
+    public void editUserRestHoursLog(EditUserRestHourLogReqDTO reqDTO) {
+        UserRestHoursLog restHoursLog = restHoursLogMapper.selectById(reqDTO.getLogId());
+        if (restHoursLog == null){
+            throw new ZSYServiceException("当前调休记录不存在,请检查");
+        }
+        restHoursLog.setRestHours(reqDTO.getRestHour());
+        restHoursLog.setRecordTime(reqDTO.getRecordTime());
+        restHoursLog.setContent(reqDTO.getContent().trim());
+        if (restHoursLogMapper.updateById(restHoursLog) == 0){
+            throw new ZSYServiceException("修改调休日志失败");
+        }
+    }
+
+    /**
      * 导出考勤记录Excel
      * @param dates
      * @param map
