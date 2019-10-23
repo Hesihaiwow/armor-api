@@ -471,14 +471,14 @@ public class ZSYSignInService implements IZSYSignInService {
                         calendar.setTime(checkDate);
                         calendar.add(Calendar.DAY_OF_MONTH,x);
                         String checkDateStr = dateSDF.format(calendar.getTime());
-                        Date startTime = timeSDF.parse(checkDateStr + " 07:00:00");
+                        Date startTime = timeSDF.parse(checkDateStr + " 05:00:00");
                         Date endTime = timeSDF.parse(checkDateStr + " 23:59:59");
                         Date today15 = timeSDF.parse(checkDateStr + " 15:00:00");
                         calendar.setTime(startTime);
                         calendar.add(Calendar.DAY_OF_MONTH,1);
                         Date nextDate = calendar.getTime();
                         String nextDateStr = dateSDF.format(nextDate);
-                        Date nextSeven = timeSDF.parse(nextDateStr + " 07:00:00");
+                        Date nextFive = timeSDF.parse(nextDateStr + " 05:00:00");
                         //查询当天的考勤记录
                         List<SignIn> todayList = totalList.stream()
                                 .filter(signIn -> (signIn.getCheckTime().compareTo(startTime) >= 0) && (signIn.getCheckTime().compareTo(endTime) <= 0)
@@ -486,7 +486,7 @@ public class ZSYSignInService implements IZSYSignInService {
                                 .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
                         //查询第二天 7点前的记录
                         List<SignIn> nextBeforSeven = totalList.stream()
-                                .filter(signIn -> ((signIn.getCheckTime().compareTo(nextSeven) < 0)) && (signIn.getCheckTime().compareTo(endTime) > 0)
+                                .filter(signIn -> ((signIn.getCheckTime().compareTo(nextFive) < 0)) && (signIn.getCheckTime().compareTo(endTime) > 0)
                                         && signIn.getUserId().equals(userId) && signIn.getType() != 2)
                                 .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
                         Date checkInTime  = null;
@@ -508,22 +508,26 @@ public class ZSYSignInService implements IZSYSignInService {
 
 
                         if (checkInTime!=null &&  checkOutTime!=null){
-                            Long workTimeMillis = checkOutTime.getTime() - checkInTime.getTime();
-                            if (workTimeMillis > 9*3600*1000){
-                                Long eworkTimeMillis = workTimeMillis - (9*3600*1000);
-                                double restHour= eworkTimeMillis/(3600*1000);
-                                if (restHour>=1){
-                                    UserRestHoursLog restHoursLog = new UserRestHoursLog();
-                                    restHoursLog.setId(snowFlakeIDHelper.nextId());
-                                    restHoursLog.setUserId(userId);
-                                    restHoursLog.setUserName(userName);
-                                    restHoursLog.setRestHours(BigDecimal.valueOf(restHour));
-                                    restHoursLog.setType(ZSYRestHoursType.EXTRA.getValue());
-                                    restHoursLog.setContent(checkDateStr+" 日常加班累计调休");
-                                    restHoursLog.setYear(calendar.get(Calendar.YEAR));
-                                    restHoursLog.setCreateTime(new Date());
-                                    restHoursLog.setRecordTime(checkInTime);
-                                    restHoursLogList.add(restHoursLog);
+                            calendar.setTime(checkInTime);
+                            int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
+                            if (weekDay != 1 && weekDay != 7){
+                                Long workTimeMillis = checkOutTime.getTime() - checkInTime.getTime();
+                                if (workTimeMillis > 9*3600*1000){
+                                    Long eworkTimeMillis = workTimeMillis - (9*3600*1000);
+                                    double restHour= eworkTimeMillis/(3600*1000);
+                                    if (restHour>=1){
+                                        UserRestHoursLog restHoursLog = new UserRestHoursLog();
+                                        restHoursLog.setId(snowFlakeIDHelper.nextId());
+                                        restHoursLog.setUserId(userId);
+                                        restHoursLog.setUserName(userName);
+                                        restHoursLog.setRestHours(BigDecimal.valueOf(restHour));
+                                        restHoursLog.setType(ZSYRestHoursType.EXTRA.getValue());
+                                        restHoursLog.setContent(checkDateStr+" 日常加班累计调休");
+                                        restHoursLog.setYear(calendar.get(Calendar.YEAR));
+                                        restHoursLog.setCreateTime(new Date());
+                                        restHoursLog.setRecordTime(checkInTime);
+                                        restHoursLogList.add(restHoursLog);
+                                    }
                                 }
                             }
                         }
@@ -622,8 +626,8 @@ public class ZSYSignInService implements IZSYSignInService {
                     today18 = sdf.parse(prefix + " 18:30:00");
                     today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
-                    nextSeven = sdf.parse(nextPrefix + " 07:00:00");
-                    seven = sdf.parse(prefix + " 07:00:00");
+                    nextSeven = sdf.parse(nextPrefix + " 05:00:00");
+                    seven = sdf.parse(prefix + " 05:00:00");
                     fifteen = sdf.parse(prefix + " 15:00:00");
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -632,7 +636,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 //过滤当天上午7点之前的打卡记录
                 dateList = dateList.stream().filter(time-> {
                     try {
-                        return time.after(sdf.parse(prefix + " 07:00:00"));
+                        return time.after(sdf.parse(prefix + " 05:00:00"));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -991,8 +995,8 @@ public class ZSYSignInService implements IZSYSignInService {
                     today18 = sdf.parse(prefix + " 18:30:00");
                     today23 = sdf.parse(prefix + " 23:59:59");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
-                    nextSeven = sdf.parse(nextPrefix + " 07:00:00");
-                    seven = sdf.parse(prefix + " 07:00:00");
+                    nextSeven = sdf.parse(nextPrefix + " 05:00:00");
+                    seven = sdf.parse(prefix + " 05:00:00");
                     fifteen = sdf.parse(prefix + " 15:00:00");
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -1001,7 +1005,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 //过滤当天上午7点之前的打卡记录
                 dateList = dateList.stream().filter(time-> {
                     try {
-                        return time.after(sdf.parse(prefix + " 07:00:00"));
+                        return time.after(sdf.parse(prefix + " 05:00:00"));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -1341,8 +1345,8 @@ public class ZSYSignInService implements IZSYSignInService {
                     thisWeekFirstDay = sdf.parse(thisWeekFirst);
                     thisWeekLastDay = sdf.parse(thisWeekLast);
                     zero = sdf.parse(nextPrefix + " 00:00:00");
-                    nextSeven = sdf.parse(nextPrefix + " 07:00:00");
-                    seven = sdf.parse(prefix + " 07:00:00");
+                    nextSeven = sdf.parse(nextPrefix + " 05:00:00");
+                    seven = sdf.parse(prefix + " 05:00:00");
                     fifteen = sdf.parse(prefix + " 15:00:00");
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -1357,7 +1361,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 //过滤当天上午7点之前的打卡记录
                 dateList = dateList.stream().filter(time-> {
                     try {
-                        return time.after(sdf.parse(prefix + " 07:00:00"));
+                        return time.after(sdf.parse(prefix + " 05:00:00"));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -1581,8 +1585,8 @@ public class ZSYSignInService implements IZSYSignInService {
                 Date fifteen = null;
                 try {
                     zero = sdf.parse(nextPrefix + " 00:00:00");
-                    nextSeven = sdf.parse(nextPrefix + " 07:00:00");
-                    seven = sdf.parse(prefix + " 07:00:00");
+                    nextSeven = sdf.parse(nextPrefix + " 05:00:00");
+                    seven = sdf.parse(prefix + " 05:00:00");
                     fifteen = sdf.parse(prefix + " 15:00:00");
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -1591,7 +1595,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 //过滤当天上午7点之前的打卡记录
                 dateList = dateList.stream().filter(time-> {
                     try {
-                        return time.after(sdf.parse(prefix + " 07:00:00"));
+                        return time.after(sdf.parse(prefix + " 05:00:00"));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -1772,8 +1776,8 @@ public class ZSYSignInService implements IZSYSignInService {
                     today10 = sdf.parse(prefix + " 10:00:00");
                     today18 = sdf.parse(prefix + " 18:00:00");
                     zero = sdf.parse(nextPrefix + " 00:00:00");
-                    nextSeven = sdf.parse(nextPrefix + " 07:00:00");
-                    seven = sdf.parse(prefix + " 07:00:00");
+                    nextSeven = sdf.parse(nextPrefix + " 05:00:00");
+                    seven = sdf.parse(prefix + " 05:00:00");
                     fifteen = sdf.parse(prefix + " 15:00:00");
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -1782,7 +1786,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 //过滤当天上午7点之前的打卡记录
                 dateList = dateList.stream().filter(time-> {
                     try {
-                        return time.after(sdf.parse(prefix + " 07:00:00"));
+                        return time.after(sdf.parse(prefix + " 05:00:00"));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -1969,10 +1973,10 @@ public class ZSYSignInService implements IZSYSignInService {
                     Date tomorrow0clock = null;
                     Date tomorrow7clock = null;
                     try {
-                        today7clock = timeSdf.parse(prefix + " 07:00:00");
+                        today7clock = timeSdf.parse(prefix + " 05:00:00");
                         today15clock = timeSdf.parse(prefix + " 15:00:00");
                         tomorrow0clock = timeSdf.parse(nextPrefix + " 00:00:00");
-                        tomorrow7clock = timeSdf.parse(nextPrefix + " 07:00:00");
+                        tomorrow7clock = timeSdf.parse(nextPrefix + " 05:00:00");
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -1980,7 +1984,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     //过滤当天上午7点之前的打卡记录
                     dateList = dateList.stream().filter(time-> {
                     try {
-                        return time.after(timeSdf.parse(prefix + " 07:00:00"));
+                        return time.after(timeSdf.parse(prefix + " 05:00:00"));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -2300,6 +2304,7 @@ public class ZSYSignInService implements IZSYSignInService {
             restHoursLogs.forEach(restHoursLog->{
                 RestHoursLogPageResDTO resDTO = new RestHoursLogPageResDTO();
                 BeanUtils.copyProperties(restHoursLog,resDTO);
+                resDTO.setTypeName(ZSYRestHoursType.getName(restHoursLog.getType()));
                 page.add(resDTO);
             });
         }
@@ -2385,7 +2390,7 @@ public class ZSYSignInService implements IZSYSignInService {
         List<UserRestHoursLog> userRestHoursLogList = new ArrayList<>();
         List<UserLeave> leaveList = userLeaveMapper.selectListByTime(beginStr,endStr);
         if (!CollectionUtils.isEmpty(leaveList)){
-            System.out.println("leaveList = " + leaveList.size());
+//            System.out.println("leaveList = " + leaveList.size());
             for (UserLeave userLeave : leaveList) {
                 User user = userMapper.selectById(userLeave.getUserId());
                 UserRestHoursLog restHoursLog = new UserRestHoursLog();
@@ -2393,7 +2398,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 restHoursLog.setUserId(userLeave.getUserId());
                 restHoursLog.setUserName(user.getName());
                 restHoursLog.setLeaveId(userLeave.getId());
-                restHoursLog.setRestHours(userLeave.getHours());
+                restHoursLog.setRestHours(BigDecimal.ZERO.subtract(userLeave.getHours()));
                 restHoursLog.setType(ZSYRestHoursType.LEAVE.getValue());
                 restHoursLog.setContent(userLeave.getDescription());
                 Calendar calendar = Calendar.getInstance();
@@ -2407,7 +2412,7 @@ public class ZSYSignInService implements IZSYSignInService {
         //查询10月份之间  审核通过的加班申请
         List<ExtraWork> extraWorkList = extraWorkMapper.selectListByTime(beginStr,endStr);
         if (!CollectionUtils.isEmpty(extraWorkList)){
-            System.out.println("extraWorkList = " + extraWorkList.size());
+//            System.out.println("extraWorkList = " + extraWorkList.size());
             for (ExtraWork extraWork : extraWorkList) {
                 User user = userMapper.selectById(extraWork.getUserId());
                 UserRestHoursLog restHoursLog = new UserRestHoursLog();

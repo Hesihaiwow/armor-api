@@ -30,9 +30,10 @@ public class RestHoursLogPageResDTO {
     private BigDecimal restHours;
 
     /**
-     * 类型(1:手动修改, 2:请假扣除,3: 加班累加)
+     * 类型(1:手动修改, 2:请假扣除,3: 日常加班 4:加班申请)
      */
     private Integer type;
+    private String typeName;
 
     /**
      * 日志内容
@@ -48,6 +49,14 @@ public class RestHoursLogPageResDTO {
      * 记录时间
      */
     private Date recordTime;
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
 
     public Long getId() {
         return id;

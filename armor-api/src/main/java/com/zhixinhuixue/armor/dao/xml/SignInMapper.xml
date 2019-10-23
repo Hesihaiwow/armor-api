@@ -288,7 +288,7 @@
     <select id="selectAllBetween0And7" resultMap="BaseSignInMap">
         SELECT * FROM `sign_in` WHERE  `type` != 2
         <![CDATA[  and  time(check_time) >= '00:00:00' ]]>
-        <![CDATA[  and  time(check_time) <= '07:00:00' ]]>
+        <![CDATA[  and  time(check_time) <= '05:00:00' ]]>
         and check_time like "%"#{yearAndMonth}"%"
     </select>
 
@@ -302,7 +302,7 @@
     <select id="selectAllBetween0And7AndUserId" resultMap="BaseSignInMap">
         SELECT * FROM `sign_in` WHERE  `type` != 2 AND `user_id` = #{userId}
         <![CDATA[  and  time(check_time) >= '00:00:00' ]]>
-        <![CDATA[  and  time(check_time) <= '07:00:00' ]]>
+        <![CDATA[  and  time(check_time) <= '05:00:00' ]]>
         and check_time like "%"#{yearAndMonth}"%"
     </select>
 
