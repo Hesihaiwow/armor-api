@@ -21,6 +21,7 @@ import demandDetail from '@/components/demandDetail'
 import Notice from '@/components/Notice'
 import SummaryNav from '@/components/SummaryNav'
 import Evaluation from '@/components/Evaluation'
+import UserRestHoursPage from '@/components/UserRestHoursPage'
 import TestExamples from '@/components/test-examples'
 import TestExamplesEdit from '@/components/test-examples/Edit'
 import TestExamplesLook from '@/components/test-examples/Look'
@@ -126,6 +127,10 @@ const router = new Router({
                             component: TestExamplesLook
                         }
                     ]
+                },
+                {
+                    path:'UserRestHoursPage',
+                    component: UserRestHoursPage
                 }
             ]
         }

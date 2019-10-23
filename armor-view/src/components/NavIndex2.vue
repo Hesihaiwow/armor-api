@@ -288,6 +288,14 @@
             <p class="mic-title" style="margin-top: 20px">调休统计</p>
             <div class="my-task-detail" style="width: 1200px;">
                 <div class="add-member-basic-msg fl" >
+                    <el-date-picker
+                            v-model="restHourYear"
+                            align="right"
+                            type="year"
+                            placeholder="选择年份">
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl" >
                     <el-select v-model="restHourReqDTO.jobRole" clearable filterable   placeholder="筛选角色">
                         <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
                                    :value="item.roleId"></el-option>
@@ -3653,6 +3661,7 @@
                     jobRole:'',
                     userId:''
                 },
+                restHourYear:'',
                 restHoursData:[],
                 userRestHoursLogForm:{
                     restHour:0,
@@ -7037,13 +7046,14 @@
             },
             showUserRestHoursLog(userId,userName){
                 if (userId != null && userId !== undefined && userId !==  '') {
-                    this.userRestHoursLogReqDTO.userId = userId;
-                    this.userRestHoursLogReqDTO.userName = userName;
-                    http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO,res=>{
-                        this.userRestHoursLogData = res.data.list;
-                        this.userRestHoursLogPage.total = res.data.total;
-                        this.userRestHoursDetailVisible = true;
-                    })
+                    // this.userRestHoursLogReqDTO.userId = userId;
+                    // this.userRestHoursLogReqDTO.userName = userName;
+                    // http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO,res=>{
+                    //     this.userRestHoursLogData = res.data.list;
+                    //     this.userRestHoursLogPage.total = res.data.total;
+                    //     this.userRestHoursDetailVisible = true;
+                    // })
+                    this.$router.push({ path: '/index/UserRestHoursPage', query: { userId: userId,userName:userName }});
                 }else {
                     this.$message({
                         showClose: true,
@@ -8546,6 +8556,12 @@
             },
             //查看用户调休
             fetchAllUsersRestHours(){
+                if (this.restHourYear != null && this.restHourYear  !== undefined && this.restHourYear !== ''){
+                    this.restHourReqDTO.year = moment(this.restHourYear).format("YYYY-MM-DD");
+                    this.restHourReqDTO.year = this.restHourReqDTO.year.substring(0,4);
+                }else {
+                    this.restHourReqDTO.year = null
+                }
                 http.zsyPostHttp('sign-in/rest-hours/list',this.restHourReqDTO,res=>{
                     this.restHoursData = res.data;
                 })

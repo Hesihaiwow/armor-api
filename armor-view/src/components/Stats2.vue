@@ -1951,7 +1951,12 @@
             }
         },
         beforeMount:function () {
-            this.getStats(this.statsPage.currentPage);
+            let sss = this.$route.query.activeName;
+            if (sss != null && sss!== undefined && sss != ''){
+                this.activeName = this.$route.query.activeName;
+            }
+            this.handleClick()
+            // this.getStats(this.statsPage.currentPage);
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "stats");
             // this.fetchUserList();
@@ -2066,6 +2071,7 @@
         },
         methods: {
             handleClick(){
+                this.$router.push({query:{activeName:this.activeName}})
               if (this.activeName === 'stat'){
                   this.getStats();
               }else if (this.activeName === 'weekPublish'){
@@ -4164,13 +4170,14 @@
             },
             showUserRestHoursLog2(userId,userName){
                 if (userId != null && userId !== undefined && userId !== '') {
-                    this.userRestHoursLogReqDTO2.userId = userId;
-                    this.userRestHoursLogReqDTO2.userName = userName;
-                    Http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO2,res=>{
-                        this.userRestHoursLogData2 = res.data.list;
-                        this.userRestHoursLogPage2.total = res.data.total;
-                        this.userRestHoursDetailVisible2 = true;
-                    })
+                    // this.userRestHoursLogReqDTO2.userId = userId;
+                    // this.userRestHoursLogReqDTO2.userName = userName;
+                    // Http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO2,res=>{
+                    //     this.userRestHoursLogData2 = res.data.list;
+                    //     this.userRestHoursLogPage2.total = res.data.total;
+                    //     this.userRestHoursDetailVisible2 = true;
+                    // })
+                    this.$router.push({ path: '/index/UserRestHoursPage', query: { userId: userId,userName:userName }});
                 }else {
                     this.$message({
                         showClose: true,
@@ -4572,7 +4579,7 @@
         height: 500px;
     }
     .bug-stats-con {
-        width: 1200px;
+        width: 1300px;
         font-size: 14px;
         background: #fff;
         padding: 30px 0;
