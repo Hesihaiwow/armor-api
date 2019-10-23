@@ -14,11 +14,18 @@
                 </template>
             </el-table-column>
             <el-table-column prop="userName" label="用户" align="center" width="100"></el-table-column>
-            <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
+            <el-table-column prop="restHours" label="时长" align="center" width="100"></el-table-column>
             <el-table-column prop="content" label="事由" align="center"></el-table-column>
-            <el-table-column prop="recordTime" label="记录日期"  width="200"  align="center">
+            <el-table-column  label="参考时间"  width="165"  align="center">
                 <template scope="scope">
-                    <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
+                    <div type="text" size="small" v-if="scope.row.type === 2">{{scope.row.leaveTimeStr}}</div>
+                    <div type="text" size="small" v-if="scope.row.type === 3">{{scope.row.checkTimeStr}}</div>
+                    <div type="text" size="small" v-if="scope.row.type === 4">{{scope.row.eworkTimeStr}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="recordTime" label="记录日期"  width="120"  align="center">
+                <template scope="scope">
+                    <div type="text" size="small" >{{scope.row.recordTime | formatDate}}</div>
                 </template>
             </el-table-column>
             <el-table-column prop="typeName" label="类型" width="120" align="center"></el-table-column>
@@ -366,7 +373,7 @@
         filters:{
             formatDate: function (value) {
                 if (!value) return '';
-                return moment(value).format('YYYY年MM月DD日 HH:00:00');
+                return moment(value).format('YYYY-MM-DD');
             },
             formatDate1: function (value) {
                 if (!value) return '';
