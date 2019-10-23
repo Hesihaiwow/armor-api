@@ -2302,9 +2302,69 @@ public class ZSYSignInService implements IZSYSignInService {
         BeanUtils.copyProperties(restHoursLogs,page);
         if (!CollectionUtils.isEmpty(restHoursLogs)){
             restHoursLogs.forEach(restHoursLog->{
+                SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 RestHoursLogPageResDTO resDTO = new RestHoursLogPageResDTO();
                 BeanUtils.copyProperties(restHoursLog,resDTO);
                 resDTO.setTypeName(ZSYRestHoursType.getName(restHoursLog.getType()));
+                if (ZSYRestHoursType.LEAVE.getValue() == restHoursLog.getType()
+                && restHoursLog.getLeaveId()  != null){
+                    UserLeave userLeave = userLeaveMapper.selectById(restHoursLog.getLeaveId());
+                    if (userLeave!=null){
+                        String leaveTimeStr = sdf.format(userLeave.getBeginTime()) + "  " + sdf.format(userLeave.getEndTime());
+                        resDTO.setLeaveTimeStr(leaveTimeStr);
+                    }
+                }else if (ZSYRestHoursType.EWORK.getValue() == restHoursLog.getType()
+                && restHoursLog.getEwId() != null){
+                    ExtraWork extraWork = extraWorkMapper.selectById(restHoursLog.getEwId());
+                    if (extraWork != null){
+                        String eworkTimeStr = sdf.format(extraWork.getBeginTime())+"  "+sdf.format(extraWork.getEndTime());
+                        resDTO.setEworkTimeStr(eworkTimeStr);
+                    }
+                }else if (ZSYRestHoursType.EXTRA.getValue()== restHoursLog.getType()){
+
+                    String format = dateSDF.format(restHoursLog.getRecordTime());
+                    Date begin = null;
+                    Date end = null;
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH,1);
+                    Date nextDate = calendar.getTime();
+                    String nextDateStr = dateSDF.format(nextDate);
+                    Date nextZero = null;
+                    Date nextFive = null;
+                    Date today15 = null;
+                    try {
+                        begin = timeSDF.parse(format + " 05:00:00");
+                        end = timeSDF.parse(format + " 23:59:59");
+                        nextZero = timeSDF.parse(nextDateStr + " 00:00:00");
+                        nextFive = timeSDF.parse(nextDateStr + " 05:00:00");
+                        today15 = timeSDF.parse(format + " 15:00:00");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    Date checkInTime  = null;
+                    Date checkOutTime =  null;
+                    List<SignIn> signIns = signInMapper.selectSignInByUserAndTimeRange(restHoursLog.getUserId(), begin, end);
+                    if (!CollectionUtils.isEmpty(signIns)){
+                        if (today15.compareTo(signIns.get(0).getCheckTime())>0){
+                            checkInTime = signIns.get(0).getCheckTime();
+                        }
+
+                        List<SignIn> nextSignIgs = signInMapper.selectSignInByUserAndTimeRange(restHoursLog.getUserId(), nextZero, nextFive);
+                        //如果第二天 7点之前有打卡,   第一条为  前一天的 下班卡
+                        if (!CollectionUtils.isEmpty(nextSignIgs)){
+                            checkOutTime = nextSignIgs.get(0).getCheckTime();
+                        }else {
+                            //如果 今天的最后一条记录是再15点之后 就是 今天的下班卡
+                            if (signIns.get(signIns.size()-1).getCheckTime().compareTo(today15)>0){
+                                checkOutTime = signIns.get(signIns.size()-1).getCheckTime();
+                            }
+                        }
+                    }
+                    String checkTimeStr = sdf.format(checkInTime)+"  "+sdf.format(checkOutTime);
+                    resDTO.setCheckTimeStr(checkTimeStr);
+                }
                 page.add(resDTO);
             });
         }
@@ -2383,10 +2443,16 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     @Transactional
-    public void updateLeaveAndEWork() {
+    public void updateLeaveAndEWork(LeaveAndEWorkReqDTO reqDTO) {
         //查询10月份之间  审核通过的请假
-        String beginStr = "2019-10-01 00:00:00";
-        String endStr = "2019-11-01 00:00:00";
+        String beginStr = reqDTO.getBeginTime();
+        String endStr = reqDTO.getEndTime();
+        if (beginStr == null || beginStr.trim().equals("")){
+            throw new ZSYServiceException("请选择开始时间");
+        }
+        if (endStr == null || endStr.trim().equals("")){
+            throw new ZSYServiceException("请选择截止时间");
+        }
         List<UserRestHoursLog> userRestHoursLogList = new ArrayList<>();
         List<UserLeave> leaveList = userLeaveMapper.selectListByTime(beginStr,endStr);
         if (!CollectionUtils.isEmpty(leaveList)){

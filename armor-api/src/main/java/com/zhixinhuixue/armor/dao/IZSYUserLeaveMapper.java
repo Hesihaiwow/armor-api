@@ -53,4 +53,10 @@ public interface IZSYUserLeaveMapper {
      * @param endStr 截止
      */
     List<UserLeave> selectListByTime(@Param("beginStr") String beginStr, @Param("endStr")String endStr);
+
+    /**
+     * 根据主键查询
+     * @param leaveId 请假id
+     */
+    UserLeave selectById(@Param("leaveId") Long leaveId);
 }

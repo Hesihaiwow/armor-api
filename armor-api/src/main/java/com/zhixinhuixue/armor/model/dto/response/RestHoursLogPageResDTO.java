@@ -50,6 +50,45 @@ public class RestHoursLogPageResDTO {
      */
     private Date recordTime;
 
+    /**
+     * 上下班打卡
+     */
+    private String checkTimeStr;
+
+    /**
+     * 请假时间
+     */
+    private String leaveTimeStr;
+
+    /**
+     * 加班时间
+     */
+    private String eworkTimeStr;
+
+    public String getCheckTimeStr() {
+        return checkTimeStr;
+    }
+
+    public void setCheckTimeStr(String checkTimeStr) {
+        this.checkTimeStr = checkTimeStr;
+    }
+
+    public String getLeaveTimeStr() {
+        return leaveTimeStr;
+    }
+
+    public void setLeaveTimeStr(String leaveTimeStr) {
+        this.leaveTimeStr = leaveTimeStr;
+    }
+
+    public String getEworkTimeStr() {
+        return eworkTimeStr;
+    }
+
+    public void setEworkTimeStr(String eworkTimeStr) {
+        this.eworkTimeStr = eworkTimeStr;
+    }
+
     public String getTypeName() {
         return typeName;
     }

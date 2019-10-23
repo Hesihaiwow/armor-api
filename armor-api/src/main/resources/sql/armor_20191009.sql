@@ -33,6 +33,8 @@ ALTER TABLE `sign_in`
 MODIFY COLUMN `type`  int(1) NOT NULL COMMENT '状态(0:正常打卡, 1:补打卡, 2:手动补录)' AFTER `user_id`;
 
 
-
+ALTER TABLE `user_rest_hours_log`
+ADD UNIQUE INDEX `leave_id` (`leave_id`) ,
+ADD UNIQUE INDEX `ew_id` (`ew_id`) ;
 
 

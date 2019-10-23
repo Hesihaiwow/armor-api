@@ -28,7 +28,7 @@
 
   <!--批量新增-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserRestHoursLog">
-      INSERT INTO `user_rest_hours_log`
+      REPLACE INTO `user_rest_hours_log`
       (`id`,`user_id`,`user_name`,`leave_id`,`rest_hours`,`type`,`content`,`create_time`,`record_time`,`year`,`ew_id`)
       VALUES
       <foreach collection="list" item="item" separator=",">

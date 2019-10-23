@@ -224,7 +224,6 @@
         SELECT * FROM `sign_in` WHERE `user_id` = #{userId}
         <![CDATA[  and  `check_time` >= #{today0} ]]>
         <![CDATA[  and  `check_time` <= #{today23} ]]>
-        limit 1
     </select>
 
     <!--导入记录的最先一条记录打卡时间-->

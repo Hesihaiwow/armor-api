@@ -84,7 +84,12 @@
       SELECT * FROM `user_leave` WHERE `review_status` = 3 AND `type` = 8 AND `begin_time` >= #{beginStr} AND `begin_time` &lt; #{endStr}
     </select>
 
-    <update id="updateLeave">
+  <!--根据主键查询-->
+  <select id="selectById" resultMap="BaseResultMap">
+      SELECT * FROM `user_leave` WHERE `id` = #{leaveId}
+  </select>
+
+  <update id="updateLeave">
     UPDATE user_leave
         <set>
          description= #{description,jdbcType=BIGINT}, hours= #{hours,jdbcType=DECIMAL},

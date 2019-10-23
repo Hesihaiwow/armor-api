@@ -203,8 +203,8 @@ public class ZSYSignInController {
 
     @ApiOperation("更新2019年10月的请假和加班产生的调休变化")
     @PutMapping("/reset")
-    public String updateLeaveAndEWork(){
-        signInService.updateLeaveAndEWork();
+    public String updateLeaveAndEWork(@RequestBody LeaveAndEWorkReqDTO reqDTO){
+        signInService.updateLeaveAndEWork(reqDTO);
         return ZSYResult.success().build();
     }
 }

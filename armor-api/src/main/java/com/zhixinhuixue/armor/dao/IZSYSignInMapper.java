@@ -148,7 +148,7 @@ public interface IZSYSignInMapper {
      * @param today23
      * @return
      */
-    SignIn selectSignInByUserAndTimeRange(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
+    List<SignIn> selectSignInByUserAndTimeRange(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
 
     /**
      * 删除type=2 的多余记录
