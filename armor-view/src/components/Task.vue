@@ -222,7 +222,7 @@
                     {label: '非常紧急', value: 3},
                 ],
                 typeList: [{value: 1, name: '个人任务'}, {value: 2, name: '多人任务'}],
-                status: [{value: 0, name: '暂停中'}, {value: 1, name: '进行中'}, {value: 3, name: '已完成'}],
+                status: [{value: 0, name: '暂停中'}, {value: 1, name: '进行中'}, {value: 2, name: '已完成'}, {value: 3, name: '已结束'}],
                 taskItems: [],
                 page: {
                     pageNum: 0,

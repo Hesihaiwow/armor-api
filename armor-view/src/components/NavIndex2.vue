@@ -5660,7 +5660,12 @@
                                 this.editLeaveDetailVisible = false;
                                 this.isSaving = false
                             }, err => {
-                                this.isSaving = false
+                                this.isSaving = false;
+                                this.$message({
+                                    showClose: true,
+                                    message: err.errMsg,
+                                    type: 'error'
+                                });
                             })
                         } else {
                             http.zsyPostHttp('/userLeave/add', form, (resp) => {
@@ -5675,6 +5680,11 @@
                                 this.editLeaveDetailVisible = false;
                                 this.isSaving = false
                             }, err => {
+                                this.$message({
+                                    showClose: true,
+                                    message: err.errMsg,
+                                    type: 'error'
+                                });
                                 this.isSaving = false
                             })
                         }
