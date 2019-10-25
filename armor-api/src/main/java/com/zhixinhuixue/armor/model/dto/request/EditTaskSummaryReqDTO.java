@@ -8,14 +8,14 @@ import java.util.Date;
 
 /**
  * @author sch
- * @DATE 2019/9/3 13:45
+ * @time 2019/10/25 13:11
  */
-public class AddTaskSummaryReqDTO {
+public class EditTaskSummaryReqDTO {
     /**
-     * 任务id
+     * id
      */
-    @NotNull(message = "任务id不能为空")
-    private Long taskId;
+    @NotNull(message = "任务总结id不能为空")
+    private Long id;
 
     /**
      * 任务完成质量
@@ -59,6 +59,14 @@ public class AddTaskSummaryReqDTO {
     @NotNull(message = "总结结束时间不能为空")
     private Date endTime;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public BigDecimal getQuality() {
         return quality;
     }
@@ -81,14 +89,6 @@ public class AddTaskSummaryReqDTO {
 
     public void setHasCommunicateProblem(Integer hasCommunicateProblem) {
         this.hasCommunicateProblem = hasCommunicateProblem;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
     }
 
     public String getComment() {

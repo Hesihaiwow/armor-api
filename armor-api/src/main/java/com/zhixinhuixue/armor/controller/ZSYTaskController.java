@@ -354,6 +354,13 @@ public class ZSYTaskController extends ZSYController {
         List<TaskSummaryResDTO> summaryResDTOS = taskService.deleteTaskSummary(summaryId);
         return ZSYResult.success().data(summaryResDTOS).build();
     }
+
+    @ApiOperation("编辑任务总结")
+    @PutMapping("/summary/edit")
+    public String updateSummary(@Valid @RequestBody EditTaskSummaryReqDTO reqDTO){
+        List<TaskSummaryResDTO> summaryResDTOS = taskService.editTaskSummary(reqDTO);
+        return ZSYResult.success().data(summaryResDTOS).build();
+    }
     // -- sch
 }
 

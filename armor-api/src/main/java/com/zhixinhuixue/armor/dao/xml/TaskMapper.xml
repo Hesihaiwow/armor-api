@@ -262,8 +262,11 @@
             <if test="status!=null and status==0">
                 and t1.`status` = 0
             </if>
-            <if test="status!=null and status !=0 and status!=1 ">
-                and t1.`status` in (2,3)
+            <if test="status!=null and status ==2">
+                and t1.`status` = 2
+            </if>
+            <if test="status!=null and status ==3">
+                and t1.`status` = 3
             </if>
             <if test="beginTime!=null">
                 and t1.create_time &gt;= #{beginTime}

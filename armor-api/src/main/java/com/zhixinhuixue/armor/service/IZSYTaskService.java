@@ -332,6 +332,13 @@ public interface IZSYTaskService {
      */
     List<TaskSummaryResDTO> deleteTaskSummary(Long summaryId);
 
+    /**
+     * 编辑任务总结
+     * @author sch
+     * @param reqDTO 参数
+     */
+    List<TaskSummaryResDTO> editTaskSummary(EditTaskSummaryReqDTO reqDTO);
+
 
     // -- sch
 }

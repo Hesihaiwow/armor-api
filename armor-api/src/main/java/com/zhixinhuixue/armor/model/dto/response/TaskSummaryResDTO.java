@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -55,6 +56,45 @@ public class TaskSummaryResDTO {
      * 创建时间
      */
     private Date createTime;
+
+    /**
+     * 任务完成质量
+     */
+    private BigDecimal quality;
+
+    /**
+     * 是否延期
+     */
+    private Integer isDelayed;
+
+    /**
+     * 是否有沟通问题字段
+     */
+    private Integer hasCommunicateProblem;
+
+    public BigDecimal getQuality() {
+        return quality;
+    }
+
+    public void setQuality(BigDecimal quality) {
+        this.quality = quality;
+    }
+
+    public Integer getIsDelayed() {
+        return isDelayed;
+    }
+
+    public void setIsDelayed(Integer isDelayed) {
+        this.isDelayed = isDelayed;
+    }
+
+    public Integer getHasCommunicateProblem() {
+        return hasCommunicateProblem;
+    }
+
+    public void setHasCommunicateProblem(Integer hasCommunicateProblem) {
+        this.hasCommunicateProblem = hasCommunicateProblem;
+    }
 
     public String getSummaryTimesStr() {
         return summaryTimesStr;

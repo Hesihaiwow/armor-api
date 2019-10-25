@@ -2901,9 +2901,16 @@ public class ZSYTaskService implements IZSYTaskService {
         if (task == null){
             throw new ZSYServiceException("当前任务不存在,请检查");
         }
+        List<TaskSummaryBO> summaryBOS = taskSummaryMapper.selectListByTask(reqDTO.getTaskId());
+        if (!CollectionUtils.isEmpty(summaryBOS)){
+            throw new ZSYServiceException("当前任务已总结,请检查");
+        }
         TaskSummary summary = new TaskSummary();
         summary.setId(snowFlakeIDHelper.nextId());
         summary.setTaskId(reqDTO.getTaskId());
+        summary.setQuality(reqDTO.getQuality());
+        summary.setIsDelayed(reqDTO.getIsDelayed());
+        summary.setHasCommunicateProblem(reqDTO.getHasCommunicateProblem());
         summary.setComment(reqDTO.getComment().trim());
         summary.setGain(reqDTO.getGain().trim());
         summary.setBeginTime(reqDTO.getBeginTime());
@@ -2936,6 +2943,46 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     /**
+     * 编辑任务总结
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    @Transactional
+    public List<TaskSummaryResDTO> editTaskSummary(EditTaskSummaryReqDTO reqDTO) {
+        TaskSummary summary = taskSummaryMapper.selectById(reqDTO.getId());
+        if (summary == null){
+            throw new ZSYServiceException("当前任务总结不存在,请检查");
+        }
+        summary.setQuality(reqDTO.getQuality());
+        summary.setIsDelayed(reqDTO.getIsDelayed());
+        summary.setHasCommunicateProblem(reqDTO.getHasCommunicateProblem());
+        summary.setComment(reqDTO.getComment().trim());
+        summary.setGain(reqDTO.getGain().trim());
+        summary.setBeginTime(reqDTO.getBeginTime());
+        summary.setEndTime(reqDTO.getEndTime());
+        summary.setUpdateTime(new Date());
+        summary.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+        taskSummaryMapper.update(summary);
+        List<TaskSummaryBO> taskSummaryBOS = taskSummaryMapper.selectListByTask(summary.getTaskId());
+        List<TaskSummaryResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskSummaryBOS)){
+            taskSummaryBOS.forEach(taskSummaryBO -> {
+                TaskSummaryResDTO resDTO = new TaskSummaryResDTO();
+                BeanUtils.copyProperties(taskSummaryBO,resDTO);
+                long timeMillis = taskSummaryBO.getEndTime().getTime()-taskSummaryBO.getBeginTime().getTime();
+                resDTO.setSummaryTimes(timeMillis);
+                String hours = (timeMillis/1000/60/60)+"";
+                String mins = (timeMillis/1000/60%60)+"";
+                String secs = (timeMillis/1000%60)+"";
+                resDTO.setSummaryTimesStr(hours+"h "+mins+"m "+secs+"s ");
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
      * 删除任务总结
      * @author sch
      * @param summaryId 总结id
@@ -2943,6 +2990,9 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     @Transactional
     public List<TaskSummaryResDTO> deleteTaskSummary(Long summaryId) {
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.ADMINISTRATOR.getValue()){
+            throw new ZSYServiceException("用户无权限删除");
+        }
         TaskSummary summary = taskSummaryMapper.selectById(summaryId);
         if (summary == null){
             throw new ZSYServiceException("当前任务总结不存在,请检查");

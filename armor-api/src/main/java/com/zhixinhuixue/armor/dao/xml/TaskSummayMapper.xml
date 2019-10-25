@@ -13,6 +13,9 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+        <result column="is_delayed" jdbcType="INTEGER" property="isDelayed" />
+        <result column="has_communicate_problem" jdbcType="INTEGER" property="hasCommunicateProblem" />
+        <result column="quality" jdbcType="DECIMAL" property="quality" />
     </resultMap>
 
     <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TaskSummaryBO" extends="BaseResultMap">
@@ -35,18 +38,28 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
         INSERT INTO `task_summary`
         (`id`,`task_id`,`comment`,`gain`,`create_by`,`update_by`,`create_time`
-        ,`update_time`,`is_delete`,`begin_time`,`end_time`)
+        ,`update_time`,`is_delete`,`begin_time`,`end_time`,`quality`,`is_delayed`,`has_communicate_problem`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{comment,jdbcType=VARCHAR}
         ,#{gain,jdbcType=VARCHAR},#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT}
         ,#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER}
-        ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP})
+        ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP}
+        ,#{quality,jdbcType=DECIMAL},#{isDelayed,jdbcType=INTEGER},#{hasCommunicateProblem,jdbcType=INTEGER})
     </insert>
 
     <!--更新-->
     <update id="update" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
         UPDATE `task_summary`
         <set>
+            <if test="quality != null">
+                `quality` = #{quality},
+            </if>
+            <if test="isDelayed != null">
+                `is_delayed` = #{isDelayed},
+            </if>
+            <if test="hasCommunicateProblem != null">
+                `has_communicate_problem` = #{hasCommunicateProblem},
+            </if>
             <if test="comment != null and comment !='' ">
                 `comment` = #{comment},
             </if>

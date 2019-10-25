@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.model.pojo;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -19,6 +20,21 @@ public class TaskSummary {
      * 任务id
      */
     private Long taskId;
+
+    /**
+     * 任务完成质量
+     */
+    private BigDecimal quality;
+
+    /**
+     * 是否延期
+     */
+    private Integer isDelayed;
+
+    /**
+     * 是否有沟通问题字段
+     */
+    private Integer hasCommunicateProblem;
 
     /**
      * 总结内容
@@ -64,6 +80,30 @@ public class TaskSummary {
      * 是否删除
      */
     private Integer isDelete;
+
+    public BigDecimal getQuality() {
+        return quality;
+    }
+
+    public void setQuality(BigDecimal quality) {
+        this.quality = quality;
+    }
+
+    public Integer getIsDelayed() {
+        return isDelayed;
+    }
+
+    public void setIsDelayed(Integer isDelayed) {
+        this.isDelayed = isDelayed;
+    }
+
+    public Integer getHasCommunicateProblem() {
+        return hasCommunicateProblem;
+    }
+
+    public void setHasCommunicateProblem(Integer hasCommunicateProblem) {
+        this.hasCommunicateProblem = hasCommunicateProblem;
+    }
 
     public Long getId() {
         return id;

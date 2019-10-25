@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserLeaveMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
@@ -63,6 +60,18 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      */
     @Override
     public void add(UserLeaveReqDTO userLeaveReqDTO) {
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        if (userLeaveReqDTO.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(userLeaveReqDTO.getBeginTime());
+            BigDecimal totalRestHours = restHoursLogMapper.selectTotalRestHours(userId, calendar.get(Calendar.YEAR));
+            BigDecimal usedHours = restHoursLogMapper.selectUsedHours(userId, calendar.get(Calendar.YEAR));
+            BigDecimal leftHours = totalRestHours.subtract(usedHours);
+            if (leftHours.subtract(userLeaveReqDTO.getHours()).compareTo(BigDecimal.ZERO)<0){
+                throw new ZSYServiceException("用户当前所剩调休时间不足此次调休扣除,请选择其他请假类型");
+            }
+        }
+
         UserLeave userLeave = new UserLeave();
 
         BeanUtils.copyProperties(userLeaveReqDTO,userLeave);
@@ -175,8 +184,19 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      */
     @Override
     public void updateLeaveDetail(UserLeaveReqDTO userLeaveReqDTO, Long id) {
+
         UserLeave userLeave = new UserLeave();
         UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id);
+        if (userLeaveReqDTO.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(userLeaveReqDTO.getBeginTime());
+            BigDecimal totalRestHours = restHoursLogMapper.selectTotalRestHours(userLeaveBO.getUserId(), calendar.get(Calendar.YEAR));
+            BigDecimal usedHours = restHoursLogMapper.selectUsedHours(userLeaveBO.getUserId(), calendar.get(Calendar.YEAR));
+            BigDecimal leftHours = totalRestHours.subtract(usedHours);
+            if (leftHours.subtract(userLeaveReqDTO.getHours()).compareTo(BigDecimal.ZERO)<0){
+                throw new ZSYServiceException("用户当前所剩调休时间不足此次调休扣除,请选择其他请假类型");
+            }
+        }
         userLeave.setId(id);
         userLeave.setUserId(userLeaveBO.getUserId());
         userLeave.setReviewStatus(userLeaveBO.getReviewStatus());
