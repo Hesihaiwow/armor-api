@@ -66,7 +66,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             calendar.setTime(userLeaveReqDTO.getBeginTime());
             BigDecimal totalRestHours = restHoursLogMapper.selectTotalRestHours(userId, calendar.get(Calendar.YEAR));
             BigDecimal usedHours = restHoursLogMapper.selectUsedHours(userId, calendar.get(Calendar.YEAR));
-            BigDecimal leftHours = totalRestHours.subtract(usedHours);
+            BigDecimal leftHours = totalRestHours.add(usedHours);
             if (leftHours.subtract(userLeaveReqDTO.getHours()).compareTo(BigDecimal.ZERO)<0){
                 throw new ZSYServiceException("用户当前所剩调休时间不足此次调休扣除,请选择其他请假类型");
             }
@@ -192,7 +192,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             calendar.setTime(userLeaveReqDTO.getBeginTime());
             BigDecimal totalRestHours = restHoursLogMapper.selectTotalRestHours(userLeaveBO.getUserId(), calendar.get(Calendar.YEAR));
             BigDecimal usedHours = restHoursLogMapper.selectUsedHours(userLeaveBO.getUserId(), calendar.get(Calendar.YEAR));
-            BigDecimal leftHours = totalRestHours.subtract(usedHours);
+            BigDecimal leftHours = totalRestHours.add(usedHours);
             if (leftHours.subtract(userLeaveReqDTO.getHours()).compareTo(BigDecimal.ZERO)<0){
                 throw new ZSYServiceException("用户当前所剩调休时间不足此次调休扣除,请选择其他请假类型");
             }
