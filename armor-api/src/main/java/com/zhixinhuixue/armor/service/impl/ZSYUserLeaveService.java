@@ -26,6 +26,7 @@ import com.zhixinhuixue.armor.source.enums.ZSYUserLeaveType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      * @param userLeaveReqDTO
      */
     @Override
+    @Transactional
     public void add(UserLeaveReqDTO userLeaveReqDTO) {
         Long userId = ZSYTokenRequestContext.get().getUserId();
         if (userLeaveReqDTO.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
@@ -183,6 +185,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      * @param id
      */
     @Override
+    @Transactional
     public void updateLeaveDetail(UserLeaveReqDTO userLeaveReqDTO, Long id) {
 
         UserLeave userLeave = new UserLeave();
@@ -225,6 +228,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      * @param id
      */
     @Override
+    @Transactional
     public void deleteLeaveDetail(Long id) {
         userLeaveMapper.deleteById(id);
         userWeekMapper.deleteByTaskId(id);
@@ -235,9 +239,20 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      * @param id
      */
     @Override
+    @Transactional
     public void passLeave(Long id) {
         UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id);
         User user = userMapper.selectById(userLeaveBO.getUserId());
+        if (userLeaveBO.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(userLeaveBO.getBeginTime());
+            BigDecimal totalRestHours = restHoursLogMapper.selectTotalRestHours(userLeaveBO.getUserId(), calendar.get(Calendar.YEAR));
+            BigDecimal usedHours = restHoursLogMapper.selectUsedHours(userLeaveBO.getUserId(), calendar.get(Calendar.YEAR));
+            BigDecimal leftHours = totalRestHours.add(usedHours);
+            if (leftHours.subtract(userLeaveBO.getHours()).compareTo(BigDecimal.ZERO)<0){
+                throw new ZSYServiceException("用户当前所剩调休时间不足此次调休扣除,请选择其他请假类型");
+            }
+        }
         UserLeave userLeave = new UserLeave();
         BeanUtils.copyProperties(userLeaveBO,userLeave);
         userLeave.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
