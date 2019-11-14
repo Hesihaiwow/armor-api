@@ -278,4 +278,10 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<Task> selectDoingListByUser(@Param("userId") Long userId);
+
+    /**
+     * 查询7月之后的任务
+     * @author sch
+     */
+    List<Task> selectListAfterJuly();
 }

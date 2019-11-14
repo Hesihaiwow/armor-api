@@ -84,4 +84,34 @@ public interface IZSYUserTaskIntegralService {
      * @author sch
      */
     void updateAfterJulyWithoutEvaluation();
+
+    /**
+     * 更新7月之后,没有任务级别的个人任务,新增级别
+     * @author sch
+     */
+    void privateTaskAddLevel();
+
+    /**
+     * 更新7月之后,没有任务级别的多人任务,根据工时新增级别
+     * @author sch
+     */
+    void multiTaskAddLevel();
+
+    /**
+     * 计算7月之后完成的个人任务积分
+     * @author sch
+     */
+    void countPrivateIntegral();
+
+    /**
+     * 计算7月之后完成的多人任务积分
+     * @author sch
+     */
+    void countMultiIntegral();
+
+    /**
+     * 计算7月之后完成的未结束的多人任务积分
+     * @author sch
+     */
+    void countMultiCompletedIntegral();
 }

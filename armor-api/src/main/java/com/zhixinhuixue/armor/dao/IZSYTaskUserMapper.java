@@ -134,6 +134,30 @@ public interface IZSYTaskUserMapper {
      */
     List<TaskUserHoursBO> selectWithoutEvaluationMultiTask();
 
+    /**
+     * 查询7月后没有任务级别的个人任务
+     * @author sch
+     */
+    List<TaskUser> selectPrivateAfterJuly();
+
+    /**
+     * 查询7月后没有任务级别的多人任务
+     * @author sch
+     */
+    List<TaskUser> selectMultiAfterJuly();
+
+    /**
+     * 查询7月之后已完成的个人任务
+     * @author sch
+     */
+    List<TaskUser> selectPrivateAfterJulyWithLevel();
+
+    /**
+     * 查询7月之后已结束的多人任务
+     * @author sch
+     */
+    List<TaskUser> selectMultiAfterJulyWithLevel(@Param("status") Integer status);
+
 //    List<Long> selectUserIdByTaskId(@Param("taskId")Long taskId);
     // -- sch
 }

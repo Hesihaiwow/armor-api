@@ -827,49 +827,40 @@ public class ZSYTaskService implements IZSYTaskService {
 //        taskCommentMapper.insert(taskComment);
 
         Integer taskLevel = taskUserTemp.getTaskLevel();
-        Integer originIntegral = 1;
-        if (taskLevel != null){
-            if (taskLevel == 1){
-                originIntegral = 1;
-            }else if (taskLevel == 2){
-                originIntegral = 3;
-            }else if (taskLevel == 3){
-                originIntegral = 8;
-            }else if (taskLevel == 4){
-                originIntegral = 20;
-            }else if (taskLevel == 5){
-                originIntegral = 40;
-            }
+        if (taskLevel == null){
+            throw new ZSYServiceException("当前任务级别不存在,请检查");
         }
-        Integer userLevel = userTemp.getLevel();
-        BigDecimal userCoefficient = BigDecimal.ONE;
-        if (userLevel == 1){
-            userCoefficient = BigDecimal.valueOf(0.9);
-        }else if (userLevel == 2){
-            userCoefficient = BigDecimal.valueOf(0.8);
-        }else if (userLevel == 3){
-            userCoefficient = BigDecimal.valueOf(0.7);
-        }else if (userLevel == 4){
-            userCoefficient = BigDecimal.valueOf(0.6);
-        }else if (userLevel == 5){
-            userCoefficient = BigDecimal.valueOf(0.5);
-        }else if (userLevel == 6){
-            userCoefficient = BigDecimal.valueOf(0.4);
-        }else if (userLevel == 7){
-            userCoefficient = BigDecimal.valueOf(0.3);
-        }else if (userLevel == 8){
-            userCoefficient = BigDecimal.valueOf(0.2);
-        }else if (userLevel == 9){
-            userCoefficient = BigDecimal.valueOf(0.1);
-        }
+        BigDecimal originIntegral = getOriginIntegral(taskLevel);
+
+//        Integer userLevel = userTemp.getLevel();
+//        BigDecimal userCoefficient = BigDecimal.ONE;
+//        if (userLevel == 1){
+//            userCoefficient = BigDecimal.valueOf(0.9);
+//        }else if (userLevel == 2){
+//            userCoefficient = BigDecimal.valueOf(0.8);
+//        }else if (userLevel == 3){
+//            userCoefficient = BigDecimal.valueOf(0.7);
+//        }else if (userLevel == 4){
+//            userCoefficient = BigDecimal.valueOf(0.6);
+//        }else if (userLevel == 5){
+//            userCoefficient = BigDecimal.valueOf(0.5);
+//        }else if (userLevel == 6){
+//            userCoefficient = BigDecimal.valueOf(0.4);
+//        }else if (userLevel == 7){
+//            userCoefficient = BigDecimal.valueOf(0.3);
+//        }else if (userLevel == 8){
+//            userCoefficient = BigDecimal.valueOf(0.2);
+//        }else if (userLevel == 9){
+//            userCoefficient = BigDecimal.valueOf(0.1);
+//        }
         // 插入积分记录
         UserTaskIntegral userIntegral = new UserTaskIntegral();
         userIntegral.setId(snowFlakeIDHelper.nextId());
         userIntegral.setTaskId(taskCompleteReqDTO.getTaskId());
         userIntegral.setUserId(ZSYTokenRequestContext.get().getUserId());
         userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-        userIntegral.setIntegral(BigDecimal.valueOf(0.8).multiply(userCoefficient)
-                .multiply(BigDecimal.valueOf(originIntegral)).setScale(2,BigDecimal.ROUND_HALF_UP));
+        userIntegral.setIntegral(BigDecimal.valueOf(0.8)
+                .multiply(originIntegral).setScale(2,BigDecimal.ROUND_HALF_UP));
         userIntegral.setCreateTime(new Date());
         userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
         userIntegral.setDescription("完成了单人任务:" + taskTemp.getDescription());
@@ -3614,5 +3605,29 @@ public class ZSYTaskService implements IZSYTaskService {
         }else {
             throw new ZSYServiceException("当前任务没有用户参与,请检查");
         }
+    }
+
+    /**
+     * 获取原始积分
+     * @param taskLevel
+     * @return
+     */
+    private BigDecimal getOriginIntegral(Integer taskLevel){
+        BigDecimal originIntegral = BigDecimal.ZERO;
+        if (taskLevel == 1){
+            originIntegral = BigDecimal.valueOf(2);
+        }else if (taskLevel == 2){
+            originIntegral = BigDecimal.valueOf(6);
+        }else if (taskLevel == 3){
+            originIntegral = BigDecimal.valueOf(18);
+        }else if (taskLevel == 4){
+            originIntegral = BigDecimal.valueOf(54);
+        }else if (taskLevel == 5){
+            originIntegral = BigDecimal.valueOf(108);
+        }else {
+            throw new ZSYServiceException("任务级别有误,请检查");
+        }
+
+        return originIntegral;
     }
 }

@@ -29,7 +29,7 @@
 
     <!--新增-->
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
-        INSERT INTO `user_task_integral`
+        REPLACE INTO `user_task_integral`
         (`id`,`user_id`,`task_id`,`integral`,`description`
         ,`origin`,`review_status`,`create_by`,`create_time`,`score`)
         VALUES
@@ -41,7 +41,7 @@
 
     <!--批量插入-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
-        INSERT INTO `user_task_integral`
+        REPLACE INTO `user_task_integral`
         (`id`,`user_id`,`task_id`,`integral`,`description`
         ,`origin`,`review_status`,`create_by`,`create_time`
         ,`score`)

@@ -269,5 +269,37 @@
         AND t.`status` = 2 AND t.`is_delete` = 0 AND t.`review_status` = 3 AND te.id IS NOT NULL
         GROUP BY tu.id;
     </select>
+
+    <!--查询7月后没有任务级别的个人任务-->
+    <select id="selectPrivateAfterJuly" resultMap="BaseResultMap">
+        SELECT tu.* FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        WHERE tu.end_time >= '2019-07-01 00:00:00'
+        AND t.review_status = 3 AND t.is_delete = 0 AND t.type = 1 AND task_level IS NULL
+    </select>
+
+    <!--查询7月后没有任务级别的多人任务-->
+    <select id="selectMultiAfterJuly" resultMap="BaseResultMap">
+        SELECT tu.* FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        WHERE tu.end_time >= '2019-07-01 00:00:00'
+        AND t.review_status = 3 AND t.is_delete = 0 AND t.type = 2 AND task_level IS NULL
+    </select>
+
+    <!--查询7月之后已完成的个人任务-->
+    <select id="selectPrivateAfterJulyWithLevel" resultMap="BaseResultMap">
+        SELECT tu.* FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        WHERE tu.end_time >= '2019-07-01 00:00:00'
+        AND t.review_status = 3 AND t.is_delete = 0 AND t.type = 1 AND t.`status` IN (2,3)
+    </select>
+
+    <!--查询7月之后已结束的多人任务-->
+    <select id="selectMultiAfterJulyWithLevel" resultMap="BaseResultMap">
+        SELECT tu.* FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        WHERE tu.end_time >= '2019-07-01 00:00:00'
+        AND t.review_status = 3 AND t.is_delete = 0 AND t.type = 2 AND t.`status`=#{status}
+    </select>
     <!--  sch  -->
 </mapper>

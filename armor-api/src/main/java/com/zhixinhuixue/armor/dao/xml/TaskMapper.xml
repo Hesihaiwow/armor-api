@@ -674,5 +674,10 @@
     <select id="selectDoingListByUser" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `create_by` = #{userId}
     </select>
+
+    <!--查询7月之后的任务-->
+    <select id="selectListAfterJuly" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `begin_time` >= '2019-07-01 00:00:00'
+    </select>
     <!-- sch -->
 </mapper>
