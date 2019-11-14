@@ -208,7 +208,7 @@
                @click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>
             <el-tooltip placement="top">
               <div slot="content">
-                {{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}
+                {{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}<br/>任务复杂度: {{item.taskLevelName}}
                 <div v-if="item.functionStrs !== undefined && item.functionStrs.length > 0">
                   <div>功能点:</div>
                   <div v-for="functionStr in item.functionStrs">{{functionStr}}</div>

@@ -2660,6 +2660,13 @@
                             type: 'error'
                         });
                         this.isSaving = false;
+                    },(err)=>{
+                        this.$message({
+                            showClose: true,
+                            message: err.errMsg,
+                            type: 'error'
+                        });
+                        this.isSaving = false;
                     })
                 }
 
