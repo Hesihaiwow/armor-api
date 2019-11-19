@@ -143,6 +143,7 @@
                         </el-table-column>
                         <el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>
                         <el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>
+                        <el-table-column prop="others" label="其他人员" align="center" width="100"></el-table-column>
                         <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template scope="scope">
                                 <span v-if="scope.row.isSolved === 0">未解决</span>
@@ -166,88 +167,88 @@
                         </el-pagination>
                     </div>
                 </div>
-                <div class="stats-con" style="height: auto">
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="oldBugReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                            <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
-                                       :value="item.userId"></el-option>
-                        </el-select>
-                    </div>
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="oldBugReqDTO.type" clearable filterable   placeholder="类型">
-                            <el-option v-for="item in typeList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
-                        </el-select>
-                    </div>
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="oldBugReqDTO.isSolved" clearable filterable   placeholder="是否解决">
-                            <el-option v-for="item in isSolvedList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
-                        </el-select>
-                    </div>
-                    <div class="add-member-basic-msg fl"><el-date-picker
-                            v-model="bugDaterange2"
-                            type="daterange"
-                            placeholder="选择日期范围"
-                            unlink-panels
-                            @change="bugTimeChange2"
-                            :picker-options="pickerOptions">
-                    </el-date-picker></div>
-                    <div class="add-member-basic-msg fl" style="margin-left: -80px"><img src="../assets/img/u1221.png" alt="" @click="fetchOldBugPage()" class="search-btn"></div>
-                    <el-table :data="oldBugPage" border>
-                        <el-table-column type="index" label="序号" align="center" width="80">
-                            <template scope="scope">
-                                {{(oldBugReqDTO.pageNum-1)*10 + scope.$index + 1}}
-                            </template>
-                        </el-table-column>
-                        <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
-                        <el-table-column prop="createTime" label="反馈日期"  width="115">
-                            <template scope="scope">
-                                <span>{{scope.row.discoverTime | formatDate1}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="processTime" label="解决日期"  width="115">
-                            <template scope="scope">
-                                <span>{{scope.row.processTime | formatDate1}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>
-                        <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
-                        <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
-                        <!--<el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>-->
-                        <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
-                        <el-table-column prop="type" label="问题类型" align="center" width="110">
-                            <template scope="scope">
-                                <span v-if="scope.row.type === 0">bug</span>
-                                <span v-if="scope.row.type === 1">优化</span>
-                                <span v-if="scope.row.type === 2">协助</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>
-                        <el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>
-                        <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
-                            <template scope="scope">
-                                <span v-if="scope.row.isSolved === 0">未解决</span>
-                                <span v-if="scope.row.isSolved === 1">已解决</span>
-                            </template>
-                        </el-table-column>
-                        <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
-                        <el-table-column label="操作" width="80" align="center">
-                            <template scope="scope">
-                                <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <div class="pagination">
-                        <el-pagination
-                                @current-change="handleOldBugChange"
-                                :current-page.sync="oldBugReqDTO.pageNum"
-                                :page-size="oldBugFormPage.pageSize"
-                                :layout="oldBugPageLayout"
-                                :total="oldBugFormPage.total">
-                        </el-pagination>
-                    </div>
-                </div>
+                <!--<div class="stats-con" style="height: auto">-->
+                    <!--<div class="add-member-basic-msg fl" >-->
+                        <!--<el-select v-model="oldBugReqDTO.userId" clearable filterable   placeholder="筛选用户">-->
+                            <!--<el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"-->
+                                       <!--:value="item.userId"></el-option>-->
+                        <!--</el-select>-->
+                    <!--</div>-->
+                    <!--<div class="add-member-basic-msg fl" >-->
+                        <!--<el-select v-model="oldBugReqDTO.type" clearable filterable   placeholder="类型">-->
+                            <!--<el-option v-for="item in typeList" :key="item.id" :label="item.name"-->
+                                       <!--:value="item.id"></el-option>-->
+                        <!--</el-select>-->
+                    <!--</div>-->
+                    <!--<div class="add-member-basic-msg fl" >-->
+                        <!--<el-select v-model="oldBugReqDTO.isSolved" clearable filterable   placeholder="是否解决">-->
+                            <!--<el-option v-for="item in isSolvedList" :key="item.id" :label="item.name"-->
+                                       <!--:value="item.id"></el-option>-->
+                        <!--</el-select>-->
+                    <!--</div>-->
+                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
+                            <!--v-model="bugDaterange2"-->
+                            <!--type="daterange"-->
+                            <!--placeholder="选择日期范围"-->
+                            <!--unlink-panels-->
+                            <!--@change="bugTimeChange2"-->
+                            <!--:picker-options="pickerOptions">-->
+                    <!--</el-date-picker></div>-->
+                    <!--<div class="add-member-basic-msg fl" style="margin-left: -80px"><img src="../assets/img/u1221.png" alt="" @click="fetchOldBugPage()" class="search-btn"></div>-->
+                    <!--<el-table :data="oldBugPage" border>-->
+                        <!--<el-table-column type="index" label="序号" align="center" width="80">-->
+                            <!--<template scope="scope">-->
+                                <!--{{(oldBugReqDTO.pageNum-1)*10 + scope.$index + 1}}-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--&lt;!&ndash;<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>&ndash;&gt;-->
+                        <!--<el-table-column prop="createTime" label="反馈日期"  width="115">-->
+                            <!--<template scope="scope">-->
+                                <!--<span>{{scope.row.discoverTime | formatDate1}}</span>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column prop="processTime" label="解决日期"  width="115">-->
+                            <!--<template scope="scope">-->
+                                <!--<span>{{scope.row.processTime | formatDate1}}</span>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>-->
+                        <!--&lt;!&ndash;<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>&ndash;&gt;-->
+                        <!--<el-table-column prop="description" label="问题描述" align="center"></el-table-column>-->
+                        <!--&lt;!&ndash;<el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>&ndash;&gt;-->
+                        <!--<el-table-column prop="type" label="问题类型" align="center" width="110">-->
+                            <!--<template scope="scope">-->
+                                <!--<span v-if="scope.row.type === 0">bug</span>-->
+                                <!--<span v-if="scope.row.type === 1">优化</span>-->
+                                <!--<span v-if="scope.row.type === 2">协助</span>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>-->
+                        <!--<el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>-->
+                        <!--<el-table-column prop="isSolved" label="是否解决" align="center" width="100">-->
+                            <!--<template scope="scope">-->
+                                <!--<span v-if="scope.row.isSolved === 0">未解决</span>-->
+                                <!--<span v-if="scope.row.isSolved === 1">已解决</span>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--&lt;!&ndash;<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>&ndash;&gt;-->
+                        <!--<el-table-column label="操作" width="80" align="center">-->
+                            <!--<template scope="scope">-->
+                                <!--<el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                    <!--</el-table>-->
+                    <!--<div class="pagination">-->
+                        <!--<el-pagination-->
+                                <!--@current-change="handleOldBugChange"-->
+                                <!--:current-page.sync="oldBugReqDTO.pageNum"-->
+                                <!--:page-size="oldBugFormPage.pageSize"-->
+                                <!--:layout="oldBugPageLayout"-->
+                                <!--:total="oldBugFormPage.total">-->
+                        <!--</el-pagination>-->
+                    <!--</div>-->
+                <!--</div>-->
             </el-tab-pane>
             <el-tab-pane label="测试问题统计" name="mantisBug" v-if="permit" style="">
                 <div class="bug-stats-con">
@@ -2079,7 +2080,7 @@
               } else if (this.activeName === 'bug'){
                   // this.fetchSignInUser();
                   this.fetchBugPage();
-                  this.fetchOldBugPage();
+                  // this.fetchOldBugPage();
               } else if (this.activeName === 'mantisBug'){
                   this.getEnv();
                   this.fetchMantisBugStatsGroupByUser();
