@@ -917,7 +917,7 @@
         <el-dialog
                 @close="closeDialog()"
                 title="创建Bug处理结果"
-                style="width:auto;"
+                class="hhh"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="createBugSolvingVisible1">
@@ -991,7 +991,7 @@
                 <div class="ctpc-member-con">
                     <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <!--<span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>-->
+                        <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
                         <span style="position: absolute;right: 10px;">
                                 <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
                             <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
@@ -1008,11 +1008,11 @@
                                                :value="item.userId"></el-option>
                                 </el-select>
                             </div>
-                            <!--<div class="add-member-basic-menu add-member-basic-time fl">积分：-->
-                            <!--</div>-->
-                            <!--<div class="add-member-basic-msg fl">-->
-                                <!--<input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">-->
-                            <!--</div>-->
+                            <div class="add-member-basic-menu add-member-basic-time fl">积分：
+                            </div>
+                            <div class="add-member-basic-msg fl">
+                                <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
+                            </div>
                         </div>
                     </div>
                     <div class="ctpc-btns">
@@ -1094,7 +1094,7 @@
         <el-dialog
                 @close="closeDialog()"
                 title="更新Bug处理"
-                style="width:auto;"
+                class="hhh"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="updateBugSolvingVisible1">
@@ -2267,7 +2267,7 @@
                 }
             },
             saveAddMember(){
-                this.addMemberIndex.integral = 0;
+                // this.addMemberIndex.integral = 0;
                 if (this.addMemberIndex.userId === ''||this.addMemberIndex.integral === '') {
                     this.errorMsg('请将积分信息填写完整');
                     return
@@ -2288,7 +2288,7 @@
                     index: '',
                     userId: '',
                     userName: '',
-                    integral: 0,
+                    integral: null,
                 };
                 this.stepTemp = {}
 
@@ -3355,7 +3355,7 @@
                 this.onlineBugForm.processTime = null;
                 this.onlineBugForm.description = null;
                 this.onlineBugForm.accountInfo = null;
-                this.onlineBugForm.demandSystem = null;
+                this.onlineBugForm.demandSystemId = null;
                 this.onlineBugForm.remark = null;
                 this.onlineBugForm.type = 0;
                 this.onlineBugForm.isSolved = 0;
@@ -4596,6 +4596,9 @@
         margin-bottom: 0;
     }
 
+    .hhh .el-dialog--small {
+        width: 755px;
+    }
 
 </style>
 

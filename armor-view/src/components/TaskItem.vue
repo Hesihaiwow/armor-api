@@ -323,8 +323,8 @@
                             <div class="task-title-detail" v-show="item.quality!==undefined" ><em></em>任务完成质量: {{item.quality}}分</div>
                             <div class="task-title-detail" v-show="item.isDelayed===1" ><em></em>是否延期: 是</div>
                             <div class="task-title-detail" v-show="item.isDelayed===0" ><em></em>是否延期: 否</div>
-                            <div class="task-title-detail" v-show="item.hasCommunicateProblem===1" ><em></em>是否有沟通问题字段: 是</div>
-                            <div class="task-title-detail" v-show="item.hasCommunicateProblem===0" ><em></em>是否有沟通问题字段: 否</div>
+                            <div class="task-title-detail" v-show="item.hasCommunicateProblem===1" ><em></em>是否有沟通问题: 是</div>
+                            <div class="task-title-detail" v-show="item.hasCommunicateProblem===0" ><em></em>是否有沟通问题: 否</div>
                             <div class="task-title-detail" v-show="item.comment!==''" ><em></em>遇到问题: {{item.comment}}</div>
                             <div class="task-title-detail" v-show="item.gain!==''" ><em></em>解决方案: {{item.gain}}</div>
                             <div class="task-title-detail" v-show="item.beginTime!==null" ><em></em>总结开始时间: {{item.beginTime | formatTime}}</div>
@@ -478,7 +478,7 @@
                             <el-radio :label="0">否</el-radio>
                         </el-radio-group>
                     </div>
-                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -4px;width: 150px"><span class="star">*</span>是否有沟通问题字段：</div>
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -30px;width: 150px"><span class="star">*</span>是否有沟通问题：</div>
                     <div class="add-member-basic-msg">
                         <el-radio-group v-model="taskSummary.hasCommunicateProblem">
                             <el-radio :label="1">是</el-radio>
@@ -544,7 +544,7 @@
                             <el-radio :label="0">否</el-radio>
                         </el-radio-group>
                     </div>
-                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -4px;width: 150px"><span class="star">*</span>是否有沟通问题字段：</div>
+                    <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -30px;width: 150px"><span class="star">*</span>是否有沟通问题：</div>
                     <div class="add-member-basic-msg">
                         <el-radio-group v-model="taskSummary.hasCommunicateProblem">
                             <el-radio :label="1">是</el-radio>

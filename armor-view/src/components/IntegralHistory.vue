@@ -5,9 +5,9 @@
       :style="tabActive(index)">{{list.name}}
       </div>
       <div class="fl menu-list" v-show="diyStyle">
-      <el-date-picker v-model="queryForm.beginTime" type="date" placeholder="选择日期"></el-date-picker>
+      <el-date-picker v-model="queryForm.beginTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
       <span class="div-line">-</span>
-      <el-date-picker v-model="queryForm.endTime" type="date" placeholder="选择日期"></el-date-picker>
+      <el-date-picker v-model="queryForm.endTime" type="date" value-format="yyyy-MM-dd"  placeholder="选择日期"></el-date-picker>
       <img src="../assets/img/u1221.png" alt="" @click="integralDate()" class="serch-btn">
       </div>
       <el-button @click="editIntegralVisible = true" size="large" v-show="permit" style="float: right;position: relative;bottom: 12PX; right: 100PX;">添加积分记录</el-button>

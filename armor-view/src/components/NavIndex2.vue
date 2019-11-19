@@ -67,9 +67,10 @@
                         </el-table>
                     </el-tab-pane>
                     <el-tab-pane label="任务积分" name="integral">
-                        <div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"
-                        @click="integralBasicVisible=true">
-                        <span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分
+                        <div style="margin-top: 0px;margin-right: 420px;font-size: 14px"
+                        @click="clickHistory">
+                        <span style="font-size:14px;color: #36A8FF;cursor: pointer;text-decoration: underline">查看积分记录</span>
+                        <!--<span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分-->
                         </div>
                         <div class="mic-main clearfix">
                             <div class="mic-item fl" v-for="(item,key) in taskIntegralItem" style="margin-left: 75px;">
@@ -166,23 +167,6 @@
             <!--<div><p class="mic-title">我的评价</p></div>-->
 
         </div>
-        <!--<div class="my-integral-con" v-show="userRole>0 && userRole < 3">-->
-            <!--<div><p class="mic-title">我的积分</p>-->
-                <!--<div class="add-task" style="float: left;margin-top: -22px;margin-right: 420px;font-size: 14px"-->
-                     <!--@click="integralBasicVisible=true">-->
-                    <!--<span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="mic-main clearfix">-->
-                <!--<div class="mic-item fl" v-for="(item,key) in integralItem" style="margin-left: 75px;">-->
-                    <!--<div class="mic-item-title"><img :src="`${require(`../assets/img/icon_${key+1}.png`)}`"-->
-                                                     <!--class="icon-score">{{item.label}}-->
-                    <!--</div>-->
-                    <!--<div class="mic-item-title" style="font-size: 12px">{{item.time}}</div>-->
-                    <!--<div class="mic-item-integral">{{item.score}}</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
         <div class="my-task-con" v-show="userRole === 3">
 
             <p class="mic-title" style="margin-top: 20px">考勤记录</p>
@@ -5624,13 +5608,14 @@
                             this.$message({showClose: true, message: '请选择请假类型', type: 'warning'});
                             return false;
                         }
-                        let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.leaveForm.hours);
+                        // let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.leaveForm.hours);
+                        let ishours = /^[1-9]\d*$/.test(this.leaveForm.hours);
                         if (!ishours) {
-                            this.$message({showClose: true, message: '请假时长填写错误', type: 'error'});
+                            this.$message({showClose: true, message: '请假时长为正整数', type: 'error'});
                             return false;
                         }
-                        if (this.leaveForm.hours > 99999.9 || this.leaveForm.hours < 0) {
-                            this.$message({showClose: true, message: '请假时长正确值应为0~99999.9', type: 'error'});
+                        if (this.leaveForm.hours > 99999 || this.leaveForm.hours < 1) {
+                            this.$message({showClose: true, message: '请假时长正确值应为1~99999', type: 'error'});
                             return false;
                         }
                         this.weekTime.beginWeek = moment(this.leaveForm.beginTime).week();
@@ -8659,7 +8644,12 @@
                 this.userRestHoursLogForm.content = '';
                 this.editRestHoursVisible = false;
                 this.restHourLoading = false;
-            }
+            },
+
+            //查看积分记录
+            clickHistory() {
+                this.$router.push({path:'/index/IntegralHistory',query:{userId:this.userId}})
+            },
             // -- sch
         },
         components: {
