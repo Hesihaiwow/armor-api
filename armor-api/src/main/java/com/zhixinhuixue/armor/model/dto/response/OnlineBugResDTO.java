@@ -49,6 +49,11 @@ public class OnlineBugResDTO {
     private String developers;
 
     /**
+     * 其他人员
+     */
+    private String others;
+
+    /**
      * 测试人员
      */
     private String testers;
@@ -79,6 +84,14 @@ public class OnlineBugResDTO {
      */
     private Integer demandSystemId;
     private String demandSystemName;
+
+    public String getOthers() {
+        return others;
+    }
+
+    public void setOthers(String others) {
+        this.others = others;
+    }
 
     public Integer getBugNo() {
         return bugNo;

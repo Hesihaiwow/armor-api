@@ -103,17 +103,26 @@ public class ZSYBugService implements IZSYBugService {
                 BeanUtils.copyProperties(onlineBugBO,onlineBugResDTO);
                 String developers = "";
                 String testers = "";
+                String others = "";
                 if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())){
                     for (Long userId : onlineBugBO.getUserIds()) {
                         User user = userMapper.selectById(userId);
-                        if (user.getDepartmentId().equals(87526048211664896L)){
-                            developers = developers  + user.getName()+ " ";
-                        }
-                        if (user.getDepartmentId().equals(87526088225325056L)){
+                        if (user.getJobRole()==0){
                             testers = testers  + user.getName()+ " ";
+                        }else if (user.getJobRole()==1){
+                            developers = developers  + user.getName()+ " ";
+                        }else {
+                            others = others + user.getName() + " ";
                         }
+//                        if (user.getDepartmentId().equals(87526048211664896L)){
+//                            developers = developers  + user.getName()+ " ";
+//                        }
+//                        if (user.getDepartmentId().equals(87526088225325056L)){
+//                            testers = testers  + user.getName()+ " ";
+//                        }
                     }
                 }
+                onlineBugResDTO.setOthers(others);
                 onlineBugResDTO.setDevelopers(developers);
                 onlineBugResDTO.setTesters(testers);
                 if (onlineBugBO.getProjectId() != null){
@@ -449,23 +458,23 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setRemark(reqDTO.getRemark());
         bugManageMapper.updateBugManager(bugManage);
 
-//        if (bugUserMapper.deleteById(id) == 0) {
-//            throw new ZSYServiceException("删除Bug用户失败");
-//        }
+        if (bugUserMapper.deleteById(id) == 0) {
+            throw new ZSYServiceException("删除Bug用户失败");
+        }
 
         // 插入Bug处理用户
-//        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
-//            List<BugUser> bugUsers = Lists.newArrayList();
-//            reqDTO.getBugUsers().forEach(user -> {
-//                BugUser bugUser = new BugUser();
-//                bugUser.setBugId(bugManage.getId());
-//                bugUser.setId(snowFlakeIDHelper.nextId());
-//                bugUser.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
-//                bugUser.setUserId(user.getUserId());
-//                bugUsers.add(bugUser);
-//            });
-//            bugUserMapper.insertList(bugUsers);
-//        }
+        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+            List<BugUser> bugUsers = Lists.newArrayList();
+            reqDTO.getBugUsers().forEach(user -> {
+                BugUser bugUser = new BugUser();
+                bugUser.setBugId(bugManage.getId());
+                bugUser.setId(snowFlakeIDHelper.nextId());
+                bugUser.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+                bugUser.setUserId(user.getUserId());
+                bugUsers.add(bugUser);
+            });
+            bugUserMapper.insertList(bugUsers);
+        }
 //
 //        //将旧的Bug处理积分还原
 //        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
@@ -651,9 +660,9 @@ public class ZSYBugService implements IZSYBugService {
 //            }
 //        });
 //
-//        if (bugUserMapper.deleteById(id) == 0) {
-//            throw new ZSYServiceException("删除Bug用户处理记录失败");
-//        }
+        if (bugUserMapper.deleteById(id) == 0) {
+            throw new ZSYServiceException("删除Bug用户处理记录失败");
+        }
     }
 
     private String getBugNoStr(Integer bugNo){
