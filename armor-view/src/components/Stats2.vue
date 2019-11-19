@@ -918,7 +918,7 @@
         <el-dialog
                 @close="closeDialog()"
                 title="创建Bug处理结果"
-                class="hhh"
+                class="aaa"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="createBugSolvingVisible1">
@@ -1095,7 +1095,7 @@
         <el-dialog
                 @close="closeDialog()"
                 title="更新Bug处理"
-                class="hhh"
+                class="aaa"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="updateBugSolvingVisible1">
@@ -4597,9 +4597,12 @@
         margin-bottom: 0;
     }
 
-    .hhh .el-dialog--small {
+
+
+</style>
+<style>
+    .aaa .el-dialog--small {
         width: 755px;
     }
-
 </style>
 
