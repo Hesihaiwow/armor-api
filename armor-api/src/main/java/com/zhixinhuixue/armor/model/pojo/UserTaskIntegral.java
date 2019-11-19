@@ -19,6 +19,11 @@ public class UserTaskIntegral {
     private Long taskId;
 
     /**
+     * bugId
+     */
+    private Long bugId;
+
+    /**
      * 用户id
      */
     private Long userId;
@@ -57,6 +62,14 @@ public class UserTaskIntegral {
      * 审核状态   1:待审核 2:审核不通过 3:审核通过
      */
     private int reviewStatus;
+
+    public Long getBugId() {
+        return bugId;
+    }
+
+    public void setBugId(Long bugId) {
+        this.bugId = bugId;
+    }
 
     public BigDecimal getScore() {
         return score;

@@ -77,4 +77,11 @@ public interface IZSYUserTaskIntegralMapper {
     Page<UserIntegralHistoryPageBO> getIntegralHistory(@Param("userId")Long userId,
                                                        @Param("beginTime")Date beginTime,
                                                        @Param("endTime")Date endTime);
+
+    /**
+     * 删除原来的bug积分
+     * @author sch
+     * @param bugId bugId
+     */
+    void deleteByBugId(@Param("bugId") Long bugId);
 }

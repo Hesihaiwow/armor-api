@@ -21,8 +21,8 @@ public class BugUserReqDTO {
     /**
      * 积分
      */
-//    @NotNull(message = "积分不能为空")
-//    @Max(value = 99999, message = "积分不能大于{value}")
+    @NotNull(message = "积分不能为空")
+    @Max(value = 99999, message = "积分不能大于{value}")
     private BigDecimal integral;
 
     public Long getId() {

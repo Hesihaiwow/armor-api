@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYBugManageMapper;
-import com.zhixinhuixue.armor.dao.IZSYBugUserMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
@@ -24,9 +21,7 @@ import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
-import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
-import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
+import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,6 +55,8 @@ public class ZSYBugService implements IZSYBugService {
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+    @Autowired
+    private IZSYUserTaskIntegralMapper integralMapper;
 
 
     /**
@@ -128,23 +125,7 @@ public class ZSYBugService implements IZSYBugService {
                 if (onlineBugBO.getType() == null){
                     onlineBugResDTO.setType(0);
                 }
-                String bugNoStr = "";
-                Integer bugNo = onlineBugBO.getBugNo();
-                if (bugNo!=null && bugNo>0){
-                    if (bugNo<10){
-                        bugNoStr = "00000"+bugNo;
-                    }else if (bugNo<100){
-                        bugNoStr = "0000"+bugNo;
-                    }else if (bugNo<1000){
-                        bugNoStr = "000"+bugNo;
-                    }else if (bugNo<10000){
-                        bugNoStr = "00"+bugNo;
-                    }else if (bugNo<100000){
-                        bugNoStr = "0"+bugNo;
-                    }else {
-                        bugNoStr = ""+bugNo;
-                    }
-                }
+                String bugNoStr = getBugNoStr(onlineBugBO.getBugNo());
                 onlineBugResDTO.setBugNoStr(bugNoStr);
                 page.add(onlineBugResDTO);
             });
@@ -299,22 +280,37 @@ public class ZSYBugService implements IZSYBugService {
         }
 
         reqDTO.getBugUsers().forEach(user -> {
-            UserIntegral userIntegral = new UserIntegral();
-            userIntegral.setId(snowFlakeIDHelper.nextId());
-            userIntegral.setUserId(user.getUserId());
-            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
-            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
-            userIntegral.setTaskId(bugManage.getId());
-            userIntegral.setDescription("线上Bug处理");
-            userIntegral.setCreateTime(new Date());
-            userIntegralMapper.insert(userIntegral);
-            // 修改用户积分
-            User userBug = userMapper.selectById(user.getUserId());
-            BigDecimal currentIntegral = userBug.getIntegral();
-            User userBO = new User();
-            userBO.setId(user.getUserId());
-            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
-            userMapper.updateSelectiveById(userBO);
+            //新增积分记录
+            UserTaskIntegral integral = new UserTaskIntegral();
+            integral.setId(snowFlakeIDHelper.nextId());
+            integral.setUserId(user.getUserId());
+            integral.setIntegral(user.getIntegral());
+            integral.setOrigin(ZSYUserTaskIntegralOrigin.BUG.getValue());
+            integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            integral.setCreateTime(new Date());
+            integral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
+            String bugNoStr = getBugNoStr(bugManage.getBugNo());
+            integral.setDescription("线上任务bug: 编号 "+bugNoStr);
+            integral.setBugId(bugManage.getId());
+            integralMapper.insert(integral);
+
+
+//            UserIntegral userIntegral = new UserIntegral();
+//            userIntegral.setId(snowFlakeIDHelper.nextId());
+//            userIntegral.setUserId(user.getUserId());
+//            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+//            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
+//            userIntegral.setTaskId(bugManage.getId());
+//            userIntegral.setDescription("线上Bug处理");
+//            userIntegral.setCreateTime(new Date());
+//            userIntegralMapper.insert(userIntegral);
+//            // 修改用户积分
+//            User userBug = userMapper.selectById(user.getUserId());
+//            BigDecimal currentIntegral = userBug.getIntegral();
+//            User userBO = new User();
+//            userBO.setId(user.getUserId());
+//            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
+//            userMapper.updateSelectiveById(userBO);
         });
     }
 
@@ -453,54 +449,71 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setRemark(reqDTO.getRemark());
         bugManageMapper.updateBugManager(bugManage);
 
-        if (bugUserMapper.deleteById(id) == 0) {
-            throw new ZSYServiceException("删除Bug用户失败");
-        }
+//        if (bugUserMapper.deleteById(id) == 0) {
+//            throw new ZSYServiceException("删除Bug用户失败");
+//        }
 
         // 插入Bug处理用户
-        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
-            List<BugUser> bugUsers = Lists.newArrayList();
-            reqDTO.getBugUsers().forEach(user -> {
-                BugUser bugUser = new BugUser();
-                bugUser.setBugId(bugManage.getId());
-                bugUser.setId(snowFlakeIDHelper.nextId());
-                bugUser.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
-                bugUser.setUserId(user.getUserId());
-                bugUsers.add(bugUser);
-            });
-            bugUserMapper.insertList(bugUsers);
-        }
+//        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+//            List<BugUser> bugUsers = Lists.newArrayList();
+//            reqDTO.getBugUsers().forEach(user -> {
+//                BugUser bugUser = new BugUser();
+//                bugUser.setBugId(bugManage.getId());
+//                bugUser.setId(snowFlakeIDHelper.nextId());
+//                bugUser.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+//                bugUser.setUserId(user.getUserId());
+//                bugUsers.add(bugUser);
+//            });
+//            bugUserMapper.insertList(bugUsers);
+//        }
+//
+//        //将旧的Bug处理积分还原
+//        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
+//        userIntegrals.forEach(userIntegral -> {
+//            // 修改用户积分
+//            User userBug = userMapper.selectById(userIntegral.getUserId());
+//            BigDecimal currentIntegral = userBug.getIntegral();
+//            User userBO = new User();
+//            userBO.setId(userBug.getId());
+//            userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
+//            userMapper.updateSelectiveById(userBO);
+//            userIntegralMapper.deleteUserIntegral(id,userIntegral.getUserId());
+//        });
 
-        //将旧的Bug处理积分还原
-        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
-        userIntegrals.forEach(userIntegral -> {
-            // 修改用户积分
-            User userBug = userMapper.selectById(userIntegral.getUserId());
-            BigDecimal currentIntegral = userBug.getIntegral();
-            User userBO = new User();
-            userBO.setId(userBug.getId());
-            userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
-            userMapper.updateSelectiveById(userBO);
-            userIntegralMapper.deleteUserIntegral(id,userIntegral.getUserId());
-        });
-
+        //删除原来的bug积分
+        integralMapper.deleteByBugId(id);
         reqDTO.getBugUsers().forEach(user -> {
-            UserIntegral userIntegral = new UserIntegral();
-            userIntegral.setId(snowFlakeIDHelper.nextId());
-            userIntegral.setUserId(user.getUserId());
-            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
-            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
-            userIntegral.setTaskId(bugManage.getId());
-            userIntegral.setDescription("线上Bug处理");
-            userIntegral.setCreateTime(new Date());
-            userIntegralMapper.insert(userIntegral);
-            // 修改用户积分
-            User userBug = userMapper.selectById(user.getUserId());
-            BigDecimal currentIntegral = userBug.getIntegral();
-            User userBO = new User();
-            userBO.setId(user.getUserId());
-            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
-            userMapper.updateSelectiveById(userBO);
+            //新增积分记录
+            UserTaskIntegral integral = new UserTaskIntegral();
+            integral.setId(snowFlakeIDHelper.nextId());
+            integral.setUserId(user.getUserId());
+            integral.setIntegral(user.getIntegral());
+            integral.setOrigin(ZSYUserTaskIntegralOrigin.BUG.getValue());
+            integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+            integral.setCreateTime(new Date());
+            integral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
+            String bugNoStr = getBugNoStr(bugManageBO.getBugNo());
+            integral.setDescription("线上任务bug: 编号 "+bugNoStr);
+            integral.setBugId(id);
+            integralMapper.insert(integral);
+
+
+//            UserIntegral userIntegral = new UserIntegral();
+//            userIntegral.setId(snowFlakeIDHelper.nextId());
+//            userIntegral.setUserId(user.getUserId());
+//            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
+//            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
+//            userIntegral.setTaskId(bugManage.getId());
+//            userIntegral.setDescription("线上Bug处理");
+//            userIntegral.setCreateTime(new Date());
+//            userIntegralMapper.insert(userIntegral);
+//            // 修改用户积分
+//            User userBug = userMapper.selectById(user.getUserId());
+//            BigDecimal currentIntegral = userBug.getIntegral();
+//            User userBO = new User();
+//            userBO.setId(user.getUserId());
+//            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
+//            userMapper.updateSelectiveById(userBO);
         });
     }
 
@@ -621,23 +634,45 @@ public class ZSYBugService implements IZSYBugService {
         }
 
         //将旧的Bug处理积分还原
-        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
-        userIntegrals.forEach(userIntegral -> {
-            // 修改用户积分
-            User userBug = userMapper.selectById(userIntegral.getUserId());
-            BigDecimal currentIntegral = userBug.getIntegral();
-            User userBO = new User();
-            userBO.setId(userBug.getId());
-            userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
-            userMapper.updateSelectiveById(userBO);
-            if (userIntegralMapper.deleteUserIntegral(id , userIntegral.getUserId()) == 0) {
-                throw new ZSYServiceException("删除积分信息失败");
-            }
-        });
+        integralMapper.deleteByBugId(id);
 
-        if (bugUserMapper.deleteById(id) == 0) {
-            throw new ZSYServiceException("删除Bug用户处理记录失败");
-        }
+
+//        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
+//        userIntegrals.forEach(userIntegral -> {
+//            // 修改用户积分
+//            User userBug = userMapper.selectById(userIntegral.getUserId());
+//            BigDecimal currentIntegral = userBug.getIntegral();
+//            User userBO = new User();
+//            userBO.setId(userBug.getId());
+//            userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
+//            userMapper.updateSelectiveById(userBO);
+//            if (userIntegralMapper.deleteUserIntegral(id , userIntegral.getUserId()) == 0) {
+//                throw new ZSYServiceException("删除积分信息失败");
+//            }
+//        });
+//
+//        if (bugUserMapper.deleteById(id) == 0) {
+//            throw new ZSYServiceException("删除Bug用户处理记录失败");
+//        }
     }
 
+    private String getBugNoStr(Integer bugNo){
+        String bugNoStr = "";
+        if (bugNo!=null && bugNo>0){
+            if (bugNo<10){
+                bugNoStr = "00000"+bugNo;
+            }else if (bugNo<100){
+                bugNoStr = "0000"+bugNo;
+            }else if (bugNo<1000){
+                bugNoStr = "000"+bugNo;
+            }else if (bugNo<10000){
+                bugNoStr = "00"+bugNo;
+            }else if (bugNo<100000){
+                bugNoStr = "0"+bugNo;
+            }else {
+                bugNoStr = ""+bugNo;
+            }
+        }
+        return bugNoStr;
+    }
 }

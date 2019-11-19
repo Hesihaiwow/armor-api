@@ -6,6 +6,7 @@
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="user_id" jdbcType="BIGINT" property="userId" />
         <result column="task_id" jdbcType="BIGINT" property="taskId" />
+        <result column="bug_id" jdbcType="BIGINT" property="bugId" />
         <result column="description" jdbcType="VARCHAR" property="description" />
         <result column="integral" jdbcType="DECIMAL" property="integral" />
         <result column="score" jdbcType="DECIMAL" property="score" />
@@ -31,12 +32,12 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
         REPLACE INTO `user_task_integral`
         (`id`,`user_id`,`task_id`,`integral`,`description`
-        ,`origin`,`review_status`,`create_by`,`create_time`,`score`)
+        ,`origin`,`review_status`,`create_by`,`create_time`,`score`,`bug_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT}
         ,#{integral,jdbcType=DECIMAL},#{description,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER}
         ,#{reviewStatus,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP}
-        ,#{score,jdbcType=DECIMAL})
+        ,#{score,jdbcType=DECIMAL},#{bugId,jdbcType=BIGINT})
     </insert>
 
     <!--批量插入-->
@@ -44,15 +45,20 @@
         REPLACE INTO `user_task_integral`
         (`id`,`user_id`,`task_id`,`integral`,`description`
         ,`origin`,`review_status`,`create_by`,`create_time`
-        ,`score`)
+        ,`score`,`bug_id`)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
             ,#{item.integral,jdbcType=DECIMAL},#{item.description,jdbcType=VARCHAR},#{item.origin,jdbcType=INTEGER}
             ,#{item.reviewStatus,jdbcType=INTEGER},#{item.createBy,jdbcType=BIGINT},#{item.createTime,jdbcType=TIMESTAMP}
-            ,#{item.score,jdbcType=DECIMAL})
+            ,#{item.score,jdbcType=DECIMAL},#{bugId,jdbcType=BIGINT})
         </foreach>
     </insert>
+
+    <!--删除原来的bug积分-->
+    <delete id="deleteByBugId">
+        DELETE FROM `user_task_integral` WHERE `bug_id` = #{bugId}
+    </delete>
 
     <!--根据用户和任务查询积分-->
     <select id="selectByUserAndTask" resultMap="BaseMap">
