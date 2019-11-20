@@ -51,7 +51,7 @@
             (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
             ,#{item.integral,jdbcType=DECIMAL},#{item.description,jdbcType=VARCHAR},#{item.origin,jdbcType=INTEGER}
             ,#{item.reviewStatus,jdbcType=INTEGER},#{item.createBy,jdbcType=BIGINT},#{item.createTime,jdbcType=TIMESTAMP}
-            ,#{item.score,jdbcType=DECIMAL},#{bugId,jdbcType=BIGINT})
+            ,#{item.score,jdbcType=DECIMAL},#{item.bugId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
