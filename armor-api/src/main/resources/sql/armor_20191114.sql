@@ -11,6 +11,11 @@ ALTER TABLE `task_log`
 MODIFY COLUMN `title`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '日志标题' AFTER `user_name`,
 MODIFY COLUMN `content`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '日志内容' AFTER `title`;
 
+ALTER TABLE `bug_user`
+MODIFY COLUMN `integral`  decimal(10,2) NOT NULL AFTER `user_id`;
+
+
+
 
 
 
