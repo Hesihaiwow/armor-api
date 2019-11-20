@@ -156,6 +156,8 @@ public class ZSYBugService implements IZSYBugService {
             throw new ZSYServiceException("无法找到Bug处理结果,id:" + id);
         }
         BeanUtils.copyProperties(onlineBugBO,resDTO);
+        String bugNoStr = getBugNoStr(onlineBugBO.getBugNo());
+        resDTO.setBugNoStr(bugNoStr);
         if (resDTO.getDemandSystemName() == null){
             resDTO.setDemandSystemName("知心慧学");
         }

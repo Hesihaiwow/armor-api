@@ -18,6 +18,19 @@ public class OnlineBugDetailResDTO extends OnlineBugManage {
      */
     private List<BugUserBO> bugUsers;
 
+    /**
+     * bug编号
+     */
+    private String bugNoStr;
+
+    public String getBugNoStr() {
+        return bugNoStr;
+    }
+
+    public void setBugNoStr(String bugNoStr) {
+        this.bugNoStr = bugNoStr;
+    }
+
     public List<BugUserBO> getBugUsers() {
         return bugUsers;
     }
