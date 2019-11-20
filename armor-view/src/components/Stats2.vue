@@ -2267,11 +2267,33 @@
                     integral: '',
                 }
             },
+            isDecimal(str) {
+                var regu = /^[-]{0,1}[0-9]{1,}$/;
+                if (regu.test(str)) {
+                    return true;
+                }
+                var re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
+                if (re.test(str)) {
+                    if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
+                    return true;
+                } else {
+                    return false;
+                }
+
+            },
             saveAddMember(){
                 // this.addMemberIndex.integral = 0;
                 if (this.addMemberIndex.userId === ''||this.addMemberIndex.integral === '') {
                     this.errorMsg('请将积分信息填写完整');
                     return
+                }
+                if (!this.isDecimal(this.addMemberIndex.integral)) {
+                    this.$message({showClose: true, message: '积分填写不正确,请填写成数字类型', type: 'error'});
+                    return false;
+                }
+                if (this.addMemberIndex.integral >= 108 || this.addMemberIndex.integral <= -108) {
+                    this.$message({showClose: true, message: '积分正确值应为-108~108', type: 'error'});
+                    return false;
                 }
                 this.showAddDetail = !this.showAddDetail;
                 if (this.addMemberIndex.index === '') {
