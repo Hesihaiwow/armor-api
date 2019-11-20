@@ -1211,6 +1211,7 @@
             :close-on-press-escape="false"
             :visible.sync="bugDetailVisible">
             <el-form>
+                <el-form-item class="task-form" label="bug编号：">{{bugDetailForm.bugNoStr}}</el-form-item>
                 <el-form-item class="task-form" label="反馈人：">{{bugDetailForm.origin}}</el-form-item>
                 <el-form-item class="task-form" label="反馈日期：">{{bugDetailForm.discoverTime | formatDate1}}</el-form-item>
                 <el-form-item class="task-form" label="解决日期：">{{bugDetailForm.processTime | formatDate1}}</el-form-item>
@@ -2421,10 +2422,10 @@
                 })
             },
             bugDetail(row){
-                this.bugDetailVisible = true;
                 Http.zsyGetHttp('/bug/detail/'+row.id, null, (resp) => {
                     this.bugDetailForm = resp.data
                 });
+                this.bugDetailVisible = true;
                 this.modifyId = row.id;
             },
             handleCurrentChange(currentPage){
