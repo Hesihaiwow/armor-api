@@ -992,11 +992,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
                 integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
                 integral.setIntegral(originIntegral.multiply(evaluateCoefficient));
-                if (!CollectionUtils.isEmpty(taskList)){
-                    Task task1 = taskList.stream().filter(task -> task.getId().equals(taskUser.getTaskId())).collect(Collectors.toList()).get(0);
-                    if (task1!=null){
-                        integral.setDescription("完成多人任务: "+task1.getName());
-                    }
+                Task task1 = taskMapper.selectByPrimaryKey(taskUser.getTaskId());
+                if (task1!=null){
+                    integral.setDescription("完成多人任务: "+task1.getName());
                 }
                 if (avgScore.compareTo(BigDecimal.ZERO)>0){
                     integral.setScore(avgScore);
@@ -1059,11 +1057,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
                     integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
                     integral.setIntegral(originIntegral.multiply(evaluateCoefficient));
-                    if (!CollectionUtils.isEmpty(taskList)){
-                        Task task1 = taskList.stream().filter(task -> task.getId().equals(taskUser.getTaskId())).collect(Collectors.toList()).get(0);
-                        if (task1!=null){
-                            integral.setDescription("完成多人任务: "+task1.getName());
-                        }
+                    Task task1 = taskMapper.selectByPrimaryKey(taskUser.getTaskId());
+                    if (task1!=null){
+                        integral.setDescription("完成多人任务: "+task1.getName());
                     }
                     if (avgScore.compareTo(BigDecimal.ZERO)>0){
                         integral.setScore(avgScore);
