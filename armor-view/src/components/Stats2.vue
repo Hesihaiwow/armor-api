@@ -118,7 +118,7 @@
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
-                        <el-table-column prop="bugNoStr" label="bug编号" align="center" width="110"></el-table-column>
+                        <!--<el-table-column prop="bugNoStr" label="bug编号" align="center" width="110"></el-table-column>-->
                         <el-table-column prop="createTime" label="反馈日期"  width="115">
                             <template scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
@@ -132,7 +132,7 @@
                         <el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>
                         <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
                         <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
-                        <!--<el-table-column prop="developers" label="开发人员" align="center" width="130"></el-table-column>-->
+                        <el-table-column prop="remark" label="备注" align="center" width="130"></el-table-column>
                         <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
                         <el-table-column prop="type" label="问题类型" align="center" width="100">
                             <template scope="scope">
