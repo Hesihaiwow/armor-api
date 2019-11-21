@@ -3057,7 +3057,7 @@
                 // 绘制图表
                 myChart.setOption({
                     title: {
-                        text: '反馈系统bug分类柱状图',
+                        text: '反馈系统分类柱状图',
                         // x:'center',
                         // subtext:'总计: '+this.onlineBugTotalNum3+ ' 个'
                     },
@@ -3076,8 +3076,8 @@
                             rotate:-45,//倾斜度 -90 至 90 默认为0
                             margin:2,
                             textStyle:{
-                                fontWeight:"bolder",
-                                color:"#000000"
+                                color:"#000000",
+                                fontSize:15
                             }
                         }
                     },
@@ -3153,7 +3153,7 @@
                 // 绘制图表
                 myChart.setOption({
                     title: {
-                        text: '用户bug分类柱状图',
+                        text: '用户分类柱状图',
                         // x:'center',
                         // subtext:'总计: '+this.onlineBugTotalNum3+ ' 个'
                     },
@@ -3172,8 +3172,8 @@
                             rotate:-45,//倾斜度 -90 至 90 默认为0
                             margin:2,
                             textStyle:{
-                                fontWeight:"bolder",
-                                color:"#000000"
+                                color:"#000000",
+                                fontSize:15
                             }
                         }
                     },
