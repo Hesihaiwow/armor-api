@@ -146,8 +146,12 @@
                         <el-table-column prop="others" label="其他人员" align="center" width="100"></el-table-column>
                         <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template scope="scope">
-                                <span v-if="scope.row.isSolved === 0">未解决</span>
-                                <span v-if="scope.row.isSolved === 1">已解决</span>
+                                <span v-if="scope.row.isSolved === 0">未解决
+                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information" @click="toTask(scope.row.taskId)" style="cursor: pointer;color: orangered"></i></span>
+                                </span>
+                                <span v-if="scope.row.isSolved === 1">已解决
+                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information" @click="toTask(scope.row.taskId)" style="cursor: pointer;color: orangered"></i></span>
+                                </span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
@@ -165,6 +169,22 @@
                                 :layout="pageLayout"
                                 :total="bugFormPage.total">
                         </el-pagination>
+                    </div>
+                </div>
+                <div class="stats-con" style="height: auto">
+                    <div class="add-member-basic-msg fl"><el-date-picker
+                            v-model="bugHistogramDateRange"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            unlink-panels
+                            @change="bugTimeChange3"
+                            :picker-options="pickerOptions">
+                    </el-date-picker></div>
+                    <div class="add-member-basic-msg fl" style="margin-left: -80px;"><img src="../assets/img/u1221.png" alt="" @click="fetchHistogram()" class="search-btn"></div>
+                    <div>
+                        <div id="myChart11" :style="{width:'1100px',height:'400px',marginTop:'70px',left:'80px'}"></div>
+                        <div id="myChart12" :style="{width:'1100px',height:'400px',marginTop:'70px',left:'80px'}"></div>
+                        <!--<div id="myChart12" :style="{width:'600px',height:'400px',left:'-220px',marginTop:'70px'}"></div>-->
                     </div>
                 </div>
                 <!--<div class="stats-con" style="height: auto">-->
@@ -922,7 +942,7 @@
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="createBugSolvingVisible1">
-                <div class="ctpc-con">
+                <div class="ctpc-con" style="height: 400px">
 
                     <div style="margin-top: 10px;float: left">
                         <div  style="display: inline"><span class="star">*</span>反馈人</div>
@@ -975,8 +995,16 @@
                                 style="position: relative;margin-left: 100px">
                         </el-date-picker>
                     </div>
+                    <div style="margin-top: 150px;margin-left: 10px">
+                        <div  style="display: inline">关联任务</div>
+                        <div style="display: inline;margin-left: 30px">
+                            <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px">
+                                <el-option  v-for="item in doingTaskList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
                     <div>
-                        <div style="margin-top: 150px"><span class="star">*</span>问题描述</div>
+                        <div style="margin-top: 10px"><span class="star">*</span>问题描述</div>
                         <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="2"></el-input>
                     </div>
                     <div>
@@ -1099,7 +1127,7 @@
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="updateBugSolvingVisible1">
-            <div class="ctpc-con">
+            <div class="ctpc-con" style="height: 400px;">
                 <div style="margin-top: 10px;float: left">
                     <div  style="display: inline"><span class="star">*</span>反馈人</div>
                     <div style="display: inline;margin-left: 44px">
@@ -1151,8 +1179,16 @@
                             style="position: relative;margin-left: 100px">
                     </el-date-picker>
                 </div>
+                <div style="margin-top: 150px;margin-left: 10px">
+                    <div  style="display: inline">关联任务</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px">
+                            <el-option  v-for="item in doingTaskList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
                 <div>
-                    <div style="margin-top: 150px"><span class="star">*</span>问题描述</div>
+                    <div style="margin-top: 10px"><span class="star">*</span>问题描述</div>
                     <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="2"></el-input>
                 </div>
                 <div>
@@ -1212,6 +1248,7 @@
             :visible.sync="bugDetailVisible">
             <el-form>
                 <el-form-item class="task-form" label="bug编号：">{{bugDetailForm.bugNoStr}}</el-form-item>
+                <el-form-item class="task-form" label="关联任务：">{{bugDetailForm.taskName}}</el-form-item>
                 <el-form-item class="task-form" label="反馈人：">{{bugDetailForm.origin}}</el-form-item>
                 <el-form-item class="task-form" label="反馈日期：">{{bugDetailForm.discoverTime | formatDate1}}</el-form-item>
                 <el-form-item class="task-form" label="解决日期：">{{bugDetailForm.processTime | formatDate1}}</el-form-item>
@@ -1690,6 +1727,7 @@
                 ],
                 onlineBugForm:{
                     projectId:'',
+                    taskId:'',
                     discoverTime:'',
                     processTime:'',
                     description:'',
@@ -1949,6 +1987,22 @@
                     recordTime:null
                 },
                 editRestHoursVisible: false,
+                bugHistogramReqDTO:{
+                    startTime:null,
+                    endTime:null
+                },
+                doingTaskList:[],
+                bugHistogramDateRange:'',
+                systemBugNumList:[],
+                systemX:[],
+                systemBugList:[],
+                systemOpsList:[],
+                systemAssList:[],
+                userBugList:[],
+                userOpsList:[],
+                userAssList:[],
+                userX:[],
+                userBugNumList:[],
                 // -- sch
             }
         },
@@ -1965,6 +2019,7 @@
             this.fetchSignInUser();
             this.fetchDemandSystem();
             this.fetchPlatformList();
+            this.fetchAllDoingTasks();
             // this.fetchProjectList();
             // this.getBugList();
             // this.fetchBugPage();
@@ -2081,6 +2136,8 @@
               } else if (this.activeName === 'bug'){
                   // this.fetchSignInUser();
                   this.fetchBugPage();
+                  this.getSystemHistogram();
+                  this.getUserBugHistogram();
                   // this.fetchOldBugPage();
               } else if (this.activeName === 'mantisBug'){
                   this.getEnv();
@@ -2170,6 +2227,16 @@
                     this.oldBugReqDTO.endTime = `${time[1]} 23:59:59`
                 } else {
                     this.oldBugReqDTO.startTime = this.oldBugReqDTO.endTime = this.bugDaterange2 = ''
+                }
+            },
+            bugTimeChange3(time) {
+                // 选择结束时间
+                time = time.split(' - ');
+                if (time && time.length === 2) {
+                    this.bugHistogramReqDTO.startTime = `${time[0]} 00:00:00`;
+                    this.bugHistogramReqDTO.endTime = `${time[1]} 23:59:59`
+                } else {
+                    this.bugHistogramReqDTO.startTime = this.bugHistogramReqDTO.endTime = this.bugHistogramDateRange = ''
                 }
             },
             leaveTimeChange(time) {
@@ -2359,6 +2426,7 @@
                 this.updateBugSolvingVisible1 = true;
                 this.bugDetailVisible = false;
                 this.onlineBugForm.projectId = bugDetailForm.projectId;
+                this.onlineBugForm.taskId = bugDetailForm.taskId;
                 this.onlineBugForm.createTime = bugDetailForm.createTime;
                 this.onlineBugForm.discoverTime = bugDetailForm.discoverTime;
                 this.onlineBugForm.processTime = bugDetailForm.processTime;
@@ -2981,6 +3049,198 @@
                     ]
                 });
             },
+            drawLine11(){
+                // 基于准备好的dom，初始化echarts实例
+                let dom = document.getElementById('myChart11');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '反馈系统bug分类柱状图',
+                        // x:'center',
+                        // subtext:'总计: '+this.onlineBugTotalNum3+ ' 个'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        // formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: this.systemX,
+                        axisLabel:{
+                            interval:0,
+                            rotate:-45,//倾斜度 -90 至 90 默认为0
+                            margin:2,
+                            textStyle:{
+                                fontWeight:"bolder",
+                                color:"#000000"
+                            }
+                        }
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name:'个数',
+                            interval: 5,
+                            axisLabel: {
+                                formatter: '{value} h'
+                            },
+                            splitLine: {
+                                show: false
+                            }
+                        },
+
+                    ],
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    series : [
+                        {
+                            name:'bug',
+                            type:'bar',
+                            data:this.systemBugList,
+                            barWidth:15,
+                            barGap:0,
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside'
+                                }
+                            }
+                        },
+                        {
+                            name:'优化',
+                            type:'bar',
+                            data:this.systemOpsList,
+                            barWidth:15,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside',
+                                    // verticalAlign:'middle'
+                                }
+                            }
+                        },
+                        {
+                            name:'协助',
+                            type:'bar',
+                            data:this.systemAssList,
+                            barWidth:15,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside'
+                                }
+                            }
+                        },
+                    ]
+                });
+            },
+            drawLine12(){
+                // 基于准备好的dom，初始化echarts实例
+                let dom = document.getElementById('myChart12');
+                if(!dom)return;
+                let myChart = this.$echarts.init(dom);
+                // 绘制图表
+                myChart.setOption({
+                    title: {
+                        text: '用户bug分类柱状图',
+                        // x:'center',
+                        // subtext:'总计: '+this.onlineBugTotalNum3+ ' 个'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        // formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: this.userX,
+                        axisLabel:{
+                            interval:0,
+                            rotate:-45,//倾斜度 -90 至 90 默认为0
+                            margin:2,
+                            textStyle:{
+                                fontWeight:"bolder",
+                                color:"#000000"
+                            }
+                        }
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name:'个数',
+                            interval: 5,
+                            axisLabel: {
+                                formatter: '{value} h'
+                            },
+                            splitLine: {
+                                show: false
+                            }
+                        },
+
+                    ],
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    series : [
+                        {
+                            name:'bug',
+                            type:'bar',
+                            data:this.userBugList,
+                            barWidth:15,
+                            barGap:0,
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside'
+                                }
+                            }
+                        },
+                        {
+                            name:'优化',
+                            type:'bar',
+                            data:this.userOpsList,
+                            barWidth:15,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside',
+                                    // verticalAlign:'middle'
+                                }
+                            }
+                        },
+                        {
+                            name:'协助',
+                            type:'bar',
+                            data:this.userAssList,
+                            barWidth:15,
+                            // barGap:10
+                            label:{
+                                normal: {
+                                    show: true,
+                                    position: 'inside'
+                                }
+                            }
+                        },
+                    ]
+                });
+            },
             selectTaskByYear(){
                 if(this.whichYear1){
                     this.taskReqDTO.whichYear = moment(this.whichYear1).format("YYYY-MM-DD");
@@ -3270,6 +3530,7 @@
                     param.demandSystemName = demandSystems[0].name
                 }
                 param.projectId = param.projectId.trim();
+                param.taskId = param.taskId;
                 param.description = param.description.trim();
                 param['bugUsers'] = this.bugUsers;
                 Http.zsyPostHttp('/bug/add-bug', param, (resp) => {
@@ -3279,7 +3540,7 @@
                         type: 'success'
                     });
                     this.onlineBugForm.projectId = this.onlineBugForm.description = this.onlineBugForm.demandSystemId = this.onlineBugForm.demandSystemName = '';
-                    this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
+                    this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = this.onlineBugForm.taskId = null;
                     this.createBugSolvingVisible1 = false;
                     this.bugUsers = [];
                     this.fetchBugPage();
@@ -3353,6 +3614,52 @@
                     }
                 })
             },
+            //按时间查询
+            fetchHistogram(){
+                this.systemX = [];
+                this.systemBugList= [];
+                this.systemOpsList= [];
+                this.systemAssList= [];
+                this.getSystemHistogram();
+
+                this.userX = [];
+                this.userBugList= [];
+                this.userOpsList= [];
+                this.userAssList= [];
+                this.getUserBugHistogram();
+            },
+            //查询系统bug柱状图
+            getSystemHistogram(){
+              Http.zsyPostHttp('/bug/system/histogram',this.bugHistogramReqDTO,res=>{
+                    this.systemBugNumList = res.data;
+                    if (this.systemBugNumList.length>0){
+                        this.systemBugNumList.forEach(systemBugNum=>{
+                            this.systemX.push(systemBugNum.demandSystemName);
+                            this.systemBugList.push(systemBugNum.bugNum);
+                            this.systemOpsList.push(systemBugNum.optimizationNum);
+                            this.systemAssList.push(systemBugNum.assistanceNum);
+                        });
+                        this.drawLine11()
+                    }
+
+              })
+            },
+            //查询用户bug分类柱状图
+            getUserBugHistogram(){
+                Http.zsyPostHttp('/bug/user/histogram',this.bugHistogramReqDTO,res=>{
+                    this.userBugNumList = res.data;
+                    if (this.userBugNumList.length>0){
+                        this.userBugNumList.forEach(userBugNum=>{
+                            this.userX.push(userBugNum.userName);
+                            this.userBugList.push(userBugNum.bugNum);
+                            this.userOpsList.push(userBugNum.optimizationNum);
+                            this.userAssList.push(userBugNum.assistanceNum);
+                        });
+                        this.drawLine12()
+                    }
+
+                })
+            },
             //分页查询bug
             fetchBugPage(){
               Http.zsyPostHttp('/bug/new/page',this.bugReqDTO,(res)=>{
@@ -3374,6 +3681,7 @@
             },
             closeDialog(){
                 this.onlineBugForm.projectId = null;
+                this.onlineBugForm.taskId = null;
                 this.onlineBugForm.origin = null;
                 this.onlineBugForm.discoverTime = null;
                 this.onlineBugForm.processTime = null;
@@ -3938,6 +4246,12 @@
             fetchPlatformList() {
                 Http.zsyGetHttp('/platform/list', {}, (resp) => {
                     this.platformList = resp.data;
+                })
+            },
+            //查询进行中的任务
+            fetchAllDoingTasks(){
+                Http.zsyGetHttp('/task/doing/all',{},res=>{
+                    this.doingTaskList = res.data;
                 })
             },
             initTime(){
