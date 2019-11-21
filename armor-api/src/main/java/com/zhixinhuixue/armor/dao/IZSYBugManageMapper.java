@@ -4,11 +4,13 @@ import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.BugManageBO;
 import com.zhixinhuixue.armor.model.bo.BugManageListBO;
 import com.zhixinhuixue.armor.model.bo.OnlineBugBO;
+import com.zhixinhuixue.armor.model.bo.SystemBugTypeBO;
 import com.zhixinhuixue.armor.model.dto.request.BugListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.BugManage;
 import com.zhixinhuixue.armor.model.pojo.OnlineBugManage;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -131,4 +133,25 @@ public interface IZSYBugManageMapper {
      * @return
      */
     OnlineBugManage selectById(@Param("id") Long id);
+
+    /**
+     * 查询时间段内线上bug的系统数量
+     * @param startTime 开始时间
+     * @param endTime 截止时间
+     */
+    List<Integer> selectSystemsByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    /**
+     * 根据反馈系统和类型查询数量
+     * @param systemId 系统id
+     * @param type 类型
+     */
+    Integer selectNumBySystemAndType(@Param("systemId") Integer systemId, @Param("type") int type);
+
+    /**
+     * 查询时间段内线上bug各个系统对应的各个类型的数量
+     * @param startTime 开始时间
+     * @param endTime 截止时间
+     */
+    List<SystemBugTypeBO> selectSystemTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

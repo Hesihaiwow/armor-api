@@ -2974,6 +2974,26 @@ public class ZSYTaskService implements IZSYTaskService {
     }
 
     /**
+     * 所有进行中的任务
+     * @author sch
+     */
+    @Override
+    public List<TaskBaseResDTO> getAllDoingTasks() {
+        List<TaskBaseResDTO> list = new ArrayList<>();
+        List<Task> taskList = taskMapper.selectAllDoingTasks();
+        if (!CollectionUtils.isEmpty(taskList)){
+            taskList.forEach(task -> {
+                TaskBaseResDTO resDTO = new TaskBaseResDTO();
+                resDTO.setId(task.getId());
+                resDTO.setName(task.getName());
+                list.add(resDTO);
+            });
+
+        }
+        return list;
+    }
+
+    /**
      * 删除任务总结
      * @author sch
      * @param summaryId 总结id

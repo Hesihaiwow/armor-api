@@ -23,6 +23,11 @@ public class BugManageAddReqDTO {
     private Long projectId;
 
     /**
+     * 任务id
+     */
+    private Long taskId;
+
+    /**
      * 任务描述
      */
     @NotNull(message = "任务描述不能为空")
@@ -81,6 +86,14 @@ public class BugManageAddReqDTO {
      * 备注
      */
     private String remark;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 
     public Long getProjectId() {
         return projectId;

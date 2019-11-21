@@ -361,6 +361,12 @@ public class ZSYTaskController extends ZSYController {
         List<TaskSummaryResDTO> summaryResDTOS = taskService.editTaskSummary(reqDTO);
         return ZSYResult.success().data(summaryResDTOS).build();
     }
+
+    @ApiOperation("所有进行中的任务")
+    @GetMapping("/doing/all")
+    public String getAllDoingTasks(){
+        return ZSYResult.success().data(taskService.getAllDoingTasks()).build();
+    }
     // -- sch
 }
 

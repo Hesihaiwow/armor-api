@@ -284,4 +284,10 @@ public interface IZSYTaskMapper {
      * @author sch
      */
     List<Task> selectListAfterJuly();
+
+    /**
+     * 所有进行中的任务
+     * @author sch
+     */
+    List<Task> selectAllDoingTasks();
 }

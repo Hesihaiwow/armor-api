@@ -14,6 +14,11 @@ public class OnlineBugResDTO {
     private Long id;
 
     /**
+     * 任务id
+     */
+    private Long taskId;
+
+    /**
      * 反馈人
      */
     private String origin;
@@ -84,6 +89,14 @@ public class OnlineBugResDTO {
      */
     private Integer demandSystemId;
     private String demandSystemName;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 
     public String getOthers() {
         return others;

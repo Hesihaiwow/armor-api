@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -338,6 +339,12 @@ public interface IZSYTaskService {
      * @param reqDTO 参数
      */
     List<TaskSummaryResDTO> editTaskSummary(EditTaskSummaryReqDTO reqDTO);
+
+    /**
+     * 所有进行中的任务
+     * @author sch
+     */
+    List<TaskBaseResDTO> getAllDoingTasks();
 
 
     // -- sch

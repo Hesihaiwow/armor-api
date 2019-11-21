@@ -8,6 +8,8 @@ import com.zhixinhuixue.armor.model.dto.request.BugReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.source.ZSYResult;
 
+import java.util.List;
+
 /**
  * Created by Lang on 2017/9/4 0004.
  */
@@ -96,4 +98,18 @@ public interface IZSYBugService {
      * 更新老数据状态为已解决
      */
     void updateStatus();
+
+    /**
+     * 各个系统bug分类柱状图
+     * @author sch
+     * @param reqDTO 参数
+     */
+    List<SystemBugResDTO> getSystemHistogram(BugListReqDTO reqDTO);
+
+    /**
+     * 用户bug分类柱状图
+     * @author sch
+     * @param reqDTO 参数
+     */
+    List<UserBugResDTO> getUserBugHistogram(BugListReqDTO reqDTO);
 }

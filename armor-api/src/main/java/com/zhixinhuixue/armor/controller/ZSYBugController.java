@@ -132,6 +132,18 @@ public class ZSYBugController extends ZSYController{
         bugService.updateStatus();
         return ZSYResult.success().build();
     }
+
+    @ApiOperation("各个系统bug分类柱状图")
+    @PostMapping("/system/histogram")
+    public String getSystemHistogram(@RequestBody BugListReqDTO reqDTO){
+        return ZSYResult.success().data(bugService.getSystemHistogram(reqDTO)).build();
+    }
+
+    @ApiOperation("用户bug分类柱状图")
+    @PostMapping("/user/histogram")
+    public String getUserBugHistogram(@RequestBody BugListReqDTO reqDTO){
+        return ZSYResult.success().data(bugService.getUserBugHistogram(reqDTO)).build();
+    }
     // -- sch
 
 }

@@ -4,14 +4,13 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
-import com.zhixinhuixue.armor.model.bo.BugManageBO;
-import com.zhixinhuixue.armor.model.bo.BugManageListBO;
-import com.zhixinhuixue.armor.model.bo.OnlineBugBO;
+import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.BugListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.BugManageAddReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.BugReqDTO;
@@ -262,6 +261,9 @@ public class ZSYBugService implements IZSYBugService {
             bugManage.setBugNo(1);
         }
         bugManage.setId(snowFlakeIDHelper.nextId());
+        if (reqDTO.getTaskId() != null){
+            bugManage.setTaskId(reqDTO.getTaskId());
+        }
         bugManage.setCreateTime(new Date());
         bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
         bugManage.setProcessTime(reqDTO.getProcessTime());
@@ -446,6 +448,9 @@ public class ZSYBugService implements IZSYBugService {
 
         OnlineBugManage bugManage = new OnlineBugManage();
         bugManage.setId(id);
+        if (reqDTO.getTaskId()!=null){
+            bugManage.setTaskId(reqDTO.getTaskId());
+        }
         bugManage.setCreateTime(bugManageBO.getCreateTime());
         bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
         bugManage.setProcessTime(reqDTO.getProcessTime());
@@ -613,6 +618,131 @@ public class ZSYBugService implements IZSYBugService {
                 throw new ZSYServiceException("批量更新bug处理状态失败");
             }
         }
+    }
+
+    /**
+     * 各个系统bug分类柱状图
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public List<SystemBugResDTO> getSystemHistogram(BugListReqDTO reqDTO) {
+        List<SystemBugResDTO> list = new ArrayList<>();
+        //查询时间段内线上bug的系统数量
+        List<Integer> systemIds = bugManageMapper.selectSystemsByTime(reqDTO.getStartTime(),reqDTO.getEndTime());
+        //查询时间段内线上bug各个系统对应的各个类型的数量
+        List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime());
+        if (!CollectionUtils.isEmpty(systemIds)){
+            systemIds.forEach(systemId->{
+//                Integer bugNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.BUG.getValue());
+//                Integer optimizationNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.OPTIMIZATION.getValue());
+//                Integer assistanceNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.ASSISTANCE.getValue());
+                SystemBugResDTO systemBugResDTO = new SystemBugResDTO();
+                if (!CollectionUtils.isEmpty(bugTypeBOS)){
+                    systemBugResDTO.setDemandSystemId(systemId);
+                    systemBugResDTO.setBugNum(0);
+                    systemBugResDTO.setOptimizationNum(0);
+                    systemBugResDTO.setAssistanceNum(0);
+                    List<SystemBugTypeBO> bugBOS = bugTypeBOS.stream()
+                            .filter(bugTypeBO -> bugTypeBO.getDemandSystemId() == systemId && bugTypeBO.getType() == ZSYBugType.BUG.getValue())
+                            .collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(bugBOS)){
+                        SystemBugTypeBO bugBO = bugBOS.get(0);
+                        if (bugBO!=null){
+                            systemBugResDTO.setBugNum(bugBO.getNum());
+                            systemBugResDTO.setDemandSystemName(bugBO.getDemandSystemName());
+                        }
+                    }
+
+
+                    List<SystemBugTypeBO> optimizationBOS = bugTypeBOS.stream()
+                            .filter(bugTypeBO -> bugTypeBO.getDemandSystemId() == systemId && bugTypeBO.getType() == ZSYBugType.OPTIMIZATION.getValue())
+                            .collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(optimizationBOS)){
+                        SystemBugTypeBO optimizationBO = optimizationBOS.get(0);
+                        if (optimizationBO!=null){
+                            systemBugResDTO.setOptimizationNum(optimizationBO.getNum());
+                            systemBugResDTO.setDemandSystemName(optimizationBO.getDemandSystemName());
+                        }
+                    }
+
+
+                    List<SystemBugTypeBO> assistanceBOS = bugTypeBOS.stream()
+                            .filter(bugTypeBO -> bugTypeBO.getDemandSystemId() == systemId && bugTypeBO.getType() == ZSYBugType.ASSISTANCE.getValue())
+                            .collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(assistanceBOS)){
+                        SystemBugTypeBO assistanceBO = assistanceBOS.get(0);
+                        if (assistanceBO!=null){
+                            systemBugResDTO.setAssistanceNum(assistanceBO.getNum());
+                            systemBugResDTO.setDemandSystemName(assistanceBO.getDemandSystemName());
+                        }
+                    }
+
+                }
+                list.add(systemBugResDTO);
+            });
+
+        }
+        return list;
+    }
+
+    /**
+     * 用户bug分类柱状图
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public List<UserBugResDTO> getUserBugHistogram(BugListReqDTO reqDTO) {
+        List<UserBugResDTO> list = new ArrayList<>();
+        //查询时间段内bug人员
+        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(),reqDTO.getEndTime());
+        //查询时间段内用户参与的bug
+        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime());
+        if (!CollectionUtils.isEmpty(userIds)){
+            userIds.forEach(userId->{
+                UserBugResDTO userBugResDTO = new UserBugResDTO();
+                userBugResDTO.setUserId(userId);
+                userBugResDTO.setBugNum(0);
+                userBugResDTO.setAssistanceNum(0);
+                userBugResDTO.setOptimizationNum(0);
+                if (!CollectionUtils.isEmpty(userBugTypeBOS)){
+                    List<UserBugTypeBO> bugBOS = userBugTypeBOS.stream()
+                            .filter(userBugTypeBO -> userBugTypeBO.getUserId().equals(userId) && userBugTypeBO.getType() == ZSYBugType.BUG.getValue())
+                            .collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(bugBOS)){
+                        UserBugTypeBO bugBO = bugBOS.get(0);
+                        if (bugBO!=null){
+                            userBugResDTO.setUserName(bugBO.getUserName());
+                            userBugResDTO.setBugNum(bugBO.getNum());
+                        }
+                    }
+
+                    List<UserBugTypeBO> optimizationBOS = userBugTypeBOS.stream()
+                            .filter(userBugTypeBO -> userBugTypeBO.getUserId().equals(userId) && userBugTypeBO.getType() == ZSYBugType.OPTIMIZATION.getValue())
+                            .collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(optimizationBOS)){
+                        UserBugTypeBO optimizationBO = optimizationBOS.get(0);
+                        if (optimizationBO!=null){
+                            userBugResDTO.setUserName(optimizationBO.getUserName());
+                            userBugResDTO.setOptimizationNum(optimizationBO.getNum());
+                        }
+                    }
+
+                    List<UserBugTypeBO> assistanceBOS = userBugTypeBOS.stream()
+                            .filter(userBugTypeBO -> userBugTypeBO.getUserId().equals(userId) && userBugTypeBO.getType() == ZSYBugType.ASSISTANCE.getValue())
+                            .collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(assistanceBOS)){
+                        UserBugTypeBO assistanceBO = assistanceBOS.get(0);
+                        if (assistanceBO!=null){
+                            userBugResDTO.setUserName(assistanceBO.getUserName());
+                            userBugResDTO.setAssistanceNum(assistanceBO.getNum());
+                        }
+                    }
+                }
+                list.add(userBugResDTO);
+            });
+        }
+        return list;
     }
 
     /**

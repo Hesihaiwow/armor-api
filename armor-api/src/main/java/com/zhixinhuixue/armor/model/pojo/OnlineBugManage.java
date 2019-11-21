@@ -15,6 +15,11 @@ public class OnlineBugManage {
     private Long id;
 
     /**
+     * 任务id
+     */
+    private Long taskId;
+
+    /**
      * 描述
      */
     private String description;
@@ -79,6 +84,14 @@ public class OnlineBugManage {
      * 备注
      */
     private String remark;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 
     public Integer getIsDelete() {
         return isDelete;

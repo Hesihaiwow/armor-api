@@ -679,5 +679,10 @@
     <select id="selectListAfterJuly" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `begin_time` >= '2019-07-01 00:00:00'
     </select>
+
+    <!--所有进行中的任务-->
+    <select id="selectAllDoingTasks" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1
+    </select>
     <!-- sch -->
 </mapper>

@@ -14,6 +14,18 @@ public class OnlineBugBO extends OnlineBugManage {
      */
     private List<Long> userIds;
 
+    /**
+     * 任务名称
+     */
+    private String taskName;
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
 
     private List<BugUserBO> bugUsers;
 
