@@ -131,8 +131,27 @@
                         </el-table-column>
                         <el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>
                         <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
-                        <el-table-column prop="description" label="问题描述" align="center"></el-table-column>
-                        <el-table-column prop="remark" label="备注" align="center" width="130"></el-table-column>
+                        <el-table-column prop="description" label="问题描述" align="center">
+                            <template scope="scope">
+                                <span v-show="scope.row.description.length<20">{{scope.row.description}}</span>
+                                <el-popover v-show="scope.row.description.length>=20" :content="scope.row.description" placement="top-start"
+                                            width="250"
+                                            trigger="hover">
+                                    <span slot="reference" style="cursor: pointer;">{{scope.row.description.substring(0,30)}}......</span>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column prop="remark" label="备注" align="center" width="130">
+                            <template scope="scope">
+                                <span v-show="scope.row.remark.length<20">{{scope.row.remark}}</span>
+                                <el-popover v-show="scope.row.remark.length>=20" :content="scope.row.remark" placement="top-start"
+                                            width="250"
+                                            trigger="hover">
+                                    <span slot="reference" style="cursor: pointer;">{{scope.row.remark.substring(0,21)}}......</span>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
                         <!--<el-table-column prop="testers" label="测试人员" align="center" width="130"></el-table-column>-->
                         <el-table-column prop="type" label="问题类型" align="center" width="100">
                             <template scope="scope">
