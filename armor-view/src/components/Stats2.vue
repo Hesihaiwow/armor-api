@@ -1017,7 +1017,7 @@
                     <div style="margin-top: 150px;margin-left: 10px">
                         <div  style="display: inline">关联任务</div>
                         <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px">
+                            <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px" filterable clearable>
                                 <el-option  v-for="item in doingTaskList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -1201,7 +1201,7 @@
                 <div style="margin-top: 150px;margin-left: 10px">
                     <div  style="display: inline">关联任务</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px">
+                        <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px" filterable clearable>
                             <el-option  v-for="item in doingTaskList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
