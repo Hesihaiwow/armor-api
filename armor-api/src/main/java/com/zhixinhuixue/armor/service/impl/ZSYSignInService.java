@@ -2753,6 +2753,9 @@ public class ZSYSignInService implements IZSYSignInService {
                 font7.setFontName("宋体");
                 style7.setFont(font7);
 
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
                 for (User user : userList) {
                     List<SignInResDTO> signInResDTOS = map.get(user.getId());
                     row1 = sheet.createRow(num + 4);
@@ -2801,10 +2804,27 @@ public class ZSYSignInService implements IZSYSignInService {
                         HSSFCell row4Celli = row4.createCell(i+2);
                         HSSFCell row5Celli = row5.createCell(i+2);
                         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                        Date checkInTime1 = signInResDTOS.get(signInResDTOS.size() - 1 - i).getCheckInTime();
                         row1Celli.setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckInTime() == null ? "" : timeFormat.format(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckInTime()));
+
                         row1Celli.setCellStyle(style7);
+                        if (checkInTime1 != null){
+                            String dateStr = dateFormat.format(checkInTime1);
+                            Date today930 = timeSDF.parse(dateStr + " 09:30:00");
+                            if (checkInTime1.compareTo(today930)>0){
+                                row1Celli.setCellStyle(style4);
+                            }
+                        }
+                        Date checkOutTime1 = signInResDTOS.get(signInResDTOS.size() - 1 - i).getCheckOutTime();
                         row2Celli.setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckOutTime() == null ? "" : timeFormat.format(signInResDTOS.get(signInResDTOS.size()-1-i).getCheckOutTime()));
                         row2Celli.setCellStyle(style7);
+                        if (checkOutTime1 != null){
+                            String dateStr = dateFormat.format(checkOutTime1);
+                            Date today1830 = timeSDF.parse(dateStr + " 18:30:00");
+                            if (checkOutTime1.compareTo(today1830)<0){
+                                row2Celli.setCellStyle(style4);
+                            }
+                        }
                         row3Celli.setCellValue(signInResDTOS.get(signInResDTOS.size()-1-i).getWorkTime() == null ? "" : getTime(signInResDTOS.get(signInResDTOS.size()-1-i).getWorkTime()));
                         row3Celli.setCellStyle(style3);
                         Long eWorkTime = signInResDTOS.get(signInResDTOS.size() - 1 - i).getEWorkTime();

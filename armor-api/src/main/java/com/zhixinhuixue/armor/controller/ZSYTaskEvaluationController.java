@@ -27,9 +27,9 @@ public class ZSYTaskEvaluationController {
     @PostMapping("/add")
     public String evaluate(@Valid @RequestBody AddEvaluationReqDTO reqDTO){
         ZSYResult zsyResult = taskEvaluationService.evaluate(reqDTO);
-        if (zsyResult.getErrCode().equals("00")) {
-            taskEvaluationService.finishTask(reqDTO.getTaskId());
-        }
+//        if (zsyResult.getErrCode().equals("00")) {
+//            taskEvaluationService.finishTask(reqDTO.getTaskId());
+//        }
         return zsyResult.build();
     }
 

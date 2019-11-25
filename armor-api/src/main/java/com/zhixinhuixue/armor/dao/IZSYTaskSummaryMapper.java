@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.zhixinhuixue.armor.model.bo.TaskReviewBO;
 import com.zhixinhuixue.armor.model.bo.TaskSummaryBO;
 import com.zhixinhuixue.armor.model.pojo.TaskSummary;
 import org.apache.ibatis.annotations.Param;
@@ -54,4 +53,10 @@ public interface IZSYTaskSummaryMapper {
      * @param summary 任务总
      */
     int update(TaskSummary summary);
+
+    /**
+     * 所有任务总结
+     * @author sch
+     */
+    List<TaskSummary> selectAll();
 }

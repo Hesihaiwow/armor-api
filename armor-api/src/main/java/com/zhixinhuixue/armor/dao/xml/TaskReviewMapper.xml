@@ -90,5 +90,12 @@
         SELECT * FROM `task_review` WHERE `id` = #{reviewId}
     </select>
 
+    <!--查询所有任务评审-->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT tr.* FROM `task_review` tr
+        LEFT JOIN `task` t ON t.id = tr.task_id
+        WHERE tr.`is_delete` = 0 AND t.`is_delete` = 0 AND t.`review_status` = 3 AND t.`status` = 1
+    </select>
+
 
 </mapper>
