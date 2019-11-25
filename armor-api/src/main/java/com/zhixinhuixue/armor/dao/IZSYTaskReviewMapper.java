@@ -54,4 +54,10 @@ public interface IZSYTaskReviewMapper {
      * @param review 评审
      */
     int update(TaskReview review);
+
+    /**
+     * 查询所有任务评审
+     * @author sch
+     */
+    List<TaskReview> selectAll();
 }

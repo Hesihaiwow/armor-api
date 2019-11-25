@@ -103,5 +103,12 @@
         SELECT * FROM `task_summary` WHERE `id` = #{summaryId}
     </select>
 
+    <!--所有任务总结-->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT ts.* FROM `task_summary` ts
+        LEFT JOIN `task` t ON t.id = ts.task_id
+        WHERE ts.`is_delete` = 0 AND t.`is_delete` = 0 AND t.`review_status` = 3 AND t.`status` = 2;
+    </select>
+
 
 </mapper>

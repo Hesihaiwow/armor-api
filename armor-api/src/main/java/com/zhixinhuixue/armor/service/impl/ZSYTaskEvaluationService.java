@@ -144,7 +144,7 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
             }
         }
 
-
+        finishTask(taskId);
         return ZSYResult.success();
     }
 

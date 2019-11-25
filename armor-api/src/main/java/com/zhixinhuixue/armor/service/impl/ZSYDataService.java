@@ -8,9 +8,7 @@ import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
-import com.zhixinhuixue.armor.model.pojo.Task;
-import com.zhixinhuixue.armor.model.pojo.User;
-import com.zhixinhuixue.armor.model.pojo.UserLeave;
+import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYDataService;
 import com.zhixinhuixue.armor.source.enums.ZSYFeedbackType;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
@@ -717,13 +715,16 @@ public class ZSYDataService implements IZSYDataService {
                 if (!CollectionUtils.isEmpty(taskList)){
                     chargeTaskNum = taskList.size();
 
+                    //所有任务评审
+                    List<TaskReview> allReviews = reviewMapper.selectAll();
                     //待评审任务
                     List<Task> reviewTaskList = taskList.stream()
                             .filter(task -> task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L))
                             .collect(Collectors.toList());
                     if (!CollectionUtils.isEmpty(reviewTaskList)){
                         for (Task task : reviewTaskList) {
-                            List<TaskReviewBO> taskReviewBOS = reviewMapper.selectListByTask(task.getId());
+                            List<TaskReview> taskReviewBOS = allReviews.stream().filter(taskReview -> taskReview.getTaskId().equals(task.getId())).collect(Collectors.toList());
+//                            List<TaskReviewBO> taskReviewBOS = reviewMapper.selectListByTask(task.getId());
                             if (CollectionUtils.isEmpty(taskReviewBOS)){
                                 reviewTaskNum += 1;
                             }
@@ -771,13 +772,16 @@ public class ZSYDataService implements IZSYDataService {
                     }
                 }
 
-                //待发布任务
+                //所有任务总结
+                List<TaskSummary> allSummaries = summaryMapper.selectAll();
+                //已发布任务(完成未结束)
                 List<TaskListBO> summarizeTaskList =
                         taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), user.getId());
                 if (!CollectionUtils.isEmpty(summarizeTaskList)){
                     summarizeTaskList = summarizeTaskList.stream().filter(taskListBO -> taskListBO.getStatus() > 1).collect(Collectors.toList());
                     for (TaskListBO taskListBO : summarizeTaskList) {
-                        List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskListBO.getId());
+                        List<TaskSummary> taskSummaryBOS = allSummaries.stream().filter(taskSummary -> taskSummary.getTaskId().equals(taskListBO.getId())).collect(Collectors.toList());
+//                        List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskListBO.getId());
                         if (CollectionUtils.isEmpty(taskSummaryBOS)){
                             summarizeTaskNum += 1;
                         }
