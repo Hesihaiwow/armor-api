@@ -86,4 +86,17 @@ public class ZSYTaskBugController {
     public String getReadyTasks(){
         return ZSYResult.success().data(taskBugService.getReadyTasks()).build();
     }
+
+    @ApiOperation("测试相关阶段的任务")
+    @GetMapping("/task/testing")
+    public String getTaskTesting(){
+        return ZSYResult.success().data(taskBugService.getTaskTesting()).build();
+    }
+
+
+    @ApiOperation("我的bug视图")
+    @GetMapping("/my-list")
+    public String getMyBugList(){
+        return ZSYResult.success().data(taskBugService.getMyBugList()).build();
+    }
 }

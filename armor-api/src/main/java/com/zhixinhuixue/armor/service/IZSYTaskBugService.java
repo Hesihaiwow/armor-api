@@ -69,4 +69,16 @@ public interface IZSYTaskBugService {
      * @author sch
      */
     List<TaskBaseResDTO> getReadyTasks();
+
+    /**
+     * 我的bug视图
+     * @author sch
+     */
+    MyBugResDTO getMyBugList();
+
+    /**
+     * 测试相关阶段的任务
+     * @author sch
+     */
+    List<TaskBaseResDTO> getTaskTesting();
 }

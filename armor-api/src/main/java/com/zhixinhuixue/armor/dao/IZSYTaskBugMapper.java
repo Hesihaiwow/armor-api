@@ -3,8 +3,11 @@ package com.zhixinhuixue.armor.dao;
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.TaskBugBO;
 import com.zhixinhuixue.armor.model.dto.request.QueryTaskBugPageReqDTO;
+import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskBug;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author sch
@@ -55,4 +58,12 @@ public interface IZSYTaskBugMapper {
      * @author sch
      */
     Integer selectLastBugNo();
+
+    /**
+     * 根据条件查询
+     * @param status
+     * @param handlerId
+     * @param createBy
+     */
+    List<TaskBugBO> selectMyBugList(@Param("status") Integer status, @Param("handlerId") Long handlerId, @Param("createBy") Long createBy);
 }

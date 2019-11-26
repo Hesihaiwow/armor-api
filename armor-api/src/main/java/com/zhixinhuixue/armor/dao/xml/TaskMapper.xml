@@ -671,5 +671,18 @@
     <select id="selectDoingListByUser" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `create_by` = #{userId}
     </select>
+
+    <!--查询已经产生bug的任务-->
+    <select id="selectBugTasks" resultMap="BaseResultMap">
+        SELECT t.* FROM `task_bug` tb
+        LEFT JOIN `task` t ON t.`id` = tb.`task_id`
+        WHERE tb.`is_delete` = 0 AND t.`is_delete` = 0 AND t.`review_status` = 3
+    </select>
+
+    <!--测试相关阶段的任务-->
+    <select id="selectTestTask" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3
+        AND `status` = 1 AND `stage_id` IN (212754785051344895,212754785051344896)
+    </select>
     <!-- sch -->
 </mapper>

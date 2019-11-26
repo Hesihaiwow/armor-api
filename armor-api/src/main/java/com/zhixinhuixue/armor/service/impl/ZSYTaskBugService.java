@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author sch
@@ -56,22 +53,24 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
      */
     @Override
     public PageInfo<TaskBugPageResDTO> getTaskBugPage(QueryTaskBugPageReqDTO reqDTO) {
-        Integer selectAll = reqDTO.getSelectAll();
-        Long userId = ZSYTokenRequestContext.get().getUserId();
+//        Integer selectAll = reqDTO.getSelectAll();
+//        Long userId = ZSYTokenRequestContext.get().getUserId();
         Page<TaskBugBO> taskBugBOS = new Page<>();
         Page<TaskBugPageResDTO> page = new Page<>();
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
         //查看当前用户的bug
-        if (selectAll == 0){
-            taskBugBOS = taskBugMapper.selectPage(reqDTO,userId);
-        }else {
+//        if (selectAll == 0){
             taskBugBOS = taskBugMapper.selectPage(reqDTO,null);
-        }
+//        }else {
+//            taskBugBOS = taskBugMapper.selectPage(reqDTO,null);
+//        }
         BeanUtils.copyProperties(taskBugBOS,page);
         if (!CollectionUtils.isEmpty(taskBugBOS)){
             taskBugBOS.forEach(taskBugBO -> {
                 TaskBugPageResDTO resDTO = new TaskBugPageResDTO();
+                String bugNoStr = getBugNoStr(taskBugBO.getTbNo());
                 BeanUtils.copyProperties(taskBugBO,resDTO);
+                resDTO.setTbNoStr(bugNoStr);
                 resDTO.setSeverityName(TaskBugSeverity.getName(taskBugBO.getSeverity()));
                 resDTO.setStatusName(TaskBugStatus.getName(taskBugBO.getStatus()));
                 page.add(resDTO);
@@ -80,6 +79,30 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         return new PageInfo<>(page);
     }
 
+    /**
+     * 获取bug编号
+     */
+    private String getBugNoStr(Integer bugNo){
+        String bugNoStr = "";
+        if (bugNo != null){
+            if (bugNo<10){
+                bugNoStr = "000000"+bugNo;
+            }else if (bugNo<100){
+                bugNoStr = "00000"+bugNo;
+            }else if (bugNo<1000){
+                bugNoStr = "0000"+bugNo;
+            }else if (bugNo<10000){
+                bugNoStr = "000"+bugNo;
+            }else if (bugNo<100000){
+                bugNoStr = "00"+bugNo;
+            }else if (bugNo<1000000){
+                bugNoStr = "0"+bugNo;
+            }else {
+                bugNoStr = ""+bugNo;
+            }
+        }
+        return bugNoStr;
+    }
     /**
      * 新增
      * @param reqDTO 条件
@@ -330,6 +353,78 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
      */
     @Override
     public List<TaskBaseResDTO> getReadyTasks() {
-        return null;
+        List<TaskBaseResDTO> list = new ArrayList<>();
+        List<Task> taskList = taskMapper.selectBugTasks();
+        if (!CollectionUtils.isEmpty(taskList)){
+            taskList.forEach(task -> {
+                TaskBaseResDTO resDTO = new TaskBaseResDTO();
+                resDTO.setId(task.getId());
+                resDTO.setName(task.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 我的bug视图
+     * @author sch
+     */
+    @Override
+    public MyBugResDTO getMyBugList() {
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+        //查询我的已分派未解决bug
+        List<TaskBugBO> assignedBugs = taskBugMapper.selectMyBugList(TaskBugStatus.ASSIGNED.getValue(),userId,null);
+        //查询我的已解决bug
+        List<TaskBugBO> solvedBugs = taskBugMapper.selectMyBugList(TaskBugStatus.RESOLVED.getValue(), userId, null);
+        //查询我提交的bug
+        List<TaskBugBO> reportBugs = taskBugMapper.selectMyBugList(null, null, userId);
+        MyBugResDTO resDTO = new MyBugResDTO();
+        List<TaskBugPageResDTO> solvingBugList = getBugList(assignedBugs);
+        List<TaskBugPageResDTO> solvedBugList = getBugList(solvedBugs);
+        List<TaskBugPageResDTO> reportBugList = getBugList(reportBugs);
+        resDTO.setSolvingBugList(solvingBugList);
+        resDTO.setSolvedBugList(solvedBugList);
+        resDTO.setReportBugList(reportBugList);
+        return resDTO;
+    }
+
+    /**
+     * 测试相关阶段的任务
+     * @author sch
+     */
+    @Override
+    public List<TaskBaseResDTO> getTaskTesting() {
+        List<Task> taskList = taskMapper.selectTestTask();
+        List<TaskBaseResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskList)){
+            taskList.forEach(task -> {
+                TaskBaseResDTO resDTO = new TaskBaseResDTO();
+                resDTO.setId(task.getId());
+                resDTO.setName(task.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 获取任务bug集合
+     * @param taskBugs 参数
+     */
+    private List<TaskBugPageResDTO> getBugList(List<TaskBugBO> taskBugs) {
+        List<TaskBugPageResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(taskBugs)){
+            taskBugs.forEach(taskBug -> {
+                TaskBugPageResDTO bugResDTO = new TaskBugPageResDTO();
+                bugResDTO.setTbId(taskBug.getTbId());
+                bugResDTO.setTitle(taskBug.getTitle());
+                bugResDTO.setTbNoStr(getBugNoStr(taskBug.getTbNo()));
+                bugResDTO.setTaskName(taskBug.getTaskName());
+                bugResDTO.setCreateTime(taskBug.getCreateTime());
+                list.add(bugResDTO);
+            });
+        }
+        return list;
     }
 }
