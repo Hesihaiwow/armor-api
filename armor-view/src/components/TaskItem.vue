@@ -60,7 +60,7 @@
             </div>
             <div class="task-mark"  v-show="isPrivate && task.status===1 && !task.expand && taskStatus==='TaskDoing'  && task.reviewStatus === 3 && task.type === 2" style="margin-right: 20px;">
                 <el-button @click.stop="applyModifyMyTask(task)">申请修改任务</el-button>
-                <el-button v-show="userInfo.jobRole === 0" @click.stop="toBug(task)">提BUG</el-button>
+                <!--<el-button v-show="userInfo.jobRole === 0" @click.stop="toBug(task)">提BUG</el-button>-->
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
             <div class="task-data-show" v-show="task.status > 1 && task.taskIntegral !== undefined">
@@ -193,117 +193,7 @@
             <el-button type="success" @click="acceptTask(privateTaskLevel,taskDetail.createBy)">审核通过</el-button>
           </span>
         </el-dialog>
-        <!--<el-dialog-->
-                <!--title="任务详情"-->
-                <!--top="10%"-->
-                <!--:visible.sync="showTaskDetail"-->
-                <!--:close-on-click-modal="false"-->
-                <!--:close-on-press-escape="false"-->
-                <!--custom-class="myDialog"-->
-                <!--size="tiny"-->
-                <!--:before-close="hideTaskDetail">-->
-            <!--<el-form>-->
-                <!--<el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>-->
-                <!--<el-form-item class="task-form" label="关联文档：">-->
-                    <!--<a  v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"-->
-                        <!--@click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...-->
-                    <!--</a>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item class="task-form" style="white-space: pre-wrap" label="任务描述：">{{taskDetail.description}}</el-form-item>-->
-                <!--<el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>-->
-                <!--<el-form-item class="task-form" label="阶段：" style="margin-bottom: -36px;">{{taskDetail.stageName}}</el-form-item>-->
-                <!--<el-form-item class="task-form" label="优先级：" style="margin-left: 200px;"><span v-for="item in priorityList"-->
-                                                                   <!--v-if="item.value == taskDetail.priority">{{item.label}}</span>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item class="task-form" label="难易度："  style="margin-bottom: -36px;"><span v-for="item in facilityList"-->
-                                                                   <!--v-if="item.value == taskDetail.facility">{{item.label}}</span>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item class="task-form" label="设计完成时间：" style="margin-left: 200px;">{{taskDetail.beginTime | formatDate}}</el-form-item>-->
-                <!--<el-form-item class="task-form" label="开发完成时间：" style="margin-bottom: -36px;">{{taskDetail.testTime | formatDate}}</el-form-item>-->
-                <!--<el-form-item class="task-form" label="截止时间：" style="margin-left: 200px;">{{taskDetail.endTime | formatDate}}</el-form-item>-->
-                <!--<el-form-item class="task-form" label="标签：">-->
-                    <!--<el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">-->
-                        <!--{{item.name}}-->
-                    <!--</el-tag>-->
-                <!--</el-form-item>-->
-                <!--<div class="ctpc-member-con" v-if="taskDetail.type==2">-->
-                    <!--<div class="ctpc-member-list clearfix" :class="taskStepStatus(item, taskDetail.users.length)"-->
-                         <!--v-for="(item,index) in taskDetail.users">-->
-                        <!--<el-tooltip  placement="top">-->
-                            <!--<div slot="content">-->
-                                <!--<span>进行中任务:</span>-->
-                                <!--<div v-for="(userTask,userIndex) in item.userTask">-->
-                                    <!--<div class="fl" style="margin-left: 20px;">{{userIndex+1}}:任务名称:{{userTask.taskName}}</div>-->
-                                    <!--<div class="fl" style="margin-left: 20px;">工作量:{{userTask.taskHours}}</div>-->
-                                    <!--<div>&nbsp;&nbsp;开始时间:{{userTask.beginTime | formatDate}}</div>-->
-                                    <!--<div>&nbsp;&nbsp;结束时间:{{userTask.endTime | formatDate}}</div>-->
-                                    <!--&lt;!&ndash;<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 任务描述:{{userTask.description}}</div>&ndash;&gt;-->
-                                <!--</div>-->
-                                <!--<div v-if="item.userTask&&item.userTask.length==0">无</div>-->
-                            <!--</div>-->
-                            <!--<span class="fl ctpc-member-head" >{{item.userName}}</span>-->
-                        <!--</el-tooltip>-->
-                        <!--<span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>-->
-                        <!--<span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>-->
-                        <!--&lt;!&ndash;<span class="fl ctpc-member-assess" v-show="item.status==3 && item.commentGrade">评价：{{item.commentGrade}}</span>&ndash;&gt;-->
-                        <!--<span class="fl ctpc-member-assess" v-show="item.status==3 && item.avgScore">评分：{{item.avgScore}}</span>-->
-                        <!--<a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status==3"-->
-                           <!--@click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>-->
-                        <!--<el-tooltip placement="top">-->
-                            <!--<div slot="content">{{item.description}}<br/>开始时间:{{item.beginTime | formatDate}}</div>-->
-                            <!--<span class="fl" style="margin-left: 25px"><i class="el-icon-information"></i></span>-->
-                        <!--</el-tooltip>-->
-                        <!--<span v-if="item.proTest && !taskDetail.testing" class="fl ctpc-member-end-time" style="margin-left:20px;color: #66ccff">测试中</span>-->
-                    <!--</div>-->
-                    <!--<div class="bdl-line"></div>-->
-                <!--</div>-->
-                <!--<div v-else="taskDetail.type==1" v-for="(item,index) in taskDetail.users">-->
-                    <!--<el-form-item class="task-form" label="工作量：">{{item.taskHours}} 工时</el-form-item>-->
-                    <!--<el-form-item class="task-form" label="负责人：">{{item.userName}}</el-form-item>-->
-                <!--</div>-->
 
-            <!--</el-form>-->
-
-            <!--<div class="trends" v-show="taskLog.list.length>0">-->
-                <!--<div class="trends-title clearfix">-->
-                    <!--<b class="fl">动态</b>-->
-                    <!--<a class="fr" href="javascript:;" @click="taskLogMore(taskDetail.id)" v-show="taskLog.hasNextPage">显示较早的动态</a>-->
-                <!--</div>-->
-                <!--<ul style="height: 100px; overflow: auto">-->
-                    <!--<li v-for="(item,index) in taskLog.list" :key="index" class="clearfix">-->
-                        <!--<div style="float: left;width: 350px;"> {{item.title}} <div class="task-title-detail" v-show="item.content!==''" ><em></em>{{item.content}}</div></div>-->
-                        <!--<span style="float: right;font-size: 13px;padding-right: 10px"> {{item.createTime | formatTime}}</span>-->
-                    <!--</li>-->
-                <!--</ul>-->
-            <!--</div>-->
-            <!--<span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status==1 || taskDetail.status==0)">-->
-                <!--<el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">-->
-                    <!--<el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name,taskDetail.proNames)"  style="text-align: right">添加Bug修复时间</el-button>-->
-                <!--</el-tooltip>-->
-                <!--<el-tooltip content="启用任务" placement="top" >-->
-                    <!--<el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>-->
-                <!--</el-tooltip>-->
-                <!--<el-tooltip content="暂停任务" placement="top" >-->
-                    <!--<el-button type="danger"  @click="modifyStopVisible=true" v-show="userRole===0&&taskDetail.status!=0" style="text-align: left">暂停任务</el-button>-->
-                <!--</el-tooltip>-->
-                <!--&lt;!&ndash;<el-tooltip content="评审任务" placement="top" >-->
-                    <!--<el-button type="primary"  @click="examineTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.examine===0" style="text-align: left">已评审</el-button>-->
-                <!--</el-tooltip>&ndash;&gt;-->
-                <!--&lt;!&ndash;<el-tooltip content="评审任务" placement="top" >-->
-                    <!--<el-button type="danger"  @click="examineTask(taskDetail.id,0)" v-show="userRole===0&&taskDetail.examine===1" style="text-align: left">未评审</el-button>-->
-                <!--</el-tooltip>&ndash;&gt;-->
-                <!--<el-tooltip content="删除该任务" placement="top">-->
-                      <!--<el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>-->
-                <!--</el-tooltip>-->
-                 <!--<el-tooltip content="编辑该任务" placement="top">-->
-                 <!--<el-button type="primary" icon="edit" @click="showModifyDescription"-->
-                            <!--v-show="((taskDetail.createBy==loginUserId&&userRole===1)  || userRole===0 )&& taskDetail.type==2"></el-button>-->
-               <!--</el-tooltip>-->
-                <!--<el-button type="primary" icon="check" @click="completeTask(taskDetail.examine)"-->
-                           <!--v-show="taskDetail.status!=3 && userRole==0 && taskDetail.type==2">完成</el-button>-->
-                <!--<el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>-->
-          <!--</span>-->
-        <!--</el-dialog>-->
         <el-dialog
                 title="任务详情"
                 top="10%"
