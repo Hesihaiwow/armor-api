@@ -249,7 +249,7 @@
                                     if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
-                                        endTime = el.clickFinishTime
+                                        endTime = el.completeTime
                                     }
                                     endTime = moment(endTime).format('YYYY-MM-DD');
                                     const diffDays = moment(today).diff(moment(endTime), 'days');
@@ -296,7 +296,7 @@
                                     if (el.status == 1) {
                                         endTime = el.endTime
                                     } else {
-                                        endTime = el.clickFinishTime
+                                        endTime = el.completeTime
                                     }
                                     endTime = moment(endTime).format('YYYY-MM-DD');
                                     const diffDays = moment(today).diff(moment(endTime), 'days');
