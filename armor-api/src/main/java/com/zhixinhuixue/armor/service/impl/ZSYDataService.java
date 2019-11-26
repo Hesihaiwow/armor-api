@@ -825,29 +825,18 @@ public class ZSYDataService implements IZSYDataService {
         //查询全部负责人
         long t1 = System.currentTimeMillis();
         List<User> users = userMapper.selectManagers();
-        long t2 = System.currentTimeMillis();
-        logger.info("查询负责人耗时: "+(t2-t1)+"ms");
         Map<Long,String> userMap = new HashMap<>();
         for (User user : users) {
             userMap.put(user.getId(),user.getName());
         }
         //查询全部进行中的任务
-        long t3 = System.currentTimeMillis();
         List<Task> doingTaskList = taskMapper.selectAllDoingTasks();
-        long t4 = System.currentTimeMillis();
-        logger.info("查询全部进行中的任务耗时: "+(t4-t3)+"ms");
         //查询全部发布任务
         List<Task> publishTaskList = taskMapper.selectAllCompleteTasks();
-        long t5 = System.currentTimeMillis();
-        logger.info("查询全部发布任务的任务耗时: "+(t5-t4)+"ms");
         //所有任务评审
         List<TaskReview> allReviews = reviewMapper.selectAll();
-        long t6 = System.currentTimeMillis();
-        logger.info("查询所有任务评审耗时: "+(t6-t5)+"ms");
         //所有任务总结
         List<TaskSummary> allSummaries = summaryMapper.selectAll();
-        long t7 = System.currentTimeMillis();
-        logger.info("查询所有任务总结耗时: "+(t7-t6)+"ms");
         Map<Long, List<Task>> userTaskMap = doingTaskList.stream().collect(Collectors.groupingBy(Task::getCreateBy));
         Map<Long, List<Task>> userPublishTaskMap = publishTaskList.stream().collect(Collectors.groupingBy(Task::getCreateBy));
         long t8 = System.currentTimeMillis();

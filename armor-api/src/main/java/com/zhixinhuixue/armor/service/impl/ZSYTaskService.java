@@ -1913,7 +1913,6 @@ public class ZSYTaskService implements IZSYTaskService {
         long t1 = System.currentTimeMillis();
         Stage stage = stageMapper.selectById(stageId);
         long t3 = System.currentTimeMillis();
-        logger.info("查询任务阶段耗时 耗时: "+(t3-t1)+"ms");
         List<TaskListBO> taskListBOS = new ArrayList<>();
         if(stage.getName().equals("已发布")){
             taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),userId);
@@ -1921,8 +1920,6 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.info("查询 "+stage.getName()+" 任务 耗时: "+(t4-t3)+"ms");
         }else{
             taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),userId);
-            long t4 = System.currentTimeMillis();
-            logger.info("查询 "+stage.getName()+" 任务 耗时: "+(t4-t3)+"ms");
         }
         long t5 = System.currentTimeMillis();
         List<TaskListResDTO> list = new ArrayList<>();
@@ -1945,40 +1942,6 @@ public class ZSYTaskService implements IZSYTaskService {
                 }else if(stage.getName().indexOf("开发")!=-1 && taskListBO.getTestTime()!=null){
                     taskListResDTO.setEndTime(taskListBO.getTestTime());
                 }
-                //待设计
-//                if (taskListBO.getStageId().equals(212754785051344891L)){
-//                    taskListResDTO.setCanDrag(false);
-//                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
-//                    if (!CollectionUtils.isEmpty(userBos)){
-//                        userBos.forEach(userBo -> {
-//                            if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
-//                                    || userBo.getJobRole().equals(ZSYJobRole.PRODUCT.getValue())){
-//                                taskListResDTO.setCanDrag(true);
-//                            }
-//                        });
-//                    }
-//                }else if (taskListBO.getStageId().equals(212754785051344890L)){
-//                    taskListResDTO.setCanDrag(false);
-//                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
-//                    if (!CollectionUtils.isEmpty(userBos)){
-//                        userBos.forEach(userBo -> {
-//                            if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
-//                                    || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
-//                                taskListResDTO.setCanDrag(true);
-//                            }
-//                        });
-//                    }
-//                }else if (taskListBO.getStageId().equals(212754785051344895L)){
-//                    taskListResDTO.setCanDrag(false);
-//                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
-//                    if (!CollectionUtils.isEmpty(userBos)){
-//                        userBos.forEach(userBo -> {
-//                            if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
-//                                taskListResDTO.setCanDrag(true);
-//                            }
-//                        });
-//                    }
-//                }
                 taskListResDTO.setTags(taskTagResDTOS);
                 list.add(taskListResDTO);
             }
@@ -1986,7 +1949,7 @@ public class ZSYTaskService implements IZSYTaskService {
         });
         long t2 = System.currentTimeMillis();
         logger.info("准备数据 耗时: "+(t2-t5)+"ms");
-        logger.info("全部阶段 耗时: "+(System.currentTimeMillis()-t2)+"ms");
+        logger.info("全部阶段 耗时: "+(System.currentTimeMillis()-t1)+"ms");
         return list;
     }
 
