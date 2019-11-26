@@ -27,13 +27,13 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBug">
         INSERT INTO `task_bug`
         (`tb_id`,`task_id`,`handler_id`,`severity`,`frequency`,`title`,`description`
-        ,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`is_delete`)
+        ,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`is_delete`,`tb_no`)
         VALUES
         (#{tbId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{handlerId,jdbcType=BIGINT}
         ,#{severity,jdbcType=INTEGER},#{frequency,jdbcType=INTEGER},#{title,jdbcType=VARCHAR}
         ,#{description,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
         ,#{createTime,jdbcType=TIMESTAMP},#{updateBy,jdbcType=BIGINT},#{updateTime,jdbcType=TIMESTAMP}
-        ,#{isDelete,jdbcType=INTEGER})
+        ,#{isDelete,jdbcType=INTEGER},#{tbNo,jdbcType=INTEGER})
     </insert>
 
     <!--更新-->
@@ -139,6 +139,11 @@
         <if test="userId != null">
             AND (`create_by` = #{userId} OR `handler_id` = #{userId})
         </if>
+    </select>
+
+    <!--查询最后一个bug编号-->
+    <select id="selectLastBugNo" resultType="java.lang.Integer">
+        SELECT `tb_no` FROM `task_bug` ORDER BY `tb_no` DESC LIMIT 1
     </select>
 
 

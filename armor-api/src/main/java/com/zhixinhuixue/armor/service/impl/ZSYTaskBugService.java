@@ -91,6 +91,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (task == null){
             throw new ZSYServiceException("任务不存在,请检查");
         }
+        Integer lastBugNo = taskBugMapper.selectLastBugNo();
         TaskBug taskBug = new TaskBug();
         BeanUtils.copyProperties(reqDTO,taskBug);
         Long userId = ZSYTokenRequestContext.get().getUserId();
@@ -98,6 +99,11 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
 //        User user = userMapper.selectById(userId);
 
         taskBug.setTbId(snowFlakeIDHelper.nextId());
+        if (lastBugNo == null){
+            taskBug.setTbNo(0);
+        }else {
+            taskBug.setTbNo(lastBugNo+1);
+        }
         taskBug.setCreateBy(userId);
         taskBug.setCreateTime(new Date());
         taskBug.setUpdateBy(userId);
@@ -109,14 +115,6 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             throw new ZSYServiceException("新增任务bug失败");
         }
 
-        TaskBugLog taskBugLog = new TaskBugLog();
-        taskBugLog.setTblId(snowFlakeIDHelper.nextId());
-        taskBugLog.setTbId(taskBug.getTbId());
-        taskBugLog.setContent(userName+"创建了bug,tbId: "+taskBug.getTbId());
-        taskBugLog.setCreateBy(userId);
-        taskBugLog.setCreateTime(new Date());
-        //插入日志
-        bugLogMapper.insert(taskBugLog);
     }
 
     /**
@@ -130,45 +128,45 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (taskBug == null){
             throw new ZSYServiceException("任务bug不存在,请检查");
         }
-        Long createBy = taskBug.getCreateBy();
+//        Long createBy = taskBug.getCreateBy();
         Long userId = ZSYTokenRequestContext.get().getUserId();
-        String userName = ZSYTokenRequestContext.get().getUserName();
+//        String userName = ZSYTokenRequestContext.get().getUserName();
 //        User user = userMapper.selectById(userId);
         //当前用户为bug创建人,  可修改全部内容
-        if (createBy.equals(userId)){
+//        if (createBy.equals(userId)){
             taskBug.setStatus(reqDTO.getStatus());
             taskBug.setTitle(reqDTO.getTitle().trim());
             taskBug.setDescription(reqDTO.getDescription());
             taskBug.setFrequency(reqDTO.getFrequency());
             taskBug.setSeverity(reqDTO.getSeverity());
             taskBug.setHandlerId(reqDTO.getHandlerId());
-        }else {
-            taskBug.setStatus(reqDTO.getStatus());
-        }
+//        }else {
+//            taskBug.setStatus(reqDTO.getStatus());
+//        }
         taskBug.setUpdateTime(new Date());
         taskBug.setUpdateBy(userId);
         if (taskBugMapper.updateById(taskBug) == 0){
             throw new ZSYServiceException("修改任务bug失败");
         }
 
-        if (reqDTO.getRemark() != null && reqDTO.getRemark().trim() != ""){
-            TaskBugRemark taskBugRemark = new TaskBugRemark();
-            taskBugRemark.setTbrId(snowFlakeIDHelper.nextId());
-            taskBugRemark.setTbId(taskBug.getTbId());
-            taskBugRemark.setRemark(reqDTO.getRemark());
-            taskBugRemark.setCreateTime(new Date());
-            taskBugRemark.setCreateBy(userId);
-            remarkMapper.insert(taskBugRemark);
-        }
-
-        //插入日志
-        TaskBugLog taskBugLog = new TaskBugLog();
-        taskBugLog.setTblId(snowFlakeIDHelper.nextId());
-        taskBugLog.setTbId(taskBug.getTbId());
-        taskBugLog.setContent(userName+"修改了任务bug,tbId: "+taskBug.getTbId());
-        taskBugLog.setCreateTime(new Date());
-        taskBugLog.setCreateBy(userId);
-        bugLogMapper.insert(taskBugLog);
+//        if (reqDTO.getRemark() != null && reqDTO.getRemark().trim() != ""){
+//            TaskBugRemark taskBugRemark = new TaskBugRemark();
+//            taskBugRemark.setTbrId(snowFlakeIDHelper.nextId());
+//            taskBugRemark.setTbId(taskBug.getTbId());
+//            taskBugRemark.setRemark(reqDTO.getRemark());
+//            taskBugRemark.setCreateTime(new Date());
+//            taskBugRemark.setCreateBy(userId);
+//            remarkMapper.insert(taskBugRemark);
+//        }
+//
+//        //插入日志
+//        TaskBugLog taskBugLog = new TaskBugLog();
+//        taskBugLog.setTblId(snowFlakeIDHelper.nextId());
+//        taskBugLog.setTbId(taskBug.getTbId());
+//        taskBugLog.setContent(userName+"修改了任务bug,tbId: "+taskBug.getTbId());
+//        taskBugLog.setCreateTime(new Date());
+//        taskBugLog.setCreateBy(userId);
+//        bugLogMapper.insert(taskBugLog);
     }
 
     /**
@@ -183,22 +181,22 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             throw new ZSYServiceException("任务bug不存在,请检查");
         }
         Long userId = ZSYTokenRequestContext.get().getUserId();
-        String userName = ZSYTokenRequestContext.get().getUserName();
+//        String userName = ZSYTokenRequestContext.get().getUserName();
         if (!userId.equals(taskBug.getCreateBy())){
             throw new ZSYServiceException("当前用户不是bug创建人,无法删除");
         }
         taskBug.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
         taskBugMapper.updateById(taskBug);
         //删除备注
-        remarkMapper.deleteByTbId(tbId);
+//        remarkMapper.deleteByTbId(tbId);
         //插入日志
-        TaskBugLog taskBugLog = new TaskBugLog();
-        taskBugLog.setTblId(snowFlakeIDHelper.nextId());
-        taskBugLog.setTbId(taskBug.getTbId());
-        taskBugLog.setContent(userName+"删除了任务bug,tbId: "+taskBug.getTbId());
-        taskBugLog.setCreateTime(new Date());
-        taskBugLog.setCreateBy(userId);
-        bugLogMapper.insert(taskBugLog);
+//        TaskBugLog taskBugLog = new TaskBugLog();
+//        taskBugLog.setTblId(snowFlakeIDHelper.nextId());
+//        taskBugLog.setTbId(taskBug.getTbId());
+//        taskBugLog.setContent(userName+"删除了任务bug,tbId: "+taskBug.getTbId());
+//        taskBugLog.setCreateTime(new Date());
+//        taskBugLog.setCreateBy(userId);
+//        bugLogMapper.insert(taskBugLog);
     }
 
     /**
@@ -324,5 +322,14 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             });
         }
         return new PageInfo<>(page);
+    }
+
+    /**
+     * 查询已经产生bug的任务
+     * @author sch
+     */
+    @Override
+    public List<TaskBaseResDTO> getReadyTasks() {
+        return null;
     }
 }

@@ -15,6 +15,11 @@ public class TaskBug {
     private Long tbId;
 
     /**
+     * bug编号
+     */
+    private Integer tbNo;
+
+    /**
      * 任务id
      */
     private Long taskId;
@@ -73,6 +78,14 @@ public class TaskBug {
      * 更新时间
      */
     private Date updateTime;
+
+    public Integer getTbNo() {
+        return tbNo;
+    }
+
+    public void setTbNo(Integer tbNo) {
+        this.tbNo = tbNo;
+    }
 
     public Long getTbId() {
         return tbId;

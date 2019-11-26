@@ -80,4 +80,10 @@ public class ZSYTaskBugController {
     public String getPersonalBugPage(@PathVariable("pageNum")Integer pageNum){
         return ZSYResult.success().data(taskBugService.getPersonalBugPage(pageNum)).build();
     }
+
+    @ApiOperation("查询已经产生bug的任务")
+    @GetMapping("/task/ready")
+    public String getReadyTasks(){
+        return ZSYResult.success().data(taskBugService.getReadyTasks()).build();
+    }
 }
