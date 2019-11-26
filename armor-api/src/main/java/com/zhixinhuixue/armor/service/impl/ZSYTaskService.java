@@ -2747,40 +2747,6 @@ public class ZSYTaskService implements IZSYTaskService {
                 }else if(stage.getName().indexOf("开发")!=-1 && taskListBO.getTestTime()!=null){
                     taskListResDTO.setEndTime(taskListBO.getTestTime());
                 }
-                //待设计
-//                if (taskListBO.getStageId().equals(212754785051344891L)){
-//                    taskListResDTO.setCanDrag(false);
-//                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
-//                    if (!CollectionUtils.isEmpty(userBos)){
-//                        userBos.forEach(userBo -> {
-//                            if (userBo.getJobRole().equals(ZSYJobRole.DESIGN.getValue())
-//                                    || userBo.getJobRole().equals(ZSYJobRole.PRODUCT.getValue())){
-//                                taskListResDTO.setCanDrag(true);
-//                            }
-//                        });
-//                    }
-//                }else if (taskListBO.getStageId().equals(212754785051344890L)){
-//                    taskListResDTO.setCanDrag(false);
-//                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
-//                    if (!CollectionUtils.isEmpty(userBos)){
-//                        userBos.forEach(userBo -> {
-//                            if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
-//                                    || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
-//                                taskListResDTO.setCanDrag(true);
-//                            }
-//                        });
-//                    }
-//                }else if (taskListBO.getStageId().equals(212754785051344895L)){
-//                    taskListResDTO.setCanDrag(false);
-//                    List<UserBo> userBos = userMapper.selectUsersByTask(taskListBO.getId());
-//                    if (!CollectionUtils.isEmpty(userBos)){
-//                        userBos.forEach(userBo -> {
-//                            if (userBo.getJobRole().equals(ZSYJobRole.TEST.getValue())){
-//                                taskListResDTO.setCanDrag(true);
-//                            }
-//                        });
-//                    }
-//                }
                 taskListResDTO.setTags(taskTagResDTOS);
                 list.add(taskListResDTO);
             }

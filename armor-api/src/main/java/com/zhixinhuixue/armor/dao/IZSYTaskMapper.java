@@ -290,4 +290,10 @@ public interface IZSYTaskMapper {
      * @author sch
      */
     List<Task> selectAllDoingTasks();
+
+    /**
+     * 查询全部发布任务
+     * @author sch
+     */
+    List<Task> selectAllCompleteTasks();
 }

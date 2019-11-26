@@ -13,6 +13,7 @@ public class PrincipalTaskNumResDTO {
     /**
      * 负责人
      */
+    private Long userId;
     private String userName;
 
     /**
@@ -44,6 +45,14 @@ public class PrincipalTaskNumResDTO {
      * 需缴纳短信费
      */
     private BigDecimal messageFee;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getUserName() {
         return userName;

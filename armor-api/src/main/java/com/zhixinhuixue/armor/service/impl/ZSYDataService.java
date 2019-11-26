@@ -10,10 +10,8 @@ import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYDataService;
-import com.zhixinhuixue.armor.source.enums.ZSYFeedbackType;
-import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
-import com.zhixinhuixue.armor.source.enums.ZSYTaskPriority;
-import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
+import com.zhixinhuixue.armor.source.enums.*;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -692,8 +690,8 @@ public class ZSYDataService implements IZSYDataService {
      * 超管查看所有负责人负责任务数
      * @author sch
      */
-    @Override
-    public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats() {
+//    @Override
+    public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats2() {
         long t1 = System.currentTimeMillis();
         List<User> users = userMapper.selectManagers();
         long t4 = System.currentTimeMillis();
@@ -820,6 +818,135 @@ public class ZSYDataService implements IZSYDataService {
         }
         logger.info("整体耗时: "+(System.currentTimeMillis()-t1)+"ms");
         return list;
+    }
+
+    @Override
+    public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats(){
+        //查询全部负责人
+        long t1 = System.currentTimeMillis();
+        List<User> users = userMapper.selectManagers();
+        long t2 = System.currentTimeMillis();
+        logger.info("查询负责人耗时: "+(t2-t1)+"ms");
+        Map<Long,String> userMap = new HashMap<>();
+        for (User user : users) {
+            userMap.put(user.getId(),user.getName());
+        }
+        //查询全部进行中的任务
+        long t3 = System.currentTimeMillis();
+        List<Task> doingTaskList = taskMapper.selectAllDoingTasks();
+        long t4 = System.currentTimeMillis();
+        logger.info("查询全部进行中的任务耗时: "+(t4-t3)+"ms");
+        //查询全部发布任务
+        List<Task> publishTaskList = taskMapper.selectAllCompleteTasks();
+        long t5 = System.currentTimeMillis();
+        logger.info("查询全部发布任务的任务耗时: "+(t5-t4)+"ms");
+        //所有任务评审
+        List<TaskReview> allReviews = reviewMapper.selectAll();
+        long t6 = System.currentTimeMillis();
+        logger.info("查询所有任务评审耗时: "+(t6-t5)+"ms");
+        //所有任务总结
+        List<TaskSummary> allSummaries = summaryMapper.selectAll();
+        long t7 = System.currentTimeMillis();
+        logger.info("查询所有任务总结耗时: "+(t7-t6)+"ms");
+        Map<Long, List<Task>> userTaskMap = doingTaskList.stream().collect(Collectors.groupingBy(Task::getCreateBy));
+        Map<Long, List<Task>> userPublishTaskMap = publishTaskList.stream().collect(Collectors.groupingBy(Task::getCreateBy));
+        long t8 = System.currentTimeMillis();
+        List<PrincipalTaskNumResDTO> collect = userTaskMap.values().stream().map(tasks -> {
+            PrincipalTaskNumResDTO resDTO = new PrincipalTaskNumResDTO();
+            Integer chargeTaskNum = 0;
+            Integer reviewTaskNum = 0;
+            Integer summarizeTaskNum = 0;
+            Integer delayedTaskNum = 0;
+            Integer delayedDesignTaskNum = 0;
+            Integer delayedDevelopTaskNum = 0;
+            Integer delayedTestTaskNum = 0;
+            Integer aboutDelayTaskNum = 0;
+            Integer aboutDelayDesignTaskNum = 0;
+            Integer aboutDelayDevelopTaskNum = 0;
+            Integer aboutDelayTestTaskNum = 0;
+            BigDecimal messageFee = BigDecimal.ZERO;
+
+            if(!CollectionUtils.isEmpty(tasks)){
+                resDTO.setUserId(tasks.get(0).getCreateBy());
+                resDTO.setUserName(userMap.get(tasks.get(0).getCreateBy()));
+                chargeTaskNum = tasks.size();
+                //待评审任务
+                reviewTaskNum = (int)(tasks.stream().filter(task -> task.getStageId().equals(ZSYTaskStage.WAIT_DESIGN.getValue())
+                        || task.getStageId().equals(ZSYTaskStage.DESIGNING.getValue()))
+                        .filter(task ->
+                                allReviews.stream().noneMatch(taskReview -> taskReview.getTaskId().equals(task.getId()))
+                        ).count());
+
+                //设计相关阶段
+                List<Integer> designTasks = tasks.stream().filter(task -> task.getStageId().equals(ZSYTaskStage.WAIT_DESIGN.getValue())
+                        || task.getStageId().equals(ZSYTaskStage.DESIGNING.getValue()))
+                        .filter(task -> task.getBeginTime() != null).map(task -> getWorkDays(new Date(), task.getBeginTime()))
+                        .collect(Collectors.toList());
+
+
+                delayedDesignTaskNum = (int)(designTasks.stream()
+                        .filter(day -> day < 1 ).count());
+                aboutDelayDesignTaskNum = (int)(designTasks.stream()
+                        .filter(day -> (day >= 1) && (day <= 2)).count());
+
+                //开发阶段
+                List<Integer> developTasks = tasks.stream().filter(task -> task.getStageId().equals(ZSYTaskStage.WAIT_DEVELOP.getValue())
+                        || task.getStageId().equals(ZSYTaskStage.DEVELOPING.getValue()))
+                        .filter(task -> task.getTestTime() != null).map(task -> getWorkDays(new Date(), task.getTestTime()))
+                        .collect(Collectors.toList());
+
+                delayedDevelopTaskNum = (int)(developTasks.stream()
+                        .filter(day -> day < 1).count());
+                aboutDelayDevelopTaskNum = (int)(developTasks.stream()
+                        .filter(day -> day >= 1 && day <= 2).count());
+
+                //测试阶段
+                List<Integer> testTasks = tasks.stream().filter(task -> task.getStageId().equals(ZSYTaskStage.WAIT_TEST.getValue())
+                        || task.getStageId().equals(ZSYTaskStage.TESTING.getValue())
+                        || task.getStageId().equals(ZSYTaskStage.WAIT_DEPLOY.getValue())
+                        || task.getStageId().equals(ZSYTaskStage.DEPLOYED.getValue()))
+                        .filter(task -> task.getEndTime() != null).map(task -> getWorkDays(new Date(), task.getEndTime()))
+                        .collect(Collectors.toList());
+
+                delayedTestTaskNum = (int)(testTasks.stream()
+                        .filter(day -> day < 1).count());
+                aboutDelayTestTaskNum = (int)(testTasks.stream()
+                        .filter(day -> (day >= 1) && (day <= 2)).count());
+
+
+            }
+            delayedTaskNum = delayedDesignTaskNum + delayedDevelopTaskNum + delayedTestTaskNum;
+            aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum +aboutDelayTestTaskNum;
+            messageFee = BigDecimal.valueOf(delayedTaskNum).multiply(BigDecimal.ONE);
+
+            resDTO.setChargeTaskNum(chargeTaskNum);
+            resDTO.setReviewTaskNum(reviewTaskNum);
+            resDTO.setSummarizeTaskNum(summarizeTaskNum);
+            resDTO.setDelayedTaskNum(delayedTaskNum);
+            resDTO.setAboutDelayTaskNum(aboutDelayTaskNum);
+            resDTO.setMessageFee(messageFee);
+//            resDTO.setUserName(user.getName());
+            return resDTO;
+
+        }).collect(Collectors.toList());
+        long t9 = System.currentTimeMillis();
+        logger.info("封装数据耗时: "+(t9-t8)+"ms");
+        if (!CollectionUtils.isEmpty(collect)){
+            collect.forEach(principalTaskNumResDTO -> {
+                principalTaskNumResDTO.setSummarizeTaskNum(0);
+                //已发布任务(完成未结束)
+                List<Task> taskList = userPublishTaskMap.get(principalTaskNumResDTO.getUserId());
+                if (!CollectionUtils.isEmpty(taskList)){
+                    long count = taskList.stream().filter(task -> allSummaries.stream().noneMatch(taskSummary -> taskSummary.getTaskId().equals(task.getId()))).count();
+                    principalTaskNumResDTO.setSummarizeTaskNum((int)count);
+                }
+
+            });
+        }
+        long t10 = System.currentTimeMillis();
+        logger.info("计算待总结任务数耗时: "+(t10-t9)+"ms");
+        logger.info("整体耗时: "+(t10-t1)+"ms");
+        return collect;
     }
 
 
