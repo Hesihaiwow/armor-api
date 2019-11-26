@@ -282,7 +282,7 @@
     <select id="selectMultiAfterJuly" resultMap="BaseResultMap">
         SELECT tu.* FROM task_user tu
         LEFT JOIN task t ON t.id = tu.task_id
-        WHERE tu.end_time >= '2019-07-01 00:00:00'
+        WHERE tu.end_time >= '2019-01-01 00:00:00'
         AND t.review_status = 3 AND t.is_delete = 0 AND t.type = 2 AND task_level IS NULL
     </select>
 
