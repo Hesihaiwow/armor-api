@@ -1910,13 +1910,21 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskListResDTO> getTaskByStageId(Long stageId,Long userId) {
+        long t1 = System.currentTimeMillis();
         Stage stage = stageMapper.selectById(stageId);
+        long t3 = System.currentTimeMillis();
+        logger.info("查询任务阶段耗时 耗时: "+(t3-t1)+"ms");
         List<TaskListBO> taskListBOS = new ArrayList<>();
         if(stage.getName().equals("已发布")){
             taskListBOS = taskMapper.selectTaskByStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),userId);
+            long t4 = System.currentTimeMillis();
+            logger.info("查询 "+stage.getName()+" 任务 耗时: "+(t4-t3)+"ms");
         }else{
             taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),userId);
+            long t4 = System.currentTimeMillis();
+            logger.info("查询 "+stage.getName()+" 任务 耗时: "+(t4-t3)+"ms");
         }
+        long t5 = System.currentTimeMillis();
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
@@ -1976,6 +1984,9 @@ public class ZSYTaskService implements IZSYTaskService {
             }
 
         });
+        long t2 = System.currentTimeMillis();
+        logger.info("准备数据 耗时: "+(t2-t5)+"ms");
+        logger.info("全部阶段 耗时: "+(System.currentTimeMillis()-t2)+"ms");
         return list;
     }
 

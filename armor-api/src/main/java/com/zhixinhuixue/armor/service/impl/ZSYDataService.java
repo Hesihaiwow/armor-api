@@ -14,6 +14,8 @@ import com.zhixinhuixue.armor.source.enums.ZSYFeedbackType;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYTaskPriority;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +54,7 @@ public class ZSYDataService implements IZSYDataService {
     private IZSYTaskReviewMapper reviewMapper;
     @Autowired
     private IZSYTaskSummaryMapper summaryMapper;
-
+    private static final Logger logger = LoggerFactory.getLogger(ZSYDataService.class);
     /**
      * 年度需求总数(学管端,其他)
      * @Author sch
@@ -692,7 +694,20 @@ public class ZSYDataService implements IZSYDataService {
      */
     @Override
     public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats() {
+        long t1 = System.currentTimeMillis();
         List<User> users = userMapper.selectManagers();
+        long t4 = System.currentTimeMillis();
+        logger.info("查询全部任务负责人耗时 "+(t4-t1)+"ms");
+
+        //所有任务评审
+        List<TaskReview> allReviews = reviewMapper.selectAll();
+        long t5 = System.currentTimeMillis();
+        logger.info("查询全部任务评审耗时 "+(t5-t4)+"ms");
+
+        //所有任务总结
+        List<TaskSummary> allSummaries = summaryMapper.selectAll();
+        long t6 = System.currentTimeMillis();
+        logger.info("查询全部任务总结耗时 "+(t6-t5)+"ms");
         List<PrincipalTaskNumResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(users)){
             users.forEach(user -> {
@@ -710,13 +725,13 @@ public class ZSYDataService implements IZSYDataService {
                 Integer aboutDelayTestTaskNum = 0;
                 BigDecimal messageFee = BigDecimal.ZERO;
                 //查询当前负责的进行中的任务
+                long t2 = System.currentTimeMillis();
                 List<Task> taskList = taskMapper.selectDoingListByUser(user.getId());
-
+                long t3 = System.currentTimeMillis();
+                logger.info("查询用户: "+user.getName()+" 进行中任务耗时 "+(t3-t2)+"ms");
                 if (!CollectionUtils.isEmpty(taskList)){
                     chargeTaskNum = taskList.size();
 
-                    //所有任务评审
-                    List<TaskReview> allReviews = reviewMapper.selectAll();
                     //待评审任务
                     List<Task> reviewTaskList = taskList.stream()
                             .filter(task -> task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L))
@@ -771,9 +786,9 @@ public class ZSYDataService implements IZSYDataService {
                         }
                     }
                 }
+                long t7 = System.currentTimeMillis();
+                logger.info("计算待评审,已超时,即将超时任务数 耗时: "+(t7-t3)+"ms");
 
-                //所有任务总结
-                List<TaskSummary> allSummaries = summaryMapper.selectAll();
                 //已发布任务(完成未结束)
                 List<TaskListBO> summarizeTaskList =
                         taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), user.getId());
@@ -787,7 +802,8 @@ public class ZSYDataService implements IZSYDataService {
                         }
                     }
                 }
-
+                long t8 = System.currentTimeMillis();
+                logger.info("计算待总结任务数 耗时: "+(t8-t7)+"ms");
                 delayedTaskNum = delayedDesignTaskNum + delayedDevelopTaskNum + delayedTestTaskNum;
                 aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum +aboutDelayTestTaskNum;
                 messageFee = BigDecimal.valueOf(delayedTaskNum).multiply(BigDecimal.ONE);
@@ -802,6 +818,7 @@ public class ZSYDataService implements IZSYDataService {
                 list.add(resDTO);
             });
         }
+        logger.info("整体耗时: "+(System.currentTimeMillis()-t1)+"ms");
         return list;
     }
 
