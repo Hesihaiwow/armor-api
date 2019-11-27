@@ -1985,7 +1985,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 if (!taskMoveReqDTO.getTargetStageId().equals(originTask.getStageId())){
                     //判断当前任务是否可以修改到设计中或开发中或测试中
                     //待设计往后面阶段移动
-                    if (originTask.getStageId().equals(212754785051344891L)){
+                    if (originTask.getStageId().equals(ZSYTaskStage.WAIT_DESIGN.getValue())){
                         boolean canDrag = false;
                         List<UserBo> userBos = userMapper.selectUsersByTask(originTask.getId());
                         if (!CollectionUtils.isEmpty(userBos)){
