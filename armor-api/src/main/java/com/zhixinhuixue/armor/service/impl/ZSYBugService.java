@@ -307,23 +307,6 @@ public class ZSYBugService implements IZSYBugService {
             integral.setBugId(bugManage.getId());
             integralMapper.insert(integral);
 
-
-//            UserIntegral userIntegral = new UserIntegral();
-//            userIntegral.setId(snowFlakeIDHelper.nextId());
-//            userIntegral.setUserId(user.getUserId());
-//            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
-//            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
-//            userIntegral.setTaskId(bugManage.getId());
-//            userIntegral.setDescription("线上Bug处理");
-//            userIntegral.setCreateTime(new Date());
-//            userIntegralMapper.insert(userIntegral);
-//            // 修改用户积分
-//            User userBug = userMapper.selectById(user.getUserId());
-//            BigDecimal currentIntegral = userBug.getIntegral();
-//            User userBO = new User();
-//            userBO.setId(user.getUserId());
-//            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
-//            userMapper.updateSelectiveById(userBO);
         });
     }
 
@@ -482,19 +465,6 @@ public class ZSYBugService implements IZSYBugService {
             });
             bugUserMapper.insertList(bugUsers);
         }
-//
-//        //将旧的Bug处理积分还原
-//        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
-//        userIntegrals.forEach(userIntegral -> {
-//            // 修改用户积分
-//            User userBug = userMapper.selectById(userIntegral.getUserId());
-//            BigDecimal currentIntegral = userBug.getIntegral();
-//            User userBO = new User();
-//            userBO.setId(userBug.getId());
-//            userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
-//            userMapper.updateSelectiveById(userBO);
-//            userIntegralMapper.deleteUserIntegral(id,userIntegral.getUserId());
-//        });
 
         //删除原来的bug积分
         integralMapper.deleteByBugId(id);
@@ -514,22 +484,6 @@ public class ZSYBugService implements IZSYBugService {
             integralMapper.insert(integral);
 
 
-//            UserIntegral userIntegral = new UserIntegral();
-//            userIntegral.setId(snowFlakeIDHelper.nextId());
-//            userIntegral.setUserId(user.getUserId());
-//            userIntegral.setIntegral(Optional.ofNullable(user.getIntegral()).orElse(BigDecimal.ZERO));
-//            userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
-//            userIntegral.setTaskId(bugManage.getId());
-//            userIntegral.setDescription("线上Bug处理");
-//            userIntegral.setCreateTime(new Date());
-//            userIntegralMapper.insert(userIntegral);
-//            // 修改用户积分
-//            User userBug = userMapper.selectById(user.getUserId());
-//            BigDecimal currentIntegral = userBug.getIntegral();
-//            User userBO = new User();
-//            userBO.setId(user.getUserId());
-//            userBO.setIntegral(currentIntegral.add(userIntegral.getIntegral()));
-//            userMapper.updateSelectiveById(userBO);
         });
     }
 
