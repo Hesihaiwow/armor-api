@@ -171,6 +171,9 @@
                                 <span v-if="scope.row.isSolved === 1">已解决
                                     <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information" @click="toTask(scope.row.taskId)" style="cursor: pointer;color: orangered"></i></span>
                                 </span>
+                                <span v-if="scope.row.isSolved === 2">暂搁置
+                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information" @click="toTask(scope.row.taskId)" style="cursor: pointer;color: orangered"></i></span>
+                                </span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
@@ -1285,6 +1288,7 @@
                     <template scope="scope">
                         <span v-if="bugDetailForm.isSolved === 0">未解决</span>
                         <span v-if="bugDetailForm.isSolved === 1">已解决</span>
+                        <span v-if="bugDetailForm.isSolved === 2">暂搁置</span>
                     </template>
                 </el-form-item>
                 <el-form-item class="task-form" label="备注：">
@@ -1718,7 +1722,8 @@
                 ],
                 solveList:[
                     {id:0,name:'未解决'},
-                    {id:1,name:'已解决'}
+                    {id:1,name:'已解决'},
+                    {id:2,name:'暂搁置'}
                 ],
                 demandSystemList:[
                     // {id:1,name:'知心慧学'},
@@ -3114,6 +3119,15 @@
                         },
 
                     ],
+                    dataZoom: [{
+                        type: 'slider',
+                        show: true, //flase直接隐藏图形
+                        xAxisIndex: [0],
+                        left: '9%', //滚动条靠左侧的百分比
+                        bottom: -5,
+                        start: 0,//滚动条的起始位置
+                        end: 50 //滚动条的截止位置（按比例分割你的柱状图x轴长度）
+                    }],
                     grid: {
                         left: '3%',
                         right: '4%',
@@ -3124,8 +3138,9 @@
                         {
                             name:'bug',
                             type:'bar',
+                            stack:'总量',
                             data:this.systemBugList,
-                            barWidth:15,
+                            barWidth:30,
                             barGap:0,
                             label:{
                                 normal: {
@@ -3137,8 +3152,9 @@
                         {
                             name:'优化',
                             type:'bar',
+                            stack:'总量',
                             data:this.systemOpsList,
-                            barWidth:15,
+                            barWidth:30,
                             // barGap:10
                             label:{
                                 normal: {
@@ -3151,8 +3167,9 @@
                         {
                             name:'协助',
                             type:'bar',
+                            stack:'总量',
                             data:this.systemAssList,
-                            barWidth:15,
+                            barWidth:30,
                             // barGap:10
                             label:{
                                 normal: {
@@ -3183,6 +3200,16 @@
                     legend: {
 
                     },
+                    dataZoom: [{
+                        type: 'slider',
+                        show: true, //flase直接隐藏图形
+                        xAxisIndex: [0],
+                        left: '9%', //滚动条靠左侧的百分比
+                        bottom: -5,
+                        start: 0,//滚动条的起始位置
+                        end: 50 //滚动条的截止位置（按比例分割你的柱状图x轴长度）
+                    }],
+
                     xAxis: {
                         type: 'category',
                         data: this.userX,
@@ -3220,8 +3247,9 @@
                         {
                             name:'bug',
                             type:'bar',
+                            stack:'总量',
                             data:this.userBugList,
-                            barWidth:15,
+                            barWidth:30,
                             barGap:0,
                             label:{
                                 normal: {
@@ -3233,8 +3261,9 @@
                         {
                             name:'优化',
                             type:'bar',
+                            stack:'总量',
                             data:this.userOpsList,
-                            barWidth:15,
+                            barWidth:30,
                             // barGap:10
                             label:{
                                 normal: {
@@ -3247,8 +3276,9 @@
                         {
                             name:'协助',
                             type:'bar',
+                            stack:'总量',
                             data:this.userAssList,
-                            barWidth:15,
+                            barWidth:30,
                             // barGap:10
                             label:{
                                 normal: {

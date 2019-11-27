@@ -5068,7 +5068,7 @@
                 list.forEach((el) => {
                     let endTime = '', today = moment().format('YYYY-MM-DD');
                     if (el.status >= 2) {
-                        endTime = el.sonTaskCompleteTime
+                        endTime = el.completeTime
                     } else if ((el.reviewStatus === 1 || el.reviewStatus === 3) && el.taskUsers[0].status === 1) {
                         endTime = el.taskUsers[0].endTime
                     } else {
