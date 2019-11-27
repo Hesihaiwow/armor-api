@@ -1779,7 +1779,8 @@
                 ],
                 isSolvedList:[
                     {id:0,name:'未解决'},
-                    {id:1,name:'已解决'}
+                    {id:1,name:'已解决'},
+                    {id:2,name:'暂搁置'}
                 ],
                 oldBugReqDTO:{
                     userId:null,
@@ -3111,7 +3112,7 @@
                             name:'个数',
                             interval: 5,
                             axisLabel: {
-                                formatter: '{value} h'
+                                formatter: '{value} 个'
                             },
                             splitLine: {
                                 show: false
@@ -3229,7 +3230,7 @@
                             name:'个数',
                             interval: 5,
                             axisLabel: {
-                                formatter: '{value} h'
+                                formatter: '{value} 个'
                             },
                             splitLine: {
                                 show: false
