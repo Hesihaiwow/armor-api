@@ -258,6 +258,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                         userWeekTempResDTOList.add(userWeekTempResDTO);
                     }
                     userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+                    userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getYear)).collect(Collectors.toList());
 
                 }
                 taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
@@ -340,6 +341,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 userWeekTempResDTOList.add(userWeekTempResDTO);
             }
             userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+            userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getYear)).collect(Collectors.toList());
         }
         taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
         List<TaskReviewLogBO> taskReviewLogBOS = taskTempBO.getTaskReviewLogBOS();
@@ -462,6 +464,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                         userWeekTempResDTOList.add(userWeekTempResDTO);
                     }
                     userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+                    userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getYear)).collect(Collectors.toList());
                 }
                 taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
                 taskTempResDTOPage.add(taskTempResDTO);
@@ -522,6 +525,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                         userWeekTempResDTOList.add(userWeekTempResDTO);
                     }
                     userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+                    userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getYear)).collect(Collectors.toList());
                 }
                 taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
                 List<TaskReviewLogBO> taskReviewLogBOS = taskTempBO.getTaskReviewLogBOS();
@@ -643,6 +647,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                         userWeekTempResDTOList.add(userWeekTempResDTO);
                     }
                     userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getWeekNumber)).collect(Collectors.toList());
+                    userWeekTempResDTOList = userWeekTempResDTOList.stream().sorted(Comparator.comparing(UserWeekTempResDTO::getYear)).collect(Collectors.toList());
                 }
                 taskTempResDTO.setUserWeekTempList(userWeekTempResDTOList);
                 List<TaskReviewLogBO> taskReviewLogBOS = taskTempBO.getTaskReviewLogBOS();

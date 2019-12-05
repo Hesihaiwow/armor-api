@@ -501,6 +501,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             userWeekResDTOList.add(userWeekResDTO);
         }
         userWeekResDTOList = userWeekResDTOList.stream().sorted(Comparator.comparing(UserWeekResDTO::getWeekNumber)).collect(Collectors.toList());
+        userWeekResDTOList = userWeekResDTOList.stream().sorted(Comparator.comparing(UserWeekResDTO::getYear)).collect(Collectors.toList());
         taskModifyDetailResDTO.setUserWeekResDTOList(userWeekResDTOList);
 
         List<TaskModifyFunctionBO> functionBOS = taskModifyDetailBO.getFunctionBOS();

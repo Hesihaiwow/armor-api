@@ -2772,6 +2772,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userWeekResDTOList.add(userWeekResDTO);
             }
             userWeekResDTOList = userWeekResDTOList.stream().sorted(Comparator.comparing(UserWeekResDTO::getWeekNumber)).collect(Collectors.toList());
+            userWeekResDTOList = userWeekResDTOList.stream().sorted(Comparator.comparing(UserWeekResDTO::getYear)).collect(Collectors.toList());
         }
         resDTO.setUserWeeks(userWeekResDTOList);
         return resDTO;
