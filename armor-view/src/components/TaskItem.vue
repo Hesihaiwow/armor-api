@@ -1070,9 +1070,18 @@
                             <el-input v-model="otherStep.taskHours" style="width: 70px"></el-input>
                             工时
                         </div>
-                        <div class="add-member-basic-menu fl"><span class="star">*</span>状态：</div>
+                        <br/>
+                        <div class="add-member-basic-menu add-member-basic-end fl" style="margin-left: -15px;margin-top: 5px;width: 110px"><span class="star">*</span>任务复杂度：
+                        </div>
+                        <div class="add-member-basic-msg fl" style="">
+                            <el-select v-model="step.taskLevel" clearable filterable placeholder="选择复杂度"  style="width: 145px;margin-left: 0px;margin-top: 5px">
+                                <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
+                                           :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="add-member-basic-menu fl" style="margin-top: 5px"><span class="star">*</span>状态：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-select v-model="otherStep.status" filterable placeholder="请选择">
+                            <el-select v-model="otherStep.status" filterable placeholder="请选择" style="margin-top: 5px">
                                 <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
@@ -1091,6 +1100,7 @@
                             <el-date-picker v-model="step.endTime" type="date" format="yyyy-MM-dd"
                                             placeholder="选择日期"></el-date-picker>
                         </div>
+
                     </div>
                         <div v-for="(item,index) in sortWeekNumber">
                             <div class="add-member-basic-list clearfix">
@@ -1872,6 +1882,7 @@
                     completeTime: '',
                     description: '',
                     status: '',
+                    taskLevel:'',
                     functionResDTOList:[]
                 },
                 otherStep:{
@@ -2873,7 +2884,7 @@
                     return;
                 }
                 this.hideTaskDetail();
-                this.showTaskModify = true;
+
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.modifyTaskForm.id = resp.data.id;
                     this.modifyTaskForm.taskName = resp.data.name;
@@ -2892,7 +2903,9 @@
                         this.modifyTaskForm.tags.push(resp.data.tags[i].id)
                     }
                     this.modifyTaskForm.taskUsers = resp.data.users
+                    console.log(this.modifyTaskForm.taskUsers)
                 });
+                this.showTaskModify = true;
             },
             // 修改阶段
             modifyStep(index, stages,taskId) {
@@ -3061,6 +3074,7 @@
                     taskUser.description = this.otherStep.description;
                     taskUser.userWeeks = this.weekNumber;
                     taskUser.status = this.otherStep.status;
+                    taskUser.taskLevel = this.step.taskLevel;
                     this.modifyTaskForm.taskUsers.push(taskUser);
                 } else {
                     // 取消css
