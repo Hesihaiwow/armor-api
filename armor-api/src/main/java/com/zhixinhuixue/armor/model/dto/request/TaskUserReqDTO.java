@@ -33,6 +33,8 @@ public class TaskUserReqDTO {
     @Max(value = 99999,message = "工时不能大于{value}")
     private Double taskHours;
 
+    @NotNull(message = "任务复杂度不能为空")
+    private Integer taskLevel;
     /**
      * 开始时间
      */
@@ -55,6 +57,14 @@ public class TaskUserReqDTO {
      */
 //    @NotNull(message = "阶段描述不能为空")
     private String description;
+
+    public Integer getTaskLevel() {
+        return taskLevel;
+    }
+
+    public void setTaskLevel(Integer taskLevel) {
+        this.taskLevel = taskLevel;
+    }
 
     private Integer status;
 

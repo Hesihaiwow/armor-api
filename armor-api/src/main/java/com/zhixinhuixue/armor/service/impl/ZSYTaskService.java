@@ -545,6 +545,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskUser.setEndTime(user.getEndTime());
                 taskUser.setTaskHours(user.getTaskHours());
                 taskUser.setCreateTime(new Date());
+                taskUser.setTaskLevel(user.getTaskLevel());
                 if (user.getStatus() != null) {
                     taskUser.setStatus(user.getStatus());
                 } else {

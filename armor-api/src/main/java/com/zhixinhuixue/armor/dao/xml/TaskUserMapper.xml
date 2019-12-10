@@ -66,7 +66,7 @@
         insert into task_user (id, task_id,
         user_id, task_hours, begin_time,
         end_time, description, complete_hours,
-        complete_time, status,create_time
+        complete_time, status,create_time,task_level
         )
         values
         <foreach collection="list" item="item" separator=",">
@@ -75,7 +75,7 @@
             #{item.endTime,jdbcType=TIMESTAMP}, #{item.description,jdbcType=VARCHAR},
             #{item.completeHours,jdbcType=INTEGER},
             #{item.completeTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=INTEGER},
-            #{item.createTime,jdbcType=TIMESTAMP}
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.taskLevel,jdbcType=INTEGER}
             )
         </foreach>
     </insert>
