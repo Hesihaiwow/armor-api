@@ -1,60 +1,104 @@
 <template>
     <div class="bug-list">
-        <el-card class="box-card">
-            <!--<div slot="header" class="clearfix">-->
-                <!--<span>{{listName}}</span>-->
-            <!--</div>-->
-            <div class="table-box">
-                <el-table
-                        :data="tableData.list"
-                        style="width: 100%"
-                        :row-class-name="tableRowClassName">
-                    <el-table-column
-                            type="index"
-                            label="序号"
-                            width="70">
-                    </el-table-column>
-                    <el-table-column
-                            label="标题">
-                        <template scope="scope">
-                            <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId,taskId:upData.taskId,taskName:taskName }}">{{scope.row.title}}</router-link>
-
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            prop="statusName"
-                            label="状态"
-                            width="80">
-                    </el-table-column>
-                    <el-table-column
-                            prop="severityName"
-                            label="类型"
-                            width="110">
-                    </el-table-column>
-                    <el-table-column
-                            prop="createName"
-                            label="提交人"
-                            width="120">
-                    </el-table-column>
-                    <el-table-column
-                            prop="handlerName"
-                            label="处理人"
-                            width="120">
-                    </el-table-column>
-                    <el-table-column
-                            label="时间"
-                            width="180">
-                        <template scope="scope">
-                            <span>{{ scope.row.createTime | formatDate }}</span>
-                        </template>
-                    </el-table-column>
-                </el-table>
+        <div class="screen-box">
+            <div class="screen-item">
+                报告员
+                <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
             </div>
-        </el-card>
+            <div class="screen-item">
+                分配给
+                <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
+            <div class="screen-item">
+                状态
+                <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
+            <div class="screen-item">
+                任务
+                <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
+            <div class="screen-item">
+                严重性
+                <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
+
+        </div>
+        <div class="table-box">
+            <el-table
+                    :data="tableData.list"
+                    style="width: 100%"
+                    :row-class-name="tableRowClassName">
+                <el-table-column
+                        type="index"
+                        label="序号"
+                        width="70">
+                </el-table-column>
+                <el-table-column
+                        prop="severityName"
+                        label="严重性"
+                        width="110">
+                </el-table-column>
+                <el-table-column
+                        prop="statusName"
+                        label="状态"
+                        width="80">
+                </el-table-column>
+                <el-table-column
+                        label="最后更新"
+                        width="180">
+                    <template scope="scope">
+                        <span>{{ scope.row.createTime | formatDate }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="摘要">
+                    <template scope="scope">
+                        <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId,taskId:upData.taskId,taskName:taskName }}">{{scope.row.title}}</router-link>
+                    </template>
+                </el-table-column>
+
+            </el-table>
+        </div>
         <div class="pagination-box">
             <el-pagination
                     background
                     @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
                     layout="prev, pager, next"
                     :total="tableData.total"
                     :page-size="tableData.pageSize">
@@ -71,6 +115,23 @@
         name: "List",
         data(){
             return {
+                value:'',
+                options: [{
+                    value: '选项1',
+                    label: '黄金糕'
+                }, {
+                    value: '选项2',
+                    label: '双皮奶'
+                }, {
+                    value: '选项3',
+                    label: '蚵仔煎'
+                }, {
+                    value: '选项4',
+                    label: '龙须面'
+                }, {
+                    value: '选项5',
+                    label: '北京烤鸭'
+                }],
                 upData:{
                     taskId:'',
                     selectAll:0,
@@ -82,7 +143,8 @@
                     total:0,
                     list:[],
                     pageSize:10,
-                }
+                },
+                currentPage:1
             }
         },
         filters:{
@@ -166,7 +228,15 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="less">
+    .screen-box{
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        .el-select{
+            width: 160px;
+        }
+    }
 .pagination-box{
     margin-top: 30px;
     text-align: center;
