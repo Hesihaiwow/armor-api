@@ -5,10 +5,10 @@
                 报告员
                 <el-select v-model="value" placeholder="请选择">
                     <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            v-for="item in reportUser"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
                     </el-option>
                 </el-select>
             </div>
@@ -16,21 +16,21 @@
                 分配给
                 <el-select v-model="value" placeholder="请选择">
                     <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            v-for="item in handleUser"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
                     </el-option>
                 </el-select>
             </div>
             <div class="screen-item">
                 状态
-                <el-select v-model="value" placeholder="请选择">
+                <el-select v-model="upData.status" placeholder="请选择">
                     <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            v-for="item in selectData.statusName"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
                     </el-option>
                 </el-select>
             </div>
@@ -38,21 +38,21 @@
                 任务
                 <el-select v-model="value" placeholder="请选择">
                     <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            v-for="item in taskList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
                     </el-option>
                 </el-select>
             </div>
             <div class="screen-item">
                 严重性
-                <el-select v-model="value" placeholder="请选择">
+                <el-select v-model="upData.severity" placeholder="请选择">
                     <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            v-for="item in selectData.severity"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
                     </el-option>
                 </el-select>
             </div>
@@ -88,7 +88,7 @@
                 <el-table-column
                         label="摘要">
                     <template scope="scope">
-                        <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId,taskId:upData.taskId,taskName:taskName }}">{{scope.row.title}}</router-link>
+                        <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId}}">{{scope.row.title}}</router-link>
                     </template>
                 </el-table-column>
 
@@ -132,11 +132,54 @@
                     value: '选项5',
                     label: '北京烤鸭'
                 }],
+                selectData:{
+                    statusName:[
+                        {
+                            id:1,
+                            name:'已分派',
+                        },
+                        {
+                            id:2,
+                            name:'已解决',
+                        },
+                        {
+                            id:3,
+                            name:'已关闭',
+                        },
+                        {
+                            id:4,
+                            name:'打回',
+                        }
+                    ],
+                    severity:[
+                        {
+                            id:1,
+                            name:'建议',
+                        },
+                        {
+                            id:2,
+                            name:'一般错误',
+                        },
+                        {
+                            id:3,
+                            name:'主要错误',
+                        },
+                        {
+                            id:4,
+                            name:'严重错误',
+                        },
+                    ]
+                },
+                taskList:[],
+                reportUser:[],
+                handleUser:[],
                 upData:{
                     taskId:'',
+                    reporterId:'',
                     selectAll:0,
                     pageNum: 1,
-                    status: 1
+                    status: 1,
+                    severity:4,
                 },
                 listName:'所有的BUG',
                 tableData:{
@@ -163,24 +206,23 @@
         },
         methods:{
             getDefaultDatas(){
-                this.upData.taskId = this.$route.query.taskId;
-                this.upData.status = this.$route.query.listType||1;
-                this.upData.selectAll = this.$route.query.selectAll||0;
-                this.taskName = this.$route.query.taskName;
-                switch (this.upData.status) {
-                    case 0:
-                        this.listName = '所有的BUG'
-                        break
-                    case 1:
-                        this.listName = '待处理的BUG'
-                        break
-                    case 2:
-                        this.listName = '待确认的BUG'
-                        break
-                    case 3:
-                        this.listName = '已关闭的BUG'
-                        break
-                }
+                // this.upData.taskId = this.$route.query.taskId;
+                // this.upData.status = this.$route.query.listType||1;
+                // this.upData.selectAll = this.$route.query.selectAll||0;
+                // this.taskName = this.$route.query.taskName;
+                http.zsyGetHttp(`/task-bug/task/ready`, {}, (res) => {
+                    this.taskList = res.data;
+                    this.upData.taskId = res.data[0].id;
+                });
+                http.zsyGetHttp(`/task-bug/users/report`, {}, (res) => {
+                    this.reportUser = res.data;
+                    // this.upData.reporterId = res.data[0].id;
+                });
+                http.zsyGetHttp(`/task-bug/users/handle`, {}, (res) => {
+                    this.handleUser = res.data;
+                    // this.upData.reporterId = res.data[0].id;
+                });
+
                 this.getList();
             },
             getList(){

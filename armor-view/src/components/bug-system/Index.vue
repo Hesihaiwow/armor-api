@@ -2,13 +2,17 @@
     <div class="bug-index">
         <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="我的视图" name="my">
-                <My></My>
+                <My v-if="activeName == 'my'"
+                    v-on:edit-bug-id="goEditBug"
+                ></My>
             </el-tab-pane>
             <el-tab-pane label="查看问题" name="list">
-                <List></List>
+                <List v-if="activeName == 'list'" ></List>
             </el-tab-pane>
             <el-tab-pane label="提交问题" name="add">
-                <Add></Add>
+                <Add v-if="activeName == 'add'"
+                :edit-bug-data="editBugData"
+                ></Add>
             </el-tab-pane>
         </el-tabs>
         <!--<div class="title">-->
@@ -73,7 +77,13 @@
                     notSolvedNum: 0,
                     solvedNum: 0,
                     totalNum: 0,
-                }
+                },
+
+                editBugData:{
+                    tbId:0,
+                    taskId:0,
+                    isEdit:false
+                },
 
             }
         },
@@ -100,7 +110,17 @@
                 // console.log(66)
             },
             handleClick(tab, event) {
-                console.log(tab, event);
+                if(this.activeName == 'add'){
+                    this.editBugData.tbId = '';
+                    this.editBugData.isEdit = false;
+                }
+                // console.log(tab, event);
+            },
+            goEditBug(data){
+                this.editBugData.tbId = data.tbId;
+                this.editBugData.taskId = data.taskId;
+                this.editBugData.isEdit = true;
+                this.activeName = 'add';
             },
             rout(){
                 this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll,taskName:this.taskName}});

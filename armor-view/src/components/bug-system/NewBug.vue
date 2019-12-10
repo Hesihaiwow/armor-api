@@ -2,12 +2,25 @@
     <div class="new-bug">
         <div class="con">
             <div class="select-box">
-                <div class="item">
+                <div class="item" v-if="!editBugData.isEdit">
                     <p class="name">任务:</p>
                     <div class="content">
-                        <el-select v-model="upBugData.handlerId" filterable placeholder="请选择">
+                        <el-select v-model="upBugData.taskId" filterable placeholder="请选择" @change="getUser">
                             <el-option
-                                    v-for="item in handlerEr"
+                                    v-for="item in taskList"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="item" v-if="editBugData.isEdit">
+                    <p class="name">状态:</p>
+                    <div class="content">
+                        <el-select v-model="upBugData.status" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="item in selectData.statusName"
                                     :key="item.id"
                                     :label="item.name"
                                     :value="item.id">
@@ -20,7 +33,7 @@
                     <div class="content">
                         <el-select v-model="upBugData.frequency" filterable placeholder="请选择">
                             <el-option
-                                    v-for="item in handlerEr"
+                                    v-for="item in selectData.frequency"
                                     :key="item.id"
                                     :label="item.name"
                                     :value="item.id">
@@ -31,9 +44,9 @@
                 <div class="item">
                     <p class="name">严重性:</p>
                     <div class="content">
-                        <el-select v-model="upBugData.handlerId" filterable placeholder="请选择">
+                        <el-select v-model="upBugData.severity" filterable placeholder="请选择">
                             <el-option
-                                    v-for="item in handlerEr"
+                                    v-for="item in selectData.severity"
                                     :key="item.id"
                                     :label="item.name"
                                     :value="item.id">
@@ -66,37 +79,6 @@
                     <p class="name">描述与截图</p>
                     <editor :content="content" v-on:change="getEditorVal" />
                 </div>
-                <!--<div class="item">-->
-                    <!--<p class="name">出现频率</p>-->
-                    <!--<div class="content">-->
-                        <!--<el-radio v-model="upBugData.frequency" label="1" border>固定重现</el-radio>-->
-                        <!--<el-radio v-model="upBugData.frequency" label="2" border>测试随机</el-radio>-->
-                        <!--<el-radio v-model="upBugData.frequency" label="3" border>无法重现</el-radio>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="item">-->
-                    <!--<p class="name">BUG类型</p>-->
-                    <!--<div class="content">-->
-                        <!--<el-radio v-model="upBugData.severity" label="1" border>严重错误</el-radio>-->
-                        <!--<el-radio v-model="upBugData.severity" label="2" border>主要错误</el-radio>-->
-                        <!--<el-radio v-model="upBugData.severity" label="3" border>一般错误</el-radio>-->
-                        <!--<el-radio v-model="upBugData.severity" label="4" border>建议</el-radio>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="item">-->
-                    <!--<p class="name">处理人</p>-->
-                    <!--<div class="content">-->
-                        <!--<el-select v-model="upBugData.handlerId" filterable placeholder="请选择">-->
-                            <!--<el-option-->
-                                    <!--v-for="item in handlerEr"-->
-                                    <!--:key="item.id"-->
-                                    <!--:label="item.name"-->
-                                    <!--:value="item.id">-->
-                            <!--</el-option>-->
-                        <!--</el-select>-->
-                    <!--</div>-->
-                <!--</div>-->
-
             </div>
         </div>
         <div class="btn-box">
@@ -112,6 +94,9 @@
     import editor from "./Editor.vue";
     export default {
         name: "NewBug",
+        props: {
+            editBugData: Object,
+        },
         components: { editor },
         data(){
           return {
@@ -119,25 +104,106 @@
               content:'',
               upBugData:{
                   description: "",
-                  frequency: 0,
+                  frequency: 1,
                   handlerId: '',
-                  severity: 0,
-                  taskId: 0,
-                  title: ""
+                  severity: 3,
+                  taskId: '',
+                  title: "",
+                  status:'',
               },
+              selectData:{
+                  frequency:[
+                      {
+                          id:1,
+                          name:'固定重现',
+                      },
+                      {
+                          id:2,
+                          name:'测试随机',
+                      },
+                      {
+                          id:3,
+                          name:'无法重现',
+                      }
+                  ],
+                  severity:[
+                      {
+                          id:1,
+                          name:'建议',
+                      },
+                      {
+                          id:2,
+                          name:'一般错误',
+                      },
+                      {
+                          id:3,
+                          name:'主要错误',
+                      },
+                      {
+                          id:4,
+                          name:'严重错误',
+                      },
+                  ],
+                  statusName:[
+                      {
+                          id:1,
+                          name:'已分派',
+                      },
+                      {
+                          id:2,
+                          name:'已解决',
+                      },
+                      {
+                          id:3,
+                          name:'已关闭',
+                      },
+                      {
+                          id:4,
+                          name:'打回',
+                      }
+                  ],
+              },
+              taskList:[],
 
           }
+        },
+        watch:{
+            editBugData(val){
+                this.getDefaultDatas();
+            }
         },
         created() {
             this.getDefaultDatas();
         },
         methods:{
             getDefaultDatas(){
-                this.upBugData.taskId = this.$route.query.taskId;
+                http.zsyGetHttp(`/task-bug/task/testing`, {}, (res) => {
+                    this.taskList = res.data;
+                });
+                if(this.editBugData.isEdit){
+                    this.getEditData();
+                }
+
+            },
+            getUser(){
                 http.zsyGetHttp(`/task-bug/users/${this.upBugData.taskId}`, {}, (res) => {
                     this.handlerEr = res.data;
                 })
+            },
+            getEditData(){
+                this.upBugData.taskId = this.editBugData.taskId;
+                http.zsyGetHttp(`/task-bug/detail/${this.editBugData.tbId}`, {}, (res) => {
+                    // this.handlerEr = res.data;
+                    this.upBugData.description = res.data.description;
+                    this.content = res.data.description;
+                    this.upBugData.status = res.data.status;
+                    this.upBugData.severity = res.data.severity;
+                    this.upBugData.handlerId = res.data.handlerId;
+                    this.upBugData.frequency = res.data.frequency;
+                    this.upBugData.title = res.data.title;
 
+                })
+                this.getUser();
             },
             goBack(){
                 this.$router.go(-1)
