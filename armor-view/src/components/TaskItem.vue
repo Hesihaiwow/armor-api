@@ -2903,7 +2903,6 @@
                         this.modifyTaskForm.tags.push(resp.data.tags[i].id)
                     }
                     this.modifyTaskForm.taskUsers = resp.data.users
-                    console.log(this.modifyTaskForm.taskUsers)
                 });
                 this.showTaskModify = true;
             },
@@ -4747,6 +4746,7 @@
                     this.weekNumber = [];
                     let weekData='';
                     let param = this.weekNumber;
+
                     if (this.step.userId !== '' && this.otherStep.taskHours !== '' && this.step.beginTime !== '' && this.step.endTime !== ''&& (moment(this.step.beginTime).isBefore(this.step.endTime)|| moment(this.step.beginTime).isSame(this.step.endTime))) {
                         this.weekTime.beginWeek = moment(this.step.beginTime).week();
                         this.weekTime.endWeek = moment(this.step.endTime).week();
@@ -4767,27 +4767,45 @@
 
                             }
                         }
-                        if(this.weekTime.beginWeek === this.weekTime.endWeek){
-                            http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
-                                weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.otherStep.taskHours ,'weekHours': resp.data,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
-                                param.push(weekData)
-                            })
-                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek >1){
-                            for(let i=this.weekTime.beginWeek;i<this.weekTime.endWeek+1;i++){
-                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
-                                    weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().week(i).year(beginYear).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD')  };
+                        else {
+                            if(this.weekTime.beginWeek === this.weekTime.endWeek){
+                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                                    weekData = {'weekNumber':this.weekTime.beginWeek, 'hours': this.otherStep.taskHours ,'weekHours': resp.data,'year':beginYear ,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')};
                                     param.push(weekData)
                                 })
                             }
-                        }else if(this.weekTime.endWeek - this.weekTime.beginWeek === 1){
-                            http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
-                                param.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear  ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
-                            })
-                            http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + endYear + '/' + this.weekTime.endWeek, {}, (resp) => {
-                                param.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')})
+                            else if(this.weekTime.endWeek - this.weekTime.beginWeek >1){
+                                for(let i=this.weekTime.beginWeek;i<this.weekTime.endWeek+1;i++){
+                                    http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                        weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().week(i).year(beginYear).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD')  };
+                                        param.push(weekData)
+                                    })
+                                }
+                            }
+                            else if(this.weekTime.endWeek - this.weekTime.beginWeek === 1){
+                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + beginYear + '/' + this.weekTime.beginWeek, {}, (resp) => {
+                                    param.push( {'weekNumber':this.weekTime.beginWeek, 'hours': '' ,'year':beginYear  ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.beginWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.beginWeek).endOf('week').format('MM-DD')})
+                                })
+                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + endYear + '/' + this.weekTime.endWeek, {}, (resp) => {
+                                    param.push( {'weekNumber':this.weekTime.endWeek, 'hours': '' ,'year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(this.weekTime.endWeek).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(this.weekTime.endWeek).endOf('week').format('MM-DD')})
 
-                            })
+                                })
+                            }
+                            else if (this.weekTime.endWeek === 1 &&  this.weekTime.beginWeek > 1){
+                                for(let i=this.weekTime.beginWeek;i<54;i++){
+                                    let date = new Date(this.step.beginTime);
+                                    let date2 = new Date(date);
+                                    date2.setDate(date.getDate() + 7*(i-this.weekTime.beginWeek));
+                                    let year = date2.getFullYear();
+                                    let week = moment(date2).week();
+                                    http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + year + '/' + week, {}, (resp) => {
+                                        weekData = {'weekNumber':week, 'hours': '','year':year ,'weekHours': resp.data,'range':moment().week(week).year(year).startOf('week').format('MM-DD')+'至'+moment().year(year).week(week).endOf('week').format('MM-DD')  };
+                                        param.push(weekData)
+                                    })
+                                }
+                            }
                         }
+
                         this.weekNumber = param
                     }
                 }
