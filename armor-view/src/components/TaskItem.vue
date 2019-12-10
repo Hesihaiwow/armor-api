@@ -3302,6 +3302,12 @@
                         this.clearFunctionForm();
                     }});
 
+                },err=>{
+                    this.$message({showClose: true, message: err.errMsg,type: 'error'});
+                    this.isSaving = false;
+                },sysError=>{
+                    this.$message({showClose: true, message: sysError.errMsg,type: 'error'});
+                    this.isSaving = false;
                 });
                 // this.showCreateTask = false;
 
