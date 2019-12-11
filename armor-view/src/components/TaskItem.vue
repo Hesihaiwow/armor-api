@@ -2048,18 +2048,37 @@
                 };
             },
             sortWeekNumber(){
-                if (this.weekNumber.length != null) {
-                    for (let i = 0; i < this.weekNumber.length; i++) {
-                        for (let x = 0; x < this.weekNumberTemp.length; x++) {
-                            if (this.weekNumber[i] != null) {
-                                if (this.weekNumber[i].weekNumber === this.weekNumberTemp[x].weekNumber) {
-                                    this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
-                                }
-                            }
-                        }
+                // if (this.weekNumber.length != null) {
+                //     for (let i = 0; i < this.weekNumber.length; i++) {
+                //         for (let x = 0; x < this.weekNumberTemp.length; x++) {
+                //             if (this.weekNumber[i] != null) {
+                //                 if (this.weekNumber[i].weekNumber === this.weekNumberTemp[x].weekNumber) {
+                //                     this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+                // return _.orderBy(this.weekNumber, 'weekNumber')
+                this.weekNumber=this.weekNumber.sort(function (a,b) {
+                    if (a.weekNumber < b.weekNumber) {
+                        return -1;
+                    } else if (a.weekNumber == b.weekNumber) {
+                        return 0;
+                    } else {
+                        return 1;
                     }
-                }
-                return _.orderBy(this.weekNumber, 'weekNumber')
+                });
+                this.weekNumber=this.weekNumber.sort(function (a,b) {
+                    if (a.year < b.year) {
+                        return -1;
+                    } else if (a.year == b.year) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                });
+                return this.weekNumber
             },
             sortTestWeekNumber(){
                 if (this.testWeekNumber.length !== 0) {
