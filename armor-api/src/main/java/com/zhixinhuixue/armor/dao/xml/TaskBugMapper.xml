@@ -94,6 +94,9 @@
         <if test="reqDTO.status != null and reqDTO.status != 0">
             AND tb.`status` = #{reqDTO.status}
         </if>
+        <if test="reqDTO.severity != null and reqDTO.severity != 0">
+            AND tb.`severity` = #{reqDTO.severity}
+        </if>
         <!--<choose>-->
             <!--<when test="reqDTO.status != null and reqDTO.status == 2">-->
                 <!--AND tb.`status` IN (1,4)-->
