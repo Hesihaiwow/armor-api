@@ -2,7 +2,7 @@
     <div class="new-bug">
         <div class="con">
             <div class="select-box">
-                <div class="item" v-if="!editBugData.isEdit">
+                <div class="item">
                     <p class="name">任务:</p>
                     <div class="content">
                         <el-select v-model="upBugData.taskId" filterable placeholder="请选择" @change="getUser">
@@ -15,19 +15,7 @@
                         </el-select>
                     </div>
                 </div>
-                <div class="item" v-if="editBugData.isEdit">
-                    <p class="name">状态:</p>
-                    <div class="content">
-                        <el-select v-model="upBugData.status" filterable placeholder="请选择">
-                            <el-option
-                                    v-for="item in selectData.statusName"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </div>
-                </div>
+
                 <div class="item">
                     <p class="name">出现频率:</p>
                     <div class="content">
@@ -67,6 +55,19 @@
                         </el-select>
                     </div>
                 </div>
+                <div class="item" v-if="editBugData.isEdit">
+                    <p class="name">状态:</p>
+                    <div class="content">
+                        <el-select v-model="upBugData.status" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="item in selectData.statusName"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
             </div>
             <div class="input-box">
                 <div class="item">
@@ -83,7 +84,7 @@
         </div>
         <div class="btn-box">
             <el-button type="primary" @click="save">保存</el-button>
-            <el-button @click="goBack">取消</el-button>
+            <!--<el-button @click="goBack">取消</el-button>-->
 
         </div>
     </div>
@@ -232,7 +233,7 @@
                             message: '编辑成功',
                             type: 'success'
                         });
-                        this.goBack();
+                        // this.goBack();
                     })
                 }else {
                     http.zsyPostHttp(`/task-bug/add`, this.upBugData, (res) => {
@@ -240,7 +241,7 @@
                             message: '创建成功',
                             type: 'success'
                         });
-                        this.goBack();
+                        // this.goBack();
                     })
                 }
 
@@ -276,7 +277,7 @@
             display: flex;
             justify-content: space-between;
             .el-select{
-                width: 160px;
+                width: 140px;
             }
             .item{
                 display: flex;

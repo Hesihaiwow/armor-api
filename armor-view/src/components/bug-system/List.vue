@@ -3,7 +3,7 @@
         <div class="screen-box">
             <div class="screen-item">
                 报告员
-                <el-select v-model="upData.reporterId" placeholder="请选择" @change="handleCurrentChange">
+                <el-select v-model="upData.reporterId" placeholder="请选择" @change="getList">
                     <el-option
                             v-for="item in reportUser"
                             :key="item.id"
@@ -14,7 +14,7 @@
             </div>
             <div class="screen-item">
                 分配给
-                <el-select v-model="upData.handlerId" placeholder="请选择" @change="handleCurrentChange">
+                <el-select v-model="upData.handlerId" placeholder="请选择" @change="getList">
                     <el-option
                             v-for="item in handleUser"
                             :key="item.id"
@@ -25,7 +25,7 @@
             </div>
             <div class="screen-item">
                 状态
-                <el-select v-model="upData.status" placeholder="请选择" @change="handleCurrentChange">
+                <el-select v-model="upData.status" placeholder="请选择" @change="getList">
                     <el-option
                             v-for="item in selectData.statusName"
                             :key="item.id"
@@ -36,7 +36,7 @@
             </div>
             <div class="screen-item">
                 任务
-                <el-select v-model="upData.taskId" placeholder="请选择" @change="handleCurrentChange">
+                <el-select v-model="upData.taskId" placeholder="请选择" @change="getList">
                     <el-option
                             v-for="item in taskList"
                             :key="item.id"
@@ -47,7 +47,7 @@
             </div>
             <div class="screen-item">
                 严重性
-                <el-select v-model="upData.severity" placeholder="请选择" @change="handleCurrentChange">
+                <el-select v-model="upData.severity" placeholder="请选择" @change="getList">
                     <el-option
                             v-for="item in selectData.severity"
                             :key="item.id"
@@ -80,18 +80,29 @@
                         width="80">
                 </el-table-column>
                 <el-table-column
-                        label="最后更新"
-                        width="180">
-                    <template scope="scope">
-                        <span>{{ scope.row.createTime | formatDate }}</span>
-                    </template>
+                        prop="createName"
+                        label="报告员"
+                        width="110">
                 </el-table-column>
+                <el-table-column
+                        prop="handlerName"
+                        label="分配给"
+                        width="110">
+                </el-table-column>
+
                 <el-table-column
                         prop="title"
                         label="摘要">
                     <!--<template scope="scope">-->
                         <!--&lt;!&ndash;<router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId}}">{{scope.row.title}}</router-link>&ndash;&gt;-->
                     <!--</template>-->
+                </el-table-column>
+                <el-table-column
+                        label="最后更新"
+                        width="180">
+                    <template scope="scope">
+                        <span>{{ scope.row.createTime | formatDate }}</span>
+                    </template>
                 </el-table-column>
 
             </el-table>

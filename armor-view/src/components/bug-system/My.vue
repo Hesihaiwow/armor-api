@@ -3,7 +3,7 @@
         <div class="list-box">
             <p class="list-title"><span class="high-light-color">未解决的</span> ({{bugList.solvingBugNum}})</p>
             <ul class="list">
-                <li v-for="li in bugList.solvingBugList" :key="li.tbId" :class='listType(li.status)' @click="goList(li)">
+                <li v-for="li in bugList.solvingBugList" :key="li.tbId" :class='listType(li.status)' @click="goEdit(li)">
                     <span class="bug-id">{{li.tbNoStr}}</span>
                     <span class="bug-title">
                         <p>{{li.title}}</p>
@@ -15,7 +15,7 @@
         <div class="list-box">
             <p class="list-title"><span class="high-light-color">已解决的</span> ({{bugList.solvedBugNum}})</p>
             <ul class="list">
-                <li v-for="li in bugList.solvedBugList" :key="li.tbId" :class='listType(li.status)' @click="goList(li)">
+                <li v-for="li in bugList.solvedBugList" :key="li.tbId" :class='listType(li.status)' @click="goEdit(li)">
                     <span class="bug-id">{{li.tbNoStr}}</span>
                     <span class="bug-title">
                         <p>{{li.title}}</p>
