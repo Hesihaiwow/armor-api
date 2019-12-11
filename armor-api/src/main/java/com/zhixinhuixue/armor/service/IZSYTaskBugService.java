@@ -81,4 +81,16 @@ public interface IZSYTaskBugService {
      * @author sch
      */
     List<TaskBaseResDTO> getTaskTesting();
+
+    /**
+     * 查询bug报告员
+     * @author sch
+     */
+    List<EffectUserResDTO> getBugReporters();
+
+    /**
+     * 查询bug分派员
+     * @author sch
+     */
+    List<EffectUserResDTO> getBugHandlers();
 }

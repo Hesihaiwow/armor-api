@@ -29,6 +29,48 @@ public class MyBugResDTO {
     @ApiModelProperty("我报告的bug")
     private List<TaskBugPageResDTO> reportBugList;
 
+    /**
+     * 我报告的bug数量
+     */
+    @ApiModelProperty("我报告的bug数量")
+    private Integer reportBugNum;
+
+    /**
+     * 未解决的bug数量
+     */
+    @ApiModelProperty("未解决的bug数量")
+    private Integer solvingBugNum;
+
+    /**
+     * 已解决的bug数量
+     */
+    @ApiModelProperty("已解决的bug数量")
+    private Integer solvedBugNum;
+
+    public Integer getReportBugNum() {
+        return reportBugNum;
+    }
+
+    public void setReportBugNum(Integer reportBugNum) {
+        this.reportBugNum = reportBugNum;
+    }
+
+    public Integer getSolvingBugNum() {
+        return solvingBugNum;
+    }
+
+    public void setSolvingBugNum(Integer solvingBugNum) {
+        this.solvingBugNum = solvingBugNum;
+    }
+
+    public Integer getSolvedBugNum() {
+        return solvedBugNum;
+    }
+
+    public void setSolvedBugNum(Integer solvedBugNum) {
+        this.solvedBugNum = solvedBugNum;
+    }
+
     public List<TaskBugPageResDTO> getSolvingBugList() {
         return solvingBugList;
     }

@@ -123,7 +123,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
 
         taskBug.setTbId(snowFlakeIDHelper.nextId());
         if (lastBugNo == null){
-            taskBug.setTbNo(0);
+            taskBug.setTbNo(1);
         }else {
             taskBug.setTbNo(lastBugNo+1);
         }
@@ -379,7 +379,14 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         List<TaskBugBO> solvedBugs = taskBugMapper.selectMyBugList(TaskBugStatus.RESOLVED.getValue(), userId, null);
         //查询我提交的bug
         List<TaskBugBO> reportBugs = taskBugMapper.selectMyBugList(null, null, userId);
+        //查询我的已分派未解决bug数量
+        Integer solvingNum = taskBugMapper.selectTaskBugNumByStatus(userId,TaskBugStatus.ASSIGNED.getValue(),null);
+        Integer solvedNum = taskBugMapper.selectTaskBugNumByStatus(userId,TaskBugStatus.RESOLVED.getValue(),null);
+        Integer reportNum = taskBugMapper.selectTaskBugNumByStatus(null,null,userId);
         MyBugResDTO resDTO = new MyBugResDTO();
+        resDTO.setSolvedBugNum(solvedNum);
+        resDTO.setSolvingBugNum(solvingNum);
+        resDTO.setReportBugNum(reportNum);
         List<TaskBugPageResDTO> solvingBugList = getBugList(assignedBugs);
         List<TaskBugPageResDTO> solvedBugList = getBugList(solvedBugs);
         List<TaskBugPageResDTO> reportBugList = getBugList(reportBugs);
@@ -409,6 +416,44 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
     }
 
     /**
+     * 查询bug报告员
+     * @author sch
+     */
+    @Override
+    public List<EffectUserResDTO> getBugReporters() {
+        List<EffectUserResDTO> list = new ArrayList<>();
+        List<User> users = userMapper.selectBugReporters();
+        if (!CollectionUtils.isEmpty(users)){
+            users.forEach(user -> {
+                EffectUserResDTO resDTO = new EffectUserResDTO();
+                resDTO.setId(user.getId());
+                resDTO.setName(user.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
+     * 查询bug分派员
+     * @author sch
+     */
+    @Override
+    public List<EffectUserResDTO> getBugHandlers() {
+        List<EffectUserResDTO> list = new ArrayList<>();
+        List<User> users = userMapper.selectBugHandlers();
+        if (!CollectionUtils.isEmpty(users)){
+            users.forEach(user -> {
+                EffectUserResDTO resDTO = new EffectUserResDTO();
+                resDTO.setId(user.getId());
+                resDTO.setName(user.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
+    }
+
+    /**
      * 获取任务bug集合
      * @param taskBugs 参数
      */
@@ -420,8 +465,11 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
                 bugResDTO.setTbId(taskBug.getTbId());
                 bugResDTO.setTitle(taskBug.getTitle());
                 bugResDTO.setTbNoStr(getBugNoStr(taskBug.getTbNo()));
+                bugResDTO.setTaskId(taskBug.getTaskId());
                 bugResDTO.setTaskName(taskBug.getTaskName());
                 bugResDTO.setCreateTime(taskBug.getCreateTime());
+                bugResDTO.setStatus(taskBug.getStatus());
+                bugResDTO.setStatusName(TaskBugStatus.getName(taskBug.getStatus()));
                 list.add(bugResDTO);
             });
         }

@@ -22,6 +22,7 @@ public class TaskBugPageResDTO {
     private String tbNoStr;
 
     private Long taskId;
+    @ApiModelProperty("任务名称")
     private String taskName;
 
     /**

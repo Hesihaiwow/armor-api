@@ -6,6 +6,7 @@
         <result column="task_id" jdbcType="BIGINT" property="taskId" />
         <result column="handler_id" jdbcType="BIGINT" property="handlerId" />
         <result column="severity" jdbcType="INTEGER" property="severity" />
+        <result column="tb_no" jdbcType="INTEGER" property="tbNo" />
         <result column="frequency" jdbcType="INTEGER" property="frequency" />
         <result column="title" jdbcType="VARCHAR" property="title" />
         <result column="description" jdbcType="VARCHAR" property="description" />
@@ -157,7 +158,7 @@
 
     <!--根据条件查询-->
     <select id="selectMyBugList" resultMap="BOMap">
-        SELECT * FROM `task_bug` tb
+        SELECT tb.*,t.name task_name FROM `task_bug` tb
         LEFT JOIN `task` t ON t.id = tb.`task_id`
         WHERE tb.`is_delete` = 0
         <if test="status != null and status != 0">
@@ -168,6 +169,21 @@
         </if>
         <if test="createBy != null and createBy != 0">
             AND tb.`create_by` = #{createBy}
+        </if>
+        ORDER BY tb.`create_time` DESC LIMIT 10
+    </select>
+
+    <!--查询我的已分派未解决bug数量-->
+    <select id="selectTaskBugNumByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `task_bug` WHERE `is_delete` = 0
+        <if test="status != null">
+            AND `status` = #{status}
+        </if>
+        <if test="handlerId != null">
+            AND `handler_id` = #{handlerId}
+        </if>
+        <if test="createBy != null">
+            AND `create_by` = #{createBy}
         </if>
     </select>
 

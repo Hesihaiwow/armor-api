@@ -174,5 +174,17 @@ public interface IZSYUserMapper {
      * @param taskId 任务id
      */
     List<User> selectTaskUsers(@Param("taskId") Long taskId);
+
+    /**
+     * 查询bug报告员
+     * @author sch
+     */
+    List<User> selectBugReporters();
+
+    /**
+     * 查询bug分派员
+     * @author sch
+     */
+    List<User> selectBugHandlers();
     // -- sch
 }
