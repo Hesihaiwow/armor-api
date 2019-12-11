@@ -163,6 +163,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             taskBug.setFrequency(reqDTO.getFrequency());
             taskBug.setSeverity(reqDTO.getSeverity());
             taskBug.setHandlerId(reqDTO.getHandlerId());
+            taskBug.setTaskId(reqDTO.getTaskId());
 //        }else {
 //            taskBug.setStatus(reqDTO.getStatus());
 //        }
@@ -244,27 +245,27 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         resDTO.setSeverityName(TaskBugSeverity.getName(taskBugBO.getSeverity()));
         resDTO.setFrequencyName(TaskBugFrequency.getName(taskBugBO.getFrequency()));
         //查询备注
-        List<TaskBugRemarkBO> remarkBOS = remarkMapper.selectListByTbId(tbId);
-        List<TaskBugRemarkResDTO> remarkResDTOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(remarkBOS)){
-            remarkBOS.forEach(remarkBO->{
-                TaskBugRemarkResDTO remarkResDTO = new TaskBugRemarkResDTO();
-                BeanUtils.copyProperties(remarkBO,remarkResDTO);
-                remarkResDTOS.add(remarkResDTO);
-            });
-        }
-        resDTO.setRemarkResDTOS(remarkResDTOS);
+//        List<TaskBugRemarkBO> remarkBOS = remarkMapper.selectListByTbId(tbId);
+//        List<TaskBugRemarkResDTO> remarkResDTOS = new ArrayList<>();
+//        if (!CollectionUtils.isEmpty(remarkBOS)){
+//            remarkBOS.forEach(remarkBO->{
+//                TaskBugRemarkResDTO remarkResDTO = new TaskBugRemarkResDTO();
+//                BeanUtils.copyProperties(remarkBO,remarkResDTO);
+//                remarkResDTOS.add(remarkResDTO);
+//            });
+//        }
+//        resDTO.setRemarkResDTOS(remarkResDTOS);
         //查询日志
-        List<TaskBugLog> logs = bugLogMapper.selectLogListByTbId(tbId);
-        List<TaskBugLogResDTO> logResDTOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(logs)){
-            logs.forEach(log->{
-                TaskBugLogResDTO logResDTO = new TaskBugLogResDTO();
-                BeanUtils.copyProperties(log,logResDTO);
-                logResDTOS.add(logResDTO);
-            });
-        }
-        resDTO.setLogResDTOList(logResDTOS);
+//        List<TaskBugLog> logs = bugLogMapper.selectLogListByTbId(tbId);
+//        List<TaskBugLogResDTO> logResDTOS = new ArrayList<>();
+//        if (!CollectionUtils.isEmpty(logs)){
+//            logs.forEach(log->{
+//                TaskBugLogResDTO logResDTO = new TaskBugLogResDTO();
+//                BeanUtils.copyProperties(log,logResDTO);
+//                logResDTOS.add(logResDTO);
+//            });
+//        }
+//        resDTO.setLogResDTOList(logResDTOS);
         return resDTO;
     }
 

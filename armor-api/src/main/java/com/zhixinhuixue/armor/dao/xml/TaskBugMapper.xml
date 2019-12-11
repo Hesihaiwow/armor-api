@@ -41,6 +41,9 @@
     <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBug">
         UPDATE `task_bug`
         <set>
+            <if test="taskId != null">
+                `task_id` = #{taskId},
+            </if>
             <if test="handlerId != null">
                 `handler_id` = #{handlerId},
             </if>
@@ -118,10 +121,11 @@
 
     <!--查看详情-->
     <select id="selectDetailById" resultMap="BOMap">
-        SELECT tb.*,u1.`name` create_name,u2.`name` handler_name
+        SELECT tb.*,u1.`name` create_name,u2.`name` handler_name,t.name task_name
         FROM `task_bug` tb
         LEFT JOIN `user` u1 ON u1.`id` = tb.`create_by`
         LEFT JOIN `user` u2 ON u2.`id` = tb.`handler_id`
+        LEFT JOIN `task` t ON t.id = tb.`task_id`
         WHERE tb.`tb_id` = #{tbId}
     </select>
 
