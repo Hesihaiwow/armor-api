@@ -89,6 +89,9 @@
         },
         created() {
             this.getDefaultDatas();
+            let _this = this;
+            //选中组织tab
+            _this.$root.eventBus.$emit("handleTabSelected", "bug");
             // this.setSessionScreenData();
         },
         methods: {
