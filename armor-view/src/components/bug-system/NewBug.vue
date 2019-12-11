@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="input-box">
-                <div class="item">
+                <div class="item" v-if="editBugData.isEdit">
                     <p class="name">任务名称</p>
                     <div class="content">
                         <p>{{editData.taskName}}</p>
