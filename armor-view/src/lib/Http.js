@@ -11,8 +11,8 @@ export default {
         } else if (process.env.NODE_ENV === 'testing') {
             return 'http://zsy.dev.xueping.com/armor2/api';
         } else {
-            // return 'http://zsy.dev.xueping.com/armor2/api';
-            return 'http://192.168.1.78:10012/armor/api';
+            return 'http://zsy.dev.xueping.com/armor2/api';
+            // return 'http://192.168.1.78:10012/armor/api';
         }
     },
     //所有请求URI

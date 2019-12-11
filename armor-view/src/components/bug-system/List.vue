@@ -26,7 +26,7 @@
 
             <div class="screen-item">
                 状态
-                <el-select v-model="upData.status" placeholder="请选择" @change="getList" clearable filterable>
+                <el-select v-model="upData.status" placeholder="请选择" @change="getList" clearable>
                     <el-option
                             v-for="item in selectData.statusName"
                             :key="item.id"
@@ -48,7 +48,7 @@
             </div>
             <div class="screen-item">
                 严重性
-                <el-select v-model="upData.severity" placeholder="请选择" @change="getList" clearable filterable>
+                <el-select v-model="upData.severity" placeholder="请选择" @change="getList" clearable>
                     <el-option
                             v-for="item in selectData.severity"
                             :key="item.id"
@@ -225,7 +225,6 @@
             },
 
             getList(){
-                console.log(888,this.upData)
                 http.zsyPostHttp('/task-bug/page', this.upData, (res) => {
                     this.tableData = res.data;
                 })

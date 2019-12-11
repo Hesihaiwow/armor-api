@@ -97,6 +97,7 @@
         methods: {
             getDefaultDatas(){
                 this.activeName = this.$route.query.type || 'my';
+
                 // this.upData.taskId = this.$route.query.taskId;
                 // this.taskName = this.$route.query.taskName;
 
@@ -112,6 +113,7 @@
                 if(this.activeName == 'add'){
                     this.editBugData.tbId = '';
                     this.editBugData.isEdit = false;
+                    this.$router.push({ path: '/index/bug', query: {type:'add'}});
                 }
                 // console.log(tab, event);
             },
@@ -120,6 +122,7 @@
                 this.editBugData.taskId = data.taskId;
                 this.editBugData.isEdit = true;
                 this.activeName = 'add';
+                this.$router.push({ path: '/index/bug', query: {type:'add'}});
             },
         },
     }
