@@ -242,7 +242,6 @@
                         name:data.taskName
                     };
                     this.taskList.push(t)
-                    console.log(2,this.taskList)
                 }
             },
             goBack(){
@@ -259,7 +258,7 @@
                             message: '编辑成功',
                             type: 'success'
                         });
-                        // this.goBack();
+                        this.$router.push({ path: '/index/bug', query: {type:'list'}});
                     })
                 }else {
                     http.zsyPostHttp(`/task-bug/add`, this.upBugData, (res) => {
@@ -267,7 +266,7 @@
                             message: '创建成功',
                             type: 'success'
                         });
-                        // this.goBack();
+                        this.$router.push({ path: '/index/bug', query: {type:'list'}});
                     })
                 }
 

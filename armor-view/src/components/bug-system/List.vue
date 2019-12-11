@@ -177,6 +177,7 @@
                     pageNum: 1,
                     status: '',
                     severity:'',
+                    handlerId:'',
                 },
                 listName:'所有的BUG',
                 tableData:{
@@ -224,6 +225,7 @@
             },
 
             getList(){
+                console.log(888,this.upData)
                 http.zsyPostHttp('/task-bug/page', this.upData, (res) => {
                     this.tableData = res.data;
                 })

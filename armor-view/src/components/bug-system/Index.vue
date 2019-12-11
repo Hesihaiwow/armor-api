@@ -96,6 +96,7 @@
         },
         methods: {
             getDefaultDatas(){
+                this.activeName = this.$route.query.type || 'my';
                 // this.upData.taskId = this.$route.query.taskId;
                 // this.taskName = this.$route.query.taskName;
 
