@@ -224,8 +224,26 @@
                     this.upBugData.frequency = res.data.frequency;
                     this.upBugData.title = res.data.title;
                     this.upBugData.tbId = res.data.tbId;
+                    this.pushTask(res.data);
                 });
                 this.getUser();
+            },
+            pushTask(data){
+                let isPush = true;
+                this.taskList.forEach(i=>{
+                    if(i.taskId == data.taskId){
+                        isPush = false;
+                        console.log(1)
+                    }
+                });
+                if(isPush){
+                    let t = {
+                        id:data.taskId,
+                        name:data.taskName
+                    };
+                    this.taskList.push(t)
+                    console.log(2,this.taskList)
+                }
             },
             goBack(){
                 this.$router.go(-1)
@@ -291,7 +309,8 @@
                 display: flex;
                 .name{
                     display: inline-block;
-                    width: 60px;
+                    /*width: 60px;*/
+                    padding-right: 10px;
                     line-height: 36px;
                     font-weight: 700;
                 }
