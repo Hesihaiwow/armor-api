@@ -11,9 +11,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -47,26 +47,72 @@ public class ZSYArmorApplicationTests {
 //		if (cha2.compareTo(BigDecimal.ZERO)>=0 && cha2.compareTo(BigDecimal.valueOf(3))<0){
 //			System.out.println("cha2 = " + cha2);
 //		}
-		Date createTime = dateFormat.parse("2019-09-25 00:00:00");
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(createTime);
-		int createTimeYear = calendar.get(Calendar.YEAR);
-		System.out.println("createTimeYear = " + createTimeYear);
-		int createTimeMonth = calendar.get(Calendar.MONTH) + 1;
-		System.out.println("createTimeMonth = " + createTimeMonth);
-		int createTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
-		System.out.println("createTimeDay = " + createTimeDay);
-		int i = calendar.get(Calendar.DAY_OF_WEEK);
-		System.out.println("i = " + i);
+//		Date createTime = dateFormat.parse("2019-09-25 00:00:00");
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTime(createTime);
+//		int createTimeYear = calendar.get(Calendar.YEAR);
+//		System.out.println("createTimeYear = " + createTimeYear);
+//		int createTimeMonth = calendar.get(Calendar.MONTH) + 1;
+//		System.out.println("createTimeMonth = " + createTimeMonth);
+//		int createTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+//		System.out.println("createTimeDay = " + createTimeDay);
+//		int i = calendar.get(Calendar.DAY_OF_WEEK);
+//		System.out.println("i = " + i);
+//
+//
+//		Date beginTime = dateFormat.parse("2019-09-24 00:00:00");
+//		calendar.setTime(beginTime);
+//		int beginTimeYear = calendar.get(Calendar.YEAR);
+//		int beginTimeMonth = calendar.get(Calendar.MONTH) + 1;
+//		int beginTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
+//		LocalDate end = LocalDate.of(beginTimeYear, beginTimeMonth, beginTimeDay);
+//		LocalDate start = LocalDate.of(createTimeYear, createTimeMonth, createTimeDay);
+//		System.out.println("相差天数"+(end.toEpochDay() - start.toEpochDay() + 1));
 
 
-		Date beginTime = dateFormat.parse("2019-09-24 00:00:00");
-		calendar.setTime(beginTime);
-		int beginTimeYear = calendar.get(Calendar.YEAR);
-		int beginTimeMonth = calendar.get(Calendar.MONTH) + 1;
-		int beginTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
-		LocalDate end = LocalDate.of(beginTimeYear, beginTimeMonth, beginTimeDay);
-		LocalDate start = LocalDate.of(createTimeYear, createTimeMonth, createTimeDay);
-		System.out.println("相差天数"+(end.toEpochDay() - start.toEpochDay() + 1));
+		List<String> list1 = new ArrayList<String>();
+		list1.add("1");
+		list1.add("2");
+		list1.add("3");
+		list1.add("5");
+		list1.add("6");
+
+		List<String> list2 = new ArrayList<String>();
+		list2.add("2");
+		list2.add("3");
+		list2.add("7");
+		list2.add("8");
+
+		// 交集
+		List<String> intersection = list1.stream().filter(item -> list2.contains(item)).collect(toList());
+		System.out.println("---交集 intersection---");
+		intersection.parallelStream().forEach(System.out :: println);
+
+		// 差集 (list1 - list2)
+		List<String> reduce1 = list1.stream().filter(item -> !list2.contains(item)).collect(toList());
+		System.out.println("---差集 reduce1 (list1 - list2)---");
+		reduce1.parallelStream().forEach(System.out :: println);
+
+		// 差集 (list2 - list1)
+		List<String> reduce2 = list2.stream().filter(item -> !list1.contains(item)).collect(toList());
+		System.out.println("---差集 reduce2 (list2 - list1)---");
+		reduce2.parallelStream().forEach(System.out :: println);
+//
+//		// 并集
+//		List<String> listAll = list1.parallelStream().collect(toList());
+//		List<String> listAll2 = list2.parallelStream().collect(toList());
+//		listAll.addAll(listAll2);
+//		System.out.println("---并集 listAll---");
+//		listAll.parallelStream().forEachOrdered(System.out :: println);
+//
+//		// 去重并集
+//		List<String> listAllDistinct = listAll.stream().distinct().collect(toList());
+//		System.out.println("---得到去重并集 listAllDistinct---");
+//		listAllDistinct.parallelStream().forEachOrdered(System.out :: println);
+//
+//		System.out.println("---原来的List1---");
+//		list1.parallelStream().forEachOrdered(System.out :: println);
+//		System.out.println("---原来的List2---");
+//		list2.parallelStream().forEachOrdered(System.out :: println);
 	}
 }
