@@ -4,10 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.AddTaskBugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTaskBugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.QueryTaskBugPageReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskBugDetailResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskBugNumResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskBugPageResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -66,4 +63,34 @@ public interface IZSYTaskBugService {
      * @param pageNum 页码
      */
     PageInfo<TaskBugPageResDTO> getPersonalBugPage(Integer pageNum);
+
+    /**
+     * 查询已经产生bug的任务
+     * @author sch
+     */
+    List<TaskBaseResDTO> getReadyTasks();
+
+    /**
+     * 我的bug视图
+     * @author sch
+     */
+    MyBugResDTO getMyBugList();
+
+    /**
+     * 测试相关阶段的任务
+     * @author sch
+     */
+    List<TaskBaseResDTO> getTaskTesting();
+
+    /**
+     * 查询bug报告员
+     * @author sch
+     */
+    List<EffectUserResDTO> getBugReporters();
+
+    /**
+     * 查询bug分派员
+     * @author sch
+     */
+    List<EffectUserResDTO> getBugHandlers();
 }

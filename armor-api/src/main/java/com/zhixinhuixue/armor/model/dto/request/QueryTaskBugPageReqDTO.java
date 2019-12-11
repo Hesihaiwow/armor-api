@@ -19,6 +19,18 @@ public class QueryTaskBugPageReqDTO {
     private Long taskId;
 
     /**
+     * 严重性
+     */
+    @ApiModelProperty("严重性 1:需求或建议,2:一般错误,3:主要错误,4:严重错误")
+    private Integer severity;
+
+    @ApiModelProperty("报告员")
+    private Long reporterId;
+
+    @ApiModelProperty("分派人")
+    private Long handlerId;
+
+    /**
      * 页码
      */
     @ApiModelProperty("页码")
@@ -27,7 +39,8 @@ public class QueryTaskBugPageReqDTO {
     /**
      * 状态
      */
-    @ApiModelProperty("查询状态(1:全部, 2:已分派和打回, 3:已解决, 4:已关闭)")
+//    @ApiModelProperty("查询状态(1:全部, 2:已分派和打回, 3:已解决, 4:已关闭)")
+    @ApiModelProperty("查询状态(1:已分派, 2:已解决, 3:已关闭,  4:打回)")
     private Integer status;
 
     /**
@@ -41,6 +54,30 @@ public class QueryTaskBugPageReqDTO {
      * 是否查看所有任务
      */
     private Integer allTask;
+
+    public Integer getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(Integer severity) {
+        this.severity = severity;
+    }
+
+    public Long getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(Long reporterId) {
+        this.reporterId = reporterId;
+    }
+
+    public Long getHandlerId() {
+        return handlerId;
+    }
+
+    public void setHandlerId(Long handlerId) {
+        this.handlerId = handlerId;
+    }
 
     public Integer getAllTask() {
         return allTask;

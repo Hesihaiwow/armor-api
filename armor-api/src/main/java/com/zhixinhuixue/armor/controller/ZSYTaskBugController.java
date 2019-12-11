@@ -69,6 +69,18 @@ public class ZSYTaskBugController {
         return ZSYResult.success().data(taskBugService.getTaskUsers(taskId)).build();
     }
 
+    @ApiOperation("查询bug报告员")
+    @GetMapping("/users/report")
+    public String getBugReporters(){
+        return ZSYResult.success().data(taskBugService.getBugReporters()).build();
+    }
+
+    @ApiOperation("查询bug分派员")
+    @GetMapping("/users/handle")
+    public String getBugHandlers(){
+        return ZSYResult.success().data(taskBugService.getBugHandlers()).build();
+    }
+
     @ApiOperation("查询任务数量")
     @PostMapping("/num")
     public String getTaskBugNum(@Valid @RequestBody QueryTaskBugPageReqDTO reqDTO){
@@ -79,5 +91,24 @@ public class ZSYTaskBugController {
     @GetMapping("/personal/page/{pageNum}")
     public String getPersonalBugPage(@PathVariable("pageNum")Integer pageNum){
         return ZSYResult.success().data(taskBugService.getPersonalBugPage(pageNum)).build();
+    }
+
+    @ApiOperation("查询已经产生bug的任务")
+    @GetMapping("/task/ready")
+    public String getReadyTasks(){
+        return ZSYResult.success().data(taskBugService.getReadyTasks()).build();
+    }
+
+    @ApiOperation("测试相关阶段的任务")
+    @GetMapping("/task/testing")
+    public String getTaskTesting(){
+        return ZSYResult.success().data(taskBugService.getTaskTesting()).build();
+    }
+
+
+    @ApiOperation("我的bug视图")
+    @GetMapping("/my-list")
+    public String getMyBugList(){
+        return ZSYResult.success().data(taskBugService.getMyBugList()).build();
     }
 }

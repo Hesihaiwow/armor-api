@@ -17,7 +17,12 @@ public class TaskBugPageResDTO {
     @ApiModelProperty("任务bugId")
     private Long tbId;
 
+    private Integer tbNo;
+    @ApiModelProperty("任务编号")
+    private String tbNoStr;
+
     private Long taskId;
+    @ApiModelProperty("任务名称")
     private String taskName;
 
     /**
@@ -37,6 +42,9 @@ public class TaskBugPageResDTO {
      */
     @ApiModelProperty("报告日期 ")
     private Date createTime;
+
+    @ApiModelProperty("最后更新时间")
+    private Date updateTime;
 
     /**
      * 提交人
@@ -61,6 +69,30 @@ public class TaskBugPageResDTO {
 
     private Integer severity;
     private String severityName;
+
+    public Integer getTbNo() {
+        return tbNo;
+    }
+
+    public void setTbNo(Integer tbNo) {
+        this.tbNo = tbNo;
+    }
+
+    public String getTbNoStr() {
+        return tbNoStr;
+    }
+
+    public void setTbNoStr(String tbNoStr) {
+        this.tbNoStr = tbNoStr;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public Long getTaskId() {
         return taskId;
