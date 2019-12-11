@@ -677,6 +677,7 @@
         SELECT t.* FROM `task_bug` tb
         LEFT JOIN `task` t ON t.`id` = tb.`task_id`
         WHERE tb.`is_delete` = 0 AND t.`is_delete` = 0 AND t.`review_status` = 3
+        GROUP BY tb.`task_id`
     </select>
 
     <!--测试相关阶段的任务-->
