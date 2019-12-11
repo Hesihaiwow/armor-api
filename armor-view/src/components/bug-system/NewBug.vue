@@ -71,6 +71,13 @@
             </div>
             <div class="input-box">
                 <div class="item">
+                    <p class="name">任务名称</p>
+                    <div class="content">
+                        <p>{{editData.taskName}}</p>
+                        <!--<el-input v-model="upBugData.title" placeholder="请输入内容"></el-input>-->
+                    </div>
+                </div>
+                <div class="item">
                     <p class="name">摘要</p>
                     <div class="content">
                         <el-input v-model="upBugData.title" placeholder="请输入内容"></el-input>
@@ -166,6 +173,7 @@
                   ],
               },
               taskList:[],
+              editData:{}
 
           }
         },
@@ -207,7 +215,7 @@
             getEditData(){
                 this.upBugData.taskId = this.editBugData.taskId;
                 http.zsyGetHttp(`/task-bug/detail/${this.editBugData.tbId}`, {}, (res) => {
-                    // this.handlerEr = res.data;
+                    this.editData = res.data;
                     this.upBugData.description = res.data.description;
                     this.content = res.data.description;
                     this.upBugData.status = res.data.status;
