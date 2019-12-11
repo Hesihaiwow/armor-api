@@ -338,6 +338,10 @@
                     name: 'project'
                 },);
                 this.tabs.push({
+                    label: 'BUG',
+                    name: 'bug'
+                },);
+                this.tabs.push({
                     label: '统计',
                     name: 'stats'
                 },);
