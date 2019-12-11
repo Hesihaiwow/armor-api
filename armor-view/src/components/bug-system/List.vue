@@ -3,7 +3,7 @@
         <div class="screen-box">
             <div class="screen-item">
                 报告员
-                <el-select v-model="upData.reporterId" placeholder="请选择" @change="getList">
+                <el-select v-model="upData.reporterId" placeholder="请选择" @change="getList" clearable filterable>
                     <el-option
                             v-for="item in reportUser"
                             :key="item.id"
@@ -14,7 +14,7 @@
             </div>
             <div class="screen-item">
                 分配给
-                <el-select v-model="upData.handlerId" placeholder="请选择" @change="getList">
+                <el-select v-model="upData.handlerId" placeholder="请选择" @change="getList" clearable filterable>
                     <el-option
                             v-for="item in handleUser"
                             :key="item.id"
@@ -23,9 +23,10 @@
                     </el-option>
                 </el-select>
             </div>
+
             <div class="screen-item">
                 状态
-                <el-select v-model="upData.status" placeholder="请选择" @change="getList">
+                <el-select v-model="upData.status" placeholder="请选择" @change="getList" clearable filterable>
                     <el-option
                             v-for="item in selectData.statusName"
                             :key="item.id"
@@ -36,7 +37,7 @@
             </div>
             <div class="screen-item">
                 任务
-                <el-select v-model="upData.taskId" placeholder="请选择" @change="getList">
+                <el-select v-model="upData.taskId" placeholder="请选择" @change="getList" clearable filterable>
                     <el-option
                             v-for="item in taskList"
                             :key="item.id"
@@ -47,7 +48,7 @@
             </div>
             <div class="screen-item">
                 严重性
-                <el-select v-model="upData.severity" placeholder="请选择" @change="getList">
+                <el-select v-model="upData.severity" placeholder="请选择" @change="getList" clearable filterable>
                     <el-option
                             v-for="item in selectData.severity"
                             :key="item.id"
