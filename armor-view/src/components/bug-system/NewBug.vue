@@ -110,6 +110,7 @@
                   taskId: '',
                   title: "",
                   status:'',
+                  tbId:0,
               },
               selectData:{
                   frequency:[
@@ -168,8 +169,12 @@
           }
         },
         watch:{
-            editBugData(val){
-                this.getDefaultDatas();
+            editBugData:{
+                handler(n,o){
+                    this.getDefaultDatas();
+                },
+                // immediate: true,  //刷新加载 立马触发一次handler
+                deep: true  // 可以深度检测对象的属性值的变化
             }
         },
         created() {
@@ -177,13 +182,21 @@
         },
         methods:{
             getDefaultDatas(){
+                if(this.editBugData.isEdit){
+                    this.getEditData();
+                }else {
+                    this.upBugData.description = '';
+                    this.content = '';
+                    this.upBugData.status = 0;
+                    this.upBugData.severity = 3;
+                    this.upBugData.handlerId = '';
+                    this.upBugData.frequency = 1;
+                    this.upBugData.title = '';
+                    this.upBugData.tbId = 0;
+                }
                 http.zsyGetHttp(`/task-bug/task/testing`, {}, (res) => {
                     this.taskList = res.data;
                 });
-                if(this.editBugData.isEdit){
-                    this.getEditData();
-                }
-
             },
             getUser(){
                 http.zsyGetHttp(`/task-bug/users/${this.upBugData.taskId}`, {}, (res) => {
@@ -201,8 +214,8 @@
                     this.upBugData.handlerId = res.data.handlerId;
                     this.upBugData.frequency = res.data.frequency;
                     this.upBugData.title = res.data.title;
-
-                })
+                    this.upBugData.tbId = res.data.tbId;
+                });
                 this.getUser();
             },
             goBack(){
@@ -213,14 +226,25 @@
             },
             save(){
                 // console.log(this.upBugData)
+                if(this.editBugData.isEdit){
+                    http.zsyPutHttp(`/task-bug/edit`, this.upBugData, (res) => {
+                        this.$message({
+                            message: '编辑成功',
+                            type: 'success'
+                        });
+                        this.goBack();
+                    })
+                }else {
+                    http.zsyPostHttp(`/task-bug/add`, this.upBugData, (res) => {
+                        this.$message({
+                            message: '创建成功',
+                            type: 'success'
+                        });
+                        this.goBack();
+                    })
+                }
 
-                http.zsyPostHttp(`/task-bug/add`, this.upBugData, (res) => {
-                    this.$message({
-                        message: '创建成功',
-                        type: 'success'
-                    });
-                    this.goBack();
-                })
+
             }
 
         }

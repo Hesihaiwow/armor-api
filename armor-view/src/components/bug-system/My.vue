@@ -28,7 +28,7 @@
         <div class="list-box">
             <p class="list-title"><span class="high-light-color">我报告的</span> ({{bugList.reportBugNum}})</p>
             <ul class="list">
-                <li  v-for="li in bugList.reportBugList" :key="li.tbId" :class='listType(li.status)' @click="goList(li)">
+                <li  v-for="li in bugList.reportBugList" :key="li.tbId" :class='listType(li.status)' @click="goEdit(li)">
                     <span class="bug-id">{{li.tbNoStr}}</span>
                     <span class="bug-title">
                         <p>{{li.title}}</p>
@@ -91,7 +91,7 @@
                     console.log(res)
                 })
             },
-            goList(data){
+            goEdit(data){
                 // console.log(data)
                 this.$emit('edit-bug-id', data);
                 // this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll,taskName:this.taskName}});
@@ -168,12 +168,12 @@
         background-color: #c2dfff;
     }
     .bug-type-2{
-        background-color: #c2dfff;
+        background-color: #d2f5b0;
     }
     .bug-type-3{
-        background-color: #c2dfff;
+        background-color: #c9ccc4;
     }
     .bug-type-4{
-        background-color: #c2dfff;
+        background-color: #e3b7eb;
     }
 </style>

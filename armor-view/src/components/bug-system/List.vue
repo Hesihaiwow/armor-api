@@ -3,7 +3,7 @@
         <div class="screen-box">
             <div class="screen-item">
                 报告员
-                <el-select v-model="value" placeholder="请选择">
+                <el-select v-model="upData.reporterId" placeholder="请选择" @change="handleCurrentChange">
                     <el-option
                             v-for="item in reportUser"
                             :key="item.id"
@@ -14,7 +14,7 @@
             </div>
             <div class="screen-item">
                 分配给
-                <el-select v-model="value" placeholder="请选择">
+                <el-select v-model="upData.handlerId" placeholder="请选择" @change="handleCurrentChange">
                     <el-option
                             v-for="item in handleUser"
                             :key="item.id"
@@ -25,7 +25,7 @@
             </div>
             <div class="screen-item">
                 状态
-                <el-select v-model="upData.status" placeholder="请选择">
+                <el-select v-model="upData.status" placeholder="请选择" @change="handleCurrentChange">
                     <el-option
                             v-for="item in selectData.statusName"
                             :key="item.id"
@@ -36,7 +36,7 @@
             </div>
             <div class="screen-item">
                 任务
-                <el-select v-model="value" placeholder="请选择">
+                <el-select v-model="upData.taskId" placeholder="请选择" @change="handleCurrentChange">
                     <el-option
                             v-for="item in taskList"
                             :key="item.id"
@@ -47,7 +47,7 @@
             </div>
             <div class="screen-item">
                 严重性
-                <el-select v-model="upData.severity" placeholder="请选择">
+                <el-select v-model="upData.severity" placeholder="请选择" @change="handleCurrentChange">
                     <el-option
                             v-for="item in selectData.severity"
                             :key="item.id"
@@ -58,11 +58,12 @@
             </div>
 
         </div>
-        <div class="table-box">
+        <div class="table-box" v-if="tableData.list">
             <el-table
-                    :data="tableData.list"
-                    style="width: 100%"
-                    :row-class-name="tableRowClassName">
+                :data="tableData.list"
+                style="width: 100%"
+                :row-class-name="tableRowClassName"
+                @row-click="goEdit">
                 <el-table-column
                         type="index"
                         label="序号"
@@ -86,10 +87,11 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        prop="title"
                         label="摘要">
-                    <template scope="scope">
-                        <router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId}}">{{scope.row.title}}</router-link>
-                    </template>
+                    <!--<template scope="scope">-->
+                        <!--&lt;!&ndash;<router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId}}">{{scope.row.title}}</router-link>&ndash;&gt;-->
+                    <!--</template>-->
                 </el-table-column>
 
             </el-table>
@@ -115,23 +117,6 @@
         name: "List",
         data(){
             return {
-                value:'',
-                options: [{
-                    value: '选项1',
-                    label: '黄金糕'
-                }, {
-                    value: '选项2',
-                    label: '双皮奶'
-                }, {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                }, {
-                    value: '选项4',
-                    label: '龙须面'
-                }, {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }],
                 selectData:{
                     statusName:[
                         {
@@ -176,15 +161,15 @@
                 upData:{
                     taskId:'',
                     reporterId:'',
-                    selectAll:0,
+                    selectAll:1,
                     pageNum: 1,
-                    status: 1,
-                    severity:4,
+                    status: '',
+                    severity:'',
                 },
                 listName:'所有的BUG',
                 tableData:{
-                    total:0,
                     list:[],
+                    total:0,
                     pageSize:10,
                 },
                 currentPage:1
@@ -212,7 +197,7 @@
                 // this.taskName = this.$route.query.taskName;
                 http.zsyGetHttp(`/task-bug/task/ready`, {}, (res) => {
                     this.taskList = res.data;
-                    this.upData.taskId = res.data[0].id;
+                    // this.upData.taskId = res.data[0].id;
                 });
                 http.zsyGetHttp(`/task-bug/users/report`, {}, (res) => {
                     this.reportUser = res.data;
@@ -225,21 +210,31 @@
 
                 this.getList();
             },
+
             getList(){
                 http.zsyPostHttp('/task-bug/page', this.upData, (res) => {
                     this.tableData = res.data;
                 })
+            },
+            goEdit(data){
+                // console.log(data,9999)
+                this.$emit('edit-bug-id', data);
+                // this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll,taskName:this.taskName}});
             },
             // 试卷列表分页
             handleCurrentChange (val) {
                 this.upData.pageNum = val;
                 this.getList();
             },
-            tableRowClassName({row, rowIndex}) {
-                if (rowIndex === 1) {
-                    return 'warning-row';
-                } else if (rowIndex === 3) {
-                    return 'success-row';
+            tableRowClassName(row, rowIndex) {
+                if (row.status === 1) {
+                    return 'bug-type-1';
+                } else if (row.status === 2) {
+                    return 'bug-type-2';
+                }else if (row.status === 3) {
+                    return 'bug-type-3';
+                }else if (row.status === 4) {
+                    return 'bug-type-4';
                 }
                 return '';
             },
@@ -283,4 +278,28 @@
     margin-top: 30px;
     text-align: center;
 }
+
+
+
+
+</style>
+<style lang="less">
+    .bug-list{
+        .bug-type-1{
+            background-color: #c2dfff;
+            cursor: pointer;
+        }
+        .bug-type-2{
+            background-color: #d2f5b0;
+            cursor: pointer;
+        }
+        .bug-type-3{
+            background-color: #c9ccc4;
+            cursor: pointer;
+        }
+        .bug-type-4{
+            background-color: #e3b7eb;
+            cursor: pointer;
+        }
+    }
 </style>

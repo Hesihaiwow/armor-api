@@ -7,7 +7,8 @@
                 ></My>
             </el-tab-pane>
             <el-tab-pane label="查看问题" name="list">
-                <List v-if="activeName == 'list'" ></List>
+                <List v-if="activeName == 'list'"
+                      v-on:edit-bug-id="goEditBug"></List>
             </el-tab-pane>
             <el-tab-pane label="提交问题" name="add">
                 <Add v-if="activeName == 'add'"
@@ -72,12 +73,6 @@
                     taskId:'',
                     selectAll:'0',
                 },
-                num:{
-                    closedNum: 0,
-                    notSolvedNum: 0,
-                    solvedNum: 0,
-                    totalNum: 0,
-                },
 
                 editBugData:{
                     tbId:0,
@@ -94,19 +89,19 @@
         },
         created() {
             this.getDefaultDatas();
-            this.setSessionScreenData();
+            // this.setSessionScreenData();
         },
         methods: {
             getDefaultDatas(){
-                this.upData.taskId = this.$route.query.taskId;
-                this.taskName = this.$route.query.taskName;
+                // this.upData.taskId = this.$route.query.taskId;
+                // this.taskName = this.$route.query.taskName;
 
-                http.zsyPostHttp('/task-bug/num', this.upData, (res) => {
-                    this.num = res.data;
-                    // console.log(99)
-                },()=>{
-                    console.log(11)
-                })
+                // http.zsyPostHttp('/task-bug/num', this.upData, (res) => {
+                //     this.num = res.data;
+                //     // console.log(99)
+                // },()=>{
+                //     console.log(11)
+                // })
                 // console.log(66)
             },
             handleClick(tab, event) {
@@ -122,31 +117,6 @@
                 this.editBugData.isEdit = true;
                 this.activeName = 'add';
             },
-            rout(){
-                this.$router.push({ path: '/index/bug/list', query: { taskId: this.upData.taskId,listType:1,selectAll:this.upData.selectAll,taskName:this.taskName}});
-            },
-            // 缓存试卷列表请求数据
-            setSessionScreenData() {
-                let taskData = {
-                    taskId:0,
-                    taskName:''
-                }
-                taskData.taskId = this.$route.query.taskId;
-                taskData.taskName = this.$route.query.taskName;
-                sessionStorage.taskData = JSON.stringify(taskData);
-            },
-            taskChange(val){
-                console.log(val);
-                if(val===1){
-                    this.upData.taskId = 0;
-                    this.taskName = '全部任务';
-
-                }else {
-                    this.upData.taskId =  sessionStorage.taskData.taskId;
-                    this.upData.taskName =  sessionStorage.taskData.taskName;
-                }
-                this.rout();
-            }
         },
     }
 </script>
