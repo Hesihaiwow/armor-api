@@ -20,6 +20,10 @@ public class EditTaskBugReqDTO {
     @ApiModelProperty("任务bugId")
     private Long tbId;
 
+    @NotNull(message = "任务Id不能为空")
+    @ApiModelProperty("任务Id")
+    private Long taskId;
+
     /**
      * 标题
      */
@@ -68,6 +72,14 @@ public class EditTaskBugReqDTO {
     @NotNull(message = "分派人不能为空")
     @ApiModelProperty("分派人")
     private Long handlerId;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 
     public String getRemark() {
         return remark;

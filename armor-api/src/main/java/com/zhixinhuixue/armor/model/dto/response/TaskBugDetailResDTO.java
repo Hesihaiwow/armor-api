@@ -18,6 +18,10 @@ public class TaskBugDetailResDTO {
     @ApiModelProperty("任务bugId")
     private Long tbId;
 
+    private Long taskId;
+    @ApiModelProperty("任务名称")
+    private String taskName;
+
     /**
      * 摘要
      */
@@ -88,6 +92,22 @@ public class TaskBugDetailResDTO {
      */
     @ApiModelProperty("日志集合")
     private List<TaskBugLogResDTO> logResDTOList;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
 
     public Integer getFrequency() {
         return frequency;
