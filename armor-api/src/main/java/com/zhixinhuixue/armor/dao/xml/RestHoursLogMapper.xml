@@ -70,13 +70,13 @@
   <!--查询请假扣除调休时间-->
     <select id="selectUsedHours" resultType="java.math.BigDecimal">
       SELECT IFNULL(SUM(`rest_hours`),0) FROM `user_rest_hours_log`
-      WHERE `user_id` = #{userId} AND `rest_hours` &lt; 0 AND `year` = #{year}
+      WHERE `user_id` = #{userId} AND `rest_hours` &lt; 0
     </select>
 
   <!--查询总的调休时间-->
   <select id="selectTotalRestHours" resultType="java.math.BigDecimal">
       SELECT IFNULL(SUM(`rest_hours`),0) FROM `user_rest_hours_log`
-      WHERE `user_id` = #{userId} AND `rest_hours` > 0 AND `year` = #{year}
+      WHERE `user_id` = #{userId} AND `rest_hours` > 0
   </select>
 
   <!--根据id查询-->
