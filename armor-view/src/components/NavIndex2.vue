@@ -7478,9 +7478,7 @@
                 let beginYear = moment(this.taskModifyDetail.beginTime).year();
                 let endYear = moment(this.taskModifyDetail.endTime).year();
                 let userWeeks = this.taskModifyDetail.userWeekResDTOList;
-                console.log(userWeeks)
                 if (beginYear !== endYear) {
-                    console.log(333333)
                     let range = moment(this.taskUser.beginTime).weeksInYear()-this.taskUser.beginWeek+1;
                     for (let i = this.taskModifyDetail.beginWeek; i < moment(this.taskModifyDetail.beginTime).weeksInYear() + 1; i++) {
                         http.zsyGetHttp('/userWeek/without/'+ this.taskModifyDetail.taskId +'/' + this.taskModifyDetail.userId + '/' + beginYear + '/' + i, {}, (resp) => {
@@ -8621,7 +8619,6 @@
             //查看积分记录
             clickHistory() {
                 this.$router.push({path:'/index/IntegralHistory',query:{userId:this.userId}})
-            },
             },
             //查询我的任务bug
             fetchMyTaskBugPage(){
