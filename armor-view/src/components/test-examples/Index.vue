@@ -4,7 +4,9 @@
             <Tree :task-id="taskId"></Tree>
         </div>
         <div class="main">
-            <div class="upload-box" v-if="isIndex">
+            <div class="btn-box" v-if="isIndex">
+                <!--<router-link :to="{ path: 'bug', query: { taskId: taskId,taskName:taskName }}" class="btn-bug"><el-button type="primary" size="small">Bug管理</el-button></router-link>-->
+
                 <el-upload
                         class="upload-demo"
                         ref="record"
@@ -33,6 +35,7 @@
         data(){
           return{
               taskId:'',
+              taskName:'',
               isIndex:true,
           }
         },
@@ -42,6 +45,7 @@
         methods:{
             getDefaultData(){
                 this.taskId=this.$route.query.id;
+                this.taskName = this.$route.query.taskName;
                 // console.log( this.$router.history.current.path,111);
                let e =  this.$router.history.current.path.indexOf('/edit');
                 let l =  this.$router.history.current.path.indexOf('/look');
@@ -99,6 +103,8 @@
         .aside {
             flex-shrink: 0;
             width: 300px;
+            min-height: 600px;
+            background-color: #fff;
 
         }
         .main {
@@ -107,10 +113,16 @@
             padding: 20px;
             background-color: #fff;
             border-left: 2px solid #cccccc;
-            .upload-box{
+            .btn-box{
+                position: relative;
                 padding: 20px 0;
                 text-align: right;
                 background-color: #fff;
+                .btn-bug{
+                    position: absolute;
+                    right: 120px;
+                    top: 22px;
+                }
             }
         }
 

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskBugMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskBug">
+        <id column="tb_id" jdbcType="BIGINT" property="tbId" />
+        <result column="task_id" jdbcType="BIGINT" property="taskId" />
+        <result column="handler_id" jdbcType="BIGINT" property="handlerId" />
+        <result column="severity" jdbcType="INTEGER" property="severity" />
+        <result column="tb_no" jdbcType="INTEGER" property="tbNo" />
+        <result column="frequency" jdbcType="INTEGER" property="frequency" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.TaskBugBO" extends="BaseResultMap">
+        <result column="create_name" property="createName" jdbcType="VARCHAR"/>
+        <result column="handler_name" property="handlerName" jdbcType="VARCHAR"/>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--新增任务bug-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBug">
+        INSERT INTO `task_bug`
+        (`tb_id`,`task_id`,`handler_id`,`severity`,`frequency`,`title`,`description`
+        ,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`is_delete`,`tb_no`)
+        VALUES
+        (#{tbId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{handlerId,jdbcType=BIGINT}
+        ,#{severity,jdbcType=INTEGER},#{frequency,jdbcType=INTEGER},#{title,jdbcType=VARCHAR}
+        ,#{description,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
+        ,#{createTime,jdbcType=TIMESTAMP},#{updateBy,jdbcType=BIGINT},#{updateTime,jdbcType=TIMESTAMP}
+        ,#{isDelete,jdbcType=INTEGER},#{tbNo,jdbcType=INTEGER})
+    </insert>
+
+    <!--更新-->
+    <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBug">
+        UPDATE `task_bug`
+        <set>
+            <if test="taskId != null">
+                `task_id` = #{taskId},
+            </if>
+            <if test="handlerId != null">
+                `handler_id` = #{handlerId},
+            </if>
+            <if test="severity != null and severity != 0">
+                `severity` = #{severity},
+            </if>
+            <if test="frequency != null and frequency != 0">
+                `frequency` = #{frequency},
+            </if>
+            <if test="status != null and status != 0">
+                `status` = #{status},
+            </if>
+            <if test="title != null and title != ''">
+                `title` = #{title},
+            </if>
+            <if test="description != null and description != ''">
+                `description` = #{description},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                `update_time` = #{updateTime},
+            </if>
+            <if test="isDelete != null">
+                `is_delete` = #{isDelete},
+            </if>
+        </set>
+        WHERE `tb_id` = #{tbId}
+    </update>
+    <!--分页查询任务bug-->
+    <select id="selectPage" resultMap="BOMap">
+        SELECT tb.*,u1.`name` create_name,u2.`name` handler_name,t.name task_name
+        FROM `task_bug` tb
+        LEFT JOIN `user` u1 ON u1.`id` = tb.`create_by`
+        LEFT JOIN `user` u2 ON u2.`id` = tb.`handler_id`
+        LEFT JOIN `task` t ON t.id = tb.`task_id`
+        WHERE tb.`is_delete` = 0
+        <if test="reqDTO.taskId != null and reqDTO.taskId != 0">
+            AND tb.`task_id` = #{reqDTO.taskId}
+        </if>
+        <if test="reqDTO.reporterId != null and reqDTO.reporterId != 0">
+            AND tb.`create_by` = #{reqDTO.reporterId}
+        </if>
+        <if test="reqDTO.handlerId != null and reqDTO.handlerId != 0">
+            AND tb.`handler_id` = #{reqDTO.handlerId}
+        </if>
+        <if test="reqDTO.status != null and reqDTO.status != 0">
+            AND tb.`status` = #{reqDTO.status}
+        </if>
+        <if test="reqDTO.severity != null and reqDTO.severity != 0">
+            AND tb.`severity` = #{reqDTO.severity}
+        </if>
+        <!--<choose>-->
+            <!--<when test="reqDTO.status != null and reqDTO.status == 2">-->
+                <!--AND tb.`status` IN (1,4)-->
+            <!--</when>-->
+            <!--<when test="reqDTO.status != null and reqDTO.status == 3">-->
+                <!--AND tb.`status` = 2-->
+            <!--</when>-->
+            <!--<when test="reqDTO.status != null and reqDTO.status == 4">-->
+                <!--AND tb.`status` = 3-->
+            <!--</when>-->
+            <!--<otherwise>-->
+                <!--AND 1 = 1-->
+            <!--</otherwise>-->
+        <!--</choose>-->
+        <!--<if test="userId != null">-->
+            <!--AND (tb.`create_by` = #{userId} OR tb.`handler_id` = #{userId})-->
+        <!--</if>-->
+        ORDER BY tb.`create_time` DESC
+    </select>
+
+    <!--根据主键查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `task_bug` WHERE `tb_id` = #{tbId}
+    </select>
+
+    <!--查看详情-->
+    <select id="selectDetailById" resultMap="BOMap">
+        SELECT tb.*,u1.`name` create_name,u2.`name` handler_name,t.name task_name
+        FROM `task_bug` tb
+        LEFT JOIN `user` u1 ON u1.`id` = tb.`create_by`
+        LEFT JOIN `user` u2 ON u2.`id` = tb.`handler_id`
+        LEFT JOIN `task` t ON t.id = tb.`task_id`
+        WHERE tb.`tb_id` = #{tbId}
+    </select>
+
+    <!--查询bug数量-->
+    <select id="selectTaskBugNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `task_bug`
+        WHERE `is_delete` = 0
+        <if test="taskId!= null and  taskId!= 0">
+            AND `task_id` = #{taskId}
+        </if>
+        <choose>
+            <when test="status != null and status == 2">
+                AND `status` IN (1,4)
+            </when>
+            <when test="status != null and status == 3">
+                AND `status` = 2
+            </when>
+            <when test="status != null and status == 4">
+                AND `status` = 3
+            </when>
+            <otherwise>
+                AND 1 = 1
+            </otherwise>
+        </choose>
+        <if test="userId != null">
+            AND (`create_by` = #{userId} OR `handler_id` = #{userId})
+        </if>
+    </select>
+
+    <!--查询最后一个bug编号-->
+    <select id="selectLastBugNo" resultType="java.lang.Integer">
+        SELECT `tb_no` FROM `task_bug` ORDER BY `tb_no` DESC LIMIT 1
+    </select>
+
+    <!--根据条件查询-->
+    <select id="selectMyBugList" resultMap="BOMap">
+        SELECT tb.*,t.name task_name FROM `task_bug` tb
+        LEFT JOIN `task` t ON t.id = tb.`task_id`
+        WHERE tb.`is_delete` = 0
+        <if test="status != null and status != 0">
+            AND tb.`status` = #{status}
+        </if>
+        <if test="handlerId != null and handlerId != 0">
+            AND tb.`handler_id` = #{handlerId}
+        </if>
+        <if test="createBy != null and createBy != 0">
+            AND tb.`create_by` = #{createBy}
+        </if>
+        ORDER BY tb.`create_time` DESC LIMIT 10
+    </select>
+
+    <!--查询我的已分派未解决bug数量-->
+    <select id="selectTaskBugNumByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `task_bug` WHERE `is_delete` = 0
+        <if test="status != null">
+            AND `status` = #{status}
+        </if>
+        <if test="handlerId != null">
+            AND `handler_id` = #{handlerId}
+        </if>
+        <if test="createBy != null">
+            AND `create_by` = #{createBy}
+        </if>
+    </select>
+
+
+</mapper>

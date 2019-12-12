@@ -269,6 +269,27 @@
         AND `id`= #{userId}
     </if>
   </select>
+
+  <!--根据任务id,查询相关人员-->
+    <select id="selectTaskUsers" resultMap="BaseResultMap">
+       SELECT u.* FROM `task_user` tu
+       LEFT JOIN `user` u ON u.`id` = tu.`user_id`
+       WHERE tu.`task_id` = #{taskId}
+    </select>
+
+  <!--查询bug报告员-->
+  <select id="selectBugReporters" resultType="com.zhixinhuixue.armor.model.pojo.User">
+     SELECT u.* FROM `task_bug` tb
+     LEFT JOIN `user` u ON u.id = tb.create_by
+     GROUP BY tb.create_by
+  </select>
+
+  <!--查询bug分派员-->
+  <select id="selectBugHandlers" resultType="com.zhixinhuixue.armor.model.pojo.User">
+     SELECT u.* FROM `task_bug` tb
+     LEFT JOIN `user` u ON u.id = tb.handler_id
+     GROUP BY tb.handler_id
+  </select>
   <!-- sch -->
 
 </mapper>

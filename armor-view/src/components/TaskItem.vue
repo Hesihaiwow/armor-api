@@ -59,7 +59,8 @@
                 </div>
             </div>
             <div class="task-mark"  v-show="isPrivate && task.status===1 && !task.expand && taskStatus==='TaskDoing'  && task.reviewStatus === 3 && task.type === 2" style="margin-right: 20px;">
-                <el-button @click="applyModifyMyTask(task)">申请修改任务</el-button>
+                <el-button @click.stop="applyModifyMyTask(task)">申请修改任务</el-button>
+                <!--<el-button v-show="userInfo.jobRole === 0" @click.stop="toBug(task)">提BUG</el-button>-->
                 <!--<el-button @click="applyExpandTime(task)">申请延长时间</el-button>-->
             </div>
             <div class="task-data-show" v-show="task.status > 1 && task.taskIntegral !== undefined">
@@ -202,7 +203,7 @@
                 size="tiny"
                 :before-close="hideTaskDetail">
             <el-form>
-                <div>任务名称: <router-link :to="{ path: 'testExamples', query: { id: taskDetail.id }}">{{taskDetail.name}}</router-link></div>
+                <div>任务名称: <router-link :to="{ path: 'testExamples', query: { id: taskDetail.id ,taskName:taskDetail.name}}">{{taskDetail.name}}</router-link></div>
                 <div>任务负责人: {{taskDetail.userName}}</div>
                 <div style="margin-top: 5px">关联文档:
                     <a  v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
@@ -1706,6 +1707,7 @@
             tagList: Array,
             userList: Array,
             viewType:'',
+            jobRole:''
         },
         data() {
             let validateEmpty = (rule, value, callback) => {
@@ -1802,6 +1804,9 @@
                 testShow: true,
                 finishTaskBtn: true,
                 taskDetail: {},
+                userInfo:{
+                    jobRole:0
+                },
                 personTaskFunctionList:[],
                 privateTaskLevel:'',
                 actionList:[
@@ -2193,6 +2198,10 @@
                 });
                 return this.taskModifyWeekNumber
             },
+            userId(){
+                let userId = helper.decodeToken().userId;
+                return userId;
+            },
         },
         filters: {
             formatDate: function (value) {
@@ -2205,6 +2214,30 @@
             }
         },
         methods: {
+            //查询用户
+            fetchUserInfo(userId){
+                http.zsyGetHttp('/user/'+userId,{},(res)=>{
+                    this.userInfo = res.data;
+                    // let jobRole = this.userInfo.jobRole;
+                    // let jobRoleName = '';
+                    // if (jobRole !== undefined && jobRole !== null && jobRole !== ''){
+                    //     if (jobRole === 0){
+                    //         jobRoleName = '测试';
+                    //     } else if(jobRole === 1){
+                    //         jobRoleName = '开发';
+                    //     }else if (jobRole === 2){
+                    //         jobRoleName = '设计';
+                    //     } else if (jobRole === 3){
+                    //         jobRoleName = '产品';
+                    //     } else if (jobRole === 5){
+                    //         jobRoleName = '算法工程师';
+                    //     } else if (jobRole === 4){
+                    //         jobRoleName = '其他';
+                    //     }
+                    // }
+                    // this.user = jobRoleName;
+                })
+            },
             fetchProjectList() {
                 let vm = this;
                 http.zsyGetHttp('/project/list', {}, (resp) => {
@@ -3663,6 +3696,10 @@
                     type: 'error'
                 });
             },
+            //跳转到bug页面
+            toBug(val){
+                this.$router.push({ path: '/index/NewBug', query: { taskId: val.id }});
+            },
             //申请修改任务
             applyModifyMyTask(task){
                 let taskId = task.taskUsers[0].taskId;
@@ -4757,6 +4794,7 @@
                 });
                 vm.getTaskLog(taskId)
             });
+            this.fetchUserInfo(this.userId)
         },
         watch:{
             step:{

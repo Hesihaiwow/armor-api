@@ -27,6 +27,7 @@ import TestExamplesEdit from '@/components/test-examples/Edit'
 import TestExamplesLook from '@/components/test-examples/Look'
 import { cancelArr } from '../lib/Http'
 
+import bug from '@/components/bug-system/Index.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -35,9 +36,6 @@ const router = new Router({
             path: '/',
             name: 'Login',
             component: Login
-        },
-        {
-            path: '*', redirect: '/index/navIndex'
         },
         {
             path: '/index',
@@ -131,9 +129,17 @@ const router = new Router({
                 {
                     path:'UserRestHoursPage',
                     component: UserRestHoursPage
-                }
+                },
+                {
+                    path:'bug',
+                    component:bug,
+                },
+
             ]
-        }
+        },
+        {
+            path: '*', redirect: '/index/navIndex'
+        },
     ]
 })
 

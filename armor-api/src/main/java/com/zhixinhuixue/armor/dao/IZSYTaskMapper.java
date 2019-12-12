@@ -296,4 +296,16 @@ public interface IZSYTaskMapper {
      * @author sch
      */
     List<Task> selectAllCompleteTasks();
+
+    /**
+     * 查询已经产生bug的任务
+     * @author sch
+     */
+    List<Task> selectBugTasks();
+
+    /**
+     * 测试相关阶段的任务
+     * @author sch
+     */
+    List<Task> selectTestTask();
 }

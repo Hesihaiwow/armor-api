@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskBugLogMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskBugLog">
+        <id column="tbl_id" jdbcType="BIGINT" property="tblId" />
+        <result column="tb_id" jdbcType="BIGINT" property="tbId" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+    <!--新增日志-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBugLog">
+        INSERT INTO `task_bug_log`
+        (`tbl_id`,`tb_id`,`content`,`create_by`,`create_time`)
+        VALUES
+        (#{tblId,jdbcType=BIGINT},#{tbId,jdbcType=BIGINT},#{content,jdbcType=BIGINT}
+        ,#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=BIGINT})
+    </insert>
+
+    <!--根据任务bugId查询日志-->
+    <select id="selectLogListByTbId" resultMap="BaseResultMap">
+        SELECT * FROM `task_bug_log` WHERE `tb_id` = #{tbId} ORDER BY `create_time` DESC
+    </select>
+
+
+</mapper>
