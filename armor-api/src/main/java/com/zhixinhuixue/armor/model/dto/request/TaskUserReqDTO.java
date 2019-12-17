@@ -33,7 +33,7 @@ public class TaskUserReqDTO {
     @Max(value = 99999,message = "工时不能大于{value}")
     private Double taskHours;
 
-    @NotNull(message = "任务复杂度不能为空")
+//    @NotNull(message = "任务复杂度不能为空")
     private Integer taskLevel;
     /**
      * 开始时间

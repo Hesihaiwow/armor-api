@@ -690,6 +690,9 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.warn("无法找到任务人员,userId:{}", userId);
             throw new ZSYServiceException("无法找到任务人员,userId:{}" + userId);
         }
+        if (level == null || level == 0){
+            throw new ZSYServiceException("个人任务复杂度不能为空");
+        }
         taskUser.setTaskLevel(level);
         Task task = new Task();
         task.setId(taskId);
