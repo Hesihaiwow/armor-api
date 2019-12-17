@@ -141,9 +141,6 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
     public void updateTaskTemp(EditTaskTempReqDTO editTaskTempReqDTO) {
         Long taskId = editTaskTempReqDTO.getTaskId();
         Long userId = editTaskTempReqDTO.getUserId();
-        if (editTaskTempReqDTO.getTaskLevel() == null || editTaskTempReqDTO.getTaskLevel() == 0){
-            throw new ZSYServiceException("任务复杂度不能为空");
-        }
         TaskTemp existTaskTemp = taskTempMapper.selectById(editTaskTempReqDTO.getId());
         if (existTaskTemp == null){
             throw new ZSYServiceException("当前任务(临时)不存在");
