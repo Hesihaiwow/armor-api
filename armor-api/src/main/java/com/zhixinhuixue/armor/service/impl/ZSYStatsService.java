@@ -121,6 +121,44 @@ public class ZSYStatsService implements IZSYStatsService {
     public List<StatsWeekResDTO> getWeekStats(UserWeekStatsReqDTO reqDTO){
         Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
         Integer jobRole = reqDTO.getJobRole();
+        Date date = reqDTO.getDate();
+        int year = DateHelper.getYears(reqDTO.getDate());
+        //2019-01-30 00:00:00
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date date1 = format.parse("2019-12-30 00:00:00");
+            Date date2 = format.parse("2020-01-05 23:59:59");
+            if (date.compareTo(date1) >= 0 && date.compareTo(date2) <= 0){
+                year = 2020;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(reqDTO.getWeekNumber(),year,departmentId,jobRole);
+
+        List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
+        BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
+        for (StatsUserWeekBO userWeekBO : statsUserWeekBOS) {
+            StatsWeekResDTO statsWeekResDTO = new StatsWeekResDTO();
+            statsWeekResDTO.setId(userWeekBO.getId());
+            statsWeekResDTO.setUserId(userWeekBO.getUserId());
+            statsWeekResDTO.setUserName(userWeekBO.getUserName());
+            statsWeekResDTO.setWeekNumber(userWeekBO.getWeekNumber());
+            statsWeekResDTO.setTaskName(userWeekBO.getTaskName());
+            statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
+
+            statsWeekResDTO.setLeaveHours(userWeekBO.getLeaveHours()==null?0:userWeekBO.getLeaveHours());
+            statsWeekResDTO.setHours(userWeekMapper.getUserWeekHours(ZSYConstants.NO_DEPT_ID,userWeekBO.getUserId(),reqDTO.getWeekNumber(),year));
+
+            statsWeekResDTOS.add(statsWeekResDTO);
+        }
+
+        return statsWeekResDTOS;
+    }
+//    @Override
+    public List<StatsWeekResDTO> getWeekStats2(UserWeekStatsReqDTO reqDTO){
+        Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
+        Integer jobRole = reqDTO.getJobRole();
         List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(reqDTO.getWeekNumber(),DateHelper.getYears(reqDTO.getDate()),departmentId,jobRole);
 
         List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
