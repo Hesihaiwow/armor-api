@@ -913,6 +913,10 @@ public class ZSYTaskService implements IZSYTaskService {
             logger.warn("该任务已完成,id:{}", taskTemp.getId());
             throw new ZSYServiceException("该任务已完成");
         }
+        TaskModify taskModify = taskModifyMapper.selectByTaskAndUser(taskTemp.getId(), ZSYTokenRequestContext.get().getUserId());
+        if (taskModify != null && taskModify.getReviewStatus() == 1){
+            throw new ZSYServiceException("该任务存在修改申请,请等待审核完成");
+        }
 
         // 修改阶段状态为 已完成
         TaskUser taskUser = new TaskUser();
