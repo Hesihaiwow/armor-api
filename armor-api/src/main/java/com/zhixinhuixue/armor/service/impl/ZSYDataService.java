@@ -426,6 +426,9 @@ public class ZSYDataService implements IZSYDataService {
         if (dayOfWeek == 1){
             weekOfYear = weekOfYear - 1;
         }
+        if (weekOfYear == 1){
+            year = year + 1;
+        }
         User user = userMapper.selectById(userId);
         SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String firstDayStr = DateHelper.getThisWeekFirstDay();
