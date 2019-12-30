@@ -3837,12 +3837,13 @@
                                 userWeeks.push(weekData)
                             }
                             for(let i=1;i<this.taskTempDetail.endWeek+1;i++){
+                                let year = endYear + 1;
                                 let weekData = {
                                     'weekNumber':i,
                                     'hours': '',
-                                    'year':endYear ,
+                                    'year':year ,
                                     'weekHours': 0,
-                                    'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
+                                    'range':moment().year(year).week(i).startOf('week').format('MM-DD')+'至'+moment().year(year).week(i).endOf('week').format('MM-DD') };
                                 userWeeks.push(weekData)
 
                             }
