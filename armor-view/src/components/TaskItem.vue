@@ -1638,7 +1638,7 @@
                     <el-input type="textarea"  v-model="modifyMyTaskDescription" :rows="3"></el-input>
                 </el-form-item>
                 <el-form-item class="task-form" label="开始时间：" style="float: left;margin-left: -8px" label-width="90px">
-                    <el-date-picker @change="changeTime()"
+                    <el-date-picker
                                     v-model="modifyMyTaskForm.beginTime"
                                     type="date"
                                     format="yyyy-MM-dd"
@@ -1647,7 +1647,7 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item class="task-form" label="截止时间：" style="margin-left: 285px">
-                    <el-date-picker @change="changeTime()"
+                    <el-date-picker
                                     v-model="modifyMyTaskForm.endTime"
                                     type="date"
                                     format="yyyy-MM-dd"
@@ -1932,6 +1932,8 @@
                     userName:null,
                     description:null,
                     beginTime:null,
+                    firstTime:null,
+                    secondTime:null,
                     endTime:null,
                     createTime:null,
                     reviewStatus:null,
@@ -3764,6 +3766,8 @@
                     this.description = this.taskTempDetail.description;
                     this.beginTime = this.taskTempDetail.beginTime;
                     this.endTime = this.taskTempDetail.endTime;
+                    this.taskTempDetail.firstTime = this.taskTempDetail.beginTime;
+                    this.taskTempDetail.secondTime = this.taskTempDetail.endTime;
                     this.getTaskDetail(taskId);
                     this.changeTaskTempWeek();
                     this.taskTempDetailVisible = true;
@@ -3801,6 +3805,20 @@
             },
 
             changeTime(){
+                if(this.taskTempDetail.beginTime instanceof Date){
+                    this.taskTempDetail.beginTime = this.taskTempDetail.beginTime.getTime()
+                }
+                if(this.taskTempDetail.endTime instanceof Date){
+                    this.taskTempDetail.endTime = this.taskTempDetail.endTime.getTime()
+                }
+
+                if (this.taskTempDetail.firstTime === this.taskTempDetail.beginTime &&
+                    this.taskTempDetail.secondTime === this.taskTempDetail.endTime) {
+                    return ;
+                }
+                this.taskTempDetail.firstTime = this.taskTempDetail.beginTime;
+                this.taskTempDetail.secondTime = this.taskTempDetail.endTime;
+
                 if(this.taskTempDetail.beginTime != null && this.taskTempDetail.beginTime != null
                    && this.taskTempDetail.endTime != null&& this.taskTempDetail.endTime != null){
                     let userWeeks = [];
