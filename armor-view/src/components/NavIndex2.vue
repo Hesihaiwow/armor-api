@@ -3779,6 +3779,8 @@
                     beginTime:null,
                     endTime:null,
                     createTime:null,
+                    firstTime:null,
+                    secondTime:null,
                     reviewStatus:null,
                     workHours:null,
                     beginWeek:null,
@@ -3877,6 +3879,8 @@
                     workHours:'',
                     reviewStatus:'',
                     createTime:'',
+                    firstTime:'',
+                    secondTime:'',
                     beginTime:'',
                     endTime:'',
                     taskLevel:'',
@@ -5582,6 +5586,11 @@
               }else {
                   this.taskTempAble = false
               }
+              var first = taskTemp.beginTime;
+              var second = taskTemp.endTime;
+                this.taskTempDetail.firstTime = first;
+                this.taskTempDetail.secondTime = second;
+
               this.taskTempDetail.id = taskTemp.id;
               this.taskTempDetail.taskId = taskTemp.taskId;
               this.taskTempDetail.taskName = taskTemp.taskName;
@@ -6205,6 +6214,24 @@
             },
 
             changeTime(){
+                if(this.taskTempDetail.beginTime instanceof Date){
+                    this.taskTempDetail.beginTime = this.taskTempDetail.beginTime.getTime()
+                }
+                if(this.taskTempDetail.endTime instanceof Date){
+                    this.taskTempDetail.endTime = this.taskTempDetail.endTime.getTime()
+                }
+                // console.log("first: "+ this.taskTempDetail.firstTime);
+                // console.log("begin: "+ this.taskTempDetail.beginTime);
+                // console.log(this.taskTempDetail.firstTime === this.taskTempDetail.beginTime &&
+                //     this.taskTempDetail.secondTime === this.taskTempDetail.endTime);
+
+                if (this.taskTempDetail.firstTime === this.taskTempDetail.beginTime &&
+                    this.taskTempDetail.secondTime === this.taskTempDetail.endTime) {
+                    return ;
+                }
+                this.taskTempDetail.firstTime = this.taskTempDetail.beginTime;
+                this.taskTempDetail.secondTime = this.taskTempDetail.endTime;
+
                 if(this.taskTempDetail.beginTime != null && this.taskTempDetail.beginTime !== ''
                     && this.taskTempDetail.endTime != null&& this.taskTempDetail.endTime !== ''){
                     let userWeeks = [];
@@ -7697,6 +7724,8 @@
                 //查询修改任务申请详情
                 http.zsyGetHttp('/task-modify/detail/'+tmId,{},(res=>{
                     this.taskModifyDetail = res.data;
+                    this.taskModifyDetail.firstTime = this.taskModifyDetail.beginTime;
+                    this.taskModifyDetail.secondTime = this.taskModifyDetail.endTime;
                     this.taskFunctionList=[];
                     this.functionLevelList=[];
                     if (this.taskModifyDetail.functionResDTOList !== undefined && this.taskModifyDetail.functionResDTOList.length>0){
@@ -7985,6 +8014,20 @@
                 this.taskModifyWeekNumber = param
             },
             changeTaskModifyTime(){
+                if(this.taskModifyDetail.beginTime instanceof Date){
+                    this.taskModifyDetail.beginTime = this.taskModifyDetail.beginTime.getTime()
+                }
+                if(this.taskModifyDetail.endTime instanceof Date){
+                    this.taskModifyDetail.endTime = this.taskModifyDetail.endTime.getTime()
+                }
+
+                if (this.taskModifyDetail.firstTime === this.taskModifyDetail.beginTime &&
+                    this.taskModifyDetail.secondTime === this.taskModifyDetail.endTime) {
+                    return ;
+                }
+                this.taskTempDetail.firstTime = this.taskTempDetail.beginTime;
+                this.taskTempDetail.secondTime = this.taskTempDetail.endTime;
+
                 if(this.taskModifyDetail.beginTime != null && this.taskModifyDetail.beginTime !== ''
                     && this.taskModifyDetail.endTime != null&& this.taskModifyDetail.endTime !== ''){
                     var userWeeks = [];
@@ -8040,12 +8083,13 @@
 
                             }
                         }
-                    } else {
-                        for(let i = 0;i<=this.taskModifyDetail.endWeek - this.taskModifyDetail.beginWeek;i++){
-                            http.zsyGetHttp('/userWeek/without/'+ this.taskModifyDetail.taskId +'/' + this.taskModifyDetail.userId + '/' + beginYear + '/'
-                                + (this.taskModifyDetail.beginWeek+i), {}, (resp) => {
+                    }
+                    else {
+                        //同年份,且周也是属于同年份
+                        if (this.taskModifyDetail.endWeek >= this.taskModifyDetail.beginWeek) {
+                            for(let i = 0;i<=this.taskModifyDetail.endWeek - this.taskModifyDetail.beginWeek;i++){
                                 let weekData = {
-                                    'weekHours':resp.data,
+                                    'weekHours':0,
                                     'weekNumber': i + this.taskModifyDetail.beginWeek,
                                     'hours': 0,
                                     'year': endYear,
@@ -8053,7 +8097,31 @@
                                         + '至' + moment().year(beginYear).week(i + this.taskModifyDetail.beginWeek).endOf('week').format('MM-DD')
                                 };
                                 userWeeks.push(weekData)
-                            })
+
+                            }
+                        }
+                        //同年份,但是有的周属于上一年,有的属于下一年
+                        else {
+                            for(let i=this.taskModifyDetail.beginWeek;i<moment(this.taskModifyDetail.beginTime).weeksInYear()+1;i++){
+                                let weekData = {
+                                    'weekNumber':i,
+                                    'hours': '',
+                                    'year':beginYear ,
+                                    'weekHours': 0,
+                                    'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                                userWeeks.push(weekData)
+                            }
+                            for(let i=1;i<this.taskModifyDetail.endWeek+1;i++){
+                                let year = endYear + 1;
+                                let weekData = {
+                                    'weekNumber':i,
+                                    'hours': '',
+                                    'year':year ,
+                                    'weekHours': 0,
+                                    'range':moment().year(year).week(i).startOf('week').format('MM-DD')+'至'+moment().year(year).week(i).endOf('week').format('MM-DD') };
+                                userWeeks.push(weekData)
+
+                            }
                         }
                     }
                     // this.taskModifyDetail.userWeekResDTOList = userWeeks;
