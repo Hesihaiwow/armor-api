@@ -3808,28 +3808,90 @@
                     let endYear = moment(this.taskTempDetail.endTime).year();
                     this.taskTempDetail.beginWeek = moment(this.taskTempDetail.beginTime).week();
                     this.taskTempDetail.endWeek = moment(this.taskTempDetail.endTime).week();
+                    if (moment(this.taskTempDetail.beginTime).isAfter(moment(this.taskTempDetail.endTime))){
+                        this.$message({ showClose: true,message: '开始时间不可在截止时间后面',type: 'error'});
+                        return false;
+                    }
+                    if (beginYear !== endYear){
+                        if (this.taskTempDetail.beginWeek > this.taskTempDetail.endWeek){
+                            for(let i=this.taskTempDetail.beginWeek;i<moment(this.taskTempDetail.beginTime).weeksInYear()+1;i++){
+                                    let weekData = {
+                                        'weekNumber':i,
+                                        'hours': '',
+                                        'year':beginYear ,
+                                        'weekHours': 0,
+                                        'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                                    userWeeks.push(weekData)
+                            }
+                            for(let i=1;i<this.taskTempDetail.endWeek+1;i++){
+                                    let weekData = {
+                                        'weekNumber':i,
+                                        'hours': '',
+                                        'year':endYear ,
+                                        'weekHours': 0,
+                                        'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
+                                userWeeks.push(weekData)
 
-                    if (this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek + 1 !== this.taskTempDetail.userWeekTempList.length){
-                        if ((endYear >= beginYear) && (this.taskTempDetail.endWeek >= this.taskTempDetail.beginWeek)){
+                            }
+                        } else {
                             for(let i = 0;i<=this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek;i++){
                                 let weekData = {
                                     'weekHours':0,
                                     'weekNumber': i + this.taskTempDetail.beginWeek,
                                     'hours': 0,
-                                    'year': beginYear,
+                                    'year': endYear,
                                     'range': moment().year(beginYear).week(i + this.taskTempDetail.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i + this.taskTempDetail.beginWeek).endOf('week').format('MM-DD')
                                 };
                                 userWeeks.push(weekData)
 
                             }
                         }
+                    }
+                    else {
+                        //同年份,且周也是属于同年份
+                        if (this.taskTempDetail.endWeek >= this.taskTempDetail.beginWeek) {
+                            for(let i = 0;i<=this.taskTempDetail.endWeek - this.taskTempDetail.beginWeek;i++){
+                                let weekData = {
+                                    'weekHours':0,
+                                    'weekNumber': i + this.taskTempDetail.beginWeek,
+                                    'hours': 0,
+                                    'year': endYear,
+                                    'range': moment().year(beginYear).week(i + this.taskTempDetail.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i + this.taskTempDetail.beginWeek).endOf('week').format('MM-DD')
+                                };
+                                userWeeks.push(weekData)
+
+                            }
+                        }
+                        //同年份,但是有的周属于上一年,有的属于下一年
+                        else {
+                            for(let i=this.taskTempDetail.beginWeek;i<moment(this.taskTempDetail.beginTime).weeksInYear()+1;i++){
+                                let weekData = {
+                                    'weekNumber':i,
+                                    'hours': '',
+                                    'year':beginYear ,
+                                    'weekHours': 0,
+                                    'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                                userWeeks.push(weekData)
+                            }
+                            for(let i=1;i<this.taskTempDetail.endWeek+1;i++){
+                                let year = endYear + 1;
+                                let weekData = {
+                                    'weekNumber':i,
+                                    'hours': '',
+                                    'year':year ,
+                                    'weekHours': 0,
+                                    'range':moment().year(year).week(i).startOf('week').format('MM-DD')+'至'+moment().year(year).week(i).endOf('week').format('MM-DD') };
+                                userWeeks.push(weekData)
+
+                            }
+                        }
+
+                    }
+
                         this.taskTempDetail.userWeekTempList = userWeeks;
                         this.changeTaskTempWeek();
                     }
-                    if (this.taskTempDetail.endWeek < this.taskTempDetail.beginWeek){
-                        this.$message({ showClose: true,message: '开始时间不可在截止时间后面',type: 'error'});
-                    }
-                }
+
 
 
             },
@@ -3989,54 +4051,59 @@
                             param.push(weekData)
                         })
                     }
-                }
-                if (this.taskUser.beginWeek === this.taskUser.endWeek) {
-                    http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' +this.taskUser.beginWeek , {}, (resp) => {
-                        weekData = {
-                            'weekHours':resp.data,
-                            'weekNumber': this.taskUser.beginWeek,
-                            'hours': this.taskUser.taskHours,
-                            'year': beginYear,
-                            'range': moment().year(beginYear).week(this.taskUser.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskUser.beginWeek).endOf('week').format('MM-DD')
-                        };
-                        param.push(weekData)
-                    })
-
-                } else if (this.taskUser.endWeek - this.taskUser.beginWeek > 1) {
-                    for (let i = this.taskUser.beginWeek; i < this.taskUser.endWeek + 1; i++) {
-                        http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                }else {
+                    if (this.taskUser.beginWeek === this.taskUser.endWeek) {
+                        http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' +this.taskUser.beginWeek , {}, (resp) => {
                             weekData = {
                                 'weekHours':resp.data,
-                                'weekNumber': i,
-                                'hours': userWeeks[i-this.taskUser.beginWeek].hours,
+                                'weekNumber': this.taskUser.beginWeek,
+                                'hours': this.taskUser.taskHours,
                                 'year': beginYear,
-                                'range': moment().week(i).year(beginYear).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                                'range': moment().year(beginYear).week(this.taskUser.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskUser.beginWeek).endOf('week').format('MM-DD')
                             };
                             param.push(weekData)
                         })
-                    }
-                } else if (this.taskUser.endWeek - this.taskUser.beginWeek === 1) {
 
-                    http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + this.taskUser.beginWeek, {}, (resp) => {
-                        param.push({
-                            'weekHours':resp.data,
-                            'weekNumber': this.taskUser.beginWeek,
-                            'hours': userWeeks[0].hours,
-                            'year': beginYear,
-                            'range': moment().year(beginYear).week(this.taskUser.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskUser.beginWeek).endOf('week').format('MM-DD')
+                    }
+                    else if (this.taskUser.endWeek - this.taskUser.beginWeek > 1) {
+                        for (let i = this.taskUser.beginWeek; i < this.taskUser.endWeek + 1; i++) {
+                            http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                weekData = {
+                                    'weekHours':resp.data,
+                                    'weekNumber': i,
+                                    'hours': userWeeks[i-this.taskUser.beginWeek].hours,
+                                    'year': beginYear,
+                                    'range': moment().week(i).year(beginYear).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(i).endOf('week').format('MM-DD')
+                                };
+                                param.push(weekData)
+                            })
+                        }
+                    }
+                    else if (this.taskUser.endWeek - this.taskUser.beginWeek === 1) {
+
+                        http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + this.taskUser.beginWeek, {}, (resp) => {
+                            param.push({
+                                'weekHours':resp.data,
+                                'weekNumber': this.taskUser.beginWeek,
+                                'hours': userWeeks[0].hours,
+                                'year': beginYear,
+                                'range': moment().year(beginYear).week(this.taskUser.beginWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskUser.beginWeek).endOf('week').format('MM-DD')
+                            })
+                        });
+                        http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + this.taskUser.endWeek, {}, (resp) => {
+                            param.push({
+                                'weekHours':resp.data,
+                                'weekNumber': this.taskUser.endWeek,
+                                'hours': userWeeks[1].hours,
+                                'year': beginYear,
+                                'range': moment().year(beginYear).week(this.taskUser.endWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskUser.endWeek).endOf('week').format('MM-DD')
+                            })
                         })
-                    });
-                    http.zsyGetHttp('/userWeek/'+ this.taskUser.taskId +'/' + this.taskUser.userId + '/' + beginYear + '/' + this.taskUser.endWeek, {}, (resp) => {
-                        param.push({
-                            'weekHours':resp.data,
-                            'weekNumber': this.taskUser.endWeek,
-                            'hours': userWeeks[1].hours,
-                            'year': beginYear,
-                            'range': moment().year(beginYear).week(this.taskUser.endWeek).startOf('week').format('MM-DD') + '至' + moment().year(beginYear).week(this.taskUser.endWeek).endOf('week').format('MM-DD')
-                        })
-                    })
+
+                    }
 
                 }
+
                 this.taskUserWeekNumber = param
             },
             editMultipleTask(formName) {
@@ -4810,19 +4877,32 @@
                         let beginYear = moment(this.step.beginTime).year();
                         let endYear = moment(this.step.endTime).year();
                         if(beginYear!==endYear){
-                            for(let i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
-                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
-                                    weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
-                                    param.push(weekData)
-                                })
-                            }
-                            for(let i=1;i<this.weekTime.endWeek+1;i++){
-                                http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
-                                    weekData = {'weekNumber':i, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
-                                    param.push(weekData)
-                                })
+                            //当前情况:  开始周是在上一年  截止周在下一年
+                            if(this.weekTime.beginWeek > this.weekTime.endWeek){
+                                for(let i=this.weekTime.beginWeek;i<moment(this.step.beginTime).weeksInYear()+1;i++){
+                                    http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                        weekData = {'weekNumber':i, 'hours': '','year':beginYear ,'weekHours': resp.data,'range':moment().year(beginYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i).endOf('week').format('MM-DD') };
+                                        param.push(weekData)
+                                    })
+                                }
+                                for(let i=1;i<this.weekTime.endWeek+1;i++){
+                                    http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' + this.step.userId + '/' + endYear + '/' + i, {}, (resp) => {
+                                        weekData = {'weekNumber':i, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(endYear).week(i).startOf('week').format('MM-DD')+'至'+moment().year(endYear).week(i).endOf('week').format('MM-DD') };
+                                        param.push(weekData)
+                                    })
 
+                                }
+                            }else {
+                                for (let i = 0;i <= this.weekTime.endWeek - this.weekTime.beginWeek;i++){
+                                    let thisWeek = i+this.weekTime.beginWeek;
+                                    http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.taskId +'/' + this.modifyTaskForm.userId + '/' + endYear + '/' + thisWeek, {}, (resp) => {
+                                        weekData = {'weekNumber':thisWeek, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(endYear).week(thisWeek).startOf('week').format('MM-DD')
+                                                +'至'+moment().year(endYear).week(thisWeek).endOf('week').format('MM-DD') };
+                                        param.push(weekData)
+                                    })
+                                }
                             }
+
                         }
                         else {
                             if(this.weekTime.beginWeek === this.weekTime.endWeek){
@@ -4855,6 +4935,9 @@
                                     date2.setDate(date.getDate() + 7*(i-this.weekTime.beginWeek));
                                     let year = date2.getFullYear();
                                     let week = moment(date2).week();
+                                    if (week == 1){
+                                        year += 1;
+                                    }
                                     http.zsyGetHttp('/userWeek/'+ this.modifyTaskForm.id +'/' +  this.step.userId + '/' + year + '/' + week, {}, (resp) => {
                                         weekData = {'weekNumber':week, 'hours': '','year':year ,'weekHours': resp.data,'range':moment().week(week).year(year).startOf('week').format('MM-DD')+'至'+moment().year(year).week(week).endOf('week').format('MM-DD')  };
                                         param.push(weekData)
@@ -4867,6 +4950,7 @@
                     }
                 }
             },
+            //修改任务申请
             modifyMyTaskForm:{
                 deep:true,
                 handler:function (val, oldVal) {
@@ -4882,33 +4966,46 @@
                         let beginYear = moment(this.modifyMyTaskForm.beginTime).year();
                         let endYear = moment(this.modifyMyTaskForm.endTime).year();
                         if(beginYear!==endYear){
-                            for(let i=this.taskModifyWeekTime.beginWeek;i<moment(this.taskModifyWeekTime.beginTime).weeksInYear()+1;i++){
-                                http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' + this.modifyMyTaskForm.userId + '/' + beginYear + '/' + i, {}, (resp) => {
-                                    weekData = {
-                                        'weekNumber':i,
-                                        'hours': '',
-                                        'year':beginYear ,
-                                        'weekHours': resp.data,
-                                        'range':moment().year(beginYear).week(i)
-                                            .startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i)
-                                            .endOf('week').format('MM-DD') };
-                                    param.push(weekData)
-                                })
-                            }
-                            for(let i=1;i<this.taskModifyWeekTime.endWeek+1;i++){
-                                http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' + this.modifyMyTaskForm.userId + '/' + endYear + '/' + i, {}, (resp) => {
-                                    weekData = {
-                                        'weekNumber':i,
-                                        'hours': '',
-                                        'year':endYear ,
-                                        'weekHours': resp.data,
-                                        'range':moment().year(endYear).week(i).startOf('week')
-                                            .format('MM-DD')+'至'+moment().year(endYear)
-                                            .week(i).endOf('week').format('MM-DD') };
-                                    param.push(weekData)
-                                })
+                            //当前情况:  开始周是在上一年  截止周在下一年
+                            if(this.taskModifyWeekTime.beginWeek > this.taskModifyWeekTime.endWeek){
+                                for(let i=this.taskModifyWeekTime.beginWeek;i<moment(this.taskModifyWeekTime.beginTime).weeksInYear()+1;i++){
+                                    http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' + this.modifyMyTaskForm.userId + '/' + beginYear + '/' + i, {}, (resp) => {
+                                        weekData = {
+                                            'weekNumber':i,
+                                            'hours': '',
+                                            'year':beginYear ,
+                                            'weekHours': resp.data,
+                                            'range':moment().year(beginYear).week(i)
+                                                .startOf('week').format('MM-DD')+'至'+moment().year(beginYear).week(i)
+                                                .endOf('week').format('MM-DD') };
+                                        param.push(weekData)
+                                    })
+                                }
+                                for(let i=1;i<this.taskModifyWeekTime.endWeek+1;i++){
+                                    http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' + this.modifyMyTaskForm.userId + '/' + endYear + '/' + i, {}, (resp) => {
+                                        weekData = {
+                                            'weekNumber':i,
+                                            'hours': '',
+                                            'year':endYear ,
+                                            'weekHours': resp.data,
+                                            'range':moment().year(endYear).week(i).startOf('week')
+                                                .format('MM-DD')+'至'+moment().year(endYear)
+                                                .week(i).endOf('week').format('MM-DD') };
+                                        param.push(weekData)
+                                    })
 
+                                }
+                            }else {
+                                for (let i = 0;i <= this.taskModifyWeekTime.endWeek - this.taskModifyWeekTime.beginWeek;i++){
+                                    let thisWeek = i+this.taskModifyWeekTime.beginWeek;
+                                    http.zsyGetHttp('/userWeek/'+ this.modifyMyTaskForm.taskId +'/' + this.modifyMyTaskForm.userId + '/' + endYear + '/' + thisWeek, {}, (resp) => {
+                                        weekData = {'weekNumber':thisWeek, 'hours': '','year':endYear ,'weekHours': resp.data,'range':moment().year(endYear).week(thisWeek).startOf('week').format('MM-DD')
+                                                +'至'+moment().year(endYear).week(thisWeek).endOf('week').format('MM-DD') };
+                                        param.push(weekData)
+                                    })
+                                }
                             }
+
                         }
                         else {
                             if(this.taskModifyWeekTime.beginWeek === this.taskModifyWeekTime.endWeek){
@@ -4970,6 +5067,9 @@
                                     date2.setDate(date.getDate() + 7*(i-this.taskModifyWeekTime.beginWeek));
                                     let year = date2.getFullYear();
                                     let week = moment(date2).week();
+                                    if (week == 1){
+                                        year += 1;
+                                    }
                                     http.zsyGetHttp('/userWeek/without/'+ this.modifyMyTaskForm.taskId +'/' +  this.modifyMyTaskForm.userId + '/' + year + '/' + week, {}, (resp) => {
                                         weekData = {'weekNumber':week, 'hours': '','year':year ,'weekHours': resp.data,'range':moment().week(week).year(year).startOf('week').format('MM-DD')+'至'+moment().year(year).week(week).endOf('week').format('MM-DD')  };
                                         param.push(weekData)
