@@ -102,6 +102,7 @@
     <!--根据task和user查看任务修改申请-->
     <select id="selectByTaskAndUser" resultMap="BaseMap">
         SELECT * FROM `task_modify_table` WHERE `task_id` = #{taskId} AND `user_id` = #{userId}
+        limit 1
     </select>
     <!--个人查看待审核任务修改申请-->
     <select id="selectListByUser" resultMap="TaskModifyBOMap">
