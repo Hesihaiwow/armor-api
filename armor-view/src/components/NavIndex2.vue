@@ -8025,8 +8025,8 @@
                     this.taskModifyDetail.secondTime === this.taskModifyDetail.endTime) {
                     return ;
                 }
-                this.taskTempDetail.firstTime = this.taskTempDetail.beginTime;
-                this.taskTempDetail.secondTime = this.taskTempDetail.endTime;
+                this.taskModifyDetail.firstTime = this.taskModifyDetail.beginTime;
+                this.taskModifyDetail.secondTime = this.taskModifyDetail.endTime;
 
                 if(this.taskModifyDetail.beginTime != null && this.taskModifyDetail.beginTime !== ''
                     && this.taskModifyDetail.endTime != null&& this.taskModifyDetail.endTime !== ''){
