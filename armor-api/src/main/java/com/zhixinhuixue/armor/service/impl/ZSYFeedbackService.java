@@ -20,6 +20,7 @@ import com.zhixinhuixue.armor.service.IZSYFeedbackService;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYQinuOssProperty;
+import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import com.zhixinhuixue.armor.source.enums.*;
 import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.*;
@@ -68,7 +69,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
 
     @Autowired
     private ZSYQinuOssProperty qinuOssProperty;
-
+    @Autowired
+    private ZSYUFileProperties uFileProperties;
     @Autowired
     private IZSYTaskMapper taskMapper;
 
@@ -1645,6 +1647,149 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         }
 
 
+    }
+
+    /**
+     * 导出
+     * @author sch
+     * @param status 状态
+     */
+    @Override
+    public String exportDemands(Integer status) {
+        List<DemandExportBO> demandExportBOS = feedbackMapper.selectDemandExportByStatus(status);
+        if (!CollectionUtils.isEmpty(demandExportBOS)){
+            //设置表头
+            List<String> headers = new ArrayList<>();
+            headers.add("提出日期");
+            headers.add("期待上线日期");
+            headers.add("来源");
+            headers.add("标题");
+            headers.add("问题");
+            headers.add("建议");
+            headers.add("点赞人数");
+            headers.add("点赞人");
+            headers.add("已读人数");
+            headers.add("回复人");
+            headers.add("回复内容");
+
+            //设置文件名
+            String fileNamePrefix = "";
+            if (status == 0){
+                fileNamePrefix = "待处理需求";
+            }else if (status == 1){
+                fileNamePrefix = "进行中需求";
+            }else if (status == 4){
+                fileNamePrefix = "排队中需求";
+            }
+            String fileName = fileNamePrefix + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+            try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+                 HSSFWorkbook workbook = new HSSFWorkbook()){
+                //创建sheet
+                HSSFSheet sheet = workbook.createSheet("需求");
+                //设置列宽
+                sheet.setDefaultColumnWidth(25);
+                //创建行
+                HSSFRow row = sheet.createRow(0);
+                //创建样式
+                HSSFCellStyle style = workbook.createCellStyle();
+                //设置样式
+                style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+                style.setAlignment(HorizontalAlignment.CENTER_SELECTION);
+                style.setVerticalAlignment(VerticalAlignment.CENTER);
+                //创建字体
+                HSSFFont font = workbook.createFont();
+                //设置字体
+                font.setFontHeightInPoints((short) 15);
+                font.setBold(true);
+                font.setFontName("微软雅黑");
+                style.setFont(font);
+                HSSFCell cell = null;
+                //创建标题
+                for (int i = 0; i < headers.size(); i++) {
+                    cell = row.createCell(i);
+                    cell.setCellValue(headers.get(i));
+                    cell.setCellStyle(style);
+                }
+                int num = 0;
+                //创建内容
+                for (int i = 0; i < demandExportBOS.size(); i++) {
+                    row = sheet.createRow(num + 1);
+                    row.setRowStyle(style);
+                    DemandExportBO demandExportBO = demandExportBOS.get(i);
+                    row.createCell(0).setCellValue(DateHelper.dateFormatter(demandExportBO.getFeedbackTime(),"yyyy-MM-dd"));
+                    if (demandExportBO.getReleaseTime() != null){
+                        row.createCell(1).setCellValue(DateHelper.dateFormatter(demandExportBO.getReleaseTime(),"yyyy-MM-dd"));
+                    }else {
+                        row.createCell(1).setCellValue("");
+                    }
+
+                    //设置来源(0:其他,1:直播,2:小程序,3:IMS,4:学管端)
+                    Integer source = demandExportBO.getSource();
+                    if (source != null){
+                        if (source == 0){
+                            row.createCell(2).setCellValue("其他");
+                        }else if (source == 1){
+                            row.createCell(2).setCellValue("直播课");
+                        }else if (source == 2){
+                            row.createCell(2).setCellValue("小程序");
+                        }else if (source == 3){
+                            row.createCell(2).setCellValue("IMS");
+                        }else if (source == 4){
+                            row.createCell(2).setCellValue("学管端");
+                        }
+                    }else {
+                        row.createCell(2).setCellValue("");
+                    }
+
+                    row.createCell(3).setCellValue(demandExportBO.getTitle());
+                    row.createCell(4).setCellValue(demandExportBO.getQuestion());
+                    row.createCell(5).setCellValue(demandExportBO.getTarget());
+                    row.createCell(6).setCellValue(demandExportBO.getLikesNum()==null?0:demandExportBO.getLikesNum());
+                    List<String> likesPersons = demandExportBO.getLikesPersons();
+                    if (!CollectionUtils.isEmpty(likesPersons)){
+                        String likesPersonStr = "";
+                        for (String likesPerson : likesPersons) {
+                            likesPersonStr = likesPersonStr + "["+likesPerson+"],";
+                        }
+                        row.createCell(7).setCellValue(likesPersonStr);
+                    }else {
+                        row.createCell(7).setCellValue("");
+                    }
+                    if (demandExportBO.getReadNum() != null){
+                        row.createCell(8).setCellValue(demandExportBO.getReadNum());
+                    }else {
+                        row.createCell(8).setCellValue("");
+                    }
+                    List<String> replyPersons = demandExportBO.getReplyPersons();
+                    if (!CollectionUtils.isEmpty(replyPersons)){
+                        String replyPersonStr = "";
+                        for (String replyPerson : replyPersons) {
+                            replyPersonStr = replyPersonStr + "["+replyPerson+"],";
+                        }
+                        row.createCell(9).setCellValue(replyPersonStr);
+                    }else {
+                        row.createCell(9).setCellValue("");
+                    }
+                    List<String> replyContents = demandExportBO.getReplyContents();
+                    if (!CollectionUtils.isEmpty(replyContents)){
+                        String replyContentStr = "";
+                        for (String replyContent : replyContents) {
+                            replyContentStr = replyContentStr + "["+replyContent+"],";
+                        }
+                        row.createCell(10).setCellValue(replyContentStr);
+                    }else {
+                        row.createCell(10).setCellValue("");
+                    }
+                    num++;
+                }
+                workbook.write(os);
+                return ZSYQinuHelper.uploadToUfile(os.toByteArray(), fileName, "application/vnd.ms-excel", uFileProperties);
+            }catch (Exception e){
+                e.printStackTrace();
+                throw new ZSYServiceException("导出表失败");
+            }
+        }
+        return null;
     }
 
     /**

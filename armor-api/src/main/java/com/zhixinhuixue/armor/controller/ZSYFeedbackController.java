@@ -460,4 +460,9 @@ public class ZSYFeedbackController extends ZSYController{
         return ZSYResult.success().build();
     }
 
+    @ApiOperation("导出需求列表")
+    @GetMapping("/export/{status}")
+    public String exportDemands(@PathVariable("status") Integer status){
+        return ZSYResult.success().data(feedbackService.exportDemands(status)).build();
+    }
 }

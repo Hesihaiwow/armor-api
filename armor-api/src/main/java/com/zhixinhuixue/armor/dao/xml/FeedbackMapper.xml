@@ -41,6 +41,16 @@
     <result column="coach_id" property="coachId" jdbcType="INTEGER"></result>
   </resultMap>
 
+  <resultMap id="exportMap" type="com.zhixinhuixue.armor.model.bo.DemandExportBO" extends="basicDemandMap">
+      <association property="readNum" column="id" javaType="java.lang.Integer"
+                   select="selectReadNumById"/>
+    <collection property="likesPersons" column="id" ofType="java.lang.String"
+                   select="selectLikesPersons"/>
+    <collection property="replyPersons" column="id" ofType="java.lang.String"
+                   select="selectReplyPersons"/>
+    <collection property="replyContents" column="id" ofType="java.lang.String"
+                   select="selectReplyContents"/>
+  </resultMap>
 
   <resultMap id="ResultMap" type="com.zhixinhuixue.armor.model.bo.FeedbackBo" extends="BaseResultMap">
     <result column="no" jdbcType="INTEGER" property="no"/>
@@ -1157,5 +1167,29 @@
         SELECT * FROM `feedback` WHERE `charge_man` is null
   </select>
 
+  <!--根据状态查询需求-->
+  <select id="selectDemandExportByStatus" resultMap="exportMap">
+      SELECT * FROM `feedback` WHERE `is_delete` = 0 AND `status` = #{status}
+  </select>
+
+  <!--查询点赞人-->
+  <select id="selectLikesPersons" resultType="java.lang.String">
+    SELECT like_people FROM `feedback_likes` WHERE `feedback_id` = #{demand_id}
+  </select>
+
+  <!--查询已读人数-->
+  <select id="selectReadNumById" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM `feedback_read` WHERE `feedback_id` = #{demand_id}
+  </select>
+
+  <!--查询回复人-->
+  <select id="selectReplyPersons" resultType="java.lang.String">
+    SELECT reply_people FROM `feedback_reply` WHERE `feedback_id` = #{demand_id}
+  </select>
+
+  <!--查询回复-->
+  <select id="selectReplyContents" resultType="java.lang.String">
+    SELECT CONCAT(reply_people,': ',content) FROM `feedback_reply` WHERE `feedback_id` = #{demand_id}
+  </select>
 
 </mapper>

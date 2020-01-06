@@ -409,7 +409,19 @@ public class ZSYSignInService implements IZSYSignInService {
                                     String singleCheckTimeStr = format + " " + checkTimeList[j].trim()+":00";
                                     SignIn signIn = new SignIn();
                                     signIn.setId(snowFlakeIDHelper.nextId());
-                                    signIn.setCheckTime(timeSDF.parse(singleCheckTimeStr));
+                                    Date parse = timeSDF.parse(singleCheckTimeStr);
+                                    Calendar instance = Calendar.getInstance();
+                                    instance.setTime(parse);
+                                    if (instance.get(Calendar.DAY_OF_WEEK) == 5){
+                                        String format1 = dateSDF.format(parse);
+                                        Date todayZero = timeSDF.parse(format1 + " 00:00:00");
+                                        Date todayFive = timeSDF.parse(format1 + " 05:00:00");
+                                        if (parse.compareTo(todayZero)>=0 && parse.compareTo(todayFive)<=0){
+                                            instance.add(Calendar.DAY_OF_MONTH,1);
+                                        }
+
+                                    }
+                                    signIn.setCheckTime(instance.getTime());
                                     signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
                                     signIn.setUserId(userId);
                                     signInList.add(signIn);

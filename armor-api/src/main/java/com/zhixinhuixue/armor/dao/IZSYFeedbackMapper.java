@@ -550,4 +550,11 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     int updateChargeManBatch(@Param("list") List<Demand> list);
+
+    /**
+     * 根据状态查询需求
+     * @author sch
+     * @param status 状态
+     */
+    List<DemandExportBO> selectDemandExportByStatus(@Param("status") Integer status);
 }

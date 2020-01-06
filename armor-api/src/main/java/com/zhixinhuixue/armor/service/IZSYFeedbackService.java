@@ -352,4 +352,11 @@ public interface IZSYFeedbackService {
      * @author sch
      */
     void updateChargeMan();
+
+    /**
+     * 导出
+     * @author sch
+     * @param status 状态
+     */
+    String exportDemands(Integer status);
 }
