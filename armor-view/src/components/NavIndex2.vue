@@ -4574,6 +4574,14 @@
                             this.createMultipleTaskVisible = false;
                             this.taskAble = false;
                             vm.reload()
+                        },(err)=>{
+                            this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                            this.createMultipleTaskVisible = false;
+                            this.taskAble = false;
+                        },error=>{
+                            this.$message({showClose: true, message: error.errMsg, type: 'error'});
+                            this.createMultipleTaskVisible = false;
+                            this.taskAble = false;
                         });
                     } else {
                         this.taskAble = false;
@@ -4682,6 +4690,14 @@
                             this.description = '';
                             this.taskAble = false;
                             vm.reload()
+                        },(err)=>{
+                            this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                            this.taskAble = false;
+                            this.taskTempDetailVisible = false;
+                        },error=>{
+                            this.$message({showClose: true, message: error.errMsg, type: 'error'});
+                            this.taskAble = false;
+                            this.taskTempDetailVisible = false;
                         });
                     } else {
                         this.taskAble = false;
@@ -4743,7 +4759,8 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         // this.taskAble = true;
-                        let param = this.taskTempDetail;
+                        // let param = this.taskTempDetail;
+                        let param = JSON.parse(JSON.stringify(this.taskTempDetail));
                         param.beginTime = moment(param.beginTime).format('YYYY-MM-DD 00:00:00');
                         param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:50');
                         if (param.taskId == null || param.taskId === ''){
@@ -4866,16 +4883,19 @@
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
                             this.description = '';
-                            this.taskAble = false;
                             this.reload();
                             this.fetchPendingTaskTemp();
                         },(err)=>{
+                            this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                            this.accessTaskTempLoading = false;
+                            this.taskTempDetailVisible = false;
                             param.taskTempFunctionList = [];
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
                         },error=>{
+                            this.$message({showClose: true, message: error.errMsg, type: 'error'});
                             this.accessTaskTempLoading = false;
-                            this.taskAble = false;
+                            this.taskTempDetailVisible = false;
                             param.taskTempFunctionList = [];
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
@@ -8045,6 +8065,15 @@
                             this.fetchPersonalTaskModifyAccessed();
                         },err=>{
                             this.isSaving = false;
+                            this.showTaskModifyDetailVisible = false;
+                            this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                            param.taskModifyFunctionList = [];
+                        },error=>{
+                            this.isSaving = false;
+                            this.showTaskModifyDetailVisible = false;
+                            this.$message({showClose: true, message: error.errMsg, type: 'error'});
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
                             param.taskModifyFunctionList = [];
@@ -8210,6 +8239,15 @@
                             this.fetchTaskModifyAccessed();
                         },err=>{
                             this.isSaving = false;
+                            this.showTaskModifyDetailVisible = false;
+                            this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                            param.taskModifyFunctionList = [];
+                        },error=>{
+                            this.isSaving = false;
+                            this.showTaskModifyDetailVisible = false;
+                            this.$message({showClose: true, message: error.errMsg, type: 'error'});
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
                             param.taskModifyFunctionList = [];

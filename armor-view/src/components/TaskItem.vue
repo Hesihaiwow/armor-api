@@ -4492,6 +4492,15 @@
                             // window.history.go(0)
                         },(err)=>{
                             this.isSaving = false;
+                            this.modifyMyTaskVisible = false;
+                            this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                            this.modifyTaskFunctionList = [];
+                            this.modifyFunctionLevelList = [];
+                            param.taskModifyFunctionList = [];
+                        },error=>{
+                            this.$message({showClose: true, message: error.errMsg, type: 'error'});
+                            this.modifyMyTaskVisible = false;
+                            this.isSaving = false;
                             this.modifyTaskFunctionList = [];
                             this.modifyFunctionLevelList = [];
                             param.taskModifyFunctionList = [];
