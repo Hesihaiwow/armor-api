@@ -289,7 +289,7 @@
     </select>
 
     <select id="selectTaskReviewLogByTaskTempAndCheckUser" resultMap="BaseTaskReviewLogMap">
-        SELECT * FROM `task_review_log` WHERE `task_temp_id` = #{ttId} AND `check_user_id` = #{checkUserId}
+        SELECT * FROM `task_review_log` WHERE `task_temp_id` = #{ttId} AND `check_user_id` = #{checkUserId} limit 1
     </select>
 
     <!--查询任务的所有临时任务-->

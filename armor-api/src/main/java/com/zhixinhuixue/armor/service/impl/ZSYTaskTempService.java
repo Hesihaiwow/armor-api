@@ -88,8 +88,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
         List<UserWeekReqDTO> userWeeks = addTaskTempReqDTO.getUserWeeks();
         List<UserWeekTemp> userWeekTempList = new ArrayList<>();
+        BigDecimal totalHours = BigDecimal.ZERO;
         if (!CollectionUtils.isEmpty(userWeeks)){
-            userWeeks.stream().forEach(week ->{
+            for (UserWeekReqDTO week : userWeeks) {
                 UserWeekTemp userWeek = new UserWeekTemp();
                 userWeek.setId(snowFlakeIDHelper.nextId());
                 userWeek.setHours(BigDecimal.valueOf(week.getHours()));
@@ -100,11 +101,14 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 userWeek.setCreateTime(new Date());
                 userWeek.setStatus(1);
                 userWeekTempList.add(userWeek);
-            });
+                totalHours = totalHours.add(BigDecimal.valueOf(week.getHours()));
+            }
         }else {
             throw new ZSYServiceException("周工时为空");
         }
-
+        if (totalHours.compareTo(addTaskTempReqDTO.getWorkHours())!=0){
+            throw new ZSYServiceException("周工作量之和与任务工作量不符,请检查");
+        }
         List<TaskTempFunctionReqDTO> functionReqDTOS = addTaskTempReqDTO.getTaskTempFunctionList();
         List<TaskTempFunction> functionList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(functionReqDTOS)){
@@ -152,8 +156,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
         List<UserWeekReqDTO> userWeeks = editTaskTempReqDTO.getUserWeeks();
         List<UserWeekTemp> userWeekTempList = new ArrayList<>();
+        BigDecimal totalHours = BigDecimal.ZERO;
         if (!CollectionUtils.isEmpty(userWeeks)){
-            userWeeks.stream().forEach(week ->{
+            for (UserWeekReqDTO week : userWeeks) {
                 UserWeekTemp userWeekTemp = new UserWeekTemp();
                 userWeekTemp.setId(snowFlakeIDHelper.nextId());
                 userWeekTemp.setCreateTime(new Date());
@@ -164,8 +169,13 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 userWeekTemp.setWeekNumber(week.getWeekNumber());
                 userWeekTemp.setYear(week.getYear());
                 userWeekTempList.add(userWeekTemp);
-            });
-
+                totalHours = totalHours.add(BigDecimal.valueOf(week.getHours()));
+            }
+        }else {
+            throw new ZSYServiceException("周工时为空");
+        }
+        if (totalHours.compareTo(existTaskTemp.getWorkHours())!=0){
+            throw new ZSYServiceException("周工作量之和与任务工作量不符,请检查");
         }
         if (!CollectionUtils.isEmpty(userWeekTempList)){
             //删除原有的userWeekTemp
@@ -726,7 +736,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         //查询申请人有几级审核人
         List<UserCheckPeopleBO> userCheckPeopleBOS = userMapper.selectUserCheckPeopleByUserId(userId);
         //查询申请人,当前临时任务审核日志
-        List<TaskReviewLogBO> taskReviewLogBOS = taskTempMapper.selectTaskReviewLogByTaskTemp(existTaskTemp.getId());
+//        List<TaskReviewLogBO> taskReviewLogBOS = taskTempMapper.selectTaskReviewLogByTaskTemp(existTaskTemp.getId());
         Integer level = 0;
         for (UserCheckPeopleBO userCheckPeopleBO : userCheckPeopleBOS) {
             if (userCheckPeopleBO.getCheckUserId().equals(ZSYTokenRequestContext.get().getUserId())){
@@ -755,8 +765,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
 
             List<UserWeekReqDTO> userWeeks = editTaskTempReqDTO.getUserWeeks();
             List<UserWeekTemp> userWeekTempList = new ArrayList<>();
+            BigDecimal totalHours = BigDecimal.ZERO;
             if (!CollectionUtils.isEmpty(userWeeks)) {
-                userWeeks.stream().forEach(week -> {
+                for (UserWeekReqDTO week : userWeeks) {
                     UserWeekTemp userWeekTemp = new UserWeekTemp();
                     userWeekTemp.setId(snowFlakeIDHelper.nextId());
                     userWeekTemp.setCreateTime(new Date());
@@ -767,7 +778,12 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                     userWeekTemp.setWeekNumber(week.getWeekNumber());
                     userWeekTemp.setYear(week.getYear());
                     userWeekTempList.add(userWeekTemp);
-                });
+                    totalHours = BigDecimal.valueOf(week.getHours()).add(totalHours);
+                }
+
+            }
+            if (totalHours.compareTo(existTaskTemp.getWorkHours()) != 0){
+                throw new ZSYServiceException("周工作量之和与任务工作量不符,请检查");
             }
             if (!CollectionUtils.isEmpty(userWeekTempList)) {
                 //删除原有的userWeekTemp
@@ -861,7 +877,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 taskUserMapper.insert(taskUser);
 
 
-                List<UserWeekTemp> userWeekTemps = taskTempMapper.selectUserWeekTempByUserAndTask(userId, taskId);
+//                List<UserWeekTemp> userWeekTemps = taskTempMapper.selectUserWeekTempByUserAndTask(userId, taskId);
                 List<UserWeek> userWeekList = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(userWeekTempList)) {
                     List<Long> uwtIds = userWeekTempList.stream().map(UserWeekTemp::getId).collect(Collectors.toList());

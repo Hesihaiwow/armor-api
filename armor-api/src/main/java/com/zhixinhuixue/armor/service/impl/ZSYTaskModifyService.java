@@ -127,7 +127,8 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             }
 
             List<TaskModifyUserWeek> taskModifyUserWeekList = new ArrayList<>();
-            userWeeks.stream().forEach(userWeekReqDTO -> {
+            BigDecimal totalHours = BigDecimal.ZERO;
+            for (UserWeekReqDTO userWeekReqDTO : userWeeks) {
                 TaskModifyUserWeek taskModifyUserWeek = new TaskModifyUserWeek();
                 taskModifyUserWeek.setId(snowFlakeIDHelper.nextId());
                 taskModifyUserWeek.setCreateTime(new Date());
@@ -139,7 +140,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 taskModifyUserWeek.setWeekNumber(userWeekReqDTO.getWeekNumber());
                 taskModifyUserWeek.setYear(userWeekReqDTO.getYear());
                 taskModifyUserWeekList.add(taskModifyUserWeek);
-            });
+                totalHours = totalHours.add(BigDecimal.valueOf(userWeekReqDTO.getHours()));
+            }
+            if (totalHours.compareTo(addTaskModifyReqDTO.getWorkHours())!=0){
+                throw new ZSYServiceException("周工作量之和与任务工作量不符,请检查");
+            }
 
             if (!CollectionUtils.isEmpty(taskModifyUserWeekList)){
                 if (taskModifyMapper.insert(taskModify) == 0){
@@ -370,7 +375,8 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
 
             //删除原来的任务修改申请周工时分配
             taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
-            userWeeks.stream().forEach(userWeekReqDTO -> {
+            BigDecimal totalHours = BigDecimal.ZERO;
+            for (UserWeekReqDTO userWeekReqDTO : userWeeks) {
                 UserWeek userWeek = new UserWeek();
                 userWeek.setTaskId(taskId);
                 userWeek.setUserId(userId);
@@ -391,8 +397,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 taskModifyUserWeek.setStatus(2);
                 taskModifyUserWeek.setCreateTime(new Date());
                 modifyUserWeekList.add(taskModifyUserWeek);
-
-            });
+                totalHours = totalHours.add(BigDecimal.valueOf(userWeekReqDTO.getHours()));
+            }
+            if (totalHours.compareTo(taskModify.getWorkHours())!=0){
+                throw new ZSYServiceException("周工作量之和与任务工作量不符,请检查");
+            }
 
             //更新原来的taskUser
             taskUserMapper.updateByPrimaryKeySelective(taskUser);
@@ -600,8 +609,8 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             taskModify.setEndTime(editTaskModifyReqDTO.getEndTime());
             taskModify.setWorkHours(editTaskModifyReqDTO.getWorkHours());
             taskModify.setTaskLevel(editTaskModifyReqDTO.getTaskLevel());
-
-            userWeeks.stream().forEach(userWeekReqDTO -> {
+            BigDecimal totalHours = BigDecimal.ZERO;
+            for (UserWeekReqDTO userWeekReqDTO : userWeeks) {
                 TaskModifyUserWeek taskModifyUserWeek = new TaskModifyUserWeek();
                 taskModifyUserWeek.setCreateTime(new Date());
                 taskModifyUserWeek.setStatus(1);
@@ -613,7 +622,11 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 taskModifyUserWeek.setTaskId(taskId);
                 taskModifyUserWeek.setId(snowFlakeIDHelper.nextId());
                 taskModifyUserWeekList.add(taskModifyUserWeek);
-            });
+                totalHours = totalHours.add(BigDecimal.valueOf(userWeekReqDTO.getHours()));
+            }
+            if (totalHours.compareTo(taskModify.getWorkHours())!=0){
+                throw new ZSYServiceException("周工作量之和与任务工作量不符,请检查");
+            }
 
             //删除原有的修改任务功能点
             taskModifyFuntionMapper.deleteByTmId(editTaskModifyReqDTO.getId());
