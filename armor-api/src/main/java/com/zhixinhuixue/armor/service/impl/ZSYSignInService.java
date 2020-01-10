@@ -286,6 +286,7 @@ public class ZSYSignInService implements IZSYSignInService {
             Date beginDate = dateSDF.parse(dateStr1);
             Date beginDate2 = null;
             Date endDate = dateSDF.parse(dateStr2);
+            Date endDayFive = timeSDF.parse(dateStr2 + " 05:00:00");
             calendar.setTime(beginDate);
             int beginTimeYear = calendar.get(Calendar.YEAR);
             int beginTimeMonth = calendar.get(Calendar.MONTH) + 1;
@@ -306,6 +307,12 @@ public class ZSYSignInService implements IZSYSignInService {
             //如果有,那么此次只导入这条记录之后的数据
             Integer lastToBegin  = 0;
             if (lastRecord  != null){
+                if (lastRecord.getCheckTime().compareTo(endDayFive)<0){
+                    Calendar instance = Calendar.getInstance();
+                    instance.setTime(lastRecord.getCheckTime());
+                    instance.add(Calendar.DAY_OF_MONTH,-1);
+                    lastRecord.setCheckTime(instance.getTime());
+                }
                 //Excel的开始日期在最后一条记录之前的 情况
                 if (beginDate.compareTo(lastRecord.getCheckTime()) <= 0){
                     //Excel的截止日期也在最后一条记录之前
@@ -548,7 +555,7 @@ public class ZSYSignInService implements IZSYSignInService {
 //                    System.out.println(userName+"  的restHoursLogList = " + restHoursLogList.size());
                 }
                 if (!CollectionUtils.isEmpty(totalRestHourList)){
-                    restHoursLogMapper.insertBatch(totalRestHourList);
+//                    restHoursLogMapper.insertBatch(totalRestHourList);
                 }
                 System.out.println("totalList = " + totalRestHourList.size());
             }

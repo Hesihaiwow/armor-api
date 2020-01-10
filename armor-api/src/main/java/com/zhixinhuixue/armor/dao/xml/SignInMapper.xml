@@ -163,7 +163,7 @@
 
     <!--导入记录的最后一条记录打卡时间-->
     <select id="selectSingInLastRecord" resultMap="BaseSignInMap">
-        SELECT * FROM `sign_in` ORDER BY `check_time` DESC LIMIT 1
+        SELECT * FROM `sign_in` where `type` = 0 ORDER BY `check_time` DESC LIMIT 1
     </select>
 
     <!--分页查询考勤记录-->
