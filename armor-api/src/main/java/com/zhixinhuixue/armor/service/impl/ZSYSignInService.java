@@ -419,15 +419,16 @@ public class ZSYSignInService implements IZSYSignInService {
                                     Date parse = timeSDF.parse(singleCheckTimeStr);
                                     Calendar instance = Calendar.getInstance();
                                     instance.setTime(parse);
-                                    if (instance.get(Calendar.DAY_OF_WEEK) == 5){
+//                                    if (instance.get(Calendar.DAY_OF_WEEK) == 5){
                                         String format1 = dateSDF.format(parse);
                                         Date todayZero = timeSDF.parse(format1 + " 00:00:00");
                                         Date todayFive = timeSDF.parse(format1 + " 05:00:00");
+                                        //如果导入的时间在今日0点到5点之间,默认是下一天的时间,天数加一
                                         if (parse.compareTo(todayZero)>=0 && parse.compareTo(todayFive)<=0){
                                             instance.add(Calendar.DAY_OF_MONTH,1);
                                         }
 
-                                    }
+//                                    }
                                     signIn.setCheckTime(instance.getTime());
                                     signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
                                     signIn.setUserId(userId);
@@ -555,7 +556,7 @@ public class ZSYSignInService implements IZSYSignInService {
 //                    System.out.println(userName+"  的restHoursLogList = " + restHoursLogList.size());
                 }
                 if (!CollectionUtils.isEmpty(totalRestHourList)){
-//                    restHoursLogMapper.insertBatch(totalRestHourList);
+                    restHoursLogMapper.insertBatch(totalRestHourList);
                 }
                 System.out.println("totalList = " + totalRestHourList.size());
             }
