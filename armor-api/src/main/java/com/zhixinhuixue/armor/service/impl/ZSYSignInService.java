@@ -1954,17 +1954,17 @@ public class ZSYSignInService implements IZSYSignInService {
         List<SignInBO> signInBOS = signInMapper.selectAllSignInByMonth(yearAndMonth);
         //查询给定年月的所有考勤人员
         List<User> signInUsers = signInMapper.selectCheckInUsers(yearAndMonth);
-        //查询给定年月每天0点到7点之间的考勤记录
+        //查询给定年月每天0点到5点之间的考勤记录
         List<SignIn> before7Clock = signInMapper.selectAllBetween0And7(yearAndMonth);
         List<Date> dates = signInMapper.selectDatesByYearAndMonth(yearAndMonth);
         //根据用户id  获取对应的  userId--List<SignInBO>   的map
         Map<Long, List<SignInBO>> map = signInBOS.stream().collect(Collectors.groupingBy(SignInBO::getUserId));
         Map<Long,List<SignInResDTO>> resultMap = new HashMap<>();
-        map.keySet().stream().forEach(userId->{
+        map.keySet().forEach(userId->{
             List<SignInResDTO> signInResDTOS = new ArrayList<>();
             List<SignInBO> personalSignIns = map.get(userId);
             if (!CollectionUtils.isEmpty(personalSignIns)){
-                personalSignIns.stream().forEach(personalSignInBo->{
+                personalSignIns.forEach(personalSignInBo->{
                     SignInResDTO resDTO = new SignInResDTO();
                     BeanUtils.copyProperties(personalSignInBo,resDTO);
                     List<User> users = signInUsers.stream().filter(user ->
@@ -2171,7 +2171,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     resDTO.setLessThanNine(0);
                     resDTO.setEWorkTime(null);
                     resDTO.setIsForget(1);
-                    calendar.setTime(dates.get(size-a-1));
+                    calendar.setTime(dates.get(dates.size()-a-1));
                     if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)){
                         resDTO.setIsWeekend(1);
                     }else {
@@ -2207,7 +2207,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     resDTO.setLeaveTime(null);
                     resDTO.setEWorkHours(null);
                     resDTO.setCanReCheck(null);
-                    resDTO.setDate(dates.get(size-a-1));
+                    resDTO.setDate(dates.get(dates.size()-a-1));
                     resDTO.setIsCheckInAfterTen(null);
                     resDTO.setIsCheckOutBeforeSix(null);
                     resDTO.setIsRecheckOut(null);
@@ -2224,7 +2224,8 @@ public class ZSYSignInService implements IZSYSignInService {
                     signInResDTOS.add(resDTO);
                 }
             }
-            resultMap.put(userId,signInResDTOS);
+            List<SignInResDTO> collect = signInResDTOS.stream().sorted(Comparator.comparing(SignInResDTO::getDate).reversed()).collect(Collectors.toList());
+            resultMap.put(userId,collect);
         });
         long time2 = System.currentTimeMillis();
         String url = getSignInExcel(dates, resultMap, signInUsers,yearAndMonth);
