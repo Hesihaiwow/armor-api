@@ -2383,8 +2383,11 @@ public class ZSYSignInService implements IZSYSignInService {
                             }
                         }
                     }
-                    String checkTimeStr = sdf.format(checkInTime)+"  "+sdf.format(checkOutTime);
-                    resDTO.setCheckTimeStr(checkTimeStr);
+                    if (checkInTime != null && checkOutTime != null){
+                        String checkTimeStr = sdf.format(checkInTime)+"  "+sdf.format(checkOutTime);
+                        resDTO.setCheckTimeStr(checkTimeStr);
+                    }
+
                 }
                 page.add(resDTO);
             });
