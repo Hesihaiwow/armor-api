@@ -8097,6 +8097,7 @@
                 });
             },
             accessTaskModify(id,formName){
+
                 let sumHours=0;
                 for(let i=0;i<this.taskModifyWeekNumber.length;i++){
                     if(this.taskModifyWeekNumber[i].hours===''|| this.taskModifyWeekNumber[i].hours=== undefined){
