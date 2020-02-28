@@ -4298,6 +4298,15 @@
                             // window.history.go(0)
                         },(err)=>{
                             this.isSaving = false;
+                            this.taskTempDetailVisible = false;
+                            this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                            param.taskTempFunctionList = [];
+                            this.taskFunctionList = [];
+                            this.functionLevelList = [];
+                        },(error)=>{
+                            this.isSaving = false;
+                            this.taskTempDetailVisible = false;
+                            this.$message({showClose: true, message: error.errMsg, type: 'error'});
                             param.taskTempFunctionList = [];
                             this.taskFunctionList = [];
                             this.functionLevelList = [];
@@ -4319,6 +4328,14 @@
                 }).then(() => {
                     http.zsyDeleteHttp(`/task-temp/delete/` + id, {}, (resp) => {
                         this.$message({showClose: true, message: '删除成功', type: 'success'});
+                        this.$emit('reload');
+                        this.taskTempDetailVisible = false;
+                    },err=>{
+                        this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                        this.$emit('reload');
+                        this.taskTempDetailVisible = false;
+                    },error=>{
+                        this.$message({showClose: true, message: error.errMsg, type: 'error'});
                         this.$emit('reload');
                         this.taskTempDetailVisible = false;
                     })

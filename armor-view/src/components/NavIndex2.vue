@@ -4718,6 +4718,16 @@
                         this.reload();
                         this.fetchPendingTaskTemp();
                         this.taskTempDetailVisible = false;
+                    },err=>{
+                        this.$message({showClose: true, message: err.errMsg, type: 'error'});
+                        this.reload();
+                        this.$emit('reload');
+                        this.taskTempDetailVisible = false;
+                    },error=>{
+                        this.$message({showClose: true, message: error.errMsg, type: 'error'});
+                        this.reload();
+                        this.$emit('reload');
+                        this.taskTempDetailVisible = false;
                     })
                 }).catch(() => {
                 });
