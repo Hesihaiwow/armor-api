@@ -146,6 +146,10 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         Long taskId = editTaskTempReqDTO.getTaskId();
         Long userId = editTaskTempReqDTO.getUserId();
         TaskTemp existTaskTemp = taskTempMapper.selectById(editTaskTempReqDTO.getId());
+        List<TaskReviewLogBO> taskReviewLogBOS = taskTempMapper.selectTaskReviewLogByTaskTemp(editTaskTempReqDTO.getId());
+        if (!CollectionUtils.isEmpty(taskReviewLogBOS)){
+            throw new ZSYServiceException("当前任务(临时)已通过审核,无法修改");
+        }
         if (existTaskTemp == null){
             throw new ZSYServiceException("当前任务(临时)不存在");
         }
@@ -210,9 +214,14 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
     @Override
     @Transactional
     public void deleteTaskTemp(Long id) {
+        Integer userRole = ZSYTokenRequestContext.get().getUserRole();
         TaskTemp existTaskTemp = taskTempMapper.selectById(id);
         if (existTaskTemp == null){
             throw new ZSYServiceException("当前任务(临时)不存在");
+        }
+        List<TaskReviewLogBO> taskReviewLogBOS = taskTempMapper.selectTaskReviewLogByTaskTemp(id);
+        if (ZSYUserRole.ADMINISTRATOR.getValue() != userRole && !CollectionUtils.isEmpty(taskReviewLogBOS)){
+            throw new ZSYServiceException("当前任务(临时)已通过审核,无法删除");
         }
         existTaskTemp.setReviewStatus(3);
         if (taskTempMapper.updateTaskTemp(existTaskTemp) == 0){

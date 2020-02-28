@@ -608,7 +608,7 @@
     <!--查询我的未完成任务-->
     <select id="selectMyRunningTask" resultMap="BaseResultMap">
         SELECT * FROM `task` t LEFT JOIN `task_user` tu ON t.id = tu.task_id
-        WHERE t.is_delete = 0 AND t.review_status = 3 AND t.status = 1 AND tu.status = 1 AND tu.user_id = #{userId}
+        WHERE t.is_delete = 0 AND t.review_status = 3 AND t.status = 1 AND tu.user_id = #{userId}
     </select>
 
     <!--分页查询已评价的任务-->

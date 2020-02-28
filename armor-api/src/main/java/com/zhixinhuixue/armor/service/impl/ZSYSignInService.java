@@ -555,9 +555,9 @@ public class ZSYSignInService implements IZSYSignInService {
                     totalRestHourList.addAll(restHoursLogList);
 //                    System.out.println(userName+"  的restHoursLogList = " + restHoursLogList.size());
                 }
-                if (!CollectionUtils.isEmpty(totalRestHourList)){
-                    restHoursLogMapper.insertBatch(totalRestHourList);
-                }
+//                if (!CollectionUtils.isEmpty(totalRestHourList)){
+//                    restHoursLogMapper.insertBatch(totalRestHourList);
+//                }
                 System.out.println("totalList = " + totalRestHourList.size());
             }
 
