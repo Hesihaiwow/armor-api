@@ -1883,6 +1883,7 @@
                 <el-form-item style="margin-top: -20px" label="申请人">{{eWorkDetail.userName}}</el-form-item>
                 <el-form-item style="margin-top: -20px" label="开始时间">{{eWorkDetail.beginTime | formatTime}}</el-form-item>
                 <el-form-item style="margin-top: -20px" label="截止时间">{{eWorkDetail.endTime | formatTime}}</el-form-item>
+                <el-form-item style="margin-top: -20px" label="参考时间">{{eWorkDetail.checkTimeStr}}</el-form-item>
                 <el-form-item style="margin-top: -20px" label="加班时长">{{eWorkDetail.workHours}}小时</el-form-item>
                 <el-form-item style="margin-top: -20px" label="关联任务">
 
