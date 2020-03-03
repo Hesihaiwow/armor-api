@@ -413,7 +413,11 @@ public class ZSYSignInService implements IZSYSignInService {
                                 String[] checkTimeList = checkTimeStr.split("  \n");
 
                                 for (int j=0;j<checkTimeList.length;j++){
-                                    String singleCheckTimeStr = format + " " + checkTimeList[j].trim()+":00";
+                                    String singleCheckTimeStr = "";
+                                    singleCheckTimeStr = format + " " + checkTimeList[j].trim()+":00";
+                                    if (checkTimeList[j].startsWith("0.")){
+                                        singleCheckTimeStr = format + " 09:30:00";
+                                    }
                                     SignIn signIn = new SignIn();
                                     signIn.setId(snowFlakeIDHelper.nextId());
                                     Date parse = timeSDF.parse(singleCheckTimeStr);
