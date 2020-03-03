@@ -39,6 +39,19 @@ public class ExtraWorkDetailResDTO extends ExtraWork {
      */
     private Long userId;
 
+    /**
+     * 考勤参考
+     */
+    private String checkTimeStr;
+
+    public String getCheckTimeStr() {
+        return checkTimeStr;
+    }
+
+    public void setCheckTimeStr(String checkTimeStr) {
+        this.checkTimeStr = checkTimeStr;
+    }
+
     public String getAvatarUrl() {
         return avatarUrl;
     }

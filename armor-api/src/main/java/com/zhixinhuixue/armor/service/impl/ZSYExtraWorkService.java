@@ -4,10 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYExtraWorkMapper;
-import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
-import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.AddExtraWorkReqDTO;
@@ -25,7 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author SCH
@@ -44,6 +44,8 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
     private IZSYTaskMapper taskMapper;
     @Autowired
     private IZSYRestHoursLogMapper restHoursLogMapper;
+    @Autowired
+    private IZSYSignInMapper signInMapper;
 
     /**
      * 新增加班申请
@@ -201,8 +203,18 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
      */
     @Override
     public List<Task> getMyRunningTaskList(Long userId) {
+        //查询进行中的任务
         List<Task> list = taskMapper.selectMyRunningTask(userId);
-        return list;
+        //查询2020-02总任务已完成的
+        List<Task> list2 = taskMapper.selectTaskDone(userId);
+        List<Task> total = new ArrayList<>();
+        total.addAll(list);
+        total.addAll(list2);
+        total = total.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(
+                () -> new TreeSet<>(Comparator.comparing(Task::getId))
+        ), ArrayList::new));
+        return total;
+//        return list;
     }
 
     /**
@@ -317,6 +329,29 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         ExtraWorkDetailResDTO resDTO = new ExtraWorkDetailResDTO();
         List<Task> taskList = extraWorkMapper.selectTasksByEwId(ewId);
         User user = userMapper.selectByEwId(extraWork.getId());
+        Date beginTime = extraWork.getBeginTime();
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timeSDF2 = new SimpleDateFormat("HH:mm:ss");
+        String dateStr = dateSDF.format(beginTime);
+        Date begin = null;
+        Date end = null;
+
+        try {
+            begin = timeSDF.parse(dateStr + " 00:00:00");
+            end = timeSDF.parse(dateStr + " 23:59:59");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (begin != null && end != null){
+            List<SignIn> signIns = signInMapper.selectSignInByUserAndTimeRange(extraWork.getUserId(), begin, end);
+            if (!CollectionUtils.isEmpty(signIns)){
+                String checkTimeStr = signIns.stream().sorted(Comparator.comparing(SignIn::getCheckTime))
+                        .map(signIn -> timeSDF2.format(signIn.getCheckTime()))
+                        .collect(Collectors.joining(","));
+                resDTO.setCheckTimeStr(checkTimeStr);
+            }
+        }
         resDTO.setUserId(user.getId());
         resDTO.setAvatarUrl(user.getAvatarUrl());
         resDTO.setUserName(user.getName());

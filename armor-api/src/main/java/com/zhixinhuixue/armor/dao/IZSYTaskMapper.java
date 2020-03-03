@@ -235,6 +235,13 @@ public interface IZSYTaskMapper {
     List<Task> selectMyRunningTask(@Param("userId")Long userId);
 
     /**
+     * 查询2020-02总任务已完成的
+     * @param userId
+     * @return
+     */
+    List<Task> selectTaskDone(@Param("userId")Long userId);
+
+    /**
      * 分页查询已评价的任务
      * @param userId
      * @return
