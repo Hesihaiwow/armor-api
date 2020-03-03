@@ -336,21 +336,62 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         String dateStr = dateSDF.format(beginTime);
         Date begin = null;
         Date end = null;
+        Date todayFive = null;
+        Date today15 = null;
 
         try {
             begin = timeSDF.parse(dateStr + " 00:00:00");
             end = timeSDF.parse(dateStr + " 23:59:59");
+            todayFive = timeSDF.parse(dateStr + " 05:00:00");
+            today15 = timeSDF.parse(dateStr + " 15:00:00");
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (begin != null && end != null){
-            List<SignIn> signIns = signInMapper.selectSignInByUserAndTimeRange(extraWork.getUserId(), begin, end);
-            if (!CollectionUtils.isEmpty(signIns)){
-                String checkTimeStr = signIns.stream().sorted(Comparator.comparing(SignIn::getCheckTime))
-                        .map(signIn -> timeSDF2.format(signIn.getCheckTime()))
-                        .collect(Collectors.joining(","));
-                resDTO.setCheckTimeStr(checkTimeStr);
+        if (todayFive != null && end != null){
+            //查询申请当日考勤
+            List<SignIn> signIns = signInMapper.selectSignInByUserAndTimeRange(extraWork.getUserId(), todayFive, end);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(begin);
+            int weekNum = calendar.get(Calendar.DAY_OF_WEEK);
+            String weekday = getWeekday(weekNum);
+            calendar.add(Calendar.DAY_OF_MONTH,1);
+            Date nextZero = calendar.getTime();
+            Date nextFive = null;
+            String nextDateStr = dateSDF.format(nextZero);
+            try {
+                nextFive = timeSDF.parse(nextDateStr + " 05:00:00");
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            //查询第二天0点--5点考勤
+            List<SignIn> signIns1 = signInMapper.selectSignInByUserAndTimeRange(extraWork.getUserId(), nextZero, nextFive);
+
+            String checkInStr = " ";
+            String checkOutStr = " ";
+            if (!CollectionUtils.isEmpty(signIns)){
+                List<Date> collect = signIns.stream().sorted(Comparator.comparing(SignIn::getCheckTime))
+                        .map(SignIn::getCheckTime)
+                        .collect(Collectors.toList());
+                //当日存在考勤,则第一条为上班打卡
+                checkInStr = timeSDF2.format(collect.get(0));
+
+                //当日最后一条在15点之后,暂定为当日下班打卡
+                Date date = collect.get(collect.size() - 1);
+                if (date.compareTo(today15)>=0){
+                    checkOutStr = timeSDF2.format(date);
+                }
+            }
+
+            //第二日0点--5点存在考勤,则最后一条为前一日的下班打卡
+            if (!CollectionUtils.isEmpty(signIns1)){
+                List<Date> collect = signIns1.stream().sorted(Comparator.comparing(SignIn::getCheckTime))
+                        .map(SignIn::getCheckTime)
+                        .collect(Collectors.toList());
+                checkOutStr = timeSDF2.format(collect.get(collect.size()-1))+"(+1)";
+            }
+
+            String checkTimeStr = weekday + ",   上班: " + checkInStr + ",   下班: " + checkOutStr;
+            resDTO.setCheckTimeStr(checkTimeStr);
         }
         resDTO.setUserId(user.getId());
         resDTO.setAvatarUrl(user.getAvatarUrl());
@@ -358,5 +399,37 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         BeanUtils.copyProperties(extraWork,resDTO);
         resDTO.setTasks(taskList);
         return resDTO;
+    }
+
+    private String  getWeekday(int weekNum) {
+        String weekday;
+        switch (weekNum){
+            case 1:
+                weekday = "星期日";
+                break;
+            case 2:
+                weekday = "星期一";
+                break;
+            case 3:
+                weekday = "星期二";
+                break;
+            case 4:
+                weekday = "星期三";
+                break;
+            case 5:
+                weekday = "星期四";
+                break;
+            case 6:
+                weekday = "星期五";
+                break;
+            case 7:
+                weekday = "星期六";
+                break;
+            default:
+                weekday = "";
+                break;
+        }
+
+        return weekday;
     }
 }
