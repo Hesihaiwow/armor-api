@@ -67,7 +67,9 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         extraWork.setReviewStatus(0);
         extraWork.setCreateTime(new Date());
         extraWork.setUserId(ZSYTokenRequestContext.get().getUserId());
-
+        Float workHours = reqDTO.getWorkHours();
+        int i = workHours.intValue();
+        extraWork.setWorkHours(Float.valueOf(i));
         if (extraWorkMapper.addExtraWork(extraWork) == 0){
             throw new ZSYServiceException("新增加班申请失败");
         }
@@ -110,6 +112,9 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
             throw new ZSYServiceException("加班申请不存在");
         }
         BeanUtils.copyProperties(reqDTO,extraWork);
+        Float workHours = reqDTO.getWorkHours();
+        int i = workHours.intValue();
+        extraWork.setWorkHours(Float.valueOf(i));
         extraWork.setUpdateTime(new Date());
         if (extraWorkMapper.updateExtraWorkById(extraWork,ewId) == 0){
             throw new ZSYServiceException("更新加班申请失败");
