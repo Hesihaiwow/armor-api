@@ -5613,14 +5613,15 @@
                 }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.extraWorkForm.workHours);
+                        // let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.extraWorkForm.workHours);
+                        let ishours = /^[1-9]\d*$/.test(this.extraWorkForm.workHours);
                         if (!ishours) {
-                            this.$message({showClose: true, message: '加班时长填写错误', type: 'error'});
+                            this.$message({showClose: true, message: '加班时长为整数', type: 'error'});
                             this.isSaving = false;
                             return false;
                         }
-                        if (this.extraWorkForm.workHours > 99999.9 || this.extraWorkForm.workHours < 0) {
-                            this.$message({showClose: true, message: '加班时长正确值应为0~99999.9', type: 'error'});
+                        if (this.extraWorkForm.workHours > 24 || this.extraWorkForm.workHours < 0) {
+                            this.$message({showClose: true, message: '加班时长正确值应为0~24', type: 'error'});
                             this.isSaving = false;
                             return false;
                         }
@@ -5641,7 +5642,19 @@
                                 this.createExtraWorkVisible = false;
                                 this.isSaving = false
                             }, err => {
-                                this.isSaving = false
+                                this.isSaving = false;
+                                this.$message({
+                                    showClose: true,
+                                    message: err.errMsg,
+                                    type: 'error'
+                                });
+                            }, error => {
+                                this.isSaving = false;
+                                this.$message({
+                                    showClose: true,
+                                    message: error.errMsg,
+                                    type: 'error'
+                                });
                             })
                         }
 
@@ -5688,13 +5701,16 @@
                 }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.extraWorkForm.workHours);
+                        // let ishours = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/.test(this.extraWorkForm.workHours);
+                        let ishours = /^[1-9]\d*$/.test(this.extraWorkForm.workHours);
                         if (!ishours) {
-                            this.$message({showClose: true, message: '加班时长填写错误', type: 'error'});
+                            this.$message({showClose: true, message: '加班时长为整数', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
-                        if (this.extraWorkForm.workHours > 99999.9 || this.extraWorkForm.workHours < 0) {
-                            this.$message({showClose: true, message: '加班时长正确值应为0~99999.9', type: 'error'});
+                        if (this.extraWorkForm.workHours > 24 || this.extraWorkForm.workHours < 0) {
+                            this.$message({showClose: true, message: '加班时长正确值应为0~24', type: 'error'});
+                            this.isSaving = false;
                             return false;
                         }
                         this.extraWorkForm.beginTime = moment(this.extraWorkForm.beginTime).toDate();
@@ -5715,7 +5731,19 @@
                                 this.editEWorkVisible = false;
                                 this.isSaving = false
                             }, err => {
-                                this.isSaving = false
+                                this.isSaving = false;
+                                this.$message({
+                                    showClose: true,
+                                    message: err.errMsg,
+                                    type: 'error'
+                                });
+                            }, error => {
+                                this.isSaving = false;
+                                this.$message({
+                                    showClose: true,
+                                    message: error.errMsg,
+                                    type: 'error'
+                                });
                             })
                         }
 
