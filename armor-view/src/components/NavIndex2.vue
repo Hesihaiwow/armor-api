@@ -2062,7 +2062,8 @@
                 </el-form-item>
                 <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                 <el-form-item label="加班时长" prop="hours">
-                    <el-input type="input" v-model="extraWorkForm.workHours" style="width:100px"></el-input>
+                    <el-input type="input" v-model="extraWorkForm.workHours" style="width:180px"
+                    placeholder="请填写整数时长"></el-input>
                     小时
                 </el-form-item>
                 <span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>

@@ -18,94 +18,6 @@
                     <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <!--<el-tab-pane label="周发版计划" name="weekPublish"  style="">-->
-                <!--<div class="add-member-basic-msg fl">-->
-                    <!--<el-date-picker-->
-                            <!--v-model="weekPublishReqDTO.beginTime"-->
-                            <!--align="right"-->
-                            <!--type="date"-->
-                            <!--value-format="yyyy-MM-dd"-->
-                            <!--clearable-->
-                            <!--placeholder="请选择开始时间"-->
-                    <!--&gt;-->
-                    <!--</el-date-picker>-->
-                    <!--<span style="font-size: 14px;color: #606266;">-</span>-->
-                    <!--<el-date-picker-->
-                            <!--v-model="weekPublishReqDTO.endTime"-->
-                            <!--align="right"-->
-                            <!--type="date"-->
-                            <!--value-format="yyyy-MM-dd"-->
-                            <!--clearable-->
-                            <!--placeholder="请选择截止时间"-->
-                    <!--&gt;-->
-                    <!--</el-date-picker>-->
-                <!--</div>-->
-                <!--&lt;!&ndash;<div class="add-member-basic-msg fl" >&ndash;&gt;-->
-                    <!--&lt;!&ndash;<el-date-picker&ndash;&gt;-->
-                            <!--&lt;!&ndash;v-model="weekPublishReqDTO.date"&ndash;&gt;-->
-                            <!--&lt;!&ndash;:picker-options="pickerWeek"&ndash;&gt;-->
-                            <!--&lt;!&ndash;type="week"&ndash;&gt;-->
-                            <!--&lt;!&ndash;format="yyyy 第 WW 周"&ndash;&gt;-->
-                            <!--&lt;!&ndash;placeholder="选择周">&ndash;&gt;-->
-                    <!--&lt;!&ndash;</el-date-picker>&ndash;&gt;-->
-                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                <!--&lt;!&ndash;<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPLastWeek()">第{{lastWeek}}周</el-button></div>&ndash;&gt;-->
-                <!--&lt;!&ndash;<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPCurrentWeek()">当前第{{currentWeek}}周</el-button></div>&ndash;&gt;-->
-                <!--&lt;!&ndash;<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPNextWeek()">第{{nextWeek}}周</el-button></div>&ndash;&gt;-->
-                <!--<div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>-->
-                <!--<el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>-->
-                <!--<el-table :data="weekPublishData" border>-->
-                    <!--<el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>-->
-                    <!--<el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>-->
-                    <!--<el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="zujuan" label="组卷" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="xueyebaogao" label="学业报告" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="chanpin" label="产品" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>-->
-                    <!--&lt;!&ndash;<el-table-column label="设计截止时间" align="center" width="175">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<template scope="scope">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<span>{{scope.row.beginTime | formatDate1}}</span><span> ({{scope.row.designDays}})</span>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</template>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</el-table-column>&ndash;&gt;-->
-                    <!--<el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>-->
-                    <!--&lt;!&ndash;<el-table-column label="开发截止时间" align="center" width="175">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<template scope="scope">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatDate1}}</span>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<span v-else-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatDate1}}</span>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<span v-else>{{scope.row.testTime | formatDate1}}</span>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<span>({{scope.row.developDays}})</span>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</template>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</el-table-column>&ndash;&gt;-->
-                    <!--<el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>-->
-                    <!--&lt;!&ndash;<el-table-column label="截止时间" align="center" width="175">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<template scope="scope">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<span>{{scope.row.endTime | formatDate1}}</span><span> ({{scope.row.testDays}})</span>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</template>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</el-table-column>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<el-table-column prop="platforms" label="需要发布平台" align="center" width="130"></el-table-column>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<el-table-column label="是否可以发布上线" align="center" width="100">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<template scope="scope">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<el-tooltip content="点击更改状态" placement="top">&ndash;&gt;-->
-                                <!--&lt;!&ndash;<i class="el-icon-circle-check" v-if="scope.row.canOnline===1"&ndash;&gt;-->
-                                   <!--&lt;!&ndash;@click="updateCanOnline(scope.row.canOnline,scope.row.wppId)" style="cursor: pointer;color: lawngreen"></i>&ndash;&gt;-->
-                                <!--&lt;!&ndash;<i class="el-icon-circle-close" v-else style="cursor: pointer;color: red;"&ndash;&gt;-->
-                                   <!--&lt;!&ndash;@click="updateCanOnline(scope.row.canOnline,scope.row.wppId)"></i>&ndash;&gt;-->
-                            <!--&lt;!&ndash;</el-tooltip>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</template>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</el-table-column>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<el-table-column prop="condition" label="任务发布情况" align="center" width="200"></el-table-column>&ndash;&gt;-->
-                    <!--<el-table-column prop="realTestTime" label="实际测试时间" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="onlineTime" label="预估上线时间" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column label="操作" width="80" align="center">-->
-                        <!--<template scope="scope">-->
-                            <!--<el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>-->
-                        <!--</template>-->
-                    <!--</el-table-column>-->
-                <!--</el-table>-->
-            <!--</el-tab-pane>-->
             <el-tab-pane label="周发版计划" name="weekPublish"  style="">
                 <div class="add-member-basic-msg fl">
                     <el-date-picker
@@ -128,38 +40,126 @@
                     >
                     </el-date-picker>
                 </div>
-                <div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlanByCharge()" class="search-btn"></div>
-                <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlanByCharge">测试中</el-checkbox>
-                <el-table :data="weekPublishByChargeData" border>
-                    <el-table-column type="expand">
+                <!--<div class="add-member-basic-msg fl" >-->
+                    <!--<el-date-picker-->
+                            <!--v-model="weekPublishReqDTO.date"-->
+                            <!--:picker-options="pickerWeek"-->
+                            <!--type="week"-->
+                            <!--format="yyyy 第 WW 周"-->
+                            <!--placeholder="选择周">-->
+                    <!--</el-date-picker>-->
+                <!--</div>-->
+                <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPLastWeek()">第{{lastWeek}}周</el-button></div>-->
+                <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPCurrentWeek()">当前第{{currentWeek}}周</el-button></div>-->
+                <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPNextWeek()">第{{nextWeek}}周</el-button></div>-->
+                <div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>
+                <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
+                <el-table :data="weekPublishData" border>
+                    <el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>
+                    <el-table-column prop="createByName" label="负责人" align="center" width="90" fixed></el-table-column>
+                    <el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>
+                    <el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="120"></el-table-column>
+                    <el-table-column prop="zujuan" label="组卷" align="center" width="120"></el-table-column>
+                    <el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>
+                    <el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>
+                    <el-table-column prop="xueyebaogao" label="学业报告" align="center" width="120"></el-table-column>
+                    <!--<el-table-column prop="chanpin" label="产品" align="center" width="120"></el-table-column>-->
+                    <!--<el-table-column label="设计截止时间" align="center" width="175">-->
+                        <!--<template scope="scope">-->
+                            <!--<span>{{scope.row.beginTime | formatDate1}}</span><span> ({{scope.row.designDays}})</span>-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
+                    <!--<el-table-column label="开发截止时间" align="center" width="175">-->
+                        <!--<template scope="scope">-->
+                            <!--<span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatDate1}}</span>-->
+                            <!--<span v-else-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatDate1}}</span>-->
+                            <!--<span v-else>{{scope.row.testTime | formatDate1}}</span>-->
+                            <!--<span>({{scope.row.developDays}})</span>-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
+                    <!--<el-table-column label="截止时间" align="center" width="175">-->
+                        <!--<template scope="scope">-->
+                            <!--<span>{{scope.row.endTime | formatDate1}}</span><span> ({{scope.row.testDays}})</span>-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="platforms" label="需要发布平台" align="center" width="130"></el-table-column>-->
+                    <!--<el-table-column label="是否可以发布上线" align="center" width="100">-->
+                        <!--<template scope="scope">-->
+                            <!--<el-tooltip content="点击更改状态" placement="top">-->
+                                <!--<i class="el-icon-circle-check" v-if="scope.row.canOnline===1"-->
+                                   <!--@click="updateCanOnline(scope.row.canOnline,scope.row.wppId)" style="cursor: pointer;color: lawngreen"></i>-->
+                                <!--<i class="el-icon-circle-close" v-else style="cursor: pointer;color: red;"-->
+                                   <!--@click="updateCanOnline(scope.row.canOnline,scope.row.wppId)"></i>-->
+                            <!--</el-tooltip>-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="condition" label="任务发布情况" align="center" width="200"></el-table-column>-->
+                    <el-table-column prop="realTestTime" label="实际测试时间" align="center" width="120"></el-table-column>
+                    <el-table-column prop="onlineTime" label="预估上线时间" align="center" width="120"></el-table-column>
+                    <el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="120"></el-table-column>
+                    <el-table-column label="操作" width="80" align="center">
                         <template scope="scope">
-                            <el-table :data=scope.row.publishResDTOList>
-                                <el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>
-                                <el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="130"></el-table-column>
-                                <el-table-column prop="zujuan" label="组卷" align="center" width="120"></el-table-column>
-                                <el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>
-                                <el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>
-                                <el-table-column prop="xueyebaogao" label="学业报告" align="center" width="120"></el-table-column>
-                                <el-table-column prop="chanpin" label="产品" align="center" width="120"></el-table-column>
-                                <!--<el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>-->
-                                <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
-                                <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
-                                <el-table-column prop="realTestTime" label="实际测试时间" align="center" width="130"></el-table-column>
-                                <el-table-column prop="onlineTime" label="预估上线时间" align="center" width="130"></el-table-column>
-                                <el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="130"></el-table-column>
-                                <el-table-column label="操作" width="80" align="center">
-                                <template scope="scope">
-                                <el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>
-                                </template>
-                                </el-table-column>
-                            </el-table>
+                            <el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>
                         </template>
                     </el-table-column>
-                    <el-table-column label="姓名" prop="userName" align="center"></el-table-column>
-                    <!--<el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>-->
-
                 </el-table>
             </el-tab-pane>
+            <!--<el-tab-pane label="周发版计划" name="weekPublish"  style="">-->
+                <!--<div class="add-member-basic-msg fl">-->
+                    <!--<el-date-picker-->
+                            <!--v-model="weekPublishReqDTO.beginTime"-->
+                            <!--align="right"-->
+                            <!--type="date"-->
+                            <!--value-format="yyyy-MM-dd"-->
+                            <!--clearable-->
+                            <!--placeholder="请选择开始时间"-->
+                    <!--&gt;-->
+                    <!--</el-date-picker>-->
+                    <!--<span style="font-size: 14px;color: #606266;">-</span>-->
+                    <!--<el-date-picker-->
+                            <!--v-model="weekPublishReqDTO.endTime"-->
+                            <!--align="right"-->
+                            <!--type="date"-->
+                            <!--value-format="yyyy-MM-dd"-->
+                            <!--clearable-->
+                            <!--placeholder="请选择截止时间"-->
+                    <!--&gt;-->
+                    <!--</el-date-picker>-->
+                <!--</div>-->
+                <!--<div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlanByCharge()" class="search-btn"></div>-->
+                <!--<el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlanByCharge">测试中</el-checkbox>-->
+                <!--<el-table :data="weekPublishByChargeData" border>-->
+                    <!--<el-table-column type="expand">-->
+                        <!--<template scope="scope">-->
+                            <!--<el-table :data=scope.row.publishResDTOList>-->
+                                <!--<el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>-->
+                                <!--<el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="130"></el-table-column>-->
+                                <!--<el-table-column prop="zujuan" label="组卷" align="center" width="120"></el-table-column>-->
+                                <!--<el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>-->
+                                <!--<el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>-->
+                                <!--<el-table-column prop="xueyebaogao" label="学业报告" align="center" width="120"></el-table-column>-->
+                                <!--<el-table-column prop="chanpin" label="产品" align="center" width="120"></el-table-column>-->
+                                <!--&lt;!&ndash;<el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>&ndash;&gt;-->
+                                <!--<el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>-->
+                                <!--<el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>-->
+                                <!--<el-table-column prop="realTestTime" label="实际测试时间" align="center" width="130"></el-table-column>-->
+                                <!--<el-table-column prop="onlineTime" label="预估上线时间" align="center" width="130"></el-table-column>-->
+                                <!--<el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="130"></el-table-column>-->
+                                <!--<el-table-column label="操作" width="80" align="center">-->
+                                <!--<template scope="scope">-->
+                                <!--<el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>-->
+                                <!--</template>-->
+                                <!--</el-table-column>-->
+                            <!--</el-table>-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column label="姓名" prop="userName" align="center"></el-table-column>-->
+                    <!--&lt;!&ndash;<el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>&ndash;&gt;-->
+
+                <!--</el-table>-->
+            <!--</el-tab-pane>-->
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
@@ -1499,9 +1499,9 @@
                     <el-form-item  label="是否涉及学业报告: ">
                         <el-input type="input" style="width: 280px"  v-model="weekPublish.xueyebaogao"></el-input>
                     </el-form-item>
-                    <el-form-item  label="是否涉及产品: ">
-                        <el-input type="input" style="width: 300px"  v-model="weekPublish.chanpin"></el-input>
-                    </el-form-item>
+                    <!--<el-form-item  label="是否涉及产品: ">-->
+                        <!--<el-input type="input" style="width: 300px"  v-model="weekPublish.chanpin"></el-input>-->
+                    <!--</el-form-item>-->
                     <el-form-item  label="实际测试时间: ">
                         <el-input type="input" style="width: 300px"  v-model="weekPublish.realTestTime"></el-input>
                     </el-form-item>
@@ -4450,7 +4450,8 @@
                 this.weekPublishReqDTO.beginTime = begin;
                 this.weekPublishReqDTO.endTime = end;
 
-                this.fetchWeekPublishPlanByCharge()
+                // this.fetchWeekPublishPlanByCharge();
+                this.fetchWeekPublishPlan()
             },
             editWeekPublish(weekPublish){
                 this.weekPublish.id = weekPublish.wppId;

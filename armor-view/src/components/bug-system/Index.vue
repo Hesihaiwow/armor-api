@@ -110,6 +110,7 @@
                 // console.log(66)
             },
             handleClick(tab, event) {
+                this.$router.push({path: '/index/bug', query: {type:tab.name,userId:''}});
                 if(this.activeName == 'add'){
                     this.editBugData.tbId = '';
                     this.editBugData.isEdit = false;
