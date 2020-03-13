@@ -54,11 +54,16 @@
                 <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPNextWeek()">第{{nextWeek}}周</el-button></div>-->
                 <div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>
                 <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
+
                 <el-table :data="weekPublishData" border>
-                    <el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>
+                    <el-table-column type="index" label="序号" align="center" width="80" fixed>
+                        <template scope="scope">
+                            {{(weekPublishReqDTO.pageNum-1)*20 + scope.$index + 1}}
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="createByName" label="负责人" align="center" width="90" fixed></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>
-                    <el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="120"></el-table-column>
+                    <el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="130"></el-table-column>
                     <el-table-column prop="zujuan" label="组卷" align="center" width="120"></el-table-column>
                     <el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>
                     <el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>
@@ -96,15 +101,24 @@
                         <!--</template>-->
                     <!--</el-table-column>-->
                     <!--<el-table-column prop="condition" label="任务发布情况" align="center" width="200"></el-table-column>-->
-                    <el-table-column prop="realTestTime" label="实际测试时间" align="center" width="120"></el-table-column>
-                    <el-table-column prop="onlineTime" label="预估上线时间" align="center" width="120"></el-table-column>
-                    <el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="120"></el-table-column>
-                    <el-table-column label="操作" width="80" align="center">
+                    <el-table-column prop="realTestTime" label="实际测试时间" align="center" width="130"></el-table-column>
+                    <el-table-column prop="onlineTime" label="预估上线时间" align="center" width="130"></el-table-column>
+                    <el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="130"></el-table-column>
+                    <el-table-column label="操作" width="80" align="center" fixed="right">
                         <template scope="scope">
                             <el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="handleWeekPublishCurrentChange"
+                            :current-page.sync="weekPublishReqDTO.pageNum"
+                            :page-size="weekPublishPage.pageSize"
+                            :layout="weekPublishPageLayout"
+                            :total="weekPublishPage.total">
+                    </el-pagination>
+                </div>
             </el-tab-pane>
             <!--<el-tab-pane label="周发版计划" name="weekPublish"  style="">-->
                 <!--<div class="add-member-basic-msg fl">-->
@@ -2053,10 +2067,15 @@
                 editWeekPublishVisible: false,
                 weekPublishDate:'',
                 weekPublishReqDTO:{
+                    pageNum:1,
                     date:'',
                     beginTime:'',
                     endTime:'',
                     isTesting:false
+                },
+                weekPublishPage:{
+                    pageSize: 20,
+                    total: 0,
                 },
                 weekPublish:{
                     id:'',
@@ -2204,6 +2223,12 @@
             },
             pageLayout() {
                 if (this.bugFormPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+            weekPublishPageLayout() {
+                if (this.weekPublishPage.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -2647,6 +2672,10 @@
             handleCurrentChange(currentPage){
                 this.bugList.pageNum = currentPage;
                 this.fetchBugPage();
+            },
+            handleWeekPublishCurrentChange(currentPage){
+                this.weekPublishReqDTO.pageNum = currentPage;
+                this.fetchWeekPublishPlan();
             },
             handleOldBugChange(currentPage){
                 this.oldBugList.pageNum = currentPage;
@@ -4414,7 +4443,8 @@
                 this.weekPublishReqDTO.beginTime = moment(this.weekPublishReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
                 this.weekPublishReqDTO.endTime = moment(this.weekPublishReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
                 Http.zsyPostHttp('week-publish/list',this.weekPublishReqDTO,(res)=>{
-                    this.weekPublishData = res.data;
+                    this.weekPublishData = res.data.list;
+                    this.weekPublishPage.total = res.data.total;
                 })
             },
             //根据任务负责人分组查询周发版计划
