@@ -7,6 +7,10 @@ import java.util.Date;
  * @DATE 2019/6/11 10:04
  */
 public class WeekPublishQueryReqDTO {
+    /**
+     * 页码
+     */
+    private Integer pageNum;
 
     /**
      * 是否测试中
@@ -22,6 +26,22 @@ public class WeekPublishQueryReqDTO {
      * 任务截止时间  结束
      */
     private Date endTime;
+
+    public Integer getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public Boolean getTesting() {
+        return isTesting;
+    }
+
+    public void setTesting(Boolean testing) {
+        isTesting = testing;
+    }
 
     public Boolean getIsTesting() {
         return isTesting;

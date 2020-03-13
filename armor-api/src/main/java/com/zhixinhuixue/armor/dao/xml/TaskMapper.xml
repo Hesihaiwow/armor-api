@@ -695,6 +695,7 @@
             AND t.stage_id = 212754785051344896
         </if>
         GROUP BY t.id
+        ORDER BY t.create_by,t.end_time DESC
     </select>
 
 

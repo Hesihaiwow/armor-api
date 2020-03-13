@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.service;
 
+import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishEditReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.WeekPublishResDTO;
@@ -18,7 +19,7 @@ public interface IZSYWeekPublishService {
      * @author sch
      * @param reqDTO 参数
      */
-    List<WeekPublishTaskResDTO> list(WeekPublishQueryReqDTO reqDTO);
+    PageInfo<WeekPublishTaskResDTO> list(WeekPublishQueryReqDTO reqDTO);
 
     /**
      * 编辑

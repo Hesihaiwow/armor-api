@@ -283,7 +283,7 @@ public interface IZSYTaskMapper {
      * @param reqDTO
      * @return
      */
-    List<WeekPublishTaskBO> selectWeekPublishTask(@Param("reqDTO") WeekPublishQueryReqDTO reqDTO);
+    Page<WeekPublishTaskBO> selectWeekPublishTask(@Param("reqDTO") WeekPublishQueryReqDTO reqDTO);
 
     /**
      * 查询当前负责的进行中的任务

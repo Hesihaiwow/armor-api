@@ -1,5 +1,8 @@
 package com.zhixinhuixue.armor.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.dao.IZSYWeekPublishPlanMapper;
@@ -52,11 +55,13 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
      * @return
      */
     @Override
-    public List<WeekPublishTaskResDTO> list(WeekPublishQueryReqDTO reqDTO) {
-        List<WeekPublishTaskBO> weekPublishTaskBOS = taskMapper.selectWeekPublishTask(reqDTO);
-        List<WeekPublishTaskResDTO> weekPublishTaskResDTOList = new ArrayList<>();
+    public PageInfo<WeekPublishTaskResDTO> list(WeekPublishQueryReqDTO reqDTO) {
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),20);
+        Page<WeekPublishTaskBO> weekPublishTaskBOS = taskMapper.selectWeekPublishTask(reqDTO);
+        Page<WeekPublishTaskResDTO> weekPublishTaskResDTOList = new Page<>();
+        BeanUtils.copyProperties(weekPublishTaskBOS,weekPublishTaskResDTOList);
         if (!CollectionUtils.isEmpty(weekPublishTaskBOS)){
-            weekPublishTaskBOS.stream().forEach(weekPublishTaskBO -> {
+            for (WeekPublishTaskBO weekPublishTaskBO : weekPublishTaskBOS) {
                 WeekPublishTaskResDTO resDTO = new WeekPublishTaskResDTO();
                 BeanUtils.copyProperties(weekPublishTaskBO,resDTO);
 
@@ -134,14 +139,10 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
 //                }
 
                 weekPublishTaskResDTOList.add(resDTO);
-            });
+            }
         }
         //插入到周发版计划表
-        List<WeekPublishTaskResDTO> collect = new ArrayList<>();
         if (!CollectionUtils.isEmpty(weekPublishTaskResDTOList)){
-            collect = weekPublishTaskResDTOList.stream()
-                    .sorted(Comparator.comparing(WeekPublishTaskResDTO::getCreateBy))
-                    .collect(Collectors.toList());
             for (WeekPublishTaskResDTO task : weekPublishTaskResDTOList) {
                 //校验是否存在
                 WeekPublishPlan exist = weekPublishPlanMapper.selectById(task.getWppId());
@@ -156,7 +157,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
             }
         }
 
-        return collect;
+        return new PageInfo<>(weekPublishTaskResDTOList);
     }
 
     private Integer getWorkDays(Date beginTime, Date endTime) {
