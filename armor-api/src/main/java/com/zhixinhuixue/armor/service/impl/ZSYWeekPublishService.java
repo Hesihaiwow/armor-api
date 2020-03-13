@@ -137,7 +137,11 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
             });
         }
         //插入到周发版计划表
+        List<WeekPublishTaskResDTO> collect = new ArrayList<>();
         if (!CollectionUtils.isEmpty(weekPublishTaskResDTOList)){
+            collect = weekPublishTaskResDTOList.stream()
+                    .sorted(Comparator.comparing(WeekPublishTaskResDTO::getCreateBy))
+                    .collect(Collectors.toList());
             for (WeekPublishTaskResDTO task : weekPublishTaskResDTOList) {
                 //校验是否存在
                 WeekPublishPlan exist = weekPublishPlanMapper.selectById(task.getWppId());
@@ -152,7 +156,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
             }
         }
 
-        return weekPublishTaskResDTOList;
+        return collect;
     }
 
     private Integer getWorkDays(Date beginTime, Date endTime) {
@@ -195,7 +199,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
             exist.setYuejuan(reqDTO.getYuejuan());
             exist.setSaomiao(reqDTO.getSaomiao());
             exist.setXueyebaogao(reqDTO.getXueyebaogao());
-            exist.setChanpin(reqDTO.getChanpin());
+//            exist.setChanpin(reqDTO.getChanpin());
             exist.setRealTestTime(reqDTO.getRealTestTime());
             exist.setOnlineTime(reqDTO.getOnlineTime());
             exist.setRealOnlineTime(reqDTO.getRealOnlineTime());
