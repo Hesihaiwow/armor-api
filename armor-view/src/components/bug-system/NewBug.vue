@@ -77,6 +77,13 @@
                         <!--<el-input v-model="upBugData.title" placeholder="请输入内容"></el-input>-->
                     </div>
                 </div>
+                <div class="item" v-if="editBugData.isEdit">
+                    <p class="name">报告人</p>
+                    <div class="content">
+                        <p>{{editData.createName}}</p>
+                        <!--<el-input v-model="upBugData.title" placeholder="请输入内容"></el-input>-->
+                    </div>
+                </div>
                 <div class="item">
                     <p class="name">摘要</p>
                     <div class="content">

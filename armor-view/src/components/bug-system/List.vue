@@ -3,7 +3,7 @@
         <div class="screen-box">
             <div class="screen-item">
                 报告员
-                <el-select v-model="upData.reporterId" placeholder="请选择" @change="getList" clearable filterable>
+                <el-select v-model="upData.reporterId" placeholder="请选择" @change="changeReporter(upData.reporterId)" clearable filterable>
                     <el-option
                             v-for="item in reportUser"
                             :key="item.id"
@@ -14,7 +14,7 @@
             </div>
             <div class="screen-item">
                 分配给
-                <el-select v-model="upData.handlerId" placeholder="请选择" @change="getList" clearable filterable>
+                <el-select v-model="upData.handlerId" placeholder="请选择" @change="changeHandler(upData.handlerId)" clearable filterable>
                     <el-option
                             v-for="item in handleUser"
                             :key="item.id"
@@ -26,7 +26,7 @@
 
             <div class="screen-item">
                 状态
-                <el-select v-model="upData.status" placeholder="请选择" @change="getList" clearable>
+                <el-select v-model="upData.status" placeholder="请选择" @change="changeStatus(upData.status)" clearable>
                     <el-option
                             v-for="item in selectData.statusName"
                             :key="item.id"
@@ -37,7 +37,7 @@
             </div>
             <div class="screen-item">
                 任务
-                <el-select v-model="upData.taskId" placeholder="请选择" @change="getList" clearable filterable>
+                <el-select v-model="upData.taskId" placeholder="请选择" @change="changeTask(upData.taskId)" clearable filterable>
                     <el-option
                             v-for="item in taskList"
                             :key="item.id"
@@ -48,7 +48,7 @@
             </div>
             <div class="screen-item">
                 严重性
-                <el-select v-model="upData.severity" placeholder="请选择" @change="getList" clearable>
+                <el-select v-model="upData.severity" placeholder="请选择" @change="changeSeverity(upData.severity)" clearable>
                     <el-option
                             v-for="item in selectData.severity"
                             :key="item.id"
@@ -185,7 +185,9 @@
                     total:0,
                     pageSize:10,
                 },
-                currentPage:1
+                currentPage:1,
+                userId:null,
+                status:0
             }
         },
         filters:{
@@ -200,7 +202,49 @@
             }
         },
         created() {
-            this.getDefaultDatas();
+            this.userId = this.$route.query.userId;
+            this.status = this.$route.query.status;
+            // console.log('userId: '+this.userId);
+            if (this.userId != null && this.userId !== undefined && this.userId !== ''){
+                if (this.status != null && this.status !== undefined && this.status !== 0) {
+                    http.zsyGetHttp(`/task-bug/task/ready`, {}, (res) => {
+                        this.taskList = res.data;
+                        // this.upData.taskId = res.data[0].id;
+                    });
+                    http.zsyGetHttp(`/task-bug/users/report`, {}, (res) => {
+                        this.reportUser = res.data;
+                        // this.upData.reporterId = res.data[0].id;
+                    });
+                    http.zsyGetHttp(`/task-bug/users/handle`, {}, (res) => {
+                        this.handleUser = res.data;
+                        // this.upData.reporterId = res.data[0].id;
+                    });
+                    this.getCustomizedPage(this.userId,this.status,1)
+                }
+            }else {
+                let reporter = window.localStorage.getItem('reporter');
+                if (reporter != null && reporter !== undefined && reporter !== ''){
+                    this.upData.reporterId = reporter
+                }
+                let handler = window.localStorage.getItem('handler');
+                if (handler != null && handler !== undefined && handler !== ''){
+                    this.upData.handlerId = handler
+                }
+                let status = window.localStorage.getItem('status');
+                if (status != null && status !== undefined && status !== ''){
+                    this.upData.status = status
+                }
+                let taskId = window.localStorage.getItem('taskId');
+                if (taskId != null && taskId !== undefined && taskId !== ''){
+                    this.upData.taskId = taskId
+                }
+                let severity = window.localStorage.getItem('severity');
+                if (severity != null && severity !== undefined && severity !== ''){
+                    this.upData.severity = severity
+                }
+                this.getDefaultDatas();
+            }
+
         },
         methods:{
             getDefaultDatas(){
@@ -224,7 +268,35 @@
                 this.getList();
             },
 
+            //页面跳转之后查询指定bug列表
+            getCustomizedPage(userId,status,pageNum){
+                http.zsyGetHttp('/task-bug/page/'+userId+'/'+status+'/'+pageNum,{},res=>{
+                    this.tableData = res.data;
+                })
+            },
+            changeReporter(reporter){
+                window.localStorage.setItem('reporter',reporter);
+                this.getList()
+            },
+            changeHandler(handler){
+                window.localStorage.setItem('handler',handler);
+                this.getList()
+            },
+            changeStatus(status){
+                window.localStorage.setItem('status',status);
+                this.getList()
+            },
+            changeTask(taskId){
+                window.localStorage.setItem('taskId',taskId);
+                this.getList()
+            },
+            changeSeverity(severity){
+                window.localStorage.setItem('severity',severity);
+                this.getList()
+            },
             getList(){
+                this.userId = null;
+                this.status = 0;
                 http.zsyPostHttp('/task-bug/page', this.upData, (res) => {
                     this.tableData = res.data;
                 })
@@ -236,8 +308,15 @@
             },
             // 试卷列表分页
             handleCurrentChange (val) {
-                this.upData.pageNum = val;
-                this.getList();
+                if (this.userId != null && this.userId !== undefined && this.userId !== ''){
+                    if (this.status != null && this.status !== undefined && this.status !== 0) {
+                        this.getCustomizedPage(this.userId,this.status,val)
+                    }
+                }else {
+                    this.upData.pageNum = val;
+                    this.getList();
+                }
+
             },
             tableRowClassName(row, rowIndex) {
                 if (row.status === 1) {

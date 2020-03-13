@@ -1,7 +1,7 @@
 <template>
     <div class="my-bugs">
         <div class="list-box">
-            <p class="list-title"><span class="high-light-color">未解决的</span> ({{bugList.solvingBugNum}})</p>
+            <p class="list-title"><span class="high-light-color" @click="toMyAssignedBug" style="cursor: pointer">未解决的</span> ({{bugList.solvingBugNum}})</p>
             <ul class="list">
                 <li v-for="li in bugList.solvingBugList" :key="li.tbId" :class='listType(li.status)' @click="goEdit(li)">
                     <span class="bug-id">{{li.tbNoStr}}</span>
@@ -13,7 +13,7 @@
             </ul>
         </div>
         <div class="list-box">
-            <p class="list-title"><span class="high-light-color">已解决的</span> ({{bugList.solvedBugNum}})</p>
+            <p class="list-title"><span class="high-light-color" @click="toMyResolvedBug" style="cursor: pointer">已解决的</span> ({{bugList.solvedBugNum}})</p>
             <ul class="list">
                 <li v-for="li in bugList.solvedBugList" :key="li.tbId" :class='listType(li.status)' @click="goEdit(li)">
                     <span class="bug-id">{{li.tbNoStr}}</span>
@@ -26,7 +26,7 @@
             </ul>
         </div>
         <div class="list-box">
-            <p class="list-title"><span class="high-light-color">我报告的</span> ({{bugList.reportBugNum}})</p>
+            <p class="list-title"><span class="high-light-color" @click="toMyReportBug" style="cursor: pointer">我报告的</span> ({{bugList.reportBugNum}})</p>
             <ul class="list">
                 <li  v-for="li in bugList.reportBugList" :key="li.tbId" :class='listType(li.status)' @click="goEdit(li)">
                     <span class="bug-id">{{li.tbNoStr}}</span>
@@ -72,6 +72,7 @@
 <script>
     import http from '../../lib/Http'
     import moment from 'moment';
+    import helper from '../../lib/Helper'
     moment.locale('zh-cn');
     export default {
         name: "My",
@@ -88,8 +89,25 @@
             getDefaultDatas(){
                 http.zsyGetHttp(`/task-bug/my-list`, {}, (res) => {
                     this.bugList = res.data;
-                    console.log(res)
+                    // console.log(res)
                 })
+            },
+            //跳转到我的已分派bug
+            toMyAssignedBug(){
+                this.$router.push({path:'/index/bug',query:{type:'list',userId:this.userId,status:1}});
+                window.location.reload()
+            },
+
+            //跳转到我的已解决bug
+            toMyResolvedBug(){
+                this.$router.push({path:'/index/bug',query:{type:'list',userId:this.userId,status:2}});
+                window.location.reload()
+            },
+
+            //跳转到我的已报告bug
+            toMyReportBug(){
+                this.$router.push({path:'/index/bug',query:{type:'list',userId:this.userId,status:3}});
+                window.location.reload()
             },
             goEdit(data){
                 // console.log(data)
@@ -115,6 +133,12 @@
                 return moment(value).format('YYYY/MM/DD HH:mm:ss');
             },
         },
+        computed:{
+            userId(){
+                let userId = helper.decodeToken().userId;
+                return userId;
+            },
+        }
     }
 </script>
 

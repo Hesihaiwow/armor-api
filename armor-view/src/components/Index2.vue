@@ -412,7 +412,12 @@
                 /*tab切换*/
                 this.$router.push(`/index/${path}`);
                 this.fetchUnreadNoticeNum();
-                window.localStorage.removeItem("justMine")
+                window.localStorage.removeItem("justMine");
+                window.localStorage.removeItem("reporter");
+                window.localStorage.removeItem("handler");
+                window.localStorage.removeItem("status");
+                window.localStorage.removeItem("taskId");
+                window.localStorage.removeItem("severity");
             },
             showIndexEvent() {
                 // 显示首页

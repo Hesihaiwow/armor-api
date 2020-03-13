@@ -444,6 +444,67 @@
             </div>
 
         </div>
+        <div class="my-task-con" v-show="userRole === 3">
+
+            <p class="mic-title" style="margin-top: 20px">考勤原始记录</p>
+            <div class="my-task-detail" style="width: 1200px;">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="signInOriginReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                   :value="item.userId"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="signInOriginReqDTO.beginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择开始时间"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="signInOriginReqDTO.endTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择截止时间"
+                    >
+                    </el-date-picker>
+                </div>
+                <el-button type="primary" @click="selectSignInOriginData" style="margin-left: 10px" size="small">查询</el-button>
+                <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
+                <el-table :data="signInOriginData" border>
+                    <el-table-column prop="userName" label="用户" align="center" width="110"></el-table-column>
+                    <el-table-column prop="checkTime" label="打卡时间" align="center">
+                        <template scope="scope">
+                            <div type="text" size="small" >{{scope.row.checkTime | formatTime}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="typeName" label="类型" align="center" width="110"></el-table-column>
+                    <el-table-column label="操作" align="center" width="130" v-show="permit">
+                        <template scope="scope">
+                            <a style="color:#20a0ff;cursor: pointer;"
+                               @click="editSignIn(scope.row)">编辑</a>
+                            <a style="color:#20a0ff;cursor: pointer;"
+                               @click="deleteSignIn(scope.row.id)">删除</a>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            @current-change="signInOriginHandleCurrentChange"
+                            :current-page.sync="signInOriginPage.pageNum"
+                            :page-size="signInOriginPage.pageSize"
+                            :layout="signInOriginPageLayout"
+                            :total="signInOriginPage.total">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
 
         <div class="my-task-con">
             <div v-show="userRole>0 && userRole < 3">
@@ -2830,6 +2891,28 @@
             </span>
         </el-dialog>
 
+        <el-dialog  title="编辑原始考勤"  size="tiny"  :close-on-click-modal="false"
+                    :close-on-press-escape="false" :visible.sync="editSignInOriginVisible">
+            <el-form :model="signInOriginForm"  ref="signInOriginForm" label-width="80px">
+                <el-form-item label="用户 ">
+                    <span>{{this.signInOriginForm.userName}}</span>
+                </el-form-item>
+                <el-form-item label="打卡时间" prop="recordTime">
+                    <el-date-picker
+                            v-model="signInOriginForm.checkTime"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm:00"
+                            value-format="yyyy-MM-dd HH:mm:00"
+                            placeholder="选择打卡日期">
+                    </el-date-picker>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" :loading="restHourLoading" @click="saveEditSignIn">立即编辑</el-button>
+                <el-button @click="cancelEditSignIn" type="error">取 消</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
@@ -3221,6 +3304,11 @@
                     total:0,
                     pageSize:20
                 },
+                signInOriginPage:{
+                    pageNum:1,
+                    total:0,
+                    pageSize:30
+                },
                 mySignInPage:{
                     pageNum:1,
                     total:0,
@@ -3232,15 +3320,28 @@
                     endTime:'',
                     pageNum:1,
                 },
+                signInOriginReqDTO:{
+                    userId:'',
+                    beginTime:'',
+                    endTime:'',
+                    pageNum:1,
+                },
+                signInOriginForm:{
+                    userName:'',
+                  id:null,
+                  checkTime:null
+                },
                 mySignInReqDTO:{
                     userId:'',
                     beginTime:'',
                     endTime:'',
                     pageNum:1,
                 },
+                editSignInOriginVisible:false,
                 signInDaterange:'',
                 mySignInDaterange:'',
                 signInData:[],
+                signInOriginData:[],
                 pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -4081,6 +4182,12 @@
                 }
                 return 'total, pager'
             },
+            signInOriginPageLayout() {
+                if (this.signInOriginPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
             myRestHoursLogsPageLayout() {
                 if (this.myRestHoursLogPage.total > 0) {
                     return 'total, prev, pager, next'
@@ -4281,6 +4388,7 @@
             reload() {
                 this.task.doing = [];
                 this.initSignInTime();
+                this.initSignInOriginTime();
                 // this.fetchIntegral()
                 this.fetchProjectList();
                 this.fetchStageList();
@@ -4295,6 +4403,7 @@
 
                 //人事查看相关统计
                 this.fetchSignInData();
+                this.fetchSignInOriginData();
                 this.getLeaveList();
                 this.getExtraWorkStats();
                 // this.fetchMultipleWait();
@@ -6798,6 +6907,16 @@
                     })
                 }
             },
+            fetchSignInOriginData(){
+                if (this.userRole === 3 ){
+                    http.zsyPostHttp('/sign-in/origin/page',this.signInOriginReqDTO,(res)=>{
+                        if (res){
+                            this.signInOriginData = res.data.list;
+                            this.signInOriginPage.total = res.data.total;
+                        }
+                    })
+                }
+            },
             //查询任务
             fetchAllMultipleTasks(){
               http.zsyGetHttp('task/multiple/all',{},(res=>{
@@ -6828,6 +6947,24 @@
                     this.mySignInReqDTO.endTime = time3 + ' 23:59:59';
                 }
             },
+            initSignInOriginTime(){
+                let date1 = new Date();
+                let time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
+                let date2 = new Date(date1);
+                let date3 = new Date(date1);
+                date3.setDate(date1.getDate() - 1);
+                date2.setDate(date1.getDate() - 7);
+                let time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
+                let time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
+                if (this.userRole === 3){
+                    this.signInOriginReqDTO.beginTime = time2 + ' 00:00:00';
+                    this.signInOriginReqDTO.endTime = time3 + ' 23:59:59';
+                }
+                if(this.userRole > 0 && this.userRole < 3){
+                    this.signInOriginReqDTO.beginTime = time2 + ' 00:00:00';
+                    this.signInOriginReqDTO.endTime = time3 + ' 23:59:59';
+                }
+            },
             selectMySignInData(){
                 if (this.mySignInReqDTO.beginTime != null && this.mySignInReqDTO.beginTime !== ''){
                     this.mySignInReqDTO.beginTime = moment(this.mySignInReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
@@ -6846,6 +6983,80 @@
                 }
 
                 this.fetchSignInData()
+            },
+            selectSignInOriginData(){
+                if (this.signInOriginReqDTO.beginTime != null && this.signInOriginReqDTO.beginTime !== ''){
+                    this.signInOriginReqDTO.beginTime = moment(this.signInOriginReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
+                }
+                if (this.signInOriginReqDTO.endTime != null && this.signInOriginReqDTO.endTime !== '') {
+                    this.signInOriginReqDTO.endTime = moment(this.signInOriginReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
+                }
+
+                this.fetchSignInOriginData()
+            },
+            //编辑原始考勤
+            editSignIn(sign){
+                this.signInOriginForm.id = sign.id;
+                this.signInOriginForm.checkTime = sign.checkTime;
+                this.signInOriginForm.userName = sign.userName;
+                this.editSignInOriginVisible = true;
+            },
+            saveEditSignIn(){
+                this.isSaving = true;
+                if (this.signInOriginForm.checkTime == null || this.signInOriginForm.checkTime === undefined
+                    || this.signInOriginForm.checkTime === '') {
+                    this.$message({
+                        showClose: true,
+                        message: '打卡时间不能为空',
+                        type: 'warning'
+                    });
+                    this.isSaving = false;
+                }
+                this.$refs.signInOriginForm.validate((valid) => {
+                    if (valid) {
+                        let form = this.signInOriginForm;
+                        if (form.checkTime != null && form.checkTime !== ''){
+                            form.checkTime = moment(form.checkTime).format('YYYY-MM-DD HH:mm:00');
+                        }
+                        http.zsyPutHttp('/sign-in/edit', form, (resp) => {
+                            this.$message({
+                                showClose: true,
+                                message: '原始考勤修改成功',
+                                type: 'success'
+                            });
+                            this.cancelEditSignIn();
+                            this.fetchSignInOriginData();
+                            this.editSignInOriginVisible = false;
+                            this.isSaving = false
+                        }, err => {
+                            this.isSaving = false
+                        }, error => {
+                            this.isSaving = false
+                        })
+                    }
+                })
+            },
+            cancelEditSignIn(){
+                this.$refs.signInOriginForm.resetFields();
+                this.editSignInOriginVisible = false;
+            },
+            //删除原始考勤
+            deleteSignIn(id){
+                this.$confirm('删除原始考勤记录, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(()=>{
+                    http.zsyDeleteHttp('/sign-in/delete/'+id,{},(res)=>{
+                        this.$message({
+                            showClose: true,
+                            message: '删除原始成功',
+                            type: 'success'
+                        });
+                        this.fetchSignInOriginData()
+                    })
+                }).catch(() => {
+                });
             },
             fetchMyTotalEWorkTime(){
                 if (this.workMonth1 != null && this.workMonth1 !== ''){
@@ -7089,6 +7300,10 @@
             signInHandleCurrentChange(currentPage){
                 this.signInPage.pageNum = currentPage;
                 this.fetchSignInData();
+            },
+            signInOriginHandleCurrentChange(currentPage){
+                this.signInOriginReqDTO.pageNum = currentPage;
+                this.fetchSignInOriginData();
             },
             mySignInHandleCurrentChange(currentPage){
                 this.mySignInPage.pageNum = currentPage;

@@ -730,10 +730,10 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="需求负责人" v-show="demandForm.source === 0">
+                <el-form-item label="需求负责人">
                     <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
                         <el-option
-                                v-for="item in otherChargeManList"
+                                v-for="item in managerList"
                                 :key="item.id"
                                 :label="item.name"
                                 :value="item.id">
@@ -829,7 +829,7 @@
                 <el-form-item label="需求负责人">
                     <el-select v-model="demandForm.chargeMan" placeholder="请选择负责人">
                         <el-option
-                                v-for="item in chargeManList"
+                                v-for="item in managerList"
                                 :key="item.id"
                                 :label="item.name"
                                 :value="item.id">
@@ -1175,6 +1175,7 @@
                     {id: 0, name: '个人建议'},
                     {id: 1, name: '市场反馈'},
                     {id: 2, name: '公司决策'},
+                    {id: 3, name: '其他'}
                 ],
                 readStatuses: [
                     {id: 0, name: '未读'},
@@ -2273,15 +2274,15 @@
                             this.isSaving = false;
                             return;
                         }
-                        if (this.demandForm.source === 1 || this.demandForm.source === 2){
-                            this.demandForm.chargeMan = '87532428385583104'
-                        }
-                        if (this.demandForm.source === 3){
-                            this.demandForm.chargeMan = '296175644545384448'
-                        }
-                        if (this.demandForm.source === 4){
-                            this.demandForm.chargeMan = '139964039693336576'
-                        }
+                        // if (this.demandForm.source === 1 || this.demandForm.source === 2){
+                        //     this.demandForm.chargeMan = '87532428385583104'
+                        // }
+                        // if (this.demandForm.source === 3){
+                        //     this.demandForm.chargeMan = '296175644545384448'
+                        // }
+                        // if (this.demandForm.source === 4){
+                        //     this.demandForm.chargeMan = '139964039693336576'
+                        // }
                         if (this.demandForm.chargeMan === null || this.demandForm.chargeMan === ''){
                             this.$message({showClose: true, message: '负责人不能为空', type: 'warning'});
                             this.isSaving = false;
