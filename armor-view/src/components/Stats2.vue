@@ -4509,7 +4509,8 @@
                             message: '修改成功',
                             type: 'success'
                         });
-                        this.fetchWeekPublishPlanByCharge();
+                        // this.fetchWeekPublishPlanByCharge();
+                        this.fetchWeekPublishPlan();
                         this.clearWeekPublish();
                         this.editWeekPublishVisible = false;
                     }
