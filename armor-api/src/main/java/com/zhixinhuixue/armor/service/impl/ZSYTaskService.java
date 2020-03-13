@@ -757,7 +757,7 @@ public class ZSYTaskService implements IZSYTaskService {
         // 关闭主任务
         Task task = new Task();
         task.setId(taskCompleteReqDTO.getTaskId());
-        task.setStatus(ZSYTaskStatus.FINISHED.getValue());
+        task.setStatus(ZSYTaskStatus.COMPLETED.getValue());
         task.setCompleteTime(taskCompleteReqDTO.getCompleteTime());
         taskMapper.updateByPrimaryKeySelective(task);
         // 插入日志

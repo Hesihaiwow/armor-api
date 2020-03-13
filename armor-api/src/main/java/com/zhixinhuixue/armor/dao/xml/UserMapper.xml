@@ -290,6 +290,13 @@
      LEFT JOIN `user` u ON u.id = tb.handler_id
      GROUP BY tb.handler_id
   </select>
+
+  <!--根据任务id查询参与人员-->
+  <select id="selectUsersByTaskId" resultMap="BaseResultMap">
+        SELECT u.* FROM `task_user` tu
+        LEFT JOIN `user` u ON u.id = tu.user_id
+        WHERE task_id = #{taskId}
+    </select>
   <!-- sch -->
 
 </mapper>

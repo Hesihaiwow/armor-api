@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.model.bo;
 
 import com.zhixinhuixue.armor.model.dto.response.PlatformResDTO;
 import com.zhixinhuixue.armor.model.pojo.Platform;
+import com.zhixinhuixue.armor.model.pojo.User;
 
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,7 @@ public class WeekPublishTaskBO {
      * 参与人员id
      */
     private List<Long> userIds;
+    private List<User> userList;
 
     /**
      * 创建时间
@@ -72,6 +74,132 @@ public class WeekPublishTaskBO {
      * 任务发布情况
      */
     private String condition;
+
+
+    /**
+     * 是否涉及组卷
+     */
+    private String zujuan;
+
+    /**
+     * 阅卷
+     */
+    private String yuejuan;
+
+    /**
+     * 扫描上传
+     */
+    private String saomiao;
+
+    /**
+     * 学业报告
+     */
+    private String xueyebaogao;
+
+    /**
+     * 产品
+     */
+    private String chanpin;
+
+    /**
+     * 时间测试时间
+     */
+    private String realTestTime;
+
+    /**
+     * 预估上线时间
+     */
+    private String onlineTime;
+
+    /**
+     * 时间上线时间
+     */
+    private String realOnlineTime;
+
+    /**
+     * 专项测试时间
+     */
+    private String specialTestTime;
+
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
+    }
+
+    public String getZujuan() {
+        return zujuan;
+    }
+
+    public void setZujuan(String zujuan) {
+        this.zujuan = zujuan;
+    }
+
+    public String getYuejuan() {
+        return yuejuan;
+    }
+
+    public void setYuejuan(String yuejuan) {
+        this.yuejuan = yuejuan;
+    }
+
+    public String getSaomiao() {
+        return saomiao;
+    }
+
+    public void setSaomiao(String saomiao) {
+        this.saomiao = saomiao;
+    }
+
+    public String getXueyebaogao() {
+        return xueyebaogao;
+    }
+
+    public void setXueyebaogao(String xueyebaogao) {
+        this.xueyebaogao = xueyebaogao;
+    }
+
+    public String getChanpin() {
+        return chanpin;
+    }
+
+    public void setChanpin(String chanpin) {
+        this.chanpin = chanpin;
+    }
+
+    public String getRealTestTime() {
+        return realTestTime;
+    }
+
+    public void setRealTestTime(String realTestTime) {
+        this.realTestTime = realTestTime;
+    }
+
+    public String getOnlineTime() {
+        return onlineTime;
+    }
+
+    public void setOnlineTime(String onlineTime) {
+        this.onlineTime = onlineTime;
+    }
+
+    public String getRealOnlineTime() {
+        return realOnlineTime;
+    }
+
+    public void setRealOnlineTime(String realOnlineTime) {
+        this.realOnlineTime = realOnlineTime;
+    }
+
+    public String getSpecialTestTime() {
+        return specialTestTime;
+    }
+
+    public void setSpecialTestTime(String specialTestTime) {
+        this.specialTestTime = specialTestTime;
+    }
 
     public Date getCreateTime() {
         return createTime;

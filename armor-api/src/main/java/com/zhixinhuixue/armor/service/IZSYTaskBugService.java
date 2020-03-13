@@ -93,4 +93,13 @@ public interface IZSYTaskBugService {
      * @author sch
      */
     List<EffectUserResDTO> getBugHandlers();
+
+    /**
+     * 我的视图跳转到查看问题对应的列表
+     * @author sch
+     * @param userId 用户id
+     * @param status 查询状态
+     * @param pageNum 页码
+     */
+    PageInfo<TaskBugPageResDTO> getCustomizedPage(Long userId, Integer status, Integer pageNum);
 }

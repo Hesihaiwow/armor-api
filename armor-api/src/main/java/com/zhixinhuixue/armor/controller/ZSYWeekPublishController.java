@@ -7,10 +7,7 @@ import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author sch
@@ -34,5 +31,11 @@ public class ZSYWeekPublishController {
     public String edit(@RequestBody WeekPublishEditReqDTO reqDTO){
         weekPublishService.edit(reqDTO);
         return ZSYResult.success().build();
+    }
+
+    @ApiOperation("按任务负责人分组查看")
+    @PostMapping("/list/by-charge")
+    public String getListByChargeMan(@RequestBody WeekPublishQueryReqDTO reqDTO){
+        return ZSYResult.success().data(weekPublishService.getListByChargeMan(reqDTO)).build();
     }
 }

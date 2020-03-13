@@ -111,4 +111,11 @@ public class ZSYTaskBugController {
     public String getMyBugList(){
         return ZSYResult.success().data(taskBugService.getMyBugList()).build();
     }
+
+    @ApiOperation("查看bug列表")
+    @GetMapping("/page/{userId}/{status}/{pageNum}")
+    public String getCustomizedPage(@PathVariable("userId")Long userId,@PathVariable("status")Integer status,
+                                    @PathVariable("pageNum")Integer pageNum){
+        return ZSYResult.success().data(taskBugService.getCustomizedPage(userId,status,pageNum)).build();
+    }
 }

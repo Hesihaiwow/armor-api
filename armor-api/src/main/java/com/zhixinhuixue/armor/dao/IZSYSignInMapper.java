@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.SignInBO;
+import com.zhixinhuixue.armor.model.bo.SignInOriginBO;
 import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInQueryDTO;
 import com.zhixinhuixue.armor.model.dto.request.SignInReqDTO;
@@ -259,4 +260,29 @@ public interface IZSYSignInMapper {
      * @return
      */
     List<Long> selectNotCheckUsers(@Param("today0")Date today0, @Param("today23")Date today23);
+
+    /**
+     * 分页查看原始考勤记录
+     * @author sch
+     * @param reqDTO 参数
+     */
+    Page<SignInOriginBO> selectSignInOriginBOPage(SignInReqDTO reqDTO);
+
+    /**
+     * 根据id查询
+     * @param id id
+     */
+    SignIn selectSignInById(@Param("id")Long id);
+
+    /**
+     * 更新原始考勤
+     * @param signIn 参数
+     */
+    void updateSignIn(SignIn signIn);
+
+    /**
+     * 删除原始考勤
+     * @param id id
+     */
+    void deleteSignInById(@Param("id")Long id);
 }

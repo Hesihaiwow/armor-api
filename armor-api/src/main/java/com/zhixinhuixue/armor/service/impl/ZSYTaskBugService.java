@@ -455,6 +455,43 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
     }
 
     /**
+     * 我的视图跳转到查看问题对应的列表
+     * @author sch
+     * @param userId 用户id
+     * @param status 查询状态
+     * @param pageNum 页码
+     */
+    @Override
+    public PageInfo<TaskBugPageResDTO> getCustomizedPage(Long userId, Integer status, Integer pageNum) {
+        if (userId == null){
+            throw new ZSYServiceException("指定用户为空");
+        }
+        Page<TaskBugBO> taskBugBOS = null;
+        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE);
+        if (status == 1 || status == 2){
+            //1: 查询已分配的bug   2:查询已解决的bug
+            taskBugBOS = taskBugMapper.selectAssignedOrSolved(userId,status);
+        }else if (status == 3){
+            //3: 查询我报告的bug
+            taskBugBOS = taskBugMapper.selectMyReportBug(userId);
+        }
+        Page<TaskBugPageResDTO> list = new Page<>();
+        BeanUtils.copyProperties(taskBugBOS,list);
+        if (!CollectionUtils.isEmpty(taskBugBOS)){
+            taskBugBOS.forEach(taskBugBO -> {
+                TaskBugPageResDTO resDTO = new TaskBugPageResDTO();
+                String bugNoStr = getBugNoStr(taskBugBO.getTbNo());
+                BeanUtils.copyProperties(taskBugBO,resDTO);
+                resDTO.setTbNoStr(bugNoStr);
+                resDTO.setSeverityName(TaskBugSeverity.getName(taskBugBO.getSeverity()));
+                resDTO.setStatusName(TaskBugStatus.getName(taskBugBO.getStatus()));
+                list.add(resDTO);
+            });
+        }
+        return new PageInfo<>(list);
+    }
+
+    /**
      * 获取任务bug集合
      * @param taskBugs 参数
      */

@@ -3,10 +3,7 @@ package com.zhixinhuixue.armor.controller;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.*;
-import com.zhixinhuixue.armor.model.dto.response.ResignInResDTO;
-import com.zhixinhuixue.armor.model.dto.response.SignInLastRecordResDTO;
-import com.zhixinhuixue.armor.model.dto.response.SignInResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TotalExtraHoursResDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.service.IZSYSignInService;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -207,4 +204,25 @@ public class ZSYSignInController {
         signInService.updateLeaveAndEWork(reqDTO);
         return ZSYResult.success().build();
     }
+
+    @ApiOperation("分页查看原始考勤记录")
+    @PostMapping("/origin/page")
+    public String getSignInOriginPage(@RequestBody SignInReqDTO reqDTO){
+        return ZSYResult.success().data(signInService.getSignInOriginPage(reqDTO)).build();
+    }
+
+    @ApiOperation("编辑原始考勤记录")
+    @PutMapping("/edit")
+    public String editSignIn(@RequestBody EditSignInReqDTO reqDTO){
+        signInService.editSignIn(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    @ApiOperation("删除原始考勤")
+    @DeleteMapping("/delete/{id}")
+    public String deleteSignIn(@PathVariable("id")Long id){
+        signInService.deleteSignIn(id);
+        return ZSYResult.success().build();
+    }
+
 }

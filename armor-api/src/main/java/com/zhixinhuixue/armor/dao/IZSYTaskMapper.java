@@ -235,11 +235,18 @@ public interface IZSYTaskMapper {
     List<Task> selectMyRunningTask(@Param("userId")Long userId);
 
     /**
-     * 查询2020-02总任务已完成的
+     * 查询2020-02总任务已完成的多人任务
      * @param userId
      * @return
      */
     List<Task> selectTaskDone(@Param("userId")Long userId);
+
+
+    /**
+     * 查询2020-02总任务已完成的个人任务
+     * @param userId 用户
+     */
+    List<Task> selectPrivateTaskDone(@Param("userId")Long userId);
 
     /**
      * 分页查询已评价的任务
@@ -315,4 +322,12 @@ public interface IZSYTaskMapper {
      * @author sch
      */
     List<Task> selectTestTask();
+
+    /**
+     * 按任务负责人分组查看
+     * @author sch
+     * @param reqDTO 参数
+     */
+    List<WeekPublishTaskBO> selectWeekPublishTaskList(WeekPublishQueryReqDTO reqDTO);
+
 }

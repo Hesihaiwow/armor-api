@@ -10,6 +10,7 @@ import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.SignInBO;
+import com.zhixinhuixue.armor.model.bo.SignInOriginBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
@@ -286,6 +287,10 @@ public class ZSYSignInService implements IZSYSignInService {
             Date beginDate = dateSDF.parse(dateStr1);
             Date beginDate2 = null;
             Date endDate = dateSDF.parse(dateStr2);
+            Date endDateZero = dateSDF.parse(dateStr2+ " 00:00:00");
+            Calendar instance1 = Calendar.getInstance();
+            instance1.setTime(endDate);
+            int weekday = instance1.get(Calendar.DAY_OF_WEEK);
             Date endDayFive = timeSDF.parse(dateStr2 + " 05:00:00");
             calendar.setTime(beginDate);
             int beginTimeYear = calendar.get(Calendar.YEAR);
@@ -345,7 +350,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     int endTimeMonth4 = calendar.get(Calendar.MONTH) + 1;
                     int endTimeDay4 = calendar.get(Calendar.DAY_OF_MONTH);
                     LocalDate end4 = LocalDate.of(endTimeYear4, endTimeMonth4, endTimeDay4);
-                    lastToBegin = (int)(end4.toEpochDay() - start4.toEpochDay()-1);
+                    lastToBegin = (int)(end4.toEpochDay() - start4.toEpochDay()-2);
                 }
             }
             List<List<String>> userCheckList = new ArrayList<>();
@@ -475,94 +480,106 @@ public class ZSYSignInService implements IZSYSignInService {
 //                        +userCheck.get(12).substring(0,5)+" "+userCheck.get(12).substring(userCheck.get(12).length()-7,userCheck.get(12).length()-2));
             }
             if (!CollectionUtils.isEmpty(totalList)){
+                List<SignIn> lastDayList = totalList.stream().filter(signIn -> signIn.getCheckTime().compareTo(endDateZero) >= 0)
+                        .collect(Collectors.toList());
+                int excelUserNum = userCheckList.size();
+                //最后一天不是周末
+                if (weekday != 1 && weekday != 7){
+                    //假如打卡人数的2倍 减去 最后一天的打卡记录 > 20   可视为当天的数据只有一半,剔除之后再新增
+                    if (excelUserNum*2-lastDayList.size()>20){
+                        logger.info("最后一天数据只有半天,剔除");
+                        totalList = totalList.stream().filter(signIn -> signIn.getCheckTime().compareTo(endDateZero) < 0)
+                                .collect(Collectors.toList());
+                    }
+                }
+
                 if (signInMapper.insertSignInBatch(totalList)==0){
                     throw new ZSYServiceException("导入考勤记录失败");
                 }
-                List<UserRestHoursLog> totalRestHourList = new ArrayList<>();
-                for (List<String> userCheck : userCheckList) {
-                    String userName = nameMap.get(userCheck.get(2));
-                    Long userId = userMap.get(userCheck.get(2));
-                    Date checkDate = null;
-                    //按日期查找当天打卡时间,判断是否要增加 调休
-                    if (beginDate2 != null){
-                        checkDate=beginDate2;
-
-                    }else {
-                        checkDate=beginDate;
-                    }
-                    List<UserRestHoursLog> restHoursLogList = new ArrayList<>();
-                    for (int x = 0;x<checkDays;x++){
-                        calendar.setTime(checkDate);
-                        calendar.add(Calendar.DAY_OF_MONTH,x);
-                        String checkDateStr = dateSDF.format(calendar.getTime());
-                        Date startTime = timeSDF.parse(checkDateStr + " 05:00:00");
-                        Date endTime = timeSDF.parse(checkDateStr + " 23:59:59");
-                        Date today15 = timeSDF.parse(checkDateStr + " 15:00:00");
-                        calendar.setTime(startTime);
-                        calendar.add(Calendar.DAY_OF_MONTH,1);
-                        Date nextDate = calendar.getTime();
-                        String nextDateStr = dateSDF.format(nextDate);
-                        Date nextFive = timeSDF.parse(nextDateStr + " 05:00:00");
-                        //查询当天的考勤记录
-                        List<SignIn> todayList = totalList.stream()
-                                .filter(signIn -> (signIn.getCheckTime().compareTo(startTime) >= 0) && (signIn.getCheckTime().compareTo(endTime) <= 0)
-                                && signIn.getUserId().equals(userId) && signIn.getType() != 2)
-                                .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
-                        //查询第二天 7点前的记录
-                        List<SignIn> nextBeforSeven = totalList.stream()
-                                .filter(signIn -> ((signIn.getCheckTime().compareTo(nextFive) < 0)) && (signIn.getCheckTime().compareTo(endTime) > 0)
-                                        && signIn.getUserId().equals(userId) && signIn.getType() != 2)
-                                .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
-                        Date checkInTime  = null;
-                        Date checkOutTime =  null;
-                        //当天的考勤不为空 且 第一条记录是在15点之前 那么 这条记录就是当天的 上班时间
-                        if (!CollectionUtils.isEmpty(todayList) && today15.compareTo(todayList.get(0).getCheckTime())>0){
-                            checkInTime = todayList.get(0).getCheckTime();
-                            //如果第二天 7点之前有打卡,   第一条为  前一天的 下班卡
-                            if (!CollectionUtils.isEmpty(nextBeforSeven)){
-                                checkOutTime = nextBeforSeven.get(0).getCheckTime();
-                            }else {
-                                //如果 今天的最后一条记录是再15点之后 就是 今天的下班卡
-                                if (todayList.get(todayList.size()-1).getCheckTime().compareTo(today15)>0){
-                                    checkOutTime = todayList.get(todayList.size()-1).getCheckTime();
-                                }
-                            }
-                        }
-
-
-
-                        if (checkInTime!=null &&  checkOutTime!=null){
-                            calendar.setTime(checkInTime);
-                            int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
-                            if (weekDay != 1 && weekDay != 7){
-                                Long workTimeMillis = checkOutTime.getTime() - checkInTime.getTime();
-                                if (workTimeMillis > 9*3600*1000){
-                                    Long eworkTimeMillis = workTimeMillis - (9*3600*1000);
-                                    double restHour= eworkTimeMillis/(3600*1000);
-                                    if (restHour>=1){
-                                        UserRestHoursLog restHoursLog = new UserRestHoursLog();
-                                        restHoursLog.setId(snowFlakeIDHelper.nextId());
-                                        restHoursLog.setUserId(userId);
-                                        restHoursLog.setUserName(userName);
-                                        restHoursLog.setRestHours(BigDecimal.valueOf(restHour));
-                                        restHoursLog.setType(ZSYRestHoursType.EXTRA.getValue());
-                                        restHoursLog.setContent(checkDateStr+" 日常加班累计调休");
-                                        restHoursLog.setYear(calendar.get(Calendar.YEAR));
-                                        restHoursLog.setCreateTime(new Date());
-                                        restHoursLog.setRecordTime(checkInTime);
-                                        restHoursLogList.add(restHoursLog);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    totalRestHourList.addAll(restHoursLogList);
-//                    System.out.println(userName+"  的restHoursLogList = " + restHoursLogList.size());
-                }
+//                List<UserRestHoursLog> totalRestHourList = new ArrayList<>();
+//                for (List<String> userCheck : userCheckList) {
+//                    String userName = nameMap.get(userCheck.get(2));
+//                    Long userId = userMap.get(userCheck.get(2));
+//                    Date checkDate = null;
+//                    //按日期查找当天打卡时间,判断是否要增加 调休
+//                    if (beginDate2 != null){
+//                        checkDate=beginDate2;
+//
+//                    }else {
+//                        checkDate=beginDate;
+//                    }
+//                    List<UserRestHoursLog> restHoursLogList = new ArrayList<>();
+//                    for (int x = 0;x<checkDays;x++){
+//                        calendar.setTime(checkDate);
+//                        calendar.add(Calendar.DAY_OF_MONTH,x);
+//                        String checkDateStr = dateSDF.format(calendar.getTime());
+//                        Date startTime = timeSDF.parse(checkDateStr + " 05:00:00");
+//                        Date endTime = timeSDF.parse(checkDateStr + " 23:59:59");
+//                        Date today15 = timeSDF.parse(checkDateStr + " 15:00:00");
+//                        calendar.setTime(startTime);
+//                        calendar.add(Calendar.DAY_OF_MONTH,1);
+//                        Date nextDate = calendar.getTime();
+//                        String nextDateStr = dateSDF.format(nextDate);
+//                        Date nextFive = timeSDF.parse(nextDateStr + " 05:00:00");
+//                        //查询当天的考勤记录
+//                        List<SignIn> todayList = totalList.stream()
+//                                .filter(signIn -> (signIn.getCheckTime().compareTo(startTime) >= 0) && (signIn.getCheckTime().compareTo(endTime) <= 0)
+//                                && signIn.getUserId().equals(userId) && signIn.getType() != 2)
+//                                .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
+//                        //查询第二天 7点前的记录
+//                        List<SignIn> nextBeforSeven = totalList.stream()
+//                                .filter(signIn -> ((signIn.getCheckTime().compareTo(nextFive) < 0)) && (signIn.getCheckTime().compareTo(endTime) > 0)
+//                                        && signIn.getUserId().equals(userId) && signIn.getType() != 2)
+//                                .sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList());
+//                        Date checkInTime  = null;
+//                        Date checkOutTime =  null;
+//                        //当天的考勤不为空 且 第一条记录是在15点之前 那么 这条记录就是当天的 上班时间
+//                        if (!CollectionUtils.isEmpty(todayList) && today15.compareTo(todayList.get(0).getCheckTime())>0){
+//                            checkInTime = todayList.get(0).getCheckTime();
+//                            //如果第二天 7点之前有打卡,   第一条为  前一天的 下班卡
+//                            if (!CollectionUtils.isEmpty(nextBeforSeven)){
+//                                checkOutTime = nextBeforSeven.get(0).getCheckTime();
+//                            }else {
+//                                //如果 今天的最后一条记录是再15点之后 就是 今天的下班卡
+//                                if (todayList.get(todayList.size()-1).getCheckTime().compareTo(today15)>0){
+//                                    checkOutTime = todayList.get(todayList.size()-1).getCheckTime();
+//                                }
+//                            }
+//                        }
+//
+//
+//
+//                        if (checkInTime!=null &&  checkOutTime!=null){
+//                            calendar.setTime(checkInTime);
+//                            int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
+//                            if (weekDay != 1 && weekDay != 7){
+//                                Long workTimeMillis = checkOutTime.getTime() - checkInTime.getTime();
+//                                if (workTimeMillis > 9*3600*1000){
+//                                    Long eworkTimeMillis = workTimeMillis - (9*3600*1000);
+//                                    double restHour= eworkTimeMillis/(3600*1000);
+//                                    if (restHour>=1){
+//                                        UserRestHoursLog restHoursLog = new UserRestHoursLog();
+//                                        restHoursLog.setId(snowFlakeIDHelper.nextId());
+//                                        restHoursLog.setUserId(userId);
+//                                        restHoursLog.setUserName(userName);
+//                                        restHoursLog.setRestHours(BigDecimal.valueOf(restHour));
+//                                        restHoursLog.setType(ZSYRestHoursType.EXTRA.getValue());
+//                                        restHoursLog.setContent(checkDateStr+" 日常加班累计调休");
+//                                        restHoursLog.setYear(calendar.get(Calendar.YEAR));
+//                                        restHoursLog.setCreateTime(new Date());
+//                                        restHoursLog.setRecordTime(checkInTime);
+//                                        restHoursLogList.add(restHoursLog);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    totalRestHourList.addAll(restHoursLogList);
+//                }
 //                if (!CollectionUtils.isEmpty(totalRestHourList)){
 //                    restHoursLogMapper.insertBatch(totalRestHourList);
 //                }
-                System.out.println("totalList = " + totalRestHourList.size());
+//                System.out.println("totalList = " + totalRestHourList.size());
             }
 
         } catch (Exception e) {
@@ -2562,6 +2579,58 @@ public class ZSYSignInService implements IZSYSignInService {
         if (restHoursLogMapper.updateById(restHoursLog) == 0){
             throw new ZSYServiceException("修改调休日志失败");
         }
+    }
+
+    /**
+     * 分页查看原始考勤记录
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public PageInfo<SignInOriginResDTO> getSignInOriginPage(SignInReqDTO reqDTO) {
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),30);
+        Page<SignInOriginBO> signInOriginBOS = signInMapper.selectSignInOriginBOPage(reqDTO);
+        Page<SignInOriginResDTO> page = new Page<>();
+        BeanUtils.copyProperties(signInOriginBOS,page);
+        if (!CollectionUtils.isEmpty(signInOriginBOS)){
+            signInOriginBOS.forEach(signInOriginBO -> {
+                SignInOriginResDTO resDTO = new SignInOriginResDTO();
+                BeanUtils.copyProperties(signInOriginBO,resDTO);
+                resDTO.setTypeName(ZSYSignInType.getName(signInOriginBO.getType()));
+                page.add(resDTO);
+            });
+        }
+        return new PageInfo<>(page);
+    }
+
+    /**
+     * 编辑原始考勤记录
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    @Transactional
+    public void editSignIn(EditSignInReqDTO reqDTO) {
+        SignIn signIn = signInMapper.selectSignInById(reqDTO.getId());
+        if (signIn == null){
+            throw new ZSYServiceException("当前记录不存在");
+        }
+        signIn.setCheckTime(reqDTO.getCheckTime());
+        signInMapper.updateSignIn(signIn);
+    }
+
+    /**
+     * 删除原始考勤
+     * @param id id
+     */
+    @Override
+    @Transactional
+    public void deleteSignIn(Long id) {
+        SignIn signIn = signInMapper.selectSignInById(id);
+        if (signIn == null){
+            throw new ZSYServiceException("当前记录不存在");
+        }
+        signInMapper.deleteSignInById(id);
     }
 
     /**

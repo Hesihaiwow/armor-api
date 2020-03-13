@@ -2,17 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYSignInMapper">
     <resultMap id="BaseExtraWork" type="com.zhixinhuixue.armor.model.pojo.ExtraWork">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
-        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"></result>
-        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"></result>
-        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"></result>
-        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"></result>
-        <result column="work_hours" property="workHours" jdbcType="FLOAT"></result>
-        <result column="is_delete" property="isDelete" jdbcType="INTEGER"></result>
-        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
-        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="work_hours" property="workHours" jdbcType="FLOAT"/>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"/>
+        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="BaseTaskMap" type="com.zhixinhuixue.armor.model.pojo.Task">
@@ -60,22 +60,26 @@
     </resultMap>
 
     <resultMap id="BaseSignInMap" type="com.zhixinhuixue.armor.model.pojo.SignIn">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
-        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"></result>
-        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
     </resultMap>
 
     <resultMap id="SignInBoMap" type="com.zhixinhuixue.armor.model.bo.SignInBO" extends="BaseSignInMap">
-        <result column="check_time_str" property="checkTimeStr" jdbcType="VARCHAR"></result>
+        <result column="check_time_str" property="checkTimeStr" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="SignInOriginMap" type="com.zhixinhuixue.armor.model.bo.SignInOriginBO" extends="BaseSignInMap">
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="BaseResignInMap" type="com.zhixinhuixue.armor.model.pojo.ResignIn">
-        <id column="id" property="id" jdbcType="BIGINT"></id>
-        <result column="user_id" property="userId" jdbcType="BIGINT"></result>
-        <result column="recheck_time" property="recheckTime" jdbcType="TIMESTAMP"></result>
-        <result column="reason" property="reason" jdbcType="VARCHAR"></result>
-        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"></result>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="recheck_time" property="recheckTime" jdbcType="TIMESTAMP"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="review_status" property="reviewStatus" jdbcType="INTEGER"/>
     </resultMap>
 
     <!--批量新增userSort-->
@@ -129,6 +133,15 @@
         WHERE `id` = #{id}
     </update>
 
+    <!--更新原始考勤-->
+    <update id="updateSignIn" parameterType="com.zhixinhuixue.armor.model.pojo.SignIn">
+        UPDATE `sign_in`
+        <set>
+            `check_time` = #{checkTime},
+        </set>
+        WHERE id = #{id}
+    </update>
+
     <!--清空userSort-->
     <delete id="deleteUserSort">
         TRUNCATE TABLE `user_sort`
@@ -149,6 +162,11 @@
         DELETE FROM `sign_in` WHERE `type` = 2 AND `user_id` = #{userId}
         <![CDATA[  and  `check_time` >= #{today0} ]]>
         <![CDATA[  and  `check_time` <= #{today23} ]]>
+    </delete>
+
+    <!--删除原始考勤-->
+    <delete id="deleteSignInById">
+        DELETE FROM `sign_in` WHERE `id` = #{id}
     </delete>
 
     <!--根据 序号 查询user-->
@@ -340,5 +358,29 @@
         <![CDATA[  and  `check_time` <= #{today23} ]]>
         WHERE u.is_delete = 0 AND u.`status` = 0 and `check_sort` > 0 AND check_time IS NULL
         GROUP BY u.id;
+    </select>
+
+    <!--分页查看原始考勤记录-->
+    <select id="selectSignInOriginBOPage" resultMap="SignInOriginMap"
+            parameterType="com.zhixinhuixue.armor.model.dto.request.SignInReqDTO">
+        SELECT si.*,u.name AS user_name
+        FROM `sign_in` si
+        LEFT JOIN `user` u ON u.id = si.user_id
+        WHERE 1 = 1
+        <if test="userId != null">
+            AND si.`user_id` = #{userId}
+        </if>
+        <if test="beginTime != null">
+            <![CDATA[  and  si.`check_time` >= #{beginTime} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[  and  si.`check_time` <= #{endTime} ]]>
+        </if>
+        ORDER BY si.check_time DESC
+    </select>
+
+    <!--根据id查询-->
+    <select id="selectSignInById" resultMap="BaseSignInMap">
+        SELECT * FROM  `sign_in` WHERE id = #{id}
     </select>
 </mapper>

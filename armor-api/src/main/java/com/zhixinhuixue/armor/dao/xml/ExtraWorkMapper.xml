@@ -152,4 +152,23 @@
         AND `begin_time` >= #{beginStr}
         AND `begin_time` &lt; #{endStr}
     </select>
+
+
+    <!--根据用户id和日期查询当天加班申请关联的任务id-->
+    <select id="selectTaskIdsByUserAndTime" resultType="java.lang.Long">
+        SELECT ewt.task_id FROM extra_work_task ewt
+        LEFT JOIN extra_work ew ON ew.id = ewt.ew_id
+        WHERE ew.is_delete = 0
+        AND user_id = #{userId}
+        AND DATE(begin_time) = #{dateStr}
+    </select>
+
+    <!--根据用户id和日期查询当天审核通过的加班申请关联的任务id-->
+    <select id="selectTaskIdsByUserAndTimeReviewed" resultType="java.lang.Long">
+        SELECT ewt.task_id FROM extra_work_task ewt
+        LEFT JOIN extra_work ew ON ew.id = ewt.ew_id
+        WHERE ew.is_delete = 0 AND ew.review_status = 2
+        AND user_id = #{userId}
+        AND DATE(begin_time) = #{dateStr}
+    </select>
 </mapper>

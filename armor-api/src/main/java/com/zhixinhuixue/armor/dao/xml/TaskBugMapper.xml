@@ -194,5 +194,40 @@
         </if>
     </select>
 
+    <!--查询已分配的或者已解决的(1: 查询已分配的bug   2:查询已解决的bug)-->
+    <select id="selectAssignedOrSolved" resultMap="BOMap">
+        SELECT tb.*,u1.`name` create_name,u2.`name` handler_name,t.name task_name
+        FROM `task_bug` tb
+        LEFT JOIN `user` u1 ON u1.`id` = tb.`create_by`
+        LEFT JOIN `user` u2 ON u2.`id` = tb.`handler_id`
+        LEFT JOIN `task` t ON t.id = tb.`task_id`
+        WHERE tb.`is_delete` = 0
+
+        <if test="status != null and status == 1">
+            AND tb.`status` = 1
+        </if>
+        <if test="status != null and status == 2">
+            AND tb.`status` = 2
+        </if>
+        <if test="userId != null">
+        AND (tb.`create_by` = #{userId} OR tb.`handler_id` = #{userId})
+        </if>
+        ORDER BY tb.`create_time` DESC
+    </select>
+
+    <!--查询我报告的bug-->
+    <select id="selectMyReportBug" resultMap="BOMap">
+        SELECT tb.*,u1.`name` create_name,u2.`name` handler_name,t.name task_name
+        FROM `task_bug` tb
+        LEFT JOIN `user` u1 ON u1.`id` = tb.`create_by`
+        LEFT JOIN `user` u2 ON u2.`id` = tb.`handler_id`
+        LEFT JOIN `task` t ON t.id = tb.`task_id`
+        WHERE tb.`is_delete` = 0
+        <if test="userId != null">
+            AND tb.`create_by` = #{userId}
+        </if>
+        ORDER BY tb.`create_time` DESC
+    </select>
+
 
 </mapper>

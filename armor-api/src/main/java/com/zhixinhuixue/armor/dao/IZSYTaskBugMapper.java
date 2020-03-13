@@ -82,4 +82,19 @@ public interface IZSYTaskBugMapper {
      * @param createBy 创建人
      */
     Integer selectTaskBugNumByStatus(@Param("handlerId")Long handlerId, @Param("status")Integer status, @Param("createBy")Long createBy);
+
+    /**
+     * 查询已分配的或者已解决的
+     * @author sch
+     * @param userId 用户
+     * @param status 状态(1: 查询已分配的bug   2:查询已解决的bug)
+     */
+    Page<TaskBugBO> selectAssignedOrSolved(@Param("userId")Long userId, @Param("status")Integer status);
+
+    /**
+     * 查询我报告的bug
+     * @author sch
+     * @param userId 用户id
+     */
+    Page<TaskBugBO> selectMyReportBug(@Param("userId")Long userId);
 }

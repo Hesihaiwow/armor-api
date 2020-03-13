@@ -13,6 +13,7 @@ import com.zhixinhuixue.armor.model.dto.response.ExtraWorkResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYExtraWorkService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +27,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author SCH
@@ -58,6 +61,17 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         User userTemp = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
         if (userTemp == null || userTemp.getIsDelete() == 1) {
             throw new ZSYServiceException("用户不存在");
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStr = dateFormat.format(reqDTO.getBeginTime());
+        List<Long> taskIds = extraWorkMapper.selectTaskIdsByUserAndTime(userTemp.getId(),dateStr);
+        if (!CollectionUtils.isEmpty(taskIds)){
+            List<Long> intersection = taskIds.stream()
+                    .filter(item -> reqDTO.getTaskIds().contains(item)).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(intersection)){
+                intersection.forEach(i-> System.out.println("i = " + i));
+                throw new ZSYServiceException("存在一个任务当天多次申请加班,请检查");
+            }
         }
 
         ExtraWork extraWork = new ExtraWork();
@@ -110,6 +124,21 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         ExtraWork extraWork = extraWorkMapper.selectById(ewId);
         if (extraWork == null){
             throw new ZSYServiceException("加班申请不存在");
+        }
+        if (extraWork.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("当前申请已删除");
+        }
+        //审核前,先校验当前加班关联的任务,在申请当天是否已经提交加班申请
+        List<Long> collect = reqDTO.getTaskIds();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<Long> taskIds = extraWorkMapper.selectTaskIdsByUserAndTimeReviewed(extraWork.getUserId(),dateFormat.format(extraWork.getBeginTime()));
+        if (!CollectionUtils.isEmpty(taskIds)){
+            List<Long> intersection = taskIds.stream()
+                    .filter(item -> collect.contains(item)).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(intersection)){
+                intersection.forEach(i-> System.out.println("i = " + i));
+                throw new ZSYServiceException("该用户存在一个任务当天多次申请加班,请检查");
+            }
         }
         BeanUtils.copyProperties(reqDTO,extraWork);
         Float workHours = reqDTO.getWorkHours();
@@ -177,6 +206,22 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         if (extraWork == null){
             throw new ZSYServiceException("该加班申请不存在");
         }
+        if (extraWork.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("当前申请已删除");
+        }
+        //审核前,先校验当前加班关联的任务,在申请当天是否已经提交加班申请
+        List<Task> taskList = extraWorkMapper.selectTasksByEwId(ewId);
+        List<Long> collect = taskList.stream().map(Task::getId).collect(Collectors.toList());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<Long> taskIds = extraWorkMapper.selectTaskIdsByUserAndTimeReviewed(extraWork.getUserId(),dateFormat.format(extraWork.getBeginTime()));
+        if (!CollectionUtils.isEmpty(taskIds)){
+            List<Long> intersection = taskIds.stream()
+                    .filter(item -> collect.contains(item)).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(intersection)){
+                intersection.forEach(i-> System.out.println("i = " + i));
+                throw new ZSYServiceException("该用户存在一个任务当天多次申请加班,请检查");
+            }
+        }
         extraWork.setReviewStatus(2);
         extraWork.setCheckTime(new Date());
         extraWork.setUpdateTime(new Date());
@@ -210,11 +255,14 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
     public List<Task> getMyRunningTaskList(Long userId) {
         //查询进行中的任务
         List<Task> list = taskMapper.selectMyRunningTask(userId);
-        //查询2020-02总任务已完成的
+        //查询2020-02总任务已完成的多人任务
         List<Task> list2 = taskMapper.selectTaskDone(userId);
+        //查询2020-02总任务已完成的个人任务
+        List<Task> list3 = taskMapper.selectPrivateTaskDone(userId);
         List<Task> total = new ArrayList<>();
         total.addAll(list);
         total.addAll(list2);
+        total.addAll(list3);
         total = total.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(
                 () -> new TreeSet<>(Comparator.comparing(Task::getId))
         ), ArrayList::new));

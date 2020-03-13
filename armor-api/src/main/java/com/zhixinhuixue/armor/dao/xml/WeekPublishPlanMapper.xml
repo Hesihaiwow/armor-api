@@ -6,6 +6,15 @@
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="can_online" jdbcType="INTEGER" property="canOnline" />
     <result column="condition" jdbcType="VARCHAR" property="condition" />
+    <result column="special_test_time" jdbcType="VARCHAR" property="specialTestTime" />
+    <result column="zujuan" jdbcType="VARCHAR" property="zujuan" />
+    <result column="yuejuan" jdbcType="VARCHAR" property="yuejuan" />
+    <result column="saomiao" jdbcType="VARCHAR" property="saomiao" />
+    <result column="xueyebaogao" jdbcType="VARCHAR" property="xueyebaogao" />
+    <result column="chanpin" jdbcType="VARCHAR" property="chanpin" />
+    <result column="real_test_time" jdbcType="VARCHAR" property="realTestTime" />
+    <result column="real_online_time" jdbcType="VARCHAR" property="realOnlineTime" />
+    <result column="online_time" jdbcType="VARCHAR" property="onlineTime" />
   </resultMap>
 
     <!--新增周发版任务-->
@@ -34,6 +43,33 @@
             </if>
             <if test="condition != null">
                 `condition` = #{condition,jdbcType=VARCHAR},
+            </if>
+            <if test="specialTestTime != null">
+                `special_test_time` = #{specialTestTime,jdbcType=VARCHAR},
+            </if>
+            <if test="zujuan != null">
+                `zujuan` = #{zujuan,jdbcType=VARCHAR},
+            </if>
+            <if test="yuejuan != null">
+                `yuejuan` = #{yuejuan,jdbcType=VARCHAR},
+            </if>
+            <if test="saomiao != null">
+                `saomiao` = #{saomiao,jdbcType=VARCHAR},
+            </if>
+            <if test="xueyebaogao != null">
+                `xueyebaogao` = #{xueyebaogao,jdbcType=VARCHAR},
+            </if>
+            <if test="chanpin != null">
+                `chanpin` = #{chanpin,jdbcType=VARCHAR},
+            </if>
+            <if test="realTestTime != null">
+                `real_test_time` = #{realTestTime,jdbcType=VARCHAR},
+            </if>
+            <if test="onlineTime != null">
+                `online_time` = #{onlineTime,jdbcType=VARCHAR},
+            </if>
+            <if test="realOnlineTime != null">
+                `real_online_time` = #{realOnlineTime,jdbcType=VARCHAR},
             </if>
         </set>
         where `id` = #{id,jdbcType=BIGINT}

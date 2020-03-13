@@ -22,7 +22,7 @@ public interface IZSYSignInService {
     void addUserSortToMysql(MultipartFile uploadFile);
 
     /**
-     * 上传.dat的花名册文件到库
+     * 上传考勤文件到库
      * @param uploadFile
      */
     void uploadToMysql(MultipartFile uploadFile);
@@ -145,30 +145,55 @@ public interface IZSYSignInService {
 
     /**
      * 查看所有人调休时间
+     * @author sch
      * @param reqDTO 条件
      */
     List<UserRestHoursListResDTO> getUserRestHoursList(QueryUserRestHoursReqDTO reqDTO);
 
     /**
      * 手动新增调休
+     * @author sch
      * @param reqDTO  参数
      */
     void addUserRestHoursLog(AddUserRestHourLogReqDTO reqDTO);
 
     /**
      * 更新2019年10月的请假和加班产生的调休变化
+     * @author sch
      */
     void updateLeaveAndEWork(LeaveAndEWorkReqDTO reqDTO);
 
     /**
      * 删除调休日志
+     * @author sch
      * @param logId 日志id
      */
     void deleteRestHoursLog(Long logId);
 
     /**
      * 编辑调休日志
+     * @author sch
      * @param reqDTO 参数
      */
     void editUserRestHoursLog(EditUserRestHourLogReqDTO reqDTO);
+
+    /**
+     * 分页查看原始考勤记录
+     * @author sch
+     * @param reqDTO 参数
+     */
+    PageInfo<SignInOriginResDTO> getSignInOriginPage(SignInReqDTO reqDTO);
+
+    /**
+     * 编辑原始考勤记录
+     * @author sch
+     * @param reqDTO 参数
+     */
+    void editSignIn(EditSignInReqDTO reqDTO);
+
+    /**
+     * 删除原始考勤
+     * @param id id
+     */
+    void deleteSignIn(Long id);
 }

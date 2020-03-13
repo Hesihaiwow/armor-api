@@ -107,4 +107,19 @@ public interface IZSYExtraWorkMapper {
      * @return
      */
     List<ExtraWork> selectListByTime(@Param("beginStr") String beginStr,@Param("endStr")  String endStr);
+
+
+    /**
+     * 根据用户id和日期查询当天加班申请关联的任务id
+     * @param userId 用户
+     * @param dateStr 当天日期
+     */
+    List<Long> selectTaskIdsByUserAndTime(@Param("userId") Long userId, @Param("dateStr") String dateStr);
+
+    /**
+     * 根据用户id和日期查询当天审核通过的加班申请关联的任务id
+     * @param userId 用户
+     * @param dateStr 当天日期
+     */
+    List<Long> selectTaskIdsByUserAndTimeReviewed(@Param("userId") Long userId, @Param("dateStr") String dateStr);
 }
