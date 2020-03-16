@@ -11,7 +11,6 @@ import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.AddEvaluationReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.EvaluationScoreReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EvaluationUserReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.AvgEvaluationScoreResDTO;
 import com.zhixinhuixue.armor.model.dto.response.PersonEvaluationResDTO;
@@ -22,12 +21,10 @@ import com.zhixinhuixue.armor.service.IZSYTaskEvaluationService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
-import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -259,6 +256,17 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                         integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
                         integral.setCreateTime(new Date());
                         userTaskIntegralMapper.insert(integral);
+                        Task task = new Task();
+                        task.setId(taskId);
+                        task.setStatus(ZSYTaskStatus.FINISHED.getValue());
+                        task.setUpdateTime(new Date());
+                        task.setCompleteTime(new Date());
+                        taskMapper.updateByPrimaryKeySelective(task);
+                        // 修改子任务状态
+                        TaskUser taskUser = new TaskUser();
+                        taskUser.setId(taskUserBO.getId());
+                        taskUser.setStatus(ZSYTaskUserStatus.COMMENTED.getValue());
+                        taskUserMapper.updateByPrimaryKeySelective(taskUser);
                     });
                     //查看当前任务是否有人总结
                     List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskId);
@@ -271,17 +279,9 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                 // 计算积分
                 taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
 
-                    Task task = new Task();
-                    task.setId(taskId);
-                    task.setStatus(ZSYTaskStatus.FINISHED.getValue());
-                    task.setUpdateTime(new Date());
-                    task.setCompleteTime(new Date());
-                    taskMapper.updateByPrimaryKeySelective(task);
-                    // 修改子任务状态
-                    TaskUser taskUser = new TaskUser();
-                    taskUser.setId(taskUserBO.getId());
-                    taskUser.setStatus(ZSYTaskUserStatus.COMMENTED.getValue());
-                    taskUserMapper.updateByPrimaryKeySelective(taskUser);
+
+
+
                     // 修改用户积分
 //                    User userTemp = userMapper.selectById(taskUserBO.getUserId());
 //                    BigDecimal currentIntegral = userTemp.getIntegral();

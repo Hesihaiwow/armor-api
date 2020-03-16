@@ -1,9 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
-import com.zhixinhuixue.armor.model.bo.TaskUserBO;
 import com.zhixinhuixue.armor.model.bo.TaskUserHoursBO;
-import com.zhixinhuixue.armor.model.bo.UserBo;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import org.apache.ibatis.annotations.Param;
@@ -157,6 +155,12 @@ public interface IZSYTaskUserMapper {
      * @author sch
      */
     List<TaskUser> selectMultiAfterJulyWithLevel(@Param("status") Integer status);
+
+    /**
+     * 更新状态为已结束
+     * @param taskId
+     */
+    void updateByTaskId(@Param("taskId") Long taskId);
 
 //    List<Long> selectUserIdByTaskId(@Param("taskId")Long taskId);
     // -- sch

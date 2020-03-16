@@ -147,6 +147,10 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+    <update id="updateByTaskId">
+        UPDATE `task_user`
+        set `status` = 3 where task_id = #{taskId}
+    </update>
 
     <select id="getPersonalList" parameterType="com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO" resultMap="personResultMap">
         SELECT (@rowid := @rowid+1) AS id,a.* FROM(

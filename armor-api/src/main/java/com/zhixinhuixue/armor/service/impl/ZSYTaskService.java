@@ -5,12 +5,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.config.ZSYSmsConfig;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
-import com.zhixinhuixue.armor.filter.ZSYLoginFilter;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.MD5Helper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
@@ -23,8 +21,6 @@ import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
-import io.swagger.models.auth.In;
-import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,23 +30,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.swing.plaf.synth.SynthEditorPaneUI;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.logging.LoggingMXBean;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Tate on 2017/8/7.
@@ -2795,6 +2782,32 @@ public class ZSYTaskService implements IZSYTaskService {
 
         }
         return list;
+    }
+
+    /**
+     * 已完成,且都评价完成的任务状态更新为已结束
+     * @author sch
+     */
+    @Override
+    @Transactional
+    public void updateTaskCompletedToFinished() {
+        //查询所有已完成任务
+        List<Task> taskList = taskMapper.selectAllCompleteTasks();
+        if (!CollectionUtils.isEmpty(taskList)){
+            taskList.forEach(task -> {
+                List<Long> taskUserIds = taskUserMapper.selectUserByTaskId(task.getId());
+                List<Long> evaluatedUserIds = evaluationMapper.selectEvaluatedUsersByTask(task.getId());
+                if ((!CollectionUtils.isEmpty(taskUserIds))
+                        && (!CollectionUtils.isEmpty(evaluatedUserIds))
+                        && (taskUserIds.size() == evaluatedUserIds.size())){
+                    //此时,该任务所有成员均已评价完成   将其状态设为FINISHED
+                    task.setStatus(ZSYTaskStatus.FINISHED.getValue());
+                    taskMapper.updateByPrimaryKeySelective(task);
+                    //更新taskUser状态为已结束
+                    taskUserMapper.updateByTaskId(task.getId());
+                }
+            });
+        }
     }
 
     /**

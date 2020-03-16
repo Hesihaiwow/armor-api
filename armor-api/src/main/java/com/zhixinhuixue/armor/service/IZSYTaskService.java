@@ -2,7 +2,6 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
-import com.zhixinhuixue.armor.model.bo.TaskListBO;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -345,6 +344,12 @@ public interface IZSYTaskService {
      * @author sch
      */
     List<TaskBaseResDTO> getAllDoingTasks();
+
+    /**
+     * 已完成,且都评价完成的任务状态更新为已结束
+     * @author sch
+     */
+    void updateTaskCompletedToFinished();
 
 
     // -- sch
