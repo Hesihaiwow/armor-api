@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <div class="ctpc-list clearfix">
-                        <div class="ctpc-list-menu fl">关联文档：
+                        <div class="ctpc-list-menu fl">需求文档：
                         </div>
                         <div class="ctpc-list-con fl">
                             <el-input type="textarea" placeholder="请输入HTTP://或HTTPS://开头的正确URL" v-model="taskForm.doc"

@@ -41,7 +41,7 @@
                                     type="textarea"
                                     :autosize="{ minRows: 8, maxRows: 20}"
                                     placeholder="请输入内容"
-                                    v-model="upData.exceptResult">
+                                    v-model="upData.expectResult">
                             </el-input>
                         </td>
                     </tr>
@@ -89,7 +89,7 @@
                     name:'',
                     type:0,
                     checkPoint:'',
-                    exceptResult:'',
+                    expectResult:'',
                     remark:'',
                     examStatus:0,
                 },
@@ -112,7 +112,7 @@
                         this.upData.name =  res.data.name;
                         this.upData.type =  res.data.type;
                         this.upData.checkPoint =  res.data.checkPoint;
-                        this.upData.exceptResult =  res.data.exceptResult;
+                        this.upData.expectResult =  res.data.expectResult;
                         this.upData.remark =  res.data.remark;
                         this.upData.examStatus =  res.data.examStatus;
                     })

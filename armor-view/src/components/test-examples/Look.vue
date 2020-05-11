@@ -111,7 +111,7 @@
                     name:'',
                     type:0,
                     checkPoint:'',
-                    exceptResult:'',
+                    expectResult:'',
                     remark:'',
                     examStatus:0,
                 },

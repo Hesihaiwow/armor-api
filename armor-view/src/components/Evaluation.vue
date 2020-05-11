@@ -149,7 +149,7 @@
                 :before-close="hideTaskDetail">
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
-                <el-form-item class="task-form" label="关联文档：">
+                <el-form-item class="task-form" label="需求文档：">
                     <a v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
                        @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                     </a>

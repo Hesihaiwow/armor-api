@@ -84,8 +84,7 @@
         <div v-show="taskItems.length===0" class="empty">
             <h2>暂无数据</h2>
         </div>
-        <el-dialog
-                title="任务信息"
+        <el-dialog title="任务信息"
                 top="10%"
                 :visible.sync="showFinishedTask"
                 :close-on-click-modal="false"
@@ -96,7 +95,7 @@
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item class="task-form" label="任务ID：">{{taskDetail.id}}</el-form-item>
                 <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
-                <el-form-item class="task-form" label="关联文档：" v-show="taskDetail.type === 2">
+                <el-form-item class="task-form" label="需求文档：" v-show="taskDetail.type === 2">
                     <a id="text" v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
                        @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                     </a>
@@ -153,8 +152,7 @@
                 <!--<el-button @click="hideFinishedPop">取 消</el-button>-->
           </span>
         </el-dialog>
-        <el-dialog
-                title="任务信息"
+        <el-dialog title="任务信息"
                 top="10%"
                 :visible.sync="showAuditTask"
                 :close-on-click-modal="false"
@@ -193,8 +191,7 @@
             <el-button type="success" @click="acceptTask(privateTaskLevel,taskDetail.createBy)" :loading="isSaving">审核通过</el-button>
           </span>
         </el-dialog>
-        <el-dialog
-                title="任务详情"
+        <el-dialog title="任务详情"
                 top="10%"
                 :visible.sync="showTaskDetail"
                 :close-on-click-modal="false"
@@ -205,10 +202,20 @@
             <el-form>
                 <div>任务名称: <router-link :to="{ path: 'testExamples', query: { id: taskDetail.id ,taskName:taskDetail.name}}">{{taskDetail.name}}</router-link></div>
                 <div>任务负责人: {{taskDetail.userName}}</div>
-                <div style="margin-top: 5px">关联文档:
+                <div style="margin-top: 5px">需求文档:
                     <a  v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
                         @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                     </a>
+                </div>
+                <div style="margin-top: 5px">用例文档:
+                    <a  v-if="taskDetail.testDoc !== undefined && taskDetail.testDoc !== null && taskDetail.testDoc !== ''" style="cursor: pointer;"
+                        @click="toFile(taskDetail.testDoc)">{{taskDetail.testDoc.substring(0,50)}}...
+                    </a>
+                    <span v-if="taskDetail.canEditTestDoc !== undefined && taskDetail.canEditTestDoc === 1"
+                          style="margin-left: 20px;cursor: pointer"
+                          @click="editTestDoc(taskDetail.id,taskDetail.testDoc,taskDetail.name)">
+                        <i class="el-icon-edit"></i>
+                    </span>
                 </div>
                 <div style="margin-top: 5px">任务描述: {{taskDetail.description}}</div>
                 <div style="margin-top: 5px;float: left">项目: {{taskDetail.projectName}}</div>
@@ -599,8 +606,7 @@
                 <el-button type="primary" @click="stopTask(taskDetail.id,0)">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog
-                title="评价"
+        <el-dialog title="评价"
                 top="10%"
                 :visible.sync="showTaskComment"
                 :close-on-click-modal="false"
@@ -643,8 +649,7 @@
                 <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
-        <el-dialog
-                title="评价"
+        <el-dialog title="评价"
                 top="10%"
                 :visible.sync="addTaskEvaluationVisible"
                 :close-on-click-modal="false"
@@ -856,8 +861,7 @@
                 <el-button type="primary" @click="taskEvaluate" v-show="!isEvaluated" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
-        <el-dialog
-                title="编辑多人任务"
+        <el-dialog title="编辑多人任务"
                 top="10%"
                 :visible.sync="showTaskModify"
                 :close-on-click-modal="false"
@@ -882,7 +886,7 @@
                     <el-input type="textarea" v-model="modifyTaskForm.description" :rows="1" style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="" style="margin-left: -67px;margin-top: 5px">
-                    <span >关联文档</span>
+                    <span >需求文档</span>
                     <el-input v-model="modifyTaskForm.doc" placeholder="请输入HTTP://或HTTPS://开头的正确URL"
                               style="width: 608px;margin-left: 28px"></el-input>
                 </el-form-item>
@@ -1164,8 +1168,7 @@
 
         </el-dialog>
 
-        <el-dialog
-                title="评价详情"
+        <el-dialog title="评价详情"
                 top="10%"
                 :visible.sync="showTaskEvaluationDetail"
                 size="tiny"
@@ -1216,8 +1219,7 @@
                 <el-button @click="hideTaskEvaluationDetail" type="primary">确 定</el-button>
             </span>
         </el-dialog>
-        <el-dialog
-                title="评价详情"
+        <el-dialog title="评价详情"
                 top="10%"
                 :visible.sync="showTaskCommentDetail"
                 size="tiny"
@@ -1242,8 +1244,7 @@
   </span>
         </el-dialog>
 
-        <el-dialog
-                title="编辑个人任务"
+        <el-dialog title="编辑个人任务"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
@@ -1434,7 +1435,7 @@
                 <el-form-item v-show="taskTempDetail.taskReviewLogResDTOList.length > 0"><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <div style="margin-top: -10px">申请人: {{taskTempDetail.userName}}</div>
                 <div style="margin-top: 3px;">任务名称: {{taskTempDetail.taskName}}</div>
-                <div style="margin-top: 3px;">关联文档:
+                <div style="margin-top: 3px;">需求文档:
                     <a  v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
                                                        @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                     </a>
@@ -1681,6 +1682,23 @@
                     <el-button type="primary" @click="saveApplyModifyMyTask('modifyMyTaskForm')"  :loading="isSaving">确认修改</el-button>
                 </div>
             </span>
+        </el-dialog>
+
+        <el-dialog title="编辑测试用例文档"
+                   :visible.sync="editTestDocVisible"
+                   width="300px"
+                   class="edit-testDoc"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   @close="closeTestDoc"
+        >
+            <div>任务名称: {{editTestDocReqDTO.taskName}}</div>
+            <span>用例文档: </span>
+            <el-input v-model="editTestDocReqDTO.testDoc" type="textarea" :rows="3" placeholder="请输入HTTP://或HTTPS://开头的正确URL"/>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="closeTestDoc">取 消</el-button>
+                <el-button :loading="isSaving" type="primary" @click="saveEditTestDoc">确定</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -2006,6 +2024,12 @@
                 },
                 taskReviewList:[],
                 taskSummaryList:[],
+                editTestDocVisible:false,
+                editTestDocReqDTO:{
+                    taskId:null,
+                    taskName:'',
+                    testDoc:'',
+                }
 
             };
         },
@@ -2026,6 +2050,7 @@
                 let userRole = helper.decodeToken().userRole;
                 return userRole;
             },
+
             showDelete() {
                 // 不包含完成的阶段才显示删除
                 if (this.taskDetail.users) {
@@ -2372,7 +2397,7 @@
             },
             taskItemClick(taskId, taskType) {
                 if (!this.isPrivate || this.taskStatus === 'auditSuccess') {
-                    this.showTaskDetail = true;
+
                     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                         this.taskDetail = resp.data;
                         this.taskReviewList = [];
@@ -2380,7 +2405,8 @@
                         this.taskSummaryList = [];
                         this.taskSummaryList = resp.data.taskSummaryResDTOS;
                     });
-                    this.getTaskLog(taskId)
+                    this.getTaskLog(taskId);
+                    this.showTaskDetail = true;
                 }
 
                 // 个人点击完成任务
@@ -4888,6 +4914,50 @@
                 this.taskSummary.beginTime = item.beginTime;
                 this.taskSummary.endTime = item.endTime;
                 this.editSummaryVisible = true;
+            },
+
+            //打开测试用例文档编辑框
+            editTestDoc(taskId,testDoc,taskName){
+                this.editTestDocReqDTO.taskId = taskId;
+                this.editTestDocReqDTO.taskName = taskName;
+                this.editTestDocReqDTO.testDoc = testDoc;
+                this.showTaskDetail = false;
+                this.editTestDocVisible = true;
+            },
+            //关闭测试用例文档编辑框
+            closeTestDoc(){
+                this.editTestDocReqDTO.taskId = null;
+                this.editTestDocReqDTO.testDoc = '';
+                this.editTestDocReqDTO.taskName = '';
+                this.editTestDocVisible = false;
+            },
+            //保存编辑
+            saveEditTestDoc(){
+                this.editTestDocReqDTO.testDoc = this.editTestDocReqDTO.testDoc.trim();
+                this.isSaving = true;
+                http.zsyPutHttp('/task/test-doc/update',this.editTestDocReqDTO,res=>{
+                    this.$message({
+                        showClose: true,
+                        message: '编辑成功',
+                        type: 'success'
+                    });
+                    this.isSaving = false;
+                    this.closeTestDoc();
+                },err=>{
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: err.errMsg,
+                        type: 'error'
+                    });
+                },sysErr=>{
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: sysErr.errMsg,
+                        type: 'error'
+                    });
+                })
             }
         },
         created() {
@@ -5136,6 +5206,9 @@
     }
 </script>
 <style>
+    .edit-testDoc .el-dialog--small {
+        width: 500px;
+    }
     .hhh .el-dialog--small {
         width: 755px;
     }

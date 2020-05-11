@@ -950,7 +950,7 @@
                         <div class="add-member-basic-msg">
                             <input class="member-time-count" v-model="taskStep.taskName" @change="" style="width:455px">
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px">关联文档：
+                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: -5px">需求文档：
                         </div>
                         <div class="add-member-basic-msg">
                             <el-input type="textarea" placeholder="请输入HTTP://或HTTPS://开头的正确URL" v-model="taskStep.doc"

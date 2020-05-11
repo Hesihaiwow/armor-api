@@ -13,7 +13,15 @@
                        element-loading-spinner="el-icon-loading"
                        element-loading-background="rgba(0, 0, 0, 0.8)"
                        type="primary" @click="excelSignInVisible=true"
-                       style="margin-left: 20px">导出考勤记录</el-button>
+                       style="margin-left: 20px;float: left">导出考勤记录</el-button>
+        </div>
+        <div v-show="userRole === 3 || userRole === 0">
+            <el-button v-loading.fullscreen.lock="fullscreenLoading"
+                       element-loading-text="拼命导出中,请稍后"
+                       element-loading-spinner="el-icon-loading"
+                       element-loading-background="rgba(0, 0, 0, 0.8)"
+                       type="primary" @click="excelLeaveAndEWorkVisible=true"
+                       style="margin-left: 20px">导出调休加班统计</el-button>
         </div>
         <div v-show="userRole === 0" style="margin-top: 10px">
                 <span style="font-size: 18px;color: black">项目管理者负责任务</span>
@@ -2238,6 +2246,21 @@
             </span>
         </el-dialog>
 
+        <el-dialog title="导出调休加班统计" :visible.sync="excelLeaveAndEWorkVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                    @close="closeLeaveAndEWork">
+            <span>导出年月: </span>
+            <el-date-picker
+                    v-model="excelLeaveAndEWorkReqDTO.yearAndMonth"
+                    type="month"
+                    format="yyyy-MM"
+                    placeholder="选择年月"
+            />
+            <span slot="footer" class="dialog-footer">
+                <el-button type="success" :loading="isSaving" @click="exportLeaveAndEWork">导出</el-button>
+            </span>
+        </el-dialog>
+
         <el-dialog title="导入花名册到数据库" :visible.sync="uploadUserSortToMysqlVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
                    @close="closeUserSortDialog">
@@ -2529,7 +2552,7 @@
                 <el-form-item v-show="taskTempDetail.taskReviewLogResDTOList.length > 0"><span>-------------------------------------------------------------------------------------------</span></el-form-item>
                 <div style="margin-top: 0px">申请人: {{taskTempDetail.userName}}</div>
                 <div style="margin-top: 3px;">任务名称: {{taskTempDetail.taskName}}</div>
-                <div style="margin-top: 3px;">关联文档:
+                <div style="margin-top: 3px;">需求文档:
                     <a v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
                                                        @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                     </a>
@@ -2683,7 +2706,7 @@
         @close="closeModifyDialog">
             <div style="margin-top: -10px">申请人: {{taskUser.userName}}</div>
             <div style="margin-top: 3px;">任务名称: {{taskDetail.name}}</div>
-            <div style="margin-top: 3px;">关联文档:
+            <div style="margin-top: 3px;">需求文档:
                 <a v-if="taskDetail.doc !== undefined && taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
                    @click="toFile(taskDetail.doc)">{{taskDetail.doc.substring(0,50)}}...
                 </a>
@@ -3294,6 +3317,7 @@
                 eWorkDetail:{},
                 uploadToMysqlVisible: false,
                 excelSignInVisible: false,
+                excelLeaveAndEWorkVisible: false,
                 fullscreenLoading: false,
                 uploadUserSortToMysqlVisible: false,
                 recordFileList:[],
@@ -3412,6 +3436,9 @@
                 },
                 excelReqDTO:{
                     yearAndMonth:''
+                },
+                excelLeaveAndEWorkReqDTO:{
+                    yearAndMonth:null
                 },
                 workMonth2:'',
                 workMonth3:'',
@@ -7083,6 +7110,54 @@
             closeExcelDialog(){
                 this.workMonth3 = '';
                 this.excelReqDTO.yearAndMonth = '';
+            },
+            closeLeaveAndEWork(){
+              this.excelLeaveAndEWorkReqDTO.yearAndMonth = null;
+              this.excelLeaveAndEWorkVisible = false;
+            },
+            //导出调休加班统计
+            exportLeaveAndEWork(){
+                if (this.excelLeaveAndEWorkReqDTO.yearAndMonth == null
+                    || this.excelLeaveAndEWorkReqDTO.yearAndMonth === undefined
+                    || this.excelLeaveAndEWorkReqDTO.yearAndMonth === ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请选择年月',
+                        type: 'warning'
+                    });
+                    return false;
+                }else {
+                    this.excelLeaveAndEWorkReqDTO.yearAndMonth = moment(this.excelLeaveAndEWorkReqDTO.yearAndMonth).format('YYYY-MM-DD 00:00:00');
+                    this.fullscreenLoading = true;
+                    this.isSaving = true;
+                    http.zsyPostHttp('/data/leave-ework/export',this.excelLeaveAndEWorkReqDTO,res=>{
+                        window.location=res.data;
+                        this.$message({
+                            showClose: true,
+                            message: '导出成功',
+                            type: 'success'
+                        });
+                        this.fullscreenLoading = false;
+                        this.isSaving = false;
+                        this.closeLeaveAndEWork()
+                    },err=>{
+                        this.fullscreenLoading = false;
+                        this.isSaving = false;
+                        this.$message({
+                            showClose: true,
+                            message: err.errMsg,
+                            type: 'error'
+                        });
+                    },sysErr=>{
+                        this.fullscreenLoading = false;
+                        this.isSaving = false;
+                        this.$message({
+                            showClose: true,
+                            message: sysErr.errMsg,
+                            type: 'error'
+                        });
+                    })
+                }
             },
             //导出考勤记录Excel
             signInExcel(){
