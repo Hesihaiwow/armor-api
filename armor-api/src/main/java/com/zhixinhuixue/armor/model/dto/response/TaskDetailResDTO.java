@@ -95,9 +95,19 @@ public class TaskDetailResDTO {
     private String myTaskLevelName;
 
     /**
-     * 关联文档
+     * 需求文档
      */
     private String doc;
+
+    /**
+     * 测试用例文档
+     */
+    private String testDoc;
+
+    /**
+     * 能否编辑用例文档
+     */
+    private Integer canEditTestDoc;
 
     /**
      * 项目名称
@@ -133,6 +143,46 @@ public class TaskDetailResDTO {
      * 我的任务功能点
      */
     private List<TaskTempFunctionResDTO> myFunctionResDTOS;
+
+    public Integer getCanEditTestDoc() {
+        return canEditTestDoc;
+    }
+
+    public void setCanEditTestDoc(Integer canEditTestDoc) {
+        this.canEditTestDoc = canEditTestDoc;
+    }
+
+    public boolean isCanReview() {
+        return canReview;
+    }
+
+    public boolean isCanSummarize() {
+        return canSummarize;
+    }
+
+    public boolean isReview() {
+        return isReview;
+    }
+
+    public void setReview(boolean review) {
+        isReview = review;
+    }
+
+    public boolean isSummarize() {
+        return isSummarize;
+    }
+
+    public void setSummarize(boolean summarize) {
+        isSummarize = summarize;
+    }
+
+    public String getTestDoc() {
+        return testDoc;
+    }
+
+    public void setTestDoc(String testDoc) {
+        this.testDoc = testDoc;
+    }
 
     public boolean getIsReview() {
         return isReview;

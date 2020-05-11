@@ -351,6 +351,13 @@ public interface IZSYTaskService {
      */
     void updateTaskCompletedToFinished();
 
+    /**
+     * 编辑任务测试用例文档url
+     * @author sch
+     * @param reqDTO 参数
+     */
+    void editTaskTestDoc(EditTaskTestDocReqDTO reqDTO);
+
 
     // -- sch
 }

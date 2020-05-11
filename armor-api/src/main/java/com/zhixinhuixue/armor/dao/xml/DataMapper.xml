@@ -61,6 +61,16 @@
         <result column="examine" jdbcType="INTEGER" property="examine"/>
     </resultMap>
 
+    <resultMap id="LeaveAndEWorkMap" type="com.zhixinhuixue.armor.model.bo.LeaveAndEworkBO">
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="job_number" property="jobNumber" jdbcType="VARCHAR"/>
+        <result column="leave_hours" property="leaveHours" jdbcType="DECIMAL"/>
+        <result column="ew_hours" property="ewHours" jdbcType="DECIMAL"/>
+        <result column="leave_counts" property="leaveCounts" jdbcType="INTEGER"/>
+        <result column="ew_counts" property="ewCounts" jdbcType="INTEGER"/>
+    </resultMap>
+
     <!--查询年度需求  来自学管端-->
     <select id="selectAnnualFeedbackFromCoach" resultType="java.lang.Integer">
         select count(1) from feedback where is_delete = 0 and coach_id > 0
@@ -362,6 +372,40 @@
     <!--单个任务总耗时-->
     <select id="selectTaskHoursById" resultType="java.lang.Float">
         select ifnull(sum(task_hours),0) from `task_user` where `task_id` = #{taskId}
+    </select>
+
+    <!--用户加班,调休统计表-->
+    <select id="selectLeaveAndEWork" resultMap="LeaveAndEWorkMap">
+        SELECT id AS user_id,name AS user_name,u.job_number,
+        IFNULL(t1.leave_hours,0) AS leave_hours,
+        IFNULL(t2.leave_counts,0) AS leave_counts,
+        IFNULL(t3.ew_hours,0) AS ew_hours,
+        IFNULL(t4.ew_counts,0) AS ew_counts
+        FROM user u
+        LEFT JOIN
+        (SELECT user_id,SUM(rest_hours) AS leave_hours FROM user_rest_hours_log
+        WHERE leave_id IS NOT NULL
+        <![CDATA[  AND rest_hours < 0 ]]>
+        AND DATE_FORMAT(record_time,'%Y-%m') = #{yearMonthStr}
+        GROUP BY user_id) t1 ON t1.user_id = u.id
+
+        LEFT JOIN
+        (SELECT user_id,COUNT(rest_hours) AS leave_counts FROM user_rest_hours_log
+        WHERE leave_id IS NOT NULL
+        <![CDATA[  AND rest_hours <= -1 ]]>
+        AND DATE_FORMAT(record_time,'%Y-%m') = #{yearMonthStr}
+        GROUP BY user_id) t2 ON t2.user_id = u.id
+
+        LEFT JOIN
+        (SELECT user_id,SUM(rest_hours) AS ew_hours FROM user_rest_hours_log
+        WHERE rest_hours > 0 AND ew_id IS NOT NULL AND DATE_FORMAT(record_time,'%Y-%m') = #{yearMonthStr}
+        GROUP BY user_id) t3 ON t3.user_id = u.id
+
+        LEFT JOIN
+        (SELECT user_id,COUNT(rest_hours) AS ew_counts FROM user_rest_hours_log
+        WHERE rest_hours > 0 AND ew_id IS NOT NULL AND DATE_FORMAT(record_time,'%Y-%m') = #{yearMonthStr}
+        GROUP BY user_id) t4 ON t4.user_id = u.id
+        WHERE u.is_delete = 0 AND u.`status` = 0
     </select>
 
 

@@ -861,11 +861,22 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public ZSYResult<TaskDetailResDTO> getTaskDetail(Long taskId) {
         TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
+        User loginUser = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
         Optional.ofNullable(taskDetailBO).orElseThrow(() -> new ZSYServiceException("无法找到任务,id:" + taskId));
 
         // copy 任务基本属性
         TaskDetailResDTO taskDetailResDTO = new TaskDetailResDTO();
         BeanUtils.copyProperties(taskDetailBO, taskDetailResDTO);
+        if (loginUser.getUserRole() <= ZSYUserRole.PROJECT_MANAGER.getValue()){
+            taskDetailResDTO.setCanEditTestDoc(1);
+
+        }else {
+            if (loginUser.getJobRole() == ZSYJobRole.TEST.getValue()){
+                taskDetailResDTO.setCanEditTestDoc(1);
+            }else {
+                taskDetailResDTO.setCanEditTestDoc(0);
+            }
+        }
         if (taskDetailResDTO.getStageName() == null){
             taskDetailResDTO.setStageName("无");
         }
@@ -1796,7 +1807,6 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskListResDTO> getTaskByStageId(Long stageId,Long userId) {
-        long t1 = System.currentTimeMillis();
         Stage stage = stageMapper.selectById(stageId);
         long t3 = System.currentTimeMillis();
         List<TaskListBO> taskListBOS = new ArrayList<>();
@@ -1807,7 +1817,6 @@ public class ZSYTaskService implements IZSYTaskService {
         }else{
             taskListBOS = taskMapper.selectTaskByEndStageId(stageId,ZSYTokenRequestContext.get().getDepartmentId(),userId);
         }
-        long t5 = System.currentTimeMillis();
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
         taskListBOS.stream().forEach(taskListBO -> {
@@ -1833,9 +1842,6 @@ public class ZSYTaskService implements IZSYTaskService {
             }
 
         });
-        long t2 = System.currentTimeMillis();
-        logger.info("准备数据 耗时: "+(t2-t5)+"ms");
-        logger.info("全部阶段 耗时: "+(System.currentTimeMillis()-t1)+"ms");
         return list;
     }
 
@@ -2808,6 +2814,36 @@ public class ZSYTaskService implements IZSYTaskService {
                 }
             });
         }
+    }
+
+    /**
+     * 编辑任务测试用例文档url
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    @Transactional
+    public void editTaskTestDoc(EditTaskTestDocReqDTO reqDTO) {
+        Task existTask = taskMapper.selectByPrimaryKey(reqDTO.getTaskId());
+        if (existTask == null){
+            throw new ZSYServiceException("当前任务不存在,请检查");
+        }
+        if (existTask.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("当前任务已删除,请检查");
+        }
+        Task task = new Task();
+        if (reqDTO.getTestDoc() != null && !"".equals(reqDTO.getTestDoc().trim())){
+            if (!reqDTO.getTestDoc().trim().startsWith("http") || !reqDTO.getTestDoc().trim().startsWith("https")){
+                throw new ZSYServiceException("测试用例文档url有误,请检查");
+            }
+            task.setTestDoc(reqDTO.getTestDoc().trim());
+        }else {
+            task.setTestDoc("");
+        }
+
+        task.setId(existTask.getId());
+        task.setUpdateTime(new Date());
+        taskMapper.updateByPrimaryKeySelective(task);
     }
 
     /**

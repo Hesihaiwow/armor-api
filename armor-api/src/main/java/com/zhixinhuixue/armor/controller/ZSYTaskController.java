@@ -373,6 +373,13 @@ public class ZSYTaskController extends ZSYController {
         taskService.updateTaskCompletedToFinished();
         return ZSYResult.success().build();
     }
+
+    @ApiOperation("编辑任务测试用例文档url")
+    @PutMapping("/test-doc/update")
+    public String editTaskTestDoc(@Valid @RequestBody EditTaskTestDocReqDTO reqDTO){
+        taskService.editTaskTestDoc(reqDTO);
+        return ZSYResult.success().build();
+    }
     // -- sch
 }
 

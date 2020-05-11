@@ -6,6 +6,7 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="description" jdbcType="LONGVARCHAR" property="description"/>
         <result column="doc" jdbcType="LONGVARCHAR" property="doc"/>
+        <result column="test_doc" jdbcType="LONGVARCHAR" property="testDoc"/>
         <result column="project_id" jdbcType="BIGINT" property="projectId"/>
         <result column="stage_id" jdbcType="BIGINT" property="stageId"/>
         <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
@@ -27,7 +28,7 @@
 
     <sql id="Base_Column_List">
         id, name, description, project_id,stage_id, begin_time, test_time, end_time, `type`, status, review_status, priority, create_by,
-        complete_time, create_time, update_time, sort, facility, examine
+        complete_time, create_time, update_time, sort, facility, examine,is_delete
     </sql>
 
     <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.TaskListBO" extends="BaseResultMap">
@@ -458,7 +459,7 @@
       insert into task (id, name, description,
       project_id,stage_id, begin_time, test_time, end_time, `type`, status,
       review_status, priority, create_by,
-      complete_time, create_time, update_time, is_delete,sort, facility, examine,doc
+      complete_time, create_time, update_time, is_delete,sort, facility, examine,doc,test_doc
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
       #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{beginTime,jdbcType=TIMESTAMP},
@@ -467,18 +468,21 @@
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
        #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER},#{facility,jdbcType=INTEGER},#{examine,jdbcType=INTEGER}
-       ,#{doc,jdbcType=LONGVARCHAR}
+       ,#{doc,jdbcType=LONGVARCHAR},#{testDoc,jdbcType=LONGVARCHAR}
       )
   </insert>
 
     <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Task">
         update task
         <set>
-            <if test="name != null">
+            <if test="name != null and name != ''">
                 name = #{name,jdbcType=VARCHAR},
             </if>
-            <if test="name != null">
+            <if test="doc != null">
                 doc = #{doc,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="testDoc != null">
+                test_doc = #{testDoc,jdbcType=LONGVARCHAR},
             </if>
             <if test="description != null">
                 description = #{description,jdbcType=LONGVARCHAR},

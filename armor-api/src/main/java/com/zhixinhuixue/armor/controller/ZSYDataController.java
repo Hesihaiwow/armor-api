@@ -1,12 +1,9 @@
 package com.zhixinhuixue.armor.controller;
 
-import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.model.dto.request.ExportLeaveAndEworkReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.*;
-import com.zhixinhuixue.armor.model.dto.response.AnnualFeedbackInTypeResDTO;
-import com.zhixinhuixue.armor.model.dto.response.ProjectTaskResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskTotalHoursResDTO;
 import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.service.IZSYDataService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
@@ -14,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -178,4 +176,9 @@ public class ZSYDataController {
         return ZSYResult.success().data(zsyDataService.getAllPrincipalTaskStats()).build();
     }
 
+    @ApiOperation("导出月度用户加班,调休统计表")
+    @PostMapping("/leave-ework/export")
+    public String exportLeaveAndEwork(@Valid @RequestBody ExportLeaveAndEworkReqDTO reqDTO){
+        return ZSYResult.success().data(zsyDataService.exportLeaveAndEwork(reqDTO)).build();
+    }
 }

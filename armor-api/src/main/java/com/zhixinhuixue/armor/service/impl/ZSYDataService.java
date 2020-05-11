@@ -4,14 +4,20 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
+import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.dto.request.ExportLeaveAndEworkReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYDataService;
+import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import com.zhixinhuixue.armor.source.enums.*;
-import org.apache.commons.collections4.MapUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +59,8 @@ public class ZSYDataService implements IZSYDataService {
     private IZSYTaskReviewMapper reviewMapper;
     @Autowired
     private IZSYTaskSummaryMapper summaryMapper;
+    @Autowired
+    private ZSYUFileProperties uFileProperties;
     private static final Logger logger = LoggerFactory.getLogger(ZSYDataService.class);
     /**
      * 年度需求总数(学管端,其他)
@@ -942,6 +951,81 @@ public class ZSYDataService implements IZSYDataService {
         logger.info("计算待总结任务数耗时: "+(t10-t9)+"ms");
         logger.info("整体耗时: "+(t10-t1)+"ms");
         return collect;
+    }
+
+    /**
+     * 导出月度用户加班,调休统计表
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    public String exportLeaveAndEwork(ExportLeaveAndEworkReqDTO reqDTO) {
+        Date yearAndMonth = reqDTO.getYearAndMonth();
+        String yearMonthStr = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
+        List<LeaveAndEworkBO> list = dataMapper.selectLeaveAndEWork(yearMonthStr);
+        if (!CollectionUtils.isEmpty(list)){
+            //设置表头
+            List<String> headers = new ArrayList<>();
+            headers.add("工号");
+            headers.add("姓名");
+            headers.add("当月请假调休时长");
+            headers.add("当月请假调休次数");
+            headers.add("当月加班时长");
+            headers.add("当月加班天数");
+
+            //设置文件名
+            String fileName = yearMonthStr+"月调休和加班统计" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+            try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+                 HSSFWorkbook workbook = new HSSFWorkbook()){
+                //创建sheet
+                HSSFSheet sheet = workbook.createSheet("调休和加班统计");
+                //设置列宽
+                sheet.setDefaultColumnWidth(25);
+                //创建行
+                HSSFRow row = sheet.createRow(0);
+                //创建样式
+                HSSFCellStyle style = workbook.createCellStyle();
+                //设置样式
+                style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
+                style.setAlignment(HorizontalAlignment.CENTER_SELECTION);
+                style.setVerticalAlignment(VerticalAlignment.CENTER);
+                //创建字体
+                HSSFFont font = workbook.createFont();
+                //设置字体
+                font.setFontHeightInPoints((short) 15);
+                font.setBold(true);
+                font.setFontName("微软雅黑");
+                style.setFont(font);
+                HSSFCell cell = null;
+                //创建标题
+                for (int i = 0; i < headers.size(); i++) {
+                    cell = row.createCell(i);
+                    cell.setCellValue(headers.get(i));
+                    cell.setCellStyle(style);
+                }
+                int num = 0;
+                //创建内容
+                for (int i = 0; i < list.size(); i++) {
+                    LeaveAndEworkBO leaveAndEworkBO = list.get(i);
+                    row = sheet.createRow(num + 1);
+                    row.setRowStyle(style);
+                    row.createCell(0).setCellValue(leaveAndEworkBO.getJobNumber());
+                    row.createCell(1).setCellValue(leaveAndEworkBO.getUserName());
+                    row.createCell(2).setCellValue(leaveAndEworkBO.getLeaveHours().toString());
+                    row.createCell(3).setCellValue(leaveAndEworkBO.getLeaveCounts().toString());
+                    row.createCell(4).setCellValue(leaveAndEworkBO.getEwHours().toString());
+                    row.createCell(5).setCellValue(leaveAndEworkBO.getEwCounts().toString());
+
+                    num++;
+                }
+                workbook.write(os);
+                return ZSYQinuHelper.uploadToUfile(os.toByteArray(), fileName, "application/vnd.ms-excel", uFileProperties);
+            }catch (Exception e){
+                e.printStackTrace();
+                throw new ZSYServiceException("导出表失败");
+            }
+        }
+        return null;
     }
 
 

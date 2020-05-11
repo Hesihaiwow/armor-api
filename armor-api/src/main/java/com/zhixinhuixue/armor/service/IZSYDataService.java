@@ -1,11 +1,9 @@
 package com.zhixinhuixue.armor.service;
 
+import com.zhixinhuixue.armor.model.dto.request.ExportLeaveAndEworkReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.PersonVacationReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.*;
-import com.zhixinhuixue.armor.model.dto.response.AnnualFeedbackInTypeResDTO;
-import com.zhixinhuixue.armor.model.dto.response.ProjectTaskResDTO;
-import com.zhixinhuixue.armor.model.dto.response.TaskTotalHoursResDTO;
 import com.zhixinhuixue.armor.model.dto.request.YearReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.*;
 
 import java.util.List;
 
@@ -177,4 +175,11 @@ public interface IZSYDataService {
      * @author sch
      */
     List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats();
+
+    /**
+     * 导出月度用户加班,调休统计表
+     * @author sch
+     * @param reqDTO 参数
+     */
+    String exportLeaveAndEwork(ExportLeaveAndEworkReqDTO reqDTO);
 }

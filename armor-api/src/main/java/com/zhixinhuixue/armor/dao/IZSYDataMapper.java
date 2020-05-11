@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.*;
-import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import org.apache.ibatis.annotations.Param;
 
@@ -291,4 +290,11 @@ public interface IZSYDataMapper {
      * @return
      */
     Float selectTaskHoursById(@Param("taskId") Long taskId);
+
+    /**
+     * 用户加班,调休统计表
+     * @param yearMonthStr
+     * @return
+     */
+    List<LeaveAndEworkBO> selectLeaveAndEWork(@Param("yearMonthStr") String yearMonthStr);
 }

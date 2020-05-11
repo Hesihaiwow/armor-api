@@ -46,6 +46,16 @@ public class Task {
 
     private String doc;
 
+    private String testDoc;
+
+    public String getTestDoc() {
+        return testDoc;
+    }
+
+    public void setTestDoc(String testDoc) {
+        this.testDoc = testDoc;
+    }
+
     public String getDoc() {
         return doc;
     }
