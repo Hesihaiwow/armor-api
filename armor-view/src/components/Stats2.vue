@@ -779,7 +779,7 @@
                     </el-table-column>
                     <el-table-column prop="remark" label="备注" align="left">
                         <template scope="scope">
-                            {{scope.row.remarkList}}
+                            <pre class="pre">{{scope.row.remarkList}}</pre>
                         </template>
                     </el-table-column>
                     <el-table-column prop="vacationNum" label="请假次数" align="center" width="120" sortable></el-table-column>
@@ -5179,6 +5179,13 @@
 
     .wpp .el-dialog--small {
         width: 500px;
+    }
+    .pre{
+        white-space:pre-wrap;
+        white-space:-moz-pre-wrap;
+        white-space:-pre-wrap;
+        white-space:-o-pre-wrap;
+        word-wrap:break-word;
     }
 </style>
 
