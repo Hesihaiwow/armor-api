@@ -1111,7 +1111,7 @@ public class ZSYDataService implements IZSYDataService {
                 personVacationResDTO.setUserId(userId);
                 personVacationResDTO.setUserName(user.getName());
                 List<UserLeave> userLeaves = dataMapper.selectUserLeaveById(beginTime,endTime,userId);
-                List<String> remarkList = new ArrayList<>();
+                String remarkStr = "";
                 BigDecimal vacationTime = BigDecimal.ZERO;
                 if (!CollectionUtils.isEmpty(userLeaves)){
                     for (UserLeave userLeave : userLeaves) {
@@ -1120,12 +1120,10 @@ public class ZSYDataService implements IZSYDataService {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
                         String begin = sdf.format(userLeave.getBeginTime());
                         String end = sdf.format(userLeave.getEndTime());
-                        String remark ="( " + begin + " 至 " + end + "; 原因: " + userLeave.getDescription() + "; 时长: " + userLeave.getHours() + " 小时 )";
-                        remarkList.add(remark);
+                        String remark ="( " + begin + " 至 " + end + "; 原因: " + userLeave.getDescription() + "; 时长: " + userLeave.getHours() + " 小时 )\n";
+                        remarkStr = remarkStr + remark;
                     }
-                    String str1 = remarkList.toString().replace("[", "");
-                    String str2 = str1.replace("]", "");
-                    personVacationResDTO.setRemarkList(str2);
+                    personVacationResDTO.setRemarkList(remarkStr);
                     personVacationResDTO.setVacationNum(userLeaves.size());
                     personVacationResDTO.setVacationTime(vacationTime);
                 }
