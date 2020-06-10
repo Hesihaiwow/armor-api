@@ -649,7 +649,7 @@
                 <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
-        <el-dialog title="评价"
+        <el-dialog title="评价sss"
                 top="10%"
                 :visible.sync="addTaskEvaluationVisible"
                 :close-on-click-modal="false"
@@ -666,7 +666,7 @@
                         <el-checkbox v-show="!isEvaluated"  v-model="checkBox[`${index}`]" @change="hasIntersection(index,stage.userId)" style="margin-right: 20px">任务有交集</el-checkbox>
                         <span class="amd-job-time">工作量：{{stage.taskHours}}小时</span>
                         <span class="amd-during-time">截止：{{stage.endTime | formatDate}}</span>
-                        <span class="amd-name">{{stage.userName}}</span>
+                        <span class="amd-name" style="margin-left: -40px">{{stage.userName}}</span>
                         <span>{{stage.jobRoleName}}</span>
                     </div>
                     <div v-if="!isEvaluated">
@@ -729,7 +729,197 @@
                                     <span>{{evaluation[`${index}_2`]}}</span>
                                 </el-form-item>
                             </div>
+                            <div v-if="stage.jobRole === 4 && showEvaluate[`${index}`]" >
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="质量">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
                             <div v-if="stage.jobRole === 5 && showEvaluate[`${index}`]" >
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="质量">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole === 6 && showEvaluate[`${index}`]" >
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="质量">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole === 7 && showEvaluate[`${index}`]" >
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="质量">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole === 8 && showEvaluate[`${index}`]" >
+                                <el-form-item class="person-evaluate el-form-item" label="沟通">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_0`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_0`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="态度">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_1`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_1`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="质量">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_3`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_3`]}}</span>
+                                </el-form-item>
+                                <el-form-item class="person-evaluate el-form-item" label="效率">
+                                    <el-rate
+                                            v-model="evaluation[`${index}_2`]"
+                                            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                            :allow-half=true
+                                            style="float: left;margin-top: 7px">
+                                    </el-rate>
+                                    <span>{{evaluation[`${index}_2`]}}</span>
+                                </el-form-item>
+                            </div>
+                            <div v-if="stage.jobRole === 9 && showEvaluate[`${index}`]" >
                                 <el-form-item class="person-evaluate el-form-item" label="沟通">
                                     <el-rate
                                             v-model="evaluation[`${index}_0`]"
@@ -1317,6 +1507,9 @@
 
             </el-form>
             <span slot="footer" class="dialog-footer">
+                <el-tooltip content="删除该任务" placement="top">
+                      <el-button type="danger" icon="delete" @click="deletePrivateTask(modifyPrivateTaskForm.id)"></el-button>
+                </el-tooltip>
             <el-button type="primary" @click="saveModifyPrivateTaskForm" :loading="isSaving">保存</el-button>
             <el-button @click="hideModifyPrivateTaskDialog">取 消</el-button>
           </span>
@@ -2397,7 +2590,6 @@
             },
             taskItemClick(taskId, taskType) {
                 if (!this.isPrivate || this.taskStatus === 'auditSuccess') {
-
                     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                         this.taskDetail = resp.data;
                         this.taskReviewList = [];
@@ -2481,6 +2673,25 @@
                 }).catch(() => {
                 });
             },
+            //用户删除待审核个人任务
+            deletePrivateTask(taskId) {
+                this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    http.zsyDeleteHttp(`/task/delete/private/`+taskId, {}, (resp) => {
+                        this.$emit('reload');
+                        this.$root.eventBus.$emit('reloadBoard');
+                        this.showModifyPrivateTask = false;
+                        this.$message({ showClose: true,message: '删除成功',type: 'success'});
+                        this.hideTaskDetail();
+                        this.showAuditTask = false;
+                        this.taskDetail = {};
+                    })
+                }).catch(() => {
+                });
+            },
             // showWaitAssess(taskId) {
             //     let vm = this
             //     http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
@@ -2523,6 +2734,7 @@
             //     this.showTaskComment = true;
             // },
             showWaitAssess(taskId) {
+                console.log(222222222)
                 let vm = this;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data;
@@ -2581,8 +2793,9 @@
                             // stage.evaluationList.splice(attitude, 1, score)
                             // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
-                        else if (jobRole === 5){
-                            //算法
+                        else if (jobRole === 4){
+                            console.log("c++")
+                            //C++
                             let evaluationList = [];
                             evaluationList.push({
                                 'taskUserId': users[i].userId,
@@ -2605,8 +2818,131 @@
                                 'evaluationOption': '4'
                             });
                             users[i].evaluationList = evaluationList;
-                            // stage.evaluationList.splice(attitude, 1, score)
-                            // this.$set(users[i],users[i].evaluationList,evaluationList)
+                        }
+                        else if (jobRole === 5){
+                            //PHP
+                            let evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '4'
+                            });
+                            users[i].evaluationList = evaluationList;
+                        }
+                        else if (jobRole === 6){
+                            //前端
+                            let evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '4'
+                            });
+                            users[i].evaluationList = evaluationList;
+                        }
+                        else if (jobRole === 7){
+                            //IOS
+                            let evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '4'
+                            });
+                            users[i].evaluationList = evaluationList;
+                        }
+                        else if (jobRole === 8){
+                            //Android
+                            let evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '4'
+                            });
+                            users[i].evaluationList = evaluationList;
+                        }
+                        else if (jobRole === 9){
+                            //人工智能
+                            let evaluationList = [];
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '1'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '2'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '3'
+                            });
+                            evaluationList.push({
+                                'taskUserId': users[i].userId,
+                                'score': 0,
+                                'evaluationOption': '4'
+                            });
+                            users[i].evaluationList = evaluationList;
                         }
                         else if (jobRole === 2){
                             //设计
@@ -2964,7 +3300,6 @@
                     return;
                 }
                 this.hideTaskDetail();
-
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.modifyTaskForm.id = resp.data.id;
                     this.modifyTaskForm.taskName = resp.data.name;

@@ -1936,6 +1936,9 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
+                <el-tooltip content="删除该申请" placement="top">
+                          <el-button type="danger" icon="delete" @click="deleteLeave(leaveForm.id)"></el-button>
+                    </el-tooltip>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible"
                            :loading="isSaving">立即创建</el-button>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible"
@@ -2199,7 +2202,7 @@
                     <el-tooltip content="删除该申请" placement="top">
                           <el-button type="danger" icon="delete" @click="deleteLeave(leaveForm.id)"></el-button>
                     </el-tooltip>
-                    <el-tooltip content="编辑该申请" placement="top">
+                    <el-tooltip content="编辑该申请" placement="top" v-if="leaveForm.reviewStatus === 1">
                      <el-button type="primary" icon="edit" @click="editLeaveDetail(leaveForm,1)"></el-button>
                     </el-tooltip>
                     <el-button type="success" @click="acceptLeave(leaveForm.id)"
@@ -3087,6 +3090,7 @@
                 leaveForm: {
                     id: '',
                     userId: '',
+                    reviewStatus: null,
                     userName: '',
                     description: '',
                     beginTime: '',
@@ -5023,9 +5027,9 @@
                         }
 
                         http.zsyPutHttp(`/task-temp/access`, param, (resp) => {
-                            this.$message({showClose: true, message: '审核成功', type: 'success'});
                             this.accessTaskTempLoading = false;
                             this.taskTempDetailVisible = false;
+                            this.$message({showClose: true, message: '审核成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             param.taskTempFunctionList = [];
                             this.taskFunctionList = [];
@@ -5537,6 +5541,7 @@
                 this.leaveDetailVisible = true;
                 this.leaveForm.id = leave.id;
                 this.leaveForm.userId = leave.userId;
+                this.leaveForm.reviewStatus = leave.reviewStatus;
                 this.leaveForm.userName = leave.userName;
                 this.leaveForm.description = leave.description;
                 this.leaveForm.beginTime = moment(leave.beginTime).toDate();
@@ -5555,6 +5560,7 @@
                     this.editLeaveVisible = true;
                     this.leaveForm.id = leave.id;
                     this.leaveForm.userId = leave.userId;
+                    this.leaveForm.reviewStatus = leave.reviewStatus;
                     this.leaveForm.userName = leave.userName;
                     this.leaveForm.description = leave.description;
                     this.leaveForm.beginTime = moment(leave.beginTime).toDate();
@@ -8698,14 +8704,24 @@
                         if (jobRole === 0){
                             jobRoleName = '测试';
                         } else if(jobRole === 1){
-                            jobRoleName = '开发';
+                            jobRoleName = 'JAVA开发';
                         }else if (jobRole === 2){
-                            jobRoleName = '设计';
+                            jobRoleName = 'UI设计';
                         } else if (jobRole === 3){
-                            jobRoleName = '产品';
+                            jobRoleName = '产品经理';
                         } else if (jobRole === 5){
-                            jobRoleName = '算法工程师';
+                            jobRoleName = 'PHP开发';
                         } else if (jobRole === 4){
+                            jobRoleName = 'C++开发';
+                        } else if (jobRole === 6){
+                            jobRoleName = '前端开发';
+                        } else if (jobRole === 7){
+                            jobRoleName = 'IOS开发';
+                        } else if (jobRole === 8){
+                            jobRoleName = 'Android开发';
+                        } else if (jobRole === 9){
+                            jobRoleName = '人工智能';
+                        } else if (jobRole === 10){
                             jobRoleName = '其他';
                         }
                     }

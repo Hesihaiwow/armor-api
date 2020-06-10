@@ -463,7 +463,157 @@
 
 
                             }
+                            else if (jobRole == 4){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalQualityScore = 0;
+                                var totalEfficiencyScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'质量',
+                                    'score':Number((totalQualityScore/length).toFixed(2))
+                                })
+
+
+                            }
                             else if (jobRole == 5){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalQualityScore = 0;
+                                var totalEfficiencyScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'质量',
+                                    'score':Number((totalQualityScore/length).toFixed(2))
+                                })
+
+
+                            }
+                            else if (jobRole == 6){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalQualityScore = 0;
+                                var totalEfficiencyScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'质量',
+                                    'score':Number((totalQualityScore/length).toFixed(2))
+                                })
+
+
+                            }
+                            else if (jobRole == 7){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalQualityScore = 0;
+                                var totalEfficiencyScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'质量',
+                                    'score':Number((totalQualityScore/length).toFixed(2))
+                                })
+
+
+                            }
+                            else if (jobRole == 8){
+                                var totalCommunicateScore = 0;
+                                var totalAttitudeScore = 0;
+                                var totalQualityScore = 0;
+                                var totalEfficiencyScore = 0;
+                                vm.taskEvaluation.forEach(evaluation=>{
+                                    totalCommunicateScore += evaluation.evaluationScoreResDTOS[0].score
+                                    totalAttitudeScore += evaluation.evaluationScoreResDTOS[1].score
+                                    totalQualityScore += evaluation.evaluationScoreResDTOS[3].score
+                                    totalEfficiencyScore += evaluation.evaluationScoreResDTOS[2].score
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'沟通',
+                                    'score':Number((totalCommunicateScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'态度',
+                                    'score':Number((totalAttitudeScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'效率',
+                                    'score':Number((totalEfficiencyScore/length).toFixed(2))
+                                })
+                                this.avgEvaluation.push({
+                                    'option':'质量',
+                                    'score':Number((totalQualityScore/length).toFixed(2))
+                                })
+
+
+                            }
+                            else if (jobRole == 9){
                                 var totalCommunicateScore = 0;
                                 var totalAttitudeScore = 0;
                                 var totalQualityScore = 0;

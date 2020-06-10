@@ -2035,8 +2035,8 @@
                 fullscreenLoading:false,
                 rolesList:[
                     {
-                        roleId: 1,
-                        roleName: '开发'
+                        roleId: 3,
+                        roleName: '产品经理'
                     },
                     {
                         roleId: 0,
@@ -2044,18 +2044,38 @@
                     },
                     {
                         roleId: 2,
-                        roleName: '设计'
+                        roleName: 'UI设计'
                     },
                     {
-                        roleId: 3,
-                        roleName: '产品'
-                    },
-                    {
-                        roleId: 5,
-                        roleName: '算法工程师'
+                        roleId: 1,
+                        roleName: 'JAVA开发'
                     },
                     {
                         roleId: 4,
+                        roleName: 'C++开发'
+                    },
+                    {
+                        roleId: 5,
+                        roleName: 'PHP开发'
+                    },
+                    {
+                        roleId: 6,
+                        roleName: '前端开发'
+                    },
+                    {
+                        roleId: 7,
+                        roleName: 'IOS开发'
+                    },
+                    {
+                        roleId: 8,
+                        roleName: 'Android开发'
+                    },
+                    {
+                        roleId: 9,
+                        roleName: '人工智能'
+                    },
+                    {
+                        roleId: 10,
                         roleName: '其他'
                     }
                 ],
