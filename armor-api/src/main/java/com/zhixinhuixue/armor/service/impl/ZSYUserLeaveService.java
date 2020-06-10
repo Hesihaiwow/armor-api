@@ -5,7 +5,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.*;
+import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserLeaveMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
@@ -23,6 +26,7 @@ import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYUserLeaveType;
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -230,8 +234,18 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     @Override
     @Transactional
     public void deleteLeaveDetail(Long id) {
+        UserLeave userLeave = userLeaveMapper.selectById(id);
+        if (userLeave == null){
+            throw new ZSYServiceException("请假申请不存在");
+        }
+        if (userLeave.getReviewStatus() == ZSYReviewStatus.ACCEPT.getValue()){
+            if (ZSYTokenRequestContext.get().getUserRole() != ZSYUserRole.ADMINISTRATOR.getValue()){
+                throw new ZSYServiceException("暂无权限");
+            }
+        }
         userLeaveMapper.deleteById(id);
         userWeekMapper.deleteByTaskId(id);
+        restHoursLogMapper.deleteByLeave(id);
     }
 
     /**

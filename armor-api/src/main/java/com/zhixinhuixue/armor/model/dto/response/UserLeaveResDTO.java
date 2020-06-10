@@ -29,6 +29,16 @@ public class UserLeaveResDTO {
 
     private Date createTime;
 
+    private Integer reviewStatus;
+
+    public Integer getReviewStatus() {
+        return reviewStatus;
+    }
+
+    public void setReviewStatus(Integer reviewStatus) {
+        this.reviewStatus = reviewStatus;
+    }
+
     private List<UserWeekResDTO> userWeeks;
 
     public Long getId() {

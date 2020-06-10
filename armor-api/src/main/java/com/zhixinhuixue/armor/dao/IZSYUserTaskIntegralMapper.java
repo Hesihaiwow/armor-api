@@ -84,4 +84,11 @@ public interface IZSYUserTaskIntegralMapper {
      * @param bugId bugId
      */
     void deleteByBugId(@Param("bugId") Long bugId);
+
+    /**
+     * 删除任务对应积分
+     * @author sch
+     * @param taskId 任务id
+     */
+    void deleteByTask(@Param("taskId") Long taskId);
 }

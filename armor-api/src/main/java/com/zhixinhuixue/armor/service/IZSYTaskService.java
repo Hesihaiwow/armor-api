@@ -358,6 +358,13 @@ public interface IZSYTaskService {
      */
     void editTaskTestDoc(EditTaskTestDocReqDTO reqDTO);
 
+    /**
+     * 个人删除未审核的个人任务
+     * @author sch
+     * @param taskId 任务id
+     */
+    void deletePrivateTask(Long taskId);
+
 
     // -- sch
 }

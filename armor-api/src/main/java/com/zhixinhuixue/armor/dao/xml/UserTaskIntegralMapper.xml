@@ -59,6 +59,9 @@
     <delete id="deleteByBugId">
         DELETE FROM `user_task_integral` WHERE `bug_id` = #{bugId}
     </delete>
+    <delete id="deleteByTask">
+        DELETE FROM `user_task_integral` WHERE `task_id` = #{taskId}
+    </delete>
 
     <!--根据用户和任务查询积分-->
     <select id="selectByUserAndTask" resultMap="BaseMap">

@@ -17,7 +17,7 @@
 
   <!--新增-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserRestHoursLog">
-    INSERT INTO `user_rest_hours_log`
+    REPLACE INTO `user_rest_hours_log`
     (`id`,`user_id`,`user_name`,`leave_id`,`rest_hours`,`type`,`content`,`create_time`,`record_time`,`year`,`ew_id`)
     VALUES
     (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{userName,jdbcType=VARCHAR}
@@ -61,7 +61,12 @@
     DELETE FROM  `user_rest_hours_log` WHERE `id` = #{logId}
   </delete>
 
-  <!--分页查询用户调休修改日志-->
+  <!--根据请假id删除调休记录-->
+    <delete id="deleteByLeave">
+      DELETE FROM  `user_rest_hours_log` WHERE `leave_id` = #{id}
+    </delete>
+
+    <!--分页查询用户调休修改日志-->
   <select id="selectUserRestHoursLogPage" resultMap="BaseResultMap">
      SELECT * FROM `user_rest_hours_log` WHERE `user_id` = #{userId}
      ORDER BY `record_time` DESC

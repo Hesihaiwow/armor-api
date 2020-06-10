@@ -1013,11 +1013,23 @@ public class ZSYTaskService implements IZSYTaskService {
             if (jobRole == 0){
                 taskUserResDTO.setJobRoleName("测试");
             }else if (jobRole == 1){
-                taskUserResDTO.setJobRoleName("开发");
+                taskUserResDTO.setJobRoleName("JAVA开发");
             }else if (jobRole == 2){
-                taskUserResDTO.setJobRoleName("设计");
+                taskUserResDTO.setJobRoleName("UI设计");
             }else if (jobRole == 3){
-                taskUserResDTO.setJobRoleName("产品");
+                taskUserResDTO.setJobRoleName("产品经理");
+            }else if (jobRole == 4){
+                taskUserResDTO.setJobRoleName("C++开发");
+            }else if (jobRole == 5){
+                taskUserResDTO.setJobRoleName("PHP开发");
+            }else if (jobRole == 6){
+                taskUserResDTO.setJobRoleName("前端开发");
+            }else if (jobRole == 7){
+                taskUserResDTO.setJobRoleName("IOS开发");
+            }else if (jobRole == 8){
+                taskUserResDTO.setJobRoleName("Android开发");
+            }else if (jobRole == 9){
+                taskUserResDTO.setJobRoleName("人工智能");
             }
             taskUserResDTO.setEvaluationResDTOS(evaluationResDTOList);
 
@@ -1311,9 +1323,22 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("多人任务至少需要添加2个成员");
         }
         // 验证子任务是否都已经完成了
-        long count = taskDetailBO.getTaskUsers().stream().filter(taskUserBO -> taskUserBO.getStatus() == ZSYTaskUserStatus.COMPLETED.getValue()).count();
+        long count = taskDetailBO.getTaskUsers().stream()
+                .filter(taskUserBO -> taskUserBO.getStatus() == ZSYTaskUserStatus.COMPLETED.getValue()).count();
         if (count != taskDetailBO.getTaskUsers().size()) {
             throw new ZSYServiceException("任务阶段未完成");
+        }
+        List<TaskTemp> taskTemps = taskTempMapper.selectByTask(taskId);
+        List<TaskTemp> pendingTasks = taskTemps.stream()
+                .filter(item -> item.getReviewStatus() == ZSYReviewStatus.PENDING.getValue())
+                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(pendingTasks)){
+            List<String> userNames = new ArrayList<>();
+            pendingTasks.forEach(item->{
+                User user = userMapper.selectById(item.getUserId());
+                userNames.add(user.getName());
+            });
+            throw new ZSYServiceException(String.format("当前任务存在待审核的临时任务,人员:%s",userNames.toString()));
         }
         Task task = new Task();
         task.setId(taskId);
@@ -1740,6 +1765,7 @@ public class ZSYTaskService implements IZSYTaskService {
      * @return
      */
     @Override
+    @Transactional
     public ZSYResult deleteTaskById(Long taskId) {
         checkUser();
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
@@ -1752,8 +1778,6 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
-        //查询taskUser
-//        List<Long> taskUserIds = taskUserMapper.selectUserByTaskId(taskId);
         userWeekMaper.deleteByTaskId(taskId);
         feedbackPlanTaskMapper.deleteByTaskId(taskId);
         taskMapper.updateByPrimaryKeySelective(task);
@@ -1775,8 +1799,35 @@ public class ZSYTaskService implements IZSYTaskService {
         taskModifyFunctionMapper.deleteByTask(taskId);
         taskModifyMapper.deleteByTask(taskId);
         taskModifyUserWeekMapper.deleteByTask(taskId);
-//        }
+        userTaskIntegralMapper.deleteByTask(taskId);
         return ZSYResult.success();
+    }
+
+    /**
+     * 个人删除未审核的个人任务
+     * @author sch
+     * @param taskId 任务id
+     */
+    @Override
+    public void deletePrivateTask(Long taskId) {
+        Task taskTemp = taskMapper.selectByPrimaryKey(taskId);
+        if (taskTemp == null){
+            throw new ZSYServiceException("当前任务不存在，无法删除");
+        }
+        if (taskTemp.getStatus() == ZSYTaskStatus.FINISHED.getValue()) {
+            throw new ZSYServiceException("当前任务已结束，无法删除");
+        }
+        if (taskTemp.getReviewStatus() == ZSYReviewStatus.PASS.getValue()
+            || taskTemp.getReviewStatus() == ZSYReviewStatus.ACCEPT.getValue()){
+            throw new ZSYServiceException("当前任务已审核通过，无法删除");
+        }
+        Task task = new Task();
+        task.setId(taskId);
+        task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
+        taskMapper.updateByPrimaryKeySelective(task);
+        userWeekMaper.deleteByTaskId(taskId);
+        taskUserMapper.deleteByTaskId(taskId);
+
     }
 
     /**
@@ -2811,6 +2862,49 @@ public class ZSYTaskService implements IZSYTaskService {
                     taskMapper.updateByPrimaryKeySelective(task);
                     //更新taskUser状态为已结束
                     taskUserMapper.updateByTaskId(task.getId());
+
+                    //计算积分
+                    taskUserIds.forEach(userId->{
+                        User user = userMapper.selectById(userId);
+                        Integer userLevel = user.getLevel();
+                        if (userLevel==null){
+                            throw new ZSYServiceException("用户暂无级别,请检查");
+                        }
+                        List<EvaluationScoreBO> taskEvaluations =
+                                evaluationMapper.selectByTaskAndTaskUser(task.getId(),userId,null);
+
+                        //评分系数
+                        BigDecimal evaluateCoefficient;
+                        BigDecimal avgScore = BigDecimal.ZERO;
+                        if (!CollectionUtils.isEmpty(taskEvaluations)){
+                            avgScore = getAvgScore(taskEvaluations);
+                            evaluateCoefficient = getEvaluateCoefficient(taskEvaluations,avgScore);
+                        }else {
+                            evaluateCoefficient = BigDecimal.valueOf(0.9);
+                        }
+
+                        //查询功能点计算积分
+                        TaskUser taskUserBO = taskUserMapper.selectByTaskAndUser(task.getId(), userId);
+                        Integer taskLevel = taskUserBO.getTaskLevel();
+                        if (taskLevel == null){
+                            throw new ZSYServiceException(user.getName()+" 在任务: "+taskUserBO.getTaskId()+" 中,没有任务级别,请检查");
+                        }
+                        BigDecimal originIntegral = getOriginIntegral(taskLevel);
+                        BigDecimal userIntegral = originIntegral.multiply(evaluateCoefficient)
+                                .setScale(2,BigDecimal.ROUND_HALF_UP);
+                        UserTaskIntegral integral = new UserTaskIntegral();
+                        integral.setId(snowFlakeIDHelper.nextId());
+                        integral.setTaskId(taskUserBO.getTaskId());
+                        integral.setUserId(taskUserBO.getUserId());
+                        integral.setIntegral(userIntegral);
+                        integral.setScore(avgScore);
+                        integral.setOrigin(ZSYUserTaskIntegralOrigin.MULTI.getValue());
+                        integral.setDescription("完成了多人任务：" + task.getName());
+                        integral.setReviewStatus(3);
+                        integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+                        integral.setCreateTime(new Date());
+                        userTaskIntegralMapper.insert(integral);
+                    });
                 }
             });
         }
@@ -3401,5 +3495,41 @@ public class ZSYTaskService implements IZSYTaskService {
         }
 
         return originIntegral;
+    }
+
+    /**
+     * 获取评价系数
+     * @param evaluationList
+     * @param avgScore
+     * @return
+     */
+    private  BigDecimal getEvaluateCoefficient(List<EvaluationScoreBO> evaluationList,BigDecimal avgScore){
+        BigDecimal evaluateCoefficient = BigDecimal.ONE;
+        double totalScore = evaluationList.stream().mapToDouble(EvaluationScoreBO::getScore).sum();
+        avgScore = BigDecimal.valueOf(totalScore)
+                .divide(BigDecimal.valueOf(evaluationList.size()),2,BigDecimal.ROUND_HALF_UP);
+        if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
+            evaluateCoefficient = BigDecimal.valueOf(1);
+        }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
+            evaluateCoefficient = BigDecimal.valueOf(0.9);
+        }else if (avgScore.compareTo(BigDecimal.valueOf(4.6)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.3)) >= 0){
+            evaluateCoefficient = BigDecimal.valueOf(0.8);
+        }else if (avgScore.compareTo(BigDecimal.valueOf(4.3)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4)) >= 0){
+            evaluateCoefficient = BigDecimal.valueOf(0.7);
+        }else if (avgScore.compareTo(BigDecimal.valueOf(4)) < 0){
+            evaluateCoefficient = BigDecimal.valueOf(0.6);
+        }
+        return evaluateCoefficient;
+    }
+
+    /**
+     * 获取综合评价
+     * @param evaluationList
+     * @return
+     */
+    private BigDecimal getAvgScore(List<EvaluationScoreBO> evaluationList){
+        double totalScore = evaluationList.stream().mapToDouble(EvaluationScoreBO::getScore).sum();
+        return BigDecimal.valueOf(totalScore)
+                .divide(BigDecimal.valueOf(evaluationList.size()),2,BigDecimal.ROUND_HALF_UP);
     }
 }

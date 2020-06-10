@@ -1,13 +1,17 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
-import com.zhixinhuixue.armor.model.bo.*;
+import com.zhixinhuixue.armor.model.bo.TaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
+import com.zhixinhuixue.armor.model.bo.TaskListBO;
+import com.zhixinhuixue.armor.model.bo.WeekPublishTaskBO;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskComment;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -239,14 +243,14 @@ public interface IZSYTaskMapper {
      * @param userId
      * @return
      */
-    List<Task> selectTaskDone(@Param("userId")Long userId);
+    List<Task> selectTaskDone(@Param("userId")Long userId, @Param("date")LocalDate date);
 
 
     /**
      * 查询2020-02总任务已完成的个人任务
      * @param userId 用户
      */
-    List<Task> selectPrivateTaskDone(@Param("userId")Long userId);
+    List<Task> selectPrivateTaskDone(@Param("userId")Long userId, @Param("date")LocalDate date);
 
     /**
      * 分页查询已评价的任务

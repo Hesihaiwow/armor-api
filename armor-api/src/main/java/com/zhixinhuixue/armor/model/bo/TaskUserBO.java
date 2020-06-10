@@ -16,6 +16,16 @@ public class TaskUserBO extends TaskUser {
     private String stageName;
 
     /**
+     * 用户是否删除
+     */
+    private Integer isDelete;
+
+    /**
+     * 用户状态
+     */
+    private Integer userStatus;
+
+    /**
      * 负责人
      */
     private String userName;
@@ -33,6 +43,22 @@ public class TaskUserBO extends TaskUser {
     private List<TaskCommentBO> taskComments;
 
     private List<UserWeek> userWeeks;
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public Integer getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(Integer userStatus) {
+        this.userStatus = userStatus;
+    }
 
     public Integer getJobRole() {
         return jobRole;

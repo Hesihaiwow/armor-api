@@ -24,6 +24,8 @@
     <resultMap id="DetailResultMap" type="com.zhixinhuixue.armor.model.bo.TaskUserBO" extends="BaseResultMap">
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
         <result column="job_role" jdbcType="INTEGER" property="jobRole"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="user_status" jdbcType="INTEGER" property="userStatus"/>
         <association property="commentNum" column="{userId=user_id,taskId=task_id}" select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByCreateBy"></association>
         <collection property="taskComments" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYTaskCommentMapper.selectByTaskUserId"
@@ -53,9 +55,9 @@
 
     <!-- 根据task_id查询详情 -->
     <select id="selectDetailByTaskId" parameterType="java.lang.Long" resultMap="DetailResultMap">
-        select t1.*,t3.`name` as userName,t3.job_role as job_role from task_user t1
+        select t1.*,t3.`name` as userName,t3.`status` as `user_status`,t3.`is_delete`, t3.job_role as job_role from task_user t1
         left join `user` t3 on t1.user_id = t3.id
-        where task_id = #{id};
+        where task_id = #{id} and t3.`is_delete` = 0 and t3.`status` = 0
     </select>
 
     <delete id="deleteByTaskId" parameterType="java.lang.Long">
@@ -169,7 +171,9 @@
     <!--  sch  -->
     <!--查询任务开发人员-->
     <select id="selectUserByTaskId" resultType="java.lang.Long">
-        SELECT DISTINCT `user_id` FROM `task_user` WHERE `task_id` = #{id}
+        SELECT DISTINCT `user_id` FROM `task_user` tu
+        LEFT JOIN `user` u ON u.id = tu.`user_id`
+        WHERE `task_id` = #{id} AND u.`is_delete` = 0 AND u.`status` = 0
     </select>
 
     <!--根据任务id和用户id查询taskUser-->

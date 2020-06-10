@@ -176,27 +176,6 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                             throw new ZSYServiceException("用户暂无级别,请检查");
                         }
                         List<EvaluationScoreBO> taskEvaluations = evaluationMapper.selectByTaskAndTaskUser(taskId,taskUserBO.getUserId(),null);
-//                        //用戶级别系数
-//                        BigDecimal userCoefficient = BigDecimal.ONE;
-//                        if (userLevel == 1){
-//                            userCoefficient = BigDecimal.valueOf(0.9);
-//                        }else if (userLevel == 2){
-//                            userCoefficient = BigDecimal.valueOf(0.8);
-//                        }else if (userLevel == 3){
-//                            userCoefficient = BigDecimal.valueOf(0.7);
-//                        }else if (userLevel == 4){
-//                            userCoefficient = BigDecimal.valueOf(0.6);
-//                        }else if (userLevel == 5){
-//                            userCoefficient = BigDecimal.valueOf(0.5);
-//                        }else if (userLevel == 6){
-//                            userCoefficient = BigDecimal.valueOf(0.4);
-//                        }else if (userLevel == 7){
-//                            userCoefficient = BigDecimal.valueOf(0.3);
-//                        }else if (userLevel == 8){
-//                            userCoefficient = BigDecimal.valueOf(0.2);
-//                        }else if (userLevel == 9){
-//                            userCoefficient = BigDecimal.valueOf(0.1);
-//                        }
 
                         //评分系数
                         BigDecimal evaluateCoefficient = BigDecimal.ONE;
@@ -214,34 +193,6 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                             throw new ZSYServiceException(taskUserBO.getUserName()+" 在任务: "+taskUserBO.getTaskId()+" 中,没有任务级别,请检查");
                         }
                         BigDecimal originIntegral = getOriginIntegral(taskLevel);
-//                        List<TaskTempFunction> functionList = functionMapper.selectListByTaskAndUser(taskUserBO.getTaskId(), taskUserBO.getUserId());
-//                        if (!CollectionUtils.isEmpty(functionList)){
-//                            for (TaskTempFunction function : functionList) {
-//                                Integer level = function.getLevel();
-//                                if (level == 1){
-//                                    originIntegral += 1;
-//                                }else if (level == 2){
-//                                    originIntegral += 3;
-//                                }else if (level == 3){
-//                                    originIntegral += 8;
-//                                }else if (level == 4){
-//                                    originIntegral += 20;
-//                                }else if (level == 5){
-//                                    originIntegral += 40;
-//                                }
-//                            }
-//                        }else {
-//                            Double taskHours = taskUserBO.getTaskHours();
-//                            int level1Counts = 0;
-//                            int level2Counts = (int)Math.floor(taskHours/30);
-//                            double leftHours = taskHours%30;
-//                            if (leftHours<=10 && leftHours >1){
-//                                level1Counts += 1;
-//                            }else if (leftHours > 10){
-//                                level2Counts += 1;
-//                            }
-//                            originIntegral = level1Counts+(level2Counts*3);
-//                        }
                         BigDecimal userIntegral = originIntegral.multiply(evaluateCoefficient)
                                 .setScale(2,BigDecimal.ROUND_HALF_UP);
                         UserTaskIntegral integral = new UserTaskIntegral();
@@ -256,18 +207,19 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                         integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
                         integral.setCreateTime(new Date());
                         userTaskIntegralMapper.insert(integral);
-                        Task task = new Task();
-                        task.setId(taskId);
-                        task.setStatus(ZSYTaskStatus.FINISHED.getValue());
-                        task.setUpdateTime(new Date());
-                        task.setCompleteTime(new Date());
-                        taskMapper.updateByPrimaryKeySelective(task);
+
                         // 修改子任务状态
                         TaskUser taskUser = new TaskUser();
                         taskUser.setId(taskUserBO.getId());
                         taskUser.setStatus(ZSYTaskUserStatus.COMMENTED.getValue());
                         taskUserMapper.updateByPrimaryKeySelective(taskUser);
                     });
+                    Task task = new Task();
+                    task.setId(taskId);
+                    task.setStatus(ZSYTaskStatus.FINISHED.getValue());
+                    task.setUpdateTime(new Date());
+                    task.setCompleteTime(new Date());
+                    taskMapper.updateByPrimaryKeySelective(task);
                     //查看当前任务是否有人总结
                     List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskId);
                     if (!CollectionUtils.isEmpty(taskSummaryBOS)){
@@ -277,20 +229,6 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
             }
             if (commentCompleted){
                 // 计算积分
-                taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
-
-
-
-
-                    // 修改用户积分
-//                    User userTemp = userMapper.selectById(taskUserBO.getUserId());
-//                    BigDecimal currentIntegral = userTemp.getIntegral();
-//                    User user = new User();
-//                    user.setId(taskUserBO.getUserId());
-//                    user.setIntegral(currentIntegral.add(avgIntegral));
-//                    userMapper.updateSelectiveById(user);
-
-                });
             }
         }else {
             throw new ZSYServiceException("当前任务没有用户参与,请检查");
@@ -386,7 +324,17 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     optionNum = 3;
                 }else if (jobRole == 3){
                     optionNum = 4;
+                }else if (jobRole == 4){
+                    optionNum = 4;
                 }else if (jobRole == 5){
+                    optionNum = 4;
+                }else if (jobRole == 6){
+                    optionNum = 4;
+                }else if (jobRole == 7){
+                    optionNum = 4;
+                }else if (jobRole == 8){
+                    optionNum = 4;
+                }else if (jobRole == 9){
                     optionNum = 4;
                 }
                 Integer evaluateTimes = evaluationNum/optionNum;

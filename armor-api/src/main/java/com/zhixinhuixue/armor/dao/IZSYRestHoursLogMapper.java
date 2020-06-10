@@ -64,4 +64,10 @@ public interface IZSYRestHoursLogMapper {
      * @param restHoursLog 日志
      */
     int updateById(UserRestHoursLog restHoursLog);
+
+    /**
+     * 根据请假id删除调休记录
+     * @param id 请假id
+     */
+    void deleteByLeave(@Param("id") Long id);
 }

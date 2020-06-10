@@ -119,6 +119,7 @@
               LEFT JOIN user u ON u.id = uw.user_id
               LEFT JOIN user_leave ul on ul.id = uw.task_id
               WHERE uw.`year` = #{year} AND uw.week_number = #{weekOfYear} AND u.job_role = #{jobRole} AND ul.id IS NULL
+              AND u.`is_delete` = 0 AND u.`status` = 0
           GROUP BY u.`name`) t
     </select>
 

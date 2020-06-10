@@ -171,6 +171,13 @@ public class ZSYTaskController extends ZSYController {
         return ZSYResult.success().data(taskService.deleteTaskById(taskId)).build();
     }
 
+    @ApiOperation("个人删除未审核的个人任务")
+    @DeleteMapping("/delete/private/{taskId}")
+    public String deletePrivateTask(@PathVariable("taskId") Long taskId) {
+        taskService.deletePrivateTask(taskId);
+        return ZSYResult.success().build();
+    }
+
     @ApiOperation("获取任务日志")
     @GetMapping("/log/{taskId}/{pageNum}")
     public String getTaskLog(@PathVariable("taskId") Long taskId,

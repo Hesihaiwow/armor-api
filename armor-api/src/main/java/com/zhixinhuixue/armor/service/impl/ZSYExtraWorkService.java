@@ -25,10 +25,9 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author SCH
@@ -256,9 +255,10 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         //查询进行中的任务
         List<Task> list = taskMapper.selectMyRunningTask(userId);
         //查询2020-02总任务已完成的多人任务
-        List<Task> list2 = taskMapper.selectTaskDone(userId);
+        LocalDate localDate = LocalDate.now().minusMonths(2);
+        List<Task> list2 = taskMapper.selectTaskDone(userId,localDate);
         //查询2020-02总任务已完成的个人任务
-        List<Task> list3 = taskMapper.selectPrivateTaskDone(userId);
+        List<Task> list3 = taskMapper.selectPrivateTaskDone(userId,localDate);
         List<Task> total = new ArrayList<>();
         total.addAll(list);
         total.addAll(list2);

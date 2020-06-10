@@ -72,7 +72,9 @@
 
     <!--根据任务查询已经评价的用户-->
     <select id="selectEvaluatedUsersByTask" resultType="java.lang.Long">
-        SELECT DISTINCT `evaluate_user_id` FROM `task_evaluation` WHERE `task_id` = #{taskId}
+        SELECT DISTINCT `evaluate_user_id` FROM `task_evaluation` te
+        LEFT JOIN `user` u ON u.id = te.`evaluate_user_id`
+        WHERE `task_id` = #{taskId} AND u.`is_delete` = 0 AND u.`status` = 0
     </select>
 
     <!--根据任务和用户查询评价-->

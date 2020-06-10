@@ -631,7 +631,7 @@
     <select id="selectTaskDone" resultType="com.zhixinhuixue.armor.model.pojo.Task">
         SELECT * FROM `task` t LEFT JOIN `task_user` tu ON t.id = tu.task_id
         WHERE t.is_delete = 0 AND t.review_status = 3 AND t.status = 2 AND t.type = 2
-        AND tu.user_id = #{userId} AND t.complete_time >= '2020-02-01 00:00:00'
+        AND tu.user_id = #{userId} AND t.complete_time >= #{date}
     </select>
 
 
@@ -639,7 +639,7 @@
     <select id="selectPrivateTaskDone" resultMap="BaseResultMap">
         SELECT * FROM `task` t LEFT JOIN `task_user` tu ON t.id = tu.task_id
         WHERE t.is_delete = 0 AND t.review_status = 3 AND t.status in (2,3) AND t.type = 1
-        AND tu.user_id = #{userId} AND t.complete_time >= '2020-02-01 00:00:00'
+        AND tu.user_id = #{userId} AND t.complete_time >= #{date}
     </select>
     <!--分页查询已评价的任务-->
     <select id="selectCommented" resultMap="TaskDetailResultMap">
