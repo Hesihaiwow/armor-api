@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYWorkGroupMapper">
+
+  <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.WorkGroup">
+    <id column="id" property="id" jdbcType="BIGINT"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="description" property="description" jdbcType="VARCHAR"/>
+    <result column="leader" property="leader" jdbcType="BIGINT"/>
+    <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+    <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
+  </resultMap>
+
+  <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.WorkGroupBO" extends="BaseMap">
+    <result column="leader_name" property="leaderName" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <!--根据名称查询-->
+  <insert id="insertGroup" parameterType="com.zhixinhuixue.armor.model.pojo.WorkGroup">
+    INSERT INTO `work_group`
+    (`id`,`name`,`description`,`leader`,`is_delete`
+    ,`create_by`,`update_by`,`create_time`,`update_time`)
+    VALUES
+    (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR}
+    ,#{leader,jdbcType=BIGINT},#{isDelete,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
+    ,#{updateBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--更新团队-->
+  <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.WorkGroup">
+    UPDATE `work_group`
+    <set>
+      <if test="name != null and name != '' ">
+        `name` = #{name},
+      </if>
+      <if test="description != null and description != ''">
+        `description` = #{description},
+      </if>
+      <if test="leader != null">
+        `leader` = #{leader},
+      </if>
+      <if test="isDelete != null">
+        `is_delete` = #{isDelete},
+      </if>
+      <if test="updateBy != null">
+        `update_by` =#{updateBy},
+      </if>
+      <if test="updateTime != null">
+        `update_time` = #{updateTime},
+      </if>
+    </set>
+    WHERE `id` = #{id}
+  </update>
+
+  <!--根据名称查询-->
+  <select id="selectByName" resultMap="BaseMap">
+    SELECT * FROM `work_group` WHERE `name` = #{name} LIMIT 1
+  </select>
+
+  <!--根据主键查询-->
+  <select id="selectById" resultMap="BaseMap">
+    SELECT * FROM `work_group` WHERE `id` = #{id}
+  </select>
+
+  <!--查询团队列表-->
+  <select id="selectList" resultMap="BaseMap">
+    SELECT * FROM `work_group` WHERE `is_delete` = 0 ORDER BY create_time DESC
+  </select>
+
+  <!--查询团队详情-->
+  <select id="selectDetailById" resultMap="BOMap">
+    SELECT wg.*,u.name leader_name
+    FROM `work_group` wg
+    LEFT JOIN `user` u ON u.id = wg.leader
+    WHERE wg.id = #{id}
+  </select>
+</mapper>
