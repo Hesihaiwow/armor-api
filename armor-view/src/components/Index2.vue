@@ -64,7 +64,7 @@
             <el-table :data="noticeData" border>
                 <el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>
                 <el-table-column property="content" label="内容" align="center">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <span v-if="scope.row.status === 0">
                             <a style="color:orangered;cursor: pointer;"@click="showTaskDetails(scope.row.taskId)">{{scope.row.content}}</a>
                         </span>
@@ -72,18 +72,18 @@
                     </template>
                 </el-table-column>
                 <el-table-column property="time" width="200" label="时间" align="center">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <span>{{scope.row.createTime | formatTime}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="状态" align="center" width="70">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <span v-if="scope.row.status == 0">未读</span>
                         <span v-else>已读</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" align="center" width="100">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <a style="color:#20a0ff;cursor: pointer;"
                            @click="readNotice(scope.row.nid)" v-if="scope.row.status === 0">标记已阅</a>
                     </template>

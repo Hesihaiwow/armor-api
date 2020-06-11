@@ -6,7 +6,7 @@ import router from './router'
 // element-ui
 import ElementUI from 'element-ui'
 import echarts  from 'echarts'
-import 'element-ui/lib/theme-default/index.css'
+import 'element-ui/lib/theme-chalk/index.css'
 // common css
 import './assets/css/base.css'
 import './assets/css/iconfont.css'

@@ -42,30 +42,30 @@
         <el-table :data="demandData" border>
           <el-table-column prop="no" label="序号" align="center" width="70"></el-table-column>
           <el-table-column prop="title" label="需求名称" align="center" width="250">
-            <template scope="scope">
+            <template slot-scope="scope">
               <a style="color:#20a0ff;cursor: pointer;" @click="feedbackEdit(scope.row)">{{scope.row.title}}</a>
             </template>
           </el-table-column>
           <el-table-column prop="origin" label="需求来源" align="center" width="100"></el-table-column>
           <el-table-column prop="priority" label="优先级" align="center" width="100">
-            <template scope="scope">
+            <template slot-scope="scope">
               <div type="text" v-for="item in priorityList" v-if="item.id == scope.row.priority">{{item.name}}</div>
             </template>
           </el-table-column>
           <el-table-column prop="feedbackTime" label="提出日期" align="center" width="150">
-            <template scope="scope">
+            <template slot-scope="scope">
               <div type="text" >{{scope.row.feedbackTime | formatDate}}</div>
             </template>
           </el-table-column>
           <el-table-column prop="status" label="状态" align="center" >
-            <template scope="scope">
+            <template slot-scope="scope">
               <div type="text" v-for="item in statusList" v-if="item.id == scope.row.status">{{item.name}}</div>
             </template>
           </el-table-column>
           <el-table-column prop="taskNo" label="任务" align="center" width="70"></el-table-column>
           <el-table-column prop="users" label="负责人" align="center"></el-table-column>
           <el-table-column  label="操作" align="center" width="165">
-            <template scope="scope">
+            <template slot-scope="scope">
               <el-button @click="feedbackPlan(scope.row)" type="text" size="small" v-show="permit || scope.row.taskNo!=0">计划</el-button>
               <el-button @click="linkTask(scope.row.id)" type="text" size="small" v-show="permit && scope.row.planId!=null">关联任务</el-button>
             </template>

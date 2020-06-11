@@ -94,14 +94,14 @@
                 <el-table-column
                         prop="title"
                         label="摘要">
-                    <!--<template scope="scope">-->
+                    <!--<template slot-scope="scope">-->
                         <!--&lt;!&ndash;<router-link :to="{ path: '/index/bug/details', query: { id: scope.row.tbId}}">{{scope.row.title}}</router-link>&ndash;&gt;-->
                     <!--</template>-->
                 </el-table-column>
                 <el-table-column
                         label="最后更新"
                         width="180">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <span>{{ scope.row.createTime | formatDate }}</span>
                     </template>
                 </el-table-column>

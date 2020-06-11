@@ -66,7 +66,7 @@
             <!--<el-table-column prop="createTime" label="创建日期" width="106" align="center"></el-table-column>-->
             <!--<el-table-column prop="lastLogin" label="最后登录" width="106" align="center"></el-table-column>-->
             <el-table-column prop="operate" label="操作" align="center">
-              <template scope="scope">
+              <template slot-scope="scope">
                 <!-- <el-button type="text" size="small" @click.native.prevent="authorityOpt(scope.$index, tableData)">权限</el-button> -->
                 <el-button type="text" size="small" @click.native.prevent="modifyUserDlgShow(scope.$index)">编辑</el-button>
                 <el-button type="text" size="small" @click.native.prevent="resetUserPwdDlgShow(scope.$index)">重置密码</el-button>

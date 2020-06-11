@@ -9,7 +9,7 @@
 
         <el-table :data="userRestHoursLogData" border>
             <el-table-column type="index" label="序号" align="center" width="80">
-                <template scope="scope">
+                <template slot-scope="scope">
                     {{(userRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
                 </template>
             </el-table-column>
@@ -17,20 +17,20 @@
             <el-table-column prop="restHours" label="时长" align="center" width="100"></el-table-column>
             <el-table-column prop="content" label="事由" align="center"></el-table-column>
             <el-table-column  label="参考时间"  width="165"  align="center">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <div type="text" size="small" v-if="scope.row.type === 2">{{scope.row.leaveTimeStr}}</div>
                     <div type="text" size="small" v-if="scope.row.type === 3">{{scope.row.checkTimeStr}}</div>
                     <div type="text" size="small" v-if="scope.row.type === 4">{{scope.row.eworkTimeStr}}</div>
                 </template>
             </el-table-column>
             <el-table-column prop="recordTime" label="记录日期"  width="120"  align="center">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <div type="text" size="small" >{{scope.row.recordTime | formatDate}}</div>
                 </template>
             </el-table-column>
             <el-table-column prop="typeName" label="类型" width="120" align="center"></el-table-column>
             <el-table-column label="操作" width="150" align="center" v-if="userRole === 0">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button type="text" size="small" @click="editLog(scope.row)">编辑</el-button>
                     <el-button type="text" size="small" @click="deleteLog(scope.row.id)">删除</el-button>
                 </template>

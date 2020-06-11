@@ -16,7 +16,7 @@
     <el-table :data="historyData" stripe style="width: 100%;bottom:20px">
       <el-table-column prop="userName" label="成员" align="center" width="100px" ></el-table-column>
       <el-table-column prop="integral" label="积分" align="center" >
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag
             :type="scope.row.integral<0 ? 'danger' : 'gray'"
             close-transition>{{scope.row.integral}}
@@ -25,7 +25,7 @@
       </el-table-column>
       <el-table-column prop="taskHours" label="工作量" align="center" width="100px" ></el-table-column>
       <el-table-column prop="origin" label="来源" align="center" width="200px" >
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag
             :type="scope.row.origin === '任务系统-单人任务' ? 'warning' : 'success'&&scope.row.origin === '手动录入' ? 'primary' : 'success'&&scope.row.origin === '转移求助' ? 'danger' : 'success'&&scope.row.origin === 'Bug处理结果' ? 'info' : 'success'"
             close-transition>{{scope.row.origin}}
@@ -33,14 +33,14 @@
         </template>
       </el-table-column>
       <el-table-column prop="score" label="评价" align="center" width="100px" >
-        <template scope="scope">
+        <template slot-scope="scope">
           <!--<el-button type="text" @click="scope.row.type =='2'?commentDetail(scope.$index,historyData):''" v-show="permit">{{scope.row.grade}}</el-button>-->
           <div type="text">{{scope.row.score}}</div>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="完成时间" align="center" width="200px"></el-table-column>
       <el-table-column prop="description" label="备注" align="center" width="400px">
-          <template scope="scope">
+          <template slot-scope="scope">
               <span @click="showTaskDetail(scope.row.taskId)" style="cursor: pointer;text-decoration: underline">{{scope.row.description}}</span>
           </template>
       </el-table-column>

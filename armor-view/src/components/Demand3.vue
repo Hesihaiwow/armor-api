@@ -85,7 +85,7 @@
                         <el-table-column prop="no" label="序号" align="center" width="65" type="index">
                         </el-table-column>
                         <el-table-column label="需求标题" align="center">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <!--<a style="color:#20a0ff;cursor: pointer;" @click.stop.prevent="demandDetail(scope.row.id)">{{scope.row.title}}</a>-->
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
@@ -94,7 +94,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.source === 0">其他</span>
                                 <span v-else-if="scope.row.source === 1">直播课</span>
                                 <span v-else-if="scope.row.source === 2">小程序</span>
@@ -103,46 +103,46 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.type === 0">个人建议</span>
                                 <span v-else-if="scope.row.type === 1">市场反馈</span>
                                 <span v-else-if="scope.row.type === 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="优先级" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <div type="text" v-for="item in prioritys" v-if="item.id === scope.row.priority">
                                     {{item.name}}
                                 </div>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出人" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="需求负责人" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.feedbackTime| formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="期待上线日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.releaseTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点赞数" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" align="center" v-if="permit" width="150">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;"
                                    @click="editDemandVisible=true,editDemand(scope.row)">编辑</a>
                                 <a style="color:#20a0ff;cursor: pointer;" @click="deleteDemand(scope.row.id)">删除</a>
@@ -217,7 +217,7 @@
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center" width="250">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
                                         style="color:#20a0ff;">{{scope.row.title}}
@@ -225,17 +225,17 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="提出人" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column label="需求负责人" align="center" width="120">-->
-                            <!--<template scope="scope">-->
+                            <!--<template slot-scope="scope">-->
                                 <!--<span>{{scope.row.chargeManName}}</span>-->
                             <!--</template>-->
                         <!--</el-table-column>-->
                         <el-table-column label="来源" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.source === 0">其他</span>
                                 <span v-else-if="scope.row.source === 1">直播课</span>
                                 <span v-else-if="scope.row.source === 2">小程序</span>
@@ -244,52 +244,52 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="期待上线日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.releaseTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="采纳时间" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.agreedTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="任务负责人" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.taskChargeMan}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="启动开发时间" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.startTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="任务数" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.taskNum}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="参与开发人数" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.workerNum}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="已进行时间(周)" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.workedWeeks}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="计划上线日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.expectOnlineTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" align="center" width="200" fixed="right">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <el-button @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!==0">计划
                                 </el-button>
@@ -370,7 +370,7 @@
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
                                         style="color:#20a0ff;">{{scope.row.title}}
@@ -378,31 +378,31 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.type === 0">个人建议</span>
                                 <span v-else-if="scope.row.type === 1">市场反馈</span>
                                 <span v-else-if="scope.row.type === 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="优先级" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <div type="text" v-for="item in prioritys" v-if="item.id === scope.row.priority">
                                     {{item.name}}
                                 </div>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出人" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="需求负责人" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.source === 0">其他</span>
                                 <span v-else-if="scope.row.source === 1">直播课</span>
                                 <span v-else-if="scope.row.source === 2">小程序</span>
@@ -411,27 +411,27 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="期待上线日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.releaseTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="采纳日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.agreedTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点赞数" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" align="center" width="130" v-show="permit">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <a style="color:#20a0ff;cursor: pointer;" @click="feedbackPlan(scope.row)" type="text" size="small"
                                            v-show="permit || scope.row.taskNum!==0">计划
                                 </a>
@@ -509,7 +509,7 @@
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
                                         style="color:#20a0ff;">{{scope.row.title}}
@@ -517,31 +517,31 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.type === 0">个人建议</span>
                                 <span v-else-if="scope.row.type === 1">市场反馈</span>
                                 <span v-else-if="scope.row.type === 2">公司决策</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="优先级" align="center" width="100">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <div type="text" v-for="item in prioritys" v-if="item.id === scope.row.priority">
                                     {{item.name}}
                                 </div>
                             </template>
                         </el-table-column>
                         <el-table-column label="提出人" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="需求负责人" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.chargeManName}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.source === 0">其他</span>
                                 <span v-else-if="scope.row.source === 1">直播课</span>
                                 <span v-else-if="scope.row.source === 2">小程序</span>
@@ -550,27 +550,27 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="期待上线日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.releaseTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点赞数" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.likesNum}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="驳回人" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.rejectUser}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="驳回日期" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.rejectedTime | formatDate}}</span>
                             </template>
                         </el-table-column>
@@ -633,7 +633,7 @@
                     <el-table :data="demandData" border>
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center" width="250">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <router-link
                                         :to="{path:'demandDetail', query:{id:scope.row.id,status:scope.row.status}}"
                                         style="color:#20a0ff;">{{scope.row.title}}
@@ -641,17 +641,17 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="提出人" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.origin}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="任务负责人" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.taskChargeMan}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="来源" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.source === 0">其他</span>
                                 <span v-else-if="scope.row.source === 1">直播课</span>
                                 <span v-else-if="scope.row.source === 2">小程序</span>
@@ -660,42 +660,42 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="提出日期" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.feedbackTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="期待上线日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.releaseTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="采纳日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.agreedTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="启动开发时间" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.startTime | formatDate}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="任务数" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.taskNum}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="参与开发人数" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.workerNum}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="已进行时间(周)" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.workedTime}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="上线日期" align="center" width="130">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span>{{scope.row.onlineTime | formatDate}}</span>
                             </template>
                         </el-table-column>

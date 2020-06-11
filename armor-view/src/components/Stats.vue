@@ -5,13 +5,13 @@
                 <el-table :data="statsData" >
                     <el-table-column prop="name" label="成员" align="center" ></el-table-column>
                     <el-table-column prop="inProcess" label="我的任务/进行中任务" align="center" >
-                        <template scope="sco">
+                        <template slot-scope="sco">
                             <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}} / {{sco.row.multiTask}}</el-button>
                         </template>
                     </el-table-column>
                     <el-table-column prop="hours" label="进行中任务耗时（小时）" align="center"></el-table-column>
                     <el-table-column prop="delay" label="超时任务" align="center" >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span type="text" style="color: red;">{{scope.row.delay}}</span>
                         </template>
                     </el-table-column>
@@ -43,7 +43,7 @@
                     <el-table-column prop="createTime" label="发现日期"  width="130"></el-table-column>
                     <el-table-column prop="processTime" label="处理日期"  width="130"></el-table-column>
                     <el-table-column label="操作" width="100">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
                         </template>
                     </el-table-column>
@@ -77,7 +77,7 @@
                 <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
                     <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="150">
-                        <template scope="sco">
+                        <template slot-scope="sco">
                             <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
                         </template>
                     </el-table-column>
@@ -103,17 +103,17 @@
                 <el-table :data="userWeekData" border  >
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="80" >
-                        <template scope="sco">
+                        <template slot-scope="sco">
                             <a style="color:#20a0ff;cursor: pointer;"  @click="getPesonStats(sco.row.userId)">{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center">
-                        <template scope="sco">
+                        <template slot-scope="sco">
                             <div style="white-space: pre-wrap;text-align: left">{{sco.row.taskName}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="hours" label="周工作量"  sortable  width="120">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span type="text" v-show="scope.row.hours<=40">{{scope.row.hours}}</span>
                             <span type="text" style="color: red;" v-show="scope.row.hours>40">{{scope.row.hours}}</span>
                         </template>
@@ -144,12 +144,12 @@
                     <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
                     <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
                     <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
                         </template>
                     </el-table-column>

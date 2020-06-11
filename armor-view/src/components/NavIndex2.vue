@@ -31,13 +31,13 @@
                     <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center" sortable width="140"></el-table-column>
                     <el-table-column prop="summarizeTaskNum" label="待总结任务数" align="center" sortable width="140"></el-table-column>
                     <el-table-column prop="delayedTaskNum" label="已超时任务数" align="center" sortable width="140">
-                        <template scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font></template>
+                        <template slot-scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font></template>
                     </el-table-column>
                     <el-table-column prop="aboutDelayTaskNum" label="即将超时任务数" align="center" sortable>
-                        <template scope="scope"><font style="color: orange">{{scope.row.aboutDelayTaskNum}}</font></template>
+                        <template slot-scope="scope"><font style="color: orange">{{scope.row.aboutDelayTaskNum}}</font></template>
                     </el-table-column>
                     <el-table-column prop="messageFee" label="需缴纳短信费" align="center" sortable width="140">
-                        <template scope="scope"><font style="color: red">{{scope.row.messageFee}}</font></template>
+                        <template slot-scope="scope"><font style="color: red">{{scope.row.messageFee}}</font></template>
                     </el-table-column>
                 </el-table>
         </div>
@@ -64,13 +64,13 @@
                             <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center"></el-table-column>
                             <el-table-column prop="summarizeTaskNum" label="待总结任务数" align="center"></el-table-column>
                             <el-table-column prop="delayedTaskNum" label="已超时任务数" align="center">
-                                <template scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font></template>
+                                <template slot-scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font></template>
                             </el-table-column>
                             <el-table-column prop="aboutDelayTaskNum" label="即将超时任务数" align="center">
-                                <template scope="scope"><font style="color: orange">{{scope.row.aboutDelayTaskNum}}</font></template>
+                                <template slot-scope="scope"><font style="color: orange">{{scope.row.aboutDelayTaskNum}}</font></template>
                             </el-table-column>
                             <el-table-column prop="messageFee" label="需缴纳短信费" align="center">
-                                <template scope="scope"><font style="color: red">{{scope.row.messageFee}}</font></template>
+                                <template slot-scope="scope"><font style="color: red">{{scope.row.messageFee}}</font></template>
                             </el-table-column>
                         </el-table>
                     </el-tab-pane>
@@ -211,30 +211,30 @@
                 <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
                 <el-table :data="signInData" border>
                     <el-table-column prop="date" label="日期" align="center" width="120">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.date | formatDate2}}{{scope.row.weekday}}
                             <span v-show="scope.row.isWeekend === 1" style="color: #3da7f5">(周末)</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="110">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span style="color: red" v-if="scope.row.isForget === 1">(漏)</span>{{scope.row.userName}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkTimeList" label="打卡记录" align="left">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.checkTimeList}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkInTime" label="上班时间" align="center" width="120" >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span style="color: red" v-if="scope.row.isRecheckIn === 1">(补)</span>
                             <span v-if="scope.row.isCheckInAfterTen === 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
                             <span v-else>{{scope.row.checkInTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120" >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span style="color: red" v-if="scope.row.isRecheckOut === 1">(补)</span>
                             <span style="color: green" v-if="scope.row.isWorkToNextDay === 1">(+1)</span>
                             <span v-if="scope.row.isCheckOutBeforeSix === 1" style="color: red">{{scope.row.checkOutTime | formatTime2}}</span>
@@ -242,23 +242,23 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="workTime" label="上班时长" align="center" width="120" >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span v-if="scope.row.lessThanNine === 1" style="color: red">{{scope.row.workTime}}</span>
                             <span v-else>{{scope.row.workTime}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.eWorkTime}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.eWorkHours}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.leaveTime}}
                         </template>
                     </el-table-column>
@@ -303,17 +303,17 @@
                 <el-table :data="restHoursData" border>
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="100">
-                        <template scope="sco">
+                        <template slot-scope="sco">
                             <a style="color:#20a0ff;cursor: pointer;" @click="showUserRestHoursLog(sco.row.userId,sco.row.userName)" >{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="totalRestHours" label="总调休" sortable align="center">
-                        <template scope="sco">
+                        <template slot-scope="sco">
                             <div style="white-space: pre-wrap;text-align: center">{{sco.row.totalRestHours}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="goneRestHours" label="已用调休"  sortable align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span type="text">{{scope.row.goneRestHours}}</span>
                         </template>
                     </el-table-column>
@@ -361,12 +361,12 @@
                     <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
                     <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
                     <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div type="text" size="small" >{{scope.row.beginTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div type="text" size="small" >{{scope.row.endTime | formatTime}}</div>
                         </template>
                     </el-table-column>
@@ -416,7 +416,7 @@
                 <el-button type="primary" @click="searchEWorkStats" style="margin-left: 10px" size="small">查询</el-button>
                 <el-table :data="extraWorkStatsList" border>
                     <el-table-column type="index" label="序号" align="center" width="80">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{(extraWorkReqDTO.pageNum-1)*10 + scope.$index + 1}}
                         </template>
                     </el-table-column>
@@ -424,17 +424,17 @@
                     <el-table-column prop="userName" label="申请人" align="center" width="130"></el-table-column>
                     <el-table-column prop="workHours" label="时长" align="center" width="80"></el-table-column>
                     <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div type="text" size="small" >{{scope.row.beginTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div type="text" size="small" >{{scope.row.endTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkRecords" label="打卡记录" align="left">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <span v-if="scope.row.checkRecords.length === 0">暂无</span>
                             <span v-else>{{scope.row.checkRecords}}</span>
                         </template>
@@ -488,13 +488,13 @@
                 <el-table :data="signInOriginData" border>
                     <el-table-column prop="userName" label="用户" align="center" width="110"></el-table-column>
                     <el-table-column prop="checkTime" label="打卡时间" align="center">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div type="text" size="small" >{{scope.row.checkTime | formatTime}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="typeName" label="类型" align="center" width="110"></el-table-column>
                     <el-table-column label="操作" align="center" width="130" v-show="permit">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <a style="color:#20a0ff;cursor: pointer;"
                                @click="editSignIn(scope.row)">编辑</a>
                             <a style="color:#20a0ff;cursor: pointer;"
@@ -667,12 +667,12 @@
                         <!--<el-tab-pane label="任务bug" name="taskBug">-->
                             <!--<el-table :data="myTaskBugData" border>-->
                                 <!--<el-table-column type="index" label="序号" align="center" width="80">-->
-                                    <!--<template scope="scope">-->
+                                    <!--<template slot-scope="scope">-->
                                         <!--{{(myTaskBugPageNum-1)*10 + scope.$index + 1}}-->
                                     <!--</template>-->
                                 <!--</el-table-column>-->
                                 <!--<el-table-column prop="title" label="标题" align="center">-->
-                                    <!--<template scope="scope">-->
+                                    <!--<template slot-scope="scope">-->
                                         <!--<span><router-link :to="{ path: 'bug', query: { taskId: scope.row.taskId,taskName:scope.row.taskName }}" class="btn-bug">{{scope.row.title }}</router-link></span>-->
                                     <!--</template>-->
                                 <!--</el-table-column>-->
@@ -681,7 +681,7 @@
                                 <!--<el-table-column prop="createName" label="提交人" align="center" width="120" ></el-table-column>-->
                                 <!--<el-table-column prop="handlerName" label="处理人" align="center" width="120" ></el-table-column>-->
                                 <!--<el-table-column prop="createTime" label="提交时间" align="center" width="120" >-->
-                                    <!--<template scope="scope">-->
+                                    <!--<template slot-scope="scope">-->
                                         <!--<span>{{scope.row.createTime | formatDate2}}</span>-->
                                     <!--</template>-->
                                 <!--</el-table-column>-->
@@ -749,7 +749,7 @@
                         <el-table-column prop="endDate" label="截止日期" align="center">
                         </el-table-column>
                         <el-table-column label="操作" align="center" width="150">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <a style="color: blue;cursor: pointer"  @click="showRestHoursDetail">查看调休日志</a>
                             </template>
                         </el-table-column>
@@ -786,30 +786,30 @@
                     <!--<span @click="showRestHoursDetail" style="font-size: 15px;cursor: pointer;text-decoration: underline">剩余调休(截止上月底): {{myRestHours}}H</span>-->
                     <el-table :data="signInData" border>
                         <el-table-column prop="date" label="日期" align="center" width="120">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 {{scope.row.date | formatDate2}}{{scope.row.weekday}}
                                 <span v-show="scope.row.isWeekend === 1" style="color: #3da7f5">(周末)</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="userName" label="用户" align="center" width="110">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span style="color: red" v-if="scope.row.isForget === 1">(漏)</span>{{scope.row.userName}}
                             </template>
                         </el-table-column>
                         <el-table-column prop="checkTimeList" label="打卡记录" align="left">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 {{scope.row.checkTimeList}}
                             </template>
                         </el-table-column>
                         <el-table-column prop="checkInTime" label="上班时间" align="center" width="120" >
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span style="color: red" v-if="scope.row.isRecheckIn === 1">(补)</span>
                                 <span v-if="scope.row.isCheckInAfterTen === 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
                                 <span v-else>{{scope.row.checkInTime | formatTime2}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120" >
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span style="color: red" v-if="scope.row.isRecheckOut === 1">(补)</span>
                                 <span style="color: green" v-if="scope.row.isWorkToNextDay === 1">(+1)</span>
                                 <span v-if="scope.row.isCheckOutBeforeSix === 1" style="color: red">{{scope.row.checkOutTime | formatTime2}}</span>
@@ -817,28 +817,28 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="workTime" label="上班时长" align="center" width="120" >
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <span v-if="scope.row.lessThanNine === 1" style="color: red">{{scope.row.workTime}}</span>
                                 <span v-else>{{scope.row.workTime}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 {{scope.row.eWorkTime}}
                             </template>
                         </el-table-column>
                         <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 {{scope.row.eWorkHours}}
                             </template>
                         </el-table-column>
                         <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 {{scope.row.leaveTime}}
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" align="center" width="80">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <a v-show="scope.row.canReCheck === 1" style="color: blue;cursor: pointer" @click="recheck(scope.row.userId,scope.row.date)">补签到</a>
                             </template>
                         </el-table-column>
@@ -2335,14 +2335,14 @@
                    width="800px">
             <el-table :data="myRestHoursLogData" border>
                 <el-table-column type="index" label="序号" align="center" width="80">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         {{(myRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
                     </template>
                 </el-table-column>
                 <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
                 <el-table-column prop="content" label="事由" align="center"></el-table-column>
                 <el-table-column prop="recordTime" label="记录日期"  width="150"  align="center">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
                     </template>
                 </el-table-column>
@@ -2365,7 +2365,7 @@
             </div>
             <el-table :data="userRestHoursLogData" border>
                 <el-table-column type="index" label="序号" align="center" width="80">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         {{(userRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
                     </template>
                 </el-table-column>
@@ -2373,7 +2373,7 @@
                 <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
                 <el-table-column prop="content" label="事由" align="center"></el-table-column>
                 <el-table-column prop="recordTime" label="记录日期"  width="150"  align="center">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
                     </template>
                 </el-table-column>

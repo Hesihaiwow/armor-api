@@ -23,7 +23,7 @@
             style="width: 100%">
         <el-table-column
                 label="任务名称">
-            <template scope="scope">
+            <template slot-scope="scope">
                 <el-button type="text" @click="toTaskList(scope.row.taskId)"> {{scope.row.taskName}}</el-button>
             </template>
         </el-table-column>
@@ -34,7 +34,7 @@
         <el-table-column
                 prop="grade"
                 label="评价等级">
-            <template scope="scope">
+            <template slot-scope="scope">
                 <span :style="scope.row.grade==='C'?'color: #ff4949;':''">{{scope.row.grade}}</span>
             </template>
         </el-table-column>
@@ -44,7 +44,7 @@
         </el-table-column>
         <el-table-column
                 label="任务负责人">
-            <template scope="scope">
+            <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
                     <p>{{ scope.row.taskUserDesc }}</p>
                     <div slot="reference" class="name-wrapper">
@@ -55,7 +55,7 @@
         </el-table-column>
         <el-table-column
                 label="评价时间">
-            <template scope="scope">
+            <template slot-scope="scope">
                 <span>{{scope.row.createTime|_formatDateTime}}</span>
             </template>
         </el-table-column>

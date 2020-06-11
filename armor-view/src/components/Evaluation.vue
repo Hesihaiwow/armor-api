@@ -35,7 +35,7 @@
             </el-form>
             <el-table :data="userEvaluationList" border>
                 <el-table-column type="expand">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-form>
                             <div v-for="task in scope.row.taskBaseResDTOS">
                                 <el-form-item align="center">
@@ -48,7 +48,7 @@
                 </el-table-column>
                 <el-table-column label="姓名" prop="userName" align="center"></el-table-column>
                 <el-table-column label="各项评价" align="center">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-form>
                             <div v-for="item in scope.row.scoreResDTOS">
                                 <el-form-item :label="item.evaluationOptionName">

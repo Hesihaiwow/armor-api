@@ -5,7 +5,7 @@
             <el-table :data="quarter" stripe style="width: 50%;float:left">
               <el-table-column label="季度排名" align="center" :render-header="createQuarterHistory">
                 <el-table-column prop="id" label="排名" align="center">
-                  <template scope="scope">
+                  <template slot-scope="scope">
                     <div v-if="scope.row.sort=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.sort"></div>
                     <div v-if="scope.row.sort=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.sort"></div>
                     <div v-if="scope.row.sort=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.sort"></div>
@@ -13,7 +13,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="userName" label="成员" align="center">
-                  <template scope="scope">
+                  <template slot-scope="scope">
                     <el-button @click.native.prevent="clicklHistory(scope.$index, quarter)" type="text" size="small">{{ scope.row.userName }}</el-button>
                   </template>
                 </el-table-column>
@@ -25,7 +25,7 @@
           <el-table :data="year" stripe style="width: 48%;float:right">
             <el-table-column label="年度排名" align="center" :render-header="createYearHistory">
               <el-table-column prop="id" label="排名" align="center">
-                <template scope="scope">
+                <template slot-scope="scope">
                   <div v-if="scope.row.sort=='1'"><img  src="../assets/img/jin.png" :alt="scope.row.sort"></div>
                   <div v-if="scope.row.sort=='2'"><img  src="../assets/img/yin.png" :alt="scope.row.sort"></div>
                   <div v-if="scope.row.sort=='3'"><img  src="../assets/img/tong.png" :alt="scope.row.sort"></div>
@@ -33,12 +33,12 @@
                 </template>
               </el-table-column>
               <el-table-column prop="userName" label="成员" align="center">
-                <template scope="scope">
+                <template slot-scope="scope">
                   <el-button @click.native.prevent="clicklHistory(scope.$index, year)" type="text" size="small">{{ scope.row.userName }}</el-button>
                 </template>
               </el-table-column>
               <el-table-column prop="integral" label="积分" align="center" type="danger">
-                <!--<template scope="scope">-->
+                <!--<template slot-scope="scope">-->
                   <!--<el-button @click.native.prevent="clicklHistory(scope.$index, year)" type="text" size="small">{{ scope.row.name }}</el-button>-->
                 <!--</template>-->
               </el-table-column>
