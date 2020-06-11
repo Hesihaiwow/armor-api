@@ -363,8 +363,10 @@
             // _this.fetchGroupTree();
             Http.zsyGetHttp('/dept/tree',null,(res)=>{
                 _this.departmentTree.push(res.data);
-                console.log(333)
-                _this.userPaging(_this.departmentTree[0].id,_this.queryForm.pageIndex);
+                _this.queryForm.deptId = _this.departmentTree[0].id;
+                _this.queryForm.pageIndex = 1;
+                _this.queryForm.groupId = null;
+                _this.userPaging(_this.queryForm);
             });
             _this.fetchGroupList();
             _this.fetchSignInUser();
@@ -379,29 +381,26 @@
                 }
             },
             //用户按部门分页查询
-            userPaging(deptId,pageIndex) {
-                    this.queryForm.groupId = null;
-                    this.queryForm.deptId = deptId;
-                    this.queryForm.pageIndex = pageIndex;
-                Http.zsyPostHttp(`/user/page`,this.queryForm,(res)=>{
+            userPaging(queryForm) {
+                Http.zsyPostHttp(`/user/page`,queryForm,(res)=>{
                     this.tableData = res.data.list;
                     this.pagination.pageSize = res.data.pageSize;
                     this.pagination.total = res.data.total;
+                    this.pagination.pageIndex = res.data.pageNum;
                     this.pagingLayout(this.pagination.total);
                 });
             },
             //点击页码
             handleCurrentChange(val) {
-                console.log(4444)
                 this.queryForm.pageIndex = val
-                this.userPaging(this.queryForm.deptId,val);
+                this.userPaging(this.queryForm);
             },
             // 部门结构树点击
             handleNodeClick(data) {
                 //最小子节点,可点击
-                console.log(555)
-
-                this.userPaging(data.id,1);
+                this.queryForm.deptId = data.id;
+                this.queryForm.pageIndex = 1;
+                this.userPaging(this.queryForm);
             },
             //团队树点击
             handleGroupNodeClick(data){
@@ -439,11 +438,11 @@
             },
             //删除用户
             deleteUser (userId){
-                console.log(666)
-
                 Http.zsyDeleteHttp(`/user/${userId}`,null,(res)=>{
                     this.$message({showClose: true, message: '删除用户成功',type: 'success'});
-                    this.userPaging(this.queryForm.deptId,this.queryForm.pageIndex);
+                    this.queryForm.deptId = this.departmentTree[0].id;
+                    this.queryForm.pageIndex = 1;
+                    this.userPaging(this.queryForm);
                 });
             },
             //添加部门弹窗
@@ -472,20 +471,24 @@
             },
             //添加用户成功,刷新用户数据
             handleUserDataRefresh () {
-                console.log(777)
-
-                this.userPaging(this.queryForm.deptId,this.queryForm.pageIndex);
+                this.queryForm.deptId = this.departmentTree[0].id;
+                this.queryForm.pageIndex = 1;
+                this.userPaging(this.queryForm);
             },
             //根据不同角色查询
-            changeJobRole(jobRole){
-                console.log(1111)
-                this.userPaging(this.queryForm.deptId,1)
+            changeJobRole(){
+                this.queryForm.groupId = null;
+                this.queryForm.deptId = this.departmentTree[0].id;
+                this.queryForm.pageIndex = 1;
+                this.userPaging(this.queryForm)
             },
 
             //根据不同用户类型查询
-            changeUserType(userType){
-                console.log(222)
-                this.userPaging(this.queryForm.deptId,1)
+            changeUserType(){
+                this.queryForm.groupId = null;
+                this.queryForm.deptId = this.departmentTree[0].id;
+                this.queryForm.pageIndex = 1;
+                this.userPaging(this.queryForm)
             },
 
             //查询团队树结构
@@ -518,15 +521,13 @@
 
             },
             fetchUserPage(id){
-                console.log(id)
-                this.queryForm.deptId = this.departmentTree[0].id;
                 this.queryForm.groupId = id;
-                setTimeout(()=>{
-                },0)
+                this.queryForm.pageIndex = 1;
                 Http.zsyPostHttp(`/user/page`,this.queryForm,(res)=>{
                     this.tableData = res.data.list;
                     this.pagination.pageSize = res.data.pageSize;
                     this.pagination.total = res.data.total;
+                    this.pagination.pageIndex = res.data.pageNum;
                     this.pagingLayout(this.pagination.total);
                 });
             },
@@ -603,7 +604,10 @@
                         type: 'success'
                     });
                     this.closeSetUser();
-                    this.fetchUserPage(null)
+                    this.queryForm.pageIndex = 1;
+                    this.queryForm.deptId = this.departmentTree[0].id;
+                    this.queryForm.groupId = null;
+                    this.userPaging(this.queryForm)
                 })
             },
             //新增团队

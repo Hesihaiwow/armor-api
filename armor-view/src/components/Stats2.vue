@@ -675,11 +675,17 @@
                     </el-table-column>
                     <el-table-column prop="hourPercent" label="成员工作量饱和度" align="center" width="150" >
                         <template slot-scope="sco">
-                            {{sco.row.hourPercent}}
+                            <div v-if="sco.row.upColor === 0">{{sco.row.hourPercent}}</div>
+                            <div v-if="sco.row.upColor === 1" style="color: orangered">{{sco.row.hourPercent}}</div>
+                            <div v-if="sco.row.upColor === 2" style="color: blue;">{{sco.row.hourPercent}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="positionHourPercent" label="岗位工作量饱和度" align="center" width="150"  >
-                        <template slot-scope="sco">{{sco.row.positionHourPercent}}</template>
+                        <template slot-scope="sco">
+                            <div v-if="sco.row.ppColor === 0">{{sco.row.positionHourPercent}}</div>
+                            <div v-if="sco.row.ppColor === 1" style="color: orangered">{{sco.row.positionHourPercent}}</div>
+                            <div v-if="sco.row.ppColor === 2" style="color: blue;">{{sco.row.positionHourPercent}}</div>
+                        </template>
                     </el-table-column>
                 </el-table>
             </el-tab-pane>
@@ -2292,7 +2298,17 @@
                     firstDayOfWeek:1
                 },
                 spanArr:[],
-                pos:0
+                userSpanArr:[],
+                weekHourSpanArr:[],
+                leaveHourSpanArr:[],
+                userPercentSpanArr:[],
+                positionPercentSpanArr:[],
+                pos:0,
+                userPos:0,
+                weekHourPos:0,
+                leaveHourPos:0,
+                userPercentPos:0,
+                positionPercentPos:0,
                 // -- sch
             }
         },
@@ -4913,85 +4929,185 @@
                         message: '请选择团队',
                         type: 'warning'
                     });
+                    return;
                 }
-                if(this.userCostReqDTO.date!==''){
-                    this.userCostReqDTO.date = moment(this.userCostReqDTO.date).format('YYYY-MM-DD HH:mm:ss');
-                    this.userCostReqDTO.weekNumber = moment(this.userCostReqDTO.date).week();
-                    Http.zsyPostHttp('/stats/week-user-cost/v2',this.userCostReqDTO , (resp) => {
-                        this.weekUserCostList = resp.data;
-                        this.getSpanArr(this.weekUserCostList)
-                    })
-
-                }else{
+                if (this.userCostReqDTO.date == null
+                    || this.userCostReqDTO.date === undefined
+                    || this.userCostReqDTO.date === ''){
                     this.$message({
                         showClose: true,
                         message: '请选择时间',
                         type: 'warning'
                     });
+                    return;
                 }
+                this.userCostReqDTO.date = moment(this.userCostReqDTO.date).format('YYYY-MM-DD HH:mm:ss');
+                this.userCostReqDTO.weekNumber = moment(this.userCostReqDTO.date).week();
+                Http.zsyPostHttp('/stats/week-user-cost/v2',this.userCostReqDTO , (resp) => {
+                    this.weekUserCostList = resp.data;
+                    this.getSpanArr(this.weekUserCostList)
+                })
 
             },
             getSpanArr(data) {
 
-                let that = this
+                let that = this;
                 //页面展示的数据，不一定是全部的数据，所以每次都清空之前存储的 保证遍历的数据是最新的数据。以免造成数据渲染混乱
-                that.spanArr = []
-                that.pos = 0
+                that.spanArr = [];
+                that.pos = 0;
+                that.userSpanArr = [];
+                that.userPos = 0;
+                that.weekHourSpanArr = [];
+                that.weekHourPos = 0;
+                that.leaveHourSpanArr = [];
+                that.leaveHourPos = 0;
+                that.userPercentSpanArr = [];
+                that.userPercentPos = 0;
+                that.positionPercentSpanArr = [];
+                that.positionPercentPos = 0;
                 //遍历数据
                 data.forEach((item, index) => {
                     //判断是否是第一项
-                    console.log(item,index)
                     if (index === 0) {
-                        this.spanArr.push(1)
-                        this.pos = 0
+                        this.spanArr.push(1);
+                        this.pos = 0;
+                        this.userSpanArr.push(1);
+                        this.userPos = 0;
+                        this.weekHourSpanArr.push(1);
+                        this.weekHourPos = 0;
+                        this.leaveHourSpanArr.push(1);
+                        this.leaveHourPos = 0;
+                        this.userPercentSpanArr.push(1);
+                        this.userPercentPos = 0;
+                        this.positionPercentSpanArr.push(1);
+                        this.positionPercentPos = 0;
                     } else {
                         //不是第一项时，就根据标识去存储
                         if (data[index].jobRoleName === data[index - 1].jobRoleName) {
                             // 查找到符合条件的数据时每次要把之前存储的数据+1
-                            this.spanArr[this.pos] += 1
+                            this.spanArr[this.pos] += 1;
                             this.spanArr.push(0)
                         } else {
                             // 没有符合的数据时，要记住当前的index
-                            this.spanArr.push(1)
+                            this.spanArr.push(1);
                             this.pos = index
+                        }
+
+                        //不是第一项时，就根据标识去存储
+                        if (data[index].userName === data[index - 1].userName) {
+                            // 查找到符合条件的数据时每次要把之前存储的数据+1
+                            this.userSpanArr[this.userPos] += 1;
+                            this.userSpanArr.push(0)
+                        } else {
+                            // 没有符合的数据时，要记住当前的index
+                            this.userSpanArr.push(1);
+                            this.userPos = index
+                        }
+
+                        //不是第一项时，就根据标识去存储
+                        if (data[index].totalHours === data[index - 1].totalHours
+                        && data[index].userName === data[index - 1].userName) {
+                            // 查找到符合条件的数据时每次要把之前存储的数据+1
+                            this.weekHourSpanArr[this.weekHourPos] += 1;
+                            this.weekHourSpanArr.push(0)
+                        } else {
+                            // 没有符合的数据时，要记住当前的index
+                            this.weekHourSpanArr.push(1);
+                            this.weekHourPos = index
+                        }
+
+                        //不是第一项时，就根据标识去存储
+                        if (data[index].leaveHours === data[index - 1].leaveHours
+                            && data[index].userName === data[index - 1].userName) {
+                            // 查找到符合条件的数据时每次要把之前存储的数据+1
+                            this.leaveHourSpanArr[this.leaveHourPos] += 1;
+                            this.leaveHourSpanArr.push(0)
+                        } else {
+                            // 没有符合的数据时，要记住当前的index
+                            this.leaveHourSpanArr.push(1);
+                            this.leaveHourPos = index
+                        }
+
+                        //不是第一项时，就根据标识去存储
+                        if (data[index].hourPercent === data[index - 1].hourPercent
+                            && data[index].userName === data[index - 1].userName) {
+                            // 查找到符合条件的数据时每次要把之前存储的数据+1
+                            this.userPercentSpanArr[this.userPercentPos] += 1;
+                            this.userPercentSpanArr.push(0)
+                        } else {
+                            // 没有符合的数据时，要记住当前的index
+                            this.userPercentSpanArr.push(1);
+                            this.userPercentPos = index
+                        }
+
+                        //不是第一项时，就根据标识去存储
+                        if (data[index].positionHourPercent === data[index - 1].positionHourPercent
+                        && data[index].jobRoleName === data[index - 1].jobRoleName) {
+                            // 查找到符合条件的数据时每次要把之前存储的数据+1
+                            this.positionPercentSpanArr[this.positionPercentPos] += 1;
+                            this.positionPercentSpanArr.push(0)
+                        } else {
+                            // 没有符合的数据时，要记住当前的index
+                            this.positionPercentSpanArr.push(1);
+                            this.positionPercentPos = index
                         }
                     }
                 })
-                console.log(this.spanArr, this.pos)
             },
             // 列表方法
             objectSpanMethod({row, column,rowIndex, columnIndex}) {
-                console.log(1111)
-                if (columnIndex === 0) {
-                    if (rowIndex % 2 === 0) {
-                        return {
-                            rowspan: 2,
-                            colspan: 1
-                        };
-                    } else {
-                        return {
-                            rowspan: 0,
-                            colspan: 0
-                        };
-                    }
-                }
 
             // 页面列表上 表格合并行 -> 第几列(从0开始)
             // 需要合并多个单元格时 依次增加判断条件即可
-            //     if (columnIndex === 0) {
-            //         // 二维数组存储的数据 取出
-            //         const _row = this.spanArr[rowIndex]
-            //         const _col = _row > 0 ? 1 : 0
-            //         return {
-            //             rowspan: _row,
-            //             colspan: _col
-            //         }
-            //         console.log(_row)
-            //         console.log(_col)
-            //         //不可以return {rowspan：0， colspan: 0} 会造成数据不渲染， 也可以不写else，eslint过不了的话就返回false
-            //     } else {
-            //         return false
-            //     }
+                if (columnIndex === 0) {
+                    // 二维数组存储的数据 取出
+                    const _row = this.spanArr[rowIndex]
+                    const _col = _row > 0 ? 1 : 0
+                    return {
+                        rowspan: _row,
+                        colspan: _col
+                    }
+                    //不可以return {rowspan：0， colspan: 0} 会造成数据不渲染， 也可以不写else，eslint过不了的话就返回false
+                } else if(columnIndex === 1){
+                    const _row = this.userSpanArr[rowIndex]
+                    const _col = _row > 0 ? 1 : 0
+                    return {
+                        rowspan: _row,
+                        colspan: _col
+                    }
+                } else if(columnIndex === 4){
+                    const _row = this.weekHourSpanArr[rowIndex]
+                    const _col = _row > 0 ? 1 : 0
+                    return {
+                        rowspan: _row,
+                        colspan: _col
+                    }
+                } else if(columnIndex === 5){
+                    const _row = this.leaveHourSpanArr[rowIndex]
+                    const _col = _row > 0 ? 1 : 0
+                    return {
+                        rowspan: _row,
+                        colspan: _col
+                    }
+                } else if(columnIndex === 6){
+                    const _row = this.userPercentSpanArr[rowIndex]
+                    const _col = _row > 0 ? 1 : 0
+                    return {
+                        rowspan: _row,
+                        colspan: _col
+                    }
+                } else if(columnIndex === 7){
+                    const _row = this.positionPercentSpanArr[rowIndex]
+                    const _col = _row > 0 ? 1 : 0
+                    return {
+                        rowspan: _row,
+                        colspan: _col
+                    }
+                }
+
+                else {
+                    return false
+                }
             },
 
             //查看用户调休
