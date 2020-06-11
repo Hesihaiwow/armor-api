@@ -123,7 +123,6 @@
                 })
             },
             handleAdd(s,d,n){//增加节点
-                // console.log(s,d,n)
                 if(n.level >=2){
                     this.$message.error("最多只支持3级！")
                     return false;
@@ -146,7 +145,6 @@
                 this.setFunctional(n.label);
             },
             handleAdde(s,d,n){//增加实例
-                console.log(n);
                 this.$router.push({ path: '/index/testExamples/edit', query: {id:this.taskId, functional: n.key,isAdd:true }});
                 // console.log(s,d,n)
                 // if(n.level >=3){
@@ -172,7 +170,6 @@
             },
 
             handleDelete(s,d,n){//删除节点
-                console.log(s,d,n)
                 let that = this;
                 //有子级不删除
                 if(d.functionTreeResDTOS && d.functionTreeResDTOS.length !== 0){
@@ -230,7 +227,6 @@
                 }
             },
             handleDel(s,d,n){//删除空节点
-                console.log(s,d,n)
                     // 新增节点直接删除，否则要询问是否删除
                     let delNode = () => {
                         let list = n.parent.data.functionTreeResDTOS || n.parent.data,//节点同级数据

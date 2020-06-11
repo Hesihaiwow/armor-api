@@ -240,7 +240,6 @@
                 this.taskList.forEach(i=>{
                     if(i.taskId == data.taskId){
                         isPush = false;
-                        console.log(1)
                     }
                 });
                 if(isPush){
@@ -258,7 +257,6 @@
                 this.upBugData.description = val
             },
             save(){
-                // console.log(this.upBugData)
                 if(this.editBugData.isEdit){
                     http.zsyPutHttp(`/task-bug/edit`, this.upBugData, (res) => {
                         this.$message({

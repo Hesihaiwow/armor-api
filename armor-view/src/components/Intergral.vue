@@ -110,26 +110,14 @@
                   this.quarter= res.data;
                   this.countQuarterHistory(this.queryForm);
                   if(this.quarter.length<1){
-                    // console.log(11)
                   }
                 })
-                //   Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.queryForm, (res) => {
-                //   this.quarter= res.data;
-                //   this.countQuarterHistory(this.queryForm);
-                //   if(this.quarter.length<1){
-                //     console.log(11)
-                //   }
-                // })
               }else if(date=="year"){//今年
                 this.getDateString("year");
                 Http.zsyPostHttp(`/user-task-integral/rank`,this.yearForm, (res) => {
                   this.year= res.data;
                   this.countYearHistory(this.yearForm);
                 })
-                //   Http.zsyGetHttp(Http.API_URI.INTEGRAL,this.yearForm, (res) => {
-                //   this.year= res.data;
-                //   this.countYearHistory(this.yearForm);
-                // })
               }
             },
             //获取本年,季度,月的开始结束日期

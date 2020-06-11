@@ -29,6 +29,19 @@
           </el-select>
         </div>
       </div>
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">团队</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-select class="w280" v-model="modifyForm.groupId" placeholder="请选择团队">-->
+            <!--<el-option-->
+                    <!--v-for="item in groupList"-->
+                    <!--:key="item.id"-->
+                    <!--:label="item.name"-->
+                    <!--:value="item.id">-->
+            <!--</el-option>-->
+          <!--</el-select>-->
+        <!--</div>-->
+      <!--</div>-->
       <div class="ftp-list clearfix">
         <div class="ftp-menus fl">级别</div>
         <div class="ftp-msg fl">
@@ -152,6 +165,7 @@
           account:'',
           jobName:'',
           jobRole:'',
+          groupId:null,
           level:'',
           phone:'',
           userRole:'',
@@ -162,25 +176,53 @@
           email:'',
             checkUserList:[],
         },
-        rolesList:[{
-            roleId: 1,
-            roleName: '开发'
-        }, {
-            roleId: 0,
-            roleName: '测试'
-        }, {
-            roleId: 2,
-            roleName: '设计'
-        }, {
-            roleId: 3,
-            roleName: '产品'
-        }, {
-            roleId: 5,
-            roleName: '算法工程师'
-        }, {
-            roleId: 4,
-            roleName: '其他'
-        }],
+          rolesList:[
+              {
+                  roleId: 3,
+                  roleName: '产品经理'
+              },
+              {
+                  roleId: 0,
+                  roleName: '测试'
+              },
+              {
+                  roleId: 2,
+                  roleName: 'UI设计'
+              },
+              {
+                  roleId: 1,
+                  roleName: 'JAVA开发'
+              },
+              {
+                  roleId: 4,
+                  roleName: 'C++开发'
+              },
+              {
+                  roleId: 5,
+                  roleName: 'PHP开发'
+              },
+              {
+                  roleId: 6,
+                  roleName: '前端开发'
+              },
+              {
+                  roleId: 7,
+                  roleName: 'IOS开发'
+              },
+              {
+                  roleId: 8,
+                  roleName: 'Android开发'
+              },
+              {
+                  roleId: 9,
+                  roleName: '人工智能'
+              },
+              {
+                  roleId: 10,
+                  roleName: '其他'
+              }
+          ],
+
           levelList:[
               {id:1,name:'一级'},
               {id:2,name:'二级'},
@@ -217,11 +259,13 @@
           showAddPop: false,
           checkUserIdList:[],
           num:1,
-          userList:[]
+          userList:[],
+          groupList:[],
       };
     },
       created(){
-        this.fetchUserList()
+        this.fetchUserList();
+        // this.fetchGroupList()
       },
     methods: {
       //显示弹框
@@ -240,6 +284,7 @@
             this.modifyForm.departmentId=res.data.departmentId;
             this.modifyForm.checkSort=res.data.checkSort;
             this.modifyForm.jobNumber=res.data.jobNumber;
+            this.modifyForm.groupId=res.data.groupId;
             this.modifyForm.checkUserList = res.data.checkUsers;
             if(this.modifyForm.checkUserList != null && this.modifyForm.checkUserList != [] && this.modifyForm.checkUserList.length > 0){
                 this.num = this.modifyForm.checkUserList.length
@@ -268,6 +313,7 @@
         this.modifyForm.level='';
         this.modifyForm.checkSort='';
         this.modifyForm.jobNumber='';
+        this.modifyForm.groupId=null;
         this.num = 1;
         this.checkUserIdList = [];
       },
@@ -380,9 +426,15 @@
             this.modifyForm.checkUserList.splice(i);
         },
         fetchUserList() {
-            let vm = this
+            let vm = this;
             Http.zsyGetHttp('/user/effective', {}, (resp) => {
                 vm.userList = resp.data
+            })
+        },
+        //查询所有可用团队
+        fetchGroupList(){
+            Http.zsyGetHttp('/work-group/list',{},res=>{
+                this.groupList = res.data;
             })
         },
     }

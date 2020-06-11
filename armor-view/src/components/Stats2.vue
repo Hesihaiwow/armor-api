@@ -120,60 +120,6 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
-            <!--<el-tab-pane label="周发版计划" name="weekPublish"  style="">-->
-                <!--<div class="add-member-basic-msg fl">-->
-                    <!--<el-date-picker-->
-                            <!--v-model="weekPublishReqDTO.beginTime"-->
-                            <!--align="right"-->
-                            <!--type="date"-->
-                            <!--value-format="yyyy-MM-dd"-->
-                            <!--clearable-->
-                            <!--placeholder="请选择开始时间"-->
-                    <!--&gt;-->
-                    <!--</el-date-picker>-->
-                    <!--<span style="font-size: 14px;color: #606266;">-</span>-->
-                    <!--<el-date-picker-->
-                            <!--v-model="weekPublishReqDTO.endTime"-->
-                            <!--align="right"-->
-                            <!--type="date"-->
-                            <!--value-format="yyyy-MM-dd"-->
-                            <!--clearable-->
-                            <!--placeholder="请选择截止时间"-->
-                    <!--&gt;-->
-                    <!--</el-date-picker>-->
-                <!--</div>-->
-                <!--<div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlanByCharge()" class="search-btn"></div>-->
-                <!--<el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlanByCharge">测试中</el-checkbox>-->
-                <!--<el-table :data="weekPublishByChargeData" border>-->
-                    <!--<el-table-column type="expand">-->
-                        <!--<template scope="scope">-->
-                            <!--<el-table :data=scope.row.publishResDTOList>-->
-                                <!--<el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>-->
-                                <!--<el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="130"></el-table-column>-->
-                                <!--<el-table-column prop="zujuan" label="组卷" align="center" width="120"></el-table-column>-->
-                                <!--<el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>-->
-                                <!--<el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>-->
-                                <!--<el-table-column prop="xueyebaogao" label="学业报告" align="center" width="120"></el-table-column>-->
-                                <!--<el-table-column prop="chanpin" label="产品" align="center" width="120"></el-table-column>-->
-                                <!--&lt;!&ndash;<el-table-column prop="createByName" label="负责人" align="center" width="90"></el-table-column>&ndash;&gt;-->
-                                <!--<el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>-->
-                                <!--<el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>-->
-                                <!--<el-table-column prop="realTestTime" label="实际测试时间" align="center" width="130"></el-table-column>-->
-                                <!--<el-table-column prop="onlineTime" label="预估上线时间" align="center" width="130"></el-table-column>-->
-                                <!--<el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="130"></el-table-column>-->
-                                <!--<el-table-column label="操作" width="80" align="center">-->
-                                <!--<template scope="scope">-->
-                                <!--<el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>-->
-                                <!--</template>-->
-                                <!--</el-table-column>-->
-                            <!--</el-table>-->
-                        <!--</template>-->
-                    <!--</el-table-column>-->
-                    <!--<el-table-column label="姓名" prop="userName" align="center"></el-table-column>-->
-                    <!--&lt;!&ndash;<el-table-column type="index" label="序号" align="center" width="70" fixed></el-table-column>&ndash;&gt;-->
-
-                <!--</el-table>-->
-            <!--</el-tab-pane>-->
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
                     <div class="add-member-basic-msg fl" >
@@ -588,6 +534,155 @@
                     <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
                 </el-table>
             </el-tab-pane>
+            <el-tab-pane label="周人员投入表" name="weekUserCost">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="userCostReqDTO.groupId" clearable filterable  placeholder="筛选团队">
+                        <el-option v-for="item in groupList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl" >
+                    <el-date-picker
+                            v-model="userCostReqDTO.date"
+                            :picker-options="userCostPickerWeek"
+                            type="week"
+                            format="yyyy 第 WW 周"
+                            placeholder="选择周">
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl"><el-button type="text" @click="getUserCostCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchWeekUserCost()" class="search-btn"></div>
+                <el-table :data="weekUserCostList" border  >
+                    <el-table-column prop="jobRoleName" label="岗位" align="center" width="130" >
+                        <template scope="sco">{{sco.row.jobRoleName}}</template>
+                    </el-table-column>
+                    <el-table-column prop="userName" label="人员" align="center" width="90" >
+                        <template scope="sco">
+                            <el-form>
+                                <div v-for="(item,key) in sco.row.userTaskHoursResDTOS">
+                                    {{item.userName}}<br/><br/>
+                                    <!--<div style="border: 0.5px solid gray;width:90px;height:0;margin-left: -18px"></div>-->
+                                </div>
+
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="taskName" label="任务" align="center">
+                        <template scope="sco">
+                            <el-form>
+                                <div v-for="item in sco.row.userTaskHoursResDTOS">
+                                    <div v-for="task in item.taskHoursResDTOS">
+                                        {{task.taskName}}
+                                    </div><br/>
+                                </div>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="workHours" label="任务工作量" align="center" width="130" >
+                        <template scope="sco">
+                            <el-form>
+                                <div v-for="item in sco.row.userTaskHoursResDTOS">
+                                    <div v-for="task in item.taskHoursResDTOS">
+                                        {{task.workHours}}
+                                    </div><br/>
+                                </div>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="totalHours" label="周工作量" align="center" width="130" >
+                        <template scope="sco">
+                            <el-form>
+                                <div v-for="item in sco.row.userTaskHoursResDTOS">
+                                    {{item.totalHours}}<br/><br/>
+                                </div>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="leaveHours" label="周请假时长" align="center" width="130" >
+                        <template scope="sco">
+                            <el-form>
+                                <div v-for="item in sco.row.userTaskHoursResDTOS">
+                                    {{item.leaveHours}}<br/><br/>
+                                </div>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="hourPercent" label="成员工作量饱和度" align="center" width="150" >
+                        <template scope="sco">
+                            <el-form>
+                                <div v-for="item in sco.row.userTaskHoursResDTOS">
+                                    <div v-if="item.color === 0">{{item.hourPercent}}<br/><br/></div>
+                                    <div v-if="item.color === 1" style="color: orangered">{{item.hourPercent}}<br/><br/></div>
+                                    <div v-if="item.color === 2" style="color: deepskyblue;">{{item.hourPercent}}<br/><br/></div>
+                                </div>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="positionHourPercent" label="岗位工作量饱和度" align="center" width="150"  >
+                        <template scope="sco">{{sco.row.positionHourPercent}}</template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
+            <!--<el-tab-pane label="周人员投入表" name="weekUserCost">-->
+                <!--<div class="add-member-basic-msg fl" >-->
+                    <!--<el-select v-model="userCostReqDTO.groupId" clearable filterable  placeholder="筛选团队">-->
+                        <!--<el-option v-for="item in groupList" :key="item.id" :label="item.name"-->
+                                   <!--:value="item.id"></el-option>-->
+                    <!--</el-select>-->
+                <!--</div>-->
+                <!--<div class="add-member-basic-msg fl" >-->
+                    <!--<el-date-picker-->
+                            <!--v-model="userCostReqDTO.date"-->
+                            <!--:picker-options="userCostPickerWeek"-->
+                            <!--type="week"-->
+                            <!--format="yyyy 第 WW 周"-->
+                            <!--placeholder="选择周">-->
+                    <!--</el-date-picker>-->
+                <!--</div>-->
+                <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getUserCostCurrentWeek()">当前第{{currentWeek}}周</el-button></div>-->
+
+                <!--<div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchWeekUserCost()" class="search-btn"></div>-->
+                <!--<el-table :data="weekUserCostList" border-->
+                          <!--:span-method="objectSpanMethod">-->
+                    <!--<el-table-column prop="jobRoleName" label="岗位" align="center" width="130" >-->
+                        <!--<template scope="sco">{{sco.row.jobRoleName}}</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="userName" label="人员" align="center" width="90" >-->
+                        <!--<template scope="sco">-->
+                            <!--{{sco.row.userName}}-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="taskName" label="任务" align="center">-->
+                        <!--<template scope="sco">-->
+                            <!--{{sco.row.taskName}}-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="workHours" label="任务工作量" align="center" width="130" >-->
+                        <!--<template scope="sco">-->
+                            <!--{{sco.row.workHours}}-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="totalHours" label="周工作量" align="center" width="130" >-->
+                        <!--<template scope="sco">-->
+                            <!--{{sco.row.totalHours}}-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="leaveHours" label="周请假时长" align="center" width="130" >-->
+                        <!--<template scope="sco">-->
+                            <!--{{sco.row.leaveHours}}-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="hourPercent" label="成员工作量饱和度" align="center" width="150" >-->
+                        <!--<template scope="sco">-->
+                            <!--{{sco.row.hourPercent}}-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column prop="positionHourPercent" label="岗位工作量饱和度" align="center" width="150"  >-->
+                        <!--<template scope="sco">{{sco.row.positionHourPercent}}</template>-->
+                    <!--</el-table-column>-->
+                <!--</el-table>-->
+            <!--</el-tab-pane>-->
             <el-tab-pane label="请假统计" name="leave"  style="" v-if="admin" >
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
@@ -991,8 +1086,7 @@
                 </el-table>
             </el-tab-pane>
         </el-tabs>
-        <el-dialog
-                title="创建Bug处理结果"
+        <el-dialog title="创建Bug处理结果"
                 style="width:auto;"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -1055,9 +1149,8 @@
         </el-dialog>
 
 
-        <el-dialog
+        <el-dialog title="创建Bug处理结果"
                 @close="closeDialog()"
-                title="创建Bug处理结果"
                 class="aaa"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -1178,8 +1271,7 @@
             <el-button @click="createBugSolvingVisible1 = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog
-                title="更新Bug处理"
+        <el-dialog title="更新Bug处理"
                 style="width:auto;"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -1240,9 +1332,8 @@
             <el-button @click="updateBugSolvingVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog title="更新Bug处理"
                 @close="closeDialog()"
-                title="更新Bug处理"
                 class="aaa"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -1410,8 +1501,7 @@
 
         </el-dialog>
 
-        <el-dialog
-                title="任务详情"
+        <el-dialog title="任务详情"
                 top="10%"
                 :visible.sync="showTaskVisible"
                 :close-on-click-modal="false"
@@ -2189,6 +2279,20 @@
                 userAssList:[],
                 userX:[],
                 userBugNumList:[],
+
+                //周人员投入表相关
+                weekUserCostList:[],
+                groupList:[],
+                userCostReqDTO:{
+                    date:null,
+                    weekNumber:null,
+                    groupId:null
+                },
+                userCostPickerWeek:{
+                    firstDayOfWeek:1
+                },
+                spanArr:[],
+                pos:0
                 // -- sch
             }
         },
@@ -2364,7 +2468,16 @@
                   this.getExtraWorkStats();
               }else if (this.activeName === 'restHours'){
                   this.fetchAllUsersRestHours();
+              }else if (this.activeName === 'weekUserCost'){
+                  // this.fetchWeekUserCost()
+                  this.fetchGroupList()
               }
+            },
+            //查询所有可用团队
+            fetchGroupList(){
+                Http.zsyGetHttp('/work-group/list',{},res=>{
+                    this.groupList= res.data;
+                })
             },
             getStats(currentPage){
                 Http.zsyGetHttp(`/stats/list`, {}, (resp) => {
@@ -2373,6 +2486,9 @@
             },
             getCurrentWeek(){
                 this.userWeekForm.date=moment().toDate()
+            },
+            getUserCostCurrentWeek(){
+                this.userCostReqDTO.date=moment().toDate()
             },
             getTask(index){
                 this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
@@ -4786,6 +4902,96 @@
             userRestHoursLogHandleCurrentChange2(currentPage){
                 this.userRestHoursLogReqDTO2.pageNum = currentPage;
                 this.showUserRestHoursLog2(this.userRestHoursLogReqDTO2.userId);
+            },
+            //查看周人员投入表
+            fetchWeekUserCost(){
+                if (this.userCostReqDTO.groupId == null
+                || this.userCostReqDTO.groupId === undefined
+                || this.userCostReqDTO.groupId === ''){
+                    this.$message({
+                        showClose: true,
+                        message: '请选择团队',
+                        type: 'warning'
+                    });
+                }
+                if(this.userCostReqDTO.date!==''){
+                    this.userCostReqDTO.date = moment(this.userCostReqDTO.date).format('YYYY-MM-DD HH:mm:ss');
+                    this.userCostReqDTO.weekNumber = moment(this.userCostReqDTO.date).week();
+                    Http.zsyPostHttp('/stats/week-user-cost',this.userCostReqDTO , (resp) => {
+                        this.weekUserCostList = resp.data;
+                        // this.getSpanArr(this.weekUserCostList)
+                    })
+
+                }else{
+                    this.$message({
+                        showClose: true,
+                        message: '请选择时间',
+                        type: 'warning'
+                    });
+                }
+
+            },
+            getSpanArr(data) {
+
+                let that = this
+                //页面展示的数据，不一定是全部的数据，所以每次都清空之前存储的 保证遍历的数据是最新的数据。以免造成数据渲染混乱
+                that.spanArr = []
+                that.pos = 0
+                //遍历数据
+                data.forEach((item, index) => {
+                    //判断是否是第一项
+                    console.log(item,index)
+                    if (index === 0) {
+                        this.spanArr.push(1)
+                        this.pos = 0
+                    } else {
+                        //不是第一项时，就根据标识去存储
+                        if (data[index].jobRoleName === data[index - 1].jobRoleName) {
+                            // 查找到符合条件的数据时每次要把之前存储的数据+1
+                            this.spanArr[this.pos] += 1
+                            this.spanArr.push(0)
+                        } else {
+                            // 没有符合的数据时，要记住当前的index
+                            this.spanArr.push(1)
+                            this.pos = index
+                        }
+                    }
+                })
+                console.log(this.spanArr, this.pos)
+            },
+            // 列表方法
+            objectSpanMethod({row, column,rowIndex, columnIndex}) {
+                console.log(1111)
+                if (columnIndex === 0) {
+                    if (rowIndex % 2 === 0) {
+                        return {
+                            rowspan: 2,
+                            colspan: 1
+                        };
+                    } else {
+                        return {
+                            rowspan: 0,
+                            colspan: 0
+                        };
+                    }
+                }
+
+            // 页面列表上 表格合并行 -> 第几列(从0开始)
+            // 需要合并多个单元格时 依次增加判断条件即可
+            //     if (columnIndex === 0) {
+            //         // 二维数组存储的数据 取出
+            //         const _row = this.spanArr[rowIndex]
+            //         const _col = _row > 0 ? 1 : 0
+            //         return {
+            //             rowspan: _row,
+            //             colspan: _col
+            //         }
+            //         console.log(_row)
+            //         console.log(_col)
+            //         //不可以return {rowspan：0， colspan: 0} 会造成数据不渲染， 也可以不写else，eslint过不了的话就返回false
+            //     } else {
+            //         return false
+            //     }
             },
 
             //查看用户调休

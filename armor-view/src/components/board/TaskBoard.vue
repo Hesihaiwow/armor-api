@@ -366,7 +366,6 @@
                         drag(aLi[i].children[0],aLi[i]);//拖拽每一个图标
                     }
                 }else{
-                    console.log("列表模式")
                 }
 
 

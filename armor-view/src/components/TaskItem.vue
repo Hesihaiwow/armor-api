@@ -2734,7 +2734,6 @@
             //     this.showTaskComment = true;
             // },
             showWaitAssess(taskId) {
-                console.log(222222222)
                 let vm = this;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data;
@@ -2794,7 +2793,6 @@
                             // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
                         else if (jobRole === 4){
-                            console.log("c++")
                             //C++
                             let evaluationList = [];
                             evaluationList.push({

@@ -341,7 +341,6 @@
                 }
                 let vm = this;
                 http.zsyGetHttp(`/task/detail/${this.taskId}`, {}, (resp) => {
-                    console.log(resp)
                     vm.taskForm.description = resp.data.description;
                     vm.taskForm.taskName = resp.data.name;
                     vm.taskForm.endTime = resp.data.endTime;
@@ -352,7 +351,6 @@
                     });
                     vm.taskUsers = resp.data.users;
                 })
-                console.log(vm.taskForm)
             },
             saveTask() {
                 if (this.taskForm.description == '') {
