@@ -88,4 +88,22 @@ public class ZSYStatsController extends ZSYController{
     public String getExtraWorkStats(@RequestBody ExtraWorkStatsReqDTO reqDTO){
         return ZSYResult.success().data(statsService.getExtraWorkStats(reqDTO)).build();
     }
+
+    /**
+     * 周人员投入表
+     */
+    @ApiOperation("周人员投入表")
+    @PostMapping("/week-user-cost")
+    public String getWeekUserCost(@Valid @RequestBody QueryUserCostReqDTO reqDTO){
+        return ZSYResult.success().data(statsService.getWeekUserCost(reqDTO)).build();
+    }
+
+    /**
+     * 周人员投入表
+     */
+    @ApiOperation("周人员投入表")
+    @PostMapping("/week-user-cost/v2")
+    public String getWeekUserCostV2(@Valid @RequestBody QueryUserCostReqDTO reqDTO){
+        return ZSYResult.success().data(statsService.getWeekUserCostV2(reqDTO)).build();
+    }
 }

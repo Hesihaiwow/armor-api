@@ -14,14 +14,16 @@ import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryPageBO;
 import com.zhixinhuixue.armor.model.bo.UserTaskIntegralListBO;
 import com.zhixinhuixue.armor.model.dto.request.AddUserTaskIntegralReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserTaskIntegralReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.IntegralHistoryPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserIntegralHistoryPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserTaskIntegralListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserTaskIntegralResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYUserTaskIntegralService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
-import com.zhixinhuixue.armor.source.enums.*;
+import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
+import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
+import com.zhixinhuixue.armor.source.enums.ZSYUserTaskIntegralOrigin;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -472,7 +474,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
         Date monthFirstDay;
         Date monthLastDay;
         UserTaskIntegralResDTO resDTO = new UserTaskIntegralResDTO();
-        resDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());
+        resDTO.setDevelopRole(getIsDeveloper(user.getJobRole()));
         try {
             seasonOneBegin = timeSDF.parse(seasonOneBeginStr);
             seasonOneEnd = timeSDF.parse(seasonOneEndStr);
@@ -540,6 +542,20 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
         }
         return resDTO;
     }
+
+    /**
+     * 验证当前角色是否为开发人员
+     * @param jobRole 角色
+     */
+    private Boolean getIsDeveloper(Integer jobRole){
+        return jobRole == ZSYJobRole.JAVA.getValue()
+                || jobRole == ZSYJobRole.C.getValue()
+                || jobRole == ZSYJobRole.PHP.getValue()
+                || jobRole == ZSYJobRole.FRONT.getValue()
+                || jobRole == ZSYJobRole.IOS.getValue()
+                || jobRole == ZSYJobRole.ANDROID.getValue()
+                || jobRole == ZSYJobRole.ARTIFICIAL.getValue();
+    };
 
     /**
      * 查看积分列表

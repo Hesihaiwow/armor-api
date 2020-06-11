@@ -1,20 +1,25 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
+import com.zhixinhuixue.armor.dao.IZSYUserGroupMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.dao.IZSYWorkGroupMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.WorkGroupBO;
+import com.zhixinhuixue.armor.model.dto.request.AddGroupUserReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.AddWorkGroupReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditWorkGroupReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WorkGroupDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WorkGroupListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WorkGroupTreeResDTO;
 import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.UserGroup;
 import com.zhixinhuixue.armor.model.pojo.WorkGroup;
 import com.zhixinhuixue.armor.service.IZSYWorkGroupService;
 import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
+import com.zhixinhuixue.armor.source.enums.ZSYUserStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author sch
@@ -39,6 +45,8 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
 
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+    @Autowired
+    private IZSYUserGroupMapper userGroupMapper;
 
 
     /**
@@ -54,6 +62,16 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         if (existGroup != null){
             throw new ZSYServiceException("当前团队名已存在,请修改名称");
         }
+        User user = userMapper.selectById(reqDTO.getLeader());
+        if (user == null){
+            throw new ZSYServiceException("设置的团队负责人不存在,请检查");
+        }
+        if (user.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("设置的团队负责人已删除,请检查");
+        }
+        if (user.getStatus() != ZSYUserStatus.NORMAL.getValue()){
+            throw new ZSYServiceException("设置的团队负责人已冻结,请检查");
+        }
         WorkGroup workGroup = new WorkGroup();
         workGroup.setId(snowFlakeIDHelper.nextId());
         workGroup.setName(reqDTO.getName().trim());
@@ -68,6 +86,12 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         if (groupMapper.insertGroup(workGroup) == 0){
             throw new ZSYServiceException("新增团队失败");
         }
+
+        UserGroup userGroup = new UserGroup();
+        userGroup.setUgId(snowFlakeIDHelper.nextId());
+        userGroup.setGroupId(workGroup.getId());
+        userGroup.setUserId(reqDTO.getLeader());
+        userGroupMapper.insert(userGroup);
     }
 
     /**
@@ -82,7 +106,19 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         if (workGroup == null){
             throw new ZSYServiceException("当前团队不存在,请检查");
         }
-
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("当前团队已删除,请检查");
+        }
+        User user = userMapper.selectById(reqDTO.getLeader());
+        if (user == null){
+            throw new ZSYServiceException("设置的团队负责人不存在,请检查");
+        }
+        if (user.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("设置的团队负责人已删除,请检查");
+        }
+        if (user.getStatus() != ZSYUserStatus.NORMAL.getValue()){
+            throw new ZSYServiceException("设置的团队负责人已冻结,请检查");
+        }
         workGroup.setName(reqDTO.getName().trim());
         workGroup.setDescription(reqDTO.getDescription().trim());
         workGroup.setLeader(reqDTO.getLeader());
@@ -92,6 +128,15 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         if (groupMapper.updateById(workGroup) == 0){
             throw new ZSYServiceException("更新团队失败");
         }
+
+        if (!reqDTO.getLeader().equals(workGroup.getLeader())){
+            UserGroup userGroup = new UserGroup();
+            userGroup.setUgId(snowFlakeIDHelper.nextId());
+            userGroup.setGroupId(workGroup.getId());
+            userGroup.setUserId(reqDTO.getLeader());
+            userGroupMapper.insert(userGroup);
+        }
+
     }
 
     /**
@@ -105,6 +150,9 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         WorkGroup workGroup = groupMapper.selectById(id);
         if (workGroup == null){
             throw new ZSYServiceException("当前团队不存在,请检查");
+        }
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("当前团队已删除,请检查");
         }
         //查询是否有用户在当前团队中
         List<User> users = userMapper.selectUsersByGroup(id);
@@ -177,5 +225,68 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         }
         resDTO.setChildren(children);
         return resDTO;
+    }
+
+    /**
+     * 添加成员
+     * @author sch
+     * @param reqDTO 参数
+     */
+    @Override
+    @Transactional
+    public void addGroupUsers(AddGroupUserReqDTO reqDTO) {
+        WorkGroup workGroup = groupMapper.selectById(reqDTO.getGroupId());
+        if (workGroup == null){
+            throw new ZSYServiceException("当前团队不存在,请检查");
+        }
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("当前团队已删除,请检查");
+        }
+
+        List<Long> userIds = reqDTO.getUserIds();
+        //删除原来的团队_成员关系
+        userGroupMapper.deleteByGroup(reqDTO.getGroupId());
+        if (!CollectionUtils.isEmpty(userIds)){
+            List<UserGroup> collect = userIds.stream().map(userId -> {
+                UserGroup userGroup = new UserGroup();
+                userGroup.setUgId(snowFlakeIDHelper.nextId());
+                userGroup.setGroupId(reqDTO.getGroupId());
+                userGroup.setUserId(userId);
+                return userGroup;
+            }).collect(Collectors.toList());
+            userGroupMapper.insertBatch(collect);
+        }else {
+            UserGroup userGroup = new UserGroup();
+            userGroup.setUgId(snowFlakeIDHelper.nextId());
+            userGroup.setGroupId(reqDTO.getGroupId());
+            userGroup.setUserId(workGroup.getLeader());
+            userGroupMapper.insert(userGroup);
+        }
+    }
+
+    /**
+     * 查询团队成员
+     * @param groupId 团队id
+     * @return List<EffectUserResDTO>
+     */
+    @Override
+    public List<EffectUserResDTO> getGroupUsers(Long groupId) {
+        WorkGroup workGroup = groupMapper.selectById(groupId);
+        if (workGroup == null){
+            throw new ZSYServiceException("当前团队不存在,请检查");
+        }
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+            throw new ZSYServiceException("当前团队已删除,请检查");
+        }
+        List<User> users = userMapper.selectUsersByGroup(groupId);
+        List<EffectUserResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(users)){
+            list = users.stream().map(user -> {
+                EffectUserResDTO resDTO = new EffectUserResDTO();
+                BeanUtils.copyProperties(user,resDTO);
+                return resDTO;
+            }).collect(Collectors.toList());
+        }
+        return list;
     }
 }

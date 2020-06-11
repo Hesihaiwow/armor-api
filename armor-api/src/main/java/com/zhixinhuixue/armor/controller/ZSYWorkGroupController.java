@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.controller;
 
+import com.zhixinhuixue.armor.model.dto.request.AddGroupUserReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.AddWorkGroupReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditWorkGroupReqDTO;
 import com.zhixinhuixue.armor.service.IZSYWorkGroupService;
@@ -78,5 +79,24 @@ public class ZSYWorkGroupController {
     @GetMapping("/tree")
     public String getTree(){
         return ZSYResult.success().data(groupService.getTree()).build();
+    }
+
+    /**
+     * 新增成员
+     */
+    @ApiOperation("添加成员")
+    @PostMapping("/add-user")
+    public String addGroupUsers(@Valid @RequestBody AddGroupUserReqDTO reqDTO){
+        groupService.addGroupUsers(reqDTO);
+        return ZSYResult.success().build();
+    }
+
+    /**
+     * 查询团队成员
+     */
+    @ApiOperation("查询团队成员")
+    @GetMapping("/user/{groupId}")
+    public String getGroupUsers(@PathVariable("groupId")Long groupId){
+        return ZSYResult.success().data(groupService.getGroupUsers(groupId)).build();
     }
 }

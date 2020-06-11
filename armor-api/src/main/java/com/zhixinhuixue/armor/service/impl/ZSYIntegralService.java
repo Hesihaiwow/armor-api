@@ -3,7 +3,6 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper;
@@ -22,7 +21,6 @@ import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
-import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -111,7 +109,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
         Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId());//年度排名为空设为0
         userIntegralResDTO.setYearRank(yearRank != null ? yearRank : 0);
         User user = userMapper.selectById(id);
-        userIntegralResDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());
+//        userIntegralResDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());
         return userIntegralResDTO;
     }
 
@@ -320,7 +318,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
         Date monthFirstDay;
         Date monthLastDay;
         UserTaskIntegralResDTO resDTO = new UserTaskIntegralResDTO();
-        resDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());
+        resDTO.setDevelopRole(getIsDeveloper(user.getJobRole()));
         try {
             seasonOneBegin = timeSDF.parse(seasonOneBeginStr);
             seasonOneEnd = timeSDF.parse(seasonOneEndStr);
@@ -440,6 +438,20 @@ public class ZSYIntegralService implements IZSYIntegralService {
         }
         return resDTO;
     }
+
+    /**
+     * 验证当前角色是否为开发人员
+     * @param jobRole 角色
+     */
+    private Boolean getIsDeveloper(Integer jobRole){
+        return jobRole == ZSYJobRole.JAVA.getValue()
+                || jobRole == ZSYJobRole.C.getValue()
+                || jobRole == ZSYJobRole.PHP.getValue()
+                || jobRole == ZSYJobRole.FRONT.getValue()
+                || jobRole == ZSYJobRole.IOS.getValue()
+                || jobRole == ZSYJobRole.ANDROID.getValue()
+                || jobRole == ZSYJobRole.ARTIFICIAL.getValue();
+    };
 
     private BigDecimal getPrivateIntegral(List<TaskUser> monthTaskUsers, BigDecimal userCoefficient, BigDecimal privateTaskCoefficient) {
         Integer totalOriginIntegral = 0;

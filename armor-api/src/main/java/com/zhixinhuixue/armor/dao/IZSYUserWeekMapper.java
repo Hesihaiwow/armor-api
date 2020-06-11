@@ -2,8 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.AvgUserWeekHourBO;
 import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
-import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
-import com.zhixinhuixue.armor.model.pojo.TaskUser;
+import com.zhixinhuixue.armor.model.bo.UserCostBO;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import org.apache.ibatis.annotations.Param;
 
@@ -77,4 +76,14 @@ public interface IZSYUserWeekMapper {
      * @return
      */
     AvgUserWeekHourBO selectAvgWeekHour(@Param("jobRole")Integer jobRole, @Param("year")int year, @Param("weekOfYear")int weekOfYear);
+
+    /**
+     * 根据团队查询周人员投入
+     * @author sch
+     * @param groupId 团队id
+     * @param year 年
+     * @param weekNumber 周
+     * @return List<UserCostBO>
+     */
+    List<UserCostBO> selectUserCostByGroup(@Param("groupId")Long groupId, @Param("year")int year, @Param("weekNumber")Integer weekNumber);
 }

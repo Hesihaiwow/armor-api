@@ -2,14 +2,9 @@ package com.zhixinhuixue.armor.service;
 
 
 import com.github.pagehelper.PageInfo;
-import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
-import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,4 +44,20 @@ public interface IZSYStatsService {
      * @author sch
      */
     PageInfo<ExtraWorkStatsResDTO> getExtraWorkStats(ExtraWorkStatsReqDTO reqDTO);
+
+    /**
+     * 周人员投入表
+     * @param reqDTO 参数
+     * @author sch
+     * @return List<UserCostResDTO>
+     */
+    List<UserCostResDTO> getWeekUserCost(QueryUserCostReqDTO reqDTO);
+
+    /**
+     * 周人员投入表
+     * @param reqDTO 参数
+     * @author sch
+     * @return List<WeekUserCostResDTO>
+     */
+    List<WeekUserCostResDTO> getWeekUserCostV2(QueryUserCostReqDTO reqDTO);
 }

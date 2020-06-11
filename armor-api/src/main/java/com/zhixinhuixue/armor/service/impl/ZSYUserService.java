@@ -10,6 +10,7 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
 import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
 import com.zhixinhuixue.armor.dao.IZSYUserMapper;
+import com.zhixinhuixue.armor.dao.IZSYWorkGroupMapper;
 import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.*;
@@ -73,6 +74,9 @@ public class ZSYUserService implements IZSYUserService {
 
     @Autowired
     private IZSYUserMapper userMapper;
+
+    @Autowired
+    private IZSYWorkGroupMapper groupMapper;
 
     @Autowired
     @Qualifier("primaryStringRedisTemplate")
@@ -207,6 +211,9 @@ public class ZSYUserService implements IZSYUserService {
         deptIds.add(deptBo.getId());
         deptIds.addAll(deepCopyDeptIds(deptBo.getChildren()));
 
+        if (reqDTO.getGroupId() != null && reqDTO.getGroupId() == 1){
+            reqDTO.setGroupId(null);
+        }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageIndex()).orElse(1), ZSYConstants.PAGE_SIZE);
         Page<UserBo> userBos = userMapper.selectPage(deptIds,reqDTO);
         Page<UserPageResDTO> page = new Page<>();

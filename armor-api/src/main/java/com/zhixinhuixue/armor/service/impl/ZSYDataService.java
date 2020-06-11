@@ -339,7 +339,7 @@ public class ZSYDataService implements IZSYDataService {
         //产品阶段总耗时
         Float productTime = dataMapper.selectDiffStageTime(beginTime,endTime, ZSYJobRole.PRODUCT.getValue());
         //开发阶段总耗时
-        Float developTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.PROGRAMER.getValue());
+        Float developTime = dataMapper.selectDevStageTime(beginTime, endTime);
         //测试阶段总耗时
         Float testTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.TEST.getValue());
 
@@ -348,7 +348,7 @@ public class ZSYDataService implements IZSYDataService {
         //参与产品的任务数量
         Integer productTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.PRODUCT.getValue());
         //参与开发的任务数量
-        Integer developTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.PROGRAMER.getValue());
+        Integer developTaskNum = dataMapper.selectDevStageTaskNum(beginTime, endTime);
         //参与测试的任务数量
         Integer testTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.TEST.getValue());
 

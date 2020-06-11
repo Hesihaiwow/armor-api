@@ -268,6 +268,13 @@ public interface IZSYDataMapper {
     Float selectDiffStageTime(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("jobRole")Integer jobRole);
 
     /**
+     * 开发阶段总耗时
+     * @param beginTime 开始时间
+     * @param endTime 截止时间
+     */
+    Float selectDevStageTime(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    /**
      * 各阶段参与的任务数量
      * @param beginTime
      * @param endTime
@@ -275,6 +282,13 @@ public interface IZSYDataMapper {
      * @return
      */
     Integer selectDiffStageTaskNum(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime,@Param("jobRole")Integer jobRole);
+
+    /**
+     * 开发阶段参与的任务数量
+     * @param beginTime 开始时间
+     * @param endTime 截止时间
+     */
+    Integer selectDevStageTaskNum(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     /**
      * 年度已完成多人任务耗时最多的前10个

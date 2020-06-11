@@ -16,6 +16,11 @@ public class QueryUserPageReqDTO {
     private Long deptId;
 
     /**
+     * 工作组
+     */
+    private Long groupId;
+
+    /**
      * 角色
      */
     private Integer jobRole;
@@ -24,6 +29,14 @@ public class QueryUserPageReqDTO {
      * 用户类型(0:全部, 1:正常, 2:冻结)
      */
     private Integer userType;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
 
     public Integer getPageIndex() {
         return pageIndex;

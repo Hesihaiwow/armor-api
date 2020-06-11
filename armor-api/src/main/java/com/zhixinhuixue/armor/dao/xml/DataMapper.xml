@@ -350,10 +350,30 @@
         and t.is_delete = 0 and t.review_status = 3 and t.status in (2,3) and t.type = 2
     </select>
 
+    <!--开发阶段总耗时-->
+    <select id="selectDevStageTime" resultType="java.lang.Float">
+        select ifnull(sum(task_hours),0) from `task_user` tu
+        left join `task` t on tu.task_id = t.id
+        where tu.`user_id` in
+        (select `id` from `user` where `job_role` IN (1,4,5,6,7,8,9))
+        <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and tu.begin_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+        and t.is_delete = 0 and t.review_status = 3 and t.status in (2,3) and t.type = 2
+    </select>
+
     <!--各阶段参与的任务数量-->
     <select id="selectDiffStageTaskNum" resultType="java.lang.Integer">
         SELECT ifnull(count(*),0) from (SELECT DISTINCT tu.task_id FROM task_user tu LEFT JOIN user u on tu.user_id = u.id
         WHERE u.job_role = #{jobRole}
+        AND tu.task_id in (SELECT id FROM `task` where is_delete = 0 and review_status = 3 and status in (2,3) and `type` = 2
+        <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
+        <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]> )) tt
+    </select>
+
+    <!--开发阶段参与的任务数量-->
+    <select id="selectDevStageTaskNum" resultType="java.lang.Integer">
+        SELECT ifnull(count(*),0) from (SELECT DISTINCT tu.task_id FROM task_user tu LEFT JOIN user u on tu.user_id = u.id
+        WHERE u.job_role = IN (1,4,5,6,7,8,9)
         AND tu.task_id in (SELECT id FROM `task` where is_delete = 0 and review_status = 3 and status in (2,3) and `type` = 2
         <![CDATA[  and create_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
         <![CDATA[  and create_time <= #{endTime,jdbcType=TIMESTAMP} ]]> )) tt

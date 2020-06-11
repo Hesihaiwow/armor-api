@@ -26,6 +26,7 @@
   </resultMap>
 
   <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.UserBo" extends="BaseResultMap">
+    <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
     <association property="department" column="department_id" javaType="com.zhixinhuixue.armor.model.pojo.Department"
                  select="com.zhixinhuixue.armor.dao.IZSYDepartmentMapper.selectById"/>
   </resultMap>
@@ -171,29 +172,34 @@
 
   <!-- 用户列表(分页) -->
   <select id="selectPage" parameterType="java.util.List" resultMap="PageResultMap">
-    SELECT * FROM `user`
+    SELECT u.*,wg.name group_name FROM `user` u
+    LEFT JOIN `user_group` ug ON ug.`user_id` = u.`id`
+    LEFT JOIN `work_group` wg ON ug.`group_id` = wg.id
     WHERE 1 = 1
      <if test="deptIds!=null">
-       AND department_id IN
+       AND u.department_id IN
        <foreach collection="deptIds" open="(" separator="," close=")" item="item">
          #{item}
        </foreach>
      </if>
     <if test="reqDTO.jobRole != null">
-      AND `job_role` = #{reqDTO.jobRole}
+      AND u.`job_role` = #{reqDTO.jobRole}
+    </if>
+    <if test="reqDTO.groupId != null">
+      AND ug.`group_id` = #{reqDTO.groupId}
     </if>
     <choose>
       <when test="reqDTO.userType != null and reqDTO.userType == 1">
-        AND `is_delete` = 0 AND `status` = 0
+        AND u.`is_delete` = 0 AND u.`status` = 0
       </when>
       <when test="reqDTO.userType != null and reqDTO.userType == 2">
-        AND `is_delete` = 0 AND `status` = 1
+        AND u.`is_delete` = 0 AND u.`status` = 1
       </when>
       <otherwise>
         AND 1 = 1
       </otherwise>
     </choose>
-    ORDER BY user_role ASC ,create_time ASC
+    ORDER BY u.user_role ASC ,u.create_time ASC
   </select>
 
   <!-- 根据组织查询用户数-->
@@ -289,6 +295,13 @@
      SELECT u.* FROM `task_bug` tb
      LEFT JOIN `user` u ON u.id = tb.handler_id
      GROUP BY tb.handler_id
+  </select>
+
+  <!--根据工作组id查询用户-->
+  <select id="selectUsersByGroup" resultMap="BaseResultMap">
+      SELECT u.id,u.name FROM `user_group` ug
+      LEFT JOIN `user` u ON u.id = ug.user_id
+      WHERE ug.`group_id` = #{groupId} AND u.is_delete = 0 AND u.status = 0
   </select>
 
   <!--根据任务id查询参与人员-->

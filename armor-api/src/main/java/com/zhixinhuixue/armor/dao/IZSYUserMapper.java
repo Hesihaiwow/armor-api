@@ -8,7 +8,6 @@ import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
 import org.apache.ibatis.annotations.Param;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface IZSYUserMapper {
@@ -194,5 +193,12 @@ public interface IZSYUserMapper {
      * @author sch
      */
     List<User> selectBugHandlers();
+
+    /**
+     * 根据工作组id查询用户
+     * @author sch
+     * @param groupId 工作组id
+     */
+    List<User> selectUsersByGroup(@Param("groupId") Long groupId);
     // -- sch
 }

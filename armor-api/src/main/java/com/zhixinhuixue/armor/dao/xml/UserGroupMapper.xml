@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserGroupMapper">
+
+
+  <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserGroup">
+     REPLACE INTO `user_group`
+     (`ug_id`,`group_id`,`user_id`)
+     VALUES
+     (#{ugId,jdbcType=BIGINT},#{groupId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT})
+  </insert>
+
+    <!--批量新增-->
+    <insert id="insertBatch">
+        INSERT INTO `user_group`
+        (`ug_id`,`group_id`,`user_id`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.ugId,jdbcType=BIGINT},#{item.groupId,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+    <!--删除团队_成员关联-->
+    <delete id="deleteByGroup">
+        DELETE FROM `user_group` WHERE `group_id` = #{groupId}
+    </delete>
+
+
+</mapper>

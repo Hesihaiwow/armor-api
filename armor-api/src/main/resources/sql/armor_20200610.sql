@@ -1,6 +1,6 @@
 -- 创建人 史长浩
--- 说明: 组织结构新增"工作组"  用户表新增字段
--- 上线时间 2019-12-12
+-- 说明: 组织结构新增"团队"
+-- 上线时间 2020-06-11
 
 CREATE TABLE `work_group` (
   `id` bigint(20) NOT NULL,
@@ -16,9 +16,14 @@ CREATE TABLE `work_group` (
   UNIQUE KEY `name_index` (`name`) COMMENT '名称唯一'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='团队';
 
+CREATE TABLE `user_group` (
+  `ug_id` bigint(20) NOT NULL COMMENT '主键',
+  `group_id` bigint(20) NOT NULL COMMENT '团队id',
+  `user_id` bigint(20) NOT NULL COMMENT '成员id',
+  PRIMARY KEY (`ug_id`),
+  UNIQUE KEY `group_user_index` (`group_id`,`user_id`) COMMENT '团队_成员唯一'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户_团队关联';
 
-ALTER TABLE `user`
-ADD COLUMN `group_id`  bigint(20) NULL DEFAULT NULL COMMENT '团队id' AFTER `department_id`;
 
 
 

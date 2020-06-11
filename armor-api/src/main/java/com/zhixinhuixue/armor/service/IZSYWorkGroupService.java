@@ -1,7 +1,9 @@
 package com.zhixinhuixue.armor.service;
 
+import com.zhixinhuixue.armor.model.dto.request.AddGroupUserReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.AddWorkGroupReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditWorkGroupReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WorkGroupDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WorkGroupListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WorkGroupTreeResDTO;
@@ -53,4 +55,18 @@ public interface IZSYWorkGroupService {
      * @author sch
      */
     WorkGroupTreeResDTO getTree();
+
+    /**
+     * 添加成员
+     * @author sch
+     * @param reqDTO 参数
+     */
+    void addGroupUsers(AddGroupUserReqDTO reqDTO);
+
+    /**
+     * 查询团队成员
+     * @param groupId 团队id
+     * @return List<EffectUserResDTO>
+     */
+    List<EffectUserResDTO> getGroupUsers(Long groupId);
 }

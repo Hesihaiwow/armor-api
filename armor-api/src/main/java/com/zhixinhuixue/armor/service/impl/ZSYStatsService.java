@@ -7,27 +7,22 @@ import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.*;
-import com.zhixinhuixue.armor.model.dto.request.CalculateReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.ExtraWorkStatsReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.UserWeekStatsReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
-import com.zhixinhuixue.armor.model.dto.response.UserCommentsPageResDTO;
+import com.zhixinhuixue.armor.model.pojo.WorkGroup;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
+import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.management.ThreadInfo;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Lang on 2017/9/4 0004.
@@ -47,6 +42,8 @@ public class ZSYStatsService implements IZSYStatsService {
     private IZSYUserWeekMapper userWeekMapper;
     @Autowired
     private IZSYSignInMapper signInMapper;
+    @Autowired
+    private IZSYWorkGroupMapper workGroupMapper;
 
     @Override
     public List<StatsPageResDTO> getStats() {
@@ -216,6 +213,202 @@ public class ZSYStatsService implements IZSYStatsService {
         }
 
         return new PageInfo<>(page);
+    }
+
+    /**
+     * 周人员投入表
+     * @param reqDTO 参数
+     * @author sch
+     * @return List<UserCostResDTO>
+     */
+    @Override
+    public List<UserCostResDTO> getWeekUserCost(QueryUserCostReqDTO reqDTO) {
+        Long groupId = reqDTO.getGroupId();
+        Integer weekNumber = reqDTO.getWeekNumber();
+        WorkGroup workGroup = workGroupMapper.selectById(groupId);
+        Date date = reqDTO.getDate();
+        int year = DateHelper.getYears(reqDTO.getDate());
+        //2019-01-30 00:00:00
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date date1 = format.parse("2019-12-30 00:00:00");
+            Date date2 = format.parse("2020-01-05 23:59:59");
+            if (date.compareTo(date1) >= 0 && date.compareTo(date2) <= 0){
+                year = 2020;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        List<UserCostBO> userCostBOList = userWeekMapper.selectUserCostByGroup(groupId,year,weekNumber);
+        List<UserCostResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userCostBOList)){
+            Map<Integer, List<UserCostBO>> jobMap = userCostBOList.stream().collect(Collectors.groupingBy(UserCostBO::getJobRole));
+            jobMap.keySet().forEach(jobRole->{
+                UserCostResDTO resDTO = new UserCostResDTO();
+                resDTO.setJobRole(jobRole);
+                resDTO.setJobRoleName(ZSYJobRole.getName(jobRole));
+                List<UserCostBO> jobUserCostList = jobMap.get(jobRole);
+                List<UserTaskHoursResDTO> userTaskHoursResDTOS = new ArrayList<>();
+                Map<Long, List<UserCostBO>> userMap = jobUserCostList.stream().collect(Collectors.groupingBy(UserCostBO::getUserId));
+                userMap.keySet().forEach(userId->{
+                    List<UserCostBO> userTaskList = userMap.get(userId);
+                    BigDecimal totalHours = userTaskList.stream()
+                            .map(UserCostBO::getWorkHours)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    BigDecimal leaveHours = userTaskList.get(0).getLeaveHours();
+                    UserTaskHoursResDTO userTaskHoursResDTO = new UserTaskHoursResDTO();
+                    userTaskHoursResDTO.setUserId(userId);
+                    userTaskHoursResDTO.setUserName(userTaskList.get(0).getUserName());
+                    userTaskHoursResDTO.setTotalHours(totalHours);
+                    userTaskHoursResDTO.setLeaveHours(leaveHours);
+                    //个人除去请假时长后应该工作的时长
+                    BigDecimal shouldHours = BigDecimal.valueOf(40).subtract(leaveHours);
+                    BigDecimal userPercent = totalHours
+                            .multiply(BigDecimal.valueOf(100))
+                            .divide(shouldHours,2,BigDecimal.ROUND_HALF_UP);
+                    userTaskHoursResDTO.setColor(0);
+                    if (userPercent.compareTo(BigDecimal.valueOf(100))>0){
+                        userTaskHoursResDTO.setColor(1);
+                    }
+                    if(userPercent.compareTo(BigDecimal.valueOf(60))<0){
+                        userTaskHoursResDTO.setColor(2);
+                    }
+                    userTaskHoursResDTO.setHourPercent(userPercent+"%");
+                    List<TaskHoursResDTO> taskHoursResDTOS = userTaskList.stream().map(item->{
+                        TaskHoursResDTO taskHoursResDTO = new TaskHoursResDTO();
+                        taskHoursResDTO.setTaskId(item.getTaskId());
+                        taskHoursResDTO.setTaskName(item.getTaskName());
+                        taskHoursResDTO.setWorkHours(item.getWorkHours());
+                        return taskHoursResDTO;
+                    }).collect(Collectors.toList());
+                    userTaskHoursResDTO.setTaskHoursResDTOS(taskHoursResDTOS);
+                    userTaskHoursResDTOS.add(userTaskHoursResDTO);
+                });
+
+                //岗位总工作时长
+                BigDecimal positionTotalHours = userTaskHoursResDTOS.stream()
+                        .map(UserTaskHoursResDTO::getTotalHours)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                //岗位总请假时长
+                BigDecimal positionLeaveHours = userTaskHoursResDTOS.stream()
+                        .map(UserTaskHoursResDTO::getLeaveHours)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                //整个岗位除去请假时长后应该工作的时长
+                BigDecimal positionShouldHours = BigDecimal.valueOf(40)
+                        .multiply(BigDecimal.valueOf(userTaskHoursResDTOS.size()))
+                        .subtract(positionLeaveHours);
+
+                //岗位工作量饱和度
+                BigDecimal positionPercent = positionTotalHours
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(positionShouldHours, 2,BigDecimal.ROUND_HALF_UP);
+                resDTO.setColor(0);
+                if (positionPercent.compareTo(BigDecimal.valueOf(100))>0){
+                    resDTO.setColor(1);
+                }
+                if(positionPercent.compareTo(BigDecimal.valueOf(60))<0){
+                    resDTO.setColor(2);
+                }
+                resDTO.setPositionLeaveHours(positionLeaveHours);
+                resDTO.setPositionTotalHours(positionTotalHours);
+                resDTO.setPositionHourPercent(positionPercent+"%");
+                resDTO.setUserTaskHoursResDTOS(userTaskHoursResDTOS);
+                list.add(resDTO);
+            });
+
+        }
+        return list;
+    }
+
+    /**
+     * 周人员投入表
+     * @param reqDTO 参数
+     * @author sch
+     * @return List<WeekUserCostResDTO>
+     */
+    @Override
+    public List<WeekUserCostResDTO> getWeekUserCostV2(QueryUserCostReqDTO reqDTO) {
+        Long groupId = reqDTO.getGroupId();
+        Integer weekNumber = reqDTO.getWeekNumber();
+        WorkGroup workGroup = workGroupMapper.selectById(groupId);
+        Date date = reqDTO.getDate();
+        int year = DateHelper.getYears(reqDTO.getDate());
+        //2019-01-30 00:00:00
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date date1 = format.parse("2019-12-30 00:00:00");
+            Date date2 = format.parse("2020-01-05 23:59:59");
+            if (date.compareTo(date1) >= 0 && date.compareTo(date2) <= 0){
+                year = 2020;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        List<UserCostBO> userCostBOList = userWeekMapper.selectUserCostByGroup(groupId,year,weekNumber);
+        List<WeekUserCostResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userCostBOList)){
+            userCostBOList.forEach(userCostBO -> {
+                WeekUserCostResDTO resDTO = new WeekUserCostResDTO();
+                resDTO.setJobRole(userCostBO.getJobRole());
+                resDTO.setJobRoleName(ZSYJobRole.getName(userCostBO.getJobRole()));
+                resDTO.setUserId(userCostBO.getUserId());
+                resDTO.setUserName(userCostBO.getUserName());
+                resDTO.setTaskId(userCostBO.getTaskId());
+                resDTO.setTaskName(userCostBO.getTaskName());
+                resDTO.setWorkHours(userCostBO.getWorkHours());
+                resDTO.setLeaveHours(userCostBO.getLeaveHours());
+
+                BigDecimal totalHours = userCostBOList.stream()
+                        .filter(item -> item.getUserId().equals(userCostBO.getUserId()))
+                        .map(UserCostBO::getWorkHours)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                resDTO.setTotalHours(totalHours);
+
+                //个人除去请假时长后应该工作的时长
+                BigDecimal shouldHours = BigDecimal.valueOf(40).subtract(userCostBO.getLeaveHours());
+                BigDecimal userPercent = totalHours
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(shouldHours,2,BigDecimal.ROUND_HALF_UP);
+
+                BigDecimal positionTotalHours = userCostBOList.stream()
+                        .filter(item -> item.getJobRole() == userCostBO.getJobRole())
+                        .map(UserCostBO::getWorkHours)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal positionLeaveHours = userCostBOList.stream().sorted(Comparator.comparing(UserCostBO::getUserId))
+                        .collect(Collectors.collectingAndThen(Collectors.toCollection(
+                                () -> new TreeSet<>(Comparator.comparing(UserCostBO::getUserId))
+                        ),ArrayList::new))
+                        .stream()
+                        .filter(item->item.getJobRole() == userCostBO.getJobRole())
+                        .map(UserCostBO::getLeaveHours)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                //整个岗位除去请假时长后应该工作的时长
+                BigDecimal positionShouldHours = BigDecimal.valueOf(40)
+                        .multiply(BigDecimal.valueOf(userCostBOList.stream()
+                                .filter(item -> item.getJobRole() == userCostBO.getJobRole())
+                                .collect(Collectors.collectingAndThen(Collectors.toCollection(
+                                        () -> new TreeSet<>(Comparator.comparing(UserCostBO::getUserId))
+                                ),ArrayList::new)).stream().count()))
+                        .subtract(positionLeaveHours);
+
+                //岗位工作量饱和度
+                BigDecimal positionPercent = positionTotalHours
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(positionShouldHours, 2,BigDecimal.ROUND_HALF_UP);
+
+                resDTO.setLeaveHours(userCostBO.getLeaveHours());
+                resDTO.setHourPercent(userPercent+"%");
+                resDTO.setPositionHourPercent(positionPercent+"%");
+                list.add(resDTO);
+            });
+
+
+        }
+        return list;
     }
 
 

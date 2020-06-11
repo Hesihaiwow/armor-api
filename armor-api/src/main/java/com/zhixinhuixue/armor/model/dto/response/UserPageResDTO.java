@@ -42,9 +42,22 @@ public class UserPageResDTO {
     private Integer isDelete;
 
     /**
+     * 工作组
+     */
+    private String groupName;
+
+    /**
      * 工号
      */
     private String jobNumber;
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     public String getJobNumber() {
         return jobNumber;

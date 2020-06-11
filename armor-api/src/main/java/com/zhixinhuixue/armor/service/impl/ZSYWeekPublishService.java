@@ -12,16 +12,12 @@ import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.WeekPublishTaskBO;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishEditReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.PlatformResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WeekPublishResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WeekPublishTaskResDTO;
-import com.zhixinhuixue.armor.model.pojo.Platform;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.WeekPublishPlan;
-import com.zhixinhuixue.armor.model.pojo.WeekPublishPlanPlatform;
 import com.zhixinhuixue.armor.service.IZSYWeekPublishService;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
-import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,7 +82,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 if (!CollectionUtils.isEmpty(weekPublishTaskBO.getUserIds())){
                     for (Long userId : weekPublishTaskBO.getUserIds()) {
                         User user = userMapper.selectById(userId);
-                        if (user.getJobRole() == ZSYJobRole.PROGRAMER.getValue()){
+                        if (getIsDeveloper(user.getJobRole())){
                             developers = developers  + user.getName()+ " ";
                         }
                         if (user.getJobRole() == ZSYJobRole.TEST.getValue()){
@@ -178,6 +174,20 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
     }
 
     /**
+     * 验证当前角色是否为开发人员
+     * @param jobRole 角色
+     */
+    private Boolean getIsDeveloper(Integer jobRole){
+        return jobRole == ZSYJobRole.JAVA.getValue()
+                || jobRole == ZSYJobRole.C.getValue()
+                || jobRole == ZSYJobRole.PHP.getValue()
+                || jobRole == ZSYJobRole.FRONT.getValue()
+                || jobRole == ZSYJobRole.IOS.getValue()
+                || jobRole == ZSYJobRole.ANDROID.getValue()
+                || jobRole == ZSYJobRole.ARTIFICIAL.getValue();
+    };
+
+    /**
      * 编辑
      * @author sch
      * @param reqDTO
@@ -260,7 +270,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                         String developers = "";
                         String testers = "";
                         for (User user : userList) {
-                            if (user.getJobRole() == ZSYJobRole.PROGRAMER.getValue()){
+                            if (getIsDeveloper(user.getJobRole())){
                                 developers = developers  + user.getName()+ " ";
                             }
                             if (user.getJobRole() == ZSYJobRole.TEST.getValue()){

@@ -340,8 +340,7 @@ public class ZSYTaskService implements IZSYTaskService {
                             List<UserBo> userBos = userMapper.selectUsersByTask(taskId);
                             if (!CollectionUtils.isEmpty(userBos)){
                                 for (UserBo userBo : userBos) {
-                                    if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
-                                            || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
+                                    if (getIsDeveloper(userBo.getJobRole())){
                                         canDrag = true;
                                     }
                                 }
@@ -650,6 +649,19 @@ public class ZSYTaskService implements IZSYTaskService {
         return ZSYResult.success();
     }
 
+    /**
+     * 验证当前角色是否为开发人员
+     * @param jobRole 角色
+     */
+    private Boolean getIsDeveloper(Integer jobRole){
+        return jobRole == ZSYJobRole.JAVA.getValue()
+                || jobRole == ZSYJobRole.C.getValue()
+                || jobRole == ZSYJobRole.PHP.getValue()
+                || jobRole == ZSYJobRole.FRONT.getValue()
+                || jobRole == ZSYJobRole.IOS.getValue()
+                || jobRole == ZSYJobRole.ANDROID.getValue()
+                || jobRole == ZSYJobRole.ARTIFICIAL.getValue();
+    };
 
     /**
      * 审核任务
@@ -1108,7 +1120,7 @@ public class ZSYTaskService implements IZSYTaskService {
             taskUserResDTO.setUserTask(taskList);
 
             User user = userMapper.selectById(taskUserResDTO.getUserId());
-            if(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue() && taskDetailResDTO.getStageName().contains("测试")){
+            if(getIsDeveloper(user.getJobRole()) && taskDetailResDTO.getStageName().contains("测试")){
                 taskUserResDTO.setProTest(true);
                 proName.add(user.getName());
             }else{
@@ -2062,8 +2074,7 @@ public class ZSYTaskService implements IZSYTaskService {
                             List<UserBo> userBos = userMapper.selectUsersByTask(originTask.getId());
                             if (!CollectionUtils.isEmpty(userBos)){
                                 for (UserBo userBo : userBos) {
-                                    if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
-                                            || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
+                                    if (getIsDeveloper(userBo.getJobRole())){
                                         canDrag = true;
                                     }
                                 }
@@ -2194,8 +2205,7 @@ public class ZSYTaskService implements IZSYTaskService {
                                 List<UserBo> userBos = userMapper.selectUsersByTask(task.getId());
                                 if (!CollectionUtils.isEmpty(userBos)){
                                     for (UserBo userBo : userBos) {
-                                        if (userBo.getJobRole().equals(ZSYJobRole.PROGRAMER.getValue())
-                                                || userBo.getJobRole().equals(ZSYJobRole.ALGORITHM.getValue())){
+                                        if (getIsDeveloper(userBo.getJobRole())){
                                             canDrag = true;
                                         }
                                     }
@@ -3360,7 +3370,7 @@ public class ZSYTaskService implements IZSYTaskService {
 
         bo.getTaskUsers().forEach(taskUserBO -> {
             User user = userMapper.selectById(taskUserBO.getUserId());
-            if(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue()){
+            if(getIsDeveloper(user.getJobRole())){
                 TaskTest taskTest = new TaskTest();
                 taskTest.setTtId(snowFlakeIDHelper.nextId());
                 taskTest.setTaskId(testingTask.getTaskId());

@@ -12,7 +12,6 @@ import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.model.pojo.*;
-import com.zhixinhuixue.armor.service.IZSYTaskService;
 import com.zhixinhuixue.armor.service.IZSYTaskTempService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.*;
@@ -838,7 +837,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 if (ZSYJobRole.DESIGN.getValue() == user.getJobRole() || ZSYJobRole.PRODUCT.getValue() == user.getJobRole()){
                     taskTemp.setStageId(ZSYTaskStage.DESIGNING.getValue());
                 }
-            }else if (ZSYTaskStage.WAIT_DEVELOP.getValue().equals(stageId) && ZSYJobRole.PROGRAMER.getValue() == user.getJobRole()){
+            }else if (ZSYTaskStage.WAIT_DEVELOP.getValue().equals(stageId) && getIsDeveloper(user.getJobRole())){
                 taskTemp.setStageId(ZSYTaskStage.DEVELOPING.getValue());
             }else if (ZSYTaskStage.WAIT_TEST.getValue().equals(stageId) && ZSYJobRole.TEST.getValue() == user.getJobRole()){
                 taskTemp.setStageId(ZSYTaskStage.TESTING.getValue());
@@ -978,6 +977,20 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             }
         }
     }
+
+    /**
+     * 验证当前角色是否为开发人员
+     * @param jobRole 角色
+     */
+    private Boolean getIsDeveloper(Integer jobRole){
+        return jobRole == ZSYJobRole.JAVA.getValue()
+                || jobRole == ZSYJobRole.C.getValue()
+                || jobRole == ZSYJobRole.PHP.getValue()
+                || jobRole == ZSYJobRole.FRONT.getValue()
+                || jobRole == ZSYJobRole.IOS.getValue()
+                || jobRole == ZSYJobRole.ANDROID.getValue()
+                || jobRole == ZSYJobRole.ARTIFICIAL.getValue();
+    };
 //    public void accessTaskTemp(EditTaskTempReqDTO editTaskTempReqDTO){
 //            Long taskId = editTaskTempReqDTO.getTaskId();
 //            Long userId = editTaskTempReqDTO.getUserId();
