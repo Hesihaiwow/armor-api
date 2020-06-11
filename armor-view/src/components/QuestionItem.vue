@@ -78,7 +78,7 @@
         <div v-show="taskItems.length==0" class="empty">
             <h2>暂无数据</h2>
         </div>
-        <el-dialog
+        <el-dialog 
                 title="任务信息"
                 top="10%"
                 :visible.sync="showFinishedTask"
@@ -119,7 +119,7 @@
                 <!--<el-button @click="hideFinishedPop">取 消</el-button>-->
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog 
                 title="任务信息"
                 top="10%"
                 :visible.sync="showAuditTask"
@@ -153,7 +153,7 @@
             <el-button type="success" @click="acceptTask">审核通过</el-button>
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog 
                 title="任务详情"
                 top="10%"
                 :visible.sync="showTaskDetail"
@@ -289,7 +289,7 @@
                 <el-button type="primary" @click="stopTask(taskDetail.id,0)">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog
+        <el-dialog 
                 title="评价"
                 top="10%"
                 :visible.sync="showTaskComment"
@@ -333,7 +333,7 @@
                 <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog 
                 title="编辑多人任务"
                 top="10%"
                 :visible.sync="showTaskModify"
@@ -539,7 +539,7 @@
 
         </el-dialog>
 
-        <el-dialog
+        <el-dialog 
                 title="评价详情"
                 top="10%"
                 :visible.sync="showTaskCommentDetail"
@@ -565,7 +565,7 @@
   </span>
         </el-dialog>
 
-        <el-dialog
+        <el-dialog 
                 title="编辑个人任务"
                 size="tiny"
                 custom-class="myDialog"

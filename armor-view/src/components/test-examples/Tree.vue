@@ -12,7 +12,7 @@
                      :default-expand-all="true"
                      @node-click="handleNodeClick"></el-tree>
         </div>
-        <el-dialog
+        <el-dialog 
                 title="修改名称"
                 :visible.sync="centerDialogVisible"
                 width="30%"

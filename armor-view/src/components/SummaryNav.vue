@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <el-dialog
+        <el-dialog 
                 title="任务详情"
                 top="10%"
                 :visible.sync="showTaskVisible"
@@ -366,6 +366,7 @@
     }
 
     .card-title-con {
+      padding-bottom: 5px;
         position: relative;
         padding-left: 10px;
         margin: 0 0 16px;

@@ -79,7 +79,7 @@
                 </el-pagination>
             </div>
         </div>
-        <el-dialog
+        <el-dialog 
             title="评价详情"
             top="10%"
             :visible.sync="showTaskEvaluationDetail"
@@ -138,7 +138,7 @@
             </span>
     </el-dialog>
 
-        <el-dialog
+        <el-dialog 
                 title="任务详情"
                 top="10%"
                 :visible.sync="showTaskDetail"

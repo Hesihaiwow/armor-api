@@ -92,7 +92,7 @@ button.header-icon img { margin-bottom: -0.04rem; }
 .task-top-list .el-input__inner{color: #666;border: 1px solid #999;}
 .mint-cell-wrapper { background: none !important; }
 
-.task-top-list .el-input__inner, .ctpc-list-con .el-input__inner,.add-member-basic-msg .el-input__inner{height: 30px;}
+/* .task-top-list .el-input__inner, .ctpc-list-con .el-input__inner,.add-member-basic-msg .el-input__inner{height: 30px;} */
 
 .nav-top-bg .el-tabs__header{margin: 0;border-bottom: none;}
 

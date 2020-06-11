@@ -473,7 +473,7 @@
                 </div>
             </div>
         </div>
-        <el-dialog
+        <el-dialog 
                 title="创建个人任务"
                 size="tiny"
                 custom-class="myDialog"

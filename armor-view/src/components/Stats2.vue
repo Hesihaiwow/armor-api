@@ -5309,8 +5309,8 @@
     .search-btn {
         vertical-align: middle;
         cursor: pointer;
-        margin-left: 100px;
-        margin-top: 5px;
+        margin-left: 10px;
+        margin-top: 10px;
     }
 
     .pagination .el-pagination {
@@ -5352,6 +5352,7 @@
     }
 
     .card-title-con {
+      padding-bottom: 5px;
         position: relative;
         padding-left: 10px;
         margin: 0 0 16px;

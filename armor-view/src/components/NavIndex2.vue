@@ -2695,7 +2695,7 @@
 
         <el-dialog class="el-dialog--small" style="margin-left: 570px" title="创建任务" :visible.sync="createTaskVisible"
                    :close-on-click-modal="false" :close-on-press-escape="false"
-                   top="10%" center="true">
+                   top="10%" :center="Boolean(true)">
             <span>请选择任务类型</span>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="createPrivateTask">个人任务</el-button>
@@ -2882,7 +2882,7 @@
         </el-dialog>
 
         <el-dialog title="" style="margin-left: 30%;margin-right: 30%" :visible.sync="showUserAndLevelVisible"
-                   top="10%" center="true">
+                   top="10%" :center="Boolean(true)">
             <el-table class="hh" :data="userAndLevelData">
                 <el-table-column prop="userName"  align="center"></el-table-column>
                 <el-table-column prop="jobName"  align="center"></el-table-column>

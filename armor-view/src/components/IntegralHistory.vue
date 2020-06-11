@@ -67,7 +67,7 @@
         <el-button @click="cancelIntegral()">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog
+    <el-dialog 
       title="评价详情"
       top="10%"
       :visible.sync="showTaskCommentDetail"
@@ -92,7 +92,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog
+    <el-dialog 
             title="评价详情"
             top="10%"
             :visible.sync="showTaskEvaluationVisible"
@@ -151,7 +151,7 @@
             </span>
     </el-dialog>
 
-    <el-dialog
+    <el-dialog 
             title="任务详情"
             top="10%"
             :visible.sync="showTaskDetailVisible"

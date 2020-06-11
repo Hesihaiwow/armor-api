@@ -165,7 +165,7 @@
                 </div>
             </el-tab-pane>
         </el-tabs>
-        <el-dialog
+        <el-dialog 
                 title="创建Bug处理结果"
                 style="width:auto;"
                 :close-on-click-modal="false"
@@ -227,7 +227,7 @@
             <el-button @click="createBugSolvingVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog
+        <el-dialog 
                 title="更新Bug处理"
                 style="width:auto;"
                 :close-on-click-modal="false"
@@ -1010,8 +1010,8 @@
     .search-btn {
         vertical-align: middle;
         cursor: pointer;
-        margin-left: 100px;
-        margin-top: 5px;
+        margin-left: 10px;
+        margin-top: 10px;
     }
 
     .pagination .el-pagination {
@@ -1046,4 +1046,3 @@
 
 
 </style>
-

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog
+    <el-dialog 
             title="上传头像"
             :visible.sync="showUploadAvatarDialog"
             size="tiny"
