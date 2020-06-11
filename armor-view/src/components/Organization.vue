@@ -88,6 +88,7 @@
     <modify-member ref="showModifyMember" @handleUserDataRefresh="handleUserDataRefresh"></modify-member>
     <add-department ref="showAddDepartment" @handleDeptDataRefresh="handleDeptDataRefresh"></add-department>
     <el-dialog title="新增团队"
+    class="add-group"
     size="tiny"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
@@ -226,6 +227,9 @@
 .department-member{width: 1000px;height: 594px;margin-left: 20px;background: #fff;}
 .dm-title{margin-bottom: 0;}
 .white-bg{background: #fff;}
+</style>
+<style>
+  .add-group .el-dialog{ width: 536px;}
 </style>
 <script type="text/javascript">
 
