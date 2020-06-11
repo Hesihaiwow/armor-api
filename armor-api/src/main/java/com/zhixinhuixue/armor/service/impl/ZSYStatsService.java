@@ -403,6 +403,19 @@ public class ZSYStatsService implements IZSYStatsService {
                 resDTO.setLeaveHours(userCostBO.getLeaveHours());
                 resDTO.setHourPercent(userPercent+"%");
                 resDTO.setPositionHourPercent(positionPercent+"%");
+
+                resDTO.setUpColor(0);
+                if (userPercent.compareTo(BigDecimal.valueOf(100))>0){
+                    resDTO.setUpColor(1);
+                }else if (userPercent.compareTo(BigDecimal.valueOf(60))<0){
+                    resDTO.setUpColor(2);
+                }
+                resDTO.setPpColor(0);
+                if (positionPercent.compareTo(BigDecimal.valueOf(100))>0){
+                    resDTO.setPpColor(1);
+                }else if (positionPercent.compareTo(BigDecimal.valueOf(60))<0){
+                    resDTO.setPpColor(2);
+                }
                 list.add(resDTO);
             });
 

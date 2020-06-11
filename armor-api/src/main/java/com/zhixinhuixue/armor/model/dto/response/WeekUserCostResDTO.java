@@ -43,9 +43,31 @@ public class WeekUserCostResDTO {
     private String hourPercent;
 
     /**
+     * 颜色
+     */
+    private Integer upColor;
+    private Integer ppColor;
+
+    /**
      * 岗位工作量饱和度
      */
     private String positionHourPercent;
+
+    public Integer getUpColor() {
+        return upColor;
+    }
+
+    public void setUpColor(Integer upColor) {
+        this.upColor = upColor;
+    }
+
+    public Integer getPpColor() {
+        return ppColor;
+    }
+
+    public void setPpColor(Integer ppColor) {
+        this.ppColor = ppColor;
+    }
 
     public Integer getJobRole() {
         return jobRole;
