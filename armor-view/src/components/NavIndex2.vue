@@ -106,10 +106,9 @@
                                                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                                      :allow-half=true
                                                      disabled
-                                                     show-text
-                                                     text-template="{value}"
                                                      style="float: left;margin-top: 7px">
                                             </el-rate>
+                                            <span>{{item.avgScore}}</span>
                                         </el-form-item>
                                     </el-form>
                                 </div>
@@ -130,10 +129,9 @@
                                                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                                      :allow-half=true
                                                      disabled
-                                                     show-text
-                                                     text-template="{value}"
                                                      style="float: left;margin-top: 7px">
                                             </el-rate>
+                                            <span>{{item.avgScore}}</span>
                                         </el-form-item>
                                     </el-form>
                                 </div>
@@ -154,10 +152,9 @@
                                                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                                      :allow-half=true
                                                      disabled
-                                                     show-text
-                                                     text-template="{value}"
                                                      style="float: left;margin-top: 7px">
                                             </el-rate>
+                                            <span>{{item.avgScore}}</span>
                                         </el-form-item>
                                     </el-form>
                                 </div>
@@ -1711,7 +1708,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button type="danger" @click="deleteQuestion(questionForm.oqrId)">删除</el-button>
-            <el-button type="primary" icon="edit" @click="editQuestion(questionForm)"></el-button>
+            <el-button type="primary" icon="edit" @click="editQuestion(questionForm)">编辑</el-button>
             <el-button type="primary" @click="acceptQuestion(questionForm.oqrId)">审核通过</el-button>
           </span>
         </el-dialog>
@@ -1936,9 +1933,7 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-tooltip content="删除该申请" placement="top">
-                          <el-button type="danger" icon="delete" @click="deleteLeave(leaveForm.id)"></el-button>
-                    </el-tooltip>
+                <el-button type="danger" @click="deleteLeave(leaveForm.id)">删除</el-button>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible"
                            :loading="isSaving">立即创建</el-button>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible"
@@ -1969,28 +1964,16 @@
                     </div>
                 </div>
                 <div style="margin-left: 430px" v-show="isEWorkEdit && !permit">
-                    <el-tooltip content="编辑该申请" placement="top">
-                        <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)"></el-button>
-                    </el-tooltip>
-                    <el-tooltip content="删除该申请" placement="top">
-                          <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
-                    </el-tooltip>
+                    <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)">编辑</el-button>
+                    <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)">删除</el-button>
                 </div>
-                <div style="margin-left: 340px" v-show="isEWorkEdit && permit">
-                    <el-tooltip content="编辑该申请" placement="top">
-                        <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)"></el-button>
-                    </el-tooltip>
-                    <el-tooltip content="删除该申请" placement="top">
-                        <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
-                    </el-tooltip>
-                    <el-tooltip content="审核通过" placement="top" v-show="userRole===0">
-                        <el-button type="success" @click="accessEWork(eWorkDetail.id)">审核通过</el-button>
-                    </el-tooltip>
+                <div style="margin-left: 300px" v-show="isEWorkEdit && permit">
+                        <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)">编辑</el-button>
+                        <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)">删除</el-button>
+                        <el-button type="success" @click="accessEWork(eWorkDetail.id)">审核</el-button>
                 </div>
                 <div style="margin-left: 480px" v-show="!isEWorkEdit && permit">
-                    <el-tooltip content="删除该申请" placement="top">
-                        <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)"></el-button>
-                    </el-tooltip>
+                        <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)">删除</el-button>
                 </div>
             </el-form>
         </el-dialog>
@@ -2199,12 +2182,8 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <div v-show="userRole===0">
-                    <el-tooltip content="删除该申请" placement="top">
-                          <el-button type="danger" icon="delete" @click="deleteLeave(leaveForm.id)"></el-button>
-                    </el-tooltip>
-                    <el-tooltip content="编辑该申请" placement="top" v-if="leaveForm.reviewStatus === 1">
-                     <el-button type="primary" icon="edit" @click="editLeaveDetail(leaveForm,1)"></el-button>
-                    </el-tooltip>
+                    <el-button type="danger" @click="deleteLeave(leaveForm.id)">删除</el-button>
+                    <el-button type="primary" @click="editLeaveDetail(leaveForm,1)">编辑</el-button>
                     <el-button type="success" @click="acceptLeave(leaveForm.id)"
                                v-show="activeLeaveName==='wait'">审核通过</el-button>
                 </div>

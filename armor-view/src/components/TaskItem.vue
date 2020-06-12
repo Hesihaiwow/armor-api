@@ -182,13 +182,9 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                 <el-tooltip content="删除该任务" placement="top">
-                      <el-button type="danger" icon="delete" @click="deleteTask"></el-button>
-                </el-tooltip>
-                 <el-tooltip content="编辑该任务" placement="top">
-                 <el-button type="primary" icon="edit" @click="modifyPrivateTask(taskDetail.id)" :loading="isSaving"></el-button>
-               </el-tooltip>
-            <el-button type="success" @click="acceptTask(privateTaskLevel,taskDetail.createBy)" :loading="isSaving">审核通过</el-button>
+                <el-button type="danger" icon="delete" @click="deleteTask">删除</el-button>
+                <el-button type="primary" icon="edit" @click="modifyPrivateTask(taskDetail.id)" :loading="isSaving">编辑</el-button>
+                <el-button type="success" @click="acceptTask(privateTaskLevel,taskDetail.createBy)" :loading="isSaving">审核通过</el-button>
           </span>
         </el-dialog>
         <el-dialog title="任务详情"
@@ -356,39 +352,25 @@
                 </ul>
             </div>
             <span slot="footer" class="dialog-footer" v-show="(userRole ===0 || loginUserId === taskDetail.createBy) && (taskDetail.status>=2) && taskDetail.canSummarize">
-                <el-tooltip content="任务总结" placement="top" >
                     <el-button type="primary" @click="addTaskSummary"
                                style="text-align: left">任务总结</el-button>
-                </el-tooltip>
             </span>
 
             <span slot="footer" class="dialog-footer" v-show="permit && (taskDetail.status===1 || taskDetail.status===0)">
-                <el-tooltip content="任务评审" placement="top" v-show="(userRole ===0 || loginUserId === taskDetail.createBy) && taskDetail.canReview">
                     <el-button type="primary" @click="addTaskReview"
                                style="text-align: left">任务评审</el-button>
-                </el-tooltip>
-                <el-tooltip content="添加Bug修复时间" placement="top" v-if="taskDetail.testing">
                     <el-button type="primary"  @click="testTask(taskDetail.id,taskDetail.name,taskDetail.proNames)"  style="text-align: right">添加Bug修复时间</el-button>
-                </el-tooltip>
-                <el-tooltip content="启用任务" placement="top" >
                     <el-button type="primary"  @click="stopTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.status===0" style="text-align: left">启用任务</el-button>
-                </el-tooltip>
-                <el-tooltip content="暂停任务" placement="top" >
                     <el-button type="danger"  @click="modifyStopVisible=true" v-show="userRole===0&&taskDetail.status!==0" style="text-align: left">暂停任务</el-button>
-                </el-tooltip>
                 <!--<el-tooltip content="评审任务" placement="top" >
                     <el-button type="primary"  @click="examineTask(taskDetail.id,1)" v-show="userRole===0&&taskDetail.examine===0" style="text-align: left">已评审</el-button>
                 </el-tooltip>-->
                 <!--<el-tooltip content="评审任务" placement="top" >
                     <el-button type="danger"  @click="examineTask(taskDetail.id,0)" v-show="userRole===0&&taskDetail.examine===1" style="text-align: left">未评审</el-button>
                 </el-tooltip>-->
-                <el-tooltip content="删除该任务" placement="top">
                       <el-button type="danger" icon="delete" @click="deleteTask" v-show="showDelete"></el-button>
-                </el-tooltip>
-                 <el-tooltip content="编辑该任务" placement="top">
                  <el-button type="primary" icon="edit" @click="showModifyDescription"
-                            v-show="((taskDetail.createBy===loginUserId&&userRole===1)  || userRole===0 )&& taskDetail.type===2"></el-button>
-               </el-tooltip>
+                            v-show="((taskDetail.createBy===loginUserId&&userRole===1)  || userRole===0 )&& taskDetail.type===2">编辑</el-button>
                 <el-button type="primary" icon="check" @click="completeTask(taskDetail.examine)"
                            v-show="taskDetail.status!==3 && userRole===0 && taskDetail.type===2">完成</el-button>
                 <el-button type="primary" @click="showTaskDetail = false" v-show="taskDetail.status>1">确定</el-button>
@@ -649,7 +631,7 @@
                 <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
-        <el-dialog title="评价sss"
+        <el-dialog title="评价"
                 top="10%"
                 :visible.sync="addTaskEvaluationVisible"
                 :close-on-click-modal="false"
@@ -1507,12 +1489,10 @@
 
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-tooltip content="删除该任务" placement="top">
-                      <el-button type="danger" icon="delete" @click="deletePrivateTask(modifyPrivateTaskForm.id)"></el-button>
-                </el-tooltip>
-            <el-button type="primary" @click="saveModifyPrivateTaskForm" :loading="isSaving">保存</el-button>
-            <el-button @click="hideModifyPrivateTaskDialog">取 消</el-button>
-          </span>
+                <el-button type="danger" icon="delete" @click="deletePrivateTask(modifyPrivateTaskForm.id)">删除</el-button>
+                <el-button type="primary" @click="saveModifyPrivateTaskForm" :loading="isSaving">保存</el-button>
+                <el-button @click="hideModifyPrivateTaskDialog">取消</el-button>
+            </span>
         </el-dialog>
 
         <el-dialog title="填写Bug修复时间" top="10%"
@@ -2792,8 +2772,7 @@
                             // stage.evaluationList.splice(attitude, 1, score)
                             // this.$set(users[i],users[i].evaluationList,evaluationList)
                         }
-                        else if (jobRole === 4){
-                            //C++
+                        else if (jobRole === 4){//C++
                             let evaluationList = [];
                             evaluationList.push({
                                 'taskUserId': users[i].userId,
