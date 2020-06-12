@@ -1,8 +1,6 @@
 package com.zhixinhuixue.armor.exception;
 
 import com.zhixinhuixue.armor.source.ZSYResult;
-import com.zhixinhuixue.logback.LogbackRedis;
-import com.zhixinhuixue.logback.LogbackRedisHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,7 +37,6 @@ public class ZSYGlobeException {
     @ExceptionHandler
     public @ResponseBody String handleZSYApiException(ZSYApiException e) {
         logger.error("调用外部http接口异常:",e);
-        LogbackRedisHelper.write("调用外部http接口异常："+e.getMessage());
         return ZSYResult.fail(ZSYResult.RESPONSE.API_ERROR).msg(e.getMessage()).build();
     }
 
@@ -51,7 +48,6 @@ public class ZSYGlobeException {
     @ExceptionHandler
     public @ResponseBody String handleZSYDbException(ZSYDbException e) {
         logger.error("数据库操作异常:",e);
-        LogbackRedisHelper.write("数据库操作异常："+e.getMessage());
         return ZSYResult.fail(ZSYResult.RESPONSE.DB_ERROR).msg(e.getMessage()).build();
     }
 
@@ -63,7 +59,6 @@ public class ZSYGlobeException {
     @ExceptionHandler
     public @ResponseBody String handleZSYServerException(ZSYServerException e) {
         logger.error("服务异常:",e);
-        LogbackRedisHelper.write(e.getMessage());
         return ZSYResult.fail(ZSYResult.RESPONSE.SERVER_ERROR).msg(e.getMessage()).build();
     }
 

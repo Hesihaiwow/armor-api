@@ -99,16 +99,6 @@
 		</dependency>
 
 		<!-- fastdfs client -->
-		<dependency>
-			<groupId>com.shteo</groupId>
-			<artifactId>fastdfs-client-java</artifactId>
-			<version>1.25</version>
-		</dependency>
-		<dependency>
-			<groupId>com.zhixinhuixue</groupId>
-			<artifactId>logback-redis-appender</artifactId>
-			<version>1.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>javax.mail</groupId>

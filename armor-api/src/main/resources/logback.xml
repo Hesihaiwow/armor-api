@@ -80,11 +80,5 @@
         <appender-ref ref="infoLogFile" />
         <appender-ref ref="errorLogFile" />
     </logger>
-    <!-- 日志 -->
-    <appender name="errorLogbackRedisAppender" class="com.zhixinhuixue.logback.LogbackRedisAppender"/>
-    <logger name="errorLogger" level="ERROR">
-        <appender-ref ref="errorLogbackRedisAppender" />
-    </logger>
-
 
 </configuration>
