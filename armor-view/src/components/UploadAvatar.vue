@@ -61,7 +61,7 @@
             upload(file) {
                 var data = new FormData();
                 data.append('uploadFile', file.file);
-                Http.zsyPostHttp('/upload/image', data, (res) => {
+                Http.zsyPostHttp('/upload/ucloud/image', data, (res) => {
                     this.imageUrl = res.data.url;
                 })
             },
