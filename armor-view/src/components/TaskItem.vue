@@ -85,6 +85,7 @@
             <h2>暂无数据</h2>
         </div>
         <el-dialog title="任务信息"
+                class="task-infos"
                 top="10%"
                 :visible.sync="showFinishedTask"
                 :close-on-click-modal="false"
@@ -6263,4 +6264,7 @@
     .el-tooltip__popper {
         max-width: 50%
     }
+</style>
+<style>
+  .task-infos .el-dialog{width: 536px;}
 </style>
