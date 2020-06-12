@@ -632,7 +632,7 @@
                 <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
-        <el-dialog title="评价"
+        <el-dialog title="评价ssss"
                 top="10%"
                 :visible.sync="addTaskEvaluationVisible"
                 :close-on-click-modal="false"
@@ -1017,11 +1017,9 @@
                                              :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                                              :allow-half=true
                                              disabled
-                                             show-text
-                                             text-template="{value}"
                                              style="float: left;margin-top: 7px">
                                     </el-rate>
-                                    <!--<span>{{item.score}}</span>-->
+                                    <span>{{item.score}}</span>
                                 </el-form-item>
                             </el-form>
 

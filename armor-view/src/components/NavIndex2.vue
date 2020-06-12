@@ -1963,7 +1963,7 @@
                         <span class="fl ctpc-member-end-time">截止:{{task.endTime|formatDate}}</span>
                     </div>
                 </div>
-                <div style="margin-left: 430px" v-show="isEWorkEdit && !permit">
+                <div style="margin-left: 395px" v-show="isEWorkEdit && !permit">
                     <el-button type="primary" icon="edit" @click="editEWorkForm(eWorkDetail)">编辑</el-button>
                     <el-button type="danger" icon="delete" @click="deleteEWork(eWorkDetail.id)">删除</el-button>
                 </div>

@@ -614,15 +614,28 @@
                                    :value="item.userId"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl"><el-date-picker
-                        v-model="leaveDaterange"
-                        type="daterange"
-                        placeholder="选择日期范围"
-                        unlink-panels
-                        @change="leaveTimeChange"
-                        :picker-options="pickerOptions">
-                </el-date-picker></div>
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getLeaveList()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="leaveBeginTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择开始时间"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="leaveEndTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            placeholder="请选择截止时间"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchLeaveList()" class="search-btn"></div>
                 <el-table :data="leaveManage" border>
                     <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
                     <el-table-column prop="description" label="请假原因" align="center"></el-table-column>
@@ -967,14 +980,14 @@
                 </div>
             </el-tab-pane>
             <el-tab-pane label="加班调休统计" name="restHours" v-if="admin">
-                <div class="add-member-basic-msg fl" >
-                    <el-date-picker
-                            v-model="restHourYear"
-                            align="right"
-                            type="year"
-                            placeholder="选择年份">
-                    </el-date-picker>
-                </div>
+                <!--<div class="add-member-basic-msg fl" >-->
+                    <!--<el-date-picker-->
+                            <!--v-model="restHourYear"-->
+                            <!--align="right"-->
+                            <!--type="year"-->
+                            <!--placeholder="选择年份">-->
+                    <!--</el-date-picker>-->
+                <!--</div>-->
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="restHourReqDTO.jobRole" clearable filterable   placeholder="筛选角色">
                         <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
@@ -1724,6 +1737,8 @@
                 bugDaterange:'',
                 bugDaterange2:'',
                 leaveDaterange:'',
+                leaveBeginTime:null,
+                leaveEndTime:null,
                 bugDetailForm:{},
                 bugManage:[],
                 leaveManage:[],
@@ -2382,7 +2397,8 @@
               } else if (this.activeName === 'week'){
 
               } else if (this.activeName === 'leave'){
-                    this.getLeaveList();
+                    // this.getLeaveList();
+                   this.initTime3()
               } else if (this.activeName === 'task'){
                   this.fetchAnnualTaskByPriority();
                   this.fetchAnnualProjectTaskNum();
@@ -2400,7 +2416,8 @@
                   this.initSignInTime();
                   this.fetchSignInData();
               } else if (this.activeName === 'eWork'){
-                  this.getExtraWorkStats();
+                  this.initTime4();
+                  // this.getExtraWorkStats();
               }else if (this.activeName === 'restHours'){
                   this.fetchAllUsersRestHours();
               }else if (this.activeName === 'weekUserCost'){
@@ -2437,6 +2454,21 @@
                     this.bugFormPage.total = resp.data.total;
                 });
             },
+            fetchLeaveList(){
+                this.leaveList.pageNum = 1;
+                this.leaveList.beginTime = this.leaveList.endTime = null;
+                if (this.leaveBeginTime != null
+                && this.leaveBeginTime !== undefined
+                && this.leaveBeginTime !== ''){
+                    this.leaveList.beginTime = moment(this.leaveBeginTime).format('YYYY-MM-DD 00:00:00');
+                }
+                if (this.leaveEndTime != null
+                    && this.leaveEndTime !== undefined
+                    && this.leaveEndTime !== ''){
+                    this.leaveList.endTime = moment(this.leaveEndTime).format('YYYY-MM-DD 23:59:59');
+                }
+                this.getLeaveList()
+            },
             getLeaveList(){
                 Http.zsyPostHttp(`/userLeave/list`, this.leaveList, (resp) => {
                     this.leaveManage =  resp.data.list;
@@ -2447,7 +2479,7 @@
                 // 选择结束时间
                 if (time && time.length === 2) {
                     this.bugList.startTime = moment(time[0]).format('YYYY-MM-DD 00:00:00');
-                    this.bugList.endTime = moment(time[0]).format('YYYY-MM-DD 00:00:00');
+                    this.bugList.endTime = moment(time[0]).format('YYYY-MM-DD 23:59:59');
                 } else {
                     this.bugList.startTime = this.bugList.endTime = this.bugDaterange = ''
                 }
@@ -4074,6 +4106,7 @@
 
             },
             selectSignInData(){
+                this.signInReqDTO.pageNum = 1;
                 if (this.signInReqDTO.beginTime != null && this.signInReqDTO.beginTime !== ''){
                     this.signInReqDTO.beginTime = moment(this.signInReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
                 }
@@ -4586,6 +4619,38 @@
 
                 this.fetchPersonVacation()
             },
+            initTime3(){
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 1);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.leaveBeginTime = begin;
+                this.leaveEndTime = end;
+                this.leaveList.beginTime = begin;
+                this.leaveList.endTime = end;
+
+                this.getLeaveList()
+            },
+            initTime4(){
+                let date = new Date();
+                // 本周一的日期
+                date.setDate(date.getDate() - date.getDay() + 1);
+                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
+
+                // 本周日的日期
+                date.setDate(date.getDate() + 6);
+                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
+                this.ewBeginTime = begin;
+                this.ewEndTime = end;
+                this.extraWorkReqDTO.beginTime = begin;
+                this.extraWorkReqDTO.endTime = end;
+
+                this.getExtraWorkStats()
+            },
             editWeekPublish(weekPublish){
                 this.weekPublish.id = weekPublish.wppId;
                 this.weekPublish.taskId = weekPublish.taskId;
@@ -4713,6 +4778,7 @@
                 })
             },
             searchEWorkStats(){
+                this.extraWorkReqDTO.pageNum = 1;
                 this.extraWorkReqDTO.beginTime = null;
                 this.extraWorkReqDTO.endTime = null;
                 if (this.ewBeginTime !== undefined && this.ewBeginTime !== null && this.ewBeginTime !== ''){
