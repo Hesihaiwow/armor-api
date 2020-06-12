@@ -402,6 +402,7 @@
             // 部门结构树点击
             handleNodeClick(data) {
                 //最小子节点,可点击
+                this.queryForm.groupId = null;
                 this.queryForm.deptId = data.id;
                 this.queryForm.pageIndex = 1;
                 this.userPaging(this.queryForm);
