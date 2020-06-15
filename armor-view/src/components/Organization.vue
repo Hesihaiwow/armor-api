@@ -56,12 +56,12 @@
       <div class="white-bg">
         <div class="department-member-table">
           <el-table :data="tableData" stripe style="width: 100%">
-            <el-table-column prop="name" label="姓名" width="100" align="center"></el-table-column>
-            <el-table-column prop="account" label="用户名" width="100" align="center"></el-table-column>
-            <el-table-column prop="jobName" label="职位" width="100" align="center"></el-table-column>
+            <el-table-column prop="name" label="姓名" width="80" align="center"></el-table-column>
+            <el-table-column prop="account" label="用户名" width="120" align="center"></el-table-column>
+            <el-table-column prop="jobName" label="职位" width="120" align="center"></el-table-column>
             <el-table-column prop="phone" label="手机号" width="116" align="center"></el-table-column>
-            <el-table-column prop="levelName" label="级别" width="116" align="center"></el-table-column>
-            <el-table-column prop="deptName" label="部门" width="116" align="center"></el-table-column>
+            <el-table-column prop="levelName" label="级别" width="90" align="center"></el-table-column>
+            <el-table-column prop="deptName" label="部门" width="90" align="center"></el-table-column>
             <el-table-column prop="groupName" label="团队" width="116" align="center"></el-table-column>
             <!--<el-table-column prop="createTime" label="创建日期" width="106" align="center"></el-table-column>-->
             <!--<el-table-column prop="lastLogin" label="最后登录" width="106" align="center"></el-table-column>-->
@@ -185,7 +185,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeSetUser">取 消</el-button>
-        <el-button :loading="isSaving" type="primary" @click="saveSetUser">确定</el-button>
+        <el-button :loading="isSaving" type="primary" @click="saveSetUser(setUserDTO.groupId)">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -601,7 +601,7 @@
                 this.setUserVisible = true
             },
             //保存设置团队成员
-            saveSetUser() {
+            saveSetUser(groupId) {
                 Http.zsyPostHttp('work-group/add-user',this.setUserDTO,res=>{
                     this.$message({
                         showClose: true,
@@ -611,7 +611,7 @@
                     this.closeSetUser();
                     this.queryForm.pageIndex = 1;
                     this.queryForm.deptId = this.departmentTree[0].id;
-                    this.queryForm.groupId = null;
+                    this.queryForm.groupId = groupId;
                     this.userPaging(this.queryForm)
                 })
             },
