@@ -199,6 +199,7 @@
         AND 1 = 1
       </otherwise>
     </choose>
+    GROUP BY u.id
     ORDER BY u.user_role ASC ,u.create_time ASC
   </select>
 
