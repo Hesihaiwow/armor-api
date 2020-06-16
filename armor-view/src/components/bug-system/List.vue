@@ -319,13 +319,13 @@
 
             },
             tableRowClassName(row, rowIndex) {
-                if (row.status === 1) {
+                if (row.row.status === 1) {
                     return 'bug-type-1';
-                } else if (row.status === 2) {
+                } else if (row.row.status === 2) {
                     return 'bug-type-2';
-                }else if (row.status === 3) {
+                }else if (row.row.status === 3) {
                     return 'bug-type-3';
-                }else if (row.status === 4) {
+                }else if (row.row.status === 4) {
                     return 'bug-type-4';
                 }
                 return '';
