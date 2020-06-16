@@ -236,28 +236,19 @@
                 this.getUser();
             },
             pushTask(data){
+                let isPush = true;
                 this.taskList.forEach(i=>{
-                    if(i.taskId == data.taskId){
-                        let t = {
-                            id:data.taskId,
-                            name:data.taskName
-                        };
-                        this.taskList.push(t)
+                    if(i.id == data.taskId){
+                        isPush = false;
                     }
                 });
-                // let isPush = true;
-                // this.taskList.forEach(i=>{
-                //     if(i.taskId == data.taskId){
-                //         isPush = false;
-                //     }
-                // });
-                // if(isPush){
-                //     let t = {
-                //         id:data.taskId,
-                //         name:data.taskName
-                //     };
-                //     this.taskList.push(t)
-                // }
+                if(isPush){
+                    let t = {
+                        id:data.taskId,
+                        name:data.taskName
+                    };
+                    this.taskList.push(t)
+                }
             },
             goBack(){
                 this.$router.go(-1)
