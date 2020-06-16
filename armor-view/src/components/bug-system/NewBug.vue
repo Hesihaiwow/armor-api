@@ -238,7 +238,7 @@
             pushTask(data){
                 let isPush = true;
                 this.taskList.forEach(i=>{
-                    if(i.taskId == data.taskId){
+                    if(i.id == data.taskId){
                         isPush = false;
                     }
                 });
