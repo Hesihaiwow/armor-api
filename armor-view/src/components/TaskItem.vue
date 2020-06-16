@@ -230,7 +230,7 @@
                 <div style="margin-top: 5px;">截止时间：{{taskDetail.endTime | formatDate}}</div>
                 <div style="margin-top: 5px;float: left">是否评审：{{taskDetail.isReviewStr}}</div>
                 <div style="margin-top: 5px;margin-left: 250px">是否总结：{{taskDetail.isSummarizeStr}}</div>
-                <!--<div style="margin-top: 5px;margin-left: 250px" v-show="taskDetail">我的任务级别: {{taskDetail.myTaskLevelName}}</div>-->
+                <!--<div style="margin-top: 5px;margin-left: 250px" v-show="taskDetail">我的 任务级别: {{taskDetail.myTaskLevelName}}</div>-->
                 <div>标签：
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
