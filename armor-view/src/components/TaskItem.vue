@@ -1428,7 +1428,7 @@
                 :visible.sync="showModifyPrivateTask">
             <el-form :model="modifyPrivateTaskForm" label-width="80px">
                 <el-form-item class="task-form-edit" label="项目">
-                    <el-select v-model="modifyPrivateTaskForm.projectId" placeholder="请选择">
+                    <el-select v-model="modifyPrivateTaskForm.projectId" placeholder="请选择" size="small">
                         <el-option
                                 v-for="item in projectList"
                                 :key="item.id"
@@ -1442,6 +1442,7 @@
                             v-model="modifyPrivateTaskForm.beginTime"
                             type="date"
                             format="yyyy-MM-dd"
+                            size="small"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1450,19 +1451,20 @@
                             v-model="modifyPrivateTaskForm.endTime"
                             type="date"
                             format="yyyy-MM-dd"
+                            size="small"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="工作量">
-                    <el-input style="width:100px" v-model="modifyPrivateTaskForm.taskHours" :maxlength="6"></el-input>
+                    <el-input style="width:100px" size="small" v-model="modifyPrivateTaskForm.taskHours" :maxlength="6"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item class="task-form-edit" label="任务名称">
-                    <el-input v-model="modifyPrivateTaskForm.taskName"></el-input>
+                    <el-input v-model="modifyPrivateTaskForm.taskName" size="small"></el-input>
                 </el-form-item>
 
-                <el-form-item class="task-form-edit" label="任务描述">
-                    <el-input type="textarea" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
+                <el-form-item class="task-form-edit" style="margin-top: 5px;" label="任务描述">
+                    <el-input type="textarea" size="small" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
                 <!--<el-form-item class="task-form-edit" label="阶段">-->
                     <!--<el-select-->
@@ -1477,7 +1479,7 @@
                         <!--</el-option>-->
                     <!--</el-select>-->
                 <!--</el-form-item>-->
-                <el-form-item class="task-form-edit" label="标签">
+                <el-form-item class="task-form-edit" style="margin-top: 5px;" label="标签" size="small">
                     <el-select
                             v-model="modifyPrivateTaskForm.tags"
                             multiple
