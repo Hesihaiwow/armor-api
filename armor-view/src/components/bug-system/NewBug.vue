@@ -198,6 +198,9 @@
         },
         methods:{
             getDefaultDatas(){
+                http.zsyGetHttp(`/task-bug/task/testing`, {}, (res) => {
+                    this.taskList = res.data;
+                });
                 if(this.editBugData.isEdit){
                     this.getEditData();
                 }else {
@@ -210,9 +213,7 @@
                     this.upBugData.title = '';
                     this.upBugData.tbId = 0;
                 }
-                http.zsyGetHttp(`/task-bug/task/testing`, {}, (res) => {
-                    this.taskList = res.data;
-                });
+
             },
             getUser(){
                 http.zsyGetHttp(`/task-bug/users/${this.upBugData.taskId}`, {}, (res) => {
@@ -247,7 +248,7 @@
                         id:data.taskId,
                         name:data.taskName
                     };
-                    this.taskList.push(t)
+                    this.taskList.push(t);
                 }
             },
             goBack(){
