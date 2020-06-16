@@ -632,7 +632,7 @@
                 <el-button type="primary" @click="taskAssess" v-show="!allComment" :loading="isSaving">完成</el-button>
           </span>
         </el-dialog>
-        <el-dialog title="评价ssss"
+        <el-dialog title="评价"
                 top="10%"
                 :visible.sync="addTaskEvaluationVisible"
                 :close-on-click-modal="false"
@@ -1677,6 +1677,8 @@
                                     v-model="taskTempDetail.beginTime"
                                     type="date"
                                     format="yyyy-MM-dd"
+                                    style="width: 150px"
+                                    size="small"
                                     placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1689,6 +1691,8 @@
                                     v-model="taskTempDetail.endTime"
                                     type="date"
                                     format="yyyy-MM-dd"
+                                    style="width: 150px"
+                                    size="small"
                                     placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1696,8 +1700,8 @@
                 <el-form-item v-show="taskTempDetail.isChecked === 1" class="task-form" label="任务时长：" style="margin-left: 405px">
                     {{taskTempDetail.workHours}} 小时
                 </el-form-item>
-                <el-form-item v-show="taskTempDetail.isChecked === 0" class="task-form" label="任务时长：">
-                    <el-input v-model="taskTempDetail.workHours" style="width: 20%"></el-input>
+                <el-form-item v-show="taskTempDetail.isChecked === 0" class="task-form" label="任务时长：" style="margin-top: 3px">
+                    <el-input v-model="taskTempDetail.workHours" style="width: 20%" size="small"></el-input>
                     小时
                 </el-form-item>
 
@@ -1816,6 +1820,8 @@
                                     type="date"
                                     format="yyyy-MM-dd"
                                     placeholder="选择日期时间"
+                                    style="width: 150px;"
+                                    size="small"
                                     >
                     </el-date-picker>
                 </el-form-item>
@@ -1825,15 +1831,18 @@
                                     type="date"
                                     format="yyyy-MM-dd"
                                     placeholder="选择日期时间"
+                                    style="width: 150px;"
+                                    size="small"
                                     >
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item class="task-form" label="任务时长：" style="float: left;margin-left: 0px">
-                    <el-input v-model="modifyMyTaskForm.workHours"  style="width: 40%"></el-input>
+                    <el-input v-model="modifyMyTaskForm.workHours"  style="width: 40%" size="small"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item class="task-form" label="任务级别:  " style="margin-left: 285px">
-                    <el-select v-model="modifyMyTaskForm.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">
+                    <el-select v-model="modifyMyTaskForm.taskLevel" clearable filterable placeholder="请选择任务级别"
+                               size="small" style="width: 150px;margin-left: 11px">
                         <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>

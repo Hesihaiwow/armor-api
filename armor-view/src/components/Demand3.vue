@@ -58,7 +58,7 @@
                                         value-format="yyyy-MM-dd"
                                         clearable
                                         size="small"
-                                        style="width: 150px"
+                                        style="width: 130px"
                                 >
                                 </el-date-picker>
                                 <span style="font-size: 14px;color: #606266;">-</span>
@@ -70,7 +70,7 @@
                                         value-format="yyyy-MM-dd"
                                         clearable
                                         size="small"
-                                        style="width: 150px"
+                                        style="width: 130px"
                                 >
                                 </el-date-picker>
                             </div>
@@ -593,6 +593,9 @@
                                 type="date"
                                 value-format="yyyy-MM-dd"
                                 clearable
+                                size="small"
+                                style="width: 150px"
+                                placeholder="请选择截止时间"
                         >
                         </el-date-picker>
                         <span style="font-size: 14px;color: #606266;">-</span>
@@ -602,6 +605,9 @@
                                 type="date"
                                 value-format="yyyy-MM-dd"
                                 clearable
+                                size="small"
+                                style="width: 150px"
+                                placeholder="请选择截止时间"
                         >
                         </el-date-picker>
                         <div class="demand-top-list fl">
@@ -1383,12 +1389,12 @@
                         {required: true, message: '目标不能为空', trigger: 'blur'},
                         {min: 5, max: 200, message: '长度在 5 到 200 个字符', trigger: 'blur'}
                     ],
-                    releaseTime: [
-                        {type: 'date', required: true, message: '期待上线时间不能为空', trigger: 'blur'}
-                    ],
-                    feedbackTime: [
-                        {type: 'date', required: true, message: '需求提出时间不能为空', trigger: 'blur'}
-                    ]
+                    // releaseTime: [
+                    //     {type: 'date', required: true, message: '期待上线时间不能为空', trigger: 'blur'}
+                    // ],
+                    // feedbackTime: [
+                    //     {type: 'date', required: true, message: '需求提出时间不能为空', trigger: 'blur'}
+                    // ]
                 },
 
                 num:1,
@@ -2294,14 +2300,20 @@
                             return;
                         }
                         let param = this.demandForm;
-                        param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:00:00');
-                        param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:00:00');
+                        console.log(param)
+                        param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:23:59');
+                        param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:23:59');
+                        console.log(111)
 
                         http.zsyPostHttp('/feedback/demand/add', param, (resp) => {
                             this.$message({showClose: true, message: '需求创建成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.newDemandVisible = false;
                             this.fetchNewDemandList();
+                            this.isSaving = false
+                        },err=>{
+                            this.isSaving = false
+                        },sysErr => {
                             this.isSaving = false
                         });
                     }else {

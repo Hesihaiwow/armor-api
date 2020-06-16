@@ -204,7 +204,7 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
-                <el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
+                <!--<el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>-->
                 <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
                 <el-table :data="signInData" border>
                     <el-table-column prop="date" label="日期" align="center" width="120">
@@ -756,7 +756,7 @@
                 </div>
 
                 <p class="mic-title">我的考勤</p>
-                <div class="my-task-detail" style="width: 1200px">
+                <div class="my-task-detail" style="width: 1100px">
                     <div class="add-member-basic-msg fl">
                         <el-date-picker
                                 v-model="mySignInReqDTO.beginTime"
@@ -819,11 +819,11 @@
                                 <span v-else>{{scope.row.workTime}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
-                            <template slot-scope="scope">
-                                {{scope.row.eWorkTime}}
-                            </template>
-                        </el-table-column>
+                        <!--<el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >-->
+                            <!--<template slot-scope="scope">-->
+                                <!--{{scope.row.eWorkTime}}-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
                         <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
                             <template slot-scope="scope">
                                 {{scope.row.eWorkHours}}
@@ -1622,8 +1622,8 @@
                     <el-date-picker
                             v-model="questionForm.beginTime"
                             type="date"
-                            format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd HH:mm:ss"
+                            format="YYYY-MM-dd"
+                            value-format="YYYY-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -2285,7 +2285,7 @@
                                :value="item.userId"></el-option>
                 </el-select>
             <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{eWorkTimeUserName}}</span></div>
-            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">加班总时长：<span>{{totalEWorkTime}}</span></div>
+            <!--<div class="mic-item-title" style="font-size: 14px;margin-top: 10px">加班总时长：<span>{{totalEWorkTime}}</span></div>-->
             <span slot="footer" class="dialog-footer">
                 <el-button type="success" @click="fetchTotalEWorkTime">查询</el-button>
             </span>
@@ -2410,27 +2410,16 @@
                 <div v-show="showTaskDetailVisible" style="float: left;margin-top: 3px;margin-left: 20px">优先级: <span v-for="item in priorityList" v-if="item.value === taskDetail.priority">{{item.label}}</span></div>
                 <div v-show="showTaskDetailVisible" style="margin-top: 3px;margin-left: 250px">任务截止时间: {{taskDetail.endTime | formatDate}}</div>
                 <div v-show="showTaskDetailVisible" style="margin-left: 20px">标签:
-                <!--<el-form-item class="task-form" v-show="showTaskDescriptionVisible" label="任务描述: ">-->
-                    <!--<el-input type="textarea" disabled :rows="6" v-model="taskDetail.description"></el-input>-->
-                <!--</el-form-item>-->
                     <el-tag style="margin: 5px;" type="gray" v-for="(item, key) in taskDetail.tags" :key="key">
                         {{item.name}}
                     </el-tag>
                 </div>
-
-                <!--<div>-->
-                    <!--<span class="star" style="float: left;margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>-->
-                    <!--<el-button type="text" style="margin-left: 12px" @click="addFunctionVisible=true">点击新增任务功能点</el-button>-->
-                <!--</div>-->
-
                 <div v-show="this.taskFunctionData.length>0">
                     <span class="star" style="margin-top: 7px;margin-right: -8px;margin-left: 8px;">*</span>
                     <span style="margin-left: 7px;color: blue;cursor: pointer" @click="showLevelReference">功能点(点击查看复杂度参考表)</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
                         <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1 && num<taskFunctionData.length" @click="plus"></i>
                         <i class="el-icon-minus" v-show="num>1"@click="minus(num-1)"></i>
-                        <!--<el-button style="margin-left: 0px" v-show="num>=1" @click="plus(num-1)" type="text">加1</el-button>-->
-                        <!--<el-button  type="text" v-show="num>1"@click="minus(num-1)">减1</el-button>-->
                         <div v-for="i in num" style="margin-top: 3px">
                             <el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable
                             style="width: 400px">
@@ -2470,15 +2459,17 @@
                             v-model="taskTempForm.beginTime"
                             type="date"
                             format="yyyy-MM-dd"
+                            style="width: 150px"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <span class="star" style="float: left;margin-top: 17px;margin-right: -8px;margin-left: 8px;">*</span>
+                <span class="star" style="float: left;margin-top: 17px;margin-left: 35px;">*</span>
                 <el-form-item class="task-form" label="截止日期" prop="endTime" style="margin-left: 285px;margin-top: 10px" label-width="75px">
                     <el-date-picker
                             v-model="taskTempForm.endTime"
                             type="date"
                             format="yyyy-MM-dd"
+                            style="width: 150px"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -2554,9 +2545,6 @@
                 <div v-show="!taskTempAble && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 0px">功能点:</span>
                     <div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">
-                        <!--<i style="margin-left: 0px" class="el-icon-plus" v-show="num>=taskTempDetail.functionResDTOList.length" @click="plus"></i>-->
-                        <!--<i class="el-icon-minus" v-show="num>taskTempDetail.functionResDTOList.length" @click="minus(num-1)"></i>-->
-
                         <div v-for="i in num" style="margin-top: 3px">
                             <div  style="float: left">
                                 <el-select placeholder="功能点" v-model="taskFunctionList[i-1]"  clearable
@@ -2581,7 +2569,6 @@
                                     </el-option>
                                 </el-select>
                             </div>
-                            <!--<i type="text"  @mouseenter="mouseEnter(taskFunctionList[i-1])">参考</i>-->
                         </div>
 
                     </div>
@@ -2614,6 +2601,8 @@
                                     type="date"
                                     format="yyyy-MM-dd"
                                     placeholder="选择日期时间"
+                                    style="width: 150px"
+                                    size="small"
                                     :disabled="taskTempAble">
                     </el-date-picker>
                 </el-form-item>
@@ -2624,17 +2613,19 @@
                                     type="date"
                                     format="yyyy-MM-dd"
                                     placeholder="选择日期时间"
+                                    style="width: 150px"
+                                    size="small"
                                     :disabled="taskTempAble">
                     </el-date-picker>
                 </el-form-item>
 
                 <el-form-item v-show="!taskTempAble" class="task-form" label="任务时长：" style="float: left">
-                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 40%"></el-input>
+                    <el-input v-model="taskTempDetail.workHours" :disabled="taskTempAble" style="width: 40%" size="small"></el-input>
                     小时
                 </el-form-item>
 
                 <el-form-item v-show="!taskTempAble" class="task-form" label="任务级别: " style="margin-left: 285px">
-                    <el-select v-model="taskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">
+                    <el-select v-model="taskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px" size="small">
                         <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
@@ -2792,6 +2783,8 @@
                                     v-model="taskModifyDetail.beginTime"
                                     type="date"
                                     format="yyyy-MM-dd"
+                                    style="width: 150px"
+                                    size="small"
                                     placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -2804,6 +2797,8 @@
                                     v-model="taskModifyDetail.endTime"
                                     type="date"
                                     format="yyyy-MM-dd"
+                                    style="width: 150px"
+                                    size="small"
                                     placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -2812,11 +2807,11 @@
                     {{taskModifyDetail.workHours}} 小时
                 </el-form-item>
                 <el-form-item v-show="taskModifyDetail.reviewStatus === 1" class="task-form" label="任务时长：" style="float: left">
-                    <el-input v-model="taskModifyDetail.workHours" style="width: 20%"></el-input>
+                    <el-input v-model="taskModifyDetail.workHours" style="width: 40%" size="small"></el-input>
                     小时
                 </el-form-item>
                 <el-form-item  v-show="taskModifyDetail.reviewStatus === 1" class="task-form" label="任务级别:  " style="margin-left: 285px">
-                    <el-select v-model="taskModifyDetail.taskLevel" clearable filterable placeholder="请选择任务级别"  style="width: 150px;margin-left: 11px">
+                    <el-select v-model="taskModifyDetail.taskLevel" clearable filterable placeholder="请选择任务级别" size="small"  style="width: 150px;margin-left: 11px">
                         <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
@@ -3248,10 +3243,10 @@
                 questionForm: {
                     name: '',
                     description: '',
-                    projectId: '',
-                    endTime: '',
-                    beginTime: '',
-                    workHour: '',
+                    projectId: null,
+                    endTime: null,
+                    beginTime: null,
+                    workHour: null,
                     urlList: []
                 },
                 questionRules: {
