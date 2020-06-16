@@ -25,7 +25,8 @@
         </div>
         <div v-show="userRole === 0" style="margin-top: 10px">
                 <span style="font-size: 18px;color: black">项目管理者负责任务</span>
-                <el-table :data="principalAllTaskList" border style="width: 1100px">
+                <el-table :data="principalAllTaskList" border style="width: 1100px"
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="userName" label="负责人" align="center" width="100"></el-table-column>
                     <el-table-column prop="chargeTaskNum" label="负责任务数(进行中)" align="center" sortable></el-table-column>
                     <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center" sortable width="140"></el-table-column>
@@ -59,7 +60,8 @@
             <div class="my-task-detail hh">
                 <el-tabs v-model="tabName" @tab-click="handleClickTab">
                     <el-tab-pane label="负责任务" name="task" v-if="userRole == 1">
-                        <el-table :data="principalTaskList" border style="width: 1100px">
+                        <el-table :data="principalTaskList" border style="width: 1100px"
+                                  :header-cell-style="{background:'#D9D9D9',color:'black'}">
                             <el-table-column prop="chargeTaskNum" label="负责任务数(进行中)" align="center"></el-table-column>
                             <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center"></el-table-column>
                             <el-table-column prop="summarizeTaskNum" label="待总结任务数" align="center"></el-table-column>
@@ -206,7 +208,7 @@
                 <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
                 <!--<el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>-->
                 <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
-                <el-table :data="signInData" border>
+                <el-table :data="signInData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template slot-scope="scope">
                             {{scope.row.date | formatDate2}}{{scope.row.weekday}}
@@ -244,11 +246,11 @@
                             <span v-else>{{scope.row.workTime}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
-                        <template slot-scope="scope">
-                            {{scope.row.eWorkTime}}
-                        </template>
-                    </el-table-column>
+                    <!--<el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >-->
+                        <!--<template slot-scope="scope">-->
+                            <!--{{scope.row.eWorkTime}}-->
+                        <!--</template>-->
+                    <!--</el-table-column>-->
                     <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
                         <template slot-scope="scope">
                             {{scope.row.eWorkHours}}
@@ -297,7 +299,7 @@
                     </el-select>
                 </div>
                 <el-button type="primary" @click="fetchAllUsersRestHours" style="margin-left: 10px" size="small">查询</el-button>
-                <el-table :data="restHoursData" border>
+                <el-table :data="restHoursData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="100">
                         <template slot-scope="sco">
@@ -351,7 +353,7 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" @click="getLeaveList" style="margin-left: 10px" size="small">查询</el-button>
-                <el-table :data="leaveManage" border>
+                <el-table :data="leaveManage" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" width="80"></el-table-column>
                     <el-table-column prop="description" label="请假原因" align="center"></el-table-column>
                     <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
@@ -411,7 +413,7 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" @click="searchEWorkStats" style="margin-left: 10px" size="small">查询</el-button>
-                <el-table :data="extraWorkStatsList" border>
+                <el-table :data="extraWorkStatsList" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" align="center" width="80">
                         <template slot-scope="scope">
                             {{(extraWorkReqDTO.pageNum-1)*10 + scope.$index + 1}}
@@ -482,7 +484,7 @@
                 </div>
                 <el-button type="primary" @click="selectSignInOriginData" style="margin-left: 10px" size="small">查询</el-button>
                 <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
-                <el-table :data="signInOriginData" border>
+                <el-table :data="signInOriginData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="userName" label="用户" align="center" width="110"></el-table-column>
                     <el-table-column prop="checkTime" label="打卡时间" align="center">
                         <template slot-scope="scope">
@@ -657,86 +659,9 @@
                                 <h2>暂无数据</h2>
                             </div>
                         </el-tab-pane>
-                        <!--<el-tab-pane label="审核失败" name="applyFail">
-                            <task-item :taskItems="task.applyFail" :isPrivate="true"
-                                       taskStatus="ApplyFail" @reload="reload"></task-item>
-                        </el-tab-pane>-->
-                        <!--<el-tab-pane label="任务bug" name="taskBug">-->
-                            <!--<el-table :data="myTaskBugData" border>-->
-                                <!--<el-table-column type="index" label="序号" align="center" width="80">-->
-                                    <!--<template slot-scope="scope">-->
-                                        <!--{{(myTaskBugPageNum-1)*10 + scope.$index + 1}}-->
-                                    <!--</template>-->
-                                <!--</el-table-column>-->
-                                <!--<el-table-column prop="title" label="标题" align="center">-->
-                                    <!--<template slot-scope="scope">-->
-                                        <!--<span><router-link :to="{ path: 'bug', query: { taskId: scope.row.taskId,taskName:scope.row.taskName }}" class="btn-bug">{{scope.row.title }}</router-link></span>-->
-                                    <!--</template>-->
-                                <!--</el-table-column>-->
-                                <!--<el-table-column prop="statusName" label="状态" align="center" width="110"></el-table-column>-->
-                                <!--<el-table-column prop="severityName" label="严重程度" align="center" width="120"></el-table-column>-->
-                                <!--<el-table-column prop="createName" label="提交人" align="center" width="120" ></el-table-column>-->
-                                <!--<el-table-column prop="handlerName" label="处理人" align="center" width="120" ></el-table-column>-->
-                                <!--<el-table-column prop="createTime" label="提交时间" align="center" width="120" >-->
-                                    <!--<template slot-scope="scope">-->
-                                        <!--<span>{{scope.row.createTime | formatDate2}}</span>-->
-                                    <!--</template>-->
-                                <!--</el-table-column>-->
-                            <!--</el-table>-->
-                            <!--<div class="pagination">-->
-                                <!--<el-pagination-->
-                                        <!--@current-change="myTaskBugHandleCurrentChange"-->
-                                        <!--:current-page.sync="myTaskBugPageNum"-->
-                                        <!--:page-size="myTaskBugPage.pageSize"-->
-                                        <!--:layout="myTaskBugPageLayout"-->
-                                        <!--:total="myTaskBugPage.total">-->
-                                <!--</el-pagination>-->
-                            <!--</div>-->
-                        <!--</el-tab-pane>-->
-                        <!--<el-tab-pane label="审核通过" name="access">-->
-                            <!--<div class="task-lis" v-for="item in taskTemp.auditSuccess" @click="getTaskTempDetail(item)">-->
-                                <!--<div class="head-img"><img src="../assets/img/finished.jpg"></div>-->
-                                <!--<div class="main-task-detail">-->
-                                    <!--<div class="task-name" style="width: 700px;">-->
-                                        <!--<span>{{item.taskName}}:({{item.description}})</span>-->
-                                    <!--</div>-->
-                                    <!--<div class="task-state">-->
-                                        <!--<span class="task-end blue">申请人：{{item.userName}}</span>-->
-                                        <!--<span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--<div class="task-mark" style="position:relative; left:-10px">-->
-                                    <!--<img v-if="item.projectImage" :src="item.projectImage" style="width: 40px;height: 40px;border-radius: 50%;">-->
-                                    <!--<img v-else="" src="../assets/img/u431.png" alt="" >-->
-                                    <!--&lt;!&ndash;<img src="../assets/img/u431.png" alt="">&ndash;&gt;-->
-                                    <!--<span  class="mark-msg">{{item.projectName}}</span>-->
-                                <!--</div>-->
-                                <!--<div class="task-data-show">-->
-                                <!--</div>-->
-                                <!--<div class="task-username">-->
-                                    <!--<img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!=''"-->
-                                         <!--:src="item.avatarUrl" :alt="item.userName">-->
-                                    <!--<span v-else="">{{item.userName}}</span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <!--<div v-show="taskTemp.auditSuccess.length==0 || taskTemp.auditSuccess == null" class="empty">-->
-                                <!--<h2>暂无数据</h2>-->
-                            <!--</div>-->
-                            <!--<div class="pagination" v-show="this.taskTemp.auditSuccess.length>0">-->
-                                <!--<el-pagination-->
-                                        <!--@current-change="handleAuditSuccessTaskTempPage"-->
-                                        <!--:current-page.sync="taskTempPage2.pageNum"-->
-                                        <!--:page-size="taskTempPage2.pageSize"-->
-                                        <!--:layout="taskTempAuditSuccessPageLayout"-->
-                                        <!--:total="taskTempPage2.total">-->
-                                <!--</el-pagination>-->
-                            <!--</div>-->
-                        <!--</el-tab-pane>-->
-                    <!--</el-tabs>-->
-                <!--</div>-->
                 <p class="mic-title">我的调休</p>
                 <div class="my-task-detail" style="width: 1100px">
-                    <el-table :data="myRestHours" border>
+                    <el-table :data="myRestHours" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="totalRestHours" label="总调休" align="center" >
                         </el-table-column>
                         <el-table-column prop="goneRestHours" label="已用调休" align="center">
@@ -781,7 +706,7 @@
                     <el-button type="primary" @click="selectMySignInData" style="margin-left: 10px" size="small">查询</el-button>
                     <el-button type="primary" @click="showPersonalTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
                     <!--<span @click="showRestHoursDetail" style="font-size: 15px;cursor: pointer;text-decoration: underline">剩余调休(截止上月底): {{myRestHours}}H</span>-->
-                    <el-table :data="signInData" border>
+                    <el-table :data="signInData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="date" label="日期" align="center" width="120">
                             <template slot-scope="scope">
                                 {{scope.row.date | formatDate2}}{{scope.row.weekday}}
@@ -1286,7 +1211,7 @@
                                     <div class="task-state">
                                         <span class="task-end blue">申请人: {{leave.userName}}</span>
                                         <span class="task-end blue">{{leave.createTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-edit"></i></span>
+                                        <!--<span class="task-time-opt"><i class="el-icon-edit"></i></span>-->
                                     </div>
                                 </div>
                                 <div class="task-username">
@@ -1618,16 +1543,15 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="开始日期" prop="beginTime">
+                <el-form-item label="开始日期">
                     <el-date-picker
-                            v-model="questionForm.beginTime"
                             type="date"
                             format="YYYY-MM-dd"
                             value-format="YYYY-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="截止日期" prop="endTime">
+                <el-form-item label="截止日期">
                     <el-date-picker
                             v-model="questionForm.endTime"
                             type="date"
@@ -1933,7 +1857,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="danger" @click="deleteLeave(leaveForm.id)">删除</el-button>
+                <el-button type="danger" @click="deleteLeave(leaveForm.id)"
+                           v-if="leaveForm.id != null && leaveForm.id !== undefined && leaveForm.id !== ''">删除</el-button>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="!editLeaveDetailVisible"
                            :loading="isSaving">立即创建</el-button>
                 <el-button type="primary" @click="saveLeaveInfo('leaveForm')" v-show="editLeaveDetailVisible"
@@ -2310,9 +2235,9 @@
             </span>
         </el-dialog>
         <el-dialog title="用户调休使用日志" :visible.sync="myRestHoursDetailVisible" class="rest-hour-log"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="small"
-                   width="800px">
-            <el-table :data="myRestHoursLogData" border>
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="small"
+                   width="850px">
+            <el-table :data="myRestHoursLogData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column type="index" label="序号" align="center" width="80">
                     <template slot-scope="scope">
                         {{(myRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
@@ -2320,7 +2245,7 @@
                 </el-table-column>
                 <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
                 <el-table-column prop="content" label="事由" align="center"></el-table-column>
-                <el-table-column prop="recordTime" label="记录日期"  width="150"  align="center">
+                <el-table-column prop="recordTime" label="记录日期"  width="200"  align="center">
                     <template slot-scope="scope">
                         <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
                     </template>
@@ -2342,7 +2267,7 @@
             <div>
                 <el-button type="primary" @click="addRestHoursLog">手动新增调休记录</el-button>
             </div>
-            <el-table :data="userRestHoursLogData" border>
+            <el-table :data="userRestHoursLogData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column type="index" label="序号" align="center" width="80">
                     <template slot-scope="scope">
                         {{(userRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
@@ -2577,7 +2502,7 @@
                 <div v-show="taskTempAble && taskTempDetail.functionResDTOList !== undefined && taskTempDetail.functionResDTOList.length>0">
                     <span style="margin-left: 0px">功能点:</span>
 
-                    <el-table class="hh" :data="taskTempDetail.functionResDTOList">
+                    <el-table class="hh" :data="taskTempDetail.functionResDTOList" :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
@@ -2699,7 +2624,8 @@
             <div style="margin-top: 0px">任务描述: {{taskUser.description}}</div>
             <div v-show="taskModifyDetail.oldFunctionResDTOList !== undefined && taskModifyDetail.oldFunctionResDTOList.length>0">
                 <span style="margin-left: 0px">功能点:</span>
-                <el-table class="hh" :data="taskModifyDetail.oldFunctionResDTOList">
+                <el-table class="hh" :data="taskModifyDetail.oldFunctionResDTOList"
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                     <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                     <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
@@ -2738,7 +2664,8 @@
                 <div v-show="taskModifyDetail.reviewStatus === 2 && taskModifyDetail.functionResDTOList !== undefined
                 && taskModifyDetail.functionResDTOList.length>0">
                     <span style="margin-left: 0px">功能点:</span>
-                    <el-table class="hh" :data="taskModifyDetail.functionResDTOList">
+                    <el-table class="hh" :data="taskModifyDetail.functionResDTOList"
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="moduleName" label="模块" align="center"></el-table-column>
                         <el-table-column prop="function" label="功能点" align="center" width="120"></el-table-column>
                         <el-table-column prop="actionName" label="动作" align="center" width="120"></el-table-column>
@@ -2857,7 +2784,8 @@
 
         <el-dialog title="" style="margin-left: 30%;margin-right: 30%" :visible.sync="showUserAndLevelVisible"
                    top="10%" :center="Boolean(true)">
-            <el-table class="hh" :data="userAndLevelData">
+            <el-table class="hh" :data="userAndLevelData"
+                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column prop="userName"  align="center"></el-table-column>
                 <el-table-column prop="jobName"  align="center"></el-table-column>
                 <el-table-column prop="levelName"  align="center"></el-table-column>
@@ -3062,7 +2990,7 @@
                     username: ''
                 },
                 leaveForm: {
-                    id: '',
+                    id: null,
                     userId: '',
                     reviewStatus: null,
                     userName: '',
@@ -3252,12 +3180,6 @@
                 questionRules: {
                     projectId: [
                         {required: true, message: '项目不能为空', trigger: 'change'},
-                    ],
-                    endTime: [
-                        {type: 'date', required: true, message: '截止时间不能为空', trigger: 'blur'},
-                    ],
-                    beginTime: [
-                        {type: 'date', required: true, message: '开始时间不能为空', trigger: 'blur'},
                     ],
                     workHour: [
                         {required: true,  validator: validateEmpty,message: '工作量不能为空', trigger: 'blur'},
@@ -5556,7 +5478,8 @@
                 this.editHelpDetailVisible = false;
             },
             clearLeaveForm() {
-                this.leaveForm.id = this.leaveForm.endTime = this.leaveForm.beginTime = this.leaveForm.hours = this.leaveForm.type = this.leaveForm.description = '';
+                this.leaveForm.id = this.leaveForm.endTime =
+                    this.leaveForm.beginTime = this.leaveForm.hours = this.leaveForm.type = this.leaveForm.description = null;
                 this.userWeeks = []
             },
             clearExtraWorkForm(){
@@ -5636,7 +5559,7 @@
                         }
                         form['userWeeks'] = this.userWeeks;
                         this.isSaving = true;
-                        if (form.id !== '') {
+                        if (form.id !== '' && form.id != null && form.id !== undefined) {
                             http.zsyPostHttp('/userLeave/editLeaveDetail/' + form.id, form, (resp) => {
                                 this.$message({
                                     showClose: true,
@@ -5655,6 +5578,8 @@
                                     message: err.errMsg,
                                     type: 'error'
                                 });
+                            }, sysErr =>{
+                                this.isSaving = false;
                             })
                         } else {
                             http.zsyPostHttp('/userLeave/add', form, (resp) => {
@@ -5873,14 +5798,15 @@
             },
             deleteLeave(id) {
                 http.zsyDeleteHttp('/userLeave/delete/' + id, null, (resp) => {
+                    this.fetchUserLeaveList();
+                    this.clearLeaveForm();
+                    this.editLeaveVisible = false;
+                    this.leaveDetailVisible = false;
                     this.$message({
                         showClose: true,
                         message: '请假申请删除成功',
                         type: 'success'
                     });
-                    this.fetchUserLeaveList();
-                    this.clearLeaveForm();
-                    this.leaveDetailVisible = false
                 })
             },
             acceptLeave(id) {

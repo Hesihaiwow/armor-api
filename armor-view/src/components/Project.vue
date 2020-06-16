@@ -24,7 +24,8 @@
             </el-tab-pane>
             <el-tab-pane label="阶段管理" name="stage" >
             <el-button type="primary" size="middle" style="margin-bottom: 10px;margin-left: 1000px" @click="addStageVisible=true;clearStage()">添加阶段</el-button>
-            <el-table :data="stageList" style="width: 100%;margin: auto" >
+            <el-table :data="stageList" style="width: 100%;margin: auto"
+                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column
                         label="序号"
                         prop="num" style="text-align: center"></el-table-column>

@@ -5,6 +5,8 @@
                         v-model="planYear"
                         align="right"
                         type="year"
+                        size="small"
+                        style="width: 150px"
                         :blur="fetchTreeJson"
                         placeholder="选择年">
                 </el-date-picker>
@@ -24,9 +26,9 @@
         <div class="plan-content fl">
             <div class="plan-filter clearfix">
                 <span class="fl" >周计划:</span>
-                <el-button @click="clearForm">全部</el-button>
-                <el-button v-for="item in stageList" v-model="stage" :key="item.id" @click="fetchTreeJson(String(item.id))">{{item.name}}</el-button>
-                <el-button @click="fetchPausePlan">暂停</el-button>
+                <el-button @click="clearForm" size="small">全部</el-button>
+                <el-button v-for="item in stageList" v-model="stage" size="small" :key="item.id" @click="fetchTreeJson(String(item.id))">{{item.name}}</el-button>
+                <el-button @click="fetchPausePlan" size="small">暂停</el-button>
                 <br>
 
                 <span class="fl">排序：</span>

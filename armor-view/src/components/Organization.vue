@@ -55,7 +55,8 @@
       <!--<div class="dm-title" style="width: 50%;">成员<span class="add-department" @click="addUserDlgShow">+</span></div>-->
       <div class="white-bg">
         <div class="department-member-table">
-          <el-table :data="tableData" stripe style="width: 100%">
+          <el-table :data="tableData" stripe style="width: 100%"
+                    :header-cell-style="{background:'#D9D9D9',color:'black'}">
             <el-table-column prop="name" label="姓名" width="80" align="center"></el-table-column>
             <el-table-column prop="account" label="用户名" width="120" align="center"></el-table-column>
             <el-table-column prop="jobName" label="职位" width="120" align="center"></el-table-column>

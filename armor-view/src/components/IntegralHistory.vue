@@ -13,7 +13,8 @@
       <el-button @click="editIntegralVisible = true" size="large" v-show="permit" style="float: right;position: relative;bottom: 12PX; right: 100PX;">添加积分记录</el-button>
       <el-button @click="backButton()" size="large" style="float: right;position: relative;bottom: 12PX; right: 200PX;">返回上页</el-button>
     </div>
-    <el-table :data="historyData" stripe style="width: 100%;bottom:20px">
+    <el-table :data="historyData" stripe style="width: 100%;bottom:20px"
+              :header-cell-style="{background:'#D9D9D9',color:'black'}">
       <el-table-column prop="userName" label="成员" align="center" width="100px" ></el-table-column>
       <el-table-column prop="integral" label="积分" align="center" >
         <template slot-scope="scope">

@@ -7,7 +7,8 @@
             <el-button type="primary" @click="addRestHoursLog">手动新增调休记录</el-button>
         </div>
 
-        <el-table :data="userRestHoursLogData" border>
+        <el-table :data="userRestHoursLogData" border
+                  :header-cell-style="{background:'#D9D9D9',color:'black'}">
             <el-table-column type="index" label="序号" align="center" width="80">
                 <template slot-scope="scope">
                     {{(userRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}

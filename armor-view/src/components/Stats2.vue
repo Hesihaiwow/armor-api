@@ -2,7 +2,8 @@
     <div class="stats-con">
         <el-tabs v-model="activeName" @tab-click="handleClick" style="position:relative;margin-bottom: 20px;">
             <el-tab-pane label="任务统计" name="stat"  style="">
-                <el-table :data="statsData" >
+                <el-table :data="statsData"
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="name" label="成员" align="center" ></el-table-column>
                     <el-table-column prop="inProcess" label="我的任务/进行中任务" align="center" >
                         <template slot-scope="sco">
@@ -40,22 +41,11 @@
                     >
                     </el-date-picker>
                 </div>
-                <!--<div class="add-member-basic-msg fl" >-->
-                    <!--<el-date-picker-->
-                            <!--v-model="weekPublishReqDTO.date"-->
-                            <!--:picker-options="pickerWeek"-->
-                            <!--type="week"-->
-                            <!--format="yyyy 第 WW 周"-->
-                            <!--placeholder="选择周">-->
-                    <!--</el-date-picker>-->
-                <!--</div>-->
-                <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPLastWeek()">第{{lastWeek}}周</el-button></div>-->
-                <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPCurrentWeek()">当前第{{currentWeek}}周</el-button></div>-->
-                <!--<div class="add-member-basic-msg fl"><el-button type="text" @click="getWPNextWeek()">第{{nextWeek}}周</el-button></div>-->
-                <div class="add-member-basic-msg fl" style="margin-left: -90px"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>
                 <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
 
-                <el-table :data="weekPublishData" border>
+                <el-table :data="weekPublishData" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" align="center" width="80" fixed>
                         <template slot-scope="scope">
                             {{(weekPublishReqDTO.pageNum-1)*20 + scope.$index + 1}}
@@ -155,7 +145,8 @@
                         <span>优化: {{BugNumData.optimizationNum}}</span>
                         <span style="margin-right: 10px">协助: {{BugNumData.assistanceNum}}</span>
                     </div>
-                    <el-table :data="bugPage" border>
+                    <el-table :data="bugPage" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column type="index" label="序号" align="center" width="60">
                             <template slot-scope="scope">
                                 {{(bugReqDTO.pageNum-1)*10 + scope.$index + 1}}
@@ -268,7 +259,8 @@
                         <el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" style="margin-left: 700px;margin-top: -5px;" @click="importBugVisible = true">导入bug信息</el-button>
                         <el-button type="primary" style="margin-top: -5px" v-show="environment === 'dev' || environment === 'test'" @click="selectMantisProject">导出bug信息</el-button>
                     </div>
-                    <el-table :data="taskBugStatsList" border>
+                    <el-table :data="taskBugStatsList" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="taskName" label="任务名称" align="center">
                             <template slot-scope="scope">
                                 <a style="color: #1c8de0;cursor: pointer" @click="toTask(scope.row.taskId)">{{scope.row.taskName}}</a>
@@ -316,7 +308,8 @@
                             @change="changeMonth1"
                     size="medium">
                     </el-date-picker></div>
-                    <el-table :data="mantisUserBugStatsList" border>
+                    <el-table :data="mantisUserBugStatsList" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="realName" label="负责人" align="center" width="100"></el-table-column>
                         <el-table-column label="负责平台"  width="240">
                             <template slot-scope="scope">
@@ -398,7 +391,8 @@
                         :picker-options="pickerOptions">
                 </el-date-picker></div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
-                <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary>
+                <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="150">
                         <template slot-scope="sco">
@@ -431,7 +425,8 @@
                 <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
 
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
-                <el-table :data="userWeekData" border  >
+                <el-table :data="userWeekData" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column  type="index"  label="序号" align="center" width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="80" >
                         <template slot-scope="sco">
@@ -452,99 +447,9 @@
                     <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <!-- <el-tab-pane label="周人员投入表" name="weekUserCost">
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="userCostReqDTO.groupId" clearable filterable  placeholder="筛选团队">
-                        <el-option v-for="item in groupList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <div class="add-member-basic-msg fl" >
-                    <el-date-picker
-                            v-model="userCostReqDTO.date"
-                            :picker-options="userCostPickerWeek"
-                            type="week"
-                            format="yyyy 第 WW 周"
-                            placeholder="选择周">
-                    </el-date-picker>
-                </div>
-                <div class="add-member-basic-msg fl"><el-button type="text" @click="getUserCostCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
-
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchWeekUserCost()" class="search-btn"></div>
-                <el-table :data="weekUserCostList" border  >
-                    <el-table-column prop="jobRoleName" label="岗位" align="center" width="130" >
-                        <template slot-scope="sco">{{sco.row.jobRoleName}}</template>
-                    </el-table-column>
-                    <el-table-column prop="userName" label="人员" align="center" width="90" >
-                        <template slot-scope="sco">
-                            <el-form>
-                                <div v-for="(item,key) in sco.row.userTaskHoursResDTOS">
-                                    {{item.userName}}<br/><br/>
-                                    <div style="border: 0.5px solid gray;width:90px;height:0;margin-left: -18px"></div>
-                                </div>
-
-                            </el-form>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="taskName" label="任务" align="center">
-                        <template slot-scope="sco">
-                            <el-form>
-                                <div v-for="item in sco.row.userTaskHoursResDTOS">
-                                    <div v-for="task in item.taskHoursResDTOS">
-                                        {{task.taskName}}
-                                    </div><br/>
-                                </div>
-                            </el-form>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="workHours" label="任务工作量" align="center" width="130" >
-                        <template slot-scope="sco">
-                            <el-form>
-                                <div v-for="item in sco.row.userTaskHoursResDTOS">
-                                    <div v-for="task in item.taskHoursResDTOS">
-                                        {{task.workHours}}
-                                    </div><br/>
-                                </div>
-                            </el-form>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="totalHours" label="周工作量" align="center" width="130" >
-                        <template slot-scope="sco">
-                            <el-form>
-                                <div v-for="item in sco.row.userTaskHoursResDTOS">
-                                    {{item.totalHours}}<br/><br/>
-                                </div>
-                            </el-form>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="leaveHours" label="周请假时长" align="center" width="130" >
-                        <template slot-scope="sco">
-                            <el-form>
-                                <div v-for="item in sco.row.userTaskHoursResDTOS">
-                                    {{item.leaveHours}}<br/><br/>
-                                </div>
-                            </el-form>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="hourPercent" label="成员工作量饱和度" align="center" width="150" >
-                        <template slot-scope="sco">
-                            <el-form>
-                                <div v-for="item in sco.row.userTaskHoursResDTOS">
-                                    <div v-if="item.color === 0">{{item.hourPercent}}<br/><br/></div>
-                                    <div v-if="item.color === 1" style="color: orangered">{{item.hourPercent}}<br/><br/></div>
-                                    <div v-if="item.color === 2" style="color: deepskyblue;">{{item.hourPercent}}<br/><br/></div>
-                                </div>
-                            </el-form>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="positionHourPercent" label="岗位工作量饱和度" align="center" width="150"  >
-                        <template slot-scope="sco">{{sco.row.positionHourPercent}}</template>
-                    </el-table-column>
-                </el-table>
-            </el-tab-pane> -->
             <el-tab-pane label="周人员投入表" name="weekUserCost">
                 <div class="add-member-basic-msg fl" >
-                    <el-select v-model="userCostReqDTO.groupId" clearable filterable  placeholder="筛选团队">
+                    <el-select v-model="userCostReqDTO.groupId" clearable filterable  placeholder="筛选团队" style="width: 200px">
                         <el-option v-for="item in groupList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
@@ -555,6 +460,7 @@
                             :picker-options="userCostPickerWeek"
                             type="week"
                             format="yyyy 第 WW 周"
+                            style="width: 200px"
                             placeholder="选择周">
                     </el-date-picker>
                 </div>
@@ -562,6 +468,7 @@
 
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchWeekUserCost()" class="search-btn"></div>
                 <el-table :data="weekUserCostList" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}"
                           :span-method="objectSpanMethod">
                     <el-table-column prop="jobRoleName" label="岗位" align="center" width="130" >
                         <template slot-scope="sco">{{sco.row.jobRoleName}}</template>
@@ -636,7 +543,8 @@
                     </el-date-picker>
                 </div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchLeaveList()" class="search-btn"></div>
-                <el-table :data="leaveManage" border>
+                <el-table :data="leaveManage" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
                     <el-table-column prop="description" label="请假原因" align="center"></el-table-column>
                     <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
@@ -802,7 +710,8 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" @click="selectVacationByDate" style="margin-left: 10px" size="small">查询</el-button>
-                <el-table :data="personVacationData" border>
+                <el-table :data="personVacationData" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="80">
                         <template slot-scope="scope">
@@ -847,9 +756,10 @@
                     </el-date-picker>
                 </div>
                 <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
-                <el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
+                <!--<el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>-->
                 <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
-                <el-table :data="signInData" border>
+                <el-table :data="signInData" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="date" label="日期" align="center" width="120">
                         <template slot-scope="scope">
                             {{scope.row.date | formatDate2}}{{scope.row.weekday}}
@@ -943,7 +853,8 @@
                     </el-date-picker>
                 </div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="searchEWorkStats()" class="search-btn"></div>
-                <el-table :data="extraWorkStatsList" border>
+                <el-table :data="extraWorkStatsList" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" align="center" width="80">
                         <template slot-scope="scope">
                             {{(extraWorkReqDTO.pageNum-1)*10 + scope.$index + 1}}
@@ -1001,7 +912,8 @@
                     </el-select>
                 </div>
                 <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchAllUsersRestHours" class="search-btn"></div>
-                <el-table :data="restHoursData" border  >
+                <el-table :data="restHoursData" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="100">
                         <template slot-scope="sco">
@@ -1582,7 +1494,8 @@
         <el-dialog title="用户调休使用日志" :visible.sync="userRestHoursDetailVisible" class="rest-hour-log"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="small"
                    width="800px">
-            <el-table :data="userRestHoursLogData" border>
+            <el-table :data="userRestHoursLogData" border
+                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column type="index" label="序号" align="center" width="80">
                     <template slot-scope="scope">
                         {{(userRestHoursLogPage.pageNum-1)*10 + scope.$index + 1}}
@@ -1613,7 +1526,8 @@
             <div style="margin-bottom: 10px">
                 <el-button type="primary" @click="addRestHoursLog">手动新增调休记录</el-button>
             </div>
-            <el-table :data="userRestHoursLogData2" border>
+            <el-table :data="userRestHoursLogData2" border
+                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column type="index" label="序号" align="center" width="80">
                     <template slot-scope="scope">
                         {{(userRestHoursLogPage2.pageNum-1)*10 + scope.$index + 1}}

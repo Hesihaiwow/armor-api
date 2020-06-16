@@ -61,7 +61,8 @@
             </div>
         </el-dialog>
         <el-dialog title="所有通知" :visible.sync="allShow">
-            <el-table :data="noticeData" border>
+            <el-table :data="noticeData" border
+                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column property="no" label="序号" align="center" width="70" type="index"></el-table-column>
                 <el-table-column property="content" label="内容" align="center">
                     <template slot-scope="scope">

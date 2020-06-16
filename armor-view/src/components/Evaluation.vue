@@ -33,7 +33,8 @@
                     <el-button type="primary" @click="onSubmit">查询</el-button>
                 </el-form-item>
             </el-form>
-            <el-table :data="userEvaluationList" border>
+            <el-table :data="userEvaluationList" border
+                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column type="expand">
                     <template slot-scope="scope">
                         <el-form>

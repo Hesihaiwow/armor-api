@@ -81,7 +81,8 @@
                             </el-button>
                         </div>
                     </div>
-                    <el-table :data="demandData" border>
+                    <el-table :data="demandData" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="no" label="序号" align="center" width="65" type="index">
                         </el-table-column>
                         <el-table-column label="需求标题" align="center">
@@ -214,7 +215,8 @@
                             <el-button type="primary" size="small" @click="select1">查询</el-button>
                         </div>
                     </div>
-                    <el-table :data="demandData" border>
+                    <el-table :data="demandData" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center" width="250">
                             <template slot-scope="scope">
@@ -367,7 +369,8 @@
                             <el-button type="primary" size="small" @click="select4">查询</el-button>
                         </div>
                     </div>
-                    <el-table :data="demandData" border>
+                    <el-table :data="demandData" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center">
                             <template slot-scope="scope">
@@ -506,7 +509,8 @@
                             <el-button type="primary" size="small" @click="select3">查询</el-button>
                         </div>
                     </div>
-                    <el-table :data="demandData" border>
+                    <el-table :data="demandData" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center">
                             <template slot-scope="scope">
@@ -636,7 +640,8 @@
                         </div>
                         <el-button type="primary" size="small" @click="select2">查询</el-button>
                     </div>
-                    <el-table :data="demandData" border>
+                    <el-table :data="demandData" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column type="index" label="序号" align="center" width="70"></el-table-column>
                         <el-table-column label="需求标题" align="center" width="250">
                             <template slot-scope="scope">
@@ -811,9 +816,7 @@
                         <i class="el-icon-plus"></i>
                     </el-upload>
                 </el-form-item>
-                <div class="el-dialog__footer fr" style=" margin-top: 30px;margin-right: 20px; text-align: center">
-                    <el-button @click="saveDemand('demandForm')" type="primary" :loading="isSaving">保存</el-button>
-                </div>
+                <el-button class="fr" style="margin-top: -30px" @click="saveDemand('demandForm')" type="primary" :loading="isSaving">保存</el-button>
             </el-form>
         </el-dialog>
         <el-dialog :visible.sync="editDemandVisible" title="编辑需求" custom-class="myDialog" :close-on-click-modal="false"
@@ -1095,8 +1098,8 @@
                     <span class="add-member-msg" style="margin-top: -40px;margin-left: 24px;"
                           @click="addTask">添加任务</span>
                 </div>
-                <el-button type="text" icon="check" @click="savePlan(demandForm.status)" style="margin-left: 400px;"
-                           :loading="isSaving">保存计划
+                <el-button type="primary" @click="savePlan(demandForm.status)" style="margin-left: 400px;"
+                           :loading="isSaving" v-show="!showTaskDetail">保存计划
                 </el-button>
             </div>
         </el-dialog>
@@ -2296,6 +2299,18 @@
                         }
                         if (this.demandForm.priority === null ||this.demandForm.priority === '') {
                             this.$message({showClose: true, message: '优先级不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
+                        }
+                        if (this.demandForm.feedbackTime == null || this.demandForm.feedbackTime === undefined
+                        || this.demandForm.feedbackTime === ''){
+                            this.$message({showClose: true, message: '提出时间不能为空', type: 'warning'});
+                            this.isSaving = false;
+                            return;
+                        }
+                        if (this.demandForm.releaseTime == null || this.demandForm.releaseTime === undefined
+                        || this.demandForm.releaseTime === ''){
+                            this.$message({showClose: true, message: '预期上线时间不能为空', type: 'warning'});
                             this.isSaving = false;
                             return;
                         }
