@@ -1545,9 +1545,9 @@
                 </el-form-item>
                 <el-form-item label="开始日期">
                     <el-date-picker
+                            v-model="questionForm.beginTime"
                             type="date"
-                            format="YYYY-MM-dd"
-                            value-format="YYYY-MM-dd HH:mm:ss"
+                            format="yyyy-MM-dd"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1556,7 +1556,6 @@
                             v-model="questionForm.endTime"
                             type="date"
                             format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                 </el-form-item>
@@ -1598,13 +1597,13 @@
             <el-button @click="editQuestionVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog title="线上问题(数据)记录"
+        <el-dialog title="线上问题(数据)记录ss"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="checkQuestionVisible">
-            <el-form :model="questionForm" :rules="questionRules" ref="questionForm" label-width="100px">
+            <el-form :model="questionForm" ref="questionForm" label-width="100px">
                 <el-form-item label="项目:" prop="projectId">
                     {{questionForm.projectName}}
                 </el-form-item>
@@ -1632,7 +1631,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button type="danger" @click="deleteQuestion(questionForm.oqrId)">删除</el-button>
-            <el-button type="primary" icon="edit" @click="editQuestion(questionForm)">编辑</el-button>
+            <el-button type="primary" @click="editQuestion(questionForm)">编辑</el-button>
             <el-button type="primary" @click="acceptQuestion(questionForm.oqrId)">审核通过</el-button>
           </span>
         </el-dialog>
@@ -1642,7 +1641,7 @@
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="acceptedQuestionVisible">
-            <el-form :model="questionForm" :rules="questionRules" ref="questionForm" label-width="100px">
+            <el-form :model="questionForm"  ref="questionForm" label-width="100px">
                 <el-form-item label="项目:" prop="projectId">
                     {{questionForm.projectName}}
                 </el-form-item>
@@ -1679,7 +1678,7 @@
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :visible.sync="finishQuestionVisible">
-            <el-form :model="questionForm" :rules="questionRules" ref="questionForm" label-width="100px">
+            <el-form :model="questionForm" ref="questionForm" label-width="100px">
                 <el-form-item label="项目:" prop="projectId">
                     {{questionForm.projectName}}
                 </el-form-item>
@@ -6297,8 +6296,8 @@
                 this.editQuestionVisible = true;
                 this.questionForm.oqrId = item.oqrId;
                 this.questionForm.name = item.name;
-                this.questionForm.beginTime = item.beginTime;
-                this.questionForm.endTime = item.endTime;
+                this.questionForm.beginTime = moment(item.beginTime).format('yyyy-MM-DD');
+                this.questionForm.endTime = moment(item.endTime).format('yyyy-MM-DD');
                 this.questionForm.projectId = item.projectId;
                 this.questionForm.description = item.description;
                 this.questionForm.workHour = String(item.workHour);
@@ -6307,12 +6306,12 @@
             },
             //审核问题
             checkQuestion(item){
-                this.fetchQuestionWait();
+                // this.fetchQuestionWait();
                 this.checkQuestionVisible = true;
                 this.questionForm.oqrId = item.oqrId;
                 this.questionForm.name = item.name;
-                this.questionForm.beginTime = moment(item.beginTime).format('YYYY-MM-DD');
-                this.questionForm.endTime = moment(item.endTime).format('YYYY-MM-DD');
+                this.questionForm.beginTime = moment(item.beginTime).format('yyyy-MM-DD');
+                this.questionForm.endTime = moment(item.endTime).format('yyyy-MM-DD');
                 this.questionForm.projectId = item.projectId;
                 this.questionForm.projectName = item.projectName;
                 this.questionForm.description = item.description;
@@ -6336,19 +6335,27 @@
             saveQuestionInfo(formName) {
                 let vm = this;
                 this.questionAble = true;
-                this.questionForm.endTime = moment(this.questionForm.endTime).toDate();
-                this.questionForm.beginTime = moment(this.questionForm.beginTime).toDate();
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let param = this.questionForm;
                         param.name = param.name.trim();
-                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
-                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                         if (param.workHour.length !== parseFloat(param.workHour).toString().length || parseFloat(param.workHour) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
                             this.questionAble = false;
                             return false;
                         }
+                        if (param.beginTime == null || param.beginTime === undefined || param.beginTime === ''){
+                            this.$message({showClose: true, message: '请选择开始时间', type: 'error'});
+                            this.questionAble = false;
+                            return false;
+                        }
+                        if (param.endTime == null || param.endTime === undefined || param.endTime === ''){
+                            this.$message({showClose: true, message: '请选择截止时间', type: 'error'});
+                            this.questionAble = false;
+                            return false;
+                        }
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                         http.zsyPostHttp('/question/add', param, (resp) => {
                             this.$message({showClose: true, message: '线上问题创建成功', type: 'success'});
                             this.$refs[formName].resetFields();
@@ -6370,26 +6377,39 @@
             editQuestionInfo(formName) {
                 let vm = this;
                 this.questionAble = true;
-                this.questionForm.endTime = moment(this.questionForm.endTime).toDate();
-                this.questionForm.beginTime = moment(this.questionForm.beginTime).toDate();
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let param = this.questionForm;
+                        console.log(this.questionForm)
                         param.name = param.name.trim();
-                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
-                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                         param.oqrId = this.questionForm.oqrId;
                         if (param.workHour.length !== parseFloat(param.workHour).toString().length || parseFloat(param.workHour) == "NaN") {
                             this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
                             this.questionAble = false;
                             return false;
                         }
+                        if (param.beginTime == null || param.beginTime === undefined || param.beginTime === ''){
+                            this.$message({showClose: true, message: '请选择开始时间', type: 'error'});
+                            this.questionAble = false;
+                            return false;
+                        }
+                        if (param.endTime == null || param.endTime === undefined || param.endTime === ''){
+                            this.$message({showClose: true, message: '请选择截止时间', type: 'error'});
+                            this.questionAble = false;
+                            return false;
+                        }
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
                         http.zsyPutHttp('/question/update', param, (resp) => {
                             this.$message({showClose: true, message: '线上问题修改成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.editQuestionVisible = false;
                             this.questionAble = false;
                             vm.reload()
+                        },err=>{
+                            this.questionAble = false;
+                        },sysErr=>{
+                            this.questionAble = false;
                         });
                     } else {
                         this.questionAble = false;
