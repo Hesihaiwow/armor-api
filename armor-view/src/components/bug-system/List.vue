@@ -393,5 +393,10 @@
             background-color: #e3b7eb;
             cursor: pointer;
         }
+        .table-box{
+            tr{
+                cursor: pointer;
+            }
+        }
     }
 </style>
