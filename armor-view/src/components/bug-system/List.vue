@@ -61,6 +61,7 @@
         </div>
         <div class="table-box" v-if="tableData.list">
             <el-table
+                    :header-cell-style="{background:'#D9D9D9',color:'black'}"
                 :data="tableData.list"
                 style="width: 100%"
                 :row-class-name="tableRowClassName"
