@@ -1597,7 +1597,7 @@
             <el-button @click="editQuestionVisible = false">取 消</el-button>
           </span>
         </el-dialog>
-        <el-dialog title="线上问题(数据)记录ss"
+        <el-dialog title="线上问题(数据)记录"
                 size="tiny"
                 custom-class="myDialog"
                 :close-on-click-modal="false"
