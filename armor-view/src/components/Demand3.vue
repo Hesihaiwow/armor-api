@@ -2315,10 +2315,8 @@
                             return;
                         }
                         let param = this.demandForm;
-                        console.log(param)
                         param.releaseTime = moment(param.releaseTime).format('YYYY-MM-DD HH:23:59');
                         param.feedbackTime = moment(param.feedbackTime).format('YYYY-MM-DD HH:23:59');
-                        console.log(111)
 
                         http.zsyPostHttp('/feedback/demand/add', param, (resp) => {
                             this.$message({showClose: true, message: '需求创建成功', type: 'success'});

@@ -6039,10 +6039,6 @@
                 if(this.taskTempDetail.endTime instanceof Date){
                     this.taskTempDetail.endTime = this.taskTempDetail.endTime.getTime()
                 }
-                // console.log("first: "+ this.taskTempDetail.firstTime);
-                // console.log("begin: "+ this.taskTempDetail.beginTime);
-                // console.log(this.taskTempDetail.firstTime === this.taskTempDetail.beginTime &&
-                //     this.taskTempDetail.secondTime === this.taskTempDetail.endTime);
 
                 if (this.taskTempDetail.firstTime === this.taskTempDetail.beginTime &&
                     this.taskTempDetail.secondTime === this.taskTempDetail.endTime) {
@@ -6380,7 +6376,6 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let param = this.questionForm;
-                        console.log(this.questionForm)
                         param.name = param.name.trim();
                         param.oqrId = this.questionForm.oqrId;
                         if (param.workHour.length !== parseFloat(param.workHour).toString().length || parseFloat(param.workHour) == "NaN") {
@@ -7878,10 +7873,6 @@
                 this.taskModifyDetail.endWeek = moment(this.taskModifyDetail.endTime).week();
                 let beginYear = moment(this.taskModifyDetail.beginTime).year();
                 let endYear = moment(this.taskModifyDetail.endTime).year();
-                // console.log("beginYear: "+beginYear)
-                // console.log("endYear: "+endYear)
-                // console.log("beginWeek: "+this.taskModifyDetail.beginWeek)
-                // console.log("endWeek: "+this.taskModifyDetail.endWeek)
                 let userWeeks = this.taskModifyDetail.userWeekResDTOList;
                 if (beginYear !== endYear) {
                     //当前情况:  开始周是在上一年  截止周在下一年

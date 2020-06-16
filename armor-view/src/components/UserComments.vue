@@ -127,7 +127,6 @@
                 this.fetchUserComments();
             },
             toTaskList(taskId){
-                console.log(taskId)
                 this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
             }
 

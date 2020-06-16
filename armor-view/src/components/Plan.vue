@@ -100,7 +100,6 @@
             init(){
             },
             fetchTreeJson(){
-                console.log(this.treeList)
                 if(this.activeSort=='com'){
                     if(this.activeArrow){
                         this.treeList.sort = '0'//降序

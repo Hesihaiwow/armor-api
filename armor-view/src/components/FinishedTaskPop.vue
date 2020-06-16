@@ -45,7 +45,6 @@
         },
         methods: {
             show(taskId, userId) {
-                console.log(`FinishedTaskPop:${taskId}  ${userId}`)
                 this.form.taskId = taskId;
                 this.form.taskUserId = userId
                 this.showFinishedTask = true;

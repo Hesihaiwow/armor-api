@@ -70,7 +70,6 @@ export default {
     methods: {
       handleClick(activeName) {
         // 点击tab
-        console.log(tab, event);
         this.showIndex = false;
       },
       handleClick(path){
