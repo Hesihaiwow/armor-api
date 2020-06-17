@@ -704,7 +704,7 @@
                         </el-date-picker>
                     </div>
                     <el-button type="primary" @click="selectMySignInData" style="margin-left: 10px" size="small">查询</el-button>
-                    <el-button type="primary" @click="showPersonalTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>
+                    <!--<el-button type="primary" @click="showPersonalTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>-->
                     <!--<span @click="showRestHoursDetail" style="font-size: 15px;cursor: pointer;text-decoration: underline">剩余调休(截止上月底): {{myRestHours}}H</span>-->
                     <el-table :data="signInData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
                         <el-table-column prop="date" label="日期" align="center" width="120">
