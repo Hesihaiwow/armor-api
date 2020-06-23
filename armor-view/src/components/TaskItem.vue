@@ -1297,39 +1297,6 @@
                             </div>
                         </div>
 
-
-                    <!--<div v-show="step.functionResDTOList !== undefined && step.functionResDTOList.length>0">-->
-                        <!--<span style="margin-left: 0px;color: blue;cursor: pointer" @click="showLevelReference">功能点(点击查看复杂度参考表):</span>-->
-                        <!--<div style="border: 1px solid #bfcbd9;border-radius: 4px; padding: 10px;">-->
-                            <!--&lt;!&ndash;<i style="margin-left: 0px" class="el-icon-plus" v-show="num>=taskTempDetail.functionResDTOList.length" @click="plus"></i>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<i class="el-icon-minus" v-show="num>taskTempDetail.functionResDTOList.length" @click="minus(num-1)"></i>&ndash;&gt;-->
-                            <!--<div v-for="i in modifyTaskNum" style="margin-top: 3px">-->
-                                <!--<el-select placeholder="功能点" v-model="taskFunctionList[i-1]" clearable-->
-                                           <!--disabled-->
-                                           <!--style="width: 360px">-->
-                                    <!--<el-option-->
-                                            <!--v-for="item in taskFunctionData"-->
-                                            <!--:key="item.id"-->
-                                            <!--:label="item.functionStr"-->
-                                            <!--:value="item.id">-->
-                                    <!--</el-option>-->
-                                <!--</el-select>-->
-                                <!--<el-select placeholder="复杂度" v-model="functionLevelList[i-1]" clearable-->
-                                           <!--style="width: 120px">-->
-                                    <!--<el-option-->
-                                            <!--v-for="item in taskLevelList"-->
-                                            <!--:key="item.id"-->
-                                            <!--:label="item.name"-->
-                                            <!--:value="item.id">-->
-                                    <!--</el-option>-->
-                                <!--</el-select>-->
-                            <!--</div>-->
-
-
-                        <!--</div>-->
-
-                    <!--</div>-->
-
                 </div>
                 <div class="ctpc-btns">
                     <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
@@ -2285,16 +2252,16 @@
                 //     }
                 // }
                 // return _.orderBy(this.weekNumber, 'weekNumber')
-                this.weekNumber=this.weekNumber.sort(function (a,b) {
-                    if (a.weekNumber < b.weekNumber) {
+                this.weekNumberTemp=this.weekNumberTemp.sort(function (a,b) {
+                    if (a.weekNumberTemp < b.weekNumberTemp) {
                         return -1;
-                    } else if (a.weekNumber == b.weekNumber) {
+                    } else if (a.weekNumberTemp == b.weekNumberTemp) {
                         return 0;
                     } else {
                         return 1;
                     }
                 });
-                this.weekNumber=this.weekNumber.sort(function (a,b) {
+                this.weekNumberTemp=this.weekNumberTemp.sort(function (a,b) {
                     if (a.year < b.year) {
                         return -1;
                     } else if (a.year == b.year) {
@@ -2303,7 +2270,7 @@
                         return 1;
                     }
                 });
-                return this.weekNumber
+                return this.weekNumberTemp
             },
             sortTestWeekNumber(){
                 if (this.testWeekNumber.length !== 0) {
@@ -3355,8 +3322,8 @@
                     item.cssClass = ''
                 });
                 this.modifyTaskForm.taskUsers[index].cssClass = 'stepActive';
-                this.showAddDetail = true;
                 this.weekNumberTemp = stages[index].userWeeks
+                this.showAddDetail = true;
             },
             hideTaskModify() {
                 this.modifyTaskForm.taskName = '';
@@ -3440,24 +3407,24 @@
             },
             saveAddMember() {
                 let sumHours=0;
-                for(let i=0;i<this.weekNumber.length;i++){
-                    if(this.weekNumber[i].hours===''|| this.weekNumber[i].hours=== undefined){
-                        if(this.weekNumber[i].hoursTemp !== undefined &&this.weekNumber[i].hoursTemp!==''){
-                            this.weekNumber[i].hours = this.weekNumber[i].hoursTemp
+                for(let i=0;i<this.weekNumberTemp.length;i++){
+                    if(this.weekNumberTemp[i].hours===''|| this.weekNumberTemp[i].hours=== undefined){
+                        if(this.weekNumberTemp[i].hoursTemp !== undefined &&this.weekNumberTemp[i].hoursTemp!==''){
+                            this.weekNumberTemp[i].hours = this.weekNumberTemp[i].hoursTemp
                         }else{
-                            this.weekNumber[i].hours = 0
+                            this.weekNumberTemp[i].hours = 0
                         }
                     }
-                    let ishours = /^(([0-9]+[\.]?[0-9]+)|[0-9])$/.test(this.weekNumber[i].hours);
+                    let ishours = /^(([0-9]+[\.]?[0-9]+)|[0-9])$/.test(this.weekNumberTemp[i].hours);
                     if(!ishours){
                         this.errorMsg('工作量填写错误');
                         return false;
                     }
-                    if(this.weekNumber[i].hours>99999.9||this.weekNumber[i].hours<0){
+                    if(this.weekNumberTemp[i].hours>99999.9||this.weekNumberTemp[i].hours<0){
                         this.errorMsg('工作量正确值应为0~99999.9');
                         return false;
                     }
-                    sumHours +=  parseFloat(this.weekNumber[i].hours)
+                    sumHours +=  parseFloat(this.weekNumberTemp[i].hours)
                 }
                 if(sumHours!=this.otherStep.taskHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
@@ -3483,7 +3450,7 @@
                     taskUser.endTime = this.step.endTime;
                     taskUser.taskHours = this.otherStep.taskHours;
                     taskUser.description = this.otherStep.description;
-                    taskUser.userWeeks = this.weekNumber;
+                    taskUser.userWeeks = this.weekNumberTemp;
                     taskUser.status = this.otherStep.status;
                     taskUser.taskLevel = this.step.taskLevel;
                     this.modifyTaskForm.taskUsers.push(taskUser);
@@ -3493,7 +3460,7 @@
                     this.modifyTaskForm.taskUsers[this.step.index].description = this.otherStep.description;
                     this.modifyTaskForm.taskUsers[this.step.index].status = this.otherStep.status;
                     this.modifyTaskForm.taskUsers[this.step.index].taskHours = this.otherStep.taskHours;
-                    this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumber;
+                    this.modifyTaskForm.taskUsers[this.step.index].userWeeks = this.weekNumberTemp;
                 }
 
                 this.showAddDetail = !this.showAddDetail;
