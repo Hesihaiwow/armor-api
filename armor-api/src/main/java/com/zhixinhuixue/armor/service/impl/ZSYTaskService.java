@@ -63,7 +63,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
-    private IZSYUserWeekMapper userWeekMaper;
+    private IZSYUserWeekMapper userWeekMapper;
     @Autowired
     private IZSYStageMapper stageMapper;
     @Autowired
@@ -259,7 +259,7 @@ public class ZSYTaskService implements IZSYTaskService {
                     });
                 }
 
-                userWeekMaper.insertList(userWeeks);
+                userWeekMapper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
         }
@@ -414,7 +414,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
         taskCommentMapper.deleteByTaskId(taskId);
-        userWeekMaper.deleteByTaskId(taskId);
+        userWeekMapper.deleteByTaskId(taskId);
 
         // 判断含有重复的负责人
         if (taskReqDTO.getTaskUsers() != null && taskReqDTO.getTaskUsers().size() > 0) {
@@ -553,7 +553,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         userWeeks.add(userWeek);
                     });
                 }
-                userWeekMaper.insertList(userWeeks);
+                userWeekMapper.insertList(userWeeks);
             });
             taskUserMapper.insertList(taskUsers);
             List<Long> newTaskUserIds = taskUsers.stream().map(TaskUser::getUserId).collect(Collectors.toList());
@@ -1092,6 +1092,11 @@ public class ZSYTaskService implements IZSYTaskService {
             List<UserWeekResDTO> userWeekResDTOS = new ArrayList<>();
             taskUserBO.getUserWeeks().stream().forEach(userWeekBO -> {
                 UserWeekResDTO userWeekResDTO = new UserWeekResDTO();
+                //查询当前任务之外的周工作量
+                Double weekHours = 
+                        userWeekMapper.selectWithoutTask(userWeekBO.getUserId(),userWeekBO.getYear(),
+                                userWeekBO.getWeekNumber(),userWeekBO.getTaskId());
+                userWeekResDTO.setWeekHours(weekHours);
                 BeanUtils.copyProperties(userWeekBO, userWeekResDTO);
                 userWeekResDTOS.add(userWeekResDTO);
             });
@@ -1790,7 +1795,7 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
-        userWeekMaper.deleteByTaskId(taskId);
+        userWeekMapper.deleteByTaskId(taskId);
         feedbackPlanTaskMapper.deleteByTaskId(taskId);
         taskMapper.updateByPrimaryKeySelective(task);
         taskUserMapper.deleteByTaskId(taskId);
@@ -1837,7 +1842,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
         taskMapper.updateByPrimaryKeySelective(task);
-        userWeekMaper.deleteByTaskId(taskId);
+        userWeekMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
 
     }
@@ -2678,7 +2683,7 @@ public class ZSYTaskService implements IZSYTaskService {
             resDTO.setTaskLevel(taskUser.getTaskLevel());
             resDTO.setTaskLevelName(TaskLevel.getName(taskUser.getTaskLevel()));
         }
-        List<UserWeek> userWeeks = userWeekMaper.selectByTaskAndUser(taskId,userId);
+        List<UserWeek> userWeeks = userWeekMapper.selectByTaskAndUser(taskId,userId);
         List<UserWeekResDTO> userWeekResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userWeeks)){
             for (UserWeek userWeek : userWeeks) {
@@ -3419,7 +3424,7 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("没有开发任务，请检查");
         }
 
-        userWeekMaper.insertList(userWeeks);
+        userWeekMapper.insertList(userWeeks);
         taskTestMapper.insertList(taskTests);
 
         //新增一条任务日志

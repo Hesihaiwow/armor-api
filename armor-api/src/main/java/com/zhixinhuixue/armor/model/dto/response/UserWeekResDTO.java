@@ -9,7 +9,20 @@ public class UserWeekResDTO {
 
     private Double hours;
 
+    /**
+     * 当前任务之外的工作量
+     */
+    private Double weekHours;
+
     private int year;
+
+    public Double getWeekHours() {
+        return weekHours;
+    }
+
+    public void setWeekHours(Double weekHours) {
+        this.weekHours = weekHours;
+    }
 
     public int getWeekNumber() {
         return weekNumber;

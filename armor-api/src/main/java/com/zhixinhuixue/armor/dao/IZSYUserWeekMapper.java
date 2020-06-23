@@ -86,4 +86,15 @@ public interface IZSYUserWeekMapper {
      * @return List<UserCostBO>
      */
     List<UserCostBO> selectUserCostByGroup(@Param("groupId")Long groupId, @Param("year")int year, @Param("weekNumber")Integer weekNumber);
+
+    /**
+     * 查询当前任务之外的周工作量
+     * @author sch
+     * @param userId 用户id
+     * @param year 年
+     * @param weekNumber 周
+     * @param taskId 任务id
+     */
+    Double selectWithoutTask(@Param("userId")Long userId, @Param("year")int year,
+                             @Param("weekNumber")int weekNumber, @Param("taskId")Long taskId);
 }

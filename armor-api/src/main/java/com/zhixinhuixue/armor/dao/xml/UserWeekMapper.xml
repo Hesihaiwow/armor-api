@@ -178,6 +178,12 @@
         ORDER BY u.job_role,u.id;
     </select>
 
+    <!--查询当前任务之外的周工作量-->
+    <select id="selectWithoutTask" resultType="java.lang.Double">
+        SELECT IFNULL(SUM(hours),0) FROM `user_week`
+        WHERE `user_id` = #{userId} AND `year` = #{year} AND `week_number` = #{weekNumber} AND `task_id` != #{taskId}
+    </select>
+
     <update id="updateHours" parameterType="java.util.Map" >
         update user_week SET  hours = #{hours}
         where id = #{id}
