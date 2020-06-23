@@ -1669,7 +1669,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button type="danger" @click="deleteQuestion(questionForm.oqrId)">删除</el-button>
-            <el-button type="primary" v-show="activeQuestionName === 'wait'" icon="edit" @click="editQuestion(questionForm)"></el-button>
+            <!--<el-button type="primary" v-show="activeQuestionName === 'wait'" @click="editQuestion(questionForm)"></el-button>-->
           </span>
         </el-dialog>
         <el-dialog title="线上问题(数据)记录"

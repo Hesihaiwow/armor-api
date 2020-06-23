@@ -1223,7 +1223,7 @@
                     <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                     <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
                     <span style="position: absolute;right: 10px;">
-                        <el-button type="text" icon="edit" v-show="userRole === 0"
+                        <el-button type="text" icon="el-icon-edit" v-show="userRole === 0"
                                    @click="modifyStep(index,modifyTaskForm.taskUsers,modifyTaskForm.id)"></el-button>
                     <el-button v-show="userRole === 0" type="text" icon="el-icon-delete" @click="deleteMember(index)"></el-button>
                     </span>
