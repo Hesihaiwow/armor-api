@@ -206,7 +206,7 @@
                 btnValStatus: 1, /*1是列表模式，2是看板模式*/
                 loading: true,
                 sortList:[{id:1,name:'优先级',tips:'排序'},{id:2,name:'截止时间',tips:'升序'},{id:3,name:'完成时间',tips:'升序'},{id:4,name:'创建时间',tips:'降序'}],
-                timeRange: '323232',
+                timeRange: '',
                 publishText:'设置下次发版时间',
                 publishHide:true,
                 projectList: [],
