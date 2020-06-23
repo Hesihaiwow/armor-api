@@ -71,7 +71,7 @@
                                                :value="item.value"></el-option>
                                 </el-select>
                             </div>
-                            <div class="task-top-list fl">
+                            <div class="task-top-list fl" v-show="loadShow">
                                 <span class="ttl-name">截止日期</span>
                                 <el-date-picker v-model="timeRange" type="daterange" :picker-options="pickerOptions"
                                                 placeholder="选择日期"
@@ -119,6 +119,7 @@
                             <!--<span class="ttl-add-msg">创建多人任务</span>-->
                         <!--</div>-->
                     <!--</div>-->
+                    <input type="hidden"  id="autoFocus">
                     <div class="filter-btn">
                         <span @click="openFun" :class="open?'':'open'">{{open ? '收起筛选' : '展开筛选'}}</span>
                     </div>
@@ -205,7 +206,7 @@
                 btnValStatus: 1, /*1是列表模式，2是看板模式*/
                 loading: true,
                 sortList:[{id:1,name:'优先级',tips:'排序'},{id:2,name:'截止时间',tips:'升序'},{id:3,name:'完成时间',tips:'升序'},{id:4,name:'创建时间',tips:'降序'}],
-                timeRange: '',
+                timeRange: '323232',
                 publishText:'设置下次发版时间',
                 publishHide:true,
                 projectList: [],
@@ -284,7 +285,8 @@
                 pickerWeek:{
                     firstDayOfWeek:1
                 },
-                createBy:''
+                createBy:'',
+                loadShow:false
             };
         },
         created() {
@@ -372,6 +374,11 @@
         },
         beforeDestroy(){
             document.getElementById('app').style.overflowY = 'auto'
+        },
+        mounted(){
+          setTimeout(()=>{
+            this.loadShow = true
+          },100)
         },
         methods: {
             btnValFun() {
