@@ -1234,36 +1234,41 @@
                 <el-input type="textarea" placeholder="描述该成员的工作内容..." v-model="otherStep.description"
                           :rows="3"></el-input>
                 <div class="add-member-basic">
-                    <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu fl" style="margin-left: -30px"><span class="star">*</span>姓名：</div>
-                        <div class="add-member-basic-msg fl" style="margin-left: 30px">
-                            <el-select v-model="step.userId" filterable placeholder="请选择" @change="stepUserChange">
-                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
+                    <div class="add-member-basic-list">
+                        <div class="clearfix">
+                          <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
+                          <div class="add-member-basic-msg fl">
+                              <el-select v-model="step.userId" filterable placeholder="请选择" @change="stepUserChange">
+                                  <el-option v-for="item in userList" :key="item.id" :label="item.name"
+                                             :value="item.id"></el-option>
+                              </el-select>
+                          </div>
+
+                          <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>工作量：
+                          </div>
+                          <div class="add-member-basic-msg fl">
+                              <!--<input class="member-time-count" v-model="step.taskHours">工时-->
+                              <el-input v-model="otherStep.taskHours" style="width: 80px;margin-right:5px;"></el-input>
+                              工时
+                          </div>
                         </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl" style="margin-left: 26px"><span class="star">*</span>工作量：
-                        </div>
-                        <div class="add-member-basic-msg fl">
-                            <!--<input class="member-time-count" v-model="step.taskHours">工时-->
-                            <el-input v-model="otherStep.taskHours" style="width: 70px"></el-input>
-                            工时
-                        </div>
-                        <br/>
-                        <div class="add-member-basic-menu add-member-basic-end fl" style="margin-left: -15px;margin-top: 5px;width: 110px"><span class="star">*</span>任务复杂度：
-                        </div>
-                        <div class="add-member-basic-msg fl" style="">
-                            <el-select v-model="step.taskLevel" clearable filterable placeholder="选择复杂度"  style="width: 145px;margin-left: 0px;margin-top: 5px">
-                                <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                        <div class="add-member-basic-menu fl" style="margin-top: 5px"><span class="star">*</span>状态：</div>
-                        <div class="add-member-basic-msg fl">
-                            <el-select v-model="otherStep.status" filterable placeholder="请选择" style="margin-top: 5px">
-                                <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
+
+                        <div class="clearfix">
+                          <div class="add-member-basic-menu add-member-basic-end fl" style="margin-left: 0;margin-top: 5px;"><span class="star">*</span>任务复杂度：
+                          </div>
+                          <div class="add-member-basic-msg fl" style="">
+                              <el-select v-model="step.taskLevel" clearable filterable placeholder="选择复杂度"  style="margin-left: 0px;margin-top: 5px">
+                                  <el-option v-for="item in taskLevelList" :key="item.id" :label="item.name"
+                                             :value="item.id"></el-option>
+                              </el-select>
+                          </div>
+                          <div class="add-member-basic-menu fl" style="margin-top: 5px"><span class="star">*</span>状态：</div>
+                          <div class="add-member-basic-msg fl">
+                              <el-select v-model="otherStep.status" filterable placeholder="请选择" style="margin-top: 5px">
+                                  <el-option v-for="item in statusOptions" :key="item.id" :label="item.name"
+                                             :value="item.id"></el-option>
+                              </el-select>
+                          </div>
                         </div>
                     </div>
 
@@ -6186,10 +6191,13 @@
     }
 
     .add-member-basic-menu {
-        width: 82px;
+        width: 100px;
         text-align: right;
-    }
 
+    }
+    .add-member-basic-menu:nth-child(even){
+      margin-left:30px!important;
+    }
     .add-member-basic-list { /* border-bottom: 1px solid #ccc; */
         padding: 5px 0;
         line-height: 34px;
@@ -6204,7 +6212,7 @@
     }
 
     .add-member-basic-time {
-        margin-left: 40px;
+        /* margin-left: 40px; */
     }
 
     .add-member-basic-msg .el-date-editor.el-input {
@@ -6212,7 +6220,7 @@
     }
 
     .add-member-basic-end {
-        margin-left: 40px;
+        /* margin-left: 40px; */
     }
 
     .tag-add-sel .el-select {
