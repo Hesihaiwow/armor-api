@@ -28,6 +28,31 @@ public class OnlineBugDetailResDTO extends OnlineBugManage {
      */
     private String taskName;
 
+    /**
+     * 业务组
+     */
+    private String groupName;
+
+    /**
+     * 影响范围
+     */
+    private String affectScopeStr;
+
+    public String getAffectScopeStr() {
+        return affectScopeStr;
+    }
+
+    public void setAffectScopeStr(String affectScopeStr) {
+        this.affectScopeStr = affectScopeStr;
+    }
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
     public String getTaskName() {
         return taskName;
     }

@@ -90,6 +90,54 @@ public class OnlineBugResDTO {
     private Integer demandSystemId;
     private String demandSystemName;
 
+    /**
+     * 年份
+     */
+    private Integer year;
+
+    /**
+     * 业务组
+     */
+    private String groupName;
+
+    /**
+     * 影响范围
+     */
+    private Integer affectScope;
+    private String affectScopeStr;
+
+    public String getAffectScopeStr() {
+        return affectScopeStr;
+    }
+
+    public void setAffectScopeStr(String affectScopeStr) {
+        this.affectScopeStr = affectScopeStr;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public Integer getAffectScope() {
+        return affectScope;
+    }
+
+    public void setAffectScope(Integer affectScope) {
+        this.affectScope = affectScope;
+    }
+
     public Long getTaskId() {
         return taskId;
     }

@@ -26,10 +26,14 @@
         <result column="remark" property="remark" jdbcType="VARCHAR"/>
         <result column="bug_no" property="bugNo" jdbcType="INTEGER"/>
         <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
+        <result column="group_id" jdbcType="BIGINT" property="groupId" />
+        <result column="year" property="year" jdbcType="INTEGER"/>
+        <result column="affect_scope" property="affectScope" jdbcType="INTEGER"/>
     </resultMap>
 
     <resultMap id="OnlineBugBOPageMap" type="com.zhixinhuixue.armor.model.bo.OnlineBugBO" extends="OnlineBugMap">
         <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
         <collection property="userIds" column="id"
                     select="com.zhixinhuixue.armor.dao.IZSYBugManageMapper.selectUsersByBugId">
         </collection>
@@ -55,6 +59,8 @@
         <result column="demand_system" property="demandSystemName" jdbcType="VARCHAR"/>
         <result column="type" property="type" jdbcType="INTEGER"/>
         <result column="num" property="num" jdbcType="INTEGER"/>
+        <result column="group_id" property="groupId" jdbcType="BIGINT"/>
+        <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
     </resultMap>
     
     <insert id="insertBug" parameterType="com.zhixinhuixue.armor.model.pojo.BugManage">
@@ -68,12 +74,30 @@
     <insert id="insertBugManager" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineBugManage">
         INSERT INTO `bug_manage`
         (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`
-        ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`,`bug_no`,`task_id`)
+        ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`
+        ,`bug_no`,`task_id`,`group_id`,`affect_scope`,`year`)
         VALUES
         (#{id,jdbcType=BIGINT},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{discoverTime,jdbcType=TIMESTAMP},#{processTime,jdbcType=TIMESTAMP},
         #{origin,jdbcType=VARCHAR},#{accountInfo,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{isSolved,jdbcType=INTEGER}
         ,#{remark,jdbcType=VARCHAR},#{demandSystemName,jdbcType=VARCHAR},#{demandSystemId,jdbcType=INTEGER},#{bugNo,jdbcType=INTEGER}
-        ,#{taskId,jdbcType=BIGINT})
+        ,#{taskId,jdbcType=BIGINT},#{groupId,jdbcType=BIGINT},#{affectScope,jdbcType=INTEGER},#{year,jdbcType=INTEGER})
+    </insert>
+
+    <!--批量新增-->
+    <insert id="insertBatch">
+        INSERT INTO `bug_manage`
+        (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`
+        ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`
+        ,`bug_no`,`task_id`,`group_id`,`affect_scope`,`year`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT},#{item.description,jdbcType=VARCHAR},#{item.projectId,jdbcType=BIGINT}
+            ,#{item.createTime,jdbcType=TIMESTAMP},#{item.discoverTime,jdbcType=TIMESTAMP},#{item.processTime,jdbcType=TIMESTAMP},
+            #{item.origin,jdbcType=VARCHAR},#{item.accountInfo,jdbcType=VARCHAR},#{item.type,jdbcType=INTEGER}
+            ,#{item.isSolved,jdbcType=INTEGER},#{item.remark,jdbcType=VARCHAR},#{item.demandSystemName,jdbcType=VARCHAR}
+            ,#{item.demandSystemId,jdbcType=INTEGER},#{item.bugNo,jdbcType=INTEGER},#{item.taskId,jdbcType=BIGINT}
+            ,#{item.groupId,jdbcType=BIGINT},#{item.affectScope,jdbcType=INTEGER},#{item.year,jdbcType=INTEGER})
+        </foreach>
     </insert>
 
 
@@ -108,16 +132,22 @@
 
     <!--分页查询线上bug-->
     <select id="selectOnlineBugPage" resultMap="OnlineBugBOPageMap">
-        select distinct bm.* from `bug_manage` bm
+        select distinct bm.*,t.name AS `task_name`,wg.`name` AS `group_name`
+        from `bug_manage` bm
         left join `bug_user` bu on bm.id = bu.bug_id
         left join `user` u on bu.user_id = u.id
-        left join `department` dep on dep.id = u.department_id
+        left join `work_group` wg on wg.`id` = bm.`group_id`
+        left join `task` t on t.id = bm.`task_id`
         <where>
+            bm.demand_system_id is not null and bm.`is_delete` = 0
+            <if test="bugListReqDTO.groupId != null">
+                and bm.group_id = #{bugListReqDTO.groupId}
+            </if>
+            <if test="bugListReqDTO.year != null">
+                and bm.year = #{bugListReqDTO.year}
+            </if>
             <if test="bugListReqDTO.userId != null">
                 and bu.user_id = #{bugListReqDTO.userId}
-            </if>
-            <if test="bugListReqDTO.departmentId != null">
-                and dep.parent_id = #{bugListReqDTO.departmentId}
             </if>
             <if test="bugListReqDTO.startTime != null">
                 <![CDATA[  and bm.create_time >= #{bugListReqDTO.startTime} ]]>
@@ -131,7 +161,6 @@
             <if test="bugListReqDTO.isSolved != null">
                 and bm.is_solved = #{bugListReqDTO.isSolved}
             </if>
-            and bm.demand_system_id is not null and bm.`is_delete` = 0
         </where>
         order by bm.create_time desc
     </select>
@@ -172,8 +201,11 @@
 
     <!--线上bug详情-->
     <select id="selectOnlineBugDetailById" resultMap="OnlineBugBOPageMap">
-        SELECT bm.*,t.name task_name FROM `bug_manage` bm
-        LEFT JOIN `task` t ON t.`id` = bm.`task_id` WHERE bm.`id` = #{id}
+        SELECT bm.*,t.name task_name,wg.`name` as `group_name`
+        FROM `bug_manage` bm
+        LEFT JOIN `task` t ON t.`id` = bm.`task_id`
+        LEFT JOIN `work_group` wg ON wg.`id` = bm.`group_id`
+        WHERE bm.`id` = #{id}
     </select>
 
     <!--根据type查询bug数量-->
@@ -227,15 +259,35 @@
 
     <!--查询时间段内线上bug各个系统对应的各个类型的数量-->
     <select id="selectSystemTypeNum" resultMap="SystemTypeNumBO">
-        SELECT `demand_system_id`,`demand_system`,`type`,count(`id`) num FROM `bug_manage`
-        WHERE `is_delete` = 0 AND `demand_system_id` IS NOT NULL
+        SELECT bm.`demand_system_id`,bm.`demand_system`,bm.`group_id`,bm.`type`,count(bm.`id`) num,wg.`name` as `group_name`
+        FROM `bug_manage` bm
+        LEFT JOIN `work_group` wg ON wg.`id` = bm.`group_id`
+        WHERE bm.`is_delete` = 0 AND bm.`demand_system_id` IS NOT NULL
+        <if test="startTime != null">
+            <![CDATA[  AND bm.discover_time >= #{startTime} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[  AND bm.discover_time <= #{endTime} ]]>
+        </if>
+        <if test="year != null">
+            AND bm.`year` = #{year}
+        </if>
+        GROUP BY bm.`group_id`,bm.`type`;
+    </select>
+
+    <!--查询时间段内线上bug的业务组数量-->
+    <select id="selectGroupsByTime" resultType="java.lang.Long">
+        SELECT `group_id` FROM `bug_manage` WHERE `is_delete` = 0 AND `demand_system_id` IS NOT NULL AND `group_id` IS NOT NULL
         <if test="startTime != null">
             <![CDATA[  AND discover_time >= #{startTime} ]]>
         </if>
         <if test="endTime != null">
             <![CDATA[  AND discover_time <= #{endTime} ]]>
         </if>
-        GROUP BY `demand_system_id`,`type`;
+        <if test="year != null">
+            AND `year` = #{year}
+        </if>
+        GROUP BY `group_id`
     </select>
 
     <!-- 删除Bug处理记录  -->
@@ -292,6 +344,15 @@
             </if>
             <if test="isDelete != null">
                 `is_delete` = #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="groupId != null">
+                `group_id` = #{groupId,jdbcType=BIGINT},
+            </if>
+            <if test="year != null">
+                `year` = #{year,jdbcType=INTEGER},
+            </if>
+            <if test="affectScope != null">
+                `affect_scope` = #{affectScope,jdbcType=INTEGER},
             </if>
         </set>
         WHERE id=#{id,jdbcType=BIGINT};

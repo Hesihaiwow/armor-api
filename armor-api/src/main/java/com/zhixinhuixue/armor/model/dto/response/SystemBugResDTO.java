@@ -12,6 +12,12 @@ public class SystemBugResDTO {
     private String demandSystemName;
 
     /**
+     * 业务组
+     */
+    private Long groupId;
+    private String groupName;
+
+    /**
      * bug数量
      */
     private Integer bugNum;
@@ -25,6 +31,22 @@ public class SystemBugResDTO {
      * 协助数量
      */
     private Integer assistanceNum;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     public Integer getDemandSystemId() {
         return demandSystemId;

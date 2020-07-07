@@ -7,6 +7,7 @@ import com.zhixinhuixue.armor.model.dto.request.BugManageAddReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.BugReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
 import com.zhixinhuixue.armor.source.ZSYResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -112,4 +113,10 @@ public interface IZSYBugService {
      * @param reqDTO 参数
      */
     List<UserBugResDTO> getUserBugHistogram(BugListReqDTO reqDTO);
+
+    /**
+     * 导入bug
+     * @param uploadFile 文件
+     */
+    void importBug(MultipartFile uploadFile);
 }

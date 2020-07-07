@@ -52,6 +52,9 @@
         <if test="endTime != null">
             <![CDATA[  AND bm.discover_time <= #{endTime} ]]>
         </if>
+        <if test="year != null">
+            AND bm.`year` = #{year}
+        </if>
         GROUP BY but.`user_id`;
     </select>
 
@@ -66,6 +69,9 @@
         </if>
         <if test="endTime != null">
             <![CDATA[  AND bm.discover_time <= #{endTime} ]]>
+        </if>
+        <if test="year != null">
+            AND bm.`year` = #{year}
         </if>
         GROUP BY but.`user_id`,bm.`type`;
     </select>

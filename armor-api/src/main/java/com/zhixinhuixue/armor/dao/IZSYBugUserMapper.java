@@ -1,11 +1,6 @@
 package com.zhixinhuixue.armor.dao;
 
-import com.github.pagehelper.Page;
-import com.zhixinhuixue.armor.model.bo.BugManageListBO;
-import com.zhixinhuixue.armor.model.bo.BugUserBO;
 import com.zhixinhuixue.armor.model.bo.UserBugTypeBO;
-import com.zhixinhuixue.armor.model.dto.request.BugListReqDTO;
-import com.zhixinhuixue.armor.model.pojo.BugManage;
 import com.zhixinhuixue.armor.model.pojo.BugUser;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,12 +27,12 @@ public interface IZSYBugUserMapper {
      * @param startTime 开始
      * @param endTime 截止
      */
-    List<Long> selectBugUsersByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<Long> selectBugUsersByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
 
     /**
      * 查询时间段内用户参与的bug
      * @param startTime 开始
      * @param endTime 截止
      */
-    List<UserBugTypeBO> selectUserTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<UserBugTypeBO> selectUserTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
 }

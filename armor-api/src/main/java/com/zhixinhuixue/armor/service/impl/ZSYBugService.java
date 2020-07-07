@@ -3,8 +3,8 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
@@ -21,16 +21,25 @@ import com.zhixinhuixue.armor.service.IZSYBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.enums.*;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -56,6 +65,8 @@ public class ZSYBugService implements IZSYBugService {
     private SnowFlakeIDHelper snowFlakeIDHelper;
     @Autowired
     private IZSYUserTaskIntegralMapper integralMapper;
+    @Autowired
+    private IZSYWorkGroupMapper groupMapper;
 
 
     /**
@@ -106,20 +117,23 @@ public class ZSYBugService implements IZSYBugService {
                 if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())){
                     for (Long userId : onlineBugBO.getUserIds()) {
                         User user = userMapper.selectById(userId);
-                        if (user.getJobRole()==0){
+                        if (user.getJobRole()==ZSYJobRole.TEST.getValue()){
                             testers = testers  + user.getName()+ " ";
-                        }else if (user.getJobRole()==1){
+                        }else if (user.getJobRole()==ZSYJobRole.JAVA.getValue()
+                                || user.getJobRole()==ZSYJobRole.PHP.getValue()
+                                || user.getJobRole()==ZSYJobRole.C.getValue()
+                                || user.getJobRole()==ZSYJobRole.IOS.getValue()
+                                || user.getJobRole()==ZSYJobRole.ANDROID.getValue()
+                                || user.getJobRole()==ZSYJobRole.FRONT.getValue()
+                                || user.getJobRole()==ZSYJobRole.ARTIFICIAL.getValue()){
                             developers = developers  + user.getName()+ " ";
                         }else {
                             others = others + user.getName() + " ";
                         }
-//                        if (user.getDepartmentId().equals(87526048211664896L)){
-//                            developers = developers  + user.getName()+ " ";
-//                        }
-//                        if (user.getDepartmentId().equals(87526088225325056L)){
-//                            testers = testers  + user.getName()+ " ";
-//                        }
                     }
+                }
+                if (onlineBugBO.getAffectScope() != null){
+                    onlineBugResDTO.setAffectScopeStr(AffectScopeEnum.getName(onlineBugBO.getAffectScope()));
                 }
                 onlineBugResDTO.setOthers(others);
                 onlineBugResDTO.setDevelopers(developers);
@@ -155,6 +169,9 @@ public class ZSYBugService implements IZSYBugService {
             throw new ZSYServiceException("无法找到Bug处理结果,id:" + id);
         }
         BeanUtils.copyProperties(onlineBugBO,resDTO);
+        if (onlineBugBO.getAffectScope() != null){
+            resDTO.setAffectScopeStr(AffectScopeEnum.getName(onlineBugBO.getAffectScope()));
+        }
         String bugNoStr = getBugNoStr(onlineBugBO.getBugNo());
         resDTO.setBugNoStr(bugNoStr);
         if (resDTO.getDemandSystemName() == null){
@@ -264,7 +281,7 @@ public class ZSYBugService implements IZSYBugService {
         if (reqDTO.getTaskId() != null){
             bugManage.setTaskId(reqDTO.getTaskId());
         }
-        bugManage.setCreateTime(new Date());
+        bugManage.setCreateTime(reqDTO.getDiscoverTime());
         bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
         bugManage.setProcessTime(reqDTO.getProcessTime());
         bugManage.setDescription(reqDTO.getDescription());
@@ -276,6 +293,11 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setDemandSystemName(reqDTO.getDemandSystemName());
         bugManage.setIsSolved(reqDTO.getIsSolved());
         bugManage.setRemark(reqDTO.getRemark());
+        bugManage.setGroupId(reqDTO.getGroupId());
+        bugManage.setAffectScope(reqDTO.getAffectScope());
+        LocalDateTime localDateTime =
+                LocalDateTime.ofEpochSecond(reqDTO.getDiscoverTime().getTime() / 1000, 0, ZoneOffset.ofHours(8));
+        bugManage.setYear(localDateTime.getYear());
         bugManageMapper.insertBugManager(bugManage);
 
         // 插入Bug处理用户
@@ -434,7 +456,7 @@ public class ZSYBugService implements IZSYBugService {
         if (reqDTO.getTaskId()!=null){
             bugManage.setTaskId(reqDTO.getTaskId());
         }
-        bugManage.setCreateTime(bugManageBO.getCreateTime());
+        bugManage.setCreateTime(reqDTO.getDiscoverTime());
         bugManage.setDiscoverTime(reqDTO.getDiscoverTime());
         bugManage.setProcessTime(reqDTO.getProcessTime());
         bugManage.setDescription(reqDTO.getDescription());
@@ -446,6 +468,11 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setDemandSystemId(reqDTO.getDemandSystemId());
         bugManage.setIsSolved(reqDTO.getIsSolved());
         bugManage.setRemark(reqDTO.getRemark());
+        bugManage.setGroupId(reqDTO.getGroupId());
+        bugManage.setAffectScope(reqDTO.getAffectScope());
+        LocalDateTime localDateTime =
+                LocalDateTime.ofEpochSecond(reqDTO.getDiscoverTime().getTime() / 1000, 0, ZoneOffset.ofHours(8));
+        bugManage.setYear(localDateTime.getYear());
         bugManageMapper.updateBugManager(bugManage);
 
         if (bugUserMapper.deleteById(id) == 0) {
@@ -583,52 +610,54 @@ public class ZSYBugService implements IZSYBugService {
     public List<SystemBugResDTO> getSystemHistogram(BugListReqDTO reqDTO) {
         List<SystemBugResDTO> list = new ArrayList<>();
         //查询时间段内线上bug的系统数量
-        List<Integer> systemIds = bugManageMapper.selectSystemsByTime(reqDTO.getStartTime(),reqDTO.getEndTime());
+//        List<Integer> systemIds = bugManageMapper.selectSystemsByTime(reqDTO.getStartTime(),reqDTO.getEndTime());
+        //查询时间段内线上bug的业务组数量
+        List<Long> groupIds = bugManageMapper.selectGroupsByTime(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
         //查询时间段内线上bug各个系统对应的各个类型的数量
-        List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime());
-        if (!CollectionUtils.isEmpty(systemIds)){
-            systemIds.forEach(systemId->{
+        List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
+        if (!CollectionUtils.isEmpty(groupIds)){
+            groupIds.forEach(groupId->{
 //                Integer bugNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.BUG.getValue());
 //                Integer optimizationNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.OPTIMIZATION.getValue());
 //                Integer assistanceNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.ASSISTANCE.getValue());
                 SystemBugResDTO systemBugResDTO = new SystemBugResDTO();
                 if (!CollectionUtils.isEmpty(bugTypeBOS)){
-                    systemBugResDTO.setDemandSystemId(systemId);
+                    systemBugResDTO.setGroupId(groupId);
                     systemBugResDTO.setBugNum(0);
                     systemBugResDTO.setOptimizationNum(0);
                     systemBugResDTO.setAssistanceNum(0);
                     List<SystemBugTypeBO> bugBOS = bugTypeBOS.stream()
-                            .filter(bugTypeBO -> bugTypeBO.getDemandSystemId() == systemId && bugTypeBO.getType() == ZSYBugType.BUG.getValue())
+                            .filter(bugTypeBO -> bugTypeBO.getGroupId().equals(groupId) && bugTypeBO.getType() == ZSYBugType.BUG.getValue())
                             .collect(Collectors.toList());
                     if (!CollectionUtils.isEmpty(bugBOS)){
                         SystemBugTypeBO bugBO = bugBOS.get(0);
                         if (bugBO!=null){
                             systemBugResDTO.setBugNum(bugBO.getNum());
-                            systemBugResDTO.setDemandSystemName(bugBO.getDemandSystemName());
+                            systemBugResDTO.setGroupName(bugBO.getGroupName());
                         }
                     }
 
 
                     List<SystemBugTypeBO> optimizationBOS = bugTypeBOS.stream()
-                            .filter(bugTypeBO -> bugTypeBO.getDemandSystemId() == systemId && bugTypeBO.getType() == ZSYBugType.OPTIMIZATION.getValue())
+                            .filter(bugTypeBO -> bugTypeBO.getGroupId().equals(groupId) && bugTypeBO.getType() == ZSYBugType.OPTIMIZATION.getValue())
                             .collect(Collectors.toList());
                     if (!CollectionUtils.isEmpty(optimizationBOS)){
                         SystemBugTypeBO optimizationBO = optimizationBOS.get(0);
                         if (optimizationBO!=null){
                             systemBugResDTO.setOptimizationNum(optimizationBO.getNum());
-                            systemBugResDTO.setDemandSystemName(optimizationBO.getDemandSystemName());
+                            systemBugResDTO.setGroupName(optimizationBO.getGroupName());
                         }
                     }
 
 
                     List<SystemBugTypeBO> assistanceBOS = bugTypeBOS.stream()
-                            .filter(bugTypeBO -> bugTypeBO.getDemandSystemId() == systemId && bugTypeBO.getType() == ZSYBugType.ASSISTANCE.getValue())
+                            .filter(bugTypeBO -> bugTypeBO.getGroupId().equals(groupId) && bugTypeBO.getType() == ZSYBugType.ASSISTANCE.getValue())
                             .collect(Collectors.toList());
                     if (!CollectionUtils.isEmpty(assistanceBOS)){
                         SystemBugTypeBO assistanceBO = assistanceBOS.get(0);
                         if (assistanceBO!=null){
                             systemBugResDTO.setAssistanceNum(assistanceBO.getNum());
-                            systemBugResDTO.setDemandSystemName(assistanceBO.getDemandSystemName());
+                            systemBugResDTO.setGroupName(assistanceBO.getGroupName());
                         }
                     }
 
@@ -649,9 +678,9 @@ public class ZSYBugService implements IZSYBugService {
     public List<UserBugResDTO> getUserBugHistogram(BugListReqDTO reqDTO) {
         List<UserBugResDTO> list = new ArrayList<>();
         //查询时间段内bug人员
-        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(),reqDTO.getEndTime());
+        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
         //查询时间段内用户参与的bug
-        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime());
+        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
         if (!CollectionUtils.isEmpty(userIds)){
             userIds.forEach(userId->{
                 UserBugResDTO userBugResDTO = new UserBugResDTO();
@@ -697,6 +726,176 @@ public class ZSYBugService implements IZSYBugService {
             });
         }
         return list;
+    }
+
+    /**
+     * 导入bug
+     * @param uploadFile 文件
+     */
+    @Override
+    @Transactional
+    public void importBug(MultipartFile uploadFile) {
+        String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
+        if (!isExcel(suffix)){
+            throw new ZSYServiceException("只能上传Excel");
+        }
+        Workbook book;
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat timeSDF2 = new SimpleDateFormat("yyyy.MM.dd.HH");
+        SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            File file = multipartFileToFile(uploadFile);
+            String file_dir = file.getAbsolutePath();
+            book = getExcelWorkbook(file_dir);
+
+            Sheet sheet = getSheetByNum(book,0);
+            int lastRowNum = sheet.getLastRowNum();
+
+            List<List<String>> bugList = new ArrayList<>();
+            for(int i = 1 ; i <= lastRowNum ; i++){
+                List<String> bugFields = new ArrayList<>();
+                Row row;
+                row = sheet.getRow(i);
+                if( row != null ){
+                    int lastCellNum = 12;
+                    Cell cell;
+                    for( int j = 0 ; j <= lastCellNum ; j++ ){
+                        cell = row.getCell(j);
+                        if( cell != null ){
+                            cell.setCellType(CellType.STRING);
+                            String cellValue = cell.getStringCellValue();
+                            if (j == 1 && !Strings.isNullOrEmpty(cellValue)){
+                                //将Excel表中的日期转换成字符串
+                                calendar.set(1900, 0, 1);
+                                calendar.add(Calendar.DATE, Integer.valueOf(cellValue) - 2);
+                                BigDecimal bd = new BigDecimal(cellValue);
+                                int mills = (int) Math.round(bd.subtract(new BigDecimal(Integer.valueOf(cellValue))).doubleValue() * 24 * 3600);
+                                int hour = mills / 3600;
+                                int minute = (mills - hour * 3600) / 60;
+                                int second = mills - hour * 3600 - minute * 60;
+                                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                                calendar.set(Calendar.MINUTE, minute);
+                                calendar.set(Calendar.SECOND, second);
+                                Date d = calendar.getTime();//Date
+                                cellValue = dateSDF.format(d)+" 00:00:00";
+                            }
+                            bugFields.add(cellValue);
+                        }
+                    }
+                }
+                bugList.add(bugFields);
+            }
+            bugList = bugList.stream().filter(item->!Strings.isNullOrEmpty(item.get(0))).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(bugList)){
+                throw new ZSYServiceException("暂无数据导入,请检查");
+            }
+            //查询所有用户
+            List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
+            Map<String, List<User>> userMap = users.stream().collect(Collectors.groupingBy(User::getName));
+            //查询最近一条bug
+            OnlineBugManage lastBug = bugManageMapper.selectLastBugNo();
+            //查询所有业务组
+            List<WorkGroup> groupList = groupMapper.selectList();
+            Integer lastBugNo = lastBug.getBugNo();
+            List<OnlineBugManage> bugManageList = new ArrayList<>();
+            List<BugUser> bugUsers = new ArrayList<>();
+            for (List<String> bugDetail : bugList) {
+                lastBugNo++;
+                OnlineBugManage bugManage = new OnlineBugManage();
+                bugManage.setId(snowFlakeIDHelper.nextId());
+                bugManage.setBugNo(lastBugNo);
+                bugManage.setDescription(bugDetail.get(4));
+                bugManage.setCreateTime(timeSDF.parse(bugDetail.get(1)));
+                bugManage.setDiscoverTime(timeSDF.parse(bugDetail.get(1)));
+                if (!Strings.isNullOrEmpty(bugDetail.get(11))){
+                    bugManage.setProcessTime(timeSDF2.parse(bugDetail.get(11)));
+                }
+                bugManage.setOrigin(bugDetail.get(0));
+                bugManage.setAccountInfo(bugDetail.get(3));
+                bugManage.setDemandSystemId(1);
+                if (!Strings.isNullOrEmpty(bugDetail.get(6))){
+                    if (bugDetail.get(6).equals(ZSYBugType.BUG.getName())){
+                        bugManage.setType(ZSYBugType.BUG.getValue());
+                    }else if (bugDetail.get(6).equals(ZSYBugType.OPTIMIZATION.getName())){
+                        bugManage.setType(ZSYBugType.OPTIMIZATION.getValue());
+                    }else if (bugDetail.get(6).equals(ZSYBugType.ASSISTANCE.getName())){
+                        bugManage.setType(ZSYBugType.ASSISTANCE.getValue());
+                    }
+                }
+                if (!Strings.isNullOrEmpty(bugDetail.get(7))){
+                    if (bugDetail.get(7).equals("已解决")){
+                        bugManage.setIsSolved(1);
+                    }else if (bugDetail.get(7).equals("未解决")){
+                        bugManage.setIsSolved(0);
+                    }else if (bugDetail.get(7).equals("暂搁置")){
+                        bugManage.setIsSolved(2);
+                    }
+                }
+                bugManage.setRemark(bugDetail.get(12));
+                bugManage.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+                if (!Strings.isNullOrEmpty(bugDetail.get(2))){
+                    List<WorkGroup> collect = groupList.stream()
+                            .filter(group -> group.getName().contains(bugDetail.get(2))).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(collect) && collect.get(0) != null){
+                        bugManage.setGroupId(collect.get(0).getId());
+                    }else {
+                        WorkGroup workGroup = groupList.stream()
+                                .filter(group -> group.getName().contains("家教生校")).collect(Collectors.toList()).get(0);
+                        bugManage.setGroupId(workGroup.getId());
+                    }
+                }
+                if (!Strings.isNullOrEmpty(bugDetail.get(5))){
+                    if (AffectScopeEnum.SINGLE.getName().equals(bugDetail.get(5))){
+                        bugManage.setAffectScope(AffectScopeEnum.SINGLE.getValue());
+                    }else if (AffectScopeEnum.MULTIPLE.getName().equals(bugDetail.get(5))){
+                        bugManage.setAffectScope(AffectScopeEnum.MULTIPLE.getValue());
+                    }else if (AffectScopeEnum.ALL.getName().equals(bugDetail.get(5))){
+                        bugManage.setAffectScope(AffectScopeEnum.ALL.getValue());
+                    }
+                }
+                Date date = bugManage.getCreateTime();
+                Instant instant = date.toInstant();
+                ZoneId zoneId = ZoneId.systemDefault();
+                LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+                bugManage.setYear(localDateTime.getYear());
+                String productStr = bugDetail.get(8);
+                String developerStr = bugDetail.get(9);
+                String testerStr = bugDetail.get(10);
+                List<BugUser> bugUserList = new ArrayList<>();
+                if (!Strings.isNullOrEmpty(productStr)){
+                    bugUserList = getBugUserList(userMap, bugManage, productStr, bugUserList);
+                }
+                if (!Strings.isNullOrEmpty(developerStr)){
+                    bugUserList = getBugUserList(userMap, bugManage, developerStr, bugUserList);
+                }
+                if (!Strings.isNullOrEmpty(testerStr)){
+                    bugUserList = getBugUserList(userMap, bugManage, testerStr, bugUserList);
+                }
+                bugUsers.addAll(bugUserList);
+                bugManageList.add(bugManage);
+            }
+            bugUserMapper.insertList(bugUsers);
+            bugManageMapper.insertBatch(bugManageList);
+        } catch (Exception e) {
+            throw new ZSYServiceException(e.getMessage());
+        }
+    }
+
+    private List<BugUser> getBugUserList(Map<String, List<User>> userMap, OnlineBugManage bugManage, String testerStr, List<BugUser> bugUserList) {
+        String[] testerArr = testerStr.split(",");
+        for (String tester : testerArr) {
+            if (!CollectionUtils.isEmpty(userMap.get(tester))) {
+                User user = userMap.get(tester).get(0);
+                BugUser bugUser = new BugUser();
+                bugUser.setId(snowFlakeIDHelper.nextId());
+                bugUser.setBugId(bugManage.getId());
+                bugUser.setUserId(user.getId());
+                bugUser.setIntegral(BigDecimal.ZERO);
+                bugUserList.add(bugUser);
+            }
+        }
+        return bugUserList;
     }
 
     /**
@@ -769,5 +968,93 @@ public class ZSYBugService implements IZSYBugService {
             }
         }
         return bugNoStr;
+    }
+
+    /**
+     * 获取上传文件后缀名
+     *
+     * @param uploadName
+     * @return
+     */
+    public String getUploadSuffix(String uploadName) {
+        return uploadName.substring(uploadName.lastIndexOf(".") + 1);
+    }
+
+    //判断是否是excel
+    public static boolean isExcel(String url){
+        Pattern p=Pattern.compile("\\.(xls|XLS)");
+        Matcher m=p.matcher(url);
+        if(m.find()){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * MultipartFile 转 File
+     * @param file
+     * @throws Exception
+     */
+    public static File multipartFileToFile( @RequestParam MultipartFile file ) throws Exception {
+
+        File toFile = null;
+        if(file.equals("")||file.getSize()<=0){
+            file = null;
+        }else {
+            InputStream ins = null;
+            ins = file.getInputStream();
+            toFile = new File(file.getOriginalFilename());
+            inputStreamToFile(ins, toFile);
+            ins.close();
+        }
+        return toFile;
+    }
+
+    public static void inputStreamToFile(InputStream ins, File file) {
+        try {
+            OutputStream os = new FileOutputStream(file);
+            int bytesRead = 0;
+            byte[] buffer = new byte[8192];
+            while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.close();
+            ins.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Workbook getExcelWorkbook(String filePath) throws IOException {
+        Workbook book = null;
+        File file  = null;
+        FileInputStream fis = null;
+
+        try {
+            file = new File(filePath);
+            if(!file.exists()){
+                throw new RuntimeException("文件不存在");
+            }else{
+                fis = new FileInputStream(file);
+                book = WorkbookFactory.create(fis);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            if(fis != null){
+                fis.close();
+            }
+        }
+        return book;
+    }
+
+    public static Sheet getSheetByNum(Workbook book,int number){
+        Sheet sheet = null;
+        try {
+            sheet = book.getSheetAt(number);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return sheet;
     }
 }

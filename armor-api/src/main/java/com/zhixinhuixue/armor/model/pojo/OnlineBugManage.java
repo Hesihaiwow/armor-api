@@ -85,6 +85,45 @@ public class OnlineBugManage {
      */
     private String remark;
 
+    /**
+     * 业务组
+     */
+    private Long groupId;
+
+    /**
+     * 影响范围
+     */
+    private Integer affectScope;
+
+    /**
+     * 年份
+     */
+    private Integer year;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public Integer getAffectScope() {
+        return affectScope;
+    }
+
+    public void setAffectScope(Integer affectScope) {
+        this.affectScope = affectScope;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
     public Long getTaskId() {
         return taskId;
     }

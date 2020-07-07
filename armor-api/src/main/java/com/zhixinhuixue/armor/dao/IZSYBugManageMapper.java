@@ -153,5 +153,19 @@ public interface IZSYBugManageMapper {
      * @param startTime 开始时间
      * @param endTime 截止时间
      */
-    List<SystemBugTypeBO> selectSystemTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<SystemBugTypeBO> selectSystemTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
+
+    /**
+     * 查询时间段内线上bug的业务组数量
+     * @param startTime 开始时间
+     * @param endTime 截止时间
+     * @param year 年份
+     */
+    List<Long> selectGroupsByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
+
+    /**
+     * 批量新增
+     * @param list 集合
+     */
+    void insertBatch(@Param("list") List<OnlineBugManage> list);
 }

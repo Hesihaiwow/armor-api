@@ -10,10 +10,10 @@ import com.zhixinhuixue.armor.model.dto.response.OnlineBugResDTO;
 import com.zhixinhuixue.armor.service.IZSYBugService;
 import com.zhixinhuixue.armor.source.ZSYResult;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -143,6 +143,13 @@ public class ZSYBugController extends ZSYController{
     @PostMapping("/user/histogram")
     public String getUserBugHistogram(@RequestBody BugListReqDTO reqDTO){
         return ZSYResult.success().data(bugService.getUserBugHistogram(reqDTO)).build();
+    }
+
+    @ApiOperation("导入bug")
+    @PostMapping("/import")
+    public String importBug(@RequestParam(value = "uploadFile") MultipartFile uploadFile){
+        bugService.importBug(uploadFile);
+        return ZSYResult.success().build();
     }
     // -- sch
 

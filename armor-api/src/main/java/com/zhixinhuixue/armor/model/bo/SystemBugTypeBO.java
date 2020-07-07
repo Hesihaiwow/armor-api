@@ -21,6 +21,28 @@ public class SystemBugTypeBO {
      */
     private Integer num;
 
+    /**
+     * 业务组
+     */
+    private Long groupId;
+    private String groupName;
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
     public Integer getDemandSystemId() {
         return demandSystemId;
     }

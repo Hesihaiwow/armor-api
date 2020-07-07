@@ -30,7 +30,7 @@ public class BugManageAddReqDTO {
     /**
      * 任务描述
      */
-    @NotNull(message = "任务描述不能为空")
+//    @NotNull(message = "任务描述不能为空")
     private String description;
 
     /**
@@ -86,6 +86,32 @@ public class BugManageAddReqDTO {
      * 备注
      */
     private String remark;
+
+    /**
+     * 业务组
+     */
+    private Long groupId;
+
+    /**
+     * 影响范围
+     */
+    private Integer affectScope;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public Integer getAffectScope() {
+        return affectScope;
+    }
+
+    public void setAffectScope(Integer affectScope) {
+        this.affectScope = affectScope;
+    }
 
     public Long getTaskId() {
         return taskId;

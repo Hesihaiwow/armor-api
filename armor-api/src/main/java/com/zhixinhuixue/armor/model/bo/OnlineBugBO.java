@@ -19,6 +19,19 @@ public class OnlineBugBO extends OnlineBugManage {
      */
     private String taskName;
 
+    /**
+     * 业务组
+     */
+    private String groupName;
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
     public String getTaskName() {
         return taskName;
     }

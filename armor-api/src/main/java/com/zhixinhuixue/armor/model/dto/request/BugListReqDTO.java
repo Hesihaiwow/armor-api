@@ -21,15 +21,39 @@ public class BugListReqDTO {
 
     /**
      * 问题类型
-     * @return
      */
     private Integer type;
 
     /**
      * 是否解决
-     * @return
      */
     private Integer isSolved;
+
+    /**
+     * 业务组
+     */
+    private Long groupId;
+
+    /**
+     * 年份
+     */
+    private Integer year;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
 
     public Integer getType() {
         return type;
