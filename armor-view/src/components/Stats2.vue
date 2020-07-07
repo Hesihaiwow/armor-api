@@ -58,39 +58,8 @@
                     <el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>
                     <el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>
                     <el-table-column prop="xueyebaogao" label="学业报告" align="center" width="120"></el-table-column>
-                    <!--<el-table-column prop="chanpin" label="产品" align="center" width="120"></el-table-column>-->
-                    <!--<el-table-column label="设计截止时间" align="center" width="175">-->
-                        <!--<template slot-scope="scope">-->
-                            <!--<span>{{scope.row.beginTime | formatDate1}}</span><span> ({{scope.row.designDays}})</span>-->
-                        <!--</template>-->
-                    <!--</el-table-column>-->
                     <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
-                    <!--<el-table-column label="开发截止时间" align="center" width="175">-->
-                        <!--<template slot-scope="scope">-->
-                            <!--<span v-if="scope.row.testTimeColor == 1" style="color: orange">{{scope.row.testTime | formatDate1}}</span>-->
-                            <!--<span v-else-if="scope.row.testTimeColor == 2" style="color: red">{{scope.row.testTime | formatDate1}}</span>-->
-                            <!--<span v-else>{{scope.row.testTime | formatDate1}}</span>-->
-                            <!--<span>({{scope.row.developDays}})</span>-->
-                        <!--</template>-->
-                    <!--</el-table-column>-->
                     <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
-                    <!--<el-table-column label="截止时间" align="center" width="175">-->
-                        <!--<template slot-scope="scope">-->
-                            <!--<span>{{scope.row.endTime | formatDate1}}</span><span> ({{scope.row.testDays}})</span>-->
-                        <!--</template>-->
-                    <!--</el-table-column>-->
-                    <!--<el-table-column prop="platforms" label="需要发布平台" align="center" width="130"></el-table-column>-->
-                    <!--<el-table-column label="是否可以发布上线" align="center" width="100">-->
-                        <!--<template slot-scope="scope">-->
-                            <!--<el-tooltip content="点击更改状态" placement="top">-->
-                                <!--<i class="el-icon-circle-check" v-if="scope.row.canOnline===1"-->
-                                   <!--@click="updateCanOnline(scope.row.canOnline,scope.row.wppId)" style="cursor: pointer;color: lawngreen"></i>-->
-                                <!--<i class="el-icon-circle-close" v-else style="cursor: pointer;color: red;"-->
-                                   <!--@click="updateCanOnline(scope.row.canOnline,scope.row.wppId)"></i>-->
-                            <!--</el-tooltip>-->
-                        <!--</template>-->
-                    <!--</el-table-column>-->
-                    <!--<el-table-column prop="condition" label="任务发布情况" align="center" width="200"></el-table-column>-->
                     <el-table-column prop="realTestTime" label="实际测试时间" align="center" width="130"></el-table-column>
                     <el-table-column prop="onlineTime" label="预估上线时间" align="center" width="130"></el-table-column>
                     <el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="130"></el-table-column>
@@ -115,31 +84,54 @@
                     <div class="add-member-basic-msg fl" >
                         <el-select v-model="bugReqDTO.userId" clearable filterable   placeholder="筛选用户">
                             <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
-                                       :value="item.userId"></el-option>
+                                       :value="item.userId">
+                            </el-option>
                         </el-select>
                     </div>
                     <div class="add-member-basic-msg fl" >
                         <el-select v-model="bugReqDTO.type" clearable filterable   placeholder="类型">
                             <el-option v-for="item in typeList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
+                                       :value="item.id">
+                            </el-option>
                         </el-select>
                     </div>
                     <div class="add-member-basic-msg fl" >
                         <el-select v-model="bugReqDTO.isSolved" clearable filterable   placeholder="是否解决">
                             <el-option v-for="item in isSolvedList" :key="item.id" :label="item.name"
-                                       :value="item.id"></el-option>
+                                       :value="item.id">
+                            </el-option>
                         </el-select>
                     </div>
-                    <div class="add-member-basic-msg fl"><el-date-picker
-                            v-model="bugDaterange"
-                            type="daterange"
-                            placeholder="选择日期范围"
-                            unlink-panels
-                            @change="bugTimeChange1"
-                            :picker-options="pickerOptions">
-                    </el-date-picker></div>
+                    <div class="add-member-basic-msg fl" >
+                        <el-select v-model="bugReqDTO.groupId" clearable filterable   placeholder="业务组">
+                            <el-option v-for="item in groupList" :key="item.id" :label="item.name"
+                                       :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker
+                                style="width: 140px;"
+                                v-model="bugReqDTO.year"
+                                align="right"
+                                type="year"
+                                placeholder="选择年份">
+                        </el-date-picker>
+                    </div>
+                    <!--<div class="add-member-basic-msg fl">-->
+                        <!--<el-date-picker-->
+                            <!--v-model="bugDaterange"-->
+                            <!--type="daterange"-->
+                            <!--placeholder="选择日期范围"-->
+                            <!--unlink-panels-->
+                            <!--@change="bugTimeChange1"-->
+                            <!--:picker-options="pickerOptions">-->
+                        <!--</el-date-picker>-->
+                    <!--</div>-->
                     <el-button type="primary" @click="fetchBugPage()" style="margin-left: 10px">搜索</el-button>
                     <el-button type="primary" style="margin-left: 10px;margin-bottom: 10px;" @click="openBugDialog" v-show="permit">创建bug处理</el-button>
+                    <el-button v-loading.fullscreen.lock="fullscreenLoading"
+                               type="primary" @click="importOnlineBugVisible=true">导入</el-button>
                     <div class="fr">
                         <span>bug: {{BugNumData.bugNum}}</span>
                         <span>优化: {{BugNumData.optimizationNum}}</span>
@@ -154,17 +146,18 @@
                         </el-table-column>
                         <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
                         <!--<el-table-column prop="bugNoStr" label="bug编号" align="center" width="110"></el-table-column>-->
-                        <el-table-column prop="createTime" label="反馈日期"  width="115">
+                        <el-table-column prop="createTime" label="反馈日期" align="center"  width="115">
                             <template slot-scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="processTime" label="解决日期"  width="115">
+                        <el-table-column prop="processTime" label="解决日期" align="center"  width="115">
                             <template slot-scope="scope">
                                 <span>{{scope.row.processTime | formatDate1}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>
+                        <el-table-column prop="groupName" label="业务组" align="center"  width="130"></el-table-column>
+                        <!--<el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>-->
                         <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
                         <el-table-column prop="description" label="问题描述" align="center">
                             <template slot-scope="scope">
@@ -229,14 +222,23 @@
                     </div>
                 </div>
                 <div class="stats-con" style="height: auto">
-                    <div class="add-member-basic-msg fl"><el-date-picker
-                            v-model="bugHistogramDateRange"
-                            type="daterange"
-                            placeholder="选择日期范围"
-                            unlink-panels
-                            @change="bugTimeChange3"
-                            :picker-options="pickerOptions">
-                    </el-date-picker></div>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker
+                                style="width: 140px;"
+                                v-model="bugHistogramReqDTO.year"
+                                align="right"
+                                type="year"
+                                placeholder="选择年份">
+                        </el-date-picker>
+                    </div>
+                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
+                            <!--v-model="bugHistogramDateRange"-->
+                            <!--type="daterange"-->
+                            <!--placeholder="选择日期范围"-->
+                            <!--unlink-panels-->
+                            <!--@change="bugTimeChange3"-->
+                            <!--:picker-options="pickerOptions">-->
+                    <!--</el-date-picker></div>-->
                     <el-button type="primary" style="margin-left: 10px;" @click="fetchHistogram()">搜索</el-button>
                     <div>
                         <div id="myChart11" :style="{width:'1100px',height:'400px',marginTop:'70px',left:'80px'}"></div>
@@ -245,136 +247,136 @@
                 </div>
 
             </el-tab-pane>
-            <el-tab-pane label="测试问题统计" name="mantisBug" v-if="permit" style="">
-                <div class="bug-stats-con">
-                    <h1 style="font-size: 20px;margin-left: 10px;margin-top: -35px;margin-bottom: 10px;font-weight: bold;">任务bug统计</h1>
-                    <div class="add-member-basic-msg" style="float: left"><el-date-picker
-                            v-model="yearMonth3"
-                            type="month"
-                            placeholder="选择月份"
-                            @change="changeMonth3"
-                    size="medium">
-                    </el-date-picker></div>
-                    <div>
-                        <el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" style="margin-left: 700px;margin-top: -5px;" @click="importBugVisible = true">导入bug信息</el-button>
-                        <el-button type="primary" style="margin-top: -5px" v-show="environment === 'dev' || environment === 'test'" @click="selectMantisProject">导出bug信息</el-button>
-                    </div>
-                    <el-table :data="taskBugStatsList" border
-                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                        <el-table-column prop="taskName" label="任务名称" align="center">
-                            <template slot-scope="scope">
-                                <a style="color: #1c8de0;cursor: pointer" @click="toTask(scope.row.taskId)">{{scope.row.taskName}}</a>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>
-                        <el-table-column label="测试提交数量"  width="200">
-                            <template slot-scope="scope">
-                                <div v-for="testerData in scope.row.mantisBugTesterNumResDTOList">
-                                    <span>{{testerData.userName}} {{testerData.bugNum}}个</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="开发解决数量" width="200">
-                            <template slot-scope="scope">
-                                <div v-for="developerData in scope.row.mantisBugDeveloperNumResDTOList">
-                                    <span>{{developerData.userName}} {{developerData.bugNum}}个</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="按严重程度划分" width="200">
-                            <template slot-scope="scope">
-                                <div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">
-                                    <span>{{severity.severityName}} {{severity.bugNum}}个</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <div class="pagination">
-                        <el-pagination
-                                @current-change="handleTaskBugChange"
-                                :current-page.sync="mantisBugReqDTO4.pageNum"
-                                :page-size="taskBugPage.pageSize"
-                                :layout="taskPageLayout"
-                                :total="taskBugPage.total">
-                        </el-pagination>
-                    </div>
-                </div>
-                <div class="bug-stats-con">
-                    <h1 style="font-size: 20px;margin-left: 10px;margin-top: -25px;margin-bottom: 10px;font-weight: bold;">测试bug统计</h1>
-                    <div class="add-member-basic-msg fl"><el-date-picker
-                            v-model="yearMonth1"
-                            type="month"
-                            placeholder="选择月份"
-                            @change="changeMonth1"
-                    size="medium">
-                    </el-date-picker></div>
-                    <el-table :data="mantisUserBugStatsList" border
-                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                        <el-table-column prop="realName" label="负责人" align="center" width="100"></el-table-column>
-                        <el-table-column label="负责平台"  width="240">
-                            <template slot-scope="scope">
-                                <div v-for="category in scope.row.categoryResDTOList">
-                                    <span>{{category.name}}</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="mantisBugTotalNum" label="bug数量" width="100"></el-table-column>
-                        <el-table-column label="按严重程度划分" width="140">
-                            <template slot-scope="scope">
-                                <div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">
-                                    <span>{{severity.severityName}} {{severity.bugNum}}个</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="按状态划分" width="130">
-                            <template slot-scope="scope">
-                                <div v-for="status in scope.row.mantisBugStatusNumResDTOList">
-                                    <span>{{status.statusName}} {{status.bugNum}}个</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="按分类划分">
-                            <template slot-scope="scope">
-                                <div v-for="category in scope.row.mantisBugCategoryNumResDTOList">
-                                    <span v-if="category.isInCharge == 1" style="color: red">{{category.categoryName}} {{category.bugNum}}个</span>
-                                    <span v-else>{{category.categoryName}} {{category.bugNum}}个</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="线上bug统计">
-                            <template slot-scope="scope">
-                                <div v-for="demandSystem in scope.row.onlineBugCategoryNumResDTOList">
-                                    <span v-if="demandSystem.isInCharge === 1" style="color: red">{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>
-                                    <span v-else>{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </div>
-                <div class="bug-stats-con" style="height: 500px;">
-                    <div class="add-member-basic-msg fl"><el-date-picker
-                            v-model="yearMonth4"
-                            type="month"
-                            placeholder="选择月份"
-                            @change="changeMonth4"
-                    >
-                    </el-date-picker></div>
-                    <div id="myChart8" :style="{width:'1000px',height:'400px',left:'40px',float:'left',marginTop:'20px'}"></div>
-                </div>
-                <div class="bug-stats-con" style="height: 500px;">
-                    <div class="add-member-basic-msg fl"><el-date-picker
-                            v-model="yearMonth2"
-                            type="month"
-                            placeholder="选择月份"
-                            @change="changeMonth2"
-                            size="medium">
-                    </el-date-picker></div>
-                    <div class="steps-body">
-                        <div id="myChart9" :style="{width:'600px',height:'400px',left:'-120px',float:'left',marginTop:'70px'}"></div>
-                        <div id="myChart10" :style="{width:'600px',height:'400px',left:'-220px',float:'left',marginTop:'70px'}"></div>
-                    </div>
-                </div>
-            </el-tab-pane>
+            <!--<el-tab-pane label="测试问题统计" name="mantisBug" v-if="permit" style="">-->
+                <!--<div class="bug-stats-con">-->
+                    <!--<h1 style="font-size: 20px;margin-left: 10px;margin-top: -35px;margin-bottom: 10px;font-weight: bold;">任务bug统计</h1>-->
+                    <!--<div class="add-member-basic-msg" style="float: left"><el-date-picker-->
+                            <!--v-model="yearMonth3"-->
+                            <!--type="month"-->
+                            <!--placeholder="选择月份"-->
+                            <!--@change="changeMonth3"-->
+                    <!--size="medium">-->
+                    <!--</el-date-picker></div>-->
+                    <!--<div>-->
+                        <!--<el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" style="margin-left: 700px;margin-top: -5px;" @click="importBugVisible = true">导入bug信息</el-button>-->
+                        <!--<el-button type="primary" style="margin-top: -5px" v-show="environment === 'dev' || environment === 'test'" @click="selectMantisProject">导出bug信息</el-button>-->
+                    <!--</div>-->
+                    <!--<el-table :data="taskBugStatsList" border-->
+                              <!--:header-cell-style="{background:'#D9D9D9',color:'black'}">-->
+                        <!--<el-table-column prop="taskName" label="任务名称" align="center">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<a style="color: #1c8de0;cursor: pointer" @click="toTask(scope.row.taskId)">{{scope.row.taskName}}</a>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>-->
+                        <!--<el-table-column label="测试提交数量"  width="200">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="testerData in scope.row.mantisBugTesterNumResDTOList">-->
+                                    <!--<span>{{testerData.userName}} {{testerData.bugNum}}个</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column label="开发解决数量" width="200">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="developerData in scope.row.mantisBugDeveloperNumResDTOList">-->
+                                    <!--<span>{{developerData.userName}} {{developerData.bugNum}}个</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column label="按严重程度划分" width="200">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">-->
+                                    <!--<span>{{severity.severityName}} {{severity.bugNum}}个</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                    <!--</el-table>-->
+                    <!--<div class="pagination">-->
+                        <!--<el-pagination-->
+                                <!--@current-change="handleTaskBugChange"-->
+                                <!--:current-page.sync="mantisBugReqDTO4.pageNum"-->
+                                <!--:page-size="taskBugPage.pageSize"-->
+                                <!--:layout="taskPageLayout"-->
+                                <!--:total="taskBugPage.total">-->
+                        <!--</el-pagination>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="bug-stats-con">-->
+                    <!--<h1 style="font-size: 20px;margin-left: 10px;margin-top: -25px;margin-bottom: 10px;font-weight: bold;">测试bug统计</h1>-->
+                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
+                            <!--v-model="yearMonth1"-->
+                            <!--type="month"-->
+                            <!--placeholder="选择月份"-->
+                            <!--@change="changeMonth1"-->
+                    <!--size="medium">-->
+                    <!--</el-date-picker></div>-->
+                    <!--<el-table :data="mantisUserBugStatsList" border-->
+                              <!--:header-cell-style="{background:'#D9D9D9',color:'black'}">-->
+                        <!--<el-table-column prop="realName" label="负责人" align="center" width="100"></el-table-column>-->
+                        <!--<el-table-column label="负责平台"  width="240">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="category in scope.row.categoryResDTOList">-->
+                                    <!--<span>{{category.name}}</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column prop="mantisBugTotalNum" label="bug数量" width="100"></el-table-column>-->
+                        <!--<el-table-column label="按严重程度划分" width="140">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">-->
+                                    <!--<span>{{severity.severityName}} {{severity.bugNum}}个</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column label="按状态划分" width="130">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="status in scope.row.mantisBugStatusNumResDTOList">-->
+                                    <!--<span>{{status.statusName}} {{status.bugNum}}个</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column label="按分类划分">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="category in scope.row.mantisBugCategoryNumResDTOList">-->
+                                    <!--<span v-if="category.isInCharge == 1" style="color: red">{{category.categoryName}} {{category.bugNum}}个</span>-->
+                                    <!--<span v-else>{{category.categoryName}} {{category.bugNum}}个</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                        <!--<el-table-column label="线上bug统计">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<div v-for="demandSystem in scope.row.onlineBugCategoryNumResDTOList">-->
+                                    <!--<span v-if="demandSystem.isInCharge === 1" style="color: red">{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>-->
+                                    <!--<span v-else>{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>-->
+                                <!--</div>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
+                    <!--</el-table>-->
+                <!--</div>-->
+                <!--<div class="bug-stats-con" style="height: 500px;">-->
+                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
+                            <!--v-model="yearMonth4"-->
+                            <!--type="month"-->
+                            <!--placeholder="选择月份"-->
+                            <!--@change="changeMonth4"-->
+                    <!--&gt;-->
+                    <!--</el-date-picker></div>-->
+                    <!--<div id="myChart8" :style="{width:'1000px',height:'400px',left:'40px',float:'left',marginTop:'20px'}"></div>-->
+                <!--</div>-->
+                <!--<div class="bug-stats-con" style="height: 500px;">-->
+                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
+                            <!--v-model="yearMonth2"-->
+                            <!--type="month"-->
+                            <!--placeholder="选择月份"-->
+                            <!--@change="changeMonth2"-->
+                            <!--size="medium">-->
+                    <!--</el-date-picker></div>-->
+                    <!--<div class="steps-body">-->
+                        <!--<div id="myChart9" :style="{width:'600px',height:'400px',left:'-120px',float:'left',marginTop:'70px'}"></div>-->
+                        <!--<div id="myChart10" :style="{width:'600px',height:'400px',left:'-220px',float:'left',marginTop:'70px'}"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</el-tab-pane>-->
             <el-tab-pane label="个人任务" name="personal">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="persanalForm.userId" clearable filterable   placeholder="筛选用户">
@@ -1009,33 +1011,49 @@
                     <div style="margin-top: 10px;float: left">
                         <div  style="display: inline"><span class="star">*</span>反馈人</div>
                         <div style="display: inline;margin-left: 44px">
-                            <el-select v-model="onlineBugForm.origin" placeholder="请选择">
+                            <el-select v-model="onlineBugForm.origin" placeholder="请选择" style="width: 150px;">
                                 <el-option  v-for="item in originList" :key="item.id" :label="item.name" :value="item.name"></el-option>
                             </el-select>
                         </div>
                     </div>
-                    <div style="margin-top: 10px;float: left;margin-left: 10px">
+                    <div style="margin-top: 10px;float: left;margin-left: 60px">
                         <div  style="display: inline"><span class="star">*</span>问题类型</div>
                         <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.type" placeholder="请选择">
+                            <el-select v-model="onlineBugForm.type" placeholder="请选择" style="width: 150px;">
                                 <el-option  v-for="item in typeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </div>
 
                     <div style="margin-top: 10px;float: left">
-                        <div  style="display: inline"><span class="star">*</span>是否解决</div>
+                        <div  style="display: inline;margin-left: 10px"><span class="star">*</span>是否解决</div>
                         <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.isSolved" placeholder="请选择">
+                            <el-select v-model="onlineBugForm.isSolved" placeholder="请选择" style="width: 150px;">
                                 <el-option  v-for="item in solveList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </div>
-                    <div style="margin-top: 10px;float: left;margin-left: 10px">
+                    <div style="margin-top: 10px;float: left;margin-left: 0px">
                         <div  style="display: inline"><span class="star">*</span>反馈系统</div>
                         <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择">
+                            <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择" style="width: 200px;">
                                 <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;float: left">
+                        <div  style="display: inline;margin-left: 10px"><span class="star">*</span>影响范围</div>
+                        <div style="display: inline;margin-left: 30px">
+                            <el-select v-model="onlineBugForm.affectScope" placeholder="请选择" style="width: 150px;">
+                                <el-option  v-for="item in affectScopeList" :key="item.id" :label="item.value" :value="item.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;float: left;margin-left: 10px">
+                        <div  style="display: inline"><span class="star">*</span>业务组</div>
+                        <div style="display: inline;margin-left: 44px">
+                            <el-select v-model="onlineBugForm.groupId" placeholder="请选择" style="width: 150px;">
+                                <el-option  v-for="item in groupList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -1057,7 +1075,7 @@
                                 style="position: relative;margin-left: 100px">
                         </el-date-picker>
                     </div>
-                    <div style="margin-top: 150px;margin-left: 10px">
+                    <div style="margin-top: 160px;margin-left: 10px">
                         <div  style="display: inline">关联任务</div>
                         <div style="display: inline;margin-left: 30px">
                             <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px" filterable clearable>
@@ -1191,33 +1209,49 @@
                 <div style="margin-top: 10px;float: left">
                     <div  style="display: inline"><span class="star">*</span>反馈人</div>
                     <div style="display: inline;margin-left: 44px">
-                        <el-select v-model="onlineBugForm.origin" placeholder="请选择">
+                        <el-select v-model="onlineBugForm.origin" placeholder="请选择" style="width: 150px;">
                             <el-option  v-for="item in originList" :key="item.id" :label="item.name" :value="item.name"></el-option>
                         </el-select>
                     </div>
                 </div>
-                <div style="margin-top: 10px;float: left;margin-left: 10px">
+                <div style="margin-top: 10px;float: left;margin-left: 60px">
                     <div  style="display: inline"><span class="star">*</span>问题类型</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.type" placeholder="请选择">
+                        <el-select v-model="onlineBugForm.type" placeholder="请选择" style="width: 150px;">
                             <el-option  v-for="item in typeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
 
                 <div style="margin-top: 10px;float: left">
-                    <div  style="display: inline"><span class="star">*</span>是否解决</div>
+                    <div  style="display: inline;margin-left: 10px"><span class="star">*</span>是否解决</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.isSolved" placeholder="请选择">
+                        <el-select v-model="onlineBugForm.isSolved" placeholder="请选择" style="width: 150px;">
                             <el-option  v-for="item in solveList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
-                <div style="margin-top: 10px;float: left;margin-left: 10px">
-                    <div  style="display: inline">反馈系统</div>
-                    <div style="display: inline;margin-left: 40px">
-                        <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择">
+                <div style="margin-top: 10px;float: left;margin-left: 0px">
+                    <div  style="display: inline"><span class="star">*</span>反馈系统</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择" style="width: 200px;">
                             <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;float: left">
+                    <div  style="display: inline;margin-left: 10px"><span class="star">*</span>影响范围</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.affectScope" placeholder="请选择" style="width: 150px;">
+                            <el-option  v-for="item in affectScopeList" :key="item.id" :label="item.value" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;float: left;margin-left: 10px">
+                    <div  style="display: inline"><span class="star">*</span>业务组</div>
+                    <div style="display: inline;margin-left: 44px">
+                        <el-select v-model="onlineBugForm.groupId" placeholder="请选择" style="width: 150px;">
+                            <el-option  v-for="item in groupList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
@@ -1313,6 +1347,9 @@
                 <el-form-item class="task-form" label="反馈日期：">{{bugDetailForm.discoverTime | formatDate1}}</el-form-item>
                 <el-form-item class="task-form" label="解决日期：">{{bugDetailForm.processTime | formatDate1}}</el-form-item>
                 <el-form-item class="task-form" label="反馈系统：">{{bugDetailForm.demandSystemName}}</el-form-item>
+                <el-form-item class="task-form" label="业务组：">{{bugDetailForm.groupName}}</el-form-item>
+                <el-form-item class="task-form" label="影响范围：">{{bugDetailForm.affectScopeStr}}</el-form-item>
+                <el-form-item class="task-form" label="年份：">{{bugDetailForm.year}}</el-form-item>
                 <el-form-item class="task-form" label="账号信息：">{{bugDetailForm.accountInfo}}</el-form-item>
                 <el-form-item class="task-form" label="问题描述：">{{bugDetailForm.description}}</el-form-item>
                 <el-form-item class="task-form" label="问题类型：">
@@ -1340,10 +1377,10 @@
             <span slot="footer" class="dialog-footer" >
                 <div v-show="permit">
                     <el-tooltip content="编辑该任务" placement="top">
-                     <el-button type="primary" icon="edit" @click="editBugDetail1(bugDetailForm)"></el-button>
+                     <el-button type="primary" @click="editBugDetail1(bugDetailForm)">编辑</el-button>
                     </el-tooltip>
                     <el-tooltip content="删除该任务" placement="top">
-                          <el-button type="danger" icon="delete" @click="deleteBug()"></el-button>
+                          <el-button type="danger" @click="deleteBug()">删除</el-button>
                     </el-tooltip>
                 </div>
             </span>
@@ -1395,7 +1432,7 @@
         </el-dialog>
 
         <el-dialog title="导入bug信息" :visible.sync="importBugVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                    @close="closeMantisVisible">
             <el-upload
                     ref="bugData"
@@ -1406,6 +1443,21 @@
                     :http-request="importBugInfo">
                 <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
                 <!--<div slot="tip" class="el-upload__tip">只能上传.dat文件，且不超过1MB</div>-->
+            </el-upload>
+        </el-dialog>
+
+        <el-dialog title="导入线上bug" :visible.sync="importOnlineBugVisible" custom-class="myDialog"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
+                   @close="closeOnlineBugVisible"
+                    width="400px">
+            <el-upload
+                    ref="onlineBugData"
+                    action=""
+                    :on-preview="handleRecordPreview"
+                    :on-remove="handleRecordRemove"
+                    :before-upload="beforeUpload"
+                    :http-request="importOnlineBug">
+                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
             </el-upload>
         </el-dialog>
         <el-dialog title="选择mantis系统项目" :visible.sync="selectMantisProjectVisible" custom-class="myDialog"
@@ -1830,14 +1882,23 @@
                     demandSystemId:'',
                     demandSystemName:'',
                     remark:'',
-                    isSolved:0
+                    isSolved:0,
+                    groupId:null,
+                    affectScope:null
                 },
+                affectScopeList:[
+                    {id:0,value:'单个学校'},
+                    {id:1,value:'多个学校'},
+                    {id:2,value:'所有学校'}
+                ],
                 bugReqDTO:{
                     userId:null,
                     beginTime:null,
                     endTime:null,
                     type:null,
                     isSolved:null,
+                    groupId:null,
+                    year:null,
                     pageNum:1,
                     departmentId:null
                 },
@@ -2025,6 +2086,8 @@
                 urlList:[],
                 environment:'',
                 importBugVisible:false,
+                importOnlineBugVisible:false,
+                uploadToMysqlVisible:false,
 
                 showWeekPublishPlanVisible: false,
                 editWeekPublishVisible: false,
@@ -2118,10 +2181,12 @@
                 editRestHoursVisible: false,
                 bugHistogramReqDTO:{
                     startTime:null,
-                    endTime:null
+                    endTime:null,
+                    year:null
                 },
                 doingTaskList:[],
                 bugHistogramDateRange:'',
+
                 systemBugNumList:[],
                 systemX:[],
                 systemBugList:[],
@@ -2295,6 +2360,7 @@
                   // this.initSignInTime2();
               } else if (this.activeName === 'bug'){
                   // this.fetchSignInUser();
+                  this.fetchGroupList()
                   this.fetchBugPage();
                   this.getSystemHistogram();
                   this.getUserBugHistogram();
@@ -2624,6 +2690,9 @@
                 this.onlineBugForm.remark = bugDetailForm.remark;
                 this.onlineBugForm.isSolved = bugDetailForm.isSolved;
                 this.onlineBugForm.accountInfo = bugDetailForm.accountInfo;
+                this.onlineBugForm.groupId = bugDetailForm.groupId;
+                this.onlineBugForm.affectScope = bugDetailForm.affectScope;
+                this.onlineBugForm.year = bugDetailForm.year;
                 this.bugUsers = bugDetailForm.bugUsers;
             },
             deleteBug(){
@@ -3285,15 +3354,15 @@
                         },
 
                     ],
-                    dataZoom: [{
-                        type: 'slider',
-                        show: true, //flase直接隐藏图形
-                        xAxisIndex: [0],
-                        // left: '9%', //滚动条靠左侧的百分比
-                        bottom: -5,
-                        start: 0,//滚动条的起始位置
-                        end: 50 //滚动条的截止位置（按比例分割你的柱状图x轴长度）
-                    }],
+                    // dataZoom: [{
+                    //     type: 'slider',
+                    //     show: true, //flase直接隐藏图形
+                    //     xAxisIndex: [0],
+                    //     // left: '9%', //滚动条靠左侧的百分比
+                    //     bottom: -5,
+                    //     start: 0,//滚动条的起始位置
+                    //     end: 50 //滚动条的截止位置（按比例分割你的柱状图x轴长度）
+                    // }],
                     grid: {
                         left: '3%',
                         right: '4%',
@@ -3851,6 +3920,10 @@
             },
             //按时间查询
             fetchHistogram(){
+                if(this.bugHistogramReqDTO.year != null && this.bugHistogramReqDTO.year !== undefined && this.bugHistogramReqDTO.year !== ''){
+                    this.bugHistogramReqDTO.year = moment(this.bugHistogramReqDTO.year).format("YYYY-MM-DD");
+                    this.bugHistogramReqDTO.year = this.bugHistogramReqDTO.year.substring(0,4)
+                }
                 this.systemX = [];
                 this.systemBugList= [];
                 this.systemOpsList= [];
@@ -3869,7 +3942,7 @@
                     this.systemBugNumList = res.data;
                     if (this.systemBugNumList.length>0){
                         this.systemBugNumList.forEach(systemBugNum=>{
-                            this.systemX.push(systemBugNum.demandSystemName);
+                            this.systemX.push(systemBugNum.groupName);
                             this.systemBugList.push(systemBugNum.bugNum);
                             this.systemOpsList.push(systemBugNum.optimizationNum);
                             this.systemAssList.push(systemBugNum.assistanceNum);
@@ -3898,6 +3971,10 @@
             },
             //分页查询bug
             fetchBugPage(){
+                if(this.bugReqDTO.year != null && this.bugReqDTO.year !== undefined && this.bugReqDTO.year !== ''){
+                    this.bugReqDTO.year = moment(this.bugReqDTO.year).format("YYYY-MM-DD");
+                    this.bugReqDTO.year = this.bugReqDTO.year.substring(0,4)
+                }
               Http.zsyPostHttp('/bug/new/page',this.bugReqDTO,(res)=>{
                   if (res){
                       this.bugPage = res.data.list;
@@ -4286,6 +4363,9 @@
             closeMantisVisible(){
                 this.selectMantisProjectVisible = false;
             },
+            closeOnlineBugVisible(){
+                this.importOnlineBugVisible = false;
+            },
             importBugInfo(file){
                 this.fullscreenLoading = true;
                 this.importBugVisible = false;
@@ -4321,6 +4401,37 @@
                     });
                     this.fullscreenLoading = false;
                 })
+            },
+            importOnlineBug(file){
+                this.fullscreenLoading = true;
+                this.importOnlineBugVisible = false;
+                let data = new FormData();
+                data.append('uploadFile', file.file);
+                Http.zsyPostHttp('/bug/import',data,(res)=> {
+                    if (res.errMsg === "执行成功") {
+                        this.$refs.onlineBugData.clearFiles();
+                        this.$message({
+                            showClose: true,
+                            message: '导入成功',
+                            type: 'success'
+                        });
+                        this.fullscreenLoading = false;
+                        this.bugReqDTO.pageNum = 1
+                        this.fetchBugPage()
+                    }else {
+                        this.fullscreenLoading = false;
+                    }
+                },(fail)=>{
+                    this.$message({
+                        showClose: true,
+                        message: fail.errMsg,
+                        type: 'error'
+                    });
+                    this.fullscreenLoading = false;
+                })
+            },
+            closeSignInDialog(){
+                this.$refs.record.clearFiles();
             },
             exportBugInfo(){
                 if (this.mantisProject != null &&  this.mantisProject !== ''){
@@ -4456,13 +4567,8 @@
 
             },
             beforeUpload(file) {
-                let suffix = file.name.substring(file.name.lastIndexOf(".")+1);
-                const isXls = file.name.substring(file.name.lastIndexOf(".")+1) === "xls";
                 const isExcel = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
                 const isLt2M = file.size / 1024 / 1024 < 2;
-                // if ("xls" != suffix) {
-                //     this.$message.error('上传文件只能是".xls"格式!');
-                // }
                 if (!isExcel) {
                     this.$message.error('上传文件只能是excel 格式!');
                     return false
@@ -4470,7 +4576,7 @@
                 if (!isLt2M) {
                     this.$message.error('上传文件大小不能超过 2MB!');
                 }
-                return isExcel && isLt2M && isXls;
+                return isExcel && isLt2M;
             },
             //查询周发版计划
             fetchWeekPublishPlan(){
@@ -5140,7 +5246,7 @@
                 this.userRestHoursLogForm.content = '';
                 this.editRestHoursVisible = false;
                 this.restHourLoading = false;
-            }
+            },
             // -- sch
         }
     }

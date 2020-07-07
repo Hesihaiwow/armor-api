@@ -2124,7 +2124,7 @@
             </span>
         </el-dialog>
         <el-dialog title="导入考勤记录到数据库" :visible.sync="uploadToMysqlVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                     @close="closeSignInDialog">
             <el-upload
                     class="upload-demo"
@@ -2140,7 +2140,7 @@
         </el-dialog>
 
         <el-dialog title="导出考勤记录Excel" :visible.sync="excelSignInVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                     @close="closeExcelDialog">
             <el-select clearable filterable no-match-text=" " v-model="workMonth3" placeholder="请选择月份"
                        size="small" style="width:200px">
@@ -2153,7 +2153,7 @@
         </el-dialog>
 
         <el-dialog title="导出调休加班统计" :visible.sync="excelLeaveAndEWorkVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                     @close="closeLeaveAndEWork">
             <span>导出年月: </span>
             <el-date-picker
