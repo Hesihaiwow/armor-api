@@ -5,7 +5,7 @@
 ALTER TABLE `bug_manage`
 ADD COLUMN `group_id`  bigint(20) NULL COMMENT '业务组' AFTER `is_delete`,
 ADD COLUMN `affect_scope`  tinyint(3) NULL COMMENT '影响范围' AFTER `group_id`,
-ADD COLUMN `year`  int(10) NULL COMMENT default 2019 '年份' AFTER `affect_scope`,
+ADD COLUMN `year`  int(10) NULL default 2019 COMMENT '年份' AFTER `affect_scope`,
 MODIFY COLUMN `create_time`  datetime NOT NULL COMMENT '创建时间' AFTER `description`,
 MODIFY COLUMN `type`  int(1) NOT NULL DEFAULT 0 COMMENT '问题类型(0:bug,1:优化,2:协助)' AFTER `demand_system`,
 MODIFY COLUMN `is_solved`  int(1) NOT NULL DEFAULT 0 COMMENT '是否解决(0:未解决,1:已解决,2:暂搁置)' AFTER `type`,
