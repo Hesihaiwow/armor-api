@@ -114,6 +114,7 @@ public class ZSYBugService implements IZSYBugService {
                 String developers = "";
                 String testers = "";
                 String others = "";
+                String users = "";
                 if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())){
                     for (Long userId : onlineBugBO.getUserIds()) {
                         User user = userMapper.selectById(userId);
@@ -130,11 +131,13 @@ public class ZSYBugService implements IZSYBugService {
                         }else {
                             others = others + user.getName() + " ";
                         }
+                        users = users + user.getName() + " ";
                     }
                 }
                 if (onlineBugBO.getAffectScope() != null){
                     onlineBugResDTO.setAffectScopeStr(AffectScopeEnum.getName(onlineBugBO.getAffectScope()));
                 }
+                onlineBugResDTO.setUsers(users);
                 onlineBugResDTO.setOthers(others);
                 onlineBugResDTO.setDevelopers(developers);
                 onlineBugResDTO.setTesters(testers);
@@ -615,11 +618,9 @@ public class ZSYBugService implements IZSYBugService {
         List<Long> groupIds = bugManageMapper.selectGroupsByTime(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
         //查询时间段内线上bug各个系统对应的各个类型的数量
         List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
+        bugTypeBOS = bugTypeBOS.stream().filter(item->item.getGroupId() != null).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(groupIds)){
-            groupIds.forEach(groupId->{
-//                Integer bugNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.BUG.getValue());
-//                Integer optimizationNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.OPTIMIZATION.getValue());
-//                Integer assistanceNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.ASSISTANCE.getValue());
+            for (Long groupId : groupIds) {
                 SystemBugResDTO systemBugResDTO = new SystemBugResDTO();
                 if (!CollectionUtils.isEmpty(bugTypeBOS)){
                     systemBugResDTO.setGroupId(groupId);
@@ -663,7 +664,13 @@ public class ZSYBugService implements IZSYBugService {
 
                 }
                 list.add(systemBugResDTO);
-            });
+            }
+//            groupIds.forEach(groupId->{
+//                Integer bugNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.BUG.getValue());
+//                Integer optimizationNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.OPTIMIZATION.getValue());
+//                Integer assistanceNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.ASSISTANCE.getValue());
+
+//            });
 
         }
         return list;

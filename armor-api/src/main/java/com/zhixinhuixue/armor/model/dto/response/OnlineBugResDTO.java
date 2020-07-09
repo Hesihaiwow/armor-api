@@ -64,6 +64,11 @@ public class OnlineBugResDTO {
     private String testers;
 
     /**
+     * 相关人员
+     */
+    private String users;
+
+    /**
      * 类型
      */
     private Integer type;
@@ -105,6 +110,14 @@ public class OnlineBugResDTO {
      */
     private Integer affectScope;
     private String affectScopeStr;
+
+    public String getUsers() {
+        return users;
+    }
+
+    public void setUsers(String users) {
+        this.users = users;
+    }
 
     public String getAffectScopeStr() {
         return affectScopeStr;
