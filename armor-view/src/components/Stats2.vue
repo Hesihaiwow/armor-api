@@ -151,11 +151,11 @@
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="processTime" label="解决日期" align="center"  width="115">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.processTime | formatDate1}}</span>
-                            </template>
-                        </el-table-column>
+                        <!--<el-table-column prop="processTime" label="解决日期" align="center"  width="115">-->
+                            <!--<template slot-scope="scope">-->
+                                <!--<span>{{scope.row.processTime | formatDate1}}</span>-->
+                            <!--</template>-->
+                        <!--</el-table-column>-->
                         <el-table-column prop="groupName" label="业务组" align="center"  width="130"></el-table-column>
                         <!--<el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>-->
                         <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
@@ -170,7 +170,7 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column prop="remark" label="备注" align="center" width="130">
+                        <el-table-column prop="remark" label="备注" align="center" width="200">
                             <template slot-scope="scope">
                                 <span v-show="scope.row.remark.length<20">{{scope.row.remark}}</span>
                                 <el-popover v-show="scope.row.remark.length>=20" :content="scope.row.remark" placement="top-start"
@@ -3351,7 +3351,7 @@
                         {
                             type: 'value',
                             name:'个数',
-                            interval: 5,
+                            // interval: 5,
                             axisLabel: {
                                 formatter: '{value} 个'
                             },
@@ -3469,7 +3469,7 @@
                         {
                             type: 'value',
                             name:'个数',
-                            interval: 5,
+                            // interval: 5,
                             axisLabel: {
                                 formatter: '{value} 个'
                             },
