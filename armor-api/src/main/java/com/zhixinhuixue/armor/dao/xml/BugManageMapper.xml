@@ -217,6 +217,9 @@
         <if test="bugListReqDTO.endTime != null">
             <![CDATA[  and create_time <= #{bugListReqDTO.endTime} ]]>
         </if>
+        <if test="bugListReqDTO.year != null">
+            and `year` = #{bugListReqDTO.year}
+        </if>
         AND demand_system_id is not null AND `is_delete` = 0
     </select>
 
