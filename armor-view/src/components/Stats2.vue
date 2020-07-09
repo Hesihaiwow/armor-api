@@ -188,9 +188,11 @@
                                 <span v-if="scope.row.type === 2">协助</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>
-                        <el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>
-                        <el-table-column prop="others" label="其他人员" align="center" width="100"></el-table-column>
+                        <el-table-column prop="affectScopeStr" label="影响范围" align="center" width="100"></el-table-column>
+                        <el-table-column prop="users" label="相关人员" align="center" width="100"></el-table-column>
+                        <!--<el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>-->
+                        <!--<el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>-->
+                        <!--<el-table-column prop="others" label="其他人员" align="center" width="100"></el-table-column>-->
                         <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template slot-scope="scope">
                                 <span v-if="scope.row.isSolved === 0">未解决
