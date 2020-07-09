@@ -1836,7 +1836,12 @@
                     {id:4,name:'刘利利'},
                     {id:5,name:'冷毅剑'},
                     {id:6,name:'张怡硕'},
-                    {id:7,name:'杜仲'}
+                    {id:7,name:'杜仲'},
+                    {id:8,name:'万永强'},
+                    {id:9,name:'邦昭强'},
+                    {id:10,name:'题库老师'},
+                    {id:11,name:'知春'},
+                    {id:12,name:'直播老师'}
                 ],
                 typeList:[
                     {id:0,name:'bug'},
