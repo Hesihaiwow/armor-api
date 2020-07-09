@@ -749,7 +749,7 @@ public class ZSYBugService implements IZSYBugService {
         Workbook book;
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat timeSDF2 = new SimpleDateFormat("yyyy.MM.dd.HH");
+        SimpleDateFormat timeSDF2 = new SimpleDateFormat("yyyy.MM.dd");
         SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
         try {
             File file = multipartFileToFile(uploadFile);
@@ -772,7 +772,7 @@ public class ZSYBugService implements IZSYBugService {
                         if( cell != null ){
                             cell.setCellType(CellType.STRING);
                             String cellValue = cell.getStringCellValue();
-                            if (j == 1 && !Strings.isNullOrEmpty(cellValue)){
+                            if ((j == 1 || j == 11) && !Strings.isNullOrEmpty(cellValue)){
                                 //将Excel表中的日期转换成字符串
                                 calendar.set(1900, 0, 1);
                                 calendar.add(Calendar.DATE, Integer.valueOf(cellValue) - 2);
@@ -793,12 +793,12 @@ public class ZSYBugService implements IZSYBugService {
                 }
                 bugList.add(bugFields);
             }
-            bugList = bugList.stream().filter(item->!Strings.isNullOrEmpty(item.get(0))).collect(Collectors.toList());
+            bugList = bugList.stream().filter(item->!CollectionUtils.isEmpty(item) && !Strings.isNullOrEmpty(item.get(0))).collect(Collectors.toList());
             if (CollectionUtils.isEmpty(bugList)){
                 throw new ZSYServiceException("暂无数据导入,请检查");
             }
             //查询所有用户
-            List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
+            List<User> users = userMapper.selectAll();
             Map<String, List<User>> userMap = users.stream().collect(Collectors.groupingBy(User::getName));
             //查询最近一条bug
             OnlineBugManage lastBug = bugManageMapper.selectLastBugNo();
@@ -807,8 +807,11 @@ public class ZSYBugService implements IZSYBugService {
             Integer lastBugNo = lastBug.getBugNo();
             List<OnlineBugManage> bugManageList = new ArrayList<>();
             List<BugUser> bugUsers = new ArrayList<>();
+//            int i = 2;
             for (List<String> bugDetail : bugList) {
                 lastBugNo++;
+//                System.out.println("第"+ i+"行 = " + bugDetail.get(1));
+//                i++;
                 OnlineBugManage bugManage = new OnlineBugManage();
                 bugManage.setId(snowFlakeIDHelper.nextId());
                 bugManage.setBugNo(lastBugNo);
@@ -816,7 +819,7 @@ public class ZSYBugService implements IZSYBugService {
                 bugManage.setCreateTime(timeSDF.parse(bugDetail.get(1)));
                 bugManage.setDiscoverTime(timeSDF.parse(bugDetail.get(1)));
                 if (!Strings.isNullOrEmpty(bugDetail.get(11))){
-                    bugManage.setProcessTime(timeSDF2.parse(bugDetail.get(11)));
+                    bugManage.setProcessTime(timeSDF.parse(bugDetail.get(11)));
                 }
                 bugManage.setOrigin(bugDetail.get(0));
                 bugManage.setAccountInfo(bugDetail.get(3));
@@ -890,7 +893,7 @@ public class ZSYBugService implements IZSYBugService {
     }
 
     private List<BugUser> getBugUserList(Map<String, List<User>> userMap, OnlineBugManage bugManage, String testerStr, List<BugUser> bugUserList) {
-        String[] testerArr = testerStr.split(",");
+        String[] testerArr = testerStr.trim().split(",");
         for (String tester : testerArr) {
             if (!CollectionUtils.isEmpty(userMap.get(tester))) {
                 User user = userMap.get(tester).get(0);

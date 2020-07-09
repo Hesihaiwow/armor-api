@@ -311,6 +311,10 @@
         LEFT JOIN `user` u ON u.id = tu.user_id
         WHERE task_id = #{taskId}
     </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+      select * from user
+  </select>
   <!-- sch -->
 
 </mapper>

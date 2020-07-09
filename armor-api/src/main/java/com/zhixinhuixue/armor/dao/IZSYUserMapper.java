@@ -200,5 +200,7 @@ public interface IZSYUserMapper {
      * @param groupId 工作组id
      */
     List<User> selectUsersByGroup(@Param("groupId") Long groupId);
+
+    List<User> selectAll();
     // -- sch
 }
