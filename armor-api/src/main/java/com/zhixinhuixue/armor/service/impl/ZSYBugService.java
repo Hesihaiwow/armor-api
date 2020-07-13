@@ -477,10 +477,10 @@ public class ZSYBugService implements IZSYBugService {
                 LocalDateTime.ofEpochSecond(reqDTO.getDiscoverTime().getTime() / 1000, 0, ZoneOffset.ofHours(8));
         bugManage.setYear(localDateTime.getYear());
         bugManageMapper.updateBugManager(bugManage);
-
-        if (bugUserMapper.deleteById(id) == 0) {
-            throw new ZSYServiceException("删除Bug用户失败");
-        }
+        bugUserMapper.deleteById(id);
+//        if (bugUserMapper.deleteById(id) == 0) {
+//            throw new ZSYServiceException("删除Bug用户失败");
+//        }
 
         // 插入Bug处理用户
         if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
@@ -955,9 +955,10 @@ public class ZSYBugService implements IZSYBugService {
 //            }
 //        });
 //
-        if (bugUserMapper.deleteById(id) == 0) {
-            throw new ZSYServiceException("删除Bug用户处理记录失败");
-        }
+//        if (bugUserMapper.deleteById(id) == 0) {
+//            throw new ZSYServiceException("删除Bug用户处理记录失败");
+//        }
+        bugUserMapper.deleteById(id);
     }
 
     private String getBugNoStr(Integer bugNo){
