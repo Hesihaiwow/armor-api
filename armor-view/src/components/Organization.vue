@@ -14,10 +14,11 @@
         <div class="ds-title">团队<span class="add-department" @click="addGroupDlgShow">+</span></div>
         <div>
           <div v-for="item in groupList" style="margin-left: 20px;margin-top: 8px">
-            <span style="font-size: 14px;cursor: pointer;color:#606266" @click="fetchUserPage(item.id)">{{item.name}}</span>
+            <span style="font-size: 14px;cursor: pointer;color:#606266" v-if="item.name.length>7" @click="fetchUserPage(item.id)">{{item.name.substring(0,7)}}...</span>
+            <span style="font-size: 14px;cursor: pointer;color:#606266" v-else @click="fetchUserPage(item.id)">{{item.name}}</span>
             <span class="fr" style="color: #26a2ff;margin-top: 3px;cursor: pointer;margin-right: 5px" @click="deleteGroup(item.id)">删除</span>
             <span class="fr" style="margin-right: 5px;color: #26a2ff;margin-top: 3px;cursor: pointer" @click="editGroupDlgShow(item.id)">编辑</span>
-            <span class="fr" style="color: #26a2ff;margin-top: 3px;cursor: pointer;margin-right: 5px" @click="setUser(item)">配置成员</span>
+            <span class="fr" style="color: #26a2ff;margin-top: 3px;cursor: pointer;margin-right: 5px" @click="setUser(item)">成员</span>
           </div>
         </div>
       </div>
