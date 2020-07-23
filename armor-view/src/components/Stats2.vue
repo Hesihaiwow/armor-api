@@ -249,136 +249,6 @@
                 </div>
 
             </el-tab-pane>
-            <!--<el-tab-pane label="测试问题统计" name="mantisBug" v-if="permit" style="">-->
-                <!--<div class="bug-stats-con">-->
-                    <!--<h1 style="font-size: 20px;margin-left: 10px;margin-top: -35px;margin-bottom: 10px;font-weight: bold;">任务bug统计</h1>-->
-                    <!--<div class="add-member-basic-msg" style="float: left"><el-date-picker-->
-                            <!--v-model="yearMonth3"-->
-                            <!--type="month"-->
-                            <!--placeholder="选择月份"-->
-                            <!--@change="changeMonth3"-->
-                    <!--size="medium">-->
-                    <!--</el-date-picker></div>-->
-                    <!--<div>-->
-                        <!--<el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" style="margin-left: 700px;margin-top: -5px;" @click="importBugVisible = true">导入bug信息</el-button>-->
-                        <!--<el-button type="primary" style="margin-top: -5px" v-show="environment === 'dev' || environment === 'test'" @click="selectMantisProject">导出bug信息</el-button>-->
-                    <!--</div>-->
-                    <!--<el-table :data="taskBugStatsList" border-->
-                              <!--:header-cell-style="{background:'#D9D9D9',color:'black'}">-->
-                        <!--<el-table-column prop="taskName" label="任务名称" align="center">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<a style="color: #1c8de0;cursor: pointer" @click="toTask(scope.row.taskId)">{{scope.row.taskName}}</a>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column prop="totalBugNum" label="bug数量" width="120"></el-table-column>-->
-                        <!--<el-table-column label="测试提交数量"  width="200">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="testerData in scope.row.mantisBugTesterNumResDTOList">-->
-                                    <!--<span>{{testerData.userName}} {{testerData.bugNum}}个</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column label="开发解决数量" width="200">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="developerData in scope.row.mantisBugDeveloperNumResDTOList">-->
-                                    <!--<span>{{developerData.userName}} {{developerData.bugNum}}个</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column label="按严重程度划分" width="200">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">-->
-                                    <!--<span>{{severity.severityName}} {{severity.bugNum}}个</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                    <!--</el-table>-->
-                    <!--<div class="pagination">-->
-                        <!--<el-pagination-->
-                                <!--@current-change="handleTaskBugChange"-->
-                                <!--:current-page.sync="mantisBugReqDTO4.pageNum"-->
-                                <!--:page-size="taskBugPage.pageSize"-->
-                                <!--:layout="taskPageLayout"-->
-                                <!--:total="taskBugPage.total">-->
-                        <!--</el-pagination>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="bug-stats-con">-->
-                    <!--<h1 style="font-size: 20px;margin-left: 10px;margin-top: -25px;margin-bottom: 10px;font-weight: bold;">测试bug统计</h1>-->
-                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
-                            <!--v-model="yearMonth1"-->
-                            <!--type="month"-->
-                            <!--placeholder="选择月份"-->
-                            <!--@change="changeMonth1"-->
-                    <!--size="medium">-->
-                    <!--</el-date-picker></div>-->
-                    <!--<el-table :data="mantisUserBugStatsList" border-->
-                              <!--:header-cell-style="{background:'#D9D9D9',color:'black'}">-->
-                        <!--<el-table-column prop="realName" label="负责人" align="center" width="100"></el-table-column>-->
-                        <!--<el-table-column label="负责平台"  width="240">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="category in scope.row.categoryResDTOList">-->
-                                    <!--<span>{{category.name}}</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column prop="mantisBugTotalNum" label="bug数量" width="100"></el-table-column>-->
-                        <!--<el-table-column label="按严重程度划分" width="140">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="severity in scope.row.mantisBugSeverityNumResDTOList">-->
-                                    <!--<span>{{severity.severityName}} {{severity.bugNum}}个</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column label="按状态划分" width="130">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="status in scope.row.mantisBugStatusNumResDTOList">-->
-                                    <!--<span>{{status.statusName}} {{status.bugNum}}个</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column label="按分类划分">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="category in scope.row.mantisBugCategoryNumResDTOList">-->
-                                    <!--<span v-if="category.isInCharge == 1" style="color: red">{{category.categoryName}} {{category.bugNum}}个</span>-->
-                                    <!--<span v-else>{{category.categoryName}} {{category.bugNum}}个</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                        <!--<el-table-column label="线上bug统计">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<div v-for="demandSystem in scope.row.onlineBugCategoryNumResDTOList">-->
-                                    <!--<span v-if="demandSystem.isInCharge === 1" style="color: red">{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>-->
-                                    <!--<span v-else>{{demandSystem.demandSystemName}} {{demandSystem.bugNum}}个</span>-->
-                                <!--</div>-->
-                            <!--</template>-->
-                        <!--</el-table-column>-->
-                    <!--</el-table>-->
-                <!--</div>-->
-                <!--<div class="bug-stats-con" style="height: 500px;">-->
-                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
-                            <!--v-model="yearMonth4"-->
-                            <!--type="month"-->
-                            <!--placeholder="选择月份"-->
-                            <!--@change="changeMonth4"-->
-                    <!--&gt;-->
-                    <!--</el-date-picker></div>-->
-                    <!--<div id="myChart8" :style="{width:'1000px',height:'400px',left:'40px',float:'left',marginTop:'20px'}"></div>-->
-                <!--</div>-->
-                <!--<div class="bug-stats-con" style="height: 500px;">-->
-                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
-                            <!--v-model="yearMonth2"-->
-                            <!--type="month"-->
-                            <!--placeholder="选择月份"-->
-                            <!--@change="changeMonth2"-->
-                            <!--size="medium">-->
-                    <!--</el-date-picker></div>-->
-                    <!--<div class="steps-body">-->
-                        <!--<div id="myChart9" :style="{width:'600px',height:'400px',left:'-120px',float:'left',marginTop:'70px'}"></div>-->
-                        <!--<div id="myChart10" :style="{width:'600px',height:'400px',left:'-220px',float:'left',marginTop:'70px'}"></div>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</el-tab-pane>-->
             <el-tab-pane label="个人任务" name="personal">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="persanalForm.userId" clearable filterable   placeholder="筛选用户">
@@ -1141,67 +1011,6 @@
           </span>
         </el-dialog>
         <el-dialog title="更新Bug处理"
-                style="width:auto;"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-                :visible.sync="updateBugSolvingVisible">
-            <div class="ctpc-con">
-                <div  style="display: inline"><span class="star">*</span>问题项目</div>
-                <div style="display: inline;margin-left: 30px">
-                    <el-select v-model="bugForm.projectId" placeholder="请选择">
-                        <el-option  v-for="item in projectForm" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
-                <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="bugForm.description" :rows="3"></el-input>
-                <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
-                <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
-                <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	处理日期</div>
-                <el-date-picker v-model="bugForm.processTime" type="date" placeholder="选择处理日期" style="position: relative;margin-left: 100px"></el-date-picker>
-            </div>
-
-            <div class="ctpc-member-con">
-                <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
-                    <span class="fl ctpc-member-head">{{item.userName}}</span>
-                    <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
-                    <span style="position: absolute;right: 10px;">
-                                <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
-                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
-                        </span>
-                </div>
-            </div>
-            <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                <div class="add-member-basic">
-                    <div class="add-member-basic-list clearfix">
-                        <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
-                        <div class="add-member-basic-msg fl">
-                            <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
-                                <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                           :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                        <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
-                        </div>
-                        <div class="add-member-basic-msg fl">
-                            <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
-                        </div>
-                    </div>
-                </div>
-                <div class="ctpc-btns">
-                    <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
-                    <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
-                </div>
-            </div>
-            <div class="add-member-opt" v-show="!showAddDetail" @click="showAddDetail = !showAddDetail;">
-                <span class="add-member-icon">+</span>
-                <span class="add-member-msg" style="">添加成员</span>
-            </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="editBugForm('bugForm')">立即更新</el-button>
-            <el-button @click="updateBugSolvingVisible = false">取 消</el-button>
-          </span>
-        </el-dialog>
-        <el-dialog title="更新Bug处理"
                 @close="closeDialog()"
                 class="aaa"
                 :close-on-click-modal="false"
@@ -1302,8 +1111,8 @@
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
                     <span style="position: absolute;right: 10px;">
-                                <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
-                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
+                                <el-button type="text" icon="el-icon-edit" @click="modifyMember(index,bugUsers)"></el-button>
+                            <el-button type="text" icon="el-icon-delete" @click="deleteMember(index)"></el-button>
                         </span>
                 </div>
             </div>

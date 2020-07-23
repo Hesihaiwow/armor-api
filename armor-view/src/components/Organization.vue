@@ -9,15 +9,6 @@
                  :expand-on-click-node="false"
                  @node-click="handleNodeClick" />
       </div>
-      <!--<div style="height: 50%">-->
-        <!--<div class="ds-title">团队结构<span class="add-department" @click="addGroupDlgShow">+</span></div>-->
-        <!--<el-tree :data="groupTree"-->
-                 <!--:props="groupProps"-->
-                 <!--default-expand-all-->
-                 <!--:expand-on-click-node="false"-->
-                 <!--@node-click="handleGroupNodeClick"-->
-                 <!--:render-content="renderContent"/>-->
-      <!--</div>-->
 
       <div>
         <div class="ds-title">团队<span class="add-department" @click="addGroupDlgShow">+</span></div>
@@ -50,7 +41,7 @@
                   :label="item.name"
                   :value="item.id"></el-option>
         </el-select>
-        <span class="add-department" @click="addUserDlgShow">+</span>
+        <span class="add-department" @click="addUser">+</span>
       </div>
       <!--<div class="dm-title" style="width: 50%;">成员<span class="add-department" @click="addUserDlgShow">+</span></div>-->
       <div class="white-bg">
@@ -69,7 +60,7 @@
             <el-table-column prop="operate" label="操作" align="center">
               <template slot-scope="scope">
                 <!-- <el-button type="text" size="small" @click.native.prevent="authorityOpt(scope.$index, tableData)">权限</el-button> -->
-                <el-button type="text" size="small" @click.native.prevent="modifyUserDlgShow(scope.$index)">编辑</el-button>
+                <el-button type="text" size="small" @click="editUser(scope.row.id)">编辑</el-button>
                 <el-button type="text" size="small" @click.native.prevent="resetUserPwdDlgShow(scope.$index)">重置密码</el-button>
                 <el-button type="text" size="small" v-show="scope.row.isDelete===0" @click.native.prevent="deleteUserDlgShow(scope.$index)">删除</el-button>
               </template>
@@ -187,6 +178,231 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeSetUser">取 消</el-button>
         <el-button :loading="isSaving" type="primary" @click="saveSetUser(setUserDTO.groupId)">确定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="添加用户"
+               width="536px"
+               :visible.sync="addUserVisible"
+               size="tiny"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false">
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">姓名</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addUserForm.name" placeholder="请输入姓名"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">账号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addUserForm.account" placeholder="请输入账号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">职位</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addUserForm.jobName" placeholder="请输入职位"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">角色</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="addUserForm.jobRole" placeholder="请选择角色">
+            <el-option
+                    v-for="item in rolesList"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">级别</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="addUserForm.level" placeholder="请选择级别">
+            <el-option
+                    v-for="item in levelList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">手机号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addUserForm.phone" placeholder="请输入手机号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">邮箱地址</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addUserForm.email" placeholder="请输入邮箱地址"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">用户权限</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="addUserForm.userRole" placeholder="请选择权限">
+            <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">考勤序号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addUserForm.checkSort" placeholder="请输入考勤序号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">工号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="addUserForm.jobNumber" placeholder="请输入员工工号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">审核人</div>
+        <div class="ftp-msg fl">
+          <i style="margin-left: 0px" class="el-icon-plus" v-show="num>=1 && num < 3" @click="plus"></i>
+          <i class="el-icon-minus" v-show="num>1" @click="minus(num-1)"></i>
+          <div v-for="i in num"><span style="margin-right: 20px">{{i}}</span>
+            <el-select placeholder="请选择审核人" @change="addCheckUser(i)" v-model="checkUserIdList[i-1]" clearable>
+              <el-option
+                      v-for="item in userList"
+                      :key="item.userId"
+                      :label="item.userName"
+                      :value="item.userId">
+              </el-option>
+            </el-select>
+          </div>
+
+        </div>
+      </div>
+
+      <!--<div class="am-warn">{{amWarn}}</div>-->
+      <div class="ctpc-btns">
+        <input type="button" class="ctpc-cancel" value="取消" @click="hideAddUser">
+        <input type="button" class="ctpc-save" value="保存" @click="saveAddUser">
+      </div>
+    </el-dialog>
+    <el-dialog title="编辑用户"
+               width="536px"
+               :visible.sync="editUserVisible"
+               size="tiny"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false">
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">姓名</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="editUserForm.name" placeholder="请输入姓名"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">账号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="editUserForm.account" placeholder="请输入账号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">职位</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="editUserForm.jobName" placeholder="请输入职位"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">角色</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="editUserForm.jobRole" placeholder="请选择角色">
+            <el-option
+                    v-for="item in rolesList"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">级别</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="editUserForm.level" placeholder="请选择级别">
+            <el-option
+                    v-for="item in levelList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">手机号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="editUserForm.phone" placeholder="请输入手机号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">邮箱地址</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="editUserForm.email" placeholder="请输入邮箱地址"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">用户权限</div>
+        <div class="ftp-msg fl">
+          <el-select class="w280" v-model="editUserForm.userRole" placeholder="请选择权限">
+            <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">考勤序号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="editUserForm.checkSort" placeholder="请输入考勤序号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">工号</div>
+        <div class="ftp-msg fl">
+          <el-input class="w280" v-model="editUserForm.jobNumber" placeholder="请输入员工工号"></el-input>
+        </div>
+      </div>
+      <div class="ftp-list clearfix">
+        <div class="ftp-menus fl">审核人</div>
+        <div class="ftp-msg fl">
+          <i style="margin-left: 0px" class="el-icon-plus" v-show="num2>=1 && num2 < 3" @click="plus2"></i>
+          <i class="el-icon-minus" v-show="num2>1" @click="minus2(num2-1)"></i>
+          <div v-for="i in num2"><span style="margin-right: 20px">{{i}}</span>
+            <el-select placeholder="请选择审核人" @change="addCheckUser2(i)" v-model="checkUserIdList2[i-1]" clearable>
+              <el-option
+                      v-for="item in userList"
+                      :key="item.userId"
+                      :label="item.userName"
+                      :value="item.userId">
+              </el-option>
+            </el-select>
+          </div>
+
+        </div>
+      </div>
+
+      <!--<div class="am-warn">{{amWarn}}</div>-->
+      <div class="ctpc-btns">
+        <input type="button" class="ctpc-cancel" value="取消" @click="hideEditUser">
+        <input type="button" class="ctpc-save" value="保存" @click="saveEditUser">
       </div>
     </el-dialog>
   </div>
@@ -357,6 +573,121 @@
                 },
                 checkAll: false,
                 isIndeterminate: false,
+                addUserVisible: false,
+                editUserVisible: false,
+                addUserForm:{
+                    name:'',
+                    account:'',
+                    jobName:'',
+                    phone:'',
+                    userRole:'',
+                    groupId:null,
+                    jobRole:'',
+                    level:'',
+                    departmentId:'',
+                    checkSort:'',
+                    jobNumber:'',
+                    email:'',
+                    checkUserList:[]
+                },
+                editUserForm:{
+                    id:null,
+                    name:'',
+                    account:'',
+                    jobName:'',
+                    phone:'',
+                    userRole:'',
+                    groupId:null,
+                    jobRole:'',
+                    level:'',
+                    departmentId:'',
+                    checkSort:'',
+                    jobNumber:'',
+                    email:'',
+                    checkUserList:[]
+                },
+                //用户权限
+                options: [
+                    {
+                        value: 0,
+                        label: '超级管理员'
+                    },
+                    {
+                        value: 1,
+                        label: '项目管理者'
+                    },
+                    {
+                        value: 2,
+                        label: '普通成员'
+                    },
+                    {
+                        value: 3,
+                        label: '人事行政'
+                    }
+                ],
+                //角色
+                rolesList:[
+                    {
+                        roleId: 3,
+                        roleName: '产品经理'
+                    },
+                    {
+                        roleId: 0,
+                        roleName: '测试'
+                    },
+                    {
+                        roleId: 2,
+                        roleName: 'UI设计'
+                    },
+                    {
+                        roleId: 1,
+                        roleName: 'JAVA开发'
+                    },
+                    {
+                        roleId: 4,
+                        roleName: 'C++开发'
+                    },
+                    {
+                        roleId: 5,
+                        roleName: 'PHP开发'
+                    },
+                    {
+                        roleId: 6,
+                        roleName: '前端开发'
+                    },
+                    {
+                        roleId: 7,
+                        roleName: 'IOS开发'
+                    },
+                    {
+                        roleId: 8,
+                        roleName: 'Android开发'
+                    },
+                    {
+                        roleId: 9,
+                        roleName: '人工智能'
+                    },
+                    {
+                        roleId: 10,
+                        roleName: '其他'
+                    }
+                ],
+                //级别
+                levelList:[
+                    {id:1,name:'一级'},
+                    {id:2,name:'二级'},
+                    {id:3,name:'三级'},
+                    {id:4,name:'四级'},
+                    {id:5,name:'五级'},
+                    {id:6,name:'六级'},
+                    {id:7,name:'七级'},
+                    {id:8,name:'八级'},
+                    {id:9,name:'九级'}
+                ],
+                num:1,
+                num2:1,
+                checkUserIdList:[],
+                checkUserIdList2:[],
             };
         },
         //数据初始化
@@ -749,18 +1080,6 @@
                     })
             },
 
-            renderContent(h, { node, data, store }) {
-                // return (
-                //     <span>
-                //       <span>
-                //         <span>{node.label}</span>
-                //       </span>
-                //    <span style="float: right; margin-right: 20px">
-                //       <el-button size="mini" on-click={ () => this.append(store, data) }>Append</el-button>
-                //       <el-button size="mini" on-click={ () => this.remove(store, data) }>Delete</el-button>
-                //     </span>
-                //     </span>);
-            },
             handleCheckAllChange(val) {
                 this.setUserDTO.userIds = val ? this.userIdList : []
                 this.isIndeterminate = false
@@ -782,7 +1101,279 @@
                         })
                     }
                 })
-            }
+            },
+            //打开新增用户弹框
+            addUser(){
+                this.addUserForm = {};
+                this.addUserForm.checkUserList = [];
+                this.addUserForm.departmentId = this.queryForm.deptId;
+                this.addUserVisible = true;
+            },
+            //保存新增用户
+            saveAddUser(){
+                if (this.addUserForm.name==null || this.addUserForm.name===undefined || this.addUserForm.name.trim()===''){
+                    this.warnMsg("请填写用户名称");
+                    return;
+                }
+                if (this.addUserForm.account==null || this.addUserForm.account===undefined || this.addUserForm.account.trim()===''){
+                    this.warnMsg("请填写用户账号");
+                    return;
+                }
+                if (this.addUserForm.jobName==null || this.addUserForm.jobName===undefined || this.addUserForm.jobName.trim()===''){
+                    this.warnMsg("请填写用户职位");
+                    return;
+                }
+                if (this.addUserForm.phone==null || this.addUserForm.phone===undefined || this.addUserForm.phone.trim()===''){
+                    this.warnMsg("请填写用户手机号");
+                    return;
+                }
+                if (this.addUserForm.userRole==null || this.addUserForm.userRole===undefined || this.addUserForm.userRole===''){
+                    this.warnMsg("请选择用户权限");
+                    return;
+                }
+                if (this.addUserForm.jobRole==null || this.addUserForm.jobRole===undefined || this.addUserForm.jobRole===''){
+                    this.warnMsg("请选择用户角色");
+                    return;
+                }
+                if (this.addUserForm.level==null || this.addUserForm.level===undefined || this.addUserForm.level===''){
+                    this.warnMsg("请选择用户级别");
+                    return;
+                }
+                if (this.addUserForm.jobNumber==null || this.addUserForm.jobNumber===undefined || this.addUserForm.jobNumber===''){
+                    this.warnMsg("请输入用户工号");
+                    return;
+                }
+                let checkUsers = this.addUserForm.checkUserList;
+                let checkUserIds = [];
+                checkUsers.forEach(checkUser =>{
+                    if (checkUser.id != null && checkUser.id !== ''){
+                        checkUserIds.push(checkUser.id)
+                    }
+                });
+                if (checkUserIds == null || checkUserIds === [] || checkUserIds.length === 0 || checkUserIds.length !== checkUsers.length){
+                    this.warnMsg("请选择审核人");
+                    return;
+                }
+                let nary = checkUserIds.sort();
+                for (let i = 0; i < checkUserIds.length; i++) {
+                    if (nary[i] === nary[i + 1]) {
+                        this.warnMsg("多级审核人重复,请检查");
+                        return;
+                    }
+                }
+                Http.zsyPostHttp('/user/add',this.addUserForm,(res)=>{
+                    this.hideAddUser();
+                    this.$message({
+                        showClose: true,
+                        message: '用户添加成功',
+                        type: 'success'
+                    });
+                    this.queryForm.pageIndex = 1;
+                    this.queryForm.deptId = this.departmentTree[0].id;
+                    this.queryForm.groupId = null;
+                    this.userPaging(this.queryForm)
+                });
+            },
+            warnMsg(msg) {
+                this.$message({
+                    showClose: true,
+                    message: msg,
+                    type: 'warning'
+                });
+            },
+            //关闭添加用户弹框
+            hideAddUser(){
+                this.addUserForm = {};
+                this.addUserForm.checkUserList = [];
+                this.num = 1;
+                this.checkUserIdList = [];
+                this.addUserVisible = false
+            },
+            //打开编辑用户弹框
+            editUser(userId){
+                this.editUserForm = {};
+                this.editUserForm.checkUserList = [];
+                this.num2 = 1;
+                this.checkUserIdList2 = [];
+                Http.zsyGetHttp(`/user/${userId}`,null,(res)=>{
+                    this.editUserForm.id=res.data.id;
+                    this.editUserForm.name=res.data.name;
+                    this.editUserForm.account=res.data.account;
+                    this.editUserForm.jobName=res.data.jobName;
+                    this.editUserForm.phone=res.data.phone;
+                    this.editUserForm.userRole=res.data.userRole;
+                    this.editUserForm.jobRole=res.data.jobRole;
+                    this.editUserForm.level=res.data.level;
+                    this.editUserForm.status=res.data.status;
+                    this.editUserForm.email=res.data.email;
+                    this.editUserForm.departmentId=res.data.departmentId;
+                    this.editUserForm.checkSort=res.data.checkSort;
+                    this.editUserForm.jobNumber=res.data.jobNumber;
+                    this.editUserForm.groupId=res.data.groupId;
+                    this.editUserForm.checkUserList = res.data.checkUsers;
+                    if(this.editUserForm.checkUserList != null && this.editUserForm.checkUserList !== [] && this.editUserForm.checkUserList.length > 0){
+                        this.num2 = this.editUserForm.checkUserList.length;
+                        this.editUserForm.checkUserList.forEach(checkUser=>{
+                            this.checkUserIdList2.push(checkUser.id)
+                        })
+                    }
+                    this.editUserVisible = true;
+                });
+            },
+            //关闭编辑用户弹框
+            hideEditUser(){
+                this.editUserForm = {};
+                this.editUserForm.checkUserList = [];
+                this.editUserVisible = false;
+            },
+            //保存编辑用户
+            saveEditUser(){
+                if (this.editUserForm.id==null || this.editUserForm.id===undefined || this.editUserForm.id===''){
+                    this.warnMsg("用户id不能为空");
+                    return;
+                }
+                if (this.editUserForm.name==null || this.editUserForm.name===undefined || this.editUserForm.name.trim()===''){
+                    this.warnMsg("请填写用户名称");
+                    return;
+                }
+                if (this.editUserForm.account==null || this.editUserForm.account===undefined || this.editUserForm.account.trim()===''){
+                    this.warnMsg("请填写用户账号");
+                    return;
+                }
+                if (this.editUserForm.jobName==null || this.editUserForm.jobName===undefined || this.editUserForm.jobName.trim()===''){
+                    this.warnMsg("请填写用户职位");
+                    return;
+                }
+                if (this.editUserForm.phone==null || this.editUserForm.phone===undefined || this.editUserForm.phone.trim()===''){
+                    this.warnMsg("请填写用户手机号");
+                    return;
+                }
+                if (this.editUserForm.userRole==null || this.editUserForm.userRole===undefined || this.editUserForm.userRole===''){
+                    this.warnMsg("请选择用户权限");
+                    return;
+                }
+                if (this.editUserForm.jobRole==null || this.editUserForm.jobRole===undefined || this.editUserForm.jobRole===''){
+                    this.warnMsg("请选择用户角色");
+                    return;
+                }
+                if (this.editUserForm.level==null || this.editUserForm.level===undefined || this.editUserForm.level===''){
+                    this.warnMsg("请选择用户级别");
+                    return;
+                }
+                if (this.editUserForm.jobNumber==null || this.editUserForm.jobNumber===undefined || this.editUserForm.jobNumber===''){
+                    this.warnMsg("请输入用户工号");
+                    return;
+                }
+                let checkUsers = this.editUserForm.checkUserList;
+                let checkUserIds = [];
+                checkUsers.forEach(checkUser =>{
+                    if (checkUser.id != null && checkUser.id !== ''){
+                        checkUserIds.push(checkUser.id)
+                    }
+                });
+                if (checkUserIds == null || checkUserIds === [] || checkUserIds.length === 0 || checkUserIds.length !== checkUsers.length){
+                    this.warnMsg("请选择审核人");
+                    return;
+                }
+                let nary = checkUserIds.sort();
+                for (let i = 0; i < checkUserIds.length; i++) {
+                    if (nary[i] === nary[i + 1]) {
+                        this.warnMsg("多级审核人重复,请检查");
+                        return;
+                    }
+                }
+                Http.zsyPutHttp('/user/'+this.editUserForm.id,this.editUserForm,(res)=>{
+                    this.hideEditUser();
+                    this.$message({
+                        showClose: true,
+                        message: '用户修改成功',
+                        type: 'success'
+                    });
+                    this.queryForm.pageIndex = 1;
+                    this.queryForm.deptId = this.departmentTree[0].id;
+                    this.queryForm.groupId = null;
+                    this.userPaging(this.queryForm)
+                });
+            },
+            //查询用户详情
+            getUserDetail(userId){
+                Http.zsyGetHttp(`/user/${userId}`,null,(res)=>{
+                    this.editUserForm.id=res.data.id;
+                    this.editUserForm.name=res.data.name;
+                    this.editUserForm.account=res.data.account;
+                    this.editUserForm.jobName=res.data.jobName;
+                    this.editUserForm.phone=res.data.phone;
+                    this.editUserForm.userRole=res.data.userRole;
+                    this.editUserForm.jobRole=res.data.jobRole;
+                    this.editUserForm.level=res.data.level;
+                    this.editUserForm.status=res.data.status;
+                    this.editUserForm.email=res.data.email;
+                    this.editUserForm.departmentId=res.data.departmentId;
+                    this.editUserForm.checkSort=res.data.checkSort;
+                    this.editUserForm.jobNumber=res.data.jobNumber;
+                    this.editUserForm.groupId=res.data.groupId;
+                    this.editUserForm.checkUserList = res.data.checkUsers;
+                    if(this.editUserForm.checkUserList != null && this.editUserForm.checkUserList !== [] && this.editUserForm.checkUserList.length > 0){
+                        this.num = this.editUserForm.checkUserList.length;
+                        this.editUserForm.checkUserList.forEach(checkUser=>{
+                            this.checkUserIdList.push(checkUser.id)
+                        })
+                    }
+                });
+            },
+            plus(){
+                this.num = this.num+1;
+            },
+            minus(i){
+                this.num = this.num-1;
+                this.checkUserIdList.splice(i);
+                this.addUserForm.checkUserList.splice(i);
+            },
+            plus2(){
+                this.num2 = this.num2+1;
+            },
+            minus2(i){
+                this.num2 = this.num2-1;
+                this.checkUserIdList2.splice(i);
+                this.editUserForm.checkUserList.splice(i);
+            },
+            addCheckUser(i){
+                let checkUsers = this.addUserForm.checkUserList;
+                let flag = true;
+                checkUsers.forEach(user=>{
+                    if(user.level === i){
+                        user.id = this.checkUserIdList[i-1];
+                        flag = false;
+                    }
+                });
+                this.addUserForm.checkUserList = checkUsers;
+                if (flag){
+                    let checkUser={
+                        'level':i,
+                        'id':this.checkUserIdList[i-1]
+                    };
+                    this.addUserForm.checkUserList.push(checkUser);
+                }
+            },
+            addCheckUser2(i){
+                let checkUsers = this.editUserForm.checkUserList;
+                let flag = true;
+                checkUsers.forEach(user=>{
+                    if(user.level === i){
+                        user.id = this.checkUserIdList2[i-1];
+                        flag = false;
+                    }
+                });
+                this.editUserForm.checkUserList = checkUsers;
+                if (flag){
+                    let checkUser={
+                        'level':i,
+                        'id':this.checkUserIdList2[i-1]
+                    };
+                    this.editUserForm.checkUserList.push(checkUser);
+                }
+            },
+            
         },
         components: {
             AddMember: AddMember,

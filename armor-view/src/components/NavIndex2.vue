@@ -3822,18 +3822,6 @@
                 }
             },
             sortWeekNumber(){
-                // if (this.weekNumber.length != null) {
-                //     for (let i = 0; i < this.weekNumber.length; i++) {
-                //         for (let x = 0; x < this.weekNumberTemp.length; x++) {
-                //             if (this.weekNumber[i] != null) {
-                //                 if (this.weekNumber[i].weekNumber === this.weekNumberTemp[x].weekNumber) {
-                //                     this.weekNumber[i].hoursTemp = this.weekNumberTemp[x].hours
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-                // return _.orderBy(this.weekNumber, 'weekNumber')
                 this.weekNumber=this.weekNumber.sort(function (a,b) {
                     if (a.weekNumber < b.weekNumber) {
                         return -1;
@@ -3855,17 +3843,6 @@
                 return this.weekNumber
             },
             sortWeekTempNumber(){
-                // if (this.taskTempWeekNumber.length != null) {
-                //     for (let i = 0; i < this.taskTempWeekNumber.length; i++) {
-                //         for (let x = 0; x < this.taskWeekNumberTemp.length; x++) {
-                //             if (this.taskTempWeekNumber[i] != null) {
-                //                 if (this.taskTempWeekNumber[i].weekNumber === this.taskWeekNumberTemp[x].weekNumber) {
-                //                     this.taskTempWeekNumber[i].hoursTemp = this.taskWeekNumberTemp[x].hours
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
                 this.taskTempWeekNumber=this.taskTempWeekNumber.sort(function (a,b) {
                     if (a.weekNumber < b.weekNumber) {
                         return -1;
@@ -3888,18 +3865,6 @@
                 // return _.orderBy(this.taskTempWeekNumber, 'weekNumber')
             },
             sortUserWeekNumber(){
-                // if (this.taskUserWeekNumber.length != null) {
-                //     for (let i = 0; i < this.taskUserWeekNumber.length; i++) {
-                //         for (let x = 0; x < this.taskUserTempWeekNumber.length; x++) {
-                //             if (this.taskUserWeekNumber[i] != null) {
-                //                 if (this.taskUserWeekNumber[i].weekNumber === this.taskUserTempWeekNumber[x].weekNumber) {
-                //                     this.taskUserWeekNumber[i].hoursTemp = this.taskUserTempWeekNumber[x].hours
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-                // return _.orderBy(this.taskUserWeekNumber, 'weekNumber')
                 this.taskUserWeekNumber=this.taskUserWeekNumber.sort(function (a,b) {
                     if (a.weekNumber < b.weekNumber) {
                         return -1;
@@ -3921,18 +3886,6 @@
                 return this.taskUserWeekNumber
             },
             sortTaskModifyWeekNumber(){
-                // if (this.taskModifyWeekNumber.length != null) {
-                //     for (let i = 0; i < this.taskModifyWeekNumber.length; i++) {
-                //         for (let x = 0; x < this.taskModifyWeekNumberTemp.length; x++) {
-                //             if (this.taskModifyWeekNumber[i] != null) {
-                //                 if (this.taskModifyWeekNumber[i].weekNumber === this.taskModifyWeekNumberTemp[x].weekNumber) {
-                //                     this.taskModifyWeekNumber[i].hoursTemp = this.taskModifyWeekNumberTemp[x].hours
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-                // return _.orderBy(this.taskModifyWeekNumber, 'weekNumber')
                 this.taskModifyWeekNumber=this.taskModifyWeekNumber.sort(function (a,b) {
                     if (a.weekNumber < b.weekNumber) {
                         return -1;
