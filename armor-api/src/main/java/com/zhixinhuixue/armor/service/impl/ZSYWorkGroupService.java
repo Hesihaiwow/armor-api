@@ -119,6 +119,7 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         if (user.getStatus() != ZSYUserStatus.NORMAL.getValue()){
             throw new ZSYServiceException("设置的团队负责人已冻结,请检查");
         }
+        Long oldLeader = workGroup.getLeader();
         workGroup.setName(reqDTO.getName().trim());
         workGroup.setDescription(reqDTO.getDescription().trim());
         workGroup.setLeader(reqDTO.getLeader());
@@ -129,7 +130,7 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
             throw new ZSYServiceException("更新团队失败");
         }
 
-        if (!reqDTO.getLeader().equals(workGroup.getLeader())){
+        if (!reqDTO.getLeader().equals(oldLeader)){
             UserGroup userGroup = new UserGroup();
             userGroup.setUgId(snowFlakeIDHelper.nextId());
             userGroup.setGroupId(workGroup.getId());
