@@ -247,6 +247,9 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         //删除原来的团队_成员关系
         userGroupMapper.deleteByGroup(reqDTO.getGroupId());
         if (!CollectionUtils.isEmpty(userIds)){
+            if (!userIds.contains(workGroup.getLeader())){
+                userIds.add(workGroup.getLeader());
+            }
             List<UserGroup> collect = userIds.stream().map(userId -> {
                 UserGroup userGroup = new UserGroup();
                 userGroup.setUgId(snowFlakeIDHelper.nextId());
