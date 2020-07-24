@@ -183,6 +183,7 @@
     </el-dialog>
 
     <el-dialog title="添加用户"
+               top="3%"
                width="536px"
                :visible.sync="addUserVisible"
                size="tiny"
@@ -296,6 +297,7 @@
     </el-dialog>
     <el-dialog title="编辑用户"
                width="536px"
+               top="3%"
                :visible.sync="editUserVisible"
                size="tiny"
                :close-on-click-modal="false"
