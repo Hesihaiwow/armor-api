@@ -368,6 +368,9 @@ public class ZSYStatsService implements IZSYStatsService {
 
                 //个人除去请假时长后应该工作的时长
                 BigDecimal shouldHours = BigDecimal.valueOf(40).subtract(userCostBO.getLeaveHours());
+                if (shouldHours.compareTo(BigDecimal.ZERO)==0){
+                    shouldHours = BigDecimal.valueOf(1);
+                }
                 BigDecimal userPercent = totalHours
                         .multiply(BigDecimal.valueOf(100))
                         .divide(shouldHours,2,BigDecimal.ROUND_HALF_UP);
@@ -394,7 +397,9 @@ public class ZSYStatsService implements IZSYStatsService {
                                         () -> new TreeSet<>(Comparator.comparing(UserCostBO::getUserId))
                                 ),ArrayList::new)).stream().count()))
                         .subtract(positionLeaveHours);
-
+                if (positionShouldHours.compareTo(BigDecimal.ZERO)==0){
+                    positionShouldHours = BigDecimal.valueOf(1);
+                }
                 //岗位工作量饱和度
                 BigDecimal positionPercent = positionTotalHours
                         .multiply(BigDecimal.valueOf(100))
