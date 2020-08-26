@@ -48,6 +48,19 @@ public class Task {
 
     private String testDoc;
 
+    /**
+     * 关联任务
+     */
+    private Long linkTask;
+
+    public Long getLinkTask() {
+        return linkTask;
+    }
+
+    public void setLinkTask(Long linkTask) {
+        this.linkTask = linkTask;
+    }
+
     public String getTestDoc() {
         return testDoc;
     }

@@ -334,4 +334,10 @@ public interface IZSYTaskMapper {
      */
     List<WeekPublishTaskBO> selectWeekPublishTaskList(WeekPublishQueryReqDTO reqDTO);
 
+    /**
+     * 当前用户参与的进行中的多人任务
+     * @param userId 用户id
+     * @return List<Task>
+     */
+    List<Task> selectJoinRunningTasks(@Param("userId") Long userId);
 }

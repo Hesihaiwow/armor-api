@@ -40,6 +40,11 @@ public class TaskBug {
     private Integer frequency;
 
     /**
+     * 问题类型(0:代码错误, 1:设计缺陷, 2:标准规范, 3:界面优化, 4:其他)
+     */
+    private Integer problemType;
+
+    /**
      * 摘要
      */
     private String title;
@@ -78,6 +83,14 @@ public class TaskBug {
      * 更新时间
      */
     private Date updateTime;
+
+    public Integer getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(Integer problemType) {
+        this.problemType = problemType;
+    }
 
     public Integer getTbNo() {
         return tbNo;

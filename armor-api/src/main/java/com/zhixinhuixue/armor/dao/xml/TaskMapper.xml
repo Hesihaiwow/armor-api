@@ -17,6 +17,7 @@
         <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
         <result column="review_status" jdbcType="INTEGER" property="reviewStatus"/>
         <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="link_task" jdbcType="BIGINT" property="linkTask"/>
         <result column="create_by" jdbcType="BIGINT" property="createBy"/>
         <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
@@ -459,7 +460,7 @@
       insert into task (id, name, description,
       project_id,stage_id, begin_time, test_time, end_time, `type`, status,
       review_status, priority, create_by,
-      complete_time, create_time, update_time, is_delete,sort, facility, examine,doc,test_doc
+      complete_time, create_time, update_time, is_delete,sort, facility, examine,doc,test_doc,`link_task`
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
       #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{beginTime,jdbcType=TIMESTAMP},
@@ -468,7 +469,7 @@
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
        #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER},#{facility,jdbcType=INTEGER},#{examine,jdbcType=INTEGER}
-       ,#{doc,jdbcType=LONGVARCHAR},#{testDoc,jdbcType=LONGVARCHAR}
+       ,#{doc,jdbcType=LONGVARCHAR},#{testDoc,jdbcType=LONGVARCHAR},#{linkTask,jdbcType=BIGINT}
       )
   </insert>
 
@@ -537,6 +538,9 @@
             </if>
             <if test="sort != null or sort == 0">
                 sort = #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="linkTask != null">
+                link_task = #{linkTask,jdbcType=BIGINT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
@@ -757,6 +761,13 @@
     <select id="selectTestTask" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3
         AND `status` = 1 AND `stage_id` IN (212754785051344895,212754785051344896)
+    </select>
+
+    <!--当前用户参与的进行中的多人任务-->
+    <select id="selectJoinRunningTasks" resultMap="BaseResultMap">
+        SELECT t.id,t.`name` FROM task_user tu
+        LEFT JOIN task t ON t.id = tu.task_id
+        WHERE tu.user_id = #{userId} AND t.is_delete = 0 AND t.review_status = 3 AND t.`status` = 1 AND t.type = 2
     </select>
     <!-- sch -->
 </mapper>

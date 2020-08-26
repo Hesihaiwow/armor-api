@@ -8,25 +8,26 @@ import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TaskBugBO;
-import com.zhixinhuixue.armor.model.bo.TaskBugRemarkBO;
 import com.zhixinhuixue.armor.model.dto.request.AddTaskBugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTaskBugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.QueryTaskBugPageReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
-import com.zhixinhuixue.armor.model.pojo.*;
+import com.zhixinhuixue.armor.model.pojo.Task;
+import com.zhixinhuixue.armor.model.pojo.TaskBug;
+import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.service.IZSYTaskBugService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
-import com.zhixinhuixue.armor.source.enums.TaskBugFrequency;
-import com.zhixinhuixue.armor.source.enums.TaskBugSeverity;
-import com.zhixinhuixue.armor.source.enums.TaskBugStatus;
-import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
+import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author sch
@@ -164,6 +165,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             taskBug.setSeverity(reqDTO.getSeverity());
             taskBug.setHandlerId(reqDTO.getHandlerId());
             taskBug.setTaskId(reqDTO.getTaskId());
+            taskBug.setProblemType(reqDTO.getProblemType());
 //        }else {
 //            taskBug.setStatus(reqDTO.getStatus());
 //        }
@@ -244,6 +246,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         resDTO.setStatusName(TaskBugStatus.getName(taskBugBO.getStatus()));
         resDTO.setSeverityName(TaskBugSeverity.getName(taskBugBO.getSeverity()));
         resDTO.setFrequencyName(TaskBugFrequency.getName(taskBugBO.getFrequency()));
+        resDTO.setProblemTypeName(TaskBugType.getName(taskBugBO.getProblemType()));
         //查询备注
 //        List<TaskBugRemarkBO> remarkBOS = remarkMapper.selectListByTbId(tbId);
 //        List<TaskBugRemarkResDTO> remarkResDTOS = new ArrayList<>();

@@ -113,10 +113,14 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      */
     @Override
     public ArmorPageInfo<DemandResDTO> getDemandList(DemandQueryReqDTO reqDTO) {
+        String title = reqDTO.getTitle();
+        if (!Strings.isNullOrEmpty(title)){
+            title = title.trim();
+        }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
         Page<DemandBO> demandBOS = feedbackMapper.selectDemandPage(reqDTO.getOrigin(),reqDTO.getPriority()
-                ,reqDTO.getType(),reqDTO.getFbTimeStart(),reqDTO.getFbTimeEnd(),reqDTO.getChargeMan(),reqDTO.getSource());
+                ,reqDTO.getType(),reqDTO.getFbTimeStart(),reqDTO.getFbTimeEnd(),reqDTO.getChargeMan(),reqDTO.getSource(),title);
         Page<DemandResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandBOS)){
             BeanUtils.copyProperties(demandBOS,list);
@@ -224,9 +228,14 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      */
     @Override
     public ArmorPageInfo<DemandRejectedResDTO> getDemandRejectedList(DemandQueryReqDTO reqDTO) {
+        String title = reqDTO.getTitle();
+        if (!Strings.isNullOrEmpty(title)){
+            title = title.trim();
+        }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandRejectedBO> demandRejectedBOS = feedbackMapper.selectDemandRejectedPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource());
+        Page<DemandRejectedBO> demandRejectedBOS = feedbackMapper.selectDemandRejectedPage(
+                reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource(),title);
         Page<DemandRejectedResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandRejectedBOS)){
 
@@ -346,9 +355,14 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      */
     @Override
     public ArmorPageInfo<DemandQueuedResDTO> getDemandQueuedList(DemandQueryReqDTO reqDTO) {
+        String title = reqDTO.getTitle();
+        if (!Strings.isNullOrEmpty(title)){
+            title = title.trim();
+        }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandQueuedBO> demandQueuedBOS = feedbackMapper.selectDemandQueuedPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource());
+        Page<DemandQueuedBO> demandQueuedBOS = feedbackMapper.selectDemandQueuedPage(
+                reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getChargeMan(),reqDTO.getSource(),title);
         Page<DemandQueuedResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandQueuedBOS)){
             BeanUtils.copyProperties(demandQueuedBOS,list);
@@ -515,9 +529,14 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      */
     @Override
     public PageInfo<DemandCompletedResDTO> getDemandCompletedList(DemandQueryReqDTO reqDTO) {
+        String title = reqDTO.getTitle();
+        if (!Strings.isNullOrEmpty(title)){
+            title = title.trim();
+        }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandCompletedBO> demandCompletedBOS = feedbackMapper.selectDemandCompletedPage(reqDTO.getBeginTime(),reqDTO.getEndTime(),reqDTO.getOrigin(),reqDTO.getTaskChargeMan(),reqDTO.getSource());
+        Page<DemandCompletedBO> demandCompletedBOS = feedbackMapper.selectDemandCompletedPage(
+                reqDTO.getBeginTime(),reqDTO.getEndTime(),reqDTO.getOrigin(),reqDTO.getTaskChargeMan(),reqDTO.getSource(),title);
         Page<DemandCompletedResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandCompletedBOS)){
             BeanUtils.copyProperties(demandCompletedBOS,list);
@@ -612,9 +631,14 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
      */
     @Override
     public ArmorPageInfo<DemandRunningResDTO> getDemandRunningList(DemandQueryReqDTO reqDTO) {
+        String title = reqDTO.getTitle();
+        if (!Strings.isNullOrEmpty(title)){
+            title = title.trim();
+        }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
 
-        Page<DemandRunningBO> demandRunningBOS = feedbackMapper.selectDemandRunningPage(reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getTaskChargeMan(),reqDTO.getSource());
+        Page<DemandRunningBO> demandRunningBOS = feedbackMapper.selectDemandRunningPage(
+                reqDTO.getOrigin(),reqDTO.getPriority(),reqDTO.getType(),reqDTO.getTaskChargeMan(),reqDTO.getSource(),title);
         Page<DemandRunningResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(demandRunningBOS)){
             BeanUtils.copyProperties(demandRunningBOS,list);

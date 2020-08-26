@@ -2,7 +2,6 @@ package com.zhixinhuixue.armor.model.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 
 import java.util.Date;
 
@@ -39,6 +38,19 @@ public class DemandQueryReqDTO {
     private Date fbTimeEnd;
     @ApiModelProperty("来源")
     private Integer source;
+
+    /**
+     * 标题
+     */
+    private String title;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public String getTaskChargeMan() {
         return taskChargeMan;

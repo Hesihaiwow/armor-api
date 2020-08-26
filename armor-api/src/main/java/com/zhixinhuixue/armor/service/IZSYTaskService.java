@@ -365,6 +365,11 @@ public interface IZSYTaskService {
      */
     void deletePrivateTask(Long taskId);
 
+    /**
+     * 当前用户参与的进行中的多人任务
+     */
+    List<TaskBaseResDTO> getJoinRunningTasks(Long userId);
+
 
     // -- sch
 }

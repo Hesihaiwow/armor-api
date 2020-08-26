@@ -4,15 +4,11 @@ import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.DemandQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.FeedbackListReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.DemandCompletedResDTO;
 import com.zhixinhuixue.armor.model.dto.response.IntroducerResDTO;
 import com.zhixinhuixue.armor.model.pojo.Demand;
 import com.zhixinhuixue.armor.model.pojo.DemandAccessory;
 import com.zhixinhuixue.armor.model.pojo.Feedback;
-import com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask;
-import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Date;
 import java.util.List;
@@ -54,7 +50,7 @@ public interface IZSYFeedbackMapper {
      */
     Page<DemandBO> selectDemandPage(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type
             ,@Param("fbTimeStart")Date fbTimeStart,@Param("fbTimeEnd")Date fbTimeEnd
-            ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source);
+            ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title);
 
     /**
      * 获取驳回需求反馈列表
@@ -64,7 +60,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandRejectedBO> selectDemandRejectedPage(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type
-                                        ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source);
+                                        ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title);
     /**
      * 查询驳回需求集合
      * @param origin
@@ -89,7 +85,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandQueuedBO> selectDemandQueuedPage(@Param("origin") String origin, @Param("priority")Integer priority
-            ,@Param("type")Integer type,@Param("chargeMan")Long chargeMan,@Param("source")Integer source);
+            ,@Param("type")Integer type,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title);
 
     List<DemandQueuedBO> selectDemandQueuedList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
 
@@ -100,8 +96,9 @@ public interface IZSYFeedbackMapper {
      * @param endTime
      * @return
      */
-    Page<DemandCompletedBO> selectDemandCompletedPage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime,@Param("origin")String origin
-                            ,@Param("chargeMan")String chargeMan,@Param("source")Integer source);
+    Page<DemandCompletedBO> selectDemandCompletedPage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime,
+                                                      @Param("origin")String origin,@Param("chargeMan")String chargeMan,
+                                                      @Param("source")Integer source,@Param("title") String title);
 
     /**
      * 获取我开发的需求
@@ -130,7 +127,8 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandRunningBO> selectDemandRunningPage(@Param("origin") String origin, @Param("priority")Integer priority,
-                                                 @Param("type")Integer type,@Param("chargeMan")String chargeMan,@Param("source")Integer source);
+                                                 @Param("type")Integer type,@Param("chargeMan")String chargeMan,
+                                                  @Param("source")Integer source,@Param("title") String title);
 
     List<DemandRunningBO> selectDemandRunningList(@Param("origin") String origin, @Param("priority")Integer priority,
                                               @Param("type")Integer type, @Param("chargeMan")String chargeMan,@Param("source")Integer source);

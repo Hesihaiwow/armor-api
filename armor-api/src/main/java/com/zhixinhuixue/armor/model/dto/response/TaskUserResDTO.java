@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import com.zhixinhuixue.armor.model.pojo.TaskEvaluation;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -93,9 +91,35 @@ public class TaskUserResDTO{
     private String taskLevelName;
 
     /**
+     * 个人任务时间
+     */
+    private Double privateTaskHours;
+
+    /**
+     * 个人任务集合
+     */
+    private List<UserPrivateTaskHourResDTO> priTaskList;
+
+    /**
      * 任务结束时，最终评价等级
      */
     private String commentGrade;
+
+    public List<UserPrivateTaskHourResDTO> getPriTaskList() {
+        return priTaskList;
+    }
+
+    public void setPriTaskList(List<UserPrivateTaskHourResDTO> priTaskList) {
+        this.priTaskList = priTaskList;
+    }
+
+    public Double getPrivateTaskHours() {
+        return privateTaskHours;
+    }
+
+    public void setPrivateTaskHours(Double privateTaskHours) {
+        this.privateTaskHours = privateTaskHours;
+    }
 
     public List<String> getFunctionStrs() {
         return functionStrs;

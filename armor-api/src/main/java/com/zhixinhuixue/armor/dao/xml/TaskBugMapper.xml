@@ -8,6 +8,7 @@
         <result column="severity" jdbcType="INTEGER" property="severity" />
         <result column="tb_no" jdbcType="INTEGER" property="tbNo" />
         <result column="frequency" jdbcType="INTEGER" property="frequency" />
+        <result column="problem_type" jdbcType="INTEGER" property="problemType" />
         <result column="title" jdbcType="VARCHAR" property="title" />
         <result column="description" jdbcType="VARCHAR" property="description" />
         <result column="status" jdbcType="INTEGER" property="status" />
@@ -28,13 +29,13 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBug">
         INSERT INTO `task_bug`
         (`tb_id`,`task_id`,`handler_id`,`severity`,`frequency`,`title`,`description`
-        ,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`is_delete`,`tb_no`)
+        ,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`is_delete`,`tb_no`,`problem_type`)
         VALUES
         (#{tbId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{handlerId,jdbcType=BIGINT}
         ,#{severity,jdbcType=INTEGER},#{frequency,jdbcType=INTEGER},#{title,jdbcType=VARCHAR}
         ,#{description,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
         ,#{createTime,jdbcType=TIMESTAMP},#{updateBy,jdbcType=BIGINT},#{updateTime,jdbcType=TIMESTAMP}
-        ,#{isDelete,jdbcType=INTEGER},#{tbNo,jdbcType=INTEGER})
+        ,#{isDelete,jdbcType=INTEGER},#{tbNo,jdbcType=INTEGER},#{problemType,jdbcType=INTEGER})
     </insert>
 
     <!--更新-->
@@ -71,6 +72,9 @@
             <if test="isDelete != null">
                 `is_delete` = #{isDelete},
             </if>
+            <if test="problemType != null">
+                `problem_type` = #{problemType},
+            </if>
         </set>
         WHERE `tb_id` = #{tbId}
     </update>
@@ -96,6 +100,9 @@
         </if>
         <if test="reqDTO.severity != null and reqDTO.severity != 0">
             AND tb.`severity` = #{reqDTO.severity}
+        </if>
+        <if test="reqDTO.problemType != null">
+            AND tb.`problem_type` = #{reqDTO.problemType}
         </if>
         <!--<choose>-->
             <!--<when test="reqDTO.status != null and reqDTO.status == 2">-->

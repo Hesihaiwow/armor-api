@@ -450,6 +450,9 @@
     <where>
       fb.is_delete = 0
       and fb.status = 0
+      <if test="title != null and title != ''">
+        and fb.title LIKE concat('%',#{title},'%')
+      </if>
       <if test="origin != null and origin != ''">
         and fb.origin = #{origin}
       </if>
@@ -593,6 +596,9 @@
     <where>
       f.is_delete = 0 and
       f.status = 3
+      <if test="title != null and title != ''">
+        and f.title LIKE concat('%',#{title},'%')
+      </if>
       <if test="origin != null and origin != ''">
         and f.origin = #{origin}
       </if>
@@ -686,6 +692,9 @@
     <where>
       f.is_delete = 0 and
       f.status = 4
+      <if test="title != null and title != ''">
+        and f.title LIKE concat('%',#{title},'%')
+      </if>
       <if test="origin != null and origin != ''">
         and f.origin = #{origin}
       </if>
@@ -777,6 +786,9 @@
     <where>
       f.is_delete = 0 and
       f.status = 2
+      <if test="title != null and title != ''">
+        and f.title LIKE concat('%',#{title},'%')
+      </if>
       <if test="beginTime != null">
         <![CDATA[ AND  f.online_time >= #{beginTime,jdbcType=TIMESTAMP}]]>
       </if>
@@ -898,6 +910,9 @@
     <where>
       f.is_delete = 0 and
       f.status = 1
+      <if test="title != null and title != ''">
+        and f.title LIKE concat('%',#{title},'%')
+      </if>
       <if test="origin != null and origin != ''">
         and f.origin = #{origin}
       </if>
@@ -1132,6 +1147,9 @@
     <where>
       status = 0
       and is_delete = 0
+      <if test="reqDTO.title != null and reqDTO.title != ''">
+        and title LIKE concat('%',#{reqDTO.title},'%')
+      </if>
       <if test="reqDTO.priority != null and reqDTO.priority != -1">
         and priority = #{reqDTO.priority}
       </if>

@@ -76,6 +76,12 @@ public class TaskBugDetailResDTO {
     private String severityName;
 
     /**
+     * 问题类型(0:代码错误, 1:设计缺陷, 2:标准规范, 3:界面优化, 4:其他)
+     */
+    private Integer problemType;
+    private String problemTypeName;
+
+    /**
      * 是否为创建人
      */
     @ApiModelProperty("是否为创建人")
@@ -92,6 +98,22 @@ public class TaskBugDetailResDTO {
      */
     @ApiModelProperty("日志集合")
     private List<TaskBugLogResDTO> logResDTOList;
+
+    public Integer getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(Integer problemType) {
+        this.problemType = problemType;
+    }
+
+    public String getProblemTypeName() {
+        return problemTypeName;
+    }
+
+    public void setProblemTypeName(String problemTypeName) {
+        this.problemTypeName = problemTypeName;
+    }
 
     public Long getTaskId() {
         return taskId;

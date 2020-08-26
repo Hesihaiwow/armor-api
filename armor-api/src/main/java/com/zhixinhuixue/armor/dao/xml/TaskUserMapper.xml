@@ -16,6 +16,13 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
 
+    <resultMap id="TaskAndHourMap" type="com.zhixinhuixue.armor.model.bo.TaskAndHourBO">
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="task_hours" property="hours" jdbcType="DECIMAL"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
         id, task_id, user_id, task_hours, begin_time, end_time, description, complete_hours,
         complete_time, status, create_time,task_level
@@ -308,6 +315,14 @@
         LEFT JOIN task t ON t.id = tu.task_id
         WHERE tu.end_time >= '2019-07-01 00:00:00'
         AND t.review_status = 3 AND t.is_delete = 0 AND t.type = 2 AND t.`status`=#{status}
+    </select>
+
+    <!--已当前任务关联的用户的个人任务时间-->
+    <select id="selectUserPrivateTaskHours" resultMap="TaskAndHourMap">
+        SELECT t.id AS `task_id`,t.name AS `task_name`,tu.user_id,tu.task_hours FROM task t
+        LEFT JOIN task_user tu ON tu.task_id = t.id
+        WHERE t.is_delete = 0 AND t.review_status = 3 AND t.type = 1
+        AND t.link_task = #{taskId} AND tu.user_id = #{userId}
     </select>
     <!--  sch  -->
 </mapper>

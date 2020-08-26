@@ -173,6 +173,13 @@ public class ZSYTaskService implements IZSYTaskService {
         if (taskReqDTO.getTaskType() == ZSYTaskType.PRIVATE_TASK.getValue()) {
             task.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
             task.setFacility(ZSYTaskFacility.EASY.getValue());
+            if (taskReqDTO.getLinkTask()!=null){
+                Task linkTask = taskMapper.selectByPrimaryKey(taskReqDTO.getLinkTask());
+                if (linkTask == null){
+                    throw new ZSYServiceException("关联任务不存在");
+                }
+                task.setLinkTask(taskReqDTO.getLinkTask());
+            }
         } else {
             task.setFacility(taskReqDTO.getFacility());
             // 多人任务直接通过
@@ -427,6 +434,15 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setName(taskReqDTO.getTaskName());
         if (taskReqDTO.getDoc() != null){
             task.setDoc(taskReqDTO.getDoc().trim());
+        }
+        if (taskTemp.getType() == ZSYTaskType.PRIVATE_TASK.getValue() && taskReqDTO.getLinkTask() != null){
+            if (taskReqDTO.getLinkTask()!=null){
+                Task linkTask = taskMapper.selectByPrimaryKey(taskReqDTO.getLinkTask());
+                if (linkTask == null){
+                    throw new ZSYServiceException("关联任务不存在");
+                }
+                task.setLinkTask(taskReqDTO.getLinkTask());
+            }
         }
         task.setDescription(taskReqDTO.getDescription());
         task.setProjectId(taskReqDTO.getProjectId());
@@ -879,6 +895,12 @@ public class ZSYTaskService implements IZSYTaskService {
         // copy 任务基本属性
         TaskDetailResDTO taskDetailResDTO = new TaskDetailResDTO();
         BeanUtils.copyProperties(taskDetailBO, taskDetailResDTO);
+        if (taskDetailBO.getLinkTask()!=null){
+            Task linkTask = taskMapper.selectByPrimaryKey(taskDetailBO.getLinkTask());
+            if (linkTask!=null){
+                taskDetailResDTO.setLinkTaskName(linkTask.getName());
+            }
+        }
         if (loginUser.getUserRole() <= ZSYUserRole.PROJECT_MANAGER.getValue()){
             taskDetailResDTO.setCanEditTestDoc(1);
 
@@ -954,6 +976,24 @@ public class ZSYTaskService implements IZSYTaskService {
         taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
             TaskUserResDTO taskUserResDTO = new TaskUserResDTO();
             // sch --
+            //已当前任务关联的用户的个人任务时间
+            List<TaskAndHourBO> taskAndHourBOS = taskUserMapper.selectUserPrivateTaskHours(taskId,taskUserBO.getUserId());
+            List<UserPrivateTaskHourResDTO> priTaskList;
+            if (!CollectionUtils.isEmpty(taskAndHourBOS)){
+                Double sum = taskAndHourBOS.stream().mapToDouble(item -> item.getHours().doubleValue()).sum();
+                taskUserResDTO.setPrivateTaskHours(sum==null?0:sum);
+                priTaskList = taskAndHourBOS.stream()
+                        .map(item-> {
+                            UserPrivateTaskHourResDTO userPrivateTaskHourResDTO = new UserPrivateTaskHourResDTO();
+                            userPrivateTaskHourResDTO.setTaskName(item.getTaskName());
+                            userPrivateTaskHourResDTO.setHours(item.getHours().doubleValue());
+                            return userPrivateTaskHourResDTO;
+                        })
+                        .collect(Collectors.toList());
+                taskUserResDTO.setPriTaskList(priTaskList);
+            }else {
+                taskUserResDTO.setPrivateTaskHours(Double.valueOf(0));
+            }
             Integer taskLevel = taskUserBO.getTaskLevel();
             if (taskLevel != null){
                 taskUserResDTO.setTaskLevel(taskLevel);
@@ -1845,6 +1885,23 @@ public class ZSYTaskService implements IZSYTaskService {
         userWeekMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
 
+    }
+
+    /**
+     * 当前用户参与的进行中的多人任务
+     */
+    @Override
+    public List<TaskBaseResDTO> getJoinRunningTasks(Long userId) {
+        List<Task> joinTasks = taskMapper.selectJoinRunningTasks(userId);
+        List<TaskBaseResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(joinTasks)){
+            list = joinTasks.stream().map(task -> {
+                TaskBaseResDTO resDTO = new TaskBaseResDTO();
+                BeanUtils.copyProperties(task,resDTO);
+                return resDTO;
+            }).collect(Collectors.toList());
+        }
+        return list;
     }
 
     /**

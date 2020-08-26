@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.bo.PersonTaskBO;
+import com.zhixinhuixue.armor.model.bo.TaskAndHourBO;
 import com.zhixinhuixue.armor.model.bo.TaskUserHoursBO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
@@ -161,6 +162,13 @@ public interface IZSYTaskUserMapper {
      * @param taskId
      */
     void updateByTaskId(@Param("taskId") Long taskId);
+
+    /**
+     * 已当前任务关联的用户的个人任务时间
+     * @param taskId 任务id
+     * @param userId 用户id
+     */
+    List<TaskAndHourBO> selectUserPrivateTaskHours(@Param("taskId") Long taskId, @Param("userId") Long userId);
 
 //    List<Long> selectUserIdByTaskId(@Param("taskId")Long taskId);
     // -- sch

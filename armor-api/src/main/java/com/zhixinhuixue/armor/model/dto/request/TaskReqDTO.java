@@ -30,6 +30,11 @@ public class TaskReqDTO {
     private String doc;
 
     /**
+     * 关联任务
+     */
+    private Long linkTask;
+
+    /**
      * 任务描述
      */
 //    @NotNull(message = "任务描述不能为空")
@@ -112,6 +117,14 @@ public class TaskReqDTO {
      * 任务总结
      */
     private List<AddTaskSummaryReqDTO> taskSummaryReqDTOS;
+
+    public Long getLinkTask() {
+        return linkTask;
+    }
+
+    public void setLinkTask(Long linkTask) {
+        this.linkTask = linkTask;
+    }
 
     public List<AddTaskReviewReqDTO> getTaskReviewReqDTOS() {
         return taskReviewReqDTOS;

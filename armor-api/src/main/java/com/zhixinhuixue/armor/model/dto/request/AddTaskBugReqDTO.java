@@ -35,6 +35,12 @@ public class AddTaskBugReqDTO {
     private Integer severity;
 
     /**
+     * 问题类型
+     */
+    @NotNull(message = "问题类型不能为空")
+    private Integer problemType;
+
+    /**
      * 分派人
      */
     @NotNull(message = "分派人不能为空")
@@ -55,6 +61,14 @@ public class AddTaskBugReqDTO {
     @NotBlank(message = "描述不能为空")
     @ApiModelProperty("描述")
     private String description;
+
+    public Integer getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(Integer problemType) {
+        this.problemType = problemType;
+    }
 
     public Long getTaskId() {
         return taskId;

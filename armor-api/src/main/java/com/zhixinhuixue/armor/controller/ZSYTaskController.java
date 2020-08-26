@@ -387,6 +387,14 @@ public class ZSYTaskController extends ZSYController {
         taskService.editTaskTestDoc(reqDTO);
         return ZSYResult.success().build();
     }
+
+    /**
+     * 当前用户参与的进行中的多人任务
+     */
+    @GetMapping("/join-running/{userId}")
+    public String getJoinRunningTasks(@PathVariable("userId")Long userId){
+        return ZSYResult.success().data(taskService.getJoinRunningTasks(userId)).build();
+    }
     // -- sch
 }
 

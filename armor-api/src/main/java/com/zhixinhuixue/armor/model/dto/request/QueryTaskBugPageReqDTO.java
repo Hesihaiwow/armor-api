@@ -24,6 +24,11 @@ public class QueryTaskBugPageReqDTO {
     @ApiModelProperty("严重性 1:需求或建议,2:一般错误,3:主要错误,4:严重错误")
     private Integer severity;
 
+    /**
+     * 问题类型
+     */
+    private Integer problemType;
+
     @ApiModelProperty("报告员")
     private Long reporterId;
 
@@ -54,6 +59,14 @@ public class QueryTaskBugPageReqDTO {
      * 是否查看所有任务
      */
     private Integer allTask;
+
+    public Integer getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(Integer problemType) {
+        this.problemType = problemType;
+    }
 
     public Integer getSeverity() {
         return severity;

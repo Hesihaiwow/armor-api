@@ -64,6 +64,12 @@ public class TaskDetailResDTO {
     private String isSummarizeStr;
 
     /**
+     * 关联任务
+     */
+    private Long linkTask;
+    private String linkTaskName;
+
+    /**
      * 任务评审详情
      */
     private List<TaskReviewResDTO> taskReviewResDTOS;
@@ -72,6 +78,14 @@ public class TaskDetailResDTO {
      * 任务总结详情
      */
     private List<TaskSummaryResDTO> taskSummaryResDTOS;
+
+    public String getLinkTaskName() {
+        return linkTaskName;
+    }
+
+    public void setLinkTaskName(String linkTaskName) {
+        this.linkTaskName = linkTaskName;
+    }
 
     public boolean getCanReview() {
         return canReview;
@@ -143,6 +157,14 @@ public class TaskDetailResDTO {
      * 我的任务功能点
      */
     private List<TaskTempFunctionResDTO> myFunctionResDTOS;
+
+    public Long getLinkTask() {
+        return linkTask;
+    }
+
+    public void setLinkTask(Long linkTask) {
+        this.linkTask = linkTask;
+    }
 
     public Integer getCanEditTestDoc() {
         return canEditTestDoc;
