@@ -95,6 +95,7 @@
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item class="task-form" label="任务ID：">{{taskDetail.id}}</el-form-item>
+                <el-form-item class="task-form" label="关联任务：" v-if="taskDetail.type === 1">{{taskDetail.linkTaskName}}</el-form-item>
                 <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
                 <el-form-item class="task-form" label="需求文档：" v-show="taskDetail.type === 2">
                     <a id="text" v-if="taskDetail.doc !== undefined && taskDetail.doc !== null && taskDetail.doc !== ''" style="cursor: pointer;"
@@ -166,6 +167,7 @@
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>
+                <el-form-item class="task-form" label="关联任务：">{{taskDetail.linkTaskName}}</el-form-item>
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate}}</el-form-item>
                 <el-form-item class="task-form" label="标签：">
@@ -195,6 +197,7 @@
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 custom-class="myDialog"
+                   width="800px"
                 size="tiny"
                 :before-close="hideTaskDetail">
             <el-form>
@@ -265,7 +268,6 @@
                         </el-tooltip>
                         <span class="fl ctpc-member-job-time">工作量:{{item.taskHours}}工时</span>
                         <span class="fl ctpc-member-end-time">截止:{{item.endTime | formatDate}}</span>
-                        <!--<span class="fl ctpc-member-assess" v-show="item.status==3 && item.commentGrade">评价：{{item.commentGrade}}</span>-->
                         <span class="fl ctpc-member-assess" v-show="item.status===3 && item.avgScore">评分：{{item.avgScore}}</span>
                         <a href="javascript:;" v-show="taskDetail.status>1 && userRole===0 && item.status===3"
                            @click="evaluateDetail(item.id,item.jobRole,item.userName)">查看评价</a>
@@ -275,6 +277,18 @@
                                 <div v-if="item.functionStrs !== undefined && item.functionStrs.length > 0">
                                     <div>功能点:</div>
                                     <div v-for="functionStr in item.functionStrs">{{functionStr}}</div>
+                                </div>
+                            </div>
+                            <span class="fl" style="margin-left: 25px"><i class="el-icon-info"></i></span>
+                        </el-tooltip>
+                        <span class="fl ctpc-member-job-time" style="margin-left: 10px">个人任务:{{item.privateTaskHours}}工时</span>
+                        <el-tooltip placement="top">
+                            <div slot="content" style="width: 200px">
+                                <div v-if="item.priTaskList !== undefined && item.priTaskList.length > 0">
+                                    <div v-for="priTask in item.priTaskList">
+                                        <span>{{priTask.taskName}}</span>
+                                        <span class="fr">工作量: {{priTask.hours}}</span>
+                                    </div>
                                 </div>
                             </div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-info"></i></span>
@@ -1436,19 +1450,17 @@
                 <el-form-item class="task-form-edit" style="margin-top: 5px;" label="任务描述">
                     <el-input type="textarea" size="small" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
-                <!--<el-form-item class="task-form-edit" label="阶段">-->
-                    <!--<el-select-->
-                            <!--v-model="modifyPrivateTaskForm.stageId"-->
-                            <!--default-first-option-->
-                            <!--placeholder="请选择阶段">-->
-                        <!--<el-option-->
-                                <!--v-for="item in stageList"-->
-                                <!--:key="item.id"-->
-                                <!--:label="item.name"-->
-                                <!--:value="item.id">-->
-                        <!--</el-option>-->
-                    <!--</el-select>-->
-                <!--</el-form-item>-->
+                <el-form-item label="关联任务" >
+                    <el-select v-model="modifyPrivateTaskForm.linkTask" placeholder="请选择">
+                        <el-option
+                                v-for="item in joinRunningTaskList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <span>(非必选)</span>
+                </el-form-item>
                 <el-form-item class="task-form-edit" style="margin-top: 5px;" label="标签" size="small">
                     <el-select
                             v-model="modifyPrivateTaskForm.tags"
@@ -1933,7 +1945,8 @@
                     endTime: '',
                     tags: [],
                     taskHours: '',
-                    stageId: ''
+                    stageId: '',
+                    linkTask:null
                 },
                 pickerOptions0: {
                     disabledDate(time) {
@@ -2189,7 +2202,9 @@
                     taskId:null,
                     taskName:'',
                     testDoc:'',
-                }
+                },
+                //当前用户参与的进行中的多人任务
+                joinRunningTaskList:[]
 
             };
         },
@@ -2454,7 +2469,6 @@
                 this.finishForm.taskId = taskId;
                 this.finishForm.taskUserId = userId;
                 this.finishForm.taskType = taskType;
-                this.showFinishedTask = true;
                 http.zsyGetHttp(`/task/detail/${taskId}`, {}, (resp) => {
                     this.taskDetail = resp.data;
                     if (this.taskDetail.users!==undefined && this.taskDetail.users.length>0){
@@ -2464,6 +2478,7 @@
                         }
                     }
                 })
+                this.showFinishedTask = true;
             },
             //跳转到任务关联文档URL
             toFile(url){
@@ -3196,6 +3211,14 @@
                     this.isSaving = false;
                     vm.hideModifyPrivateTaskDialog();
                     vm.$emit('reload');
+                },err=>{
+                    this.isSaving = false
+                })
+            },
+            //查询我参与的进行中的多人任务
+            fetchJoinRunningTasks(userId){
+                http.zsyGetHttp('/task/join-running/'+userId,{},res=>{
+                    this.joinRunningTaskList = res.data
                 })
             },
             // 显示修改单人任务弹出层
@@ -3213,9 +3236,11 @@
                     this.modifyPrivateTaskForm.taskHours = resp.data.users[0].taskHours;
                     this.modifyPrivateTaskForm.userId = resp.data.users[0].userId;
                     this.modifyPrivateTaskForm.stageId = resp.data.stageId;
+                    this.modifyPrivateTaskForm.linkTask = resp.data.linkTask;
                     for (let i = 0; i < resp.data.tags.length; i++) {
                         this.modifyPrivateTaskForm.tags.push(resp.data.tags[i].id)
                     }
+                    this.fetchJoinRunningTasks(this.modifyPrivateTaskForm.userId)
                 });
                 this.showModifyPrivateTask = true;
 
@@ -3234,7 +3259,8 @@
                     endTime: '',
                     tags: [],
                     taskHours: '',
-                    stageId: ''
+                    stageId: '',
+                    linkTask:null
                 };
             },
 

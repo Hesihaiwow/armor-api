@@ -74,10 +74,11 @@
                                 >
                                 </el-date-picker>
                             </div>
-
+                            <div class="demand-top-list fl" style="margin-left: 20px;">
+                                <el-input style="width: 300px;" size="small" v-model="title" placeholder="请输入标题" clearable></el-input>
+                            </div>
                             <el-button class="fl" type="primary" size="small" @click="select0">查询</el-button>
-                            <el-button class="fl" type="primary" size="small" @click="excel"
-                                       v-show="permit">导出
+                            <el-button class="fl" type="primary" size="small" @click="excel" v-show="permit">导出
                             </el-button>
                         </div>
                     </div>
@@ -212,7 +213,12 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select1">查询</el-button>
+                            <div class="demand-top-list fl" style="margin-left: 20px;">
+                                <el-input style="width: 300px;" size="small" v-model="title" placeholder="请输入标题" clearable></el-input>
+                            </div>
+                            <div class="demand-top-list fl">
+                                <el-button type="primary" size="small" @click="select1">查询</el-button>
+                            </div>
                         </div>
                     </div>
                     <el-table :data="demandData" border
@@ -366,7 +372,13 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select4">查询</el-button>
+                            <div class="demand-top-list fl" style="margin-left: 20px;">
+                                <el-input style="width: 300px;" size="small" v-model="title" placeholder="请输入标题" clearable></el-input>
+                            </div>
+                            <div class="demand-top-list fl">
+                                <el-button type="primary" size="small" @click="select4">查询</el-button>
+                            </div>
+
                         </div>
                     </div>
                     <el-table :data="demandData" border
@@ -506,7 +518,12 @@
                                                :value="item.id"></el-option>
                                 </el-select>
                             </div>
-                            <el-button type="primary" size="small" @click="select3">查询</el-button>
+                            <div class="demand-top-list fl" style="margin-left: 20px;">
+                                <el-input style="width: 300px;" size="small" v-model="title" placeholder="请输入标题" clearable></el-input>
+                            </div>
+                            <div class="demand-top-list fl">
+                                <el-button type="primary" size="small" @click="select3">查询</el-button>
+                            </div>
                         </div>
                     </div>
                     <el-table :data="demandData" border
@@ -637,6 +654,9 @@
                                 <el-option v-for="item in sourceList2" :key="item.id" :label="item.name"
                                            :value="item.id"></el-option>
                             </el-select>
+                        </div>
+                        <div class="demand-top-list fl" style="margin-left: 20px;">
+                            <el-input style="width: 250px;" size="small" v-model="title" placeholder="请输入标题" clearable></el-input>
                         </div>
                         <el-button type="primary" size="small" @click="select2">查询</el-button>
                     </div>
@@ -2032,6 +2052,7 @@
                 this.reqDTO.fromCoach = null;
                 this.reqDTO.fbTimeStart = null;
                 this.reqDTO.fbTimeEnd = null;
+                this.reqDTO.title = null;
             },
             clear0() {
                 this.priority = null;
@@ -2102,6 +2123,9 @@
                 if (this.fbTimeEnd){
                     this.reqDTO.fbTimeEnd = moment(this.fbTimeEnd).format('YYYY-MM-DD 23:59:59')
                 }
+                if (this.title != null && this.title !== undefined && this.title !== ''){
+                    this.reqDTO.title = this.title.trim()
+                }
                 http.zsyPostHttp('feedback/demand-new/list/excel',this.reqDTO,(res) =>{
                     if (res.data) {
                         window.open(res.data)
@@ -2135,6 +2159,9 @@
                 if (this.fbTimeEnd){
                     this.reqDTO.fbTimeEnd = moment(this.fbTimeEnd).format('YYYY-MM-DD 23:59:59')
                 }
+                if (this.title != null && this.title !== undefined && this.title !== ''){
+                    this.reqDTO.title = this.title.trim()
+                }
                 this.setSessionScreenData();
                 this.fetchNewDemandList()
             },
@@ -2161,7 +2188,9 @@
                 if (this.source1 !== undefined && this.source1 != null){
                     this.reqDTO.source = this.source1
                 }
-
+                if (this.title != null && this.title !== undefined && this.title !== ''){
+                    this.reqDTO.title = this.title.trim()
+                }
                 this.fetchRunningDemandList()
             },
 
@@ -2188,7 +2217,9 @@
                 if (this.chargeMan4 !== undefined && this.chargeMan4 != null) {
                     this.reqDTO.chargeMan = this.chargeMan4
                 }
-
+                if (this.title != null && this.title !== undefined && this.title !== ''){
+                    this.reqDTO.title = this.title.trim()
+                }
                 this.fetchQueueDemandList()
             },
 
@@ -2215,7 +2246,9 @@
                 if (this.chargeMan3 !== undefined && this.chargeMan3 != null) {
                     this.reqDTO.chargeMan = this.chargeMan3
                 }
-
+                if (this.title != null && this.title !== undefined && this.title !== ''){
+                    this.reqDTO.title = this.title.trim()
+                }
                 this.fetchRejectedDemandList()
             },
 
@@ -2238,7 +2271,9 @@
                 if (this.source2 !== undefined && this.source2 != null){
                     this.reqDTO.source = this.source2
                 }
-
+                if (this.title != null && this.title !== undefined && this.title !== ''){
+                    this.reqDTO.title = this.title.trim()
+                }
                 this.fetchCompletedDemandList()
             },
 
@@ -2493,6 +2528,7 @@
             },
             handleClick(tab, event) {
                 this.setSessionScreenData();
+                this.title = ''
                 if (tab.name === "new") {
                     this.clear0();
                     this.clearReqDTO();

@@ -43,6 +43,19 @@
                     </div>
                 </div>
                 <div class="item">
+                    <p class="name">问题类型:</p>
+                    <div class="content">
+                        <el-select v-model="upBugData.problemType" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="item in selectData.problemTypeList"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="item">
                     <p class="name">分派给:</p>
                     <div class="content">
                         <el-select v-model="upBugData.handlerId" filterable placeholder="请选择">
@@ -120,6 +133,7 @@
               upBugData:{
                   description: "",
                   frequency: 1,
+                  problemType: 0,
                   handlerId: '',
                   severity: 3,
                   taskId: '',
@@ -178,6 +192,13 @@
                           name:'打回',
                       }
                   ],
+                  problemTypeList:[
+                      {id:0,name:'代码问题'},
+                      {id:1,name:'设计缺陷'},
+                      {id:2,name:'标准规范'},
+                      {id:3,name:'界面优化'},
+                      {id:4,name:'其他'}
+                  ]
               },
               taskList:[],
               editData:{}
@@ -230,6 +251,7 @@
                     this.upBugData.severity = res.data.severity;
                     this.upBugData.handlerId = res.data.handlerId;
                     this.upBugData.frequency = res.data.frequency;
+                    this.upBugData.problemType = res.data.problemType;
                     this.upBugData.title = res.data.title;
                     this.upBugData.tbId = res.data.tbId;
                     this.pushTask(res.data);

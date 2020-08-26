@@ -57,6 +57,17 @@
                     </el-option>
                 </el-select>
             </div>
+            <div class="screen-item">
+                问题类型
+                <el-select v-model="upData.problemType" placeholder="请选择" @change="changeProblemType(upData.problemType)" clearable>
+                    <el-option
+                            v-for="item in selectData.problemTypeList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+            </div>
 
         </div>
         <div class="table-box" v-if="tableData.list">
@@ -166,6 +177,13 @@
                             id:4,
                             name:'严重错误',
                         },
+                    ],
+                    problemTypeList:[
+                        {id:0,name:'代码问题'},
+                        {id:1,name:'设计缺陷'},
+                        {id:2,name:'标准规范'},
+                        {id:3,name:'界面优化'},
+                        {id:4,name:'其他'}
                     ]
                 },
                 taskList:[],
@@ -179,6 +197,7 @@
                     status: '',
                     severity:'',
                     handlerId:'',
+                    problemType:'',
                 },
                 listName:'所有的BUG',
                 tableData:{
@@ -243,6 +262,10 @@
                 if (severity != null && severity !== undefined && severity !== ''){
                     this.upData.severity = severity
                 }
+                let problemType = window.localStorage.getItem('problemType');
+                if (problemType != null && problemType !== undefined && problemType !== ''){
+                    this.upData.problemType = problemType
+                }
                 this.getDefaultDatas();
             }
 
@@ -293,6 +316,10 @@
             },
             changeSeverity(severity){
                 window.localStorage.setItem('severity',severity);
+                this.getList()
+            },
+            changeProblemType(type){
+                window.localStorage.setItem('problemType',type);
                 this.getList()
             },
             getList(){

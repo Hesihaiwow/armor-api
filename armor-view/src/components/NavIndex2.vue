@@ -1441,6 +1441,17 @@
                 <el-form-item label="任务描述" prop="description">
                     <el-input type="textarea" v-model="taskForm.description" :rows="3"></el-input>
                 </el-form-item>
+                <el-form-item label="关联任务" >
+                    <el-select v-model="taskForm.linkTask" placeholder="请选择">
+                        <el-option
+                                v-for="item in joinRunningTaskList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <span>(非必选)</span>
+                </el-form-item>
                 <el-form-item label="标签" prop="tags">
                     <el-select
                             v-model="taskForm.tags"
@@ -2971,6 +2982,7 @@
                     taskName: '',
                     description: '',
                     projectId: '',
+                    linkTask: null,
                     endTime: '',
                     beginTime: '',
                     priority: 1,
@@ -3709,7 +3721,9 @@
                     pageSize:10,
                     total:0
                 },
-                myTaskBugPageNum:1
+                myTaskBugPageNum:1,
+                //当前用户参与的进行中的多人任务
+                joinRunningTaskList:[]
                 // -- sch
             };
         },
@@ -4262,6 +4276,7 @@
             createPrivateTask(){
                 // this.clearMultipleTask();
                 this.fetchProjectList();
+                this.fetchJoinRunningTasks();
                 this.createTaskVisible = false;
                 this.createPrivateTaskVisible = true;
             },
@@ -9041,6 +9056,12 @@
                 http.zsyGetHttp('/task-bug/personal/page/'+this.myTaskBugPageNum,{},res=>{
                     this.myTaskBugData = res.data.list;
                     this.myTaskBugPage.total = res.data.total;
+                })
+            },
+            //查询我参与的进行中的多人任务
+            fetchJoinRunningTasks(){
+                http.zsyGetHttp('/task/join-running/'+this.userId,{},res=>{
+                    this.joinRunningTaskList = res.data
                 })
             }
             // -- sch
