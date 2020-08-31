@@ -389,7 +389,12 @@
     .screen-box{
         margin-bottom: 20px;
         display: flex;
-        justify-content: space-between;
+        /*justify-content: space-between;*/
+        flex-wrap: wrap;
+        .screen-item{
+            margin-bottom: 15px;
+            margin-right: 15px;
+        }
         .el-select{
             width: 160px;
         }
