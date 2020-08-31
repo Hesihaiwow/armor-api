@@ -8,7 +8,11 @@ import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.TaskBugBO;
+import com.zhixinhuixue.armor.model.bo.TaskBugStatusPieBO;
+import com.zhixinhuixue.armor.model.bo.TaskBugTypePieBO;
+import com.zhixinhuixue.armor.model.bo.TaskBugUserHistogramBO;
 import com.zhixinhuixue.armor.model.dto.request.AddTaskBugReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.BugStatReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTaskBugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.QueryTaskBugPageReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
@@ -16,6 +20,7 @@ import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskBug;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.service.IZSYTaskBugService;
+import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
@@ -24,10 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author sch
@@ -492,6 +496,164 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             });
         }
         return new PageInfo<>(list);
+    }
+
+    /**
+     * bug状态饼形图
+     */
+    @Override
+    public List<TaskBugStatusPieResDTO> getBugStatusPie(BugStatReqDTO reqDTO) {
+        Date yearAndMonth = reqDTO.getYearAndMonth();
+        String yearMonth = "";
+        if (yearAndMonth != null){
+            yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
+        }
+        List<TaskBugStatusPieBO> statusPieBOS = taskBugMapper.selectBugStatusPie(yearMonth);
+        List<TaskBugStatusPieResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(statusPieBOS)){
+            list = statusPieBOS.stream().map(item->{
+                TaskBugStatusPieResDTO resDTO = new TaskBugStatusPieResDTO();
+                resDTO.setStatusName(TaskBugStatus.getName(item.getStatus()));
+                resDTO.setNumber(item.getNumber());
+                return resDTO;
+            }).collect(Collectors.toList());
+        }
+        return list;
+    }
+
+    /**
+     * bug类型分类饼形图
+     */
+    @Override
+    public List<TaskBugTypePieResDTO> getBugTypePie(BugStatReqDTO reqDTO) {
+        Date yearAndMonth = reqDTO.getYearAndMonth();
+        String yearMonth = "";
+        if (yearAndMonth != null){
+            yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
+        }
+        List<TaskBugTypePieBO> typePieBOS = taskBugMapper.selectBugTypePie(yearMonth);
+        List<TaskBugTypePieResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(typePieBOS)){
+            list = typePieBOS.stream().map(item->{
+                TaskBugTypePieResDTO resDTO = new TaskBugTypePieResDTO();
+                resDTO.setNumber(item.getNumber());
+                resDTO.setTypeName(TaskBugType.getName(item.getProblemType()));
+                return resDTO;
+            }).collect(Collectors.toList());
+        }
+        return list;
+    }
+
+    /**
+     * 用户bug柱状图
+     * @param reqDTO 查询条件
+     */
+    @Override
+    public List<TaskBugUserHistogramResDTO> getBugUserHistogram(BugStatReqDTO reqDTO) {
+        Date yearAndMonth = reqDTO.getYearAndMonth();
+        String yearMonth = "";
+        if (yearAndMonth != null){
+            yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
+        }
+        Integer isTester = reqDTO.getIsTester();
+        if (isTester == null){
+            throw new ZSYServiceException("请选择用户类型");
+        }
+        List<TaskBugUserHistogramBO> userHistogramBOS = new ArrayList<>();
+        if (isTester == 0){
+            //查询分配人的bug统计
+            userHistogramBOS = taskBugMapper.selectBugHandlerHistogram(yearMonth);
+        }else if (isTester == 1){
+            userHistogramBOS = taskBugMapper.selectBugCreatorHistogram(yearMonth);
+        }
+        List<TaskBugUserHistogramResDTO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userHistogramBOS)){
+            list = userHistogramBOS.stream()
+                    .map(item->{
+                        TaskBugUserHistogramResDTO resDTO = new TaskBugUserHistogramResDTO();
+                        resDTO.setUserName(item.getUserName());
+                        resDTO.setNumber(item.getNumber());
+                        return resDTO;
+                    }).collect(Collectors.toList());
+        }
+        return list;
+    }
+
+    /**
+     * 任务bug表
+     * @param reqDTO 参数
+     */
+    @Override
+    public ArmorPageInfo<TaskBugStatResDTO> getTaskBugStat(BugStatReqDTO reqDTO) {
+        Date yearAndMonth = reqDTO.getYearAndMonth();
+        String yearMonth = "";
+        if (yearAndMonth != null){
+            yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
+        }
+        List<TaskBugBO> allTaskBugBOS = taskBugMapper.selectTaskStat(yearMonth);
+        Page<TaskBugStatResDTO> list = new Page<>();
+        if (!CollectionUtils.isEmpty(allTaskBugBOS)){
+            Map<Long, List<TaskBugBO>> taskMap = allTaskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getTaskId));
+            for (Long taskId : taskMap.keySet()) {
+                TaskBugStatResDTO resDTO = new TaskBugStatResDTO();
+                List<TaskBugBO> taskBugBOS = taskMap.get(taskId);
+                resDTO.setTaskId(taskId);
+                resDTO.setTaskName(taskBugBOS.get(0).getTaskName());
+
+                Map<Integer, List<TaskBugBO>> statusMap = taskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getStatus));
+                List<TaskBugStatResDTO.BugStatusNum> bugStatusNumList = new ArrayList<>();
+                List<TaskBugStatResDTO.BugSeverityNum> bugSeverityNumList = new ArrayList<>();
+                List<TaskBugStatResDTO.BugTypeNum> bugTypeNumList = new ArrayList<>();
+                List<TaskBugStatResDTO.UserBugNum> creatorNumList = new ArrayList<>();
+                List<TaskBugStatResDTO.UserBugNum> handlerNumList = new ArrayList<>();
+                for (Integer status : statusMap.keySet()) {
+                    TaskBugStatResDTO.BugStatusNum bugStatusNum = new TaskBugStatResDTO.BugStatusNum();
+                    bugStatusNum.setStatusName(TaskBugStatus.getName(status));
+                    bugStatusNum.setNumber(statusMap.get(status).size());
+                    bugStatusNumList.add(bugStatusNum);
+                }
+                Map<Integer, List<TaskBugBO>> severityMap = taskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getSeverity));
+                for (Integer severity : severityMap.keySet()) {
+                    TaskBugStatResDTO.BugSeverityNum bugSeverityNum = new TaskBugStatResDTO.BugSeverityNum();
+                    bugSeverityNum.setSeverityName(TaskBugSeverity.getName(severity));
+                    bugSeverityNum.setNumber(severityMap.get(severity).size());
+                    bugSeverityNumList.add(bugSeverityNum);
+                }
+                Map<Integer, List<TaskBugBO>> typeMap = taskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getProblemType));
+                for (Integer type : typeMap.keySet()) {
+                    TaskBugStatResDTO.BugTypeNum bugTypeNum = new TaskBugStatResDTO.BugTypeNum();
+                    bugTypeNum.setTypeName(TaskBugType.getName(type));
+                    bugTypeNum.setNumber(typeMap.get(type).size());
+                    bugTypeNumList.add(bugTypeNum);
+                }
+                Map<Long, List<TaskBugBO>> creatorMap = taskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getCreateBy));
+                for (Long createUser : creatorMap.keySet()) {
+                    TaskBugStatResDTO.UserBugNum userBugNum = new TaskBugStatResDTO.UserBugNum();
+                    userBugNum.setUserName(creatorMap.get(createUser).get(0).getCreateName());
+                    userBugNum.setNumber(creatorMap.get(createUser).size());
+                    creatorNumList.add(userBugNum);
+                }
+                Map<Long, List<TaskBugBO>> handlerMap = taskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getHandlerId));
+                for (Long handlerId : handlerMap.keySet()) {
+                    TaskBugStatResDTO.UserBugNum userBugNum = new TaskBugStatResDTO.UserBugNum();
+                    userBugNum.setUserName(handlerMap.get(handlerId).get(0).getHandlerName());
+                    userBugNum.setNumber(handlerMap.get(handlerId).size());
+                    handlerNumList.add(userBugNum);
+                }
+                resDTO.setBugStatusNumList(bugStatusNumList);
+                resDTO.setBugSeverityNumList(bugSeverityNumList);
+                resDTO.setBugTypeNumList(bugTypeNumList);
+                resDTO.setCreatorNumList(creatorNumList);
+                resDTO.setHandlerNumList(handlerNumList);
+                list.add(resDTO);
+            }
+            ArmorPageInfo<TaskBugStatResDTO> page = ArmorPageInfo.pageByMemory(list, Optional.ofNullable(reqDTO.getPageNum()).orElse(1));
+            int current = page.getCurrent();
+            List<TaskBugStatResDTO> result = page.getList();
+            long totalSize = page.getTotalSize();
+            return new ArmorPageInfo(current,ZSYConstants.PAGE_SIZE, totalSize,result);
+        }
+        return new ArmorPageInfo<>(list);
     }
 
     /**

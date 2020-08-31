@@ -2,8 +2,10 @@ package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.TaskBugBO;
+import com.zhixinhuixue.armor.model.bo.TaskBugStatusPieBO;
+import com.zhixinhuixue.armor.model.bo.TaskBugTypePieBO;
+import com.zhixinhuixue.armor.model.bo.TaskBugUserHistogramBO;
 import com.zhixinhuixue.armor.model.dto.request.QueryTaskBugPageReqDTO;
-import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskBug;
 import org.apache.ibatis.annotations.Param;
 
@@ -97,4 +99,41 @@ public interface IZSYTaskBugMapper {
      * @param userId 用户id
      */
     Page<TaskBugBO> selectMyReportBug(@Param("userId")Long userId);
+
+    /**
+     * bug按状态分类
+     * @author sch
+     * @return List<TaskBugStatusPieBO>
+     */
+    List<TaskBugStatusPieBO> selectBugStatusPie(@Param("yearMonth")String yearMonth);
+
+    /**
+     * bug按类型分类
+     * @author sch
+     * @return List<TaskBugTypePieBO>
+     */
+    List<TaskBugTypePieBO> selectBugTypePie(@Param("yearMonth")String yearMonth);
+
+    /**
+     * 查询分配人的bug统计
+     * @author sch
+     * @param yearMonth 年份
+     * @return List<TaskBugUserHistogramBO>
+     */
+    List<TaskBugUserHistogramBO> selectBugHandlerHistogram(@Param("yearMonth") String yearMonth);
+
+    /**
+     * 查询创建人的bug统计
+     * @author sch
+     * @param yearMonth 年月
+     * @return List<TaskBugUserHistogramBO>
+     */
+    List<TaskBugUserHistogramBO> selectBugCreatorHistogram(@Param("yearMonth") String yearMonth);
+
+    /**
+     * 查询任务bug
+     * @param yearMonth 年月
+     * @return List<TaskBugBO>
+     */
+    Page<TaskBugBO> selectTaskStat(@Param("yearMonth") String yearMonth);
 }

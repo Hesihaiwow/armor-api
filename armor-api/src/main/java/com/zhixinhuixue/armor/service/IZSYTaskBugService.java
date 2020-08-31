@@ -2,11 +2,11 @@ package com.zhixinhuixue.armor.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.AddTaskBugReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.BugStatReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTaskBugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.QueryTaskBugPageReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.*;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import com.zhixinhuixue.armor.source.ArmorPageInfo;
 
 import java.util.List;
 
@@ -102,4 +102,26 @@ public interface IZSYTaskBugService {
      * @param pageNum 页码
      */
     PageInfo<TaskBugPageResDTO> getCustomizedPage(Long userId, Integer status, Integer pageNum);
+
+    /**
+     * bug状态饼形图
+     */
+    List<TaskBugStatusPieResDTO> getBugStatusPie(BugStatReqDTO reqDTO);
+
+    /**
+     * bug类型分类饼形图
+     */
+    List<TaskBugTypePieResDTO> getBugTypePie(BugStatReqDTO reqDTO);
+
+    /**
+     * 用户bug柱状图
+     * @param reqDTO 查询条件
+     */
+    List<TaskBugUserHistogramResDTO> getBugUserHistogram(BugStatReqDTO reqDTO);
+
+    /**
+     * 任务bug表
+     * @param reqDTO 参数
+     */
+    ArmorPageInfo<TaskBugStatResDTO> getTaskBugStat(BugStatReqDTO reqDTO);
 }

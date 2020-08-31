@@ -25,6 +25,24 @@
         <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <resultMap id="BugStatusMap" type="com.zhixinhuixue.armor.model.bo.TaskBugStatusPieBO">
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="number" property="number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="BugTypeMap" type="com.zhixinhuixue.armor.model.bo.TaskBugTypePieBO">
+        <result column="problem_type" property="problemType" jdbcType="INTEGER"/>
+        <result column="number" property="number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="BugUserMap" type="com.zhixinhuixue.armor.model.bo.TaskBugUserHistogramBO">
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="number" property="number" jdbcType="INTEGER"/>
+        <result column="user_status" property="userStatus" jdbcType="INTEGER"/>
+        <result column="user_delete" property="userDelete" jdbcType="INTEGER"/>
+    </resultMap>
+
     <!--新增任务bug-->
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBug">
         INSERT INTO `task_bug`
@@ -236,5 +254,79 @@
         ORDER BY tb.`create_time` DESC
     </select>
 
+    <!--bug按状态分类-->
+    <select id="selectBugStatusPie" resultMap="BugStatusMap">
+        SELECT `status`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0
+        <if test="yearMonth != null and yearMonth != ''">
+            AND DATE_FORMAT(create_time,'%Y-%M') = #{yearMonth}
+        </if>
+        GROUP BY `status`;
+    </select>
+
+    <!--bug按类型分类-->
+    <select id="selectBugTypePie" resultMap="BugTypeMap">
+        SELECT `problem_type`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0
+        <if test="yearMonth != null and yearMonth != ''">
+            AND DATE_FORMAT(create_time,'%Y-%M') = #{yearMonth}
+        </if>
+        GROUP BY `problem_type`;
+    </select>
+
+    <!--查询分配人的bug统计-->
+    <select id="selectBugHandlerHistogram" resultMap="BugUserMap">
+        SELECT tb.`handler_id` AS `user_id`,
+        u.`name` AS `user_name`,
+        COUNT(tb.tb_id) AS number,
+        u.is_delete AS `user_delete`,
+        u.`status` AS `user_status`
+        FROM task_bug tb
+        LEFT JOIN `user` u ON u.id = tb.handler_id
+        WHERE tb.is_delete = 0
+        <if test="yearMonth != null and yearMonth != ''">
+            AND DATE_FORMAT(tb.create_time,'%Y-%M') = #{yearMonth}
+        </if>
+        GROUP BY tb.`handler_id`;
+    </select>
+
+    <!--查询创建人的bug统计-->
+    <select id="selectBugCreatorHistogram" resultMap="BugUserMap">
+        SELECT tb.`create_by` AS `user_id`,
+        u.`name` AS `user_name`,
+        COUNT(tb.tb_id) AS number,
+        u.is_delete AS `user_delete`,
+        u.`status` AS `user_status`
+        FROM task_bug tb
+        LEFT JOIN `user` u ON u.id = tb.create_by
+        WHERE tb.is_delete = 0
+        <if test="yearMonth != null and yearMonth != ''">
+            AND DATE_FORMAT(tb.create_time,'%Y-%M') = #{yearMonth}
+        </if>
+        GROUP BY tb.`create_by`;
+    </select>
+
+    <!--查询任务bug-->
+    <select id="selectTaskStat" resultMap="BOMap">
+        SELECT
+        t.name AS task_name,
+        tb.task_id,
+        tb.tb_no,
+        tb.title,
+        tb.`status`,
+        tb.problem_type,
+        tb.severity,
+        tb.create_by,
+        tb.handler_id,
+        u1.`name` AS `create_name`,
+        u2.`name` AS `handler_name`
+        FROM task_bug tb
+        LEFT JOIN task t ON t.id = tb.task_id
+        LEFT JOIN user u1 ON u1.id = tb.create_by
+        LEFT JOIN user u2 ON u2.id = tb.handler_id
+        WHERE tb.is_delete = 0
+        <if test="yearMonth != null and yearMonth != ''">
+            AND DATE_FORMAT(tb.create_time,'%Y-%M') = #{yearMonth}
+        </if>
+        ORDER BY tb.task_id
+    </select>
 
 </mapper>

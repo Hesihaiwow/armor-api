@@ -1,7 +1,7 @@
 package com.zhixinhuixue.armor.controller;
 
-import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.model.dto.request.AddTaskBugReqDTO;
+import com.zhixinhuixue.armor.model.dto.request.BugStatReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditTaskBugReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.QueryTaskBugPageReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskBugDetailResDTO;
@@ -117,5 +117,41 @@ public class ZSYTaskBugController {
     public String getCustomizedPage(@PathVariable("userId")Long userId,@PathVariable("status")Integer status,
                                     @PathVariable("pageNum")Integer pageNum){
         return ZSYResult.success().data(taskBugService.getCustomizedPage(userId,status,pageNum)).build();
+    }
+
+    /**
+     * bug状态分类饼形图
+     * @param reqDTO 查询条件
+     */
+    @PostMapping("/status-pie")
+    public String getBugStatusPie(@RequestBody BugStatReqDTO reqDTO){
+        return ZSYResult.success().data(taskBugService.getBugStatusPie(reqDTO)).build();
+    }
+
+    /**
+     * bug类型分类饼形图
+     * @param reqDTO 查询条件
+     */
+    @PostMapping("/type-pie")
+    public String getBugTypePie(@RequestBody BugStatReqDTO reqDTO){
+        return ZSYResult.success().data(taskBugService.getBugTypePie(reqDTO)).build();
+    }
+
+    /**
+     * 用户bug柱状图
+     * @param reqDTO 查询条件
+     */
+    @PostMapping("/user-histogram")
+    public String getBugUserHistogram(@RequestBody BugStatReqDTO reqDTO){
+        return ZSYResult.success().data(taskBugService.getBugUserHistogram(reqDTO)).build();
+    }
+
+    /**
+     * 任务bug表
+     * @param reqDTO 参数
+     */
+    @PostMapping("/task-stat")
+    public String getTaskBugStat(@RequestBody BugStatReqDTO reqDTO){
+        return ZSYResult.success().data(taskBugService.getTaskBugStat(reqDTO)).build();
     }
 }
