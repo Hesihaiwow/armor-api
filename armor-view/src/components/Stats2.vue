@@ -20,64 +20,7 @@
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="周发版计划" name="weekPublish"  style="">
-                <div class="add-member-basic-msg fl">
-                    <el-date-picker
-                            v-model="weekPublishReqDTO.beginTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择开始时间"
-                    >
-                    </el-date-picker>
-                    <span style="font-size: 14px;color: #606266;">-</span>
-                    <el-date-picker
-                            v-model="weekPublishReqDTO.endTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择截止时间"
-                    >
-                    </el-date-picker>
-                </div>
-                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt="" @click="fetchWeekPublishPlan()" class="search-btn"></div>
-                <el-checkbox v-model="weekPublishReqDTO.isTesting" style="margin-top: 5px;margin-left: 10px" @change="fetchWeekPublishPlan">测试中</el-checkbox>
 
-                <el-table :data="weekPublishData" border
-                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column type="index" label="序号" align="center" width="80" fixed>
-                        <template slot-scope="scope">
-                            {{(weekPublishReqDTO.pageNum-1)*20 + scope.$index + 1}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="createByName" label="负责人" align="center" width="90" fixed></el-table-column>
-                    <el-table-column prop="taskName" label="任务名称" align="center" width="200" fixed></el-table-column>
-                    <el-table-column prop="specialTestTime" label="专项测试时间" align="center" width="130"></el-table-column>
-                    <el-table-column prop="zujuan" label="组卷" align="center" width="120"></el-table-column>
-                    <el-table-column prop="yuejuan" label="阅卷" align="center" width="120"></el-table-column>
-                    <el-table-column prop="saomiao" label="扫描上传" align="center" width="120"></el-table-column>
-                    <el-table-column prop="xueyebaogao" label="学业报告" align="center" width="120"></el-table-column>
-                    <el-table-column prop="developers" label="开发" align="center" width="110"></el-table-column>
-                    <el-table-column prop="testers" label="测试" align="center" width="110"></el-table-column>
-                    <el-table-column prop="realTestTime" label="实际测试时间" align="center" width="130"></el-table-column>
-                    <el-table-column prop="onlineTime" label="预估上线时间" align="center" width="130"></el-table-column>
-                    <el-table-column prop="realOnlineTime" label="实际上线时间" align="center" width="130"></el-table-column>
-                    <el-table-column label="操作" width="80" align="center" fixed="right">
-                        <template slot-scope="scope">
-                            <el-button @click="editWeekPublish(scope.row)" type="text" size="small" >编辑</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                            @current-change="handleWeekPublishCurrentChange"
-                            :current-page.sync="weekPublishReqDTO.pageNum"
-                            :page-size="weekPublishPage.pageSize"
-                            :layout="weekPublishPageLayout"
-                            :total="weekPublishPage.total">
-                    </el-pagination>
-                </div>
             </el-tab-pane>
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
@@ -1288,53 +1231,6 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="编辑周发版计划" :visible.sync="editWeekPublishVisible"
-                   :close-on-click-modal="false" :close-on-press-escape="false"
-                   class="wpp"
-        @close="closeEditWeekPublish">
-                <el-form :model="weekPublish"  ref="weekPublishForm">
-                    <!--<el-form-item label="平台: ">-->
-                        <!--<el-checkbox-group-->
-                                <!--v-model="weekPublish.platforms">-->
-                            <!--<el-checkbox v-for="platform in platformList"-->
-                                         <!--:label="platform.id" :key="platform.id">{{platform.name}}</el-checkbox>-->
-                        <!--</el-checkbox-group>-->
-                    <!--</el-form-item>-->
-                    <el-form-item  label="专项测试时间: ">
-                        <el-input type="input" style="width: 300px" v-model="weekPublish.specialTestTime"></el-input>
-                    </el-form-item>
-                    <el-form-item  label="是否涉及组卷: ">
-                        <el-input type="input" style="width: 300px"  v-model="weekPublish.zujuan"></el-input>
-                    </el-form-item>
-                    <el-form-item  label="是否涉及阅卷: ">
-                        <el-input type="input" style="width: 300px"  v-model="weekPublish.yuejuan"></el-input>
-                    </el-form-item>
-                    <el-form-item  label="是否涉及扫描上传: ">
-                        <el-input type="input" style="width: 280px"  v-model="weekPublish.saomiao"></el-input>
-                    </el-form-item>
-                    <el-form-item  label="是否涉及学业报告: ">
-                        <el-input type="input" style="width: 280px"  v-model="weekPublish.xueyebaogao"></el-input>
-                    </el-form-item>
-                    <!--<el-form-item  label="是否涉及产品: ">-->
-                        <!--<el-input type="input" style="width: 300px"  v-model="weekPublish.chanpin"></el-input>-->
-                    <!--</el-form-item>-->
-                    <el-form-item  label="实际测试时间: ">
-                        <el-input type="input" style="width: 300px"  v-model="weekPublish.realTestTime"></el-input>
-                    </el-form-item>
-                    <el-form-item  label="预期上线时间: ">
-                        <el-input type="input"  style="width: 300px" v-model="weekPublish.onlineTime"></el-input>
-                    </el-form-item>
-                    <el-form-item  label="实际上线时间: ">
-                        <el-input type="input"  style="width: 300px" v-model="weekPublish.realOnlineTime"></el-input>
-                    </el-form-item>
-                    <!--<el-form-item  label="任务发布情况: ">-->
-                        <!--<el-input type="textarea"  v-model="weekPublish.condition" :rows="3"></el-input>-->
-                    <!--</el-form-item>-->
-                </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="saveEditWeekPublish(weekPublish.id)">确认修改</el-button>
-            </span>
-        </el-dialog>
         <el-dialog title="修改用户调休时长" :visible.sync="modifyUserRestHoursVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
                    @close="closeRestHoursDialog">
@@ -1904,39 +1800,6 @@
                 importBugVisible:false,
                 importOnlineBugVisible:false,
                 uploadToMysqlVisible:false,
-
-                showWeekPublishPlanVisible: false,
-                editWeekPublishVisible: false,
-                weekPublishDate:'',
-                weekPublishReqDTO:{
-                    pageNum:1,
-                    date:'',
-                    beginTime:'',
-                    endTime:'',
-                    isTesting:false
-                },
-                weekPublishPage:{
-                    pageSize: 20,
-                    total: 0,
-                },
-                weekPublish:{
-                    id:'',
-                    taskId:'',
-                    canOnline:null,
-                    condition:'',
-                    specialTestTime:'',
-                    zujuan:'',
-                    yuejuan:'',
-                    saomiao:'',
-                    xueyebaogao:'',
-                    chanpin:'',
-                    realTestTime:'',
-                    onlineTime:'',
-                    realOnlineTime:'',
-                    platforms:[]
-                },
-                weekPublishData:[],
-                weekPublishByChargeData:[],
                 platformList:[],
 
                 //加班统计
@@ -2091,12 +1954,6 @@
             },
             pageLayout() {
                 if (this.bugFormPage.total > 0) {
-                    return 'total, prev, pager, next'
-                }
-                return 'total, pager'
-            },
-            weekPublishPageLayout() {
-                if (this.weekPublishPage.total > 0) {
                     return 'total, prev, pager, next'
                 }
                 return 'total, pager'
@@ -2570,10 +2427,6 @@
             handleCurrentChange(currentPage){
                 this.bugList.pageNum = currentPage;
                 this.fetchBugPage();
-            },
-            handleWeekPublishCurrentChange(currentPage){
-                this.weekPublishReqDTO.pageNum = currentPage;
-                this.fetchWeekPublishPlan();
             },
             handleOldBugChange(currentPage){
                 this.oldBugList.pageNum = currentPage;
@@ -4394,23 +4247,6 @@
                 }
                 return isExcel && isLt2M;
             },
-            //查询周发版计划
-            fetchWeekPublishPlan(){
-                this.weekPublishReqDTO.beginTime = moment(this.weekPublishReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
-                this.weekPublishReqDTO.endTime = moment(this.weekPublishReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
-                Http.zsyPostHttp('week-publish/list',this.weekPublishReqDTO,(res)=>{
-                    this.weekPublishData = res.data.list;
-                    this.weekPublishPage.total = res.data.total;
-                })
-            },
-            //根据任务负责人分组查询周发版计划
-            fetchWeekPublishPlanByCharge(){
-                this.weekPublishReqDTO.beginTime = moment(this.weekPublishReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
-                this.weekPublishReqDTO.endTime = moment(this.weekPublishReqDTO.endTime).format('YYYY-MM-DD 23:59:59');
-                Http.zsyPostHttp('week-publish/list/by-charge',this.weekPublishReqDTO,(res)=>{
-                    this.weekPublishByChargeData = res.data;
-                })
-            },
 
             //查询平台
             fetchPlatformList() {
@@ -4433,11 +4269,8 @@
                 // 本周日的日期
                 date.setDate(date.getDate() + 6);
                 let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
-                this.weekPublishReqDTO.beginTime = begin;
-                this.weekPublishReqDTO.endTime = end;
-
-                // this.fetchWeekPublishPlanByCharge();
-                this.fetchWeekPublishPlan()
+                // this.weekPublishReqDTO.beginTime = begin;
+                // this.weekPublishReqDTO.endTime = end;
             },
             initTime2(){
                 let date = new Date();
@@ -4487,98 +4320,6 @@
 
                 this.getExtraWorkStats()
             },
-            editWeekPublish(weekPublish){
-                this.weekPublish.id = weekPublish.wppId;
-                this.weekPublish.taskId = weekPublish.taskId;
-                this.weekPublish.condition = weekPublish.condition;
-                this.weekPublish.specialTestTime = weekPublish.specialTestTime;
-                this.weekPublish.zujuan = weekPublish.zujuan;
-                this.weekPublish.yuejuan = weekPublish.yuejuan;
-                this.weekPublish.saomiao = weekPublish.saomiao;
-                this.weekPublish.xueyebaogao = weekPublish.xueyebaogao;
-                this.weekPublish.chanpin = weekPublish.chanpin;
-                this.weekPublish.realTestTime = weekPublish.realTestTime;
-                this.weekPublish.onlineTime = weekPublish.onlineTime;
-                this.weekPublish.realOnlineTime = weekPublish.realOnlineTime;
-                // weekPublish.platformResDTOS.forEach(platform=>{
-                //     this.weekPublish.platforms.push(platform.id)
-                // });
-                this.editWeekPublishVisible = true;
-            },
-            saveEditWeekPublish(){
-                Http.zsyPostHttp('/week-publish/edit',this.weekPublish,(res)=>{
-                    if (res){
-                        this.$message({
-                            showClose: true,
-                            message: '修改成功',
-                            type: 'success'
-                        });
-                        // this.fetchWeekPublishPlanByCharge();
-                        this.fetchWeekPublishPlan();
-                        this.clearWeekPublish();
-                        this.editWeekPublishVisible = false;
-                    }
-                })
-            },
-            updateCanOnline(canOnline,id){
-                  if (canOnline === 0){
-                      this.weekPublish.canOnline = 1;
-                      this.weekPublish.id = id;
-                  } else if (canOnline === 1){
-                      this.weekPublish.canOnline = 0;
-                      this.weekPublish.id = id;
-                  }
-                  this.saveEditWeekPublish()
-            },
-            changeWeekPublishTime(){
-                if (this.weekPublishReqDTO.date != null && this.weekPublishReqDTO.date !== '') {
-                    let date = this.weekPublishReqDTO.date;
-                    // 本周一的日期
-                    date.setDate(date.getDate() - date.getDay() + 1);
-                    let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
-
-                    // 本周日的日期
-                    date.setDate(date.getDate() + 6);
-                    let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
-
-                    this.weekPublishReqDTO.beginTime = begin;
-                    this.weekPublishReqDTO.endTime = end;
-                    this.fetchWeekPublishPlan()
-                }
-
-            },
-            closeEditWeekPublish(){
-                this.clearWeekPublish();
-            },
-            clearWeekPublish(){
-                this.weekPublish.id = '';
-                this.weekPublish.condition = '';
-                this.weekPublish.specialTestTime = '';
-                this.weekPublish.zujuan = '';
-                this.weekPublish.yuejuan = '';
-                this.weekPublish.saomiao = '';
-                this.weekPublish.xueyebaogao = '';
-                this.weekPublish.chanpin = '';
-                this.weekPublish.realTestTime = '';
-                this.weekPublish.onlineTime = '';
-                this.weekPublish.realOnlineTime = '';
-                this.weekPublish.canOnline = null;
-                this.weekPublish.platforms = [];
-                // this.weekPublishReqDTO.date = ''
-            },
-            addFormTagId(platformId, num, $event) {
-                if (this.hasClass($event.currentTarget, 'active')) {
-                    this.removeClass($event.currentTarget, 'active');
-                    if (num === 1) {
-                        this.weekPublish.platforms.splice(this.findIndex(this.weekPublish.platforms, platformId), 1);
-                    }
-                } else {
-                    this.addClass($event.currentTarget, 'active');
-                    if (num === 1) {
-                        this.weekPublish.platforms.push(platformId);
-                    }
-                }
-            },
             hasClass(obj, cls) {
                 return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
             },
@@ -4624,46 +4365,6 @@
                     this.extraWorkReqDTO.endTime = moment(this.ewEndTime).format('YYYY-MM-DD 23:59:59');
                 }
                 this.getExtraWorkStats()
-            },
-            getWPCurrentWeek(){
-                this.weekPublishReqDTO.date=moment().toDate();
-                let date = new Date();
-                // 本周一的日期
-                date.setDate(date.getDate() - date.getDay() + 1);
-                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
-
-                // 本周日的日期
-                date.setDate(date.getDate() + 6);
-                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
-                this.weekPublishReqDTO.beginTime = begin;
-                this.weekPublishReqDTO.endTime = end;
-                // this.fetchWeekPublishPlan();
-            },
-            getWPLastWeek(){
-                let date = new Date();
-                // 本周一的日期
-                date.setDate(date.getDate() - date.getDay() - 6);
-                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
-
-                // 本周日的日期
-                date.setDate(date.getDate() + 6);
-                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
-                this.weekPublishReqDTO.beginTime = begin;
-                this.weekPublishReqDTO.endTime = end;
-                this.weekPublishReqDTO.date = date;
-            },
-            getWPNextWeek(){
-                let date = new Date();
-                // 本周一的日期
-                date.setDate(date.getDate() - date.getDay() + 8);
-                let begin = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:00";
-
-                // 本周日的日期
-                date.setDate(date.getDate() + 6);
-                let end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 23:59:59";
-                this.weekPublishReqDTO.beginTime = begin;
-                this.weekPublishReqDTO.endTime = end;
-                this.weekPublishReqDTO.date = date;
             },
 
             closeRestHoursDialog(){
