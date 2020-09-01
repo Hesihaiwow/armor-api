@@ -504,18 +504,6 @@ public class ZSYTaskService implements IZSYTaskService {
         }
         if (ZSYTaskStage.TESTING.getValue().equals(task.getStageId())){
             //移动到测试中阶段
-
-            //校验是否已经存在
-            List<WeekPublishPlan> exist = weekPublishPlanMapper.selectByTaskId(task.getId());
-            if (CollectionUtils.isEmpty(exist)){
-                WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
-                weekPublishPlan.setId(snowFlakeIDHelper.nextId());
-                weekPublishPlan.setTaskId(task.getId());
-                weekPublishPlan.setCanOnline(0);
-                weekPublishPlan.setCondition("");
-
-                weekPublishPlanMapper.insert(weekPublishPlan);
-            }
         }
         // 插入任务用户
         if (taskReqDTO.getTaskUsers() != null && taskReqDTO.getTaskUsers().size() > 0) {
@@ -2079,18 +2067,6 @@ public class ZSYTaskService implements IZSYTaskService {
                     // sch --
                     if (ZSYTaskStage.TESTING.getValue().equals(targetTask.getStageId())){
                         //移动到测试中阶段
-
-                        //校验是否已经存在
-                        List<WeekPublishPlan> exist = weekPublishPlanMapper.selectByTaskId(task.getId());
-                        if (CollectionUtils.isEmpty(exist)){
-                            WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
-                            weekPublishPlan.setId(snowFlakeIDHelper.nextId());
-                            weekPublishPlan.setTaskId(task.getId());
-                            weekPublishPlan.setCanOnline(0);
-                            weekPublishPlan.setCondition("");
-
-                            weekPublishPlanMapper.insert(weekPublishPlan);
-                        }
                     }
                     //阶段改变后,新增通知
                     stageChange(originTask,originTask.getStageId(),targetTask.getStageId());
@@ -2225,17 +2201,6 @@ public class ZSYTaskService implements IZSYTaskService {
                     if (ZSYTaskStage.TESTING.getValue().equals(targetTask.getStageId())){
                         //移动到测试中阶段
 
-                        //校验是否已经存在
-                        List<WeekPublishPlan> exist = weekPublishPlanMapper.selectByTaskId(task.getId());
-                        if (CollectionUtils.isEmpty(exist)){
-                            WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
-                            weekPublishPlan.setId(snowFlakeIDHelper.nextId());
-                            weekPublishPlan.setTaskId(task.getId());
-                            weekPublishPlan.setCanOnline(0);
-                            weekPublishPlan.setCondition("");
-
-                            weekPublishPlanMapper.insert(weekPublishPlan);
-                        }
                     }
 
                     if (!targetTask.getStageId().equals(originTask.getStageId())){

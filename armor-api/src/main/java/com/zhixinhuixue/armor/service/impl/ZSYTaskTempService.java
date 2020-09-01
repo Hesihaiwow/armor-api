@@ -843,16 +843,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 taskTemp.setStageId(ZSYTaskStage.TESTING.getValue());
             }
             if (ZSYTaskStage.TESTING.getValue().equals(taskTemp.getStageId())){
-                //校验是否已经存在
-                List<WeekPublishPlan> exist = weekPublishPlanMapper.selectByTaskId(taskTemp.getId());
-                if (CollectionUtils.isEmpty(exist)){
-                    WeekPublishPlan weekPublishPlan = new WeekPublishPlan();
-                    weekPublishPlan.setId(snowFlakeIDHelper.nextId());
-                    weekPublishPlan.setTaskId(taskTemp.getId());
-                    weekPublishPlan.setCanOnline(0);
-                    weekPublishPlan.setCondition("");
-                    weekPublishPlanMapper.insert(weekPublishPlan);
-                }
+
             }
             taskMapper.updateByPrimaryKeySelective(taskTemp);
             if (existTaskTemp.getReviewStatus() == 1) {

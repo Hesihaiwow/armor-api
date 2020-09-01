@@ -4,9 +4,7 @@ import com.github.pagehelper.Page;
 import com.zhixinhuixue.armor.model.bo.TaskBO;
 import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.bo.TaskListBO;
-import com.zhixinhuixue.armor.model.bo.WeekPublishTaskBO;
 import com.zhixinhuixue.armor.model.dto.request.TaskListReqDTO;
-import com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Task;
 import com.zhixinhuixue.armor.model.pojo.TaskComment;
 import org.apache.ibatis.annotations.Param;
@@ -283,13 +281,6 @@ public interface IZSYTaskMapper {
     List<TaskListBO> selectTaskInfoByStageId(@Param("stageId")Long stageId, @Param("departmentId")Long departmentId);
 
     /**
-     * 查询即将发版任务(测试中)
-     * @param reqDTO
-     * @return
-     */
-    Page<WeekPublishTaskBO> selectWeekPublishTask(@Param("reqDTO") WeekPublishQueryReqDTO reqDTO);
-
-    /**
      * 查询当前负责的进行中的任务
      * @author sch
      * @param userId 用户ID
@@ -326,13 +317,6 @@ public interface IZSYTaskMapper {
      * @author sch
      */
     List<Task> selectTestTask();
-
-    /**
-     * 按任务负责人分组查看
-     * @author sch
-     * @param reqDTO 参数
-     */
-    List<WeekPublishTaskBO> selectWeekPublishTaskList(WeekPublishQueryReqDTO reqDTO);
 
     /**
      * 当前用户参与的进行中的多人任务

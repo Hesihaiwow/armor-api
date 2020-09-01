@@ -99,37 +99,6 @@
                     select="com.zhixinhuixue.armor.dao.IZSYTaskFunctionMapper.selectBOListByTaskId"/>
     </resultMap>
 
-    <resultMap id="WeekPublishTaskMap" type="com.zhixinhuixue.armor.model.bo.WeekPublishTaskBO">
-        <result column="wpp_id" property="wppId" jdbcType="BIGINT"/>
-        <result column="id" property="taskId" jdbcType="BIGINT"/>
-        <result column="name" property="taskName" jdbcType="VARCHAR"/>
-        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
-        <result column="user_name" property="createByName" jdbcType="VARCHAR"/>
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
-        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP"/>
-        <result column="test_time" property="testTime" jdbcType="TIMESTAMP"/>
-        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
-        <result column="can_online" property="canOnline" jdbcType="INTEGER"/>
-        <result column="condition" property="condition" jdbcType="VARCHAR"/>
-        <result column="special_test_time" property="specialTestTime" jdbcType="VARCHAR"/>
-        <result column="zujuan" property="zujuan" jdbcType="VARCHAR"/>
-        <result column="yuejuan" property="yuejuan" jdbcType="VARCHAR"/>
-        <result column="saomiao" property="saomiao" jdbcType="VARCHAR"/>
-        <result column="xueyebaogao" property="xueyebaogao" jdbcType="VARCHAR"/>
-        <result column="chanpin" property="chanpin" jdbcType="VARCHAR"/>
-        <result column="real_test_time" property="realTestTime" jdbcType="VARCHAR"/>
-        <result column="online_time" property="onlineTime" jdbcType="VARCHAR"/>
-        <result column="real_online_time" property="realOnlineTime" jdbcType="VARCHAR"/>
-        <collection property="userIds" column="taskId=id"
-                    select="com.zhixinhuixue.armor.dao.IZSYTaskUserMapper.selectUserIdByTaskId"
-                    ofType="java.lang.Long"/>
-        <collection property="platforms" column="taskId=id"
-                    select="com.zhixinhuixue.armor.dao.IZSYPlatformMapper.selectPlaformsByTask"
-                    ofType="com.zhixinhuixue.armor.model.pojo.Platform"/>
-        <collection property="userList" column="taskId=id"
-                    select="com.zhixinhuixue.armor.dao.IZSYUserMapper.selectUsersByTaskId"
-                    ofType="com.zhixinhuixue.armor.model.pojo.User"/>
-    </resultMap>
     <!-- 查询任务详情 -->
     <select id="selectTaskDetailByTaskId" parameterType="java.lang.Long" resultMap="TaskDetailResultMap">
         select t1.*,t2.`name` as projectName,t3.`name` as stageName,t4.name as userName
@@ -685,45 +654,6 @@
         and t1.status = 1
         and t7.parent_id =#{departmentId}
         order by t1.sort ASC
-    </select>
-
-    <!--查询即将发版任务(测试中)-->
-    <select id="selectWeekPublishTask" resultMap="WeekPublishTaskMap">
-        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition,wpp.id wpp_id,
-        t.create_time,t.begin_time,t.test_time,
-        wpp.special_test_time,wpp.real_test_time,wpp.online_time,wpp.real_online_time,
-        wpp.zujuan,wpp.yuejuan,wpp.saomiao,wpp.xueyebaogao,wpp.chanpin
-        FROM task t
-        LEFT JOIN user u ON u.id = t.create_by
-        LEFT JOIN week_publish_plan wpp ON wpp.task_id = t.id
-        WHERE t.is_delete = 0 AND t.review_status = 3 AND t.type = 2
-        <![CDATA[  AND  t.end_time >= #{reqDTO.beginTime} ]]>
-        <![CDATA[  AND  t.end_time <= #{reqDTO.endTime} ]]>
-        <if test="reqDTO.isTesting == true ">
-            AND t.stage_id = 212754785051344896
-        </if>
-        GROUP BY t.id
-        ORDER BY t.create_by,t.end_time DESC
-    </select>
-
-
-    <!--按任务负责人分组查看-->
-    <select id="selectWeekPublishTaskList" resultMap="WeekPublishTaskMap"
-            parameterType="com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO">
-        SELECT t.id,t.name,t.create_by,u.name user_name,t.end_time,wpp.can_online,wpp.condition,wpp.id wpp_id,
-        t.create_time,t.begin_time,t.test_time,
-        wpp.special_test_time,wpp.real_test_time,wpp.online_time,wpp.real_online_time,
-        wpp.zujuan,wpp.yuejuan,wpp.saomiao,wpp.xueyebaogao,wpp.chanpin
-        FROM task t
-        LEFT JOIN user u ON u.id = t.create_by
-        LEFT JOIN week_publish_plan wpp ON wpp.task_id = t.id
-        WHERE t.is_delete = 0 AND t.review_status = 3 AND t.type = 2
-        <![CDATA[  AND  t.end_time >= #{beginTime} ]]>
-        <![CDATA[  AND  t.end_time <= #{endTime} ]]>
-        <if test="isTesting == true ">
-            AND t.stage_id = 212754785051344896
-        </if>
-        GROUP BY t.id
     </select>
 
     <!--查询当前负责的进行中的任务-->
