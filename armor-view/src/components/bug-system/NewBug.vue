@@ -328,12 +328,15 @@
         .select-box{
             margin-bottom: 20px;
             display: flex;
-            justify-content: space-between;
+            /*justify-content: space-between;*/
+            flex-wrap: wrap;
             .el-select{
                 width: 140px;
             }
             .item{
                 display: flex;
+                margin-bottom: 15px;
+                margin-right: 15px;
                 .name{
                     display: inline-block;
                     /*width: 60px;*/
