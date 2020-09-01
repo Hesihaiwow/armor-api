@@ -15,6 +15,9 @@
                 :edit-bug-data="editBugData"
                 ></Add>
             </el-tab-pane>
+            <el-tab-pane label="问题统计" name="stats">
+                <Stats v-if="activeName == 'stats'"></Stats>
+            </el-tab-pane>
         </el-tabs>
         <!--<div class="title">-->
             <!--<div class="left fl">-->
@@ -57,12 +60,14 @@
     import My from './My.vue'
     import List from './List.vue'
     import Add from './NewBug.vue'
+    import Stats from './Stats.vue'
     export default {
         name: "Index",
         components: {
             My,
             List,
-            Add
+            Add,
+            Stats
         },
         data(){
             return {
