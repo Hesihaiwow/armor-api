@@ -1446,6 +1446,8 @@
                     <el-select
                             v-model="weekPublishStat.addPublishPlanDTO.taskIds"
                             multiple
+                            filterable
+                            clearable
                             placeholder="请选择任务"
                             style="width: 500px;">
                         <el-option
@@ -1460,6 +1462,8 @@
                     <el-select
                             v-model="weekPublishStat.addPublishPlanDTO.platformIds"
                             multiple
+                            filterable
+                            clearable
                             placeholder="请选择平台"
                             style="width: 500px;">
                         <el-option
@@ -1498,6 +1502,8 @@
                     <el-select
                             v-model="weekPublishStat.editPublishPlanDTO.taskIds"
                             multiple
+                            filterable
+                            clearable
                             placeholder="请选择任务"
                             style="width: 500px;">
                         <el-option
@@ -1512,6 +1518,8 @@
                     <el-select
                             v-model="weekPublishStat.editPublishPlanDTO.platformIds"
                             multiple
+                            filterable
+                            clearable
                             placeholder="请选择平台"
                             style="width: 500px;">
                         <el-option
