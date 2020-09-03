@@ -1,59 +1,56 @@
 <template>
   <div class="project-con">
     <el-tabs v-model="activeName" @tab-click="handleClick">
-        <div v-if="isAdmin">
-            <el-tab-pane label="标签管理" name="tag"  style="line-height:50px">
-                <el-tag
-                        v-for="tag in tagList"
-                        :key="tag.name"
-                        :closable="true"
-                        :close-transition="false"
-                        @close="deleteTagButton(tag)"
-                        :type="color[tag.color]" style="width: 100px;height:40px;line-height:40px;text-align: center;font-size: 15px;margin-left:10px"
-                        :style="'width:'+(tag.name.length)*40+'px'">{{tag.name}}</el-tag>
-                <el-input
-                        style="width: 100px;height:40px;line-height:40px;font-size: 15px;"
-                        class="input-new-tag"
-                        v-if="inputVisible"
-                        v-model="TagName"
-                        ref="saveTagInput"
-                        size="large"
-                        @blur="handleInputTagConfirm">
-                </el-input>
-                <el-button v-else class="button-new-tag" size="large" @click="showTag">+ 新增标签</el-button>
-            </el-tab-pane>
-            <el-tab-pane label="阶段管理" name="stage" >
+        <el-tab-pane v-if="isAdmin" label="标签管理" name="tag"  style="line-height:50px">
+            <el-tag
+                    v-for="tag in tagList"
+                    :key="tag.name"
+                    :closable="true"
+                    :close-transition="false"
+                    @close="deleteTagButton(tag)"
+                    :type="color[tag.color]" style="width: 100px;height:40px;line-height:40px;text-align: center;font-size: 15px;margin-left:10px"
+                    :style="'width:'+(tag.name.length)*40+'px'">{{tag.name}}</el-tag>
+            <el-input
+                    style="width: 100px;height:40px;line-height:40px;font-size: 15px;"
+                    class="input-new-tag"
+                    v-if="inputVisible"
+                    v-model="TagName"
+                    ref="saveTagInput"
+                    size="large"
+                    @blur="handleInputTagConfirm">
+            </el-input>
+            <el-button v-else class="button-new-tag" size="large" @click="showTag">+ 新增标签</el-button>
+        </el-tab-pane>
+        <el-tab-pane label="阶段管理" name="stage" >
             <el-button type="primary" size="middle" style="margin-bottom: 10px;margin-left: 1000px" @click="addStageVisible=true;clearStage()">添加阶段</el-button>
             <el-table :data="stageList" style="width: 100%;margin: auto"
-                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                <el-table-column
-                        label="序号"
-                        prop="num" style="text-align: center"></el-table-column>
-                <el-table-column
-                        label="阶段名称"
-                        prop="name"></el-table-column>
-                <!--<el-table-column-->
-                <!--label="阶段优先级"-->
-                <!--prop="sort" align="center"></el-table-column>-->
-                <el-table-column  label="操作" align="center">
-                    <template slot-scope="scope">
-                        <el-button type="text" v-if="scope.row.id != scope.row.firstId" @click="moveStage(scope.row.id,0)">上移</el-button>
-                        <el-button type="text" v-if="scope.row.id != scope.row.lastId" @click="moveStage(scope.row.id,1)">下移</el-button>
-                        <el-button
-                                size="small"
-                                type="primary"
-                                @click="editStageDialog(scope.$index, stageList)">编辑</el-button>
-                        <el-button
-                                size="small"
-                                type="danger"
-                                @click="deleteStage(scope.$index, stageList)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            </el-tab-pane>
-        </div>
-        <div v-else=""></div>
-        <el-tab-pane label="项目管理" name="project">
+                  :header-cell-style="{background:'#D9D9D9',color:'black'}">
+            <el-table-column
+                    label="序号"
+                    prop="num" style="text-align: center"></el-table-column>
+            <el-table-column
+                    label="阶段名称"
+                    prop="name"></el-table-column>
+            <!--<el-table-column-->
+            <!--label="阶段优先级"-->
+            <!--prop="sort" align="center"></el-table-column>-->
+            <el-table-column  label="操作" align="center">
+                <template slot-scope="scope">
+                    <el-button type="text" v-if="scope.row.id != scope.row.firstId" @click="moveStage(scope.row.id,0)">上移</el-button>
+                    <el-button type="text" v-if="scope.row.id != scope.row.lastId" @click="moveStage(scope.row.id,1)">下移</el-button>
+                    <el-button
+                            size="small"
+                            type="primary"
+                            @click="editStageDialog(scope.$index, stageList)">编辑</el-button>
+                    <el-button
+                            size="small"
+                            type="danger"
+                            @click="deleteStage(scope.$index, stageList)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        </el-tab-pane>
+        <el-tab-pane v-if="isAdmin" label="项目管理" name="project">
         <div class="task-item" v-for="list in TaskItem">
           <img v-if="list.imageUrl" :src="list.imageUrl" class="task-logo" style="width: 40px;height: 40px;border-radius: 50%;">
           <img v-else="" src="../assets/img/u431.png" class="task-logo">
@@ -87,6 +84,8 @@
                     v-for="platform in platformList"
                     :key="Number(platform.id)"
                     :close-transition="false"
+                    :closable="true"
+                    @close="deletePlatform(platform)"
                     :type="color[platform.color]" style="width: 100px;height:40px;line-height:40px;text-align: center;font-size: 15px;margin-left:10px"
                     :style="'width:'+(platform.name.length)*40+'px'">{{platform.name}}</el-tag>
             <el-input
@@ -440,6 +439,19 @@
             }).catch(() => {
             });
         },
+        deletePlatform(platform){
+            this.$confirm('确认删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                Http.zsyDeleteHttp('/platform/'+platform.id, null, (res) => {
+                    this.successMsg("标签发布平台成功");
+                    this.platformList.splice(this.platformList.indexOf(platform), 1);
+                })
+            }).catch(() => {
+            });
+        },
         fetchStageList(){
             Http.zsyGetHttp('/stage/list', {}, (resp) => {
                 this.stageList = resp.data
@@ -537,7 +549,7 @@
             }
         },
         handleInputPlatformConfirm() {
-            if (this.platformName!=''&&this.platformName.trim().length>0&&this.platformName.length<=20) {
+            if (this.platformName!=''&&this.platformName.trim().length>0&&this.platformName.length<=257) {
                 Http.zsyPostHttp('/platform/add?name='+this.platformName, null, (res) => {
                     this.successMsg("平台添加成功");
                     this.fetchPlatformList();
@@ -548,7 +560,7 @@
             }else{
                 this.addPlatformVisible = false;
                 this.platformName = '';
-                this.warnMsg("平台名不为空且不超过20个字");
+                this.warnMsg("平台名不为空且不超过256个字");
             }
         },
         msg(msg) {

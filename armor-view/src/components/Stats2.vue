@@ -49,7 +49,7 @@
                         <el-table-column type="expand">
                             <template slot-scope="scope">
                                 <div style="width: 100%">
-                                    <el-form label-width="120px">
+                                    <el-form label-width="120px" class="publish-css">
                                         <el-form-item label="任务: ">
                                             <div v-for="userTask in scope.row.userAndTaskList">
                                                 <div style="display: flex">
@@ -5467,5 +5467,18 @@
         white-space:-pre-wrap;
         white-space:-o-pre-wrap;
         word-wrap:break-word;
+    }
+
+    .publish-css .el-form-item__label {
+        text-align: right;
+        vertical-align: middle;
+        font-weight: bold;
+        float: left;
+        font-size: 14px;
+        color: black;
+        line-height: 40px;
+        padding: 0 12px 0 0;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
     }
 </style>
