@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYWeekPublishPlanTaskMapper">
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.WeekPublishPlanTask">
+        <id column="wppt_id" property="wpptId" jdbcType="BIGINT"/>
+        <result column="wpp_id" property="wppId" jdbcType="BIGINT"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!--批量新增-->
+    <insert id="insertBatch">
+        INSERT INTO `week_publish_plan_task`
+        (`wppt_id`,`wpp_id`,`task_id`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.wpptId,jdbcType=BIGINT},#{item.wppId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+    <!--根据计划id删除关联任务-->
+    <delete id="deleteByWppId">
+        DELETE FROM `week_publish_plan_task` WHERE `wpp_id` = #{wppId}
+    </delete>
+
+    <!--根据计划id查询-->
+    <select id="selectByWppId" resultMap="BaseMap">
+        SELECT * FROM `week_publish_plan_task` WHERE `wpp_id` = #{wppId}
+    </select>
+
+</mapper>

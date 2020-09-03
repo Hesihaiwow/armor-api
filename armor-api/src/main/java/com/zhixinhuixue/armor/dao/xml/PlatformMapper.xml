@@ -32,4 +32,13 @@
         WHERE wppp.task_id = #{taskId}
     </select>
 
+    <!--根据id集合查询-->
+    <select id="selectByIds" resultMap="BaseResultMap">
+        SELECT * FROM `platform`
+        WHERE `id` IN
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

@@ -324,4 +324,23 @@ public interface IZSYTaskMapper {
      * @return List<Task>
      */
     List<Task> selectJoinRunningTasks(@Param("userId") Long userId);
+
+    /**
+     * 获取待发布多人任务
+     * @return List<Task>
+     */
+    List<Task> selectWaitDeployTasks();
+
+    /**
+     * 获取开发和测试阶段任务
+     * @return List<Task>
+     */
+    List<Task> selectDevAndTestTasks();
+
+    /**
+     * 根据id集合批量查询
+     * @param list id集合
+     * @return List<Task>
+     */
+    List<Task> selectByIds(@Param("list") List<Long> list);
 }

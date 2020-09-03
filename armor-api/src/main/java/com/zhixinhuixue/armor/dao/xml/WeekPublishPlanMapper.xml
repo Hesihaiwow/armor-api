@@ -2,4 +2,86 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYWeekPublishPlanMapper">
 
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
+        <id column="wpp_id" property="wppId" jdbcType="BIGINT"/>
+        <result column="wpp_name" property="wppName" jdbcType="VARCHAR"/>
+        <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="test_report" property="testReport" jdbcType="BIGINT"/>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="BOMap" type="com.zhixinhuixue.armor.model.bo.WeekPublishPlanBO" extends="BaseMap">
+        <result column="create_name" property="createName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
+        INSERT INTO `week_publish_plan`
+        (`wpp_id`,`wpp_name`,`publish_time`,`create_time`,`create_by`,`remark`,`test_report`,`is_delete`)
+        VALUES
+        (
+        #{wppId,jdbcType=BIGINT},
+        #{wppName,jdbcType=VARCHAR},
+        #{publishTime,jdbcType=TIMESTAMP},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{createBy,jdbcType=BIGINT},
+        #{remark,jdbcType=VARCHAR},
+        #{testReport,jdbcType=BIGINT},
+        #{isDelete,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <!--更新-->
+    <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
+        UPDATE `week_publish_plan`
+        <set>
+            <if test="wppName != null and wppName !=''">
+                `wpp_name` = #{wppName,jdbcType=VARCHAR},
+            </if>
+            <if test="publishTime != null">
+                `publish_time` = #{publishTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="testReport != null">
+                `test_report` = #{testReport,jdbcType=BIGINT},
+            </if>
+            <if test="testReport == null">
+                `test_report` = null,
+            </if>
+            <if test="isDelete != null">
+                `is_delete` = #{isDelete,jdbcType=INTEGER},
+            </if>
+        </set>
+        WHERE `wpp_id` = #{wppId,jdbcType=BIGINT}
+    </update>
+
+    <!--根据名称查询-->
+    <select id="selectByName" resultMap="BaseMap">
+        SELECT * FROM `week_publish_plan` WHERE `wpp_name` = #{name}
+    </select>
+
+    <!--根据id查询-->
+    <select id="selectById" resultMap="BaseMap">
+        SELECT * FROM `week_publish_plan` WHERE `wpp_id` = #{wppId}
+    </select>
+
+    <!--分页查询-->
+    <select id="selectPage" resultMap="BOMap" parameterType="com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO">
+        SELECT wpp.*,u.name AS `create_name`
+        FROM `week_publish_plan` wpp
+        LEFT JOIN `user` u ON u.`id` = wpp.`create_by`
+        WHERE wpp.`is_delete` = 0
+        <if test="beginTime != null">
+            <![CDATA[  and  wpp.publish_time >= #{beginTime} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[  and  wpp.publish_time <= #{endTime} ]]>
+        </if>
+        ORDER BY wpp.publish_time DESC
+    </select>
 </mapper>

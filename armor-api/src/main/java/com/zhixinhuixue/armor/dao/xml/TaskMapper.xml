@@ -699,5 +699,26 @@
         LEFT JOIN task t ON t.id = tu.task_id
         WHERE tu.user_id = #{userId} AND t.is_delete = 0 AND t.review_status = 3 AND t.`status` = 1 AND t.type = 2
     </select>
+
+    <!--查询待发布多人任务-->
+    <select id="selectWaitDeployTasks" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` IN (1,2) AND `type` = 2
+        AND `stage_id` = 212754785051344897
+    </select>
+
+    <!--获取开发和测试阶段任务-->
+    <select id="selectDevAndTestTasks" resultMap="BaseResultMap">
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2
+        AND `stage_id` IN (212754785051344894,212754785051344895,212754785051344896)
+    </select>
+
+    <!--根据id集合批量查询-->
+    <select id="selectByIds" resultMap="BaseResultMap">
+        SELECT * FROM `task`
+        WHERE `id` IN
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
     <!-- sch -->
 </mapper>

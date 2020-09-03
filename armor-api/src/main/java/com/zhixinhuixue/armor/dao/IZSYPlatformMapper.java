@@ -33,4 +33,11 @@ public interface IZSYPlatformMapper {
      * @return
      */
     List<Platform> selectList();
+
+    /**
+     * 根据id集合查询
+     * @param list id集合
+     * @return List<Platform>
+     */
+    List<Platform> selectByIds(@Param("list") List<Long> list);
 }

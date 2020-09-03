@@ -6,34 +6,34 @@ package com.zhixinhuixue.armor.model.pojo;
  */
 public class WeekPublishPlanPlatform {
     /**
-     * id
+     * 主键
      */
-    private Long id;
+    private Long wpppId;
 
     /**
-     * 任务id
+     * 发版计划id
      */
-    private Long taskId;
+    private Long wppId;
 
     /**
      * 平台id
      */
     private Long platformId;
 
-    public Long getId() {
-        return id;
+    public Long getWpppId() {
+        return wpppId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setWpppId(Long wpppId) {
+        this.wpppId = wpppId;
     }
 
-    public Long getTaskId() {
-        return taskId;
+    public Long getWppId() {
+        return wppId;
     }
 
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
+    public void setWppId(Long wppId) {
+        this.wppId = wppId;
     }
 
     public Long getPlatformId() {

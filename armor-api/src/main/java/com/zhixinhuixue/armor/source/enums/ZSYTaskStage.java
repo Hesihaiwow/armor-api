@@ -1,7 +1,7 @@
 package com.zhixinhuixue.armor.source.enums;
 
 /**
- * 用户角色
+ * 任务阶段
  * Created by Tate on 2017/8/7.
  */
 public enum ZSYTaskStage {

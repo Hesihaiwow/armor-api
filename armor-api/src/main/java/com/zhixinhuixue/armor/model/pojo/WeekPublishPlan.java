@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import java.util.Date;
+
 /**
  * @author sch
  * @DATE 2019/6/10 18:46
@@ -8,171 +10,106 @@ package com.zhixinhuixue.armor.model.pojo;
  */
 public class WeekPublishPlan {
     /**
-     * id
+     * 主键
      */
-    private Long id;
+    private Long wppId;
 
     /**
-     * 关联任务id
+     * 名称
      */
-    private Long taskId;
+    private String wppName;
 
     /**
-     * 是否可以上线
+     * 发版时间
      */
-    private Integer canOnline;
+    private Date publishTime;
 
     /**
-     * 发布情况
+     * 创建人
      */
-    private String condition;
+    private Long createBy;
 
     /**
-     * 是否涉及组卷
+     * 创建时间
      */
-    private String zujuan;
+    private Date createTime;
 
     /**
-     * 阅卷
+     * 备注
      */
-    private String yuejuan;
+    private String remark;
 
     /**
-     * 扫描上传
+     * 测试报告
      */
-    private String saomiao;
+    private Long testReport;
 
     /**
-     * 学业报告
+     * 是否删除
      */
-    private String xueyebaogao;
+    private Integer isDelete;
 
-    /**
-     * 产品
-     */
-    private String chanpin;
-
-    /**
-     * 时间测试时间
-     */
-    private String realTestTime;
-
-    /**
-     * 预估上线时间
-     */
-    private String onlineTime;
-
-    /**
-     * 时间上线时间
-     */
-    private String realOnlineTime;
-
-    /**
-     * 专项测试时间
-     */
-    private String specialTestTime;
-
-    public String getZujuan() {
-        return zujuan;
+    public String getWppName() {
+        return wppName;
     }
 
-    public void setZujuan(String zujuan) {
-        this.zujuan = zujuan;
+    public void setWppName(String wppName) {
+        this.wppName = wppName;
     }
 
-    public String getYuejuan() {
-        return yuejuan;
+    public Long getWppId() {
+        return wppId;
     }
 
-    public void setYuejuan(String yuejuan) {
-        this.yuejuan = yuejuan;
+    public void setWppId(Long wppId) {
+        this.wppId = wppId;
     }
 
-    public String getSaomiao() {
-        return saomiao;
+    public Date getPublishTime() {
+        return publishTime;
     }
 
-    public void setSaomiao(String saomiao) {
-        this.saomiao = saomiao;
+    public void setPublishTime(Date publishTime) {
+        this.publishTime = publishTime;
     }
 
-    public String getXueyebaogao() {
-        return xueyebaogao;
+    public Long getCreateBy() {
+        return createBy;
     }
 
-    public void setXueyebaogao(String xueyebaogao) {
-        this.xueyebaogao = xueyebaogao;
+    public void setCreateBy(Long createBy) {
+        this.createBy = createBy;
     }
 
-    public String getChanpin() {
-        return chanpin;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setChanpin(String chanpin) {
-        this.chanpin = chanpin;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
-    public String getRealTestTime() {
-        return realTestTime;
+    public String getRemark() {
+        return remark;
     }
 
-    public void setRealTestTime(String realTestTime) {
-        this.realTestTime = realTestTime;
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
-    public String getOnlineTime() {
-        return onlineTime;
+    public Long getTestReport() {
+        return testReport;
     }
 
-    public void setOnlineTime(String onlineTime) {
-        this.onlineTime = onlineTime;
+    public void setTestReport(Long testReport) {
+        this.testReport = testReport;
     }
 
-    public String getRealOnlineTime() {
-        return realOnlineTime;
+    public Integer getIsDelete() {
+        return isDelete;
     }
 
-    public void setRealOnlineTime(String realOnlineTime) {
-        this.realOnlineTime = realOnlineTime;
-    }
-
-    public String getSpecialTestTime() {
-        return specialTestTime;
-    }
-
-    public void setSpecialTestTime(String specialTestTime) {
-        this.specialTestTime = specialTestTime;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public Integer getCanOnline() {
-        return canOnline;
-    }
-
-    public void setCanOnline(Integer canOnline) {
-        this.canOnline = canOnline;
-    }
-
-    public String getCondition() {
-        return condition;
-    }
-
-    public void setCondition(String condition) {
-        this.condition = condition;
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
     }
 }
