@@ -23,6 +23,11 @@ public class WeekPublishPlanPageResDTO {
     private String publishTimeStr;
 
     /**
+     * 备注
+     */
+    private String remark;
+
+    /**
      * 任务数量
      */
     private Integer taskNum;
@@ -33,21 +38,68 @@ public class WeekPublishPlanPageResDTO {
     private List<String> platformList;
 
     /**
-     * 表格数据
+     * 开发人员
      */
-    private List<TableData> dataList;
+    private List<String> developerList;
+
+    /**
+     * 产品
+     */
+    private List<String> productorList;
+
+    /**
+     * 测试人员
+     */
+    private List<String> testerList;
 
     /**
      * 任务列表
      */
     private List<TaskAndUser> taskAndUserList;
 
-    public List<TableData> getDataList() {
-        return dataList;
+    /**
+     * 任务列表
+     */
+    private List<UserAndTask> userAndTaskList;
+
+    public String getRemark() {
+        return remark;
     }
 
-    public void setDataList(List<TableData> dataList) {
-        this.dataList = dataList;
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public List<String> getDeveloperList() {
+        return developerList;
+    }
+
+    public void setDeveloperList(List<String> developerList) {
+        this.developerList = developerList;
+    }
+
+    public List<String> getProductorList() {
+        return productorList;
+    }
+
+    public void setProductorList(List<String> productorList) {
+        this.productorList = productorList;
+    }
+
+    public List<String> getTesterList() {
+        return testerList;
+    }
+
+    public void setTesterList(List<String> testerList) {
+        this.testerList = testerList;
+    }
+
+    public List<UserAndTask> getUserAndTaskList() {
+        return userAndTaskList;
+    }
+
+    public void setUserAndTaskList(List<UserAndTask> userAndTaskList) {
+        this.userAndTaskList = userAndTaskList;
     }
 
     public String getPublishTimeStr() {
@@ -165,84 +217,31 @@ public class WeekPublishPlanPageResDTO {
         }
     }
 
-    public static class TableData{
+    public static class UserAndTask{
+        /**
+         * 用户名
+         */
+        private String userName;
 
         /**
-         * 备注
+         * 任务
          */
-        private String remark;
+        private List<String> taskNameList;
 
-        /**
-         * 任务名称
-         */
-        private List<String> taskList;
-
-        /**
-         * 开发人员
-         */
-        private List<String> developerList;
-
-        /**
-         * 产品
-         */
-        private List<String> productorList;
-
-        /**
-         * 测试人员
-         */
-        private List<String> testerList;
-
-        /**
-         * 发布平台
-         */
-        private List<String> platformList;
-
-        public String getRemark() {
-            return remark;
+        public String getUserName() {
+            return userName;
         }
 
-        public void setRemark(String remark) {
-            this.remark = remark;
+        public void setUserName(String userName) {
+            this.userName = userName;
         }
 
-        public List<String> getPlatformList() {
-            return platformList;
+        public List<String> getTaskNameList() {
+            return taskNameList;
         }
 
-        public void setPlatformList(List<String> platformList) {
-            this.platformList = platformList;
-        }
-
-        public List<String> getTaskList() {
-            return taskList;
-        }
-
-        public void setTaskList(List<String> taskList) {
-            this.taskList = taskList;
-        }
-
-        public List<String> getDeveloperList() {
-            return developerList;
-        }
-
-        public void setDeveloperList(List<String> developerList) {
-            this.developerList = developerList;
-        }
-
-        public List<String> getProductorList() {
-            return productorList;
-        }
-
-        public void setProductorList(List<String> productorList) {
-            this.productorList = productorList;
-        }
-
-        public List<String> getTesterList() {
-            return testerList;
-        }
-
-        public void setTesterList(List<String> testerList) {
-            this.testerList = testerList;
+        public void setTaskNameList(List<String> taskNameList) {
+            this.taskNameList = taskNameList;
         }
     }
 }

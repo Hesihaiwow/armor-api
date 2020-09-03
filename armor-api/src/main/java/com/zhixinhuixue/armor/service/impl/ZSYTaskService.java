@@ -703,6 +703,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setId(taskId);
         task.setReviewStatus(auditStatus);
         task.setUpdateTime(new Date());
+        task.setLinkTask(taskTemp.getLinkTask());
         taskMapper.updateByPrimaryKeySelective(task);
         taskUserMapper.updateByPrimaryKeySelective(taskUser);
         // 插入日志

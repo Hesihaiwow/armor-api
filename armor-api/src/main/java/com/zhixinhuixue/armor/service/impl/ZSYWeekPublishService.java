@@ -287,9 +287,10 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 WeekPublishPlanPageResDTO resDTO = new WeekPublishPlanPageResDTO();
                 resDTO.setWppId(item.getWppId());
                 resDTO.setWppName(item.getWppName());
+                resDTO.setRemark(item.getRemark());
                 resDTO.setPublishTimeStr(DateHelper.dateFormatter(item.getPublishTime(),DateHelper.DATE_FORMAT));
                 List<WeekPublishPlanPlatform> planPlatforms = publishPlatformMapper.selectByWppId(item.getWppId());
-                List<String> platformNames = new ArrayList<>();
+                List<String> platformNames;
                 if (!CollectionUtils.isEmpty(planPlatforms)){
                     List<Long> platformIds = planPlatforms.stream().map(WeekPublishPlanPlatform::getPlatformId).collect(Collectors.toList());
                     List<Platform> platformList = platformMapper.selectByIds(platformIds);
@@ -298,9 +299,6 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                         resDTO.setPlatformList(platformNames);
                     }
                 }
-                List<WeekPublishPlanPageResDTO.TaskAndUser> taskAndUserList = new ArrayList<>();
-                List<WeekPublishPlanPageResDTO.TableData> tableDataList = new ArrayList<>();
-                WeekPublishPlanPageResDTO.TableData tableData = new WeekPublishPlanPageResDTO.TableData();
                 List<WeekPublishPlanTask> planTasks = publishTaskMapper.selectByWppId(item.getWppId());
                 if (!CollectionUtils.isEmpty(planTasks)){
                     resDTO.setTaskNum(planTasks.size());
@@ -311,37 +309,19 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                         taskDetailBOS.add(taskDetailBO);
                         List<TaskUserBO> taskUsers = taskDetailBO.getTaskUsers();
                         taskUserBOList.addAll(taskUsers);
-//                        WeekPublishPlanPageResDTO.TaskAndUser taskAndUser = new WeekPublishPlanPageResDTO.TaskAndUser();
-//                        taskAndUser.setTaskName(taskDetailBO.getName());
-//                        taskAndUser.setCreateUser(taskDetailBO.getUserName());
-//                        if (!CollectionUtils.isEmpty(taskUsers)){
-//                            List<TaskUserBO> testers = taskUsers.stream()
-//                                    .filter(taskUserBO -> taskUserBO.getJobRole() == ZSYJobRole.TEST.getValue())
-//                                    .collect(Collectors.toList());
-//                            if (!CollectionUtils.isEmpty(testers)){
-//                                String tester = testers.stream().map(TaskUserBO::getUserName).collect(Collectors.joining(","));
-//                                taskAndUser.setTester(tester);
-//                            }
-//                            List<TaskUserBO> developers = taskUsers.stream()
-//                                    .filter(taskUserBO -> getIsDeveloper(taskUserBO.getJobRole()))
-//                                    .collect(Collectors.toList());
-//                            if (!CollectionUtils.isEmpty(developers)){
-//                                String developer = developers.stream().map(TaskUserBO::getUserName).collect(Collectors.joining(","));
-//                                taskAndUser.setDeveloper(developer);
-//                            }
-//                            List<TaskUserBO> productors = taskUsers.stream()
-//                                    .filter(taskUserBO -> taskUserBO.getJobRole() == ZSYJobRole.PRODUCT.getValue())
-//                                    .collect(Collectors.toList());
-//                            if (!CollectionUtils.isEmpty(productors)){
-//                                String productor = productors.stream().map(TaskUserBO::getUserName).collect(Collectors.joining(","));
-//                                taskAndUser.setProductor(productor);
-//                            }
-//                        }
-//                        taskAndUserList.add(taskAndUser);
                     });
-                    List<String> taskList = taskDetailBOS.stream()
-                            .sorted(Comparator.comparing(Task::getCreateBy)).map(Task::getName).collect(Collectors.toList());
-                    tableData.setTaskList(taskList);
+                    List<WeekPublishPlanPageResDTO.UserAndTask> userAndTaskList = new ArrayList<>();
+                    Map<Long, List<TaskDetailBO>> userTaskMap = taskDetailBOS.stream().collect(Collectors.groupingBy(Task::getCreateBy));
+                    for (Long userId : userTaskMap.keySet()) {
+                        List<TaskDetailBO> taskList = userTaskMap.get(userId);
+                        WeekPublishPlanPageResDTO.UserAndTask userAndTask = new WeekPublishPlanPageResDTO.UserAndTask();
+                        userAndTask.setUserName(taskList.get(0).getUserName());
+                        List<String> taskNameList = taskList.stream().map(Task::getName).collect(Collectors.toList());
+                        userAndTask.setTaskNameList(taskNameList);
+                        userAndTaskList.add(userAndTask);
+                    }
+                    resDTO.setUserAndTaskList(userAndTaskList);
+
                     ArrayList<TaskUserBO> distinctUsers = taskUserBOList.stream().sorted(Comparator.comparing(TaskUser::getUserId))
                             .collect(Collectors.collectingAndThen(Collectors.toCollection(
                                     () -> new TreeSet<>(Comparator.comparing(TaskUser::getUserId))
@@ -349,26 +329,18 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                     List<String> testerList = distinctUsers.stream()
                             .filter(taskUserBO -> taskUserBO.getJobRole() == ZSYJobRole.TEST.getValue())
                             .map(TaskUserBO::getUserName).collect(Collectors.toList());
-                    tableData.setTesterList(testerList);
+                    resDTO.setTesterList(testerList);
 
                     List<String> developerList = distinctUsers.stream()
                             .filter(taskUserBO -> getIsDeveloper(taskUserBO.getJobRole()))
                             .map(TaskUserBO::getUserName).collect(Collectors.toList());
-                    tableData.setDeveloperList(developerList);
+                    resDTO.setDeveloperList(developerList);
 
                     List<String> productorList = distinctUsers.stream()
                             .filter(taskUserBO -> taskUserBO.getJobRole() == ZSYJobRole.PRODUCT.getValue())
                             .map(TaskUserBO::getUserName).collect(Collectors.toList());
-                    tableData.setProductorList(productorList);
-                    tableData.setPlatformList(platformNames);
-                    tableData.setRemark(item.getRemark());
-                    tableDataList.add(tableData);
-
-                    resDTO.setDataList(tableDataList);
+                    resDTO.setProductorList(productorList);
                 }
-//                List<WeekPublishPlanPageResDTO.TaskAndUser> sortedTaskAndUserList = taskAndUserList.stream()
-//                        .sorted(Comparator.comparing(WeekPublishPlanPageResDTO.TaskAndUser::getCreateUser)).collect(Collectors.toList());
-//                resDTO.setTaskAndUserList(sortedTaskAndUserList);
 
                 page.add(resDTO);
             });
