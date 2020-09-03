@@ -4504,6 +4504,13 @@
                     }
                     sumHours +=  parseFloat(this.taskTempWeekNumber[i].hours)
                 }
+                let firstWeek = this.taskTempWeekNumber[0]
+                let lastWeek = this.taskTempWeekNumber[this.taskTempWeekNumber.length-1]
+                if(firstWeek.hours == 0 || lastWeek.hours == 0){
+                    this.errorMsg('第一周和最后一周工时不能为0,请合理分配工时');
+                    this.isSaving = false;
+                    return
+                }
                 if(sumHours!=this.taskTempDetail.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     this.isSaving = false;
@@ -4718,7 +4725,13 @@
                     }
                     sumHours +=  parseFloat(this.taskModifyWeekNumber[i].hours)
                 }
-
+                let firstWeek = this.taskModifyWeekNumber[0]
+                let lastWeek = this.taskModifyWeekNumber[this.taskModifyWeekNumber.length-1]
+                if(firstWeek.hours == 0 || lastWeek.hours == 0){
+                    this.errorMsg('第一周和最后一周工时不能为0,请合理分配工时');
+                    this.accessTaskTempLoading = false;
+                    return
+                }
                 if(sumHours!=this.modifyMyTaskForm.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return

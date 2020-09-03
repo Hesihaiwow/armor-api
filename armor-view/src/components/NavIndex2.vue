@@ -2179,7 +2179,7 @@
         </el-dialog>
 
         <el-dialog title="导入花名册到数据库" :visible.sync="uploadUserSortToMysqlVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                    @close="closeUserSortDialog">
             <el-upload
                     class="upload-demo"
@@ -2195,7 +2195,7 @@
         </el-dialog>
 
         <el-dialog title="计算加班总时长" :visible.sync="showPersonalTotalEWrokTime" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
         @close="closeMyEWorkCounter">
             <el-select clearable no-match-text=" " v-model="workMonth1" placeholder="不选择及查询本年度"
                        size="small" style="width:200px">
@@ -2208,7 +2208,7 @@
             </span>
         </el-dialog>
         <el-dialog title="计算加班总时长" :visible.sync="showTotalEWrokTime" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
         @close="closeEWorkCounter">
             <el-select clearable no-match-text=" " v-model="workMonth2" placeholder="不选择及查询本年度"
                         style="width:200px">
@@ -2226,7 +2226,7 @@
             </span>
         </el-dialog>
         <el-dialog title="修改用户调休时长" :visible.sync="modifyUserRestHoursVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                    @close="closeRestHoursDialog">
             <el-select v-model="restHoursUserId" clearable filterable   placeholder="筛选用户" @change="fetchUserRestHours">
                 <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
@@ -2272,7 +2272,7 @@
             </div>
         </el-dialog>
         <el-dialog title="用户调休使用日志" :visible.sync="userRestHoursDetailVisible" class="rest-hour-log"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="small"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="small"
                    width="800px">
             <div>
                 <el-button type="primary" @click="addRestHoursLog">手动新增调休记录</el-button>
@@ -2434,13 +2434,13 @@
         </el-dialog>
 
         <el-dialog title="添加任务功能点" :visible.sync="addFunctionVisible"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="10%" width="50%"
+                   :close-on-click-modal="false" :close-on-press-escape="false" width="50%"
                     @close="closeFunctionDialog">
 
         </el-dialog>
 
         <el-dialog title="多人任务申请详情" custom-class="myDialog" :visible.sync="taskTempDetailVisible"
-                   :close-on-click-modal="false" :close-on-press-escape="false" top="10%" size="tiny"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                     @close="closeTaskTemp">
             <el-form  :model="taskTempDetail"  ref="editTaskTempForm">
                 <div v-for="(item,index) in taskTempDetail.taskReviewLogResDTOList">
@@ -2600,7 +2600,7 @@
 
         <el-dialog class="el-dialog--small" style="margin-left: 570px" title="创建任务" :visible.sync="createTaskVisible"
                    :close-on-click-modal="false" :close-on-press-escape="false"
-                   top="10%" :center="Boolean(true)">
+                   :center="Boolean(true)">
             <span>请选择任务类型</span>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="createPrivateTask">个人任务</el-button>
@@ -2793,7 +2793,7 @@
         </el-dialog>
 
         <el-dialog title="" style="margin-left: 30%;margin-right: 30%" :visible.sync="showUserAndLevelVisible"
-                   top="10%" :center="Boolean(true)">
+                   :center="Boolean(true)">
             <el-table class="hh" :data="userAndLevelData"
                       :header-cell-style="{background:'#D9D9D9',color:'black'}">
                 <el-table-column prop="userName"  align="center"></el-table-column>
@@ -4496,6 +4496,12 @@
                     }
                     sumHours +=  parseFloat(this.weekNumber[i].hours)
                 }
+                let firstWeek = this.weekNumber[0]
+                let lastWeek = this.weekNumber[this.weekNumber.length-1]
+                if(firstWeek.hours == 0 || lastWeek.hours == 0){
+                    this.errorMsg('第一周和最后一周工时不能为0,请合理分配工时');
+                    return
+                }
                 if(sumHours!=this.taskTempForm.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return
@@ -4764,6 +4770,13 @@
                         return false;
                     }
                     sumHours +=  parseFloat(this.taskTempWeekNumber[i].hours)
+                }
+                let firstWeek = this.taskTempWeekNumber[0]
+                let lastWeek = this.taskTempWeekNumber[this.taskTempWeekNumber.length-1]
+                if(firstWeek.hours == 0 || lastWeek.hours == 0){
+                    this.errorMsg('第一周和最后一周工时不能为0,请合理分配工时');
+                    this.accessTaskTempLoading = false;
+                    return
                 }
                 if(sumHours!=this.taskTempDetail.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
@@ -8139,7 +8152,13 @@
                     }
                     sumHours +=  parseFloat(this.taskModifyWeekNumber[i].hours)
                 }
-
+                let firstWeek = this.taskModifyWeekNumber[0]
+                let lastWeek = this.taskModifyWeekNumber[this.taskModifyWeekNumber.length-1]
+                if(firstWeek.hours == 0 || lastWeek.hours == 0){
+                    this.errorMsg('第一周和最后一周工时不能为0,请合理分配工时');
+                    this.accessTaskTempLoading = false;
+                    return
+                }
                 if(sumHours!=this.taskModifyDetail.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return
@@ -8323,7 +8342,13 @@
                     }
                     sumHours +=  parseFloat(this.taskModifyWeekNumber[i].hours)
                 }
-
+                let firstWeek = this.taskModifyWeekNumber[0]
+                let lastWeek = this.taskModifyWeekNumber[this.taskModifyWeekNumber.length-1]
+                if(firstWeek.hours == 0 || lastWeek.hours == 0){
+                    this.errorMsg('第一周和最后一周工时不能为0,请合理分配工时');
+                    this.accessTaskTempLoading = false;
+                    return
+                }
                 if(sumHours!=this.taskModifyDetail.workHours){
                     this.errorMsg('周工作量与总工作量不符，请检查');
                     return

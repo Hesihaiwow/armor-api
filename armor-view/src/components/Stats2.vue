@@ -20,7 +20,94 @@
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="周发版计划" name="weekPublish"  style="">
-
+                <el-card>
+                    <div class="add-member-basic-msg fl">
+                        <el-date-picker
+                                v-model="weekPublishStat.queryDTO.beginTime"
+                                align="right"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                clearable
+                                placeholder="请选择开始时间"
+                        >
+                        </el-date-picker>
+                        <span style="font-size: 14px;color: #606266;">-</span>
+                        <el-date-picker
+                                v-model="weekPublishStat.queryDTO.endTime"
+                                align="right"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                clearable
+                                placeholder="请选择截止时间"
+                        >
+                        </el-date-picker>
+                    </div>
+                    <el-button type="primary" @click="searchPublishPlan()" style="margin-left: 10px">搜索</el-button>
+                    <el-button type="primary" @click="openAddPublishPlan" style="margin-left: 10px">新增</el-button>
+                    <el-table :data="weekPublishStat.publishPlanData" border
+                              :header-cell-style="{background:'#D9D9D9',color:'black'}">
+                        <el-table-column type="expand">
+                            <template slot-scope="scope">
+                                <div style="width: 100%">
+                                    <el-table :data="scope.row.dataList" :header-cell-style="{background:'#D9D9D9',color:'black'}">
+                                        <el-table-column label="任务" align="center">
+                                            <template slot-scope="scope">
+                                                <div v-for="item in scope.row.taskList">
+                                                    <span>{{item}}</span>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column label="产品" prop="productor" align="center" width="120">
+                                            <template slot-scope="scope">
+                                                <div v-for="item in scope.row.productorList">
+                                                    <span>{{item}}</span>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column label="开发" prop="developer" align="center" width="120">
+                                            <template slot-scope="scope">
+                                                <div v-for="item in scope.row.developerList">
+                                                    <span>{{item}}</span>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column label="测试" prop="tester" align="center" width="120">
+                                            <template slot-scope="scope">
+                                                <div v-for="item in scope.row.testerList">
+                                                    <span>{{item}}</span>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column label="发布平台" prop="tester" align="center" width="120">
+                                            <template slot-scope="scope">
+                                                <div v-for="item in scope.row.platformList">
+                                                    <span>{{item}}</span>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="标题" prop="wppName" align="center"></el-table-column>
+                        <el-table-column label="发版时间" prop="publishTimeStr" align="center" width="130"></el-table-column>
+                        <el-table-column label="任务数量" prop="taskNum" align="center" width="100"></el-table-column>
+                        <el-table-column label="操作" width="80" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="openEditPublishPlan(scope.row.wppId)">编辑</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div class="pagination">
+                        <el-pagination
+                                @current-change="publishPlanPageChange"
+                                :current-page.sync="weekPublishStat.queryDTO.pageNum"
+                                :page-size="weekPublishStat.queryDTO.pageSize"
+                                layout="total, prev, pager, next"
+                                :total="weekPublishStat.queryDTO.total">
+                        </el-pagination>
+                    </div>
+                </el-card>
             </el-tab-pane>
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
@@ -1339,6 +1426,110 @@
                 <el-button @click="cancelAddRestHoursLog" type="error">取 消</el-button>
             </span>
         </el-dialog>
+        <el-dialog title="新增周发版计划" :visible.sync="weekPublishStat.addVisible"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="800px">
+            <el-form label-position="left" label-width="120px">
+                <el-form-item label="发版计划名称：">
+                    <el-input v-model="weekPublishStat.addPublishPlanDTO.wppName" placeholder="填写发布计划名称" style="width: 500px"></el-input>
+                </el-form-item>
+                <el-form-item label="发版时间：">
+                    <el-date-picker
+                            v-model="weekPublishStat.addPublishPlanDTO.publishTime"
+                            type="date"
+                            style="width: 500px;"
+                            format="yyyy-MM-dd"
+                            placeholder="选择发版日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="备注：">
+                    <el-input v-model="weekPublishStat.addPublishPlanDTO.remark" placeholder="填写备注" style="width: 500px"></el-input>
+                </el-form-item>
+                <el-form-item label="关联任务：">
+                    <el-select
+                            v-model="weekPublishStat.addPublishPlanDTO.taskIds"
+                            multiple
+                            placeholder="请选择任务"
+                            style="width: 500px;">
+                        <el-option
+                                v-for="item in weekPublishStat.taskList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="发布平台：">
+                    <el-select
+                            v-model="weekPublishStat.addPublishPlanDTO.platformIds"
+                            multiple
+                            placeholder="请选择平台"
+                            style="width: 500px;">
+                        <el-option
+                                v-for="item in platformList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div style="text-align: right">
+                <el-button type="primary" @click="saveAddPublishPlan">新 增</el-button>
+                <el-button @click="clearPublishPlanDTO(0)">取 消</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="编辑周发版计划" :visible.sync="weekPublishStat.editVisible"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="800px">
+            <el-form label-width="120px" label-position="left">
+                <el-form-item label="发版计划名称：">
+                    <el-input v-model="weekPublishStat.editPublishPlanDTO.wppName" placeholder="填写发版计划名称" style="width: 500px"></el-input>
+                </el-form-item>
+                <el-form-item label="发版时间：">
+                    <el-date-picker
+                            style="width: 500px;"
+                            v-model="weekPublishStat.editPublishPlanDTO.publishTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            placeholder="选择发版日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="备注：">
+                    <el-input v-model="weekPublishStat.editPublishPlanDTO.remark" placeholder="填写备注" style="width: 500px"></el-input>
+                </el-form-item>
+                <el-form-item label="关联任务：">
+                    <el-select
+                            v-model="weekPublishStat.editPublishPlanDTO.taskIds"
+                            multiple
+                            placeholder="请选择任务"
+                            style="width: 500px;">
+                        <el-option
+                                v-for="item in weekPublishStat.taskList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="发布平台：">
+                    <el-select
+                            v-model="weekPublishStat.editPublishPlanDTO.platformIds"
+                            multiple
+                            placeholder="请选择平台"
+                            style="width: 500px;">
+                        <el-option
+                                v-for="item in platformList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div style="text-align: right">
+                <el-button type="primary" @click="saveEditPublishPlan">立即更新</el-button>
+                <el-button @click="clearPublishPlanDTO(1)">取 消</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -1900,6 +2091,38 @@
                 leaveHourPos:0,
                 userPercentPos:0,
                 positionPercentPos:0,
+                weekPublishStat:{
+                    queryDTO:{
+                        pageNum:1,
+                        beginTime:null,
+                        endTime:null,
+                        pageSize:10,
+                        total:0
+                    },
+                    publishPlanData:[],
+                    addPublishPlanDTO:{
+                        wppName:'',
+                        publishTime:null,
+                        remark:'',
+                        testReport:null,
+                        taskIds:[],
+                        platformIds:[],
+                    },
+                    editPublishPlanDTO:{
+                        wppId:null,
+                        wppName:'',
+                        publishTime:null,
+                        remark:'',
+                        testReport:null,
+                        taskIds:[],
+                        platformIds:[],
+                    },
+                    publishPlanDetail:{},
+                    addVisible:false,
+                    editVisible:false,
+                    taskList:[],
+                    waitDeployTaskList:[],
+                }
                 // -- sch
             }
         },
@@ -1909,39 +2132,12 @@
                 this.activeName = this.$route.query.activeName;
             }
             this.handleClick()
-            // this.getStats(this.statsPage.currentPage);
             //选中任务tab
             this.$root.eventBus.$emit("handleTabSelected", "stats");
-            // this.fetchUserList();
             this.fetchSignInUser();
             this.fetchDemandSystem();
             this.fetchPlatformList();
             this.fetchAllDoingTasks();
-            // this.fetchProjectList();
-            // this.getBugList();
-            // this.fetchBugPage();
-            // this.fetchOldBugPage();
-            // this.getLeaveList();
-            // this.fetchAnnualTaskByPriority();
-            // this.fetchAnnualProjectTaskNum();
-            // this.fetchEveryMonthFeedback();
-            // this.fetchEveryMonthTask();
-            // this.fetchEveryMonthVacation();
-            // this.fetchAnnualVacation();
-            // this.fetchAnnualFeedback();
-            // this.fetchPersonVacation();
-            // this.fetchDiffStageTaskTime();
-            // this.fetchTop10MostTimeTask();
-            // this.initSignInTime();
-            // this.fetchSignInData();
-            // this.fetchDiffTypeBugNum();
-            // this.fetchMantisBugStatsGroupByUser();
-            // this.fetchBugWeekGroupByUser();
-            // this.fetchOnlineBugGroupByUser();
-            // this.fetchBugStatsGroupByTask();
-            // this.fetchOnlineBugGroupByDeveloper();
-            // this.initTime();
-            // this.getExtraWorkStats();
         },
         computed: {
             permit() {
@@ -2030,14 +2226,11 @@
                   this.getStats();
               }else if (this.activeName === 'weekPublish'){
                   this.initTime();
-                  // this.initSignInTime2();
               } else if (this.activeName === 'bug'){
-                  // this.fetchSignInUser();
                   this.fetchGroupList()
                   this.fetchBugPage();
                   this.getSystemHistogram();
                   this.getUserBugHistogram();
-                  // this.fetchOldBugPage();
               } else if (this.activeName === 'mantisBug'){
                   this.getEnv();
                   this.fetchMantisBugStatsGroupByUser();
@@ -2064,17 +2257,14 @@
                   this.fetchTop10MostTimeTask();
               } else if (this.activeName === 'personalLeave'){
                   this.initTime2();
-                  // this.fetchPersonVacation();
               } else if (this.activeName === 'signIn'){
                   this.initSignInTime();
                   this.fetchSignInData();
               } else if (this.activeName === 'eWork'){
                   this.initTime4();
-                  // this.getExtraWorkStats();
               }else if (this.activeName === 'restHours'){
                   this.fetchAllUsersRestHours();
               }else if (this.activeName === 'weekUserCost'){
-                  // this.fetchWeekUserCost()
                   this.fetchGroupList()
               }
             },
@@ -2401,14 +2591,6 @@
                     vm.projectForm = resp.data
                 })
             },
-            // stepUserChange(val) {
-            //     let vm = this;
-            //     this.userList.forEach((user) => {
-            //         if (user.id === val) {
-            //             vm.addMemberIndex.userName = user.name
-            //         }
-            //     })
-            // },
             stepUserChange(val) {
                 let vm = this;
                 this.checkInUsers.forEach((user) => {
@@ -4764,7 +4946,210 @@
                 this.editRestHoursVisible = false;
                 this.restHourLoading = false;
             },
+
+            //分页查询周发版计划
+            fetchPublishPlanPage(reqDTO){
+                Http.zsyPostHttp('/week-publish/page',reqDTO,res=>{
+                    this.weekPublishStat.publishPlanData = res.data.list;
+                    this.weekPublishStat.queryDTO.total = res.data.total;
+                })
+            },
+            //条件搜索发版计划
+            searchPublishPlan(){
+                this.weekPublishStat.queryDTO.pageNum = 1;
+                if (this.weekPublishStat.queryDTO.beginTime != null
+                    && this.weekPublishStat.queryDTO.beginTime !== undefined
+                    && this.weekPublishStat.queryDTO.beginTime !== ''){
+                    this.weekPublishStat.queryDTO.beginTime = moment(this.weekPublishStat.queryDTO.beginTime).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.weekPublishStat.queryDTO.endTime != null
+                    && this.weekPublishStat.queryDTO.endTime !== undefined
+                    && this.weekPublishStat.queryDTO.endTime !== ''){
+                    this.weekPublishStat.queryDTO.endTime = moment(this.weekPublishStat.queryDTO.endTime).format('YYYY-MM-DD 23:59:59')
+                }
+                this.fetchPublishPlanPage(this.weekPublishStat.queryDTO)
+            },
+            //周发版计划翻页
+            publishPlanPageChange(curPage){
+                this.weekPublishStat.queryDTO.pageNum = curPage;
+                this.fetchPublishPlanPage(this.weekPublishStat.queryDTO)
+            },
+            //查询发版计划详情
+            fetchPublishPlanDetail(wppId){
+                Http.zsyGetHttp('/week-publish/'+wppId,{},res=>{
+                    this.weekPublishStat.publishPlanDetail.wppId = res.data.wppId;
+                    this.weekPublishStat.publishPlanDetail.wppName = res.data.wppName;
+                    this.weekPublishStat.publishPlanDetail.remark = res.data.remark;
+                    this.weekPublishStat.publishPlanDetail.testReport = res.data.testReport;
+                    this.weekPublishStat.publishPlanDetail.publishTime = res.data.publishTime;
+                    this.weekPublishStat.publishPlanDetail.taskIds = res.data.taskIds;
+                    this.weekPublishStat.publishPlanDetail.platformIds = res.data.platformIds;
+
+
+                    this.weekPublishStat.editPublishPlanDTO.wppId = wppId;
+                    this.weekPublishStat.editPublishPlanDTO.wppName = this.weekPublishStat.publishPlanDetail.wppName;
+                    this.weekPublishStat.editPublishPlanDTO.publishTime = this.weekPublishStat.publishPlanDetail.publishTime;
+                    this.weekPublishStat.editPublishPlanDTO.remark = this.weekPublishStat.publishPlanDetail.remark;
+                    this.weekPublishStat.editPublishPlanDTO.testReport = this.weekPublishStat.publishPlanDetail.testReport;
+                    this.weekPublishStat.editPublishPlanDTO.taskIds = this.weekPublishStat.publishPlanDetail.taskIds;
+                    this.weekPublishStat.editPublishPlanDTO.platformIds = this.weekPublishStat.publishPlanDetail.platformIds;
+                })
+            },
+            //打开编辑发版计划弹框
+            openEditPublishPlan(wppId){
+                this.fetchAllTaskCanSelect();
+                this.fetchPublishPlanDetail(wppId);
+                this.weekPublishStat.editVisible = true;
+            },
+            //查询待发布任务
+            fetchWaitDeployTasks(){
+                Http.zsyGetHttp('/week-publish/task-wait-deploy',{},res=>{
+                    this.weekPublishStat.waitDeployTaskList = res.data;
+                    if (this.weekPublishStat.waitDeployTaskList.length>0){
+                        this.weekPublishStat.waitDeployTaskList.forEach(item=>{
+                            this.weekPublishStat.addPublishPlanDTO.taskIds.push(item.id)
+                        })
+                    }
+                })
+            },
+            //查询可选任务
+            fetchAllTaskCanSelect(){
+                Http.zsyGetHttp('/week-publish/task-dev-test',{},res=>{
+                    this.weekPublishStat.taskList = res.data;
+                })
+            },
+            clearPublishPlanDTO(type){
+                if (type==0){
+                    this.weekPublishStat.addPublishPlanDTO = {
+                        wppName:'',
+                        publishTime:null,
+                        remark:'',
+                        testReport:null,
+                        taskIds:[],
+                        platformIds:[],
+                    }
+                    this.weekPublishStat.addVisible = false;
+                } else if (type == 1){
+                    this.weekPublishStat.editPublishPlanDTO = {
+                        wppId:null,
+                            wppName:'',
+                            publishTime:null,
+                            remark:'',
+                            testReport:null,
+                            taskIds:[],
+                            platformIds:[],
+                    }
+                    this.weekPublishStat.editVisible = false
+                }
+            },
+            //更新发版计划
+            saveEditPublishPlan(){
+                this.isSaving = true;
+                if (this.weekPublishStat.editPublishPlanDTO.wppId == null
+                || this.weekPublishStat.editPublishPlanDTO.wppId === undefined
+                || this.weekPublishStat.editPublishPlanDTO.wppId === ''){
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: '发版计划id不能为空',
+                        type: 'error'
+                    });
+                    return
+                }
+                if (this.weekPublishStat.editPublishPlanDTO.wppName == null
+                    || this.weekPublishStat.editPublishPlanDTO.wppName === undefined
+                    || this.weekPublishStat.editPublishPlanDTO.wppName.trim() === '') {
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: '发版计划标题不能为空',
+                        type: 'error'
+                    });
+                    return
+                }
+                if (this.weekPublishStat.editPublishPlanDTO.publishTime == null
+                    || this.weekPublishStat.editPublishPlanDTO.publishTime === undefined
+                    || this.weekPublishStat.editPublishPlanDTO.publishTime === ''){
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: '发版时间不能为空',
+                        type: 'error'
+                    });
+                    return
+                }
+                this.weekPublishStat.editPublishPlanDTO.publishTime = moment(this.weekPublishStat.editPublishPlanDTO.publishTime).format('YYYY-MM-DD 23:59:59');
+                Http.zsyPutHttp('/week-publish/'+this.weekPublishStat.editPublishPlanDTO.wppId,this.weekPublishStat.editPublishPlanDTO,res=>{
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: '编辑发版计划成功',
+                        type: 'success'
+                    });
+                    this.clearPublishPlanDTO(1);
+                    this.searchPublishPlan()
+                },err=>{
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: err.errMsg,
+                        type: 'error'
+                    });
+                })
+            },
+            //打开新增发布计划弹框
+            openAddPublishPlan(){
+                this.weekPublishStat.addPublishPlanDTO.taskIds = [];
+                this.weekPublishStat.addPublishPlanDTO.platformIds = [];
+                this.fetchWaitDeployTasks();
+                this.fetchAllTaskCanSelect();
+                this.weekPublishStat.addVisible = true;
+            },
+            saveAddPublishPlan(){
+                this.isSaving = true;
+                if (this.weekPublishStat.addPublishPlanDTO.wppName == null
+                    || this.weekPublishStat.addPublishPlanDTO.wppName === undefined
+                    || this.weekPublishStat.addPublishPlanDTO.wppName.trim() === '') {
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: '发版计划标题不能为空',
+                        type: 'error'
+                    });
+                    return
+                }
+                if (this.weekPublishStat.addPublishPlanDTO.publishTime == null
+                    || this.weekPublishStat.addPublishPlanDTO.publishTime === undefined
+                    || this.weekPublishStat.addPublishPlanDTO.publishTime === ''){
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: '发版时间不能为空',
+                        type: 'error'
+                    });
+                    return
+                }
+                this.weekPublishStat.addPublishPlanDTO.publishTime = moment(this.weekPublishStat.addPublishPlanDTO.publishTime).format('YYYY-MM-DD 23:59:59');
+                Http.zsyPostHttp('/week-publish',this.weekPublishStat.addPublishPlanDTO,res=>{
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: '新增发版计划成功',
+                        type: 'success'
+                    });
+                    this.clearPublishPlanDTO(0);
+                    this.searchPublishPlan()
+                },err=>{
+                    this.isSaving = false;
+                    this.$message({
+                        showClose: true,
+                        message: err.errMsg,
+                        type: 'error'
+                    });
+                })
+            }
             // -- sch
+
         }
     }
 
