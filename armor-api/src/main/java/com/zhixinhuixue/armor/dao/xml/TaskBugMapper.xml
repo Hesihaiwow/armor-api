@@ -258,7 +258,7 @@
     <select id="selectBugStatusPie" resultMap="BugStatusMap">
         SELECT `status`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0
         <if test="yearMonth != null and yearMonth != ''">
-            AND DATE_FORMAT(create_time,'%Y-%M') = #{yearMonth}
+            AND DATE_FORMAT(create_time,'%Y-%m') = #{yearMonth}
         </if>
         GROUP BY `status`;
     </select>
@@ -267,7 +267,7 @@
     <select id="selectBugTypePie" resultMap="BugTypeMap">
         SELECT `problem_type`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0
         <if test="yearMonth != null and yearMonth != ''">
-            AND DATE_FORMAT(create_time,'%Y-%M') = #{yearMonth}
+            AND DATE_FORMAT(create_time,'%Y-%m') = #{yearMonth}
         </if>
         GROUP BY `problem_type`;
     </select>
@@ -283,7 +283,7 @@
         LEFT JOIN `user` u ON u.id = tb.handler_id
         WHERE tb.is_delete = 0
         <if test="yearMonth != null and yearMonth != ''">
-            AND DATE_FORMAT(tb.create_time,'%Y-%M') = #{yearMonth}
+            AND DATE_FORMAT(tb.create_time,'%Y-%m') = #{yearMonth}
         </if>
         GROUP BY tb.`handler_id`;
     </select>
@@ -299,7 +299,7 @@
         LEFT JOIN `user` u ON u.id = tb.create_by
         WHERE tb.is_delete = 0
         <if test="yearMonth != null and yearMonth != ''">
-            AND DATE_FORMAT(tb.create_time,'%Y-%M') = #{yearMonth}
+            AND DATE_FORMAT(tb.create_time,'%Y-%m') = #{yearMonth}
         </if>
         GROUP BY tb.`create_by`;
     </select>
@@ -324,7 +324,7 @@
         LEFT JOIN user u2 ON u2.id = tb.handler_id
         WHERE tb.is_delete = 0
         <if test="yearMonth != null and yearMonth != ''">
-            AND DATE_FORMAT(tb.create_time,'%Y-%M') = #{yearMonth}
+            AND DATE_FORMAT(tb.create_time,'%Y-%m') = #{yearMonth}
         </if>
         ORDER BY tb.task_id
     </select>

@@ -511,6 +511,9 @@
             <if test="linkTask != null">
                 link_task = #{linkTask,jdbcType=BIGINT},
             </if>
+            <if test="linkTask == null">
+                link_task = null,
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>

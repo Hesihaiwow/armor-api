@@ -442,6 +442,8 @@ public class ZSYTaskService implements IZSYTaskService {
                     throw new ZSYServiceException("关联任务不存在");
                 }
                 task.setLinkTask(taskReqDTO.getLinkTask());
+            }else {
+                task.setLinkTask(null);
             }
         }
         task.setDescription(taskReqDTO.getDescription());

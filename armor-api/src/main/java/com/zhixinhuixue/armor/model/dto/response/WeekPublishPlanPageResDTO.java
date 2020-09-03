@@ -168,6 +168,11 @@ public class WeekPublishPlanPageResDTO {
     public static class TableData{
 
         /**
+         * 备注
+         */
+        private String remark;
+
+        /**
          * 任务名称
          */
         private List<String> taskList;
@@ -191,6 +196,14 @@ public class WeekPublishPlanPageResDTO {
          * 发布平台
          */
         private List<String> platformList;
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
 
         public List<String> getPlatformList() {
             return platformList;

@@ -361,6 +361,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                             .map(TaskUserBO::getUserName).collect(Collectors.toList());
                     tableData.setProductorList(productorList);
                     tableData.setPlatformList(platformNames);
+                    tableData.setRemark(item.getRemark());
                     tableDataList.add(tableData);
 
                     resDTO.setDataList(tableDataList);
