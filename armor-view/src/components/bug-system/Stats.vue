@@ -45,7 +45,7 @@
             <el-button type="primary" style="margin-left: 10px;" @click="fetchUserBugStat()">搜索</el-button>
             <div id="userBugHistogram" style="height: 400px;width: 100%;text-align: center"></div>
         </el-card>
-        <el-card style="height: 500px">
+        <el-card>
             <div class="fl">
                 <el-date-picker
                         style="width: 140px;"
