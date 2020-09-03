@@ -30,4 +30,14 @@ public class ZSYPlatformController {
     public String list(){
         return ZSYResult.success().data(platformService.list()).build();
     }
+
+    /**
+     * 删除
+     * @param id 平台id
+     */
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable("id")Long id){
+        platformService.delete(id);
+        return ZSYResult.success().build();
+    }
 }

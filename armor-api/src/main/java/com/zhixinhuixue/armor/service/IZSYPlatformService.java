@@ -22,4 +22,10 @@ public interface IZSYPlatformService {
      * @return
      */
     List<PlatformResDTO> list();
+
+    /**
+     * 删除
+     * @param id 平台id
+     */
+    void delete(Long id);
 }

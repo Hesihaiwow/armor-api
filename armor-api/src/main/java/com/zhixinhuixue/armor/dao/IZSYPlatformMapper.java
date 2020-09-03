@@ -40,4 +40,10 @@ public interface IZSYPlatformMapper {
      * @return List<Platform>
      */
     List<Platform> selectByIds(@Param("list") List<Long> list);
+
+    /**
+     * 删除
+     * @param id 平台id
+     */
+    void deleteById(@Param("id") Long id);
 }

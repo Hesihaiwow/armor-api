@@ -2,13 +2,12 @@ package com.zhixinhuixue.armor.service.impl;
 
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYPlatformMapper;
+import com.zhixinhuixue.armor.dao.IZSYWeekPublishPlanPlatformMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
-import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.response.PlatformResDTO;
 import com.zhixinhuixue.armor.model.pojo.Platform;
 import com.zhixinhuixue.armor.service.IZSYPlatformService;
-import net.bytebuddy.implementation.auxiliary.AuxiliaryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -29,6 +28,8 @@ public class ZSYPlatformService implements IZSYPlatformService {
     private IZSYPlatformMapper platformMapper;
     @Autowired
     private SnowFlakeIDHelper snowFlakeIDHelper;
+    @Autowired
+    private IZSYWeekPublishPlanPlatformMapper planPlatformMapper;
 
     /**
      * 新增
@@ -76,5 +77,18 @@ public class ZSYPlatformService implements IZSYPlatformService {
             });
         }
         return platformResDTOList;
+    }
+
+    /**
+     * 删除
+     * @param id 平台id
+     */
+    @Override
+    public void delete(Long id) {
+        Integer count = planPlatformMapper.checkPlatformUse(id);
+        if (count>0){
+            throw new ZSYServiceException("平台正在使用中,无法删除");
+        }
+        platformMapper.deleteById(id);
     }
 }

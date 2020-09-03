@@ -16,7 +16,12 @@
       ,#{platform.createBy,jdbcType=BIGINT},#{platform.createTime,jdbcType=TIMESTAMP})
   </insert>
 
-  <!--校验是否同名-->
+    <!--删除-->
+    <delete id="deleteById">
+        DELETE FROM `platform` WHERE id = #{id}
+    </delete>
+
+    <!--校验是否同名-->
   <select id="selectByName" resultMap="BaseResultMap">
       SELECT * FROM `platform` WHERE `name` = #{name}
   </select>

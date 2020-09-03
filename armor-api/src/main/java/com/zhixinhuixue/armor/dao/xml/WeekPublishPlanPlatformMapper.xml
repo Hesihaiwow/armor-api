@@ -28,4 +28,9 @@
         SELECT * FROM `week_publish_plan_platform` WHERE `wpp_id` = #{wppId}
     </select>
 
+    <!--查看平台是否使用-->
+    <select id="checkPlatformUse" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(*),0) FROM `week_publish_plan_platform` WHERE platform_id = #{platformId}
+    </select>
+
 </mapper>

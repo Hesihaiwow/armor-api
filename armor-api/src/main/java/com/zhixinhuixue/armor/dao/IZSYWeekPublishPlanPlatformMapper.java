@@ -29,4 +29,11 @@ public interface IZSYWeekPublishPlanPlatformMapper {
      * @return List<WeekPublishPlanPlatform>
      */
     List<WeekPublishPlanPlatform> selectByWppId(@Param("wppId") Long wppId);
+
+    /**
+     * 查看平台是否使用
+     * @param platformId 平台id
+     * @return Integer
+     */
+    Integer checkPlatformUse(@Param("platformId") Long platformId);
 }
