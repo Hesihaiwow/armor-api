@@ -49,44 +49,41 @@
                         <el-table-column type="expand">
                             <template slot-scope="scope">
                                 <div style="width: 100%">
-                                    <el-table :data="scope.row.dataList" :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                                        <el-table-column label="任务" align="center">
-                                            <template slot-scope="scope">
-                                                <span v-for="item in scope.row.taskList">
-                                                    <span><{{item}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    <el-form label-width="120px">
+                                        <el-form-item label="任务: ">
+                                            <div v-for="userTask in scope.row.userAndTaskList">
+                                                <div style="display: flex">
+                                                    <span>{{userTask.userName}}&nbsp;&nbsp;&nbsp;</span>
+                                                    <span>
+                                                    <span v-for="task in userTask.taskNameList">
+                                                        <{{task}}>&nbsp;&nbsp;
+                                                    </span>
                                                 </span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="产品" prop="productor" align="center" width="120">
-                                            <template slot-scope="scope">
-                                                <span v-for="item in scope.row.productorList">
-                                                    <span>{{item}}&nbsp;</span>
-                                                </span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="开发" prop="developer" align="center" width="125">
-                                            <template slot-scope="scope">
-                                                <span v-for="item in scope.row.developerList">
-                                                    <span>{{item}}&nbsp;</span>
-                                                </span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="测试" prop="tester" align="center" width="125">
-                                            <template slot-scope="scope">
-                                                <span v-for="item in scope.row.testerList">
-                                                    <span>{{item}}&nbsp;</span>
-                                                </span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="发布平台" prop="tester" align="center" width="125">
-                                            <template slot-scope="scope">
-                                                <span v-for="item in scope.row.platformList">
-                                                    <span>{{item}}&nbsp;</span>
-                                                </span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="备注" prop="remark" align="center" width="120"></el-table-column>
-                                    </el-table>
+                                                </div>
+                                            </div>
+                                        </el-form-item>
+                                        <el-form-item label="产品: ">
+                                            <span v-for="item in scope.row.productorList">
+                                                {{item}}
+                                            </span>
+                                        </el-form-item>
+                                        <el-form-item label="开发: ">
+                                            <span v-for="item in scope.row.developerList">
+                                                {{item}}
+                                            </span>
+                                        </el-form-item>
+                                        <el-form-item label="测试: ">
+                                            <span v-for="item in scope.row.testerList">
+                                                {{item}}
+                                            </span>
+                                        </el-form-item>
+                                        <el-form-item label="发布平台: ">
+                                            <span v-for="item in scope.row.platformList">
+                                                <{{item}}>&nbsp;&nbsp;
+                                            </span>
+                                        </el-form-item>
+                                        <el-form-item label="备注: ">{{scope.row.remark}}</el-form-item>
+                                    </el-form>
                                 </div>
                             </template>
                         </el-table-column>
