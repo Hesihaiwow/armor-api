@@ -184,9 +184,9 @@
             initTime(){
                 let curDate = new Date();
                 curDate = moment(curDate).format('YYYY-MM-DD 23:59:59');
-                this.bugStatusStat.queryDTO.yearAndMonth = curDate;
-                this.bugTypeStat.queryDTO.yearAndMonth = curDate;
-                this.userBugStat.queryDTO.yearAndMonth = curDate;
+                // this.bugStatusStat.queryDTO.yearAndMonth = curDate;
+                // this.bugTypeStat.queryDTO.yearAndMonth = curDate;
+                // this.userBugStat.queryDTO.yearAndMonth = curDate;
                 this.taskBugStat.queryDTO.yearAndMonth = curDate;
             },
             //查询bug状态分类图

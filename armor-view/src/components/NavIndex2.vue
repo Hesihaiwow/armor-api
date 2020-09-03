@@ -1442,7 +1442,7 @@
                     <el-input type="textarea" v-model="taskForm.description" :rows="3"></el-input>
                 </el-form-item>
                 <el-form-item label="关联任务" >
-                    <el-select v-model="taskForm.linkTask" placeholder="请选择">
+                    <el-select v-model="taskForm.linkTask" placeholder="请选择" filterable clearable>
                         <el-option
                                 v-for="item in joinRunningTaskList"
                                 :key="item.id"

@@ -52,39 +52,40 @@
                                     <el-table :data="scope.row.dataList" :header-cell-style="{background:'#D9D9D9',color:'black'}">
                                         <el-table-column label="任务" align="center">
                                             <template slot-scope="scope">
-                                                <div v-for="item in scope.row.taskList">
-                                                    <span>{{item}}</span>
-                                                </div>
+                                                <span v-for="item in scope.row.taskList">
+                                                    <span><{{item}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                                </span>
                                             </template>
                                         </el-table-column>
                                         <el-table-column label="产品" prop="productor" align="center" width="120">
                                             <template slot-scope="scope">
-                                                <div v-for="item in scope.row.productorList">
-                                                    <span>{{item}}</span>
-                                                </div>
+                                                <span v-for="item in scope.row.productorList">
+                                                    <span>{{item}}&nbsp;</span>
+                                                </span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column label="开发" prop="developer" align="center" width="120">
+                                        <el-table-column label="开发" prop="developer" align="center" width="125">
                                             <template slot-scope="scope">
-                                                <div v-for="item in scope.row.developerList">
-                                                    <span>{{item}}</span>
-                                                </div>
+                                                <span v-for="item in scope.row.developerList">
+                                                    <span>{{item}}&nbsp;</span>
+                                                </span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column label="测试" prop="tester" align="center" width="120">
+                                        <el-table-column label="测试" prop="tester" align="center" width="125">
                                             <template slot-scope="scope">
-                                                <div v-for="item in scope.row.testerList">
-                                                    <span>{{item}}</span>
-                                                </div>
+                                                <span v-for="item in scope.row.testerList">
+                                                    <span>{{item}}&nbsp;</span>
+                                                </span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column label="发布平台" prop="tester" align="center" width="120">
+                                        <el-table-column label="发布平台" prop="tester" align="center" width="125">
                                             <template slot-scope="scope">
-                                                <div v-for="item in scope.row.platformList">
-                                                    <span>{{item}}</span>
-                                                </div>
+                                                <span v-for="item in scope.row.platformList">
+                                                    <span>{{item}}&nbsp;</span>
+                                                </span>
                                             </template>
                                         </el-table-column>
+                                        <el-table-column label="备注" prop="remark" align="center" width="120"></el-table-column>
                                     </el-table>
                                 </div>
                             </template>
@@ -2225,7 +2226,8 @@
               if (this.activeName === 'stat'){
                   this.getStats();
               }else if (this.activeName === 'weekPublish'){
-                  this.initTime();
+                  // this.initTime();
+                  this.fetchPublishPlanPage(this.weekPublishStat.queryDTO)
               } else if (this.activeName === 'bug'){
                   this.fetchGroupList()
                   this.fetchBugPage();

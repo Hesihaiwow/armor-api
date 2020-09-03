@@ -331,7 +331,7 @@
             /*justify-content: space-between;*/
             flex-wrap: wrap;
             .el-select{
-                width: 140px;
+                width: 200px;
             }
             .item{
                 display: flex;

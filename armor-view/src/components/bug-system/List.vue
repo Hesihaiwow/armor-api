@@ -396,7 +396,7 @@
             margin-right: 15px;
         }
         .el-select{
-            width: 160px;
+            width: 250px;
         }
     }
 .pagination-box{

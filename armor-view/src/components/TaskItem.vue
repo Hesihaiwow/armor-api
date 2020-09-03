@@ -281,8 +281,8 @@
                             </div>
                             <span class="fl" style="margin-left: 25px"><i class="el-icon-info"></i></span>
                         </el-tooltip>
-                        <span class="fl ctpc-member-job-time" style="margin-left: 10px">个人任务:{{item.privateTaskHours}}工时</span>
-                        <el-tooltip placement="top">
+                        <span class="fl ctpc-member-job-time" style="margin-left: 10px" v-if="item.privateTaskHours>0">个人任务:{{item.privateTaskHours}}工时</span>
+                        <el-tooltip placement="top" v-if="item.privateTaskHours>0">
                             <div slot="content" style="width: 200px">
                                 <div v-if="item.priTaskList !== undefined && item.priTaskList.length > 0">
                                     <div v-for="priTask in item.priTaskList">
@@ -1451,7 +1451,7 @@
                     <el-input type="textarea" size="small" v-model="modifyPrivateTaskForm.description" :rows="3"></el-input>
                 </el-form-item>
                 <el-form-item label="关联任务" >
-                    <el-select v-model="modifyPrivateTaskForm.linkTask" placeholder="请选择">
+                    <el-select v-model="modifyPrivateTaskForm.linkTask" placeholder="请选择" clearable filterable>
                         <el-option
                                 v-for="item in joinRunningTaskList"
                                 :key="item.id"
