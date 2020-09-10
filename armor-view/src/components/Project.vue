@@ -107,7 +107,7 @@
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" align="center" width="60"></el-table-column>
                     <el-table-column label="名称" prop="name" align="center"></el-table-column>
-                    <el-table-column label="序号" prop="groupMarkText" align="center" width="120"></el-table-column>
+                    <el-table-column label="分组" prop="groupMarkText" align="center" width="120"></el-table-column>
                     <el-table-column label="操作" width="160" align="center">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="openEditPlatform(scope.row)">编辑</el-button>

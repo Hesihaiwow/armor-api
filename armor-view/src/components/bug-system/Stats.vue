@@ -56,10 +56,12 @@
                 </el-date-picker>
             </div>
             <div class="fl">
-                <el-select v-model="taskBugStat.queryDTO.taskId" filterable clearable placeholder="筛选任务" style="width: 250px">
-                    <el-option v-for="item in taskBugStat.taskList" :key="item.id" :label="item.name"
-                               :value="item.id"></el-option>
-                </el-select>
+                <el-input v-model="taskBugStat.queryDTO.taskName" clearable placeholder="填写发版平台名称"
+                          style="width: 300px"></el-input>
+                <!--<el-select v-model="taskBugStat.queryDTO.taskId" filterable clearable placeholder="筛选任务" style="width: 250px">-->
+                    <!--<el-option v-for="item in taskBugStat.taskList" :key="item.id" :label="item.name"-->
+                               <!--:value="item.id"></el-option>-->
+                <!--</el-select>-->
             </div>
             <el-button type="primary" style="margin-left: 10px;" @click="selectTaskBug()">搜索</el-button>
             <div>
@@ -171,7 +173,8 @@
                         yearAndMonth:null,
                         pageNum:1,
                         pageSize:10,
-                        total:0
+                        total:0,
+                        taskName:''
                     },
                     taskBugData:[],
                     taskList:[]
@@ -184,7 +187,7 @@
           this.fetchBugTypeStat();
           this.fetchUserBugStat();
           this.fetchTaskBugStat();
-          this.fetchBugTasks();
+          // this.fetchBugTasks();
         },
         methods:{
 
