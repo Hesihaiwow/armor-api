@@ -55,6 +55,12 @@
                         placeholder="选择年月">
                 </el-date-picker>
             </div>
+            <div class="fl">
+                <el-select v-model="taskBugStat.queryDTO.taskId" filterable clearable placeholder="筛选任务" style="width: 250px">
+                    <el-option v-for="item in taskBugStat.taskList" :key="item.id" :label="item.name"
+                               :value="item.id"></el-option>
+                </el-select>
+            </div>
             <el-button type="primary" style="margin-left: 10px;" @click="selectTaskBug()">搜索</el-button>
             <div>
                 <el-table :data="taskBugStat.taskBugData" border
@@ -168,6 +174,7 @@
                         total:0
                     },
                     taskBugData:[],
+                    taskList:[]
                 }
             }
         },
@@ -177,6 +184,7 @@
           this.fetchBugTypeStat();
           this.fetchUserBugStat();
           this.fetchTaskBugStat();
+          this.fetchBugTasks();
         },
         methods:{
 
@@ -465,6 +473,12 @@
                     ]
                 });
             },
+            //查询bug关联的任务列表
+            fetchBugTasks(){
+                http.zsyGetHttp(`/task-bug/task/ready`, {}, (res) => {
+                    this.taskBugStat.taskList = res.data;
+                });
+            }
         }
     }
 </script>

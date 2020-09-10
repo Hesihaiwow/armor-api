@@ -28,6 +28,7 @@
                                 type="date"
                                 value-format="yyyy-MM-dd"
                                 clearable
+                                style="width: 200px"
                                 placeholder="请选择开始时间"
                         >
                         </el-date-picker>
@@ -38,6 +39,7 @@
                                 type="date"
                                 value-format="yyyy-MM-dd"
                                 clearable
+                                style="width: 200px"
                                 placeholder="请选择截止时间"
                         >
                         </el-date-picker>
@@ -83,6 +85,18 @@
                                             </span>
                                         </el-form-item>
                                         <el-form-item label="备注: ">{{scope.row.remark}}</el-form-item>
+                                        <el-form-item label="多次发版平台: ">
+                                            <div v-for="item in scope.row.platformUsers">
+                                                <div style="display: flex">
+                                                    <span>{{item.platformName}}&nbsp;&nbsp;&nbsp;</span>
+                                                    <span>
+                                                    <span v-for="userName in item.userNameList">
+                                                        <{{userName}}>&nbsp;&nbsp;
+                                                    </span>
+                                                </span>
+                                                </div>
+                                            </div>
+                                        </el-form-item>
                                     </el-form>
                                 </div>
                             </template>
@@ -92,7 +106,7 @@
                         <el-table-column label="任务数量" prop="taskNum" align="center" width="100"></el-table-column>
                         <el-table-column label="操作" width="80" align="center">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="openEditPublishPlan(scope.row.wppId)">编辑</el-button>
+                                <el-button type="text" size="small" v-if="permit" @click="openEditPublishPlan(scope.row.wppId)">编辑</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -261,14 +275,13 @@
                                 placeholder="选择年份">
                         </el-date-picker>
                     </div>
-                    <!--<div class="add-member-basic-msg fl"><el-date-picker-->
-                            <!--v-model="bugHistogramDateRange"-->
-                            <!--type="daterange"-->
-                            <!--placeholder="选择日期范围"-->
-                            <!--unlink-panels-->
-                            <!--@change="bugTimeChange3"-->
-                            <!--:picker-options="pickerOptions">-->
-                    <!--</el-date-picker></div>-->
+                    <div class="add-member-basic-msg fl" >
+                        <el-select v-model="bugHistogramReqDTO.groupId" clearable filterable style="width: 250px" placeholder="业务组">
+                            <el-option v-for="item in groupList" :key="item.id" :label="item.name"
+                                       :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
                     <el-button type="primary" style="margin-left: 10px;" @click="fetchHistogram()">搜索</el-button>
                     <div>
                         <div id="myChart11" :style="{width:'1100px',height:'400px',marginTop:'70px',left:'80px'}"></div>
@@ -838,74 +851,11 @@
             </el-tab-pane>
         </el-tabs>
         <el-dialog title="创建Bug处理结果"
-                style="width:auto;"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-                :visible.sync="createBugSolvingVisible">
-                <div class="ctpc-con">
-                    <div  style="display: inline"><span class="star">*</span>问题项目</div>
-                    <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="bugForm.projectId" placeholder="请选择">
-                            <el-option  v-for="item in projectForm" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                        </el-select>
-                    </div>
-                    <div style="margin-top: 20px"><span class="star">*</span>问题描述</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="bugForm.description" :rows="3"></el-input>
-                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	发现日期</div>
-                        <el-date-picker v-model="bugForm.createTime" type="date" placeholder="选择发现日期" style="position: relative;margin-left: 100px"></el-date-picker>
-                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>	处理日期</div>
-                        <el-date-picker v-model="bugForm.processTime" type="date" placeholder="选择处理日期" style="position: relative;margin-left: 100px"></el-date-picker>
-                </div>
-
-                <div class="ctpc-member-con">
-                    <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
-                        <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
-                        <span style="position: absolute;right: 10px;">
-                                <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
-                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
-                        </span>
-                    </div>
-                </div>
-                <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                    <div class="add-member-basic">
-                        <div class="add-member-basic-list clearfix">
-                            <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
-                            <div class="add-member-basic-msg fl">
-                                <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
-                                    <el-option v-for="item in userList" :key="item.id" :label="item.name"
-                                               :value="item.id"></el-option>
-                                </el-select>
-                            </div>
-                            <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
-                            </div>
-                            <div class="add-member-basic-msg fl">
-                                <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ctpc-btns">
-                        <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
-                        <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
-                    </div>
-                </div>
-                <div class="add-member-opt" v-show="!showAddDetail" @click="showAddDetail = !showAddDetail;">
-                    <span class="add-member-icon">+</span>
-                    <span class="add-member-msg" style="">添加成员</span>
-                </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveBugForm('bugForm')" :loading="isSaving">立即创建</el-button>
-            <el-button @click="createBugSolvingVisible = false">取 消</el-button>
-          </span>
-        </el-dialog>
-
-
-        <el-dialog title="创建Bug处理结果"
                 @close="closeDialog()"
                 class="aaa"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
-                :visible.sync="createBugSolvingVisible1">
+                :visible.sync="createBugSolvingVisible">
                 <div class="ctpc-con" style="height: 400px">
 
                     <div style="margin-top: 10px;float: left">
@@ -1002,8 +952,8 @@
                         <span class="fl ctpc-member-head">{{item.userName}}</span>
                         <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
                         <span style="position: absolute;right: 10px;">
-                                <el-button type="text" icon="edit" @click="modifyMember(index,bugUsers)"></el-button>
-                            <el-button type="text" icon="close" @click="deleteMember(index)"></el-button>
+                            <el-button type="text" icon="el-icon-edit" @click="modifyMember(index,bugUsers)"></el-button>
+                            <el-button type="text" icon="el-icon-close" @click="deleteMember(index)"></el-button>
                         </span>
                     </div>
                 </div>
@@ -1035,7 +985,7 @@
                 </div>
             <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="saveOnlineBugForm()" :loading="isSaving">立即创建</el-button>
-            <el-button @click="createBugSolvingVisible1 = false">取 消</el-button>
+            <el-button @click="createBugSolvingVisible = false">取 消</el-button>
           </span>
         </el-dialog>
         <el-dialog title="更新Bug处理"
@@ -1043,7 +993,7 @@
                 class="aaa"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
-                :visible.sync="updateBugSolvingVisible1">
+                :visible.sync="updateBugSolvingVisible">
             <div class="ctpc-con" style="height: 400px;">
                 <div style="margin-top: 10px;float: left">
                     <div  style="display: inline"><span class="star">*</span>反馈人</div>
@@ -1139,9 +1089,9 @@
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
                     <span style="position: absolute;right: 10px;">
-                                <el-button type="text" icon="el-icon-edit" @click="modifyMember(index,bugUsers)"></el-button>
-                            <el-button type="text" icon="el-icon-delete" @click="deleteMember(index)"></el-button>
-                        </span>
+                        <el-button type="text" icon="el-icon-edit" @click="modifyMember(index,bugUsers)"></el-button>
+                        <el-button type="text" icon="el-icon-delete" @click="deleteMember(index)"></el-button>
+                    </span>
                 </div>
             </div>
             <div class="ctpc-add-member-detail" v-if="showAddDetail">
@@ -1171,8 +1121,8 @@
                 <span class="add-member-msg" style="">添加成员</span>
             </div>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="editBugForm1()">立即更新</el-button>
-            <el-button @click="updateBugSolvingVisible1 = false,showAddDetail = false">取 消</el-button>
+            <el-button type="primary" @click="editBugForm()">立即更新</el-button>
+            <el-button @click="updateBugSolvingVisible = false,showAddDetail = false">取 消</el-button>
           </span>
         </el-dialog>
 
@@ -1216,7 +1166,7 @@
             <span slot="footer" class="dialog-footer" >
                 <div v-show="permit">
                     <el-tooltip content="编辑该任务" placement="top">
-                     <el-button type="primary" @click="editBugDetail1(bugDetailForm)">编辑</el-button>
+                     <el-button type="primary" @click="editBugDetail(bugDetailForm)">编辑</el-button>
                     </el-tooltip>
                     <el-tooltip content="删除该任务" placement="top">
                           <el-button type="danger" @click="deleteBug()">删除</el-button>
@@ -1425,22 +1375,19 @@
             </span>
         </el-dialog>
         <el-dialog title="新增周发版计划" :visible.sync="weekPublishStat.addVisible"
-                   :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="800px">
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="900px">
             <el-form label-position="left" label-width="120px">
                 <el-form-item label="发版计划名称：">
-                    <el-input v-model="weekPublishStat.addPublishPlanDTO.wppName" placeholder="填写发布计划名称" style="width: 500px"></el-input>
+                    <el-input v-model="weekPublishStat.addPublishPlanDTO.wppName" placeholder="填写发布计划名称" style="width: 740px"></el-input>
                 </el-form-item>
                 <el-form-item label="发版时间：">
                     <el-date-picker
                             v-model="weekPublishStat.addPublishPlanDTO.publishTime"
                             type="date"
-                            style="width: 500px;"
+                            style="width: 740px;"
                             format="yyyy-MM-dd"
                             placeholder="选择发版日期">
                     </el-date-picker>
-                </el-form-item>
-                <el-form-item label="备注：">
-                    <el-input v-model="weekPublishStat.addPublishPlanDTO.remark" placeholder="填写备注" style="width: 500px"></el-input>
                 </el-form-item>
                 <el-form-item label="关联任务：">
                     <el-select
@@ -1449,7 +1396,7 @@
                             filterable
                             clearable
                             placeholder="请选择任务"
-                            style="width: 500px;">
+                            style="width: 740px;">
                         <el-option
                                 v-for="item in weekPublishStat.taskList"
                                 :key="item.id"
@@ -1459,20 +1406,105 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="发布平台：">
-                    <el-select
-                            v-model="weekPublishStat.addPublishPlanDTO.platformIds"
-                            multiple
-                            filterable
-                            clearable
-                            placeholder="请选择平台"
-                            style="width: 500px;">
-                        <el-option
-                                v-for="item in platformList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
+                    <!--<el-select-->
+                            <!--v-model="weekPublishStat.addPublishPlanDTO.platformIds"-->
+                            <!--multiple-->
+                            <!--filterable-->
+                            <!--clearable-->
+                            <!--placeholder="请选择平台"-->
+                            <!--style="width: 500px;">-->
+                        <!--<el-option-->
+                                <!--v-for="item in platformList"-->
+                                <!--:key="item.id"-->
+                                <!--:label="item.name"-->
+                                <!--:value="item.id">-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                    <div class="clearfix">
+                        <div class="fl" style="width: 100px;line-height: 32px;border: 1px solid #ebeef5;border-radius: 4px;height: 303px">
+                            <h4 style="padding: 0 10px;color: #000000;background-color: #f5f7fa;height: 40px">分组</h4>
+                            <ul style="overflow: auto;margin-left: 5px">
+                                <li v-for="li in weekPublishStat.groupMarkList" :key="li.id"
+                                    style="cursor:pointer;"
+                                    @click="findPlatform(li.id),weekPublishStat.activeGroup=li.id"
+                                    :class="{'active' : li.id === weekPublishStat.activeGroup }">
+                                    {{li.name}}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="fr platform-transfer" style="width: 600px;">
+                            <el-transfer
+                                    :titles="['待选', '已选']"
+                                    filterable
+                                    filter-placeholder="请输入平台名称"
+                                    v-model="weekPublishStat.showSelectedPlatform"
+                                    :data="weekPublishStat.showPlatform"
+                                    :props="{
+                                      key: 'id',
+                                      label: 'name'
+                                    }">
+                            </el-transfer>
+                        </div>
+                    </div>
+                    <div class="">
+                        <!--<el-button @click="cancelPlatform" class="btn-cancel">取消</el-button>-->
+                        <el-button type="primary" size="mini" @click="savePlatform(0)" class="fr">确定</el-button>
+                    </div>
+                </el-form-item>
+                <el-form-item label="多次发版：">
+                    <div class="ctpc-member-con">
+                        <div class="ctpc-member-list clearfix in" v-for="(item,index) in weekPublishStat.platformUserList"  :class="item.cssClass">
+                            <span class="fl" style="margin-left: 10px">平台:{{item.platformName}}</span>
+                            <span class="fr" style="margin-left: 10px">用户:{{item.userName}}</span>
+                            <span style="position: absolute;right: 10px;">
+                        <el-button type="text" icon="el-icon-edit" @click="modifyPlatformUser(index,weekPublishStat.platformUserList)"></el-button>
+                        <el-button type="text" icon="el-icon-delete" @click="deletePlatformUser(index)"></el-button>
+                    </span>
+                        </div>
+                    </div>
+                    <div class="ctpc-add-member-detail" v-if="weekPublishStat.addPlatformUserVisible">
+                        <div class="add-member-basic">
+                            <div class="add-member-basic-list clearfix">
+                                <div class="add-member-basic-menu fl"><span class="star">*</span>平台：</div>
+                                <div class="add-member-basic-msg fl">
+                                    <el-select v-model="weekPublishStat.addPlatformUserDTO.platformId"
+                                               filterable clearable placeholder="请选择"
+                                               @change="puPlatformChange"
+                                               style="width: 250px">
+                                        <el-option v-for="item in platformList"
+                                                   :key="item.id"
+                                                   :label="item.name"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
+                                <div class="add-member-basic-msg fl">
+                                    <el-select v-model="weekPublishStat.addPlatformUserDTO.userId"
+                                               filterable clearable placeholder="请选择"
+                                               @change="puUserChange">
+                                        <el-option v-for="item in checkInUsers"
+                                                   :key="item.userId"
+                                                   :label="item.userName"
+                                                   :value="item.userId">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ctpc-btns">
+                            <input type="button" class="ctpc-cancel" @click="cancelAddPlatformUser" value="取消">
+                            <input type="button" class="ctpc-save" @click="saveAddPlatformUser" value="确定">
+                        </div>
+                    </div>
+                    <div class="add-member-opt" v-show="!weekPublishStat.addPlatformUserVisible"
+                         @click="weekPublishStat.addPlatformUserVisible = !weekPublishStat.addPlatformUserVisible;">
+                        <!--<span class="add-member-icon">+</span>-->
+                        <span class="add-member-msg" style="width: 120px;">添加多次发版平台</span>
+                    </div>
+                </el-form-item>
+                <el-form-item label="备注：">
+                    <el-input v-model="weekPublishStat.addPublishPlanDTO.remark" placeholder="填写备注" style="width: 740px"></el-input>
                 </el-form-item>
             </el-form>
             <div style="text-align: right">
@@ -1481,22 +1513,19 @@
             </div>
         </el-dialog>
         <el-dialog title="编辑周发版计划" :visible.sync="weekPublishStat.editVisible"
-                   :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="800px">
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="900px">
             <el-form label-width="120px" label-position="left">
                 <el-form-item label="发版计划名称：">
-                    <el-input v-model="weekPublishStat.editPublishPlanDTO.wppName" placeholder="填写发版计划名称" style="width: 500px"></el-input>
+                    <el-input v-model="weekPublishStat.editPublishPlanDTO.wppName" placeholder="填写发版计划名称" style="width: 740px"></el-input>
                 </el-form-item>
                 <el-form-item label="发版时间：">
                     <el-date-picker
-                            style="width: 500px;"
+                            style="width: 740px;"
                             v-model="weekPublishStat.editPublishPlanDTO.publishTime"
                             type="date"
                             format="yyyy-MM-dd"
                             placeholder="选择发版日期">
                     </el-date-picker>
-                </el-form-item>
-                <el-form-item label="备注：">
-                    <el-input v-model="weekPublishStat.editPublishPlanDTO.remark" placeholder="填写备注" style="width: 500px"></el-input>
                 </el-form-item>
                 <el-form-item label="关联任务：">
                     <el-select
@@ -1505,7 +1534,7 @@
                             filterable
                             clearable
                             placeholder="请选择任务"
-                            style="width: 500px;">
+                            style="width: 740px;">
                         <el-option
                                 v-for="item in weekPublishStat.taskList"
                                 :key="item.id"
@@ -1515,22 +1544,108 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="发布平台：">
-                    <el-select
-                            v-model="weekPublishStat.editPublishPlanDTO.platformIds"
-                            multiple
-                            filterable
-                            clearable
-                            placeholder="请选择平台"
-                            style="width: 500px;">
-                        <el-option
-                                v-for="item in platformList"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
+                    <!--<el-select-->
+                            <!--v-model="weekPublishStat.editPublishPlanDTO.platformIds"-->
+                            <!--multiple-->
+                            <!--filterable-->
+                            <!--clearable-->
+                            <!--placeholder="请选择平台"-->
+                            <!--style="width: 500px;">-->
+                        <!--<el-option-->
+                                <!--v-for="item in platformList"-->
+                                <!--:key="item.id"-->
+                                <!--:label="item.name"-->
+                                <!--:value="item.id">-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                    <div class="clearfix">
+                        <div class="fl" style="width: 100px;line-height: 32px;border: 1px solid #ebeef5;border-radius: 4px;height: 303px">
+                            <h4 style="padding: 0 10px;color: #000000;background-color: #f5f7fa;height: 40px">分组</h4>
+                            <ul style="overflow: auto;margin-left: 5px">
+                                <li v-for="li in weekPublishStat.groupMarkList" :key="li.id"
+                                    style="cursor:pointer;"
+                                    @click="findPlatform(li.id),weekPublishStat.activeGroup=li.id"
+                                    :class="{'active' : li.id === weekPublishStat.activeGroup }">
+                                    {{li.name}}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="fr platform-transfer" style="width: 600px;">
+                            <el-transfer
+                                    :titles="['待选', '已选']"
+                                    filterable
+                                    filter-placeholder="请输入平台名称"
+                                    v-model="weekPublishStat.showSelectedPlatform"
+                                    :data="weekPublishStat.showPlatform"
+                                    :props="{
+                                      key: 'id',
+                                      label: 'name'
+                                    }">
+                            </el-transfer>
+                        </div>
+                    </div>
+                    <div class="">
+                        <!--<el-button @click="cancelPlatform" class="btn-cancel">取消</el-button>-->
+                        <el-button type="primary" @click="savePlatform(1)" class="fr" size="mini">确定</el-button>
+                    </div>
+                </el-form-item>
+                <el-form-item label="多次发版：">
+                    <div class="ctpc-member-con">
+                        <div class="ctpc-member-list clearfix in" v-for="(item,index) in weekPublishStat.platformUserList"  :class="item.cssClass">
+                            <span class="fl" style="margin-left: 10px">平台:{{item.platformName}}</span>
+                            <span class="fr" style="margin-left: 10px">用户:{{item.userName}}</span>
+                            <span style="position: absolute;right: 10px;">
+                        <el-button type="text" icon="el-icon-edit" @click="modifyPlatformUser(index,weekPublishStat.platformUserList)"></el-button>
+                        <el-button type="text" icon="el-icon-delete" @click="deletePlatformUser(index)"></el-button>
+                    </span>
+                        </div>
+                    </div>
+                    <div class="ctpc-add-member-detail" v-if="weekPublishStat.addPlatformUserVisible">
+                        <div class="add-member-basic">
+                            <div class="add-member-basic-list clearfix">
+                                <div class="add-member-basic-menu fl"><span class="star">*</span>平台：</div>
+                                <div class="add-member-basic-msg fl">
+                                    <el-select v-model="weekPublishStat.addPlatformUserDTO.platformId"
+                                               filterable clearable placeholder="请选择"
+                                               @change="puPlatformChange"
+                                               style="width: 250px">
+                                        <el-option v-for="item in platformList"
+                                                   :key="item.id"
+                                                   :label="item.name"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
+                                <div class="add-member-basic-msg fl">
+                                    <el-select v-model="weekPublishStat.addPlatformUserDTO.userId"
+                                               filterable clearable placeholder="请选择"
+                                               @change="puUserChange">
+                                        <el-option v-for="item in checkInUsers"
+                                                   :key="item.userId"
+                                                   :label="item.userName"
+                                                   :value="item.userId">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ctpc-btns">
+                            <input type="button" class="ctpc-cancel" @click="cancelAddPlatformUser" value="取消">
+                            <input type="button" class="ctpc-save" @click="saveAddPlatformUser" value="确定">
+                        </div>
+                    </div>
+                    <div class="add-member-opt" v-show="!weekPublishStat.addPlatformUserVisible"
+                         @click="weekPublishStat.addPlatformUserVisible = !weekPublishStat.addPlatformUserVisible;">
+                        <!--<span class="add-member-icon">+</span>-->
+                        <span class="add-member-msg" style="width: 120px;">添加多次发版平台</span>
+                    </div>
+                </el-form-item>
+                <el-form-item label="备注：">
+                    <el-input v-model="weekPublishStat.editPublishPlanDTO.remark" placeholder="填写备注" style="width: 740px"></el-input>
                 </el-form-item>
             </el-form>
+
             <div style="text-align: right">
                 <el-button type="primary" @click="saveEditPublishPlan">立即更新</el-button>
                 <el-button @click="clearPublishPlanDTO(1)">取 消</el-button>
@@ -1556,9 +1671,7 @@
                 isSaving:false,
                 activeName:'stat',
                 createBugSolvingVisible:false,
-                createBugSolvingVisible1:false,
                 updateBugSolvingVisible:false,
-                updateBugSolvingVisible1:false,
                 statsData:[],
                 pesonalTaskData:[],
                 modifyId:'',
@@ -2058,7 +2171,8 @@
                 bugHistogramReqDTO:{
                     startTime:null,
                     endTime:null,
-                    year:null
+                    year:null,
+                    groupId:null
                 },
                 doingTaskList:[],
                 bugHistogramDateRange:'',
@@ -2113,6 +2227,7 @@
                         testReport:null,
                         taskIds:[],
                         platformIds:[],
+                        platformAndUserList:[],
                     },
                     editPublishPlanDTO:{
                         wppId:null,
@@ -2122,12 +2237,32 @@
                         testReport:null,
                         taskIds:[],
                         platformIds:[],
+                        platformAndUserList:[],
                     },
                     publishPlanDetail:{},
                     addVisible:false,
                     editVisible:false,
                     taskList:[],
                     waitDeployTaskList:[],
+                    platformUserList:[],
+                    addPlatformUserVisible:false,
+                    addPlatformUserDTO:{
+                        index:null,
+                        platformId:null,
+                        platformName:'',
+                        userId:null,
+                        userName:''
+                    },
+                    publishUserList:[],
+                    groupMarkList: [
+                        {id: 0, name: 'java'},
+                        {id: 1, name: 'php'},
+                        {id: 2, name: '前端'},
+                        {id: 3, name: 'app&客户端'},
+                    ],
+                    activeGroup:null,
+                    showSelectedPlatform:[],
+                    showPlatform:[],
                 }
                 // -- sch
             }
@@ -2389,74 +2524,7 @@
                     this.pesonalTaskData =  resp.data;
                 });
             },
-            saveBugForm(){
-                this.isSaving = true
-                if (this.bugForm.projectId === ''||this.bugForm.description === ''
-                    ||this.bugForm.createTime === ''||this.bugForm.processTime === '') {
-                    this.errorMsg('请将问题信息填写完整');
-                    return
-                }
-                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss');
-                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss');
-                let param = this.bugForm;
-                param.projectId = param.projectId.trim();
-                param.description = param.description.trim();
-                param['bugUsers'] = this.bugUsers;
-                Http.zsyPostHttp('/bug/add', param, (resp) => {
-                    this.$message({
-                        showClose: true,
-                        message: 'Bug处理结果创建成功',
-                        type: 'success'
-                    });
-                    this.bugForm.projectId = this.bugForm.description = '';
-                    this.bugForm.createTime = this.bugForm.processTime = '';
-                    this.createBugSolvingVisible = false;
-                    this.bugUsers = [];
-                    this.fetchDiffTypeBugNum();
-                    this.getBugList();
-                    this.isSaving = false
-                })
 
-            },
-            editBugForm(id){
-                if (this.bugForm.projectId === ''||this.bugForm.description === ''
-                    ||this.bugForm.createTime === ''||this.bugForm.processTime === '') {
-                    this.errorMsg('请将问题信息填写完整');
-                    return
-                }
-                this.bugForm.createTime  = moment(this.bugForm.createTime ).format('YYYY-MM-DD HH:mm:ss');
-                this.bugForm.processTime  = moment(this.bugForm.processTime ).format('YYYY-MM-DD HH:mm:ss');
-                let param = this.bugForm;
-                param.projectId = param.projectId.trim();
-                param.description = param.description.trim();
-                param['bugUsers'] = this.bugUsers;
-                Http.zsyPutHttp('/bug/update/'+this.modifyId, param, (resp) => {
-                    this.$message({
-                        showClose: true,
-                        message: 'Bug处理结果更新成功',
-                        type: 'success'
-                    });
-                    this.bugForm.projectId = this.bugForm.description = '';
-                    this.bugForm.createTime = this.bugForm.processTime = '';
-                    this.updateBugSolvingVisible = false;
-                    this.bugUsers = [];
-                    this.getBugList();
-                    this.fetchDiffTypeBugNum();
-                })
-            },
-
-            createBugSolve(){
-                this.createBugSolvingVisible = true;
-                this.bugForm.description = this.bugForm.projectId = this.bugForm.createTime = this.bugForm.processTime = '';
-                this.bugUsers = [];
-                this.showAddDetail = false;
-                this.addMemberIndex = {
-                    index: '',
-                    userId: '',
-                    userName: '',
-                    integral: '',
-                }
-            },
             isDecimal(str) {
                 var regu = /^[-]{0,1}[0-9]{1,}$/;
                 if (regu.test(str)) {
@@ -2536,17 +2604,6 @@
                 this.showAddDetail = !this.showAddDetail;
             },
             editBugDetail(bugDetailForm){
-                this.updateBugSolvingVisible = true;
-                this.bugDetailVisible = false;
-                this.bugForm.projectId = bugDetailForm.projectId;
-                this.bugForm.createTime = bugDetailForm.createTime;
-                this.bugForm.processTime = bugDetailForm.processTime;
-                this.bugForm.description = bugDetailForm.description;
-                this.bugUsers = bugDetailForm.bugUsers;
-            },
-            editBugDetail1(bugDetailForm){
-                this.updateBugSolvingVisible1 = true;
-                this.bugDetailVisible = false;
                 this.onlineBugForm.projectId = bugDetailForm.projectId;
                 this.onlineBugForm.taskId = bugDetailForm.taskId;
                 this.onlineBugForm.createTime = bugDetailForm.createTime;
@@ -2564,6 +2621,8 @@
                 this.onlineBugForm.affectScope = bugDetailForm.affectScope;
                 this.onlineBugForm.year = bugDetailForm.year;
                 this.bugUsers = bugDetailForm.bugUsers;
+                this.updateBugSolvingVisible = true;
+                this.bugDetailVisible = false;
             },
             deleteBug(){
                 this.$confirm('确认删除?', '提示', {
@@ -3625,7 +3684,7 @@
 
             //打开新增bug窗口
             openBugDialog(){
-                this.createBugSolvingVisible1 = true;
+                this.createBugSolvingVisible = true;
                 this.onlineBugForm.description
                     = this.onlineBugForm.projectId
                     = this.onlineBugForm.createTime
@@ -3703,7 +3762,7 @@
                     });
                     this.onlineBugForm.projectId = this.onlineBugForm.description = this.onlineBugForm.demandSystemId = this.onlineBugForm.demandSystemName = '';
                     this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = this.onlineBugForm.taskId = null;
-                    this.createBugSolvingVisible1 = false;
+                    this.createBugSolvingVisible = false;
                     this.bugUsers = [];
                     this.fetchBugPage();
                     this.changeMonth1();
@@ -3719,7 +3778,7 @@
                     this.bugUsers = [];
                 })
             },
-            editBugForm1(){
+            editBugForm(){
                 if (this.onlineBugForm.origin == null || this.onlineBugForm.origin === ''){
                     this.errorMsg("反馈人不能为空");
                     return
@@ -3753,7 +3812,7 @@
                     });
                     this.onlineBugForm.projectId = this.onlineBugForm.description = this.onlineBugForm.demandSystemId = this.onlineBugForm.demandSystemName = '';
                     this.onlineBugForm.discoverTime = this.onlineBugForm.processTime = null;
-                    this.updateBugSolvingVisible1 = false;
+                    this.updateBugSolvingVisible = false;
                     this.bugUsers = [];
                     this.fetchBugPage();
                     this.changeMonth1();
@@ -4439,7 +4498,7 @@
 
             //查询平台
             fetchPlatformList() {
-                Http.zsyGetHttp('/platform/list', {}, (resp) => {
+                Http.zsyGetHttp('/platform/list?groupMark=', {}, (resp) => {
                     this.platformList = resp.data;
                 })
             },
@@ -5000,13 +5059,20 @@
                     this.weekPublishStat.editPublishPlanDTO.testReport = this.weekPublishStat.publishPlanDetail.testReport;
                     this.weekPublishStat.editPublishPlanDTO.taskIds = this.weekPublishStat.publishPlanDetail.taskIds;
                     this.weekPublishStat.editPublishPlanDTO.platformIds = this.weekPublishStat.publishPlanDetail.platformIds;
+                    this.weekPublishStat.platformUserList = res.data.platformUserList;
+                    this.weekPublishStat.showPlatform = this.platformList;
+                    this.weekPublishStat.showSelectedPlatform = res.data.platformIds
+
                 })
             },
             //打开编辑发版计划弹框
             openEditPublishPlan(wppId){
-                this.fetchAllTaskCanSelect();
+                this.weekPublishStat.taskList = [];
+                this.fetchAllTaskCanSelect(wppId);
                 this.fetchPublishPlanDetail(wppId);
                 this.weekPublishStat.editVisible = true;
+                this.weekPublishStat.addPlatformUserVisible = false;
+                // this.weekPublishStat.showPlatform = []
             },
             //查询待发布任务
             fetchWaitDeployTasks(){
@@ -5020,8 +5086,12 @@
                 })
             },
             //查询可选任务
-            fetchAllTaskCanSelect(){
-                Http.zsyGetHttp('/week-publish/task-dev-test',{},res=>{
+            fetchAllTaskCanSelect(wppId){
+                let id = 0;
+                if (wppId != null && wppId !== undefined && wppId !== ''){
+                    id = wppId
+                }
+                Http.zsyGetHttp('/week-publish/task-dev-test?wppIdStr='+id,{},res=>{
                     this.weekPublishStat.taskList = res.data;
                 })
             },
@@ -5034,8 +5104,9 @@
                         testReport:null,
                         taskIds:[],
                         platformIds:[],
-                    }
+                    };
                     this.weekPublishStat.addVisible = false;
+                    this.weekPublishStat.addPlatformUserVisible = false;
                 } else if (type == 1){
                     this.weekPublishStat.editPublishPlanDTO = {
                         wppId:null,
@@ -5045,8 +5116,9 @@
                             testReport:null,
                             taskIds:[],
                             platformIds:[],
-                    }
-                    this.weekPublishStat.editVisible = false
+                    };
+                    this.weekPublishStat.editVisible = false;
+                    this.weekPublishStat.addPlatformUserVisible = false;
                 }
             },
             //更新发版计划
@@ -5085,6 +5157,7 @@
                     });
                     return
                 }
+                this.weekPublishStat.editPublishPlanDTO.platformAndUserList = this.weekPublishStat.platformUserList;
                 this.weekPublishStat.editPublishPlanDTO.publishTime = moment(this.weekPublishStat.editPublishPlanDTO.publishTime).format('YYYY-MM-DD 23:59:59');
                 Http.zsyPutHttp('/week-publish/'+this.weekPublishStat.editPublishPlanDTO.wppId,this.weekPublishStat.editPublishPlanDTO,res=>{
                     this.isSaving = false;
@@ -5106,11 +5179,16 @@
             },
             //打开新增发布计划弹框
             openAddPublishPlan(){
+                this.weekPublishStat.taskList = [];
+                this.weekPublishStat.showPlatform = [];
+                this.weekPublishStat.showSelectedPlatform = [];
                 this.weekPublishStat.addPublishPlanDTO.taskIds = [];
                 this.weekPublishStat.addPublishPlanDTO.platformIds = [];
+                this.weekPublishStat.platformUserList = [];
                 this.fetchWaitDeployTasks();
-                this.fetchAllTaskCanSelect();
+                this.fetchAllTaskCanSelect('');
                 this.weekPublishStat.addVisible = true;
+                this.weekPublishStat.addPlatformUserVisible = false;
             },
             saveAddPublishPlan(){
                 this.isSaving = true;
@@ -5136,6 +5214,7 @@
                     });
                     return
                 }
+                this.weekPublishStat.addPublishPlanDTO.platformAndUserList = this.weekPublishStat.platformUserList;
                 this.weekPublishStat.addPublishPlanDTO.publishTime = moment(this.weekPublishStat.addPublishPlanDTO.publishTime).format('YYYY-MM-DD 23:59:59');
                 Http.zsyPostHttp('/week-publish',this.weekPublishStat.addPublishPlanDTO,res=>{
                     this.isSaving = false;
@@ -5154,7 +5233,146 @@
                         type: 'error'
                     });
                 })
-            }
+            },
+            //保存添加多次发版平台和用户
+            saveAddPlatformUser(){
+                if (this.weekPublishStat.addPlatformUserDTO.platformId == null
+                    || this.weekPublishStat.addPlatformUserDTO.platformId === undefined
+                    || this.weekPublishStat.addPlatformUserDTO.platformId === '') {
+                    this.errorMsg('请选择发版平台');
+                    return
+                }
+                if (this.weekPublishStat.addPlatformUserDTO.userId == null
+                    ||this.weekPublishStat.addPlatformUserDTO.userId === undefined
+                    ||this.weekPublishStat.addPlatformUserDTO.userId === '') {
+                    this.errorMsg('请选择关联用户');
+                    return
+                }
+                this.weekPublishStat.addPlatformUserVisible = !this.weekPublishStat.addPlatformUserVisible;
+                if (this.weekPublishStat.addPlatformUserDTO.index == null
+                    || this.weekPublishStat.addPlatformUserDTO.index === undefined
+                    || this.weekPublishStat.addPlatformUserDTO.index === '') {
+                    let platformUser = {};
+                    platformUser.platformId = this.weekPublishStat.addPlatformUserDTO.platformId;
+                    platformUser.platformName = this.weekPublishStat.addPlatformUserDTO.platformName;
+                    platformUser.userId = this.weekPublishStat.addPlatformUserDTO.userId;
+                    platformUser.userName = this.weekPublishStat.addPlatformUserDTO.userName;
+                    if (this.weekPublishStat.platformUserList.length>0){
+                        for (let i = 0;i<this.weekPublishStat.platformUserList.length;i++){
+                            let item = this.weekPublishStat.platformUserList[i];
+                            if (item.platformId == platformUser.platformId && item.userId == platformUser.userId){
+                                this.errorMsg('请勿添加重复数据');
+                                this.weekPublishStat.addPlatformUserDTO = {
+                                    index:null,
+                                    platformId:null,
+                                    platformName:'',
+                                    userId:null,
+                                    userName:''
+                                };
+                                return
+                            }
+                        }
+                    }
+                    this.weekPublishStat.platformUserList.push(platformUser)
+                } else {
+                    // 取消css
+                    this.weekPublishStat.platformUserList[this.weekPublishStat.addPlatformUserDTO.index].cssClass = ''
+                }
+
+                this.weekPublishStat.addPlatformUserDTO = {
+                    index:null,
+                    platformId:null,
+                    platformName:'',
+                    userId:null,
+                    userName:''
+                };
+                // this.stepTemp = {}
+                console.log(this.weekPublishStat.platformUserList)
+
+            },
+            //修改多次发布平台和用户
+            modifyPlatformUser(index, stages) {
+                // this.stepTemp = {
+                //     userId: stages[index].userId,
+                //     userName: stages[index].userName,
+                //     platformId: stages[index].platformId,
+                //     platformName: stages[index].platformName
+                // };
+                this.weekPublishStat.platformUserList.forEach((item) => {
+                    item.cssClass = ''
+                });
+                this.weekPublishStat.platformUserList[index].cssClass = 'stepActive';
+                this.weekPublishStat.addPlatformUserDTO = stages[index];
+                this.weekPublishStat.addPlatformUserDTO.index = index;
+                this.weekPublishStat.addPlatformUserVisible = true;
+            },
+            //删除多次发布平台和用户
+            deletePlatformUser(index) {
+                this.weekPublishStat.platformUserList.splice(index, 1);
+                if (this.weekPublishStat.platformUserList.length === 0) {
+                    this.weekPublishStat.addPlatformUserVisible = false;
+                    this.weekPublishStat.addPlatformUserDTO = {
+                        index:null,
+                        platformId:null,
+                        platformName:'',
+                        userId:null,
+                        userName:''
+                    }
+                }
+            },
+            cancelAddPlatformUser(){
+                this.weekPublishStat.addPlatformUserVisible = !this.weekPublishStat.addPlatformUserVisible;
+                this.weekPublishStat.addPlatformUserDTO = {
+                    index:null,
+                    platformId:null,
+                    platformName:'',
+                    userId:null,
+                    userName:''
+                }
+            },
+            puUserChange(val) {
+                let vm = this;
+                this.checkInUsers.forEach((user) => {
+                    if (user.userId === val) {
+                        vm.weekPublishStat.addPlatformUserDTO.userName = user.userName
+                    }
+                })
+            },
+            puPlatformChange(val) {
+                let vm = this;
+                this.platformList.forEach((item) => {
+                    if (item.id === val) {
+                        vm.weekPublishStat.addPlatformUserDTO.platformName = item.name
+                    }
+                })
+            },
+            //根据分组筛选平台
+            findPlatform(group){
+                let obj =[];
+                this.platformList.forEach(item => {
+                    if (item.groupMark === group) {
+                        obj.push(item)
+                    }
+                });
+                this.weekPublishStat.showPlatform = obj;
+            },
+            cancelPlatform(){
+                this.weekPublishStat.addPublishPlanDTO.platformIds = [];
+                this.weekPublishStat.showSelectedPlatform=[];
+                this.weekPublishStat.showPlatform = [];
+            },
+            savePlatform(type){
+                if (type == 0){
+                    this.weekPublishStat.addPublishPlanDTO.platformIds = [];
+                    this.weekPublishStat.addPublishPlanDTO.platformIds = this.weekPublishStat.showSelectedPlatform;
+                } else if (type == 1){
+                    this.weekPublishStat.editPublishPlanDTO.platformIds = [];
+                    this.weekPublishStat.editPublishPlanDTO.platformIds = this.weekPublishStat.showSelectedPlatform;
+                }
+            },
+            findId(val) {
+                return  val.map(item => item.id);
+            },
             // -- sch
 
         }
@@ -5488,5 +5706,18 @@
         padding: 0 12px 0 0;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
+    }
+
+    .platform-transfer .el-transfer-panel {
+        border: 1px solid #EBEEF5;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #FFF;
+        display: inline-block;
+        vertical-align: middle;
+        width: 250px;
+        max-height: 100%;
+        box-sizing: border-box;
+        position: relative;
     }
 </style>
