@@ -46,6 +46,9 @@
         LEFT JOIN `bug_manage` bm ON bm.`id` = but.`bug_id`
         LEFT JOIN `user` u ON u.`id` = but.`user_id`
         WHERE bm.`is_delete` = 0 AND bm.`demand_system_id` IS NOT NULL AND u.`is_delete` = 0 AND u.`status` = 0
+        <if test="groupId != null">
+            and bm.group_id = #{groupId}
+        </if>
         <if test="startTime != null">
             <![CDATA[  AND bm.discover_time >= #{startTime} ]]>
         </if>
@@ -64,6 +67,9 @@
         LEFT JOIN `bug_manage` bm ON bm.`id` = but.`bug_id`
         LEFT JOIN `user` u ON u.`id` = but.`user_id`
         WHERE bm.`is_delete` = 0 AND bm.`demand_system_id` IS NOT NULL AND u.`is_delete` = 0 AND u.`status` = 0
+        <if test="groupId != null">
+            and bm.group_id = #{groupId}
+        </if>
         <if test="startTime != null">
             <![CDATA[  AND bm.discover_time >= #{startTime} ]]>
         </if>

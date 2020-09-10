@@ -16,10 +16,35 @@ public class PlatformResDTO {
     private String name;
 
     /**
+     * 分组
+     */
+    private Integer groupMark;
+
+    /**
+     * 分组名
+     */
+    private String groupMarkText;
+
+    /**
      * 随机颜色
-     * @return
      */
     private Integer color;
+
+    public Integer getGroupMark() {
+        return groupMark;
+    }
+
+    public void setGroupMark(Integer groupMark) {
+        this.groupMark = groupMark;
+    }
+
+    public String getGroupMarkText() {
+        return groupMarkText;
+    }
+
+    public void setGroupMarkText(String groupMarkText) {
+        this.groupMarkText = groupMarkText;
+    }
 
     public Integer getColor() {
         return color;

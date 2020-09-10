@@ -43,6 +43,11 @@ public class WeekPublishPlanDetailResDTO {
      */
     private List<String> platformIds;
 
+    /**
+     * 多次发版平台和用户集合
+     */
+    private List<PlatformUser> platformUserList;
+
     public Long getWppId() {
         return wppId;
     }
@@ -97,5 +102,67 @@ public class WeekPublishPlanDetailResDTO {
 
     public void setPlatformIds(List<String> platformIds) {
         this.platformIds = platformIds;
+    }
+
+    public List<PlatformUser> getPlatformUserList() {
+        return platformUserList;
+    }
+
+    public void setPlatformUserList(List<PlatformUser> platformUserList) {
+        this.platformUserList = platformUserList;
+    }
+
+    public static class PlatformUser{
+        /**
+         * 平台id
+         */
+        private Long platformId;
+
+        /**
+         * 平台名称
+         */
+        private String platformName;
+
+        /**
+         * 用户id
+         */
+        private Long userId;
+
+        /**
+         * 用户名称
+         */
+        private String userName;
+
+        public String getPlatformName() {
+            return platformName;
+        }
+
+        public void setPlatformName(String platformName) {
+            this.platformName = platformName;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public Long getPlatformId() {
+            return platformId;
+        }
+
+        public void setPlatformId(Long platformId) {
+            this.platformId = platformId;
+        }
+
+        public Long getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Long userId) {
+            this.userId = userId;
+        }
     }
 }

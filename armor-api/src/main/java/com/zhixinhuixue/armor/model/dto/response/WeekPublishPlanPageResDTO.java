@@ -62,6 +62,19 @@ public class WeekPublishPlanPageResDTO {
      */
     private List<UserAndTask> userAndTaskList;
 
+    /**
+     * 平台-用户列表
+     */
+    private List<PlatformUser> platformUsers;
+
+    public List<PlatformUser> getPlatformUsers() {
+        return platformUsers;
+    }
+
+    public void setPlatformUsers(List<PlatformUser> platformUsers) {
+        this.platformUsers = platformUsers;
+    }
+
     public String getRemark() {
         return remark;
     }
@@ -242,6 +255,34 @@ public class WeekPublishPlanPageResDTO {
 
         public void setTaskNameList(List<String> taskNameList) {
             this.taskNameList = taskNameList;
+        }
+    }
+
+    public static class PlatformUser{
+        /**
+         * 平台名称
+         */
+        private String platformName;
+
+        /**
+         * 用户集合
+         */
+        private List<String> userNameList;
+
+        public String getPlatformName() {
+            return platformName;
+        }
+
+        public void setPlatformName(String platformName) {
+            this.platformName = platformName;
+        }
+
+        public List<String> getUserNameList() {
+            return userNameList;
+        }
+
+        public void setUserNameList(List<String> userNameList) {
+            this.userNameList = userNameList;
         }
     }
 }

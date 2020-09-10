@@ -18,6 +18,19 @@ public class TaskBugBO extends TaskBug {
      */
     private String handlerName;
 
+    /**
+     * 任务状态
+     */
+    private Integer taskStatus;
+
+    public Integer getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(Integer taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
     public String getTaskName() {
         return taskName;
     }

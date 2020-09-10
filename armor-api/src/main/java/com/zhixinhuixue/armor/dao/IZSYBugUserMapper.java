@@ -27,12 +27,12 @@ public interface IZSYBugUserMapper {
      * @param startTime 开始
      * @param endTime 截止
      */
-    List<Long> selectBugUsersByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
+    List<Long> selectBugUsersByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year, @Param("groupId")Long groupId);
 
     /**
      * 查询时间段内用户参与的bug
      * @param startTime 开始
      * @param endTime 截止
      */
-    List<UserBugTypeBO> selectUserTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
+    List<UserBugTypeBO> selectUserTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year, @Param("groupId")Long groupId);
 }

@@ -685,9 +685,9 @@ public class ZSYBugService implements IZSYBugService {
     public List<UserBugResDTO> getUserBugHistogram(BugListReqDTO reqDTO) {
         List<UserBugResDTO> list = new ArrayList<>();
         //查询时间段内bug人员
-        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
+        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear(),reqDTO.getGroupId());
         //查询时间段内用户参与的bug
-        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
+        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear(),reqDTO.getGroupId());
         if (!CollectionUtils.isEmpty(userIds)){
             userIds.forEach(userId->{
                 UserBugResDTO userBugResDTO = new UserBugResDTO();

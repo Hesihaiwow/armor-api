@@ -5,6 +5,7 @@ import com.zhixinhuixue.armor.model.dto.request.WeekPublishAddReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishEditReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishPlanDetailResDTO;
 import com.zhixinhuixue.armor.model.dto.request.WeekPublishQueryReqDTO;
+import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskBaseResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WeekPublishPlanPageResDTO;
 
@@ -43,7 +44,7 @@ public interface IZSYWeekPublishService {
     /**
      * 获取开发和测试阶段任务
      */
-    List<TaskBaseResDTO> getDevAndTestTasks();
+    List<TaskBaseResDTO> getDevAndTestTasks(String wppIdStr);
 
     /**
      * 分页查询
@@ -56,4 +57,10 @@ public interface IZSYWeekPublishService {
      * @param wppId 计划id
      */
     WeekPublishPlanDetailResDTO getPublishPlanById(Long wppId);
+
+    /**
+     * 查询发版计划涉及人员
+     * @param wppId 计划id
+     */
+    List<EffectUserResDTO> getPublishUsers(Long wppId);
 }

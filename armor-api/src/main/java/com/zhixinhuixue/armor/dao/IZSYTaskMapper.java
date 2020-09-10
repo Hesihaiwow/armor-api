@@ -343,4 +343,11 @@ public interface IZSYTaskMapper {
      * @return List<Task>
      */
     List<Task> selectByIds(@Param("list") List<Long> list);
+
+    /**
+     * 查询发版计划关联的任务
+     * @param wppId 发版计划id
+     * @return List<Task>
+     */
+    List<Task> selectPublishPlanTask(@Param("wppId") Long wppId);
 }

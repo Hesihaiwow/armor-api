@@ -23,6 +23,7 @@
         <result column="create_name" property="createName" jdbcType="VARCHAR"/>
         <result column="handler_name" property="handlerName" jdbcType="VARCHAR"/>
         <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
+        <result column="task_status" property="taskStatus" jdbcType="INTEGER"/>
     </resultMap>
 
     <resultMap id="BugStatusMap" type="com.zhixinhuixue.armor.model.bo.TaskBugStatusPieBO">
@@ -308,6 +309,7 @@
     <select id="selectTaskStat" resultMap="BOMap">
         SELECT
         t.name AS task_name,
+        t.status AS task_status,
         tb.task_id,
         tb.tb_no,
         tb.title,
@@ -324,9 +326,12 @@
         LEFT JOIN user u2 ON u2.id = tb.handler_id
         WHERE tb.is_delete = 0
         <if test="yearMonth != null and yearMonth != ''">
-            AND DATE_FORMAT(tb.create_time,'%Y-%m') = #{yearMonth}
+            AND DATE_FORMAT(t.end_time,'%Y-%m') = #{yearMonth}
         </if>
-        ORDER BY tb.task_id
+        <if test="taskId != null">
+            AND tb.task_id = #{taskId}
+        </if>
+        ORDER BY t.status,tb.task_id
     </select>
 
 </mapper>

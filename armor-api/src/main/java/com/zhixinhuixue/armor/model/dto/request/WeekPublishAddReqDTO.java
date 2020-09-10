@@ -2,10 +2,12 @@ package com.zhixinhuixue.armor.model.dto.request;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author sch
@@ -45,6 +47,20 @@ public class WeekPublishAddReqDTO {
      * 发布平台集合
      */
     private List<Long> platformIds;
+
+    /**
+     * 多次发版的平台和用户集合
+     */
+    @Valid
+    private List<PlatformAndUser> platformAndUserList;
+
+    public List<PlatformAndUser> getPlatformAndUserList() {
+        return platformAndUserList;
+    }
+
+    public void setPlatformAndUserList(List<PlatformAndUser> platformAndUserList) {
+        this.platformAndUserList = platformAndUserList;
+    }
 
     public String getWppName() {
         return wppName;
@@ -92,5 +108,49 @@ public class WeekPublishAddReqDTO {
 
     public void setPlatformIds(List<Long> platformIds) {
         this.platformIds = platformIds;
+    }
+
+    public static class PlatformAndUser{
+        /**
+         * 平台
+         */
+        @NotNull(message = "平台id不能为空")
+        private Long platformId;
+
+        /**
+         * 用户id
+         */
+        @NotNull(message = "用户id不能为空")
+        private Long userId;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PlatformAndUser that = (PlatformAndUser) o;
+            return Objects.equals(platformId, that.platformId) &&
+                    Objects.equals(userId, that.userId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(platformId, userId);
+        }
+
+        public Long getPlatformId() {
+            return platformId;
+        }
+
+        public void setPlatformId(Long platformId) {
+            this.platformId = platformId;
+        }
+
+        public Long getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Long userId) {
+            this.userId = userId;
+        }
     }
 }

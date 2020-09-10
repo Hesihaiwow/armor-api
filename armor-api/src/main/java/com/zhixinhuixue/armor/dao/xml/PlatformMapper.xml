@@ -6,15 +6,31 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="group_mark" jdbcType="INTEGER" property="groupMark" />
   </resultMap>
 
   <!--新增平台-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Platform">
-      INSERT INTO `platform` (`id`,`name`,`create_by`,`create_time`)
+      INSERT INTO `platform` (`id`,`name`,`create_by`,`create_time`,`group_mark`)
       VALUES
       (#{platform.id,jdbcType=BIGINT},#{platform.name,jdbcType=VARCHAR}
-      ,#{platform.createBy,jdbcType=BIGINT},#{platform.createTime,jdbcType=TIMESTAMP})
+      ,#{platform.createBy,jdbcType=BIGINT},#{platform.createTime,jdbcType=TIMESTAMP}
+      ,#{platform.groupMark,jdbcType=INTEGER})
   </insert>
+
+    <!--更新-->
+    <update id="updateById" parameterType="com.zhixinhuixue.armor.model.pojo.Platform">
+        UPDATE `platform`
+        <set>
+            <if test="groupMark != null">
+                `group_mark` = #{groupMark,jdbcType=INTEGER},
+            </if>
+            <if test="name != null and name != ''">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
 
     <!--删除-->
     <delete id="deleteById">
@@ -29,6 +45,11 @@
   <!--列表查询平台-->
   <select id="selectList" resultMap="BaseResultMap">
       SELECT * FROM `platform`
+      WHERE 1 = 1
+      <if test="groupMark != null">
+          AND `group_mark` = #{groupMark}
+      </if>
+      ORDER BY `group_mark`,`create_time` DESC
   </select>
 
     <select id="selectPlaformsByTask" resultMap="BaseResultMap">
@@ -44,6 +65,11 @@
         <foreach collection="list" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
+    </select>
+
+    <!--根据id 查询-->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `platform` WHERE `id` = #{id}
     </select>
 
 </mapper>

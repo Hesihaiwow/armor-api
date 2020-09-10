@@ -30,9 +30,9 @@ public interface IZSYPlatformMapper {
     /**
      * 列表查询平台
      * @author sch
-     * @return
+     * @return List<Platform>
      */
-    List<Platform> selectList();
+    List<Platform> selectList(@Param("groupMark") Integer groupMark);
 
     /**
      * 根据id集合查询
@@ -46,4 +46,17 @@ public interface IZSYPlatformMapper {
      * @param id 平台id
      */
     void deleteById(@Param("id") Long id);
+
+    /**
+     * 根据id 查询
+     * @param id 主键
+     * @return Platform
+     */
+    Platform selectById(@Param("id") Long id);
+
+    /**
+     * 更新
+     * @param platform 参数
+     */
+    void updateById(Platform platform);
 }

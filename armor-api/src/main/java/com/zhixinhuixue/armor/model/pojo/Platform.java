@@ -20,6 +20,11 @@ public class Platform {
     private String name;
 
     /**
+     * 分组
+     */
+    private Integer groupMark;
+
+    /**
      * 创建人id
      */
     private Long createBy;
@@ -28,6 +33,14 @@ public class Platform {
      * 创建时间
      */
     private Date createTime;
+
+    public Integer getGroupMark() {
+        return groupMark;
+    }
+
+    public void setGroupMark(Integer groupMark) {
+        this.groupMark = groupMark;
+    }
 
     public Long getId() {
         return id;

@@ -211,6 +211,9 @@
     <!--根据type查询bug数量-->
     <select id="selectCountByType" resultType="java.lang.Integer">
         SELECT COUNT(id) FROM `bug_manage` WHERE `type` = #{type}
+        <if test="bugListReqDTO.groupId != null">
+            and group_id = #{bugListReqDTO.groupId}
+        </if>
         <if test="bugListReqDTO.startTime != null">
             <![CDATA[  and create_time >= #{bugListReqDTO.startTime} ]]>
         </if>

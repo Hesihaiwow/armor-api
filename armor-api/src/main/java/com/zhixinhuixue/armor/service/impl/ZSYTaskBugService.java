@@ -590,7 +590,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (yearAndMonth != null){
             yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
         }
-        List<TaskBugBO> allTaskBugBOS = taskBugMapper.selectTaskStat(yearMonth);
+        List<TaskBugBO> allTaskBugBOS = taskBugMapper.selectTaskStat(yearMonth,reqDTO.getTaskId());
         Page<TaskBugStatResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(allTaskBugBOS)){
             Map<Long, List<TaskBugBO>> taskMap = allTaskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getTaskId));
@@ -599,6 +599,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
                 List<TaskBugBO> taskBugBOS = taskMap.get(taskId);
                 resDTO.setTaskId(taskId);
                 resDTO.setTaskName(taskBugBOS.get(0).getTaskName());
+                resDTO.setTaskStatus(taskBugBOS.get(0).getTaskStatus());
 
                 Map<Integer, List<TaskBugBO>> statusMap = taskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getStatus));
                 List<TaskBugStatResDTO.BugStatusNum> bugStatusNumList = new ArrayList<>();
@@ -645,9 +646,13 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
                 resDTO.setBugTypeNumList(bugTypeNumList);
                 resDTO.setCreatorNumList(creatorNumList);
                 resDTO.setHandlerNumList(handlerNumList);
+                resDTO.setBugNum(taskBugBOS.size());
                 list.add(resDTO);
             }
-            ArmorPageInfo<TaskBugStatResDTO> page = ArmorPageInfo.pageByMemory(list, Optional.ofNullable(reqDTO.getPageNum()).orElse(1));
+            List<TaskBugStatResDTO> collect = list.stream().sorted(Comparator.comparing(TaskBugStatResDTO::getBugNum).reversed()).collect(Collectors.toList());
+            Page<TaskBugStatResDTO> sortList = new Page<>();
+            sortList.addAll(collect);
+            ArmorPageInfo<TaskBugStatResDTO> page = ArmorPageInfo.pageByMemory(sortList, Optional.ofNullable(reqDTO.getPageNum()).orElse(1));
             int current = page.getCurrent();
             List<TaskBugStatResDTO> result = page.getList();
             long totalSize = page.getTotalSize();

@@ -18,9 +18,22 @@ public class BugStatReqDTO {
     private Date yearAndMonth;
 
     /**
+     * 任务
+     */
+    private Long taskId;
+
+    /**
      * 是否测试人员
      */
     private Integer isTester;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 
     public Integer getPageNum() {
         return pageNum;

@@ -65,8 +65,8 @@ public class ZSYWeekPublishController {
      * 获取开发和测试阶段任务
      */
     @GetMapping("/task-dev-test")
-    public String getDevAndTestTasks(){
-        return ZSYResult.success().data(weekPublishService.getDevAndTestTasks()).build();
+    public String getDevAndTestTasks(@RequestParam String wppIdStr){
+        return ZSYResult.success().data(weekPublishService.getDevAndTestTasks(wppIdStr)).build();
     }
 
     /**
@@ -85,5 +85,14 @@ public class ZSYWeekPublishController {
     @GetMapping("/{wppId}")
     public String getPublishPlanById(@PathVariable("wppId")Long wppId){
         return ZSYResult.success().data(weekPublishService.getPublishPlanById(wppId)).build();
+    }
+
+    /**
+     * 查询发版计划涉及人员
+     * @param wppId 计划id
+     */
+    @GetMapping("/publish-users/{wppId}")
+    public String getPublishUsers(@PathVariable("wppId")Long wppId){
+        return ZSYResult.success().data(weekPublishService.getPublishUsers(wppId)).build();
     }
 }

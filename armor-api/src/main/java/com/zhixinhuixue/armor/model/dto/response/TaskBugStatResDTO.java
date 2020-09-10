@@ -19,6 +19,16 @@ public class TaskBugStatResDTO {
     private String taskName;
 
     /**
+     * bug数量
+     */
+    private Integer bugNum;
+
+    /**
+     * 任务状态
+     */
+    private Integer taskStatus;
+
+    /**
      * 状态分类
      */
     private List<BugStatusNum> bugStatusNumList;
@@ -42,6 +52,22 @@ public class TaskBugStatResDTO {
      * 解决人分类
      */
     private List<UserBugNum> handlerNumList;
+
+    public Integer getBugNum() {
+        return bugNum;
+    }
+
+    public void setBugNum(Integer bugNum) {
+        this.bugNum = bugNum;
+    }
+
+    public Integer getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(Integer taskStatus) {
+        this.taskStatus = taskStatus;
+    }
 
     public Long getTaskId() {
         return taskId;

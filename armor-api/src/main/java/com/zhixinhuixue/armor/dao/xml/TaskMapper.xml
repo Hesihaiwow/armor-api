@@ -686,7 +686,6 @@
     <select id="selectBugTasks" resultMap="BaseResultMap">
         SELECT t.* FROM `task_bug` tb
         LEFT JOIN `task` t ON t.`id` = tb.`task_id`
-        WHERE tb.`is_delete` = 0 AND t.`is_delete` = 0 AND t.`review_status` = 3
         GROUP BY tb.`task_id`
     </select>
 
@@ -712,7 +711,7 @@
     <!--获取开发和测试阶段任务-->
     <select id="selectDevAndTestTasks" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2
-        AND `stage_id` IN (212754785051344894,212754785051344895,212754785051344896)
+        AND `stage_id` IN (212754785051344896)
     </select>
 
     <!--根据id集合批量查询-->
@@ -722,6 +721,15 @@
         <foreach collection="list" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
+    </select>
+
+    <!--查询发版计划关联的任务-->
+    <select id="selectPublishPlanTask" resultMap="BaseResultMap">
+        SELECT t.id,t.name,wppt.wpp_id
+        FROM week_publish_plan_task wppt
+        LEFT JOIN task t ON t.id = wppt.task_id
+        WHERE wppt.wpp_id = #{wppId}
+        GROUP BY wppt.task_id
     </select>
     <!-- sch -->
 </mapper>
