@@ -328,8 +328,8 @@
         <if test="yearMonth != null and yearMonth != ''">
             AND DATE_FORMAT(t.end_time,'%Y-%m') = #{yearMonth}
         </if>
-        <if test="taskId != null">
-            AND tb.task_id = #{taskId}
+        <if test="taskName != null and taskName != ''">
+            AND t.name LIKE concat('%',#{taskName},'%')
         </if>
         ORDER BY t.status,tb.task_id
     </select>

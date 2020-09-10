@@ -23,9 +23,22 @@ public class BugStatReqDTO {
     private Long taskId;
 
     /**
+     * 任务名称
+     */
+    private String taskName;
+
+    /**
      * 是否测试人员
      */
     private Integer isTester;
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
 
     public Long getTaskId() {
         return taskId;

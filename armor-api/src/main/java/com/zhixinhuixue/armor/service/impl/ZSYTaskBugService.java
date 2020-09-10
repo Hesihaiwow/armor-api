@@ -590,7 +590,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (yearAndMonth != null){
             yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
         }
-        List<TaskBugBO> allTaskBugBOS = taskBugMapper.selectTaskStat(yearMonth,reqDTO.getTaskId());
+        List<TaskBugBO> allTaskBugBOS = taskBugMapper.selectTaskStat(yearMonth,reqDTO.getTaskName().trim());
         Page<TaskBugStatResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(allTaskBugBOS)){
             Map<Long, List<TaskBugBO>> taskMap = allTaskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getTaskId));

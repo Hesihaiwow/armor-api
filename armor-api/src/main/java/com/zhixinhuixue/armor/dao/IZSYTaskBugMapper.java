@@ -133,8 +133,8 @@ public interface IZSYTaskBugMapper {
     /**
      * 查询任务bug
      * @param yearMonth 年月
-     * @param taskId 任务id
+     * @param taskName 任务名称
      * @return List<TaskBugBO>
      */
-    Page<TaskBugBO> selectTaskStat(@Param("yearMonth") String yearMonth, @Param("taskId") Long taskId);
+    Page<TaskBugBO> selectTaskStat(@Param("yearMonth") String yearMonth, @Param("taskName") String taskName);
 }
