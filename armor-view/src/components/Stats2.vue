@@ -5287,7 +5287,6 @@
                     userName:''
                 };
                 // this.stepTemp = {}
-                console.log(this.weekPublishStat.platformUserList)
 
             },
             //修改多次发布平台和用户
@@ -5720,4 +5719,13 @@
         box-sizing: border-box;
         position: relative;
     }
+    .platform-transfer .el-checkbox .el-checkbox__input {
+        display: inline;
+        /*position: relative;*/
+        white-space: nowrap;
+    }
+    .platform-transfer .el-transfer-panel__item{
+        display: block;
+    }
+
 </style>
