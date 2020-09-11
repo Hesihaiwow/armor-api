@@ -728,7 +728,7 @@
         SELECT t.id,t.name,wppt.wpp_id
         FROM week_publish_plan_task wppt
         LEFT JOIN task t ON t.id = wppt.task_id
-        WHERE wppt.wpp_id = #{wppId}
+        WHERE wppt.wpp_id = #{wppId} and t.is_delete = 0
         GROUP BY wppt.task_id
     </select>
     <!-- sch -->
