@@ -295,6 +295,7 @@
         <input type="button" class="ctpc-save" value="保存" @click="saveAddUser">
       </div>
     </el-dialog>
+
     <el-dialog title="编辑用户"
                width="536px"
                top="3%"
@@ -302,27 +303,17 @@
                size="tiny"
                :close-on-click-modal="false"
                :close-on-press-escape="false">
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">姓名</div>
-        <div class="ftp-msg fl">
+      <el-form label-width="100px">
+        <el-form-item label="姓名: ">
           <el-input class="w280" v-model="editUserForm.name" placeholder="请输入姓名"></el-input>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">账号</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="账号: ">
           <el-input class="w280" v-model="editUserForm.account" placeholder="请输入账号"></el-input>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">职位</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="职位: ">
           <el-input class="w280" v-model="editUserForm.jobName" placeholder="请输入职位"></el-input>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">角色</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="角色: ">
           <el-select class="w280" v-model="editUserForm.jobRole" placeholder="请选择角色">
             <el-option
                     v-for="item in rolesList"
@@ -331,11 +322,8 @@
                     :value="item.roleId">
             </el-option>
           </el-select>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">级别</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="级别: ">
           <el-select class="w280" v-model="editUserForm.level" placeholder="请选择级别">
             <el-option
                     v-for="item in levelList"
@@ -344,23 +332,14 @@
                     :value="item.id">
             </el-option>
           </el-select>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">手机号</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="手机号: ">
           <el-input class="w280" v-model="editUserForm.phone" placeholder="请输入手机号"></el-input>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">邮箱地址</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="邮箱地址: ">
           <el-input class="w280" v-model="editUserForm.email" placeholder="请输入邮箱地址"></el-input>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">用户权限</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="用户权限: ">
           <el-select class="w280" v-model="editUserForm.userRole" placeholder="请选择权限">
             <el-option
                     v-for="item in options"
@@ -369,23 +348,24 @@
                     :value="item.value">
             </el-option>
           </el-select>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">考勤序号</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="用户状态: ">
+          <el-select class="w280" v-model="editUserForm.status" placeholder="请选择状态">
+            <el-option
+                    v-for="item in statusOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="考勤序号: ">
           <el-input class="w280" v-model="editUserForm.checkSort" placeholder="请输入考勤序号"></el-input>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">工号</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="工号: ">
           <el-input class="w280" v-model="editUserForm.jobNumber" placeholder="请输入员工工号"></el-input>
-        </div>
-      </div>
-      <div class="ftp-list clearfix">
-        <div class="ftp-menus fl">审核人</div>
-        <div class="ftp-msg fl">
+        </el-form-item>
+        <el-form-item label="审核人: ">
           <i style="margin-left: 0px" class="el-icon-plus" v-show="num2>=1 && num2 < 3" @click="plus2"></i>
           <i class="el-icon-minus" v-show="num2>1" @click="minus2(num2-1)"></i>
           <div v-for="i in num2"><span style="margin-right: 20px">{{i}}</span>
@@ -398,16 +378,136 @@
               </el-option>
             </el-select>
           </div>
-
-        </div>
-      </div>
-
-      <!--<div class="am-warn">{{amWarn}}</div>-->
-      <div class="ctpc-btns">
-        <input type="button" class="ctpc-cancel" value="取消" @click="hideEditUser">
-        <input type="button" class="ctpc-save" value="保存" @click="saveEditUser">
-      </div>
+        </el-form-item>
+      </el-form>
     </el-dialog>
+
+    <!--<el-dialog title="编辑用户"-->
+               <!--width="536px"-->
+               <!--top="3%"-->
+               <!--:visible.sync="editUserVisible"-->
+               <!--size="tiny"-->
+               <!--:close-on-click-modal="false"-->
+               <!--:close-on-press-escape="false">-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">姓名</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-input class="w280" v-model="editUserForm.name" placeholder="请输入姓名"></el-input>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">账号</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-input class="w280" v-model="editUserForm.account" placeholder="请输入账号"></el-input>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">职位</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-input class="w280" v-model="editUserForm.jobName" placeholder="请输入职位"></el-input>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">角色</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-select class="w280" v-model="editUserForm.jobRole" placeholder="请选择角色">-->
+            <!--<el-option-->
+                    <!--v-for="item in rolesList"-->
+                    <!--:key="item.roleId"-->
+                    <!--:label="item.roleName"-->
+                    <!--:value="item.roleId">-->
+            <!--</el-option>-->
+          <!--</el-select>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">级别</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-select class="w280" v-model="editUserForm.level" placeholder="请选择级别">-->
+            <!--<el-option-->
+                    <!--v-for="item in levelList"-->
+                    <!--:key="item.id"-->
+                    <!--:label="item.name"-->
+                    <!--:value="item.id">-->
+            <!--</el-option>-->
+          <!--</el-select>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">手机号</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-input class="w280" v-model="editUserForm.phone" placeholder="请输入手机号"></el-input>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">邮箱地址</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-input class="w280" v-model="editUserForm.email" placeholder="请输入邮箱地址"></el-input>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">用户权限</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-select class="w280" v-model="editUserForm.userRole" placeholder="请选择权限">-->
+            <!--<el-option-->
+                    <!--v-for="item in options"-->
+                    <!--:key="item.value"-->
+                    <!--:label="item.label"-->
+                    <!--:value="item.value">-->
+            <!--</el-option>-->
+          <!--</el-select>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">考勤序号</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-input class="w280" v-model="editUserForm.checkSort" placeholder="请输入考勤序号"></el-input>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">工号</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-input class="w280" v-model="editUserForm.jobNumber" placeholder="请输入员工工号"></el-input>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">用户状态</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<el-select v-model="editUserForm.status" placeholder="请选择状态">-->
+            <!--<el-option-->
+                    <!--v-for="item in statusOptions"-->
+                    <!--:key="item.value"-->
+                    <!--:label="item.label"-->
+                    <!--:value="item.value">-->
+            <!--</el-option>-->
+          <!--</el-select>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ftp-list clearfix">-->
+        <!--<div class="ftp-menus fl">审核人</div>-->
+        <!--<div class="ftp-msg fl">-->
+          <!--<i style="margin-left: 0px" class="el-icon-plus" v-show="num2>=1 && num2 < 3" @click="plus2"></i>-->
+          <!--<i class="el-icon-minus" v-show="num2>1" @click="minus2(num2-1)"></i>-->
+          <!--<div v-for="i in num2"><span style="margin-right: 20px">{{i}}</span>-->
+            <!--<el-select placeholder="请选择审核人" @change="addCheckUser2(i)" v-model="checkUserIdList2[i-1]" clearable>-->
+              <!--<el-option-->
+                      <!--v-for="item in userList"-->
+                      <!--:key="item.userId"-->
+                      <!--:label="item.userName"-->
+                      <!--:value="item.userId">-->
+              <!--</el-option>-->
+            <!--</el-select>-->
+          <!--</div>-->
+
+        <!--</div>-->
+      <!--</div>-->
+
+      <!--&lt;!&ndash;<div class="am-warn">{{amWarn}}</div>&ndash;&gt;-->
+      <!--<div class="ctpc-btns">-->
+        <!--<input type="button" class="ctpc-cancel" value="取消" @click="hideEditUser">-->
+        <!--<input type="button" class="ctpc-save" value="保存" @click="saveEditUser">-->
+      <!--</div>-->
+    <!--</el-dialog>-->
   </div>
 </template>
 <style type="text/css" scoped>
@@ -595,6 +695,7 @@
                 },
                 editUserForm:{
                     id:null,
+                    status:null,
                     name:'',
                     account:'',
                     jobName:'',
@@ -609,6 +710,13 @@
                     email:'',
                     checkUserList:[]
                 },
+                statusOptions:[{
+                    value:0,
+                    label:'正常使用'
+                },{
+                    value:1,
+                    label:'冻结使用'
+                }],
                 //用户权限
                 options: [
                     {
@@ -1265,6 +1373,10 @@
                 }
                 if (this.editUserForm.jobNumber==null || this.editUserForm.jobNumber===undefined || this.editUserForm.jobNumber===''){
                     this.warnMsg("请输入用户工号");
+                    return;
+                }
+                if (this.editUserForm.status==null || this.editUserForm.status===undefined || this.editUserForm.status===''){
+                    this.warnMsg("请选择状态");
                     return;
                 }
                 let checkUsers = this.editUserForm.checkUserList;
