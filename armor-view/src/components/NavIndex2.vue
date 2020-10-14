@@ -4260,7 +4260,7 @@
             },
             createTaskClick() {
                 // 建任务
-                // this.clearPrivateTask()
+                this.clearPrivateTask();
                 this.createTaskVisible = true
             },
             //创建多人任务
@@ -4373,9 +4373,10 @@
                 this.taskForm.taskType = 1;
                 this.taskForm.priority = 1;
                 this.taskForm.stageId = '';
+                this.taskForm.linkTask = null;
               this.taskForm.taskName = this.taskForm.description = this.taskForm.beginTime = this.taskForm.endTime
                 = this.taskForm.projectId = this.taskForm.taskHours = '';
-                this.taskForm.tags = []
+                this.taskForm.tags = [];
             },
             saveTaskInfo(formName) {
                 let vm = this;
@@ -4421,6 +4422,7 @@
                         http.zsyPostHttp('/task/create', param, (resp) => {
                             this.$message({showClose: true, message: '任务创建成功', type: 'success'});
                             this.$refs[formName].resetFields();
+                            this.clearPrivateTask();
                             this.createPrivateTaskVisible = false;
                             this.taskAble = false;
                             vm.reload()

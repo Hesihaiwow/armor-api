@@ -1196,7 +1196,8 @@
                     this.queryForm.pageIndex = 1;
                     this.queryForm.deptId = this.departmentTree[0].id;
                     this.queryForm.groupId = null;
-                    this.userPaging(this.queryForm)
+                    this.userPaging(this.queryForm);
+                    this.fetchSignInUser()
                 });
             },
             warnMsg(msg) {
@@ -1323,7 +1324,8 @@
                     this.queryForm.pageIndex = 1;
                     this.queryForm.deptId = this.departmentTree[0].id;
                     this.queryForm.groupId = null;
-                    this.userPaging(this.queryForm)
+                    this.userPaging(this.queryForm);
+                    this.fetchSignInUser()
                 });
             },
             //查询用户详情
