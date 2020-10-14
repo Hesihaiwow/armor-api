@@ -174,7 +174,7 @@
                      WHERE l.review_status=3 and w.week_number = #{weekNumber} and w.year= #{year}
                 GROUP BY w.user_id) ul ON ul.user_id = ug.user_id
         LEFT JOIN `user` u on u.id = ug.user_id
-        WHERE ug.group_id = #{groupId}
+        WHERE ug.group_id = #{groupId} AND u.is_delete = 0 AND u.`status` = 0
         ORDER BY u.job_role,u.id;
     </select>
 
