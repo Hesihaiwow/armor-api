@@ -315,6 +315,11 @@
   <select id="selectAll" resultMap="BaseResultMap">
       select * from user
   </select>
+
+  <!--查询所有未删除的用户-->
+  <select id="selectNotDeleteUsers" resultMap="BaseResultMap">
+    SELECT * FROM `user` WHERE `is_delete` = 0
+  </select>
   <!-- sch -->
 
 </mapper>

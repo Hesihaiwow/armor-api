@@ -25,6 +25,7 @@ public interface IZSYStatsService {
 
     /**
      * 统计用户评论
+     *
      * @param pageNum
      * @param userId
      * @param grade
@@ -34,6 +35,7 @@ public interface IZSYStatsService {
 
     /**
      * 周工作量统计
+     *
      * @param userWeek
      * @return
      */
@@ -41,23 +43,25 @@ public interface IZSYStatsService {
 
     /**
      * 加班统计
+     *
      * @author sch
      */
     PageInfo<ExtraWorkStatsResDTO> getExtraWorkStats(ExtraWorkStatsReqDTO reqDTO);
 
     /**
      * 周人员投入表
+     *
      * @param reqDTO 参数
-     * @author sch
-     * @return List<UserCostResDTO>
-     */
-    List<UserCostResDTO> getWeekUserCost(QueryUserCostReqDTO reqDTO);
-
-    /**
-     * 周人员投入表
-     * @param reqDTO 参数
-     * @author sch
      * @return List<WeekUserCostResDTO>
+     * @author sch
      */
     List<WeekUserCostResDTO> getWeekUserCostV2(QueryUserCostReqDTO reqDTO);
+
+    /**
+     * 查询用户月工作总结
+     *
+     * @param reqDTO 参数
+     * @author sch
+     */
+    MonthWorkStatsResDTO getUserMonthStats(MonthWorkStatsReqDTO reqDTO);
 }

@@ -3369,7 +3369,7 @@ public class ZSYTaskService implements IZSYTaskService {
     public Date getPublishTime(){
         checkUser();
         if(publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId())==null){
-            return DateHelper.TimestampToDate(ZSYConstants.PUBLISHTIME);
+            return DateHelper.timestampToDate(ZSYConstants.PUBLISHTIME);
         }else{
             return  publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId());
         }

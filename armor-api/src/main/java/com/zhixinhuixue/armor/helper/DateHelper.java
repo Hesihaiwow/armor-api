@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Created by Akuma on 16/7/25.
@@ -53,8 +56,8 @@ public class DateHelper {
      */
     public static String getTodayBeginTime(){
         Calendar calendar = Calendar.getInstance();
-        String day_first = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(day_first).append(" ").append(TIME_BEGIN);
+        String dayFirst = dateFormatter(calendar.getTime(), DATE_FORMAT);
+        StringBuilder str = new StringBuilder().append(dayFirst).append(" ").append(TIME_BEGIN);
         return str.toString();
     }
 
@@ -64,8 +67,8 @@ public class DateHelper {
      */
     public static String getTodayEndTime(){
         Calendar calendar = Calendar.getInstance();
-        String day_first = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(day_first).append(" ").append(TIME_END);
+        String dayFirst = dateFormatter(calendar.getTime(), DATE_FORMAT);
+        StringBuilder str = new StringBuilder().append(dayFirst).append(" ").append(TIME_END);
         return str.toString();
     }
 
@@ -76,8 +79,8 @@ public class DateHelper {
     public static String getThisWeekFirstDay(){
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK, 1);
-        String day_first = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(day_first).append(" ").append(TIME_BEGIN);
+        String dayFirst = dateFormatter(calendar.getTime(), DATE_FORMAT);
+        StringBuilder str = new StringBuilder().append(dayFirst).append(" ").append(TIME_BEGIN);
         return str.toString();
     }
 
@@ -89,8 +92,8 @@ public class DateHelper {
     public static String getThisWeekLastDay(){
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK,Calendar.DAY_OF_WEEK);
-        String day_first = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(day_first).append(" ").append(TIME_END);
+        String dayFirst = dateFormatter(calendar.getTime(), DATE_FORMAT);
+        StringBuilder str = new StringBuilder().append(dayFirst).append(" ").append(TIME_END);
         return str.toString();
     }
 
@@ -106,8 +109,8 @@ public class DateHelper {
         gcLast.setTime(theDate);
         gcLast.set(Calendar.DAY_OF_MONTH, 1);
 
-        String day_first = dateFormatter(gcLast.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(day_first).append(" ").append(TIME_BEGIN);
+        String dayFirst = dateFormatter(gcLast.getTime(), DATE_FORMAT);
+        StringBuilder str = new StringBuilder().append(dayFirst).append(" ").append(TIME_BEGIN);
         return str.toString();
     }
 
@@ -119,7 +122,7 @@ public class DateHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         String s = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(s).append(" ").append(TIME_END);
+        StringBuilder str = new StringBuilder().append(s).append(" ").append(TIME_END);
         return str.toString();
 
     }
@@ -146,7 +149,7 @@ public class DateHelper {
             e.printStackTrace();
         }
         String s = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(s).append(" ").append(TIME_BEGIN);
+        StringBuilder str = new StringBuilder().append(s).append(" ").append(TIME_BEGIN);
         return str.toString();
     }
 
@@ -176,7 +179,7 @@ public class DateHelper {
             e.printStackTrace();
         }
         String s = dateFormatter(calendar.getTime(), DATE_FORMAT);
-        StringBuffer str = new StringBuffer().append(s).append(" ").append(TIME_END);
+        StringBuilder str = new StringBuilder().append(s).append(" ").append(TIME_END);
         return str.toString();
     }
 
@@ -223,7 +226,7 @@ public class DateHelper {
      * @return
      */
     public static Long stringToSecond(String datetime){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat(DATETIME_FORMAT);
         try {
             Date parse = sdf.parse(datetime);
             return  parse.getTime()/1000;
@@ -312,9 +315,8 @@ public class DateHelper {
      * @param date
      * @return
      */
-    public static Date TimestampToDate(String date){
-        Date datef = new Date(new Long(date));
-        return datef;
+    public static Date timestampToDate(String date){
+        return new Date(Long.valueOf(date));
     }
 
 
@@ -371,5 +373,52 @@ public class DateHelper {
             startCal.add(Calendar.DATE, 1);
         }
         return days;
+    }
+
+    /**
+     * 获取指定月份第一天
+     * @param yearAndMonth 年月 "yyyy-MM"
+     * @return Date
+     */
+    public static Date getFirstDayOfMonth(String yearAndMonth){
+        String[] arr = yearAndMonth.split("-");
+
+        int year = Integer.parseInt(arr[0]);
+        int month = Integer.parseInt(arr[1]);
+
+        Calendar cal = Calendar.getInstance();
+        //设置年份
+        cal.set(Calendar.YEAR, year);
+        //设置月份
+        cal.set(Calendar.MONTH, month - 1);
+        //获取某月最小天数
+        int firstDay = cal.getMinimum(Calendar.DATE);
+        //设置日历中月份的最小天数
+        cal.set(Calendar.DAY_OF_MONTH, firstDay);
+
+        return cal.getTime();
+    }
+
+    /**
+     * 获取指定月份最后一天
+     * @param yearAndMonth 年月 "yyyy-MM"
+     * @return Date
+     */
+    public static Date getLastDayOfMonth(String yearAndMonth){
+        String[] arr = yearAndMonth.split("-");
+
+        int year = Integer.parseInt(arr[0]);
+        int month = Integer.parseInt(arr[1]);
+
+        Calendar cal = Calendar.getInstance();
+        //设置年份
+        cal.set(Calendar.YEAR, year);
+        //设置月份
+        cal.set(Calendar.MONTH, month - 1);
+        //获取某月最大天数
+        int lastDay = cal.getActualMaximum(Calendar.DATE);
+        //设置日历中月份的最大天数
+        cal.set(Calendar.DAY_OF_MONTH, lastDay);
+        return cal.getTime();
     }
 }
