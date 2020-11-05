@@ -3856,6 +3856,10 @@
             //查询系统bug柱状图
             getSystemHistogram(){
               Http.zsyPostHttp('/bug/system/histogram',this.bugHistogramReqDTO,res=>{
+                  this.systemX = [];
+                  this.systemBugList= [];
+                  this.systemOpsList= [];
+                  this.systemAssList= [];
                     this.systemBugNumList = res.data;
                     if (this.systemBugNumList.length>0){
                         this.systemBugNumList.forEach(systemBugNum=>{
@@ -3873,6 +3877,10 @@
             //查询用户bug分类柱状图
             getUserBugHistogram(){
                 Http.zsyPostHttp('/bug/user/histogram',this.bugHistogramReqDTO,res=>{
+                    this.userX = [];
+                    this.userBugList= [];
+                    this.userOpsList= [];
+                    this.userAssList= [];
                     this.userBugNumList = res.data;
                     if (this.userBugNumList.length>0){
                         this.userBugNumList.forEach(userBugNum=>{
