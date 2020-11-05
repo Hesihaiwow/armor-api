@@ -25,5 +25,15 @@
         DELETE FROM `user_group` WHERE `group_id` = #{groupId}
     </delete>
 
+    <!--根据用户获得userGroup-->
+    <select id="selectByUserId" resultType="com.zhixinhuixue.armor.model.pojo.UserGroup">
+        select * from user_group where user_id = #{userId} limit 1
+    </select>
+
+    <!--根据组Id获得userGroup集合-->
+    <select id="selectByGroupId" resultType="com.zhixinhuixue.armor.model.pojo.UserGroup">
+        select * from user_group where group_id = #{groupId}
+    </select>
+
 
 </mapper>

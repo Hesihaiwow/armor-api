@@ -7,10 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
-import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
-import com.zhixinhuixue.armor.dao.IZSYWorkGroupMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.*;
@@ -22,9 +19,7 @@ import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserCheckPeopleResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserPageResDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserResDTO;
-import com.zhixinhuixue.armor.model.pojo.User;
-import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
-import com.zhixinhuixue.armor.model.pojo.UserRestHoursLog;
+import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYUserService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYResult;
@@ -38,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -87,6 +83,9 @@ public class ZSYUserService implements IZSYUserService {
 
     @Autowired
     private IZSYRestHoursLogMapper restHoursLogMapper;
+
+    @Autowired
+    private IZSYUserGroupMapper userGroupMapper;
 
     @Override
     @Transactional
@@ -669,6 +668,30 @@ public class ZSYUserService implements IZSYUserService {
         restHoursLog.setCreateTime(new Date());
         restHoursLog.setRecordTime(new Date());
         restHoursLogMapper.insert(restHoursLog);
+    }
+
+    /**
+     *  查询用户是否是组内领导
+     *
+     * @param userId
+     * @return
+     * @author hsh
+     * @create 2020/11/5-15:58
+     */
+    @Override
+    public Boolean getIsGroupLeader(Long userId) {
+        UserGroup userGroup = userGroupMapper.selectByUserId(userId);
+        if(userGroup == null || userGroup.getGroupId() == null){
+            throw new ZSYServiceException("用户组不存在");
+        }
+        WorkGroup workGroup = groupMapper.selectById(userGroup.getGroupId());
+        if(workGroup == null){
+            throw new ZSYServiceException("用户组不存在");
+        }
+        if(userId.longValue() == workGroup.getLeader().longValue()){
+            return true;
+        }
+        return false;
     }
 
     // -- sch

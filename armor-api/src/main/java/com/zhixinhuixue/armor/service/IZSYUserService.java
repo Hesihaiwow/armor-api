@@ -144,5 +144,15 @@ public interface IZSYUserService {
      */
     void updateUserRestHours(EditUserRestHoursReqDTO reqDTO);
 
+    /**
+     *  查询用户是否是组内领导
+     *
+     * @param userId
+     * @return
+     * @author hsh
+     * @create 2020/11/5-15:57
+     */
+    Boolean getIsGroupLeader(Long userId);
+
     // -- sch
 }

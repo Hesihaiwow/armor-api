@@ -198,4 +198,17 @@ public class ZSYUserController extends ZSYController {
         return ZSYResult.success().build();
     }
     // -- sch
+
+    /***
+     *  查询是否是组内的leader
+     *
+     * @return
+     * @author hsh
+     * @create 2020/11/5-15:53
+     */
+    @ApiOperation("查询小组管理者")
+    @GetMapping("/group-leader/{userId}")
+    public String getIsGroupLeader(@PathVariable("userId")Long userId){
+        return ZSYResult.success().data(userService.getIsGroupLeader(userId)).build();
+    }
 }

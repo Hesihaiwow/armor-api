@@ -48,6 +48,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.zhixinhuixue.armor.service.impl.ZSYMantisBugService.getExcelWorkbook;
 import static com.zhixinhuixue.armor.service.impl.ZSYMantisBugService.getSheetByNum;
@@ -75,6 +76,13 @@ public class ZSYSignInService implements IZSYSignInService {
     private ZSYUFileProperties uFileProperties;
     @Autowired
     private IZSYRestHoursLogMapper restHoursLogMapper;
+
+    @Autowired
+    private IZSYUserGroupMapper userGroupMapper;
+
+    @Autowired
+    private IZSYWorkGroupMapper workGroupMapper;
+
     private static final Logger logger = LoggerFactory.getLogger(ZSYSignInService.class);
 
     /**
@@ -607,6 +615,22 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     public PageInfo<SignInResDTO> getSignInPage(SignInReqDTO reqDTO) {
+
+        // 获取登录用户所在小组的leader
+        Long userId = ZSYTokenRequestContext.get().getUserId();
+
+        UserGroup userGroup = userGroupMapper.selectByUserId(userId);
+        if(userGroup == null || userGroup.getGroupId() == null){
+            throw new ZSYServiceException("用户组不存在");
+        }
+        WorkGroup workGroup = workGroupMapper.selectById(userGroup.getGroupId());
+        if(workGroup == null){
+            throw new ZSYServiceException("用户组不存在");
+        }
+
+        // 获取登录用户角色
+        Integer userRole = ZSYTokenRequestContext.get().getUserRole();
+
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 20);
         if (reqDTO.getBeginTime() == null){
             Date today = new Date();
@@ -627,7 +651,26 @@ public class ZSYSignInService implements IZSYSignInService {
                 e.printStackTrace();
             }
         }
-        Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO);
+        Page<SignInBO> signInPage;
+        // 管理员
+        if(userRole.intValue() == ZSYUserRole.ADMINISTRATOR.getValue()){
+            signInPage = signInMapper.selectSignInPage(reqDTO);
+        }
+        // 不是管理员但是是小组长
+        else if(workGroup.getLeader().longValue() == userId.longValue()){
+            // 获取组内成员id
+            List<UserGroup> userGroups = userGroupMapper.selectByGroupId(workGroup.getId());
+            if(CollectionUtils.isEmpty(userGroups)){
+                throw new ZSYServiceException("该成员所在小组没有成员");
+            }
+            List<Long> userIds = userGroups.stream().map(UserGroup::getUserId).collect(Collectors.toList());
+
+            signInPage = signInMapper.selectSignInPageWithUseList(userIds,reqDTO.getBeginTime(),reqDTO.getEndTime());
+        }
+        //既不是管理员也不是小组长
+        else{
+            throw new ZSYServiceException("该成员没有权限查看考勤情况！");
+        }
         Page<SignInResDTO> signInResDTOS = new Page<>();
         BeanUtils.copyProperties(signInPage,signInResDTOS);
         if (!CollectionUtils.isEmpty(signInPage)){
