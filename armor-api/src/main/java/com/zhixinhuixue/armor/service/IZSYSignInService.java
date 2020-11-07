@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.service;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
+import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -196,4 +197,14 @@ public interface IZSYSignInService {
      * @param id id
      */
     void deleteSignIn(Long id);
+
+    /**
+     *  组内成员
+     *
+     * @param
+     * @return
+     * @author hsh
+     * @create 2020/11/6-17:22
+     */
+    List<SignInUser> getSignInUsersGroup();
 }

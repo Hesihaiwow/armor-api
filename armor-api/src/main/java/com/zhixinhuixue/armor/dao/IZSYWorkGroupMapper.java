@@ -52,4 +52,14 @@ public interface IZSYWorkGroupMapper {
      * @param id id
      */
     WorkGroupBO selectDetailById(@Param("id") Long id);
+
+    /**
+     *  根据leaderId 获取 组
+     *
+     * @param userId
+     * @return
+     * @author hsh
+     * @create 2020/11/6-17:25
+     */
+    List<WorkGroup> selectByLeaderId(@Param("userId")Long userId);
 }

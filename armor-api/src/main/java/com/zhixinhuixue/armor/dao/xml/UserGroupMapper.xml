@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserGroupMapper">
 
+    <resultMap id="baseMap" type="com.zhixinhuixue.armor.model.pojo.UserGroup">
+        <id column="ug_id" property="ugId" jdbcType="BIGINT"/>
+        <result column="group_id" property="groupId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+    </resultMap>
+
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserGroup">
      REPLACE INTO `user_group`
@@ -26,13 +32,21 @@
     </delete>
 
     <!--根据用户获得userGroup-->
-    <select id="selectByUserId" resultType="com.zhixinhuixue.armor.model.pojo.UserGroup">
-        select * from user_group where user_id = #{userId} limit 1
+    <select id="selectByUserId" resultMap="baseMap">
+        select * from user_group where user_id = #{userId}
     </select>
 
     <!--根据组Id获得userGroup集合-->
-    <select id="selectByGroupId" resultType="com.zhixinhuixue.armor.model.pojo.UserGroup">
-        select * from user_group where group_id = #{groupId}
+    <select id="selectByGroupIds" resultMap="baseMap">
+        select * from user_group
+        <where>
+            <if test="groupIds != null">
+                group_id in
+                <foreach collection="groupIds" item="item" separator="," open="(" close=")">
+                   #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 

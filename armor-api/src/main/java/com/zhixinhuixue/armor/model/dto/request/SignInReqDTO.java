@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author SCH
@@ -28,6 +29,11 @@ public class SignInReqDTO {
      * 用户id
      */
     private Long userId;
+
+    /**
+     * 用户ids
+     */
+    private List<Long> userIds;
 
     public Integer getPageNum() {
         return pageNum;
@@ -60,4 +66,13 @@ public class SignInReqDTO {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public List<Long> getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(List<Long> userIds) {
+        this.userIds = userIds;
+    }
+
 }

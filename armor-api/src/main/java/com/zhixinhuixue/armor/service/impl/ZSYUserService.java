@@ -680,14 +680,16 @@ public class ZSYUserService implements IZSYUserService {
      */
     @Override
     public Boolean getIsGroupLeader(Long userId) {
+
+        if (ZSYTokenRequestContext.get().getUserRole().intValue() == ZSYUserRole.ADMINISTRATOR.getValue()){
+            return true;
+        }
+
         UserGroup userGroup = userGroupMapper.selectByUserId(userId);
-        if(userGroup == null || userGroup.getGroupId() == null){
-            throw new ZSYServiceException("用户组不存在");
-        }
+
+
         WorkGroup workGroup = groupMapper.selectById(userGroup.getGroupId());
-        if(workGroup == null){
-            throw new ZSYServiceException("用户组不存在");
-        }
+
         if(userId.longValue() == workGroup.getLeader().longValue()){
             return true;
         }

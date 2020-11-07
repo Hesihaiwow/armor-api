@@ -42,10 +42,10 @@ public interface IZSYUserGroupMapper {
     /**
      *  根据组id获取UserGroup集合
      *
-     * @param groupId
+     * @param groupIds
      * @return
      * @author hsh
      * @create 2020/11/5-17:12
      */
-    List<UserGroup> selectByGroupId(@Param("groupId")Long groupId);
+    List<UserGroup> selectByGroupIds(@Param("groupIds")List<Long> groupIds);
 }

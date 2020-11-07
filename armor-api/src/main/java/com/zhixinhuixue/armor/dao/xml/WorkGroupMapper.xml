@@ -77,4 +77,10 @@
     LEFT JOIN `user` u ON u.id = wg.leader
     WHERE wg.id = #{id}
   </select>
+
+   <!--根据leaderId查询团队-->
+    <select id="selectByLeaderId" resultMap="BaseMap">
+      SELECT * FROM `work_group` WHERE `is_delete` = 0 and `leader` = #{userId}
+      ORDER BY create_time DESC
+    </select>
 </mapper>

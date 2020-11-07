@@ -153,6 +153,13 @@ public class ZSYSignInController {
         return ZSYResult.success().data(signInService.getSignInUsers()).build();
     }
 
+    @ApiOperation("指定组考勤人员列表")
+    @GetMapping("/users-group")
+    public String getSignInUsersGroup(){
+        return ZSYResult.success().data(signInService.getSignInUsersGroup()).build();
+    }
+
+
     @ApiOperation("个人查看剩余调休")
     @GetMapping("/rest-hours/{userId}")
     public String getPersonalRestHours(@PathVariable("userId")Long userId){
