@@ -207,8 +207,8 @@ public class ZSYUserController extends ZSYController {
      * @create 2020/11/5-15:53
      */
     @ApiOperation("查询小组管理者")
-    @GetMapping("/group-leader/{userId}")
-    public String getIsGroupLeader(@PathVariable("userId")Long userId){
-        return ZSYResult.success().data(userService.getIsGroupLeader(userId)).build();
+    @GetMapping("/group-leader")
+    public String getIsGroupLeader(){
+        return ZSYResult.success().data(userService.getIsGroupLeader()).build();
     }
 }

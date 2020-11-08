@@ -29,15 +29,6 @@ public interface IZSYUserGroupMapper {
      */
     void insertBatch(@Param("list") List<UserGroup> list);
 
-    /**
-     *  根据用户获得userGroup
-     *
-     * @param userId
-     * @return
-     * @author hsh
-     * @create 2020/11/5-16:01
-     */
-    UserGroup selectByUserId(@Param("userId")Long userId);
 
     /**
      *  根据组id获取UserGroup集合

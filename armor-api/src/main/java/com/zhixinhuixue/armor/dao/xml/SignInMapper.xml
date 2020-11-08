@@ -390,28 +390,6 @@
         SELECT * FROM  `sign_in` WHERE id = #{id}
     </select>
 
-    <!--分页查看原始考勤记录(指定用户)-->
-    <select id="selectSignInPageWithUseList" resultMap="SignInBoMap">
-        SELECT si.*,GROUP_CONCAT(`check_time`) check_time_str FROM `sign_in` si
-        LEFT JOIN `user` u on si.user_id = u.id
-        <where>
-            u.`is_delete` = 0
-            <if test="reqDTO.userIds != null">
-                AND si.`user_id` IN
-                <foreach collection="reqDTO.userIds" open="(" separator="," close=")" item="item">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="reqDTO.beginTime != null">
-                <![CDATA[  and  si.`check_time` >= #{reqDTO.beginTime} ]]>
-            </if>
-            <if test="reqDTO.endTime != null">
-                <![CDATA[  and  si.`check_time` <= #{reqDTO.endTime} ]]>
-            </if>
-        </where>
-        GROUP BY `user_id`,DATE(`check_time`) ORDER BY `check_time` DESC
-    </select>
-
 
     <select id="selectEffectUsersGroup" resultMap="BaseUserMap">
           select * from `user` where `is_delete` = 0  and `status` = 0 and `job_number` is not null

@@ -673,24 +673,21 @@ public class ZSYUserService implements IZSYUserService {
     /**
      *  查询用户是否是组内领导
      *
-     * @param userId
+     * @param
      * @return
      * @author hsh
      * @create 2020/11/5-15:58
      */
     @Override
-    public Boolean getIsGroupLeader(Long userId) {
+    public Boolean getIsGroupLeader() {
 
         if (ZSYTokenRequestContext.get().getUserRole().intValue() == ZSYUserRole.ADMINISTRATOR.getValue()){
             return true;
         }
 
-        UserGroup userGroup = userGroupMapper.selectByUserId(userId);
+        List<WorkGroup> workGroups = groupMapper.selectByLeaderId(ZSYTokenRequestContext.get().getUserId());
 
-
-        WorkGroup workGroup = groupMapper.selectById(userGroup.getGroupId());
-
-        if(userId.longValue() == workGroup.getLeader().longValue()){
+        if(!CollectionUtils.isEmpty(workGroups)){
             return true;
         }
         return false;

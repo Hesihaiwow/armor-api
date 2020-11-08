@@ -31,11 +31,6 @@
         DELETE FROM `user_group` WHERE `group_id` = #{groupId}
     </delete>
 
-    <!--根据用户获得userGroup-->
-    <select id="selectByUserId" resultMap="baseMap">
-        select * from user_group where user_id = #{userId}
-    </select>
-
     <!--根据组Id获得userGroup集合-->
     <select id="selectByGroupIds" resultMap="baseMap">
         select * from user_group

@@ -613,7 +613,6 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     public PageInfo<SignInResDTO> getSignInPage(SignInReqDTO reqDTO) {
-        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 20);
         if (reqDTO.getBeginTime() == null){
             Date today = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -636,6 +635,7 @@ public class ZSYSignInService implements IZSYSignInService {
         List<SignInUser> signInUsersGroup = getSignInUsersGroup();
         List<Long> userIds = signInUsersGroup.stream().map(x -> x.getUserId()).collect(Collectors.toList());
         reqDTO.setUserIds(userIds);
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 20);
         Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO);
         Page<SignInResDTO> signInResDTOS = new Page<>();
         BeanUtils.copyProperties(signInPage,signInResDTOS);
@@ -2648,6 +2648,13 @@ public class ZSYSignInService implements IZSYSignInService {
 
         List<SignInUser> userList = new ArrayList<>();
         if(ZSYTokenRequestContext.get().getUserRole().intValue() == ZSYUserRole.ADMINISTRATOR.getValue()){
+            List<User> users = signInMapper.selectEffectUsers();
+            for(User user:users){
+                SignInUser signInUser = new SignInUser();
+                signInUser.setUserId(user.getId());
+                signInUser.setUserName(user.getName());
+                userList.add(signInUser);
+            }
             return userList;
         }
 
