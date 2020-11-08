@@ -26,12 +26,12 @@ public class SignInReqDTO {
     private Date endTime;
 
     /**
-     * 用户id
+     * 用户id(被查询用户的id)
      */
     private Long userId;
 
     /**
-     * 用户ids
+     * 用户ids(登录用户所在组的成员id集合)
      */
     private List<Long> userIds;
 
