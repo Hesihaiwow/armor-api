@@ -2284,6 +2284,7 @@
             this.fetchAllDoingTasks();
         },
         mounted: function() {
+            this.getStats();
             this.fetchSignInUserGroup();
         },
         computed: {
