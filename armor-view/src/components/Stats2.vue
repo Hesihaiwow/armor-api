@@ -642,10 +642,10 @@
                     <el-table-column prop="vacationTime" label="请假时长" align="center" width="120" sortable></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="考勤统计" name="signIn" v-if="admin">
+            <el-tab-pane label="考勤统计" name="signIn" v-if="groupLeader">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="signInReqDTO.userId" clearable filterable   placeholder="筛选用户">
-                        <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                        <el-option v-for="item in checkInUsersGroup" :key="item.userId" :label="item.userName"
                                    :value="item.userId"></el-option>
                     </el-select>
                 </div>
@@ -1736,6 +1736,7 @@
                 projectForm:[],
                 userList:[],
                 checkInUsers:[],
+                checkInUsersGroup:[],
                 bugUsers:[],
                 showAddDetail:false,
                 statsPage: {
@@ -1980,6 +1981,7 @@
                     beginTime:'',
                     endTime:'',
                     pageNum:1,
+                    userIds: [],
                 },
                 signInDaterange:'',
                 signInData:[],
@@ -2263,7 +2265,8 @@
                     activeGroup:null,
                     showSelectedPlatform:[],
                     showPlatform:[],
-                }
+                },
+                groupLeader: false,
                 // -- sch
             }
         },
@@ -2279,6 +2282,9 @@
             this.fetchDemandSystem();
             this.fetchPlatformList();
             this.fetchAllDoingTasks();
+        },
+        mounted: function() {
+            this.fetchSignInUserGroup();
         },
         computed: {
             permit() {
@@ -2417,6 +2423,11 @@
                 })
             },
             getStats(currentPage){
+                Http.zsyGetHttp(`/user/group-leader`, {}, (resp) => {
+                    if(resp.data === 'true' || resp.data === true){
+                        this.groupLeader =  true
+                    }
+                });
                 Http.zsyGetHttp(`/stats/list`, {}, (resp) => {
                     this.statsData =  resp.data;
                 });
@@ -4035,7 +4046,7 @@
 
             //查询考勤情况
             fetchSignInData(){
-                if (this.admin){
+                if (this.groupLeader){
                     Http.zsyPostHttp('/sign-in/page',this.signInReqDTO,(res)=>{
                         if (res){
                             this.signInData = res.data.list;
@@ -4138,6 +4149,15 @@
                 Http.zsyGetHttp('/sign-in/users',{},(res)=>{
                     if (res){
                         this.checkInUsers = res.data
+                    }
+                })
+            },
+            // 获取考勤人员列表
+            fetchSignInUserGroup(){
+                let _this = this;
+                Http.zsyGetHttp('/sign-in/users-group',{},(res)=>{
+                    if (res){
+                        _this.checkInUsersGroup = res.data
                     }
                 })
             },
