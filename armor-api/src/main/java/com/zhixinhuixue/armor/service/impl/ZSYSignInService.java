@@ -633,7 +633,11 @@ public class ZSYSignInService implements IZSYSignInService {
         }
         List<SignInUser> signInUsersGroup = getSignInUsersGroup();
         List<Long> userIds = signInUsersGroup.stream().map(x -> x.getUserId()).collect(Collectors.toList());
-        reqDTO.setUserIds(userIds);
+        if(ZSYTokenRequestContext.get().getUserRole().intValue() == ZSYUserRole.ADMINISTRATOR.getValue()){
+            reqDTO.setUserIds(null);
+        }else {
+            reqDTO.setUserIds(userIds);
+        }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 20);
         Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO);
         Page<SignInResDTO> signInResDTOS = new Page<>();
