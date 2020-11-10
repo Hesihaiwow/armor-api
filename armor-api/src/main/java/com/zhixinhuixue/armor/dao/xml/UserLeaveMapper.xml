@@ -90,7 +90,19 @@
       SELECT * FROM `user_leave` WHERE `id` = #{leaveId}
   </select>
 
-  <update id="updateLeave">
+    <!--查询月请假情况-->
+    <select id="selectUserLeaveMonthStats" resultMap="ResultMap">
+      SELECT ul.user_id,u.`name`,ul.hours,ul.begin_time,ul.end_time,ul.id
+      FROM user u
+      LEFT JOIN user_leave ul ON ul.user_id = u.id
+      WHERE u.is_delete = 0 AND u.`status` = 0 AND ul.review_status = 3
+      AND (DATE_FORMAT(ul.begin_time,'%Y-%m') = #{yearAndMonth} OR DATE_FORMAT(ul.end_time,'%Y-%m') = #{yearAndMonth})
+      <if test="jobRole != null">
+        AND u.job_role = #{jobRole}
+      </if>
+    </select>
+
+    <update id="updateLeave">
     UPDATE user_leave
         <set>
          description= #{description,jdbcType=BIGINT}, hours= #{hours,jdbcType=DECIMAL},

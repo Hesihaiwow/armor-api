@@ -63,5 +63,5 @@ public interface IZSYStatsService {
      * @param reqDTO 参数
      * @author sch
      */
-    MonthWorkStatsResDTO getUserMonthStats(MonthWorkStatsReqDTO reqDTO);
+    List<MonthWorkStatsResDTO> getUserMonthStats(MonthWorkStatsReqDTO reqDTO);
 }

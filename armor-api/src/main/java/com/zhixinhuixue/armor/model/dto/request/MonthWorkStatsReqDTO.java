@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -17,6 +18,7 @@ public class MonthWorkStatsReqDTO {
     /**
      * 时间
      */
+    @NotNull(message = "查询年月不能为空")
     private Date queryDate;
 
     public Integer getJobRole() {

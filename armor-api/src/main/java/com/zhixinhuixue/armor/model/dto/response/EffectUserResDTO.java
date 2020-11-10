@@ -7,6 +7,7 @@ public class EffectUserResDTO {
 
     //用户ID
     private Long id;
+//    private
 
     //用户名字
     private String name;

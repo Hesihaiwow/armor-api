@@ -38,6 +38,14 @@
         <result column="totalHours" property="totalHours" jdbcType="DECIMAL"></result>
     </resultMap>
 
+    <resultMap id="UserWeekStatMap" type="com.zhixinhuixue.armor.model.bo.UserWeekHourBO">
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="year" property="year" jdbcType="INTEGER"/>
+        <result column="week_number" property="weekNumber" jdbcType="INTEGER"/>
+        <result column="hours" property="hours" jdbcType="DECIMAL"/>
+    </resultMap>
+
   <insert id="insertList" parameterType="java.util.List">
     insert into user_week (id, week_number, hours, task_id, user_id ,year)
     values
@@ -182,6 +190,25 @@
     <select id="selectWithoutTask" resultType="java.lang.Double">
         SELECT IFNULL(SUM(hours),0) FROM `user_week`
         WHERE `user_id` = #{userId} AND `year` = #{year} AND `week_number` = #{weekNumber} AND `task_id` != #{taskId}
+    </select>
+
+    <!--查询用户周工作量-->
+    <select id="selectUserWeekStats" resultMap="UserWeekStatMap">
+        SELECT uw.user_id,u.`name` AS user_name,uw.`year`,uw.week_number,uw.hours
+        FROM user u
+        LEFT JOIN user_week uw ON uw.user_id = u.id
+        LEFT JOIN task t ON t.id = uw.task_id
+        WHERE
+        u.is_delete = 0 AND u.`status` = 0
+        AND uw.`year` = #{year} AND uw.week_number IN
+        <foreach collection="weeks" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+        AND t.is_delete = 0 AND t.review_status = 3
+        <if test="jobRole != null">
+            AND u.job_role = #{jobRole}
+        </if>
+ORDER BY uw.user_id,uw.week_number
     </select>
 
     <update id="updateHours" parameterType="java.util.Map" >

@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.service;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.EffectUserResDTO;
@@ -153,6 +152,13 @@ public interface IZSYUserService {
      * @create 2020/11/5-15:57
      */
     Boolean getIsGroupLeader();
+
+    /**
+     * 查询未删除的用户
+     *
+     * @author sch
+     */
+    List<EffectUserResDTO> getNotDeleteUserList();
 
     // -- sch
 }
