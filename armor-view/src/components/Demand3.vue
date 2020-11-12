@@ -1269,10 +1269,10 @@
                     {id:4,name:'学管端'}
                 ],
                 chargeManList:[
-                    {id:'87526662798835712',name:'杜文彬'},
-                    {id:'139964039693336576',name:'颜林艳'},
-                    {id:'87532428385583104',name:'李晓玉'},
-                    {id:'296175644545384448',name:'邵淳'},
+                    // {id:'87526662798835712',name:'杜文彬'},
+                    // {id:'139964039693336576',name:'颜林艳'},
+                    // {id:'87532428385583104',name:'李晓玉'},
+                    // {id:'296175644545384448',name:'邵淳'},
                 ],
                 chargeManList2:[],
                 otherChargeManList:[
@@ -1626,6 +1626,7 @@
                 
                 http.zsyGetHttp('/user/managers',{},(res)=>{
                     this.managerList = res.data;
+                    this.chargeManList = res.data;
                 })
             },
 
