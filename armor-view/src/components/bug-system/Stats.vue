@@ -41,6 +41,9 @@
                     <el-option v-for="item in userBugStat.isTesterList" :key="item.value" :label="item.name"
                                :value="item.value"></el-option>
                 </el-select>
+                <el-select v-if="userBugStat.queryDTO.isTester == 0" v-model="userBugStat.queryDTO.groupId" filterable clearable placeholder="请选择业务组" style="width: 150px;">
+                    <el-option  v-for="item in groupList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                </el-select>
             </div>
             <el-button type="primary" style="margin-left: 10px;" @click="fetchUserBugStat()">搜索</el-button>
             <div id="userBugHistogram" style="height: 400px;width: 100%;text-align: center"></div>
@@ -56,7 +59,7 @@
                 </el-date-picker>
             </div>
             <div class="fl">
-                <el-input v-model="taskBugStat.queryDTO.taskName" clearable placeholder="填写发版平台名称"
+                <el-input v-model="taskBugStat.queryDTO.taskName" clearable placeholder="填写任务名称"
                           style="width: 300px"></el-input>
                 <!--<el-select v-model="taskBugStat.queryDTO.taskId" filterable clearable placeholder="筛选任务" style="width: 250px">-->
                     <!--<el-option v-for="item in taskBugStat.taskList" :key="item.id" :label="item.name"-->
@@ -131,6 +134,7 @@
 <script>
     import http from '../../lib/Http'
     import moment from 'moment';
+    import Http from "../../lib/Http";
     export default {
         name: "Stats",
         data(){
@@ -157,7 +161,8 @@
                 userBugStat:{
                     queryDTO:{
                         yearAndMonth:null,
-                        isTester:1
+                        isTester:1,
+                        groupId:null
                     },
                     totalNum:0,
                     xData:[],
@@ -178,7 +183,8 @@
                     },
                     taskBugData:[],
                     taskList:[]
-                }
+                },
+                groupList:[],
             }
         },
         created(){
@@ -187,6 +193,7 @@
           this.fetchBugTypeStat();
           this.fetchUserBugStat();
           this.fetchTaskBugStat();
+          this.fetchGroupList();
           // this.fetchBugTasks();
         },
         methods:{
@@ -271,6 +278,7 @@
                     && this.userBugStat.queryDTO.yearAndMonth !== ''){
                     this.userBugStat.queryDTO.yearAndMonth = moment(this.userBugStat.queryDTO.yearAndMonth).format('YYYY-MM-DD 23:59:59');
                 }
+
                 http.zsyPostHttp('/task-bug/user-histogram',this.userBugStat.queryDTO,res=>{
                     let data = res.data;
                     if (data != null && data !== undefined && data.length >0){
@@ -481,7 +489,13 @@
                 http.zsyGetHttp(`/task-bug/task/ready`, {}, (res) => {
                     this.taskBugStat.taskList = res.data;
                 });
-            }
+            },
+            //查询所有可用团队
+            fetchGroupList(){
+                http.zsyGetHttp('/work-group/list',{},res=>{
+                    this.groupList= res.data;
+                })
+            },
         }
     }
 </script>

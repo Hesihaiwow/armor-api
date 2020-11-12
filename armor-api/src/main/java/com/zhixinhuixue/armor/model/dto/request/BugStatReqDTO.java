@@ -32,6 +32,19 @@ public class BugStatReqDTO {
      */
     private Integer isTester;
 
+    /**
+     * 业务组id
+     */
+    private Long groupId;
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
     public String getTaskName() {
         return taskName;
     }

@@ -1,6 +1,8 @@
 package com.zhixinhuixue.armor.helper;
 
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +15,8 @@ import java.util.List;
  * Created by Akuma on 16/7/25.
  */
 public class DateHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DateHelper.class);
 
     /**
      * 年-月-日 时:分:秒
@@ -361,6 +365,14 @@ public class DateHelper {
      * @return
      */
     public static List<String> getDaysBetweenTwoDate(Date start, Date end) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        SimpleDateFormat timeFormat = new SimpleDateFormat(DATETIME_FORMAT);
+        try {
+            start = timeFormat.parse(dateFormat.format(start)+" 00:00:00");
+            end = timeFormat.parse(dateFormat.format(end)+" 23:59:59");
+        }catch (Exception e){
+            LOGGER.error("解析异常: ",e);
+        }
         List<String> days = Lists.newArrayList();
         Calendar startCal = Calendar.getInstance();
         startCal.setTime(start);
@@ -395,8 +407,14 @@ public class DateHelper {
         int firstDay = cal.getMinimum(Calendar.DATE);
         //设置日历中月份的最小天数
         cal.set(Calendar.DAY_OF_MONTH, firstDay);
-
-        return cal.getTime();
+        String dateStr = yearAndMonth + "-01 00:00:00";
+        SimpleDateFormat sdf = new SimpleDateFormat(DATETIME_FORMAT);
+        try {
+            return sdf.parse(dateStr);
+        }catch (Exception e){
+            LOGGER.error("解析时间异常: ",e);
+            return cal.getTime();
+        }
     }
 
     /**
@@ -419,6 +437,13 @@ public class DateHelper {
         int lastDay = cal.getActualMaximum(Calendar.DATE);
         //设置日历中月份的最大天数
         cal.set(Calendar.DAY_OF_MONTH, lastDay);
-        return cal.getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        SimpleDateFormat timeFormat = new SimpleDateFormat(DATETIME_FORMAT);
+        try {
+            return timeFormat.parse(dateFormat.format(cal.getTime())+" 23:59:59");
+        }catch (Exception e){
+            LOGGER.error("解析时间异常: ",e);
+            return cal.getTime();
+        }
     }
 }

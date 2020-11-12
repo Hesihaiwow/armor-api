@@ -3,14 +3,10 @@ package com.zhixinhuixue.armor.service.impl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.IZSYDepartmentMapper;
-import com.zhixinhuixue.armor.dao.IZSYRestHoursLogMapper;
-import com.zhixinhuixue.armor.dao.IZSYUserMapper;
-import com.zhixinhuixue.armor.dao.IZSYWorkGroupMapper;
+import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYAuthException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.*;
@@ -41,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,6 +46,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.github.pagehelper.page.PageMethod.startPage;
 
 /**
  * Created by Akuma on 2017/8/8.
@@ -61,33 +60,27 @@ public class ZSYUserService implements IZSYUserService {
     //jwt密钥
     @Value("${jwt.secret}")
     private String jwtSecret;
-
     //jwt发行者
     @Value("${jwt.issuer}")
     private String jwtIssuer;
-
     //jwt过期时间
     @Value("${jwt.exp}")
     private int jwtExp;
-
-    @Autowired
+    @Resource
     private SnowFlakeIDHelper snowFlakeIDHelper;
-
-    @Autowired
+    @Resource
     private IZSYUserMapper userMapper;
-
-    @Autowired
+    @Resource
     private IZSYWorkGroupMapper groupMapper;
-
     @Autowired
     @Qualifier("primaryStringRedisTemplate")
     private StringRedisTemplate stringRedisTemplate;
-
-    @Autowired
+    @Resource
     private IZSYDepartmentMapper departmentMapper;
-
-    @Autowired
+    @Resource
     private IZSYRestHoursLogMapper restHoursLogMapper;
+    @Resource
+    private IZSYSignInMapper signInMapper;
 
     @Override
     @Transactional
@@ -215,7 +208,7 @@ public class ZSYUserService implements IZSYUserService {
         if (reqDTO.getGroupId() != null && reqDTO.getGroupId() == 1){
             reqDTO.setGroupId(null);
         }
-        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageIndex()).orElse(1), ZSYConstants.PAGE_SIZE);
+        startPage(Optional.ofNullable(reqDTO.getPageIndex()).orElse(1), ZSYConstants.PAGE_SIZE);
         Page<UserBo> userBos = userMapper.selectPage(deptIds,reqDTO);
         Page<UserPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userBos, page);
@@ -240,8 +233,7 @@ public class ZSYUserService implements IZSYUserService {
             userPageResDTO.setCheckUsers(checkPeopleResDTOS);
             page.add(userPageResDTO);
         });
-        PageInfo<UserPageResDTO> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+        return new PageInfo<>(page);
     }
 
 
@@ -264,7 +256,7 @@ public class ZSYUserService implements IZSYUserService {
         }
         //校验用户账户是否存在
         List<User> existUsers = userMapper.selectByAccount(userReqDTO.getAccount());
-        if (existUsers.size() > 0) {
+        if (!CollectionUtils.isEmpty(existUsers)) {
             throw new ZSYServiceException(String.format("用户账户[%s]已存在", userReqDTO.getAccount()));
         }
 
@@ -275,7 +267,7 @@ public class ZSYUserService implements IZSYUserService {
         user.setCreateTime(new Date());
         user.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         user.setIntegral(new BigDecimal(ZSYConstants.DEFAULT_INTEGRAL));
-        if(userReqDTO.getPassword()==null||userReqDTO.getPassword()==""){
+        if(userReqDTO.getPassword()==null||"".equals(userReqDTO.getPassword())){
             user.setPassword(MD5Helper.convert(
                     String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
                             ZSYConstants.HINT_PASSWORD_KEY), 32, false));
@@ -468,7 +460,9 @@ public class ZSYUserService implements IZSYUserService {
     @Override
     public void modifyUserPassword(UserPwdReqDTO userPwdReqDTO) {
         User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
-        Optional.ofNullable(user).orElseThrow(() -> new ZSYServiceException("用户不存在"));
+        if (user==null){
+            throw new ZSYServiceException("用户不存在");
+        }
         //校验用户状态
         if (user.getStatus() != 0 || user.getIsDelete() != 0) {
             throw new ZSYServiceException("账户冻结或已删除,操作失败");
@@ -498,7 +492,9 @@ public class ZSYUserService implements IZSYUserService {
             throw new ZSYAuthException("没有权限执行此操作");
         }
         User user = userMapper.selectById(ZSYTokenRequestContext.get().getUserId());
-        Optional.ofNullable(user).orElseThrow(() -> new ZSYServiceException("用户不存在"));
+        if (user==null){
+            throw new ZSYServiceException("用户不存在");
+        }
         //校验用户状态
         if (user.getIsDelete() != 0) {
             throw new ZSYServiceException("用户已删除,操作失败");
@@ -517,7 +513,6 @@ public class ZSYUserService implements IZSYUserService {
     @Override
     public UserResDTO getUserById(Long userId) {
         UserBo user = userMapper.selectUserBOById(userId);
-//        User user = userMapper.selectById(userId);
         UserResDTO userResDTO = new UserResDTO();
         if (user == null) {
             throw new ZSYServiceException(String.format("用户(%s)不存在", userId));
@@ -693,6 +688,26 @@ public class ZSYUserService implements IZSYUserService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 查询未删除的用户
+     *
+     * @author sch
+     */
+    @Override
+    public List<EffectUserResDTO> getNotDeleteUserList() {
+        List<EffectUserResDTO> list = new ArrayList<>();
+        List<User> notDeleteUsers = userMapper.selectNotDeleteUsers();
+        if (!CollectionUtils.isEmpty(notDeleteUsers)){
+            notDeleteUsers.forEach(user -> {
+                EffectUserResDTO resDTO = new EffectUserResDTO();
+                resDTO.setId(user.getId());
+                resDTO.setName(user.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
     }
 
     // -- sch

@@ -103,7 +103,7 @@ public class ZSYStatsController extends ZSYController {
      * @author sch
      */
     @PostMapping("/month-stats")
-    public ZSYSwaggerResult<MonthWorkStatsResDTO> getUserMonthStats(@RequestBody MonthWorkStatsReqDTO reqDTO) {
+    public ZSYSwaggerResult<List<MonthWorkStatsResDTO>> getUserMonthStats(@RequestBody MonthWorkStatsReqDTO reqDTO) {
         return new ZSYSwaggerResult<>(statsService.getUserMonthStats(reqDTO));
     }
 }

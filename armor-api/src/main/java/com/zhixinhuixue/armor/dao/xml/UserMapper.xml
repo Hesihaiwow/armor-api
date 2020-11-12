@@ -268,7 +268,7 @@
 
   <!--查询用户剩余调休-->
   <select id="selectUserRestHours" resultMap="BaseResultMap">
-    SELECT * FROM `user` WHERE `is_delete` = 0 AND `status` = 0
+    SELECT * FROM `user` WHERE `is_delete` = 0
     <if test="jobRole  != null">
         AND `job_role`= #{jobRole}
     </if>
@@ -318,7 +318,7 @@
 
   <!--查询所有未删除的用户-->
   <select id="selectNotDeleteUsers" resultMap="BaseResultMap">
-    SELECT * FROM `user` WHERE `is_delete` = 0
+    SELECT * FROM `user` WHERE `is_delete` = 0 ORDER BY `create_time`
   </select>
   <!-- sch -->
 

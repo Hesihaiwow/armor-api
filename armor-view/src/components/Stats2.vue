@@ -362,6 +362,31 @@
                     <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
                 </el-table>
             </el-tab-pane>
+            <el-tab-pane label="月度统计" name="monthStats">
+                <div class="add-member-basic-msg fl" >
+                    <el-select v-model="monthStats.queryDTO.jobRole" clearable filterable   placeholder="筛选角色">
+                        <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
+                                   :value="item.roleId"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl" >
+                    <el-date-picker
+                            v-model="monthStats.queryDTO.queryDate"
+                            type="month"
+                            format="yyyy-MM"
+                            placeholder="选择年月">
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getMonthStats()" class="search-btn"></div>
+                <el-table :data="monthStats.statsData" border
+                          :header-cell-style="{background:'#D9D9D9',color:'black'}">
+                    <el-table-column  type="index"  label="序号" align="center" width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80" ></el-table-column>
+                    <el-table-column prop="workHours" label="月工作量"  sortable  ></el-table-column>
+                    <el-table-column prop="checkHours" label="月打卡时长" sortable ></el-table-column>
+                    <el-table-column prop="leaveHours" label="月请假时长" sortable ></el-table-column>
+                </el-table>
+            </el-tab-pane>
             <el-tab-pane label="周人员投入表" name="weekUserCost">
                 <div class="add-member-basic-msg fl" >
                     <el-select v-model="userCostReqDTO.groupId" clearable filterable  placeholder="筛选团队" style="width: 200px">
@@ -2218,7 +2243,7 @@
                         pageNum:1,
                         beginTime:null,
                         endTime:null,
-                        pageSize:10,
+                        pageSize:1,
                         total:0
                     },
                     publishPlanData:[],
@@ -2265,6 +2290,13 @@
                     activeGroup:null,
                     showSelectedPlatform:[],
                     showPlatform:[],
+                },
+                monthStats:{
+                    queryDTO:{
+                        queryDate:null,
+                        jobRole:null
+                    },
+                    statsData:[]
                 },
                 groupLeader: false,
                 // -- sch
@@ -2390,6 +2422,8 @@
               } else if (this.activeName === 'personal'){
                     // this.fetchSignInUser();
               } else if (this.activeName === 'week'){
+
+              } else if (this.activeName === 'monthStats'){
 
               } else if (this.activeName === 'leave'){
                     // this.getLeaveList();
@@ -2551,6 +2585,7 @@
                 }
 
             },
+
             saveAddMember(){
                 // this.addMemberIndex.integral = 0;
                 if (this.addMemberIndex.userId === ''||this.addMemberIndex.integral === '') {
@@ -2703,19 +2738,6 @@
             eWorkHandleCurrentChange(currentPage){
                 this.extraWorkReqDTO.pageNum = currentPage;
                 this.getExtraWorkStats();
-            },
-            isDecimal(str) {
-                let regu = /^[-]{0,1}[0-9]{1,}$/;
-                if (regu.test(str)) {
-                    return true;
-                }
-                let re = /^[-]{0,1}(\d+)[\.]+(\d+)$/;
-                if (re.test(str)) {
-                    if (RegExp.$1 == 0 && RegExp.$2 == 0) return false;
-                    return true;
-                } else {
-                    return false;
-                }
             },
             errorMsg(msg) {
                 this.$message({
@@ -3763,7 +3785,6 @@
                     param.demandSystemName = demandSystems[0].name
                 }
                 param.projectId = param.projectId.trim();
-                param.taskId = param.taskId;
                 param.description = param.description.trim();
                 param['bugUsers'] = this.bugUsers;
                 Http.zsyPostHttp('/bug/add-bug', param, (resp) => {
@@ -5401,6 +5422,17 @@
             findId(val) {
                 return  val.map(item => item.id);
             },
+            //查询月度统计
+            getMonthStats(){
+                if (this.monthStats.queryDTO.queryDate == null || this.monthStats.queryDTO.queryDate === undefined || this.monthStats.queryDTO.queryDate === ''){
+                    this.errorMsg('请选择年月');
+                    return
+                }
+                this.monthStats.queryDTO.queryDate = moment(this.monthStats.queryDTO.queryDate).format('YYYY-MM-DD 23:59:59');
+                Http.zsyPostHttp('stats/month-stats',this.monthStats.queryDTO,res=>{
+                    this.monthStats.statsData = res.data;
+                })
+            }
             // -- sch
 
         }

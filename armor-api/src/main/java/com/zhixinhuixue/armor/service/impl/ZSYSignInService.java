@@ -118,117 +118,6 @@ public class ZSYSignInService implements IZSYSignInService {
      * 上传.dat的打卡记录文件到库
      * @param uploadFile
      */
-//    @Override
-    @Transactional
-    public void uploadToMysql2(MultipartFile uploadFile) {
-        String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
-        List<User> users = signInMapper.selectEffectUsers();
-        Map<Integer,Long> userMap = new HashMap<>();
-        users.stream().forEach(user ->
-                userMap.put(user.getCheckSort(),user.getId())
-        );
-        if (!".dat".equals(suffix)){
-            throw new ZSYServiceException("文件必须是.dat后缀");
-        }
-        BufferedReader br = null;
-        try {
-            InputStreamReader inputStreamReader = new InputStreamReader(uploadFile.getInputStream());
-            br = new BufferedReader(inputStreamReader);
-            String str;
-            List<SignIn> signIns = new ArrayList<>();
-            SignIn lastRecord = signInMapper.selectSingInLastRecord();
-            SignIn firstRecord = signInMapper.selectSingInFirstRecord();
-            //如果有最后一条记录,且当前这天的考勤时间是最后一条之后的
-            long time1 = System.currentTimeMillis();
-            if (lastRecord != null && firstRecord != null){
-                while((str=br.readLine())!=null){//按行读取
-                    String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
-                    String time = str.substring(10, 29);
-                    String trim = sort.trim();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date checkTime = sdf.parse(time);
-                    if (checkTime.after(lastRecord.getCheckTime()) || checkTime.before(firstRecord.getCheckTime())){
-                        Long userId = userMap.get(Integer.valueOf(trim));
-                        if (userId != null){
-                            SignIn signIn = new SignIn();
-                            signIn.setId(snowFlakeIDHelper.nextId());
-                            signIn.setUserId(userId);
-                            signIn.setCheckTime(checkTime);
-                            signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
-                            signIns.add(signIn);
-                        }
-                    }
-                }
-            }
-            //如果没有最后一条记录,则全部都是新的
-            else {
-                while((str=br.readLine())!=null){//按行读取
-                    String sort = str.substring(str.lastIndexOf("-")-12,str.lastIndexOf("-")-8);
-                    String time = str.substring(10, 29);
-                    String trim = sort.trim();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date checkTime = sdf.parse(time);
-                    Long userId = userMap.get(Integer.valueOf(trim));
-                    if (userId != null){
-                        SignIn signIn = new SignIn();
-                        signIn.setId(snowFlakeIDHelper.nextId());
-                        signIn.setUserId(userId);
-                        signIn.setCheckTime(checkTime);
-                        signIn.setType(ZSYSignInType.NORMAL_SIGN.getValue());
-                        signIns.add(signIn);
-                    }
-                }
-            }
-            long time2 = System.currentTimeMillis();
-            logger.info("准备数据耗时: "+(time2-time1)+"ms");
-            if (!CollectionUtils.isEmpty(signIns) && signInMapper.insertSignInBatch(signIns) == 0){
-                throw new ZSYServiceException("批量导入考勤打卡记录失败");
-            }
-            long time3 = System.currentTimeMillis();
-            logger.info("第一次插入数据耗时: "+(time3-time2)+"ms");
-            if (!CollectionUtils.isEmpty(signIns)){
-                List<String> daysBetweenTwoDate =
-                        DateHelper.getDaysBetweenTwoDate(signIns.get(0).getCheckTime(), signIns.get(signIns.size() - 1).getCheckTime());
-                Date firstDate = signIns.get(0).getCheckTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(firstDate);
-                calendar.add(Calendar.DATE,-1);
-                List<SignIn> signInList = new ArrayList<>();
-                for (int i=0;i < daysBetweenTwoDate.size();i ++){
-                    calendar.add(Calendar.DATE,1);
-                    String prefix = sdf.format(calendar.getTime());
-                    Date today0 = sdf2.parse(prefix + " 00:00:00");
-                    Date today23 = sdf2.parse(prefix + " 23:59:59");
-                    List<Long> notCheckUserIds = signInMapper.selectNotCheckUsers(today0,today23);
-                    notCheckUserIds.forEach(userId->{
-                        SignIn signIn = new SignIn();
-                        signIn.setId(snowFlakeIDHelper.nextId());
-                        signIn.setUserId(userId);
-                        signIn.setType(2);
-                        signIn.setCheckTime(today0);
-                        signInList.add(signIn);
-                    });
-                }
-                long time4 = System.currentTimeMillis();
-                logger.info("准备数据2耗时: "+(time4-time3)+"ms");
-                if (!CollectionUtils.isEmpty(signInList)){
-                    signInMapper.insertSignInBatch(signInList);
-                }
-            }
-        } catch (IOException e) {
-            throw new ZSYServiceException("上传考勤记录到数据库失败!");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @Override
     @Transactional
@@ -1008,6 +897,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 e.printStackTrace();
             }
         }
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 20);
         Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO);
         Page<SignInResDTO> signInResDTOS = new Page<>();
         BeanUtils.copyProperties(signInPage,signInResDTOS);

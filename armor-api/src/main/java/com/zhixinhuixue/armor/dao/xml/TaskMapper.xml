@@ -711,7 +711,7 @@
     <!--获取开发和测试阶段任务-->
     <select id="selectDevAndTestTasks" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2
-        AND `stage_id` IN (212754785051344896)
+        AND `stage_id` IN (212754785051344895,212754785051344896)
     </select>
 
     <!--根据id集合批量查询-->

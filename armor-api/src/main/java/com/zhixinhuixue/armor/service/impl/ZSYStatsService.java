@@ -9,10 +9,13 @@ import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.*;
 import com.zhixinhuixue.armor.model.dto.response.*;
+import com.zhixinhuixue.armor.model.pojo.SignIn;
 import com.zhixinhuixue.armor.model.pojo.User;
+import com.zhixinhuixue.armor.model.pojo.UserLeave;
 import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
+import com.zhixinhuixue.armor.source.enums.ZSYSignInType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +56,8 @@ public class ZSYStatsService implements IZSYStatsService {
     private IZSYWorkGroupMapper workGroupMapper;
     @Resource
     private IZSYUserMapper userMapper;
+    @Resource
+    private IZSYUserLeaveMapper userLeaveMapper;
 
     @Override
     public List<StatsPageResDTO> getStats() {
@@ -320,30 +325,261 @@ public class ZSYStatsService implements IZSYStatsService {
      * @author sch
      */
     @Override
-    public MonthWorkStatsResDTO getUserMonthStats(MonthWorkStatsReqDTO reqDTO) {
+    public List<MonthWorkStatsResDTO> getUserMonthStats(MonthWorkStatsReqDTO reqDTO) {
         SimpleDateFormat monthFormat = new SimpleDateFormat(MONTH_FORMAT);
         SimpleDateFormat timeFormat = new SimpleDateFormat(DATETIME_FORMAT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        Calendar calendar = Calendar.getInstance();
+
         List<User> userList = signInMapper.selectEffectUsers();
+        if (reqDTO.getJobRole() != null) {
+            userList = userList.stream().filter(user -> user.getJobRole().equals(reqDTO.getJobRole())).collect(Collectors.toList());
+        }
         Date queryDate = reqDTO.getQueryDate();
         //1.根据给定时间  确定出当前月份包含哪一年的哪个周  可能会出现跨年情况
         Date firstDayOfMonth = DateHelper.getFirstDayOfMonth(monthFormat.format(queryDate));
         Date lastDayOfMonth = DateHelper.getLastDayOfMonth(monthFormat.format(queryDate));
         List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(firstDayOfMonth, lastDayOfMonth);
-        Set<Integer> weekSet = new HashSet<>();
+        List<Integer> weekList = new ArrayList<>();
         int year = DateHelper.getYears(queryDate);
+        Map<Integer, List<Integer>> yearMonthMap = new HashMap<>();
+        List<MonthWorkStatsResDTO> list = new ArrayList<>();
         try {
+            // 准备查询条件  按年循环查询
             for (String dateStr : daysBetweenTwoDate) {
-                weekSet.add(DateHelper.getCurrentWeekNumber(timeFormat.parse(dateStr)));
+                weekList.add(DateHelper.getCurrentWeekNumber(timeFormat.parse(dateStr + " 00:00:00")));
+            }
+            weekList = weekList.stream().distinct().collect(Collectors.toList());
+            Integer firstWeek = weekList.get(0);
+            Integer secondWeek = weekList.get(1);
+            Integer lastWeek = weekList.get(weekList.size() - 1);
+            Integer lastTwoWeek = weekList.get(weekList.size() - 2);
+            List<Integer> weekNumberList = new ArrayList<>();
+            int anotherYear;
+            if (firstWeek > secondWeek) { //第一个周数大于第二个  则第一个周是上一年的
+                anotherYear = year - 1;
+                weekNumberList.add(firstWeek);
+                yearMonthMap.put(anotherYear, weekNumberList);
+                weekList.remove(0);
+                yearMonthMap.put(year, weekList);
+            } else {
+                if (lastTwoWeek > lastWeek) { //倒数第二个周数大于最后一个  则最后一个周是下一年的
+                    anotherYear = year + 1;
+                    weekNumberList.add(lastWeek);
+                    yearMonthMap.put(anotherYear, weekNumberList);
+                    weekList.remove(weekList.size() - 1);
+                    yearMonthMap.put(year, weekList);
+                } else {
+                    yearMonthMap.put(year, weekList);
+                }
+            }
+            List<UserWeekHourBO> userWeekHourBOList = new ArrayList<>();
+            //2.根据年 周 即可查出用户周工时分配情况
+            for (Integer yearNo : yearMonthMap.keySet()) {
+                List<Integer> weeks = yearMonthMap.get(yearNo);
+                List<UserWeekHourBO> userWeekHourBOS = userWeekMapper.selectUserWeekStats(year, weeks, reqDTO.getJobRole());
+                userWeekHourBOList.addAll(userWeekHourBOS);
+            }
+            Map<Long, List<UserWeekHourBO>> userHourMap = new HashMap<>();
+            if (!CollectionUtils.isEmpty(userWeekHourBOList)) {
+                userHourMap = userWeekHourBOList.stream().collect(Collectors.groupingBy(UserWeekHourBO::getUserId));
             }
 
-        }catch (Exception e){
-            LOGGER.error("异常: ",e);
+            //查询月请假情况
+            List<UserLeaveBO> userLeaveBOList = userLeaveMapper.selectUserLeaveMonthStats(monthFormat.format(queryDate), reqDTO.getJobRole());
+            Map<Long, List<UserLeaveBO>> userLeaveMap = new HashMap<>();
+            if (!CollectionUtils.isEmpty(userLeaveBOList)) {
+                userLeaveMap = userLeaveBOList.stream().collect(Collectors.groupingBy(UserLeave::getUserId));
+            }
+
+            //查询月实际打卡情况
+            calendar.setTime(firstDayOfMonth);
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            Date lastMonthLastDay = calendar.getTime();
+            calendar.setTime(lastDayOfMonth);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            Date nextMonthFirstDay = calendar.getTime();
+            SignInReqDTO signInReqDTO = new SignInReqDTO();
+            signInReqDTO.setBeginTime(lastMonthLastDay);
+            signInReqDTO.setEndTime(nextMonthFirstDay);
+            List<SignInOriginBO> signInOriginBOS = signInMapper.selectSignInOriginBOPage(signInReqDTO);
+            Map<Long, List<SignInOriginBO>> userSignMap = new HashMap<>();
+            if (!CollectionUtils.isEmpty(signInOriginBOS)) {
+                userSignMap = signInOriginBOS.stream().collect(Collectors.groupingBy(SignIn::getUserId));
+            }
+            for (User user : userList) {
+                MonthWorkStatsResDTO resDTO = new MonthWorkStatsResDTO();
+                //本月之外的工时(大概计算)
+                BigDecimal outOfMonthHours = BigDecimal.ZERO;
+                //总工时
+                BigDecimal monthWorkHours = BigDecimal.ZERO;
+
+                List<UserWeekHourBO> userWeekHourBOS = userHourMap.get(user.getId());
+                if (!CollectionUtils.isEmpty(userWeekHourBOS)) {
+                    List<UserWeekHourBO> firstWeekHoursList = userWeekHourBOS.stream().filter(item -> item.getWeekNumber().equals(firstWeek)).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(firstWeekHoursList)) {
+                        UserWeekHourBO userWeekHourBO = firstWeekHoursList.get(0);
+                        calendar.setTime(firstDayOfMonth);
+                        //3.要确认本月初是周几, 可以大概计算出本月的这几天占该周的比例   周末不算  暂不考虑法定节假日
+                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                        if (1 < dayOfWeek && dayOfWeek < 7) { //属于工作日
+                            outOfMonthHours = outOfMonthHours.add(
+                                    userWeekHourBO.getHours()
+                                            .divide(BigDecimal.valueOf(5), 2, BigDecimal.ROUND_HALF_UP)
+                                            .multiply(BigDecimal.valueOf((long) dayOfWeek - 2)).setScale(1, BigDecimal.ROUND_HALF_UP)
+                            );
+                        } else {
+                            outOfMonthHours = outOfMonthHours.add(userWeekHourBO.getHours());
+                        }
+                    }
+                    List<UserWeekHourBO> lastWeekHoursList = userWeekHourBOS.stream().filter(item -> item.getWeekNumber().equals(lastWeek)).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(lastWeekHoursList)) {
+                        UserWeekHourBO userWeekHourBO = lastWeekHoursList.get(0);
+                        calendar.setTime(lastDayOfMonth);
+                        //3.要确认本月尾是周几, 可以大概计算出本月的这几天占该周的比例   周末不算  暂不考虑法定节假日
+                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                        if (1 < dayOfWeek && dayOfWeek < 7) { //属于工作日
+                            outOfMonthHours = outOfMonthHours.add(
+                                    userWeekHourBO.getHours()
+                                            .divide(BigDecimal.valueOf(5), 2, BigDecimal.ROUND_HALF_UP)
+                                            .multiply(BigDecimal.valueOf((long) 6 - dayOfWeek)).setScale(1, BigDecimal.ROUND_HALF_UP)
+                            );
+                        } else {
+                            outOfMonthHours = outOfMonthHours.add(BigDecimal.ZERO);
+                        }
+                    }
+                    monthWorkHours = userWeekHourBOS.stream().map(UserWeekHourBO::getHours).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+                }
+
+                //总请假时长
+                BigDecimal monthLeaveHours = BigDecimal.ZERO;
+                //本月之外的请假时长
+                BigDecimal outOfMonthLeaveHours = BigDecimal.ZERO;
+                List<UserLeaveBO> userLeaveBOS = userLeaveMap.get(user.getId());
+                if (!CollectionUtils.isEmpty(userLeaveBOS)) {
+                    //过滤请假开始时间是上个月的
+                    List<UserLeaveBO> lastMonthLeaveBOS = userLeaveBOS.stream()
+                            .filter(item -> item.getBeginTime().compareTo(firstDayOfMonth) < 0).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(lastMonthLeaveBOS)) {
+                        for (UserLeaveBO userLeaveBO : lastMonthLeaveBOS) {
+                            //获取本月第一天跟请假开始时间间隔天数,已经请假天数
+                            int totalLeaveDays = DateHelper.getDaysBetweenTwoDate(userLeaveBO.getBeginTime(), userLeaveBO.getEndTime()).size();
+                            int lastMonthLeaveDays = DateHelper.getDaysBetweenTwoDate(userLeaveBO.getBeginTime(), firstDayOfMonth).size();
+                            BigDecimal bigDecimal = userLeaveBO.getHours()
+                                    .divide(BigDecimal.valueOf(totalLeaveDays), 2, BigDecimal.ROUND_HALF_UP)
+                                    .multiply(BigDecimal.valueOf(lastMonthLeaveDays - 1)).setScale(1, BigDecimal.ROUND_HALF_UP);
+                            outOfMonthLeaveHours = outOfMonthLeaveHours.add(bigDecimal);
+                        }
+                    }
+
+                    //过滤请假截止时间是下个月的
+                    List<UserLeaveBO> nextMonthLeaveBOS = userLeaveBOS.stream()
+                            .filter(item -> item.getEndTime().compareTo(lastDayOfMonth) > 0).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(nextMonthLeaveBOS)) {
+                        for (UserLeaveBO userLeaveBO : nextMonthLeaveBOS) {
+                            //获取本月最后一天跟请假截止时间间隔天数,已经请假天数
+                            int totalLeaveDays = DateHelper.getDaysBetweenTwoDate(userLeaveBO.getBeginTime(), userLeaveBO.getEndTime()).size();
+                            int nextMonthLeaveDays = DateHelper.getDaysBetweenTwoDate(lastDayOfMonth, userLeaveBO.getEndTime()).size();
+                            outOfMonthLeaveHours = outOfMonthLeaveHours.add(userLeaveBO.getHours()
+                                    .divide(BigDecimal.valueOf(totalLeaveDays), 2, BigDecimal.ROUND_HALF_UP)
+                                    .multiply(BigDecimal.valueOf(nextMonthLeaveDays - 1)).setScale(1, BigDecimal.ROUND_HALF_UP));
+                        }
+                        lastMonthLeaveBOS.forEach(userLeaveBO -> {
+
+                        });
+                    }
+                    monthLeaveHours = userLeaveBOS.stream().map(UserLeave::getHours).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+                }
+
+                //总打卡时长
+                BigDecimal totalSignInHours = BigDecimal.ZERO;
+                List<SignInOriginBO> signInList = userSignMap.get(user.getId());
+                if (!CollectionUtils.isEmpty(signInList)) {
+                    for (int i = 0; i < DateHelper.getDaysBetweenTwoDate(firstDayOfMonth, lastDayOfMonth).size(); i++) {
+                        calendar.setTime(firstDayOfMonth);
+                        calendar.add(Calendar.DAY_OF_MONTH, i);
+                        Date curSignInDay = calendar.getTime();
+                        calendar.setTime(curSignInDay);
+                        calendar.add(Calendar.DAY_OF_MONTH, -1);
+                        Date lastSignIdDay = calendar.getTime();
+                        calendar.setTime(curSignInDay);
+                        calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        Date nextSignDay = calendar.getTime();
+                        Date checkInDate = null;
+                        Date checkOutDate = null;
+                        //前一天的打卡记录
+                        List<SignInOriginBO> lastDaySignInList = signInList.stream()
+                                .filter(signIn -> dateFormat.format(signIn.getCheckTime()).equals(dateFormat.format(lastSignIdDay))).collect(Collectors.toList());
+                        //当天的打卡记录
+                        List<SignInOriginBO> curDaySignInList = signInList.stream()
+                                .filter(signIn -> dateFormat.format(signIn.getCheckTime()).equals(dateFormat.format(curSignInDay))).collect(Collectors.toList());
+                        //后一天的打卡记录
+                        List<SignInOriginBO> nextDaySignInList = signInList.stream()
+                                .filter(signIn -> dateFormat.format(signIn.getCheckTime()).equals(dateFormat.format(nextSignDay))).collect(Collectors.toList());
+                        if (!CollectionUtils.isEmpty(curDaySignInList)) {
+                            Date curDay5OClock = timeFormat.parse(dateFormat.format(curSignInDay) + " 05:00:00");
+                            Date curDay14OClock = timeFormat.parse(dateFormat.format(curSignInDay) + " 14:00:00");
+                            Date nextDay5OClock = timeFormat.parse(dateFormat.format(nextSignDay) + " 05:00:00");
+                            // 当天5:00---14:00的打卡记录,取第一条为上班打卡
+                            List<SignInOriginBO> checkInList = curDaySignInList.stream()
+                                    .filter(signIn -> signIn.getType() != ZSYSignInType.MANUAL.getValue())
+                                    .filter(signIn -> signIn.getCheckTime().after(curDay5OClock) && signIn.getCheckTime().before(curDay14OClock))
+                                    .collect(Collectors.toList());
+                            if (!CollectionUtils.isEmpty(checkInList)) {
+                                checkInDate = checkInList.stream().sorted(Comparator.comparing(SignIn::getCheckTime)).collect(Collectors.toList()).get(0).getCheckTime();
+                            }
+                            // 当天14:00---0:00的打卡记录,取最后一条为下班打卡
+                            List<SignInOriginBO> checkOutList = curDaySignInList.stream()
+                                    .filter(signIn -> signIn.getType() != ZSYSignInType.MANUAL.getValue())
+                                    .filter(signIn -> signIn.getCheckTime().after(curDay14OClock))
+                                    .collect(Collectors.toList());
+                            if (!CollectionUtils.isEmpty(checkOutList)) {
+                                checkOutDate = checkOutList.stream().sorted(Comparator.comparing(SignIn::getCheckTime))
+                                        .collect(Collectors.toList()).get(checkOutList.size() - 1).getCheckTime();
+                            }
+
+                            //判断后一天05:00前是否有打卡记录,有的话取最后一条为今天的下班打卡
+                            if (!CollectionUtils.isEmpty(nextDaySignInList)) {
+                                List<SignInOriginBO> nextDayBefore5CheckList = nextDaySignInList.stream()
+                                        .filter(signIn -> signIn.getType() != ZSYSignInType.MANUAL.getValue())
+                                        .filter(signIn -> signIn.getCheckTime().before(nextDay5OClock))
+                                        .collect(Collectors.toList());
+                                if (!CollectionUtils.isEmpty(nextDayBefore5CheckList)) {
+                                    checkOutDate = nextDayBefore5CheckList.stream().sorted(Comparator.comparing(SignIn::getCheckTime))
+                                            .collect(Collectors.toList()).get(nextDayBefore5CheckList.size() - 1).getCheckTime();
+                                }
+                            }
+                        }
+                        if (checkInDate == null && checkOutDate == null) {
+                            // 当天没有打卡记录,打卡时长加0
+                            totalSignInHours = totalSignInHours.add(BigDecimal.ZERO);
+                        } else if (checkInDate == null || checkOutDate == null) {
+                            // 当天存在漏打卡情况,打卡时长加8
+                            totalSignInHours = totalSignInHours.add(BigDecimal.valueOf(8));
+                        } else {
+                            //打卡记录正常,打卡时长为下班卡-上班卡时间差
+                            totalSignInHours = totalSignInHours
+                                    .add(
+                                            BigDecimal.valueOf(checkOutDate.getTime() - checkInDate.getTime())
+                                                    .divide(BigDecimal.valueOf(1000), 2, BigDecimal.ROUND_HALF_UP)
+                                                    .divide(BigDecimal.valueOf(60), 2, BigDecimal.ROUND_HALF_UP)
+                                                    .divide(BigDecimal.valueOf(60), 2, BigDecimal.ROUND_HALF_UP)
+                                    );
+
+                        }
+                    }
+                }
+                resDTO.setCheckHours(totalSignInHours);
+                resDTO.setUserName(user.getName());
+                resDTO.setWorkHours(monthWorkHours.subtract(outOfMonthHours));
+                resDTO.setLeaveHours(monthLeaveHours.subtract(outOfMonthLeaveHours));
+                list.add(resDTO);
+            }
+            return list;
+        } catch (Exception e) {
+            LOGGER.error("异常: ", e);
             throw new ZSYServerException(e.getMessage());
         }
-
-        //2.根据年 周 即可查出用户周工时分配情况
-        //3.要确认本月初和月尾是周几, 可以大概计算出本月的这几天占该周的比例   周末不算  暂不考虑法定节假日
-        return null;
     }
 
 

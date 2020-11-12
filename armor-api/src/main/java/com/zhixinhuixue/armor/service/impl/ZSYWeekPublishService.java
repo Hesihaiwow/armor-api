@@ -22,7 +22,6 @@ import com.zhixinhuixue.armor.model.dto.response.TaskBaseResDTO;
 import com.zhixinhuixue.armor.model.dto.response.WeekPublishPlanPageResDTO;
 import com.zhixinhuixue.armor.model.pojo.*;
 import com.zhixinhuixue.armor.service.IZSYWeekPublishService;
-import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -348,7 +347,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
      */
     @Override
     public PageInfo<WeekPublishPlanPageResDTO> getPage(WeekPublishQueryReqDTO reqDTO) {
-        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
+        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 1);
         Page<WeekPublishPlanBO> weekPublishPlanBOs = weekPublishPlanMapper.selectPage(reqDTO);
         Page<WeekPublishPlanPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(weekPublishPlanBOs,page);
