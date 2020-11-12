@@ -418,34 +418,36 @@ public class ZSYStatsService implements IZSYStatsService {
                 if (!CollectionUtils.isEmpty(userWeekHourBOS)) {
                     List<UserWeekHourBO> firstWeekHoursList = userWeekHourBOS.stream().filter(item -> item.getWeekNumber().equals(firstWeek)).collect(Collectors.toList());
                     if (!CollectionUtils.isEmpty(firstWeekHoursList)) {
-                        UserWeekHourBO userWeekHourBO = firstWeekHoursList.get(0);
-                        calendar.setTime(firstDayOfMonth);
-                        //3.要确认本月初是周几, 可以大概计算出本月的这几天占该周的比例   周末不算  暂不考虑法定节假日
-                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                        if (1 < dayOfWeek && dayOfWeek < 7) { //属于工作日
-                            outOfMonthHours = outOfMonthHours.add(
-                                    userWeekHourBO.getHours()
-                                            .divide(BigDecimal.valueOf(5), 2, BigDecimal.ROUND_HALF_UP)
-                                            .multiply(BigDecimal.valueOf((long) dayOfWeek - 2)).setScale(1, BigDecimal.ROUND_HALF_UP)
-                            );
-                        } else {
-                            outOfMonthHours = outOfMonthHours.add(userWeekHourBO.getHours());
+                        for (UserWeekHourBO userWeekHourBO : firstWeekHoursList) {
+                            calendar.setTime(firstDayOfMonth);
+                            //3.要确认本月初是周几, 可以大概计算出本月的这几天占该周的比例   周末不算  暂不考虑法定节假日
+                            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                            if (1 < dayOfWeek && dayOfWeek < 7) { //属于工作日
+                                outOfMonthHours = outOfMonthHours.add(
+                                        userWeekHourBO.getHours()
+                                                .divide(BigDecimal.valueOf(5), 2, BigDecimal.ROUND_HALF_UP)
+                                                .multiply(BigDecimal.valueOf((long) dayOfWeek - 2)).setScale(1, BigDecimal.ROUND_HALF_UP)
+                                );
+                            } else {
+                                outOfMonthHours = outOfMonthHours.add(userWeekHourBO.getHours());
+                            }
                         }
                     }
                     List<UserWeekHourBO> lastWeekHoursList = userWeekHourBOS.stream().filter(item -> item.getWeekNumber().equals(lastWeek)).collect(Collectors.toList());
                     if (!CollectionUtils.isEmpty(lastWeekHoursList)) {
-                        UserWeekHourBO userWeekHourBO = lastWeekHoursList.get(0);
-                        calendar.setTime(lastDayOfMonth);
-                        //3.要确认本月尾是周几, 可以大概计算出本月的这几天占该周的比例   周末不算  暂不考虑法定节假日
-                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                        if (1 < dayOfWeek && dayOfWeek < 7) { //属于工作日
-                            outOfMonthHours = outOfMonthHours.add(
-                                    userWeekHourBO.getHours()
-                                            .divide(BigDecimal.valueOf(5), 2, BigDecimal.ROUND_HALF_UP)
-                                            .multiply(BigDecimal.valueOf((long) 6 - dayOfWeek)).setScale(1, BigDecimal.ROUND_HALF_UP)
-                            );
-                        } else {
-                            outOfMonthHours = outOfMonthHours.add(BigDecimal.ZERO);
+                        for (UserWeekHourBO userWeekHourBO : lastWeekHoursList) {
+                            calendar.setTime(lastDayOfMonth);
+                            //3.要确认本月尾是周几, 可以大概计算出本月的这几天占该周的比例   周末不算  暂不考虑法定节假日
+                            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                            if (1 < dayOfWeek && dayOfWeek < 7) { //属于工作日
+                                outOfMonthHours = outOfMonthHours.add(
+                                        userWeekHourBO.getHours()
+                                                .divide(BigDecimal.valueOf(5), 2, BigDecimal.ROUND_HALF_UP)
+                                                .multiply(BigDecimal.valueOf((long) 6 - dayOfWeek)).setScale(1, BigDecimal.ROUND_HALF_UP)
+                                );
+                            } else {
+                                outOfMonthHours = outOfMonthHours.add(BigDecimal.ZERO);
+                            }
                         }
                     }
                     monthWorkHours = userWeekHourBOS.stream().map(UserWeekHourBO::getHours).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
