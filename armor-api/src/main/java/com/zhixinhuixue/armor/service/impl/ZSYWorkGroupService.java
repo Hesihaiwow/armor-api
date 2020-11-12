@@ -158,7 +158,13 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         //查询是否有用户在当前团队中
         List<User> users = userMapper.selectUsersByGroup(id);
         if (!CollectionUtils.isEmpty(users)){
-            throw new ZSYServiceException("当前团队内有用户存在,请先调整用户团队,再进行删除");
+            if(users.size() > 1 ){
+                throw new ZSYServiceException("当前团队内有用户存在,请先调整用户团队,再进行删除");
+            }else {
+                if(!users.get(0).getId().equals(workGroup.getLeader())){
+                    throw new ZSYServiceException("当前团队内有用户存在,且不为组内leader,请先调整用户团队,再进行删除");
+                }
+            }
         }
         workGroup.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
         workGroup.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
