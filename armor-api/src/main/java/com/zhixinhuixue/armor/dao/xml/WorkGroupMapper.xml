@@ -55,6 +55,11 @@
     WHERE `id` = #{id}
   </update>
 
+  <!--根据id删除-->
+  <delete id="deleteById">
+    delete from `work_group` where `id` = #{id}
+  </delete>
+
   <!--根据名称查询-->
   <select id="selectByName" resultMap="BaseMap">
     SELECT * FROM `work_group` WHERE `name` = #{name} LIMIT 1

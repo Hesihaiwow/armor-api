@@ -62,4 +62,15 @@ public interface IZSYWorkGroupMapper {
      * @create 2020/11/6-17:25
      */
     List<WorkGroup> selectByLeaderId(@Param("userId")Long userId);
+
+
+    /**
+     *  id 删除团队
+     *
+     * @param id
+     * @return
+     * @author hsh
+     * @create 2020/11/6-17:25
+     */
+    int deleteById(@Param("id")Long id);
 }

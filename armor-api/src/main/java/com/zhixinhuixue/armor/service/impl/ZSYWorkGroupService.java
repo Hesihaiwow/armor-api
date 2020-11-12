@@ -59,7 +59,7 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
     public void addGroup(AddWorkGroupReqDTO reqDTO) {
         //根据名称查询,确保没有重名
         WorkGroup existGroup = groupMapper.selectByName(reqDTO.getName().trim());
-        if (existGroup != null){
+        if (existGroup != null && existGroup.getIsDelete().equals(0)){
             throw new ZSYServiceException("当前团队名已存在,请修改名称");
         }
         User user = userMapper.selectById(reqDTO.getLeader());
@@ -166,13 +166,19 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
                 }
             }
         }
-        workGroup.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
-        workGroup.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
-        workGroup.setUpdateTime(new Date());
+//        workGroup.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
+//        workGroup.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
+//        workGroup.setUpdateTime(new Date());
+//
+//        if (groupMapper.updateById(workGroup) == 0){
+//            throw new ZSYServiceException("删除团队失败");
+//        }
 
-        if (groupMapper.updateById(workGroup) == 0){
+        if(groupMapper.deleteById(id) != 1){
             throw new ZSYServiceException("删除团队失败");
-        }
+        };
+
+        userGroupMapper.deleteByGroup(id);
     }
 
     /**
