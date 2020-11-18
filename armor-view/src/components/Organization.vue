@@ -208,25 +208,38 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">姓名</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="addUserForm.name" placeholder="请输入姓名"></el-input>
+                    <el-input class="w280" v-model="addUserForm.name" placeholder="请输入姓名" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">账号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="addUserForm.account" placeholder="请输入账号"></el-input>
+                    <el-input class="w280" v-model="addUserForm.account" placeholder="请输入账号" clearable></el-input>
+                </div>
+            </div>
+            <div class="ftp-list clearfix">
+                <div class="ftp-menus fl">部门</div>
+                <div class="ftp-msg fl">
+                    <el-select class="w280" v-model="addUserForm.departmentId" placeholder="请选择部门" filterable clearable>
+                        <el-option
+                                v-for="item in departmentList"
+                                :key="item.id"
+                                :label="item.label"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">职位</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="addUserForm.jobName" placeholder="请输入职位"></el-input>
+                    <el-input class="w280" v-model="addUserForm.jobName" placeholder="请输入职位" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">角色</div>
                 <div class="ftp-msg fl">
-                    <el-select class="w280" v-model="addUserForm.jobRole" placeholder="请选择角色">
+                    <el-select class="w280" v-model="addUserForm.jobRole" placeholder="请选择角色" filterable clearable>
                         <el-option
                                 v-for="item in rolesList"
                                 :key="item.roleId"
@@ -239,7 +252,7 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">级别</div>
                 <div class="ftp-msg fl">
-                    <el-select class="w280" v-model="addUserForm.level" placeholder="请选择级别">
+                    <el-select class="w280" v-model="addUserForm.level" placeholder="请选择级别" filterable clearable>
                         <el-option
                                 v-for="item in levelList"
                                 :key="item.id"
@@ -252,19 +265,19 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">手机号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="addUserForm.phone" placeholder="请输入手机号"></el-input>
+                    <el-input class="w280" v-model="addUserForm.phone" placeholder="请输入手机号" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">邮箱地址</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="addUserForm.email" placeholder="请输入邮箱地址"></el-input>
+                    <el-input class="w280" v-model="addUserForm.email" placeholder="请输入邮箱地址" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">用户权限</div>
                 <div class="ftp-msg fl">
-                    <el-select class="w280" v-model="addUserForm.userRole" placeholder="请选择权限">
+                    <el-select class="w280" v-model="addUserForm.userRole" placeholder="请选择权限" filterable clearable>
                         <el-option
                                 v-for="item in options"
                                 :key="item.value"
@@ -277,13 +290,13 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">考勤序号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="addUserForm.checkSort" placeholder="请输入考勤序号"></el-input>
+                    <el-input class="w280" v-model="addUserForm.checkSort" placeholder="请输入考勤序号" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">工号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="addUserForm.jobNumber" placeholder="请输入员工工号"></el-input>
+                    <el-input class="w280" v-model="addUserForm.jobNumber" placeholder="请输入员工工号" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
@@ -293,7 +306,7 @@
                     <i class="el-icon-minus" v-show="num>1" @click="minus(num-1)"></i>
                     <div v-for="i in num"><span style="margin-right: 20px">{{i}}</span>
                         <el-select placeholder="请选择审核人" @change="addCheckUser(i)" v-model="checkUserIdList[i-1]"
-                                   clearable>
+                                   filterable clearable>
                             <el-option
                                     v-for="item in userList"
                                     :key="item.userId"
@@ -323,25 +336,38 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">姓名</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="userDetail.name" placeholder="请输入姓名"></el-input>
+                    <el-input class="w280" v-model="userDetail.name" placeholder="请输入姓名" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">账号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="userDetail.account" placeholder="请输入账号"></el-input>
+                    <el-input class="w280" v-model="userDetail.account" placeholder="请输入账号" clearable></el-input>
+                </div>
+            </div>
+            <div class="ftp-list clearfix">
+                <div class="ftp-menus fl">部门</div>
+                <div class="ftp-msg fl">
+                    <el-select class="w280" v-model="userDetail.departmentId" placeholder="请选择部门" filterable clearable>
+                        <el-option
+                                v-for="item in departmentList"
+                                :key="item.id"
+                                :label="item.label"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">职位</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="userDetail.jobName" placeholder="请输入职位"></el-input>
+                    <el-input class="w280" v-model="userDetail.jobName" placeholder="请输入职位" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">角色</div>
                 <div class="ftp-msg fl">
-                    <el-select class="w280" v-model="userDetail.jobRole" placeholder="请选择角色">
+                    <el-select class="w280" v-model="userDetail.jobRole" placeholder="请选择角色" filterable clearable>
                         <el-option
                                 v-for="item in rolesList"
                                 :key="item.roleId"
@@ -354,7 +380,7 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">级别</div>
                 <div class="ftp-msg fl">
-                    <el-select class="w280" v-model="userDetail.level" placeholder="请选择级别">
+                    <el-select class="w280" v-model="userDetail.level" placeholder="请选择级别" filterable clearable>
                         <el-option
                                 v-for="item in levelList"
                                 :key="item.id"
@@ -367,19 +393,19 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">手机号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="userDetail.phone" placeholder="请输入手机号"></el-input>
+                    <el-input class="w280" v-model="userDetail.phone" placeholder="请输入手机号" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">邮箱地址</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="userDetail.email" placeholder="请输入邮箱地址"></el-input>
+                    <el-input class="w280" v-model="userDetail.email" placeholder="请输入邮箱地址" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">用户权限</div>
                 <div class="ftp-msg fl">
-                    <el-select class="w280" v-model="userDetail.userRole" placeholder="请选择权限">
+                    <el-select class="w280" v-model="userDetail.userRole" placeholder="请选择权限" filterable clearable>
                         <el-option
                                 v-for="item in options"
                                 :key="item.value"
@@ -392,7 +418,7 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">用户状态</div>
                 <div class="ftp-msg fl">
-                    <el-select class="w280" v-model="userDetail.status" placeholder="请选择状态">
+                    <el-select class="w280" v-model="userDetail.status" placeholder="请选择状态" filterable clearable>
                         <el-option
                                 v-for="item in statusOptions"
                                 :key="item.value"
@@ -405,13 +431,13 @@
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">考勤序号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="userDetail.checkSort" placeholder="请输入考勤序号"></el-input>
+                    <el-input class="w280" v-model="userDetail.checkSort" placeholder="请输入考勤序号" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
                 <div class="ftp-menus fl">工号</div>
                 <div class="ftp-msg fl">
-                    <el-input class="w280" v-model="userDetail.jobNumber" placeholder="请输入员工工号"></el-input>
+                    <el-input class="w280" v-model="userDetail.jobNumber" placeholder="请输入员工工号" clearable></el-input>
                 </div>
             </div>
             <div class="ftp-list clearfix">
@@ -421,7 +447,7 @@
                     <i class="el-icon-minus" v-show="num2>1" @click="minus2(num2-1)"></i>
                     <div v-for="i in num2"><span style="margin-right: 20px">{{i}}</span>
                         <el-select placeholder="请选择审核人" @change="addCheckUser2(i)" v-model="checkUserIdList2[i-1]"
-                                   clearable>
+                                   filterable clearable>
                             <el-option
                                     v-for="item in userList"
                                     :key="item.userId"
@@ -666,6 +692,7 @@
                 },
                 //部门树结构数据
                 departmentTree: [],
+                departmentList: [],
                 //部门树结构父子传递字段
 
                 //分页表数据
@@ -854,8 +881,16 @@
             });
             _this.fetchGroupList();
             _this.fetchSignInUser();
+            _this.fetchAllDept();
+
         },
         methods: {
+            //查询所有部门
+            fetchAllDept(){
+              Http.zsyGetHttp('dept/list',{},res=>{
+                  this.departmentList = res.data;
+              })
+            },
             //分页上一页和下一页样式
             pagingLayout(total) {
                 if (total > 0) {
@@ -944,6 +979,7 @@
                     this.departmentTree = [];
                     this.departmentTree.push(res.data);
                 });
+                this.fetchAllDept();
             },
             //添加用户弹窗
             addUserDlgShow() {
@@ -1256,7 +1292,6 @@
             addUser() {
                 this.addUserForm = {};
                 this.addUserForm.checkUserList = [];
-                this.addUserForm.departmentId = this.queryForm.deptId;
                 this.addUserVisible = true;
             },
             //保存新增用户
@@ -1267,6 +1302,10 @@
                 }
                 if (this.addUserForm.account == null || this.addUserForm.account === undefined || this.addUserForm.account.trim() === '') {
                     this.warnMsg("请填写用户账号");
+                    return;
+                }
+                if (this.addUserForm.departmentId == null || this.addUserForm.departmentId === undefined || this.addUserForm.departmentId === '') {
+                    this.warnMsg("请选择部门");
                     return;
                 }
                 if (this.addUserForm.jobName == null || this.addUserForm.jobName === undefined || this.addUserForm.jobName.trim() === '') {
@@ -1390,6 +1429,10 @@
                 }
                 if (this.userDetail.name == null || this.userDetail.name === undefined || this.userDetail.name.trim() === '') {
                     this.warnMsg("请填写用户名称");
+                    return;
+                }
+                if (this.userDetail.departmentId == null || this.userDetail.departmentId === undefined || this.userDetail.departmentId === '') {
+                    this.warnMsg("请选择部门");
                     return;
                 }
                 if (this.userDetail.account == null || this.userDetail.account === undefined || this.userDetail.account.trim() === '') {

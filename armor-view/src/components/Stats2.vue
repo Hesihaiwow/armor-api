@@ -384,6 +384,7 @@
                     <el-table-column prop="userName" label="用户" align="center" width="80" ></el-table-column>
                     <el-table-column prop="workHours" label="月工作量"  sortable  ></el-table-column>
                     <el-table-column prop="checkHours" label="月打卡时长" sortable ></el-table-column>
+                    <el-table-column prop="totalExtraHours" label="月加班时长" sortable ></el-table-column>
                     <el-table-column prop="leaveHours" label="月请假时长" sortable ></el-table-column>
                 </el-table>
             </el-tab-pane>
