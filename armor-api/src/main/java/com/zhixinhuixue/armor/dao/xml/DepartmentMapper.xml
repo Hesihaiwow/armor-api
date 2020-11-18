@@ -56,6 +56,11 @@
     SELECT * FROM department WHERE is_delete = 0 AND `id` = parent_id
   </select>
 
+  <!--查询全部可用部门-->
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT * FROM department WHERE is_delete = 0
+  </select>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
     update department
     <set>

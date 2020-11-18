@@ -25,9 +25,22 @@ public class MonthWorkStatsResDTO {
     private BigDecimal leaveHours;
 
     /**
+     * 加班时长
+     */
+    private int totalExtraHours;
+
+    /**
      * 打卡时长
      */
     private BigDecimal checkHours;
+
+    public int getTotalExtraHours() {
+        return totalExtraHours;
+    }
+
+    public void setTotalExtraHours(int totalExtraHours) {
+        this.totalExtraHours = totalExtraHours;
+    }
 
     public String getUserName() {
         return userName;

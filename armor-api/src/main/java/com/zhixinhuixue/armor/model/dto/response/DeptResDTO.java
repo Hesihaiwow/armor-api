@@ -7,10 +7,19 @@ import java.util.List;
  */
 public class DeptResDTO {
 
+    /**
+     * 部门id
+     */
     private Long id;
 
+    /**
+     * 部门名称
+     */
     private String label;
 
+    /**
+     * 子部门
+     */
     private List<DeptResDTO> children;
 
     public Long getId() {

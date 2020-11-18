@@ -12,12 +12,12 @@ import com.zhixinhuixue.armor.model.dto.response.DeptLevelResDTO;
 import com.zhixinhuixue.armor.model.dto.response.DeptResDTO;
 import com.zhixinhuixue.armor.model.pojo.Department;
 import com.zhixinhuixue.armor.service.IZSYDeptService;
-import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYDeleteStatus;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,7 +42,7 @@ public class ZSYDeptService implements IZSYDeptService {
         }
         //校验部门名称是否唯一
         List<Department> departments = departmentMapper.selectByDeptName(deptReqDTO.getName(),ZSYTokenRequestContext.get().getDepartmentId());
-        if (departments.size()>0){
+        if (!CollectionUtils.isEmpty(departments)){
             throw new ZSYServiceException(String.format("部门(%s)已存在",deptReqDTO.getName()));
         }
         Department department = new Department();
@@ -57,7 +57,7 @@ public class ZSYDeptService implements IZSYDeptService {
     public void addOrganization(String name){
         //校验部门名称是否唯一
         List<Department> departments = departmentMapper.selectByDeptName(name,null);
-        if (departments.size()>0){
+        if (!CollectionUtils.isEmpty(departments)){
             throw new ZSYServiceException(String.format("组织(%s)已存在",name));
         }
         Department department = new Department();
@@ -92,6 +92,27 @@ public class ZSYDeptService implements IZSYDeptService {
             }
         );
         return deptResDTOS;
+    }
+
+    /**
+     * 查询全部部门
+     *
+     * @return
+     * @author sch
+     */
+    @Override
+    public List<DeptResDTO> getDeptList() {
+        List<DeptResDTO> list = new ArrayList<>();
+        List<Department> departmentList = departmentMapper.selectAll();
+        if (!CollectionUtils.isEmpty(departmentList)){
+            departmentList.forEach(item->{
+                DeptResDTO resDTO = new DeptResDTO();
+                resDTO.setId(item.getId());
+                resDTO.setLabel(item.getName());
+                list.add(resDTO);
+            });
+        }
+        return list;
     }
 
     @Override
@@ -133,7 +154,7 @@ public class ZSYDeptService implements IZSYDeptService {
         children.stream().forEach(child->{
             DeptLevelResDTO tmp = new DeptLevelResDTO();
             tmp.setId(child.getId());
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < level; i++) {
                 sb.append("-");
             }

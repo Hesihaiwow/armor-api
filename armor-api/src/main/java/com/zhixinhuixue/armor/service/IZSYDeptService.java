@@ -41,4 +41,11 @@ public interface IZSYDeptService {
      */
     List<DeptResDTO> getAllDept();
 
+    /**
+     * 查询全部部门
+     *
+     * @return
+     * @author sch
+     */
+    List<DeptResDTO> getDeptList();
 }

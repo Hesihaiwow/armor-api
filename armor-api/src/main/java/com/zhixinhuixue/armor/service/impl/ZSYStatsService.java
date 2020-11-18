@@ -16,8 +16,6 @@ import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYSignInType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -37,7 +35,6 @@ import static com.github.pagehelper.page.PageMethod.startPage;
 @Service
 public class ZSYStatsService implements IZSYStatsService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZSYStatsService.class);
     private static final String MONTH_FORMAT = "yyyy-MM";
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -136,7 +133,7 @@ public class ZSYStatsService implements IZSYStatsService {
         Date date = reqDTO.getDate();
         //此段代码释义: 当选择的时间是2020年01周时  入参的date实际是2019-12-31  导致year为2019
         int year = DateHelper.getYears(reqDTO.getDate());
-        SimpleDateFormat format = new SimpleDateFormat(DateHelper.DATETIME_FORMAT);
+        SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
         try {
             Date date1 = format.parse("2019-12-30 00:00:00");
             Date date2 = format.parse("2020-01-05 23:59:59");
@@ -220,7 +217,7 @@ public class ZSYStatsService implements IZSYStatsService {
         Date date = reqDTO.getDate();
         int year = DateHelper.getYears(reqDTO.getDate());
         //此段代码释义: 当选择的时间是2020年01周时  入参的date实际是2019-12-31  导致year为2019
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat(DateHelper.DATETIME_FORMAT);
         try {
             Date date1 = format.parse("2019-12-30 00:00:00");
             Date date2 = format.parse("2020-01-05 23:59:59");
@@ -469,7 +466,7 @@ public class ZSYStatsService implements IZSYStatsService {
                             int lastMonthLeaveDays = DateHelper.getDaysBetweenTwoDate(userLeaveBO.getBeginTime(), firstDayOfMonth).size();
                             BigDecimal bigDecimal = userLeaveBO.getHours()
                                     .divide(BigDecimal.valueOf(totalLeaveDays), 2, BigDecimal.ROUND_HALF_UP)
-                                    .multiply(BigDecimal.valueOf(lastMonthLeaveDays - 1)).setScale(1, BigDecimal.ROUND_HALF_UP);
+                                    .multiply(BigDecimal.valueOf((long) lastMonthLeaveDays - 1)).setScale(1, BigDecimal.ROUND_HALF_UP);
                             outOfMonthLeaveHours = outOfMonthLeaveHours.add(bigDecimal);
                         }
                     }
@@ -484,7 +481,7 @@ public class ZSYStatsService implements IZSYStatsService {
                             int nextMonthLeaveDays = DateHelper.getDaysBetweenTwoDate(lastDayOfMonth, userLeaveBO.getEndTime()).size();
                             outOfMonthLeaveHours = outOfMonthLeaveHours.add(userLeaveBO.getHours()
                                     .divide(BigDecimal.valueOf(totalLeaveDays), 2, BigDecimal.ROUND_HALF_UP)
-                                    .multiply(BigDecimal.valueOf(nextMonthLeaveDays - 1)).setScale(1, BigDecimal.ROUND_HALF_UP));
+                                    .multiply(BigDecimal.valueOf((long) nextMonthLeaveDays - 1)).setScale(1, BigDecimal.ROUND_HALF_UP));
                         }
                         lastMonthLeaveBOS.forEach(userLeaveBO -> {
 
@@ -495,6 +492,7 @@ public class ZSYStatsService implements IZSYStatsService {
 
                 //总打卡时长
                 BigDecimal totalSignInHours = BigDecimal.ZERO;
+                int totalExtraHours = 0;
                 List<SignInOriginBO> signInList = userSignMap.get(user.getId());
                 if (!CollectionUtils.isEmpty(signInList)) {
                     for (int i = 0; i < DateHelper.getDaysBetweenTwoDate(firstDayOfMonth, lastDayOfMonth).size(); i++) {
@@ -503,25 +501,23 @@ public class ZSYStatsService implements IZSYStatsService {
                         Date curSignInDay = calendar.getTime();
                         calendar.setTime(curSignInDay);
                         calendar.add(Calendar.DAY_OF_MONTH, -1);
-                        Date lastSignIdDay = calendar.getTime();
                         calendar.setTime(curSignInDay);
                         calendar.add(Calendar.DAY_OF_MONTH, 1);
                         Date nextSignDay = calendar.getTime();
                         Date checkInDate = null;
                         Date checkOutDate = null;
-                        //前一天的打卡记录
-                        List<SignInOriginBO> lastDaySignInList = signInList.stream()
-                                .filter(signIn -> dateFormat.format(signIn.getCheckTime()).equals(dateFormat.format(lastSignIdDay))).collect(Collectors.toList());
                         //当天的打卡记录
                         List<SignInOriginBO> curDaySignInList = signInList.stream()
                                 .filter(signIn -> dateFormat.format(signIn.getCheckTime()).equals(dateFormat.format(curSignInDay))).collect(Collectors.toList());
                         //后一天的打卡记录
                         List<SignInOriginBO> nextDaySignInList = signInList.stream()
                                 .filter(signIn -> dateFormat.format(signIn.getCheckTime()).equals(dateFormat.format(nextSignDay))).collect(Collectors.toList());
+                        Date curDay5OClock = timeFormat.parse(dateFormat.format(curSignInDay) + " 05:00:00");
+                        Date curDay14OClock = timeFormat.parse(dateFormat.format(curSignInDay) + " 14:00:00");
+                        Date curDay19OClock = timeFormat.parse(dateFormat.format(curSignInDay) + " 19:00:00");
+                        Date nextDay5OClock = timeFormat.parse(dateFormat.format(nextSignDay) + " 05:00:00");
                         if (!CollectionUtils.isEmpty(curDaySignInList)) {
-                            Date curDay5OClock = timeFormat.parse(dateFormat.format(curSignInDay) + " 05:00:00");
-                            Date curDay14OClock = timeFormat.parse(dateFormat.format(curSignInDay) + " 14:00:00");
-                            Date nextDay5OClock = timeFormat.parse(dateFormat.format(nextSignDay) + " 05:00:00");
+
                             // 当天5:00---14:00的打卡记录,取第一条为上班打卡
                             List<SignInOriginBO> checkInList = curDaySignInList.stream()
                                     .filter(signIn -> signIn.getType() != ZSYSignInType.MANUAL.getValue())
@@ -567,7 +563,15 @@ public class ZSYStatsService implements IZSYStatsService {
                                                     .divide(BigDecimal.valueOf(60), 2, BigDecimal.ROUND_HALF_UP)
                                                     .divide(BigDecimal.valueOf(60), 2, BigDecimal.ROUND_HALF_UP)
                                     );
-
+                            //当天上班打卡在上午,则扣一小时午休时间
+                            if (checkInDate.before(curDay14OClock)) {
+                                totalSignInHours = totalSignInHours.subtract(BigDecimal.valueOf(1));
+                            }
+                            //如果在晚上七点之后下班,计算加班时间,向下取整
+                            if (checkOutDate.after(curDay19OClock)) {
+                                int curExtraHour = (int) (checkOutDate.getTime() - curDay19OClock.getTime()) / 1000 / 60 / 60;
+                                totalExtraHours = totalExtraHours + curExtraHour;
+                            }
                         }
                     }
                 }
@@ -575,11 +579,11 @@ public class ZSYStatsService implements IZSYStatsService {
                 resDTO.setUserName(user.getName());
                 resDTO.setWorkHours(monthWorkHours.subtract(outOfMonthHours));
                 resDTO.setLeaveHours(monthLeaveHours.subtract(outOfMonthLeaveHours));
+                resDTO.setTotalExtraHours(totalExtraHours);
                 list.add(resDTO);
             }
             return list;
         } catch (Exception e) {
-            LOGGER.error("异常: ", e);
             throw new ZSYServerException(e.getMessage());
         }
     }

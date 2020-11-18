@@ -5,11 +5,9 @@ import com.zhixinhuixue.armor.model.dto.response.DeptLevelResDTO;
 import com.zhixinhuixue.armor.model.dto.response.DeptResDTO;
 import com.zhixinhuixue.armor.service.IZSYDeptService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -19,45 +17,77 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/dept")
-@Api(value = "部门服务",description="任务管理系统部门相关接口",tags = "/dept")
 public class ZSYDeptController extends ZSYController {
 
 
-    @Autowired
+    @Resource
     private IZSYDeptService deptService;
 
 
-    @ApiOperation("添加部门")
+    /**
+     * 添加部门
+     *
+     * @param deptReqDTO
+     * @return
+     */
     @PostMapping("/add")
-    public String add(@Valid @RequestBody DeptReqDTO deptReqDTO){
+    public String add(@Valid @RequestBody DeptReqDTO deptReqDTO) {
         deptService.addDept(deptReqDTO);
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("添加父组织")
+    /**
+     * 添加父组织
+     *
+     * @param name
+     * @return
+     */
     @PostMapping("/addOrganization")
-    public String addOrganization(@NotNull @RequestParam String name){
+    public String addOrganization(@NotNull @RequestParam String name) {
         deptService.addOrganization(name);
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("部门树结构")
+    /**
+     * 部门树结构
+     *
+     * @return
+     */
     @GetMapping("/tree")
-    public String tree(){
+    public String tree() {
         DeptResDTO deptResDTO = deptService.getDeptTree();
         return ZSYResult.success().data(deptResDTO).build();
     }
 
-    @ApiOperation("所有部门")
+    /**
+     * 所有部门
+     *
+     * @return
+     */
     @GetMapping("/all")
-    public String allDept(){
+    public String allDept() {
         return ZSYResult.success().data(deptService.getAllDept()).build();
     }
 
-    @ApiOperation("部门级别结构")
+    /**
+     * 部门级别结构
+     *
+     * @return
+     */
     @GetMapping("/level")
-    public String level(){
+    public String level() {
         List<DeptLevelResDTO> deptLevelResDTOS = deptService.getDeptLevel();
         return ZSYResult.success().data(deptLevelResDTOS).build();
+    }
+
+    /**
+     * 查询全部部门
+     *
+     * @return
+     * @author sch
+     */
+    @GetMapping("/list")
+    public String getDeptList() {
+        return ZSYResult.success().data(deptService.getDeptList()).build();
     }
 }
