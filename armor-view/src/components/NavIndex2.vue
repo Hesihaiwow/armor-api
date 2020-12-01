@@ -2207,21 +2207,6 @@
                 <el-button type="success" :loading="isSaving" @click="exportLeaveAndEWork">导出</el-button>
             </span>
         </el-dialog>
-        <el-dialog title="导入花名册到数据库" :visible.sync="uploadUserSortToMysqlVisible" custom-class="myDialog"
-                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
-                   @close="closeUserSortDialog">
-            <el-upload
-                    class="upload-demo"
-                    ref="usersort"
-                    action=""
-                    :on-preview="handleRecordPreview2"
-                    :on-remove="handleRecordRemove2"
-                    :before-upload="beforeUserSortUpload"
-                    :http-request="uploadUserSortToMysql">
-                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传.xls文件，且不超过1MB</div>
-            </el-upload>
-        </el-dialog>
         <el-dialog title="计算加班总时长" :visible.sync="showPersonalTotalEWrokTime" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                    @close="closeMyEWorkCounter">
@@ -3350,7 +3335,6 @@
                 excelSignInVisible: false,
                 excelLeaveAndEWorkVisible: false,
                 fullscreenLoading: false,
-                uploadUserSortToMysqlVisible: false,
                 recordFileList: [],
 
                 //考勤
@@ -6859,23 +6843,6 @@
             },
             closeSignInDialog() {
                 this.$refs.record.clearFiles();
-            },
-            uploadUserSortToMysql(file) {
-                let data = new FormData();
-                data.append('uploadFile', file.file);
-                http.zsyPostHttp('/sign-in/upload/user-sort/repository', data, (res) => {
-                    this.uploadUserSortToMysqlVisible = false;
-                    this.$refs.usersort.clearFiles();
-                    if (res.errMsg === "执行成功") {
-                        this.$message({
-                            showClose: true,
-                            message: '导入成功',
-                            type: 'success'
-                        });
-                    } else {
-                        this.uploadUserSortToMysqlVisible = false;
-                    }
-                })
             },
             closeUserSortDialog() {
                 this.$refs.usersort.clearFiles();

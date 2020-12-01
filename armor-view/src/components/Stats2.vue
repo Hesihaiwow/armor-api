@@ -1,25 +1,27 @@
 <template>
     <div class="stats-con">
         <el-tabs v-model="activeName" @tab-click="handleClick" style="position:relative;margin-bottom: 20px;">
-            <el-tab-pane label="任务统计" name="stat"  style="">
+            <el-tab-pane label="任务统计" name="stat" style="">
                 <el-table :data="statsData"
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column prop="name" label="成员" align="center" ></el-table-column>
-                    <el-table-column prop="inProcess" label="我的任务/进行中任务" align="center" >
+                    <el-table-column prop="name" label="成员" align="center"></el-table-column>
+                    <el-table-column prop="inProcess" label="我的任务/进行中任务" align="center">
                         <template slot-scope="sco">
-                            <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}} / {{sco.row.multiTask}}</el-button>
+                            <el-button type="text" @click="getTask(sco.$index)">{{sco.row.inProcess}} /
+                                {{sco.row.multiTask}}
+                            </el-button>
                         </template>
                     </el-table-column>
                     <el-table-column prop="hours" label="进行中任务耗时（小时）" align="center"></el-table-column>
-                    <el-table-column prop="delay" label="超时任务" align="center" >
+                    <el-table-column prop="delay" label="超时任务" align="center">
                         <template slot-scope="scope">
                             <span type="text" style="color: red;">{{scope.row.delay}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="complete" label="已完成任务" align="center" ></el-table-column>
+                    <el-table-column prop="complete" label="已完成任务" align="center"></el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="周发版计划" name="weekPublish"  style="">
+            <el-tab-pane label="周发版计划" name="weekPublish" style="">
                 <el-card>
                     <div class="add-member-basic-msg fl">
                         <el-date-picker
@@ -102,11 +104,14 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="标题" prop="wppName" align="center"></el-table-column>
-                        <el-table-column label="发版时间" prop="publishTimeStr" align="center" width="130"></el-table-column>
+                        <el-table-column label="发版时间" prop="publishTimeStr" align="center"
+                                         width="130"></el-table-column>
                         <el-table-column label="任务数量" prop="taskNum" align="center" width="100"></el-table-column>
                         <el-table-column label="操作" width="80" align="center">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" v-if="permit" @click="openEditPublishPlan(scope.row.wppId)">编辑</el-button>
+                                <el-button type="text" size="small" v-if="permit"
+                                           @click="openEditPublishPlan(scope.row.wppId)">编辑
+                                </el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -123,32 +128,38 @@
             </el-tab-pane>
             <el-tab-pane label="线上问题统计" name="bug">
                 <div class="stats-con" style="height: auto">
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="bugReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                    <div class="add-member-basic-msg fl">
+                        <el-select v-model="bugReqDTO.userId" clearable filterable placeholder="筛选用户">
                             <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                                        :value="item.userId">
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="bugReqDTO.type" clearable filterable   placeholder="类型">
+                    <div class="add-member-basic-msg fl">
+                        <el-select v-model="bugReqDTO.type" clearable filterable placeholder="类型">
                             <el-option v-for="item in typeList" :key="item.id" :label="item.name"
                                        :value="item.id">
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="bugReqDTO.isSolved" clearable filterable   placeholder="是否解决">
+                    <div class="add-member-basic-msg fl">
+                        <el-select v-model="bugReqDTO.isSolved" clearable filterable placeholder="是否解决">
                             <el-option v-for="item in isSolvedList" :key="item.id" :label="item.name"
                                        :value="item.id">
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="bugReqDTO.groupId" clearable filterable   placeholder="业务组">
+                    <div class="add-member-basic-msg fl">
+                        <el-select v-model="bugReqDTO.groupId" clearable filterable placeholder="业务组">
                             <el-option v-for="item in groupList" :key="item.id" :label="item.name"
                                        :value="item.id">
                             </el-option>
+                        </el-select>
+                    </div>
+                    <div class="add-member-basic-msg fl">
+                        <el-select v-model="bugReqDTO.demandSystemId" placeholder="反馈系统" filterable clearable>
+                            <el-option v-for="item in demandSystemList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                     <div class="add-member-basic-msg fl">
@@ -160,20 +171,13 @@
                                 placeholder="选择年份">
                         </el-date-picker>
                     </div>
-                    <!--<div class="add-member-basic-msg fl">-->
-                        <!--<el-date-picker-->
-                            <!--v-model="bugDaterange"-->
-                            <!--type="daterange"-->
-                            <!--placeholder="选择日期范围"-->
-                            <!--unlink-panels-->
-                            <!--@change="bugTimeChange1"-->
-                            <!--:picker-options="pickerOptions">-->
-                        <!--</el-date-picker>-->
-                    <!--</div>-->
                     <el-button type="primary" @click="fetchBugPage()" style="margin-left: 10px">搜索</el-button>
-                    <el-button type="primary" style="margin-left: 10px;margin-bottom: 10px;" @click="openBugDialog" v-show="permit">创建bug处理</el-button>
-                    <el-button v-loading.fullscreen.lock="fullscreenLoading"
-                               type="primary" @click="importOnlineBugVisible=true">导入</el-button>
+                    <el-button type="primary" style="margin-left: 10px;margin-bottom: 10px;" @click="openBugDialog"
+                               v-show="permit">创建bug处理
+                    </el-button>
+<!--                    <el-button v-loading.fullscreen.lock="fullscreenLoading"-->
+<!--                               type="primary" @click="importOnlineBugVisible=true">导入-->
+<!--                    </el-button>-->
                     <div class="fr">
                         <span>bug: {{BugNumData.bugNum}}</span>
                         <span>优化: {{BugNumData.optimizationNum}}</span>
@@ -188,23 +192,24 @@
                         </el-table-column>
                         <!--<el-table-column prop="origin" label="反馈人" align="center" width="130"></el-table-column>-->
                         <!--<el-table-column prop="bugNoStr" label="bug编号" align="center" width="110"></el-table-column>-->
-                        <el-table-column prop="createTime" label="反馈日期" align="center"  width="115">
+                        <el-table-column prop="createTime" label="反馈日期" align="center" width="115">
                             <template slot-scope="scope">
                                 <span>{{scope.row.discoverTime | formatDate1}}</span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="processTime" label="解决日期" align="center"  width="115">-->
-                            <!--<template slot-scope="scope">-->
-                                <!--<span>{{scope.row.processTime | formatDate1}}</span>-->
-                            <!--</template>-->
+                        <!--<template slot-scope="scope">-->
+                        <!--<span>{{scope.row.processTime | formatDate1}}</span>-->
+                        <!--</template>-->
                         <!--</el-table-column>-->
-                        <el-table-column prop="groupName" label="业务组" align="center"  width="130"></el-table-column>
+                        <el-table-column prop="groupName" label="业务组" align="center" width="130"></el-table-column>
                         <!--<el-table-column prop="demandSystemName" label="反馈系统"  width="130"></el-table-column>-->
                         <!--<el-table-column prop="accountInfo" label="账号信息"  width="130"></el-table-column>-->
                         <el-table-column prop="description" label="问题描述" align="center">
                             <template slot-scope="scope">
                                 <span v-show="scope.row.description.length<20">{{scope.row.description}}</span>
-                                <el-popover v-show="scope.row.description.length>=20" :content="scope.row.description" placement="top-start"
+                                <el-popover v-show="scope.row.description.length>=20" :content="scope.row.description"
+                                            placement="top-start"
                                             width="250"
                                             trigger="hover">
                                     <span slot="reference" style="cursor: pointer;">{{scope.row.description.substring(0,30)}}......</span>
@@ -215,7 +220,8 @@
                         <el-table-column prop="remark" label="备注" align="center" width="200">
                             <template slot-scope="scope">
                                 <span v-show="scope.row.remark.length<20">{{scope.row.remark}}</span>
-                                <el-popover v-show="scope.row.remark.length>=20" :content="scope.row.remark" placement="top-start"
+                                <el-popover v-show="scope.row.remark.length>=20" :content="scope.row.remark"
+                                            placement="top-start"
                                             width="250"
                                             trigger="hover">
                                     <span slot="reference" style="cursor: pointer;">{{scope.row.remark.substring(0,21)}}......</span>
@@ -230,7 +236,8 @@
                                 <span v-if="scope.row.type === 2">协助</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="affectScopeStr" label="影响范围" align="center" width="100"></el-table-column>
+                        <el-table-column prop="affectScopeStr" label="影响范围" align="center"
+                                         width="100"></el-table-column>
                         <el-table-column prop="users" label="相关人员" align="center" width="100"></el-table-column>
                         <!--<el-table-column prop="testers" label="测试人员" align="center" width="100"></el-table-column>-->
                         <!--<el-table-column prop="developers" label="开发人员" align="center" width="100"></el-table-column>-->
@@ -238,20 +245,26 @@
                         <el-table-column prop="isSolved" label="是否解决" align="center" width="100">
                             <template slot-scope="scope">
                                 <span v-if="scope.row.isSolved === 0">未解决
-                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information" @click="toTask(scope.row.taskId)" style="cursor: pointer;color: orangered"></i></span>
+                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information"
+                                                                                   @click="toTask(scope.row.taskId)"
+                                                                                   style="cursor: pointer;color: orangered"></i></span>
                                 </span>
                                 <span v-if="scope.row.isSolved === 1">已解决
-                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information" @click="toTask(scope.row.taskId)" style="cursor: pointer;color: orangered"></i></span>
+                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information"
+                                                                                   @click="toTask(scope.row.taskId)"
+                                                                                   style="cursor: pointer;color: orangered"></i></span>
                                 </span>
                                 <span v-if="scope.row.isSolved === 2">暂搁置
-                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information" @click="toTask(scope.row.taskId)" style="cursor: pointer;color: orangered"></i></span>
+                                    <span v-if="scope.row.taskId !== undefined"><i class="el-icon-information"
+                                                                                   @click="toTask(scope.row.taskId)"
+                                                                                   style="cursor: pointer;color: orangered"></i></span>
                                 </span>
                             </template>
                         </el-table-column>
                         <!--<el-table-column prop="remark" label="备注" align="center" width="200"></el-table-column>-->
                         <el-table-column label="操作" width="80" align="center">
                             <template slot-scope="scope">
-                                <el-button @click="bugDetail(scope.row)" type="text" size="small" >查看</el-button>
+                                <el-button @click="bugDetail(scope.row)" type="text" size="small">查看</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -275,8 +288,9 @@
                                 placeholder="选择年份">
                         </el-date-picker>
                     </div>
-                    <div class="add-member-basic-msg fl" >
-                        <el-select v-model="bugHistogramReqDTO.groupId" clearable filterable style="width: 250px" placeholder="业务组">
+                    <div class="add-member-basic-msg fl">
+                        <el-select v-model="bugHistogramReqDTO.groupId" clearable filterable style="width: 250px"
+                                   placeholder="业务组">
                             <el-option v-for="item in groupList" :key="item.id" :label="item.name"
                                        :value="item.id">
                             </el-option>
@@ -291,44 +305,67 @@
 
             </el-tab-pane>
             <el-tab-pane label="个人任务" name="personal">
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="persanalForm.userId" clearable filterable   placeholder="筛选用户">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="persanalForm.userId" clearable filterable placeholder="筛选用户">
                         <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                                    :value="item.userId"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl"><el-date-picker
-                        v-model="daterange"
-                        type="daterange"
-                        placeholder="选择日期范围"
-                        range-separator=" 至 "
-                        @change="timeChange"
-                        :picker-options="pickerOptions">
-                </el-date-picker></div>
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getPersonalData()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="persanalForm.taskType" clearable filterable placeholder="任务类型">
+                        <el-option v-for="item in taskTypeList" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="add-member-basic-msg fl">
+                    <el-date-picker
+                            v-model="persanalForm.startTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            style="width: 200px"
+                            placeholder="请选择开始时间"
+                    >
+                    </el-date-picker>
+                    <span style="font-size: 14px;color: #606266;">-</span>
+                    <el-date-picker
+                            v-model="persanalForm.endTime"
+                            align="right"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            clearable
+                            style="width: 200px"
+                            placeholder="请选择截止时间"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt=""
+                                                          @click="getPersonalData()" class="search-btn"></div>
                 <el-table :data="pesonalTaskData" border :summary-method="getSummaries" show-summary
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column prop="id" label="序号" align="center" width="80"></el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center" width="150">
                         <template slot-scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPersonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
+                            <a style="color:#20a0ff;cursor: pointer;" @click="getPersonTask(sco.row.taskId)">{{sco.row.taskName}}</a>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="taskDescription" label="任务描述" align="center" ></el-table-column>
+                    <el-table-column prop="taskTypeName" label="任务类型" align="center" width="80"></el-table-column>
+                    <el-table-column prop="taskDescription" label="任务描述" align="center"></el-table-column>
                     <el-table-column prop="description" label="工作内容" align="center"></el-table-column>
-                    <el-table-column prop="createTime" label="开始日期"  width="120"></el-table-column>
-                    <el-table-column prop="endTime" label="截止日期"  width="120"></el-table-column>
-                    <el-table-column prop="taskHours" label="工作量"  width="80"></el-table-column>
+                    <el-table-column prop="createTime" label="开始日期" width="120"></el-table-column>
+                    <el-table-column prop="endTime" label="截止日期" width="120"></el-table-column>
+                    <el-table-column prop="taskHours" label="工作量" width="80"></el-table-column>
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="周任务统计" name="week">
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="userWeekForm.jobRole" clearable filterable   placeholder="筛选角色">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="userWeekForm.jobRole" clearable filterable placeholder="筛选角色">
                         <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
                                    :value="item.roleId"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl" >
+                <div class="add-member-basic-msg fl">
                     <el-date-picker
                             v-model="userWeekForm.date"
                             :picker-options="pickerWeek"
@@ -337,15 +374,18 @@
                             placeholder="选择周">
                     </el-date-picker>
                 </div>
-                <div class="add-member-basic-msg fl"><el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl">
+                    <el-button type="text" @click="getCurrentWeek()">当前第{{currentWeek}}周</el-button>
+                </div>
 
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getUserWeekStats()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt=""
+                                                          @click="getUserWeekStats()" class="search-btn"></div>
                 <el-table :data="userWeekData" border
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column  type="index"  label="序号" align="center" width="80"></el-table-column>
-                    <el-table-column prop="userName" label="用户" align="center" width="80" >
+                    <el-table-column type="index" label="序号" align="center" width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80">
                         <template slot-scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;"  @click="getPersonStats(sco.row.userId)">{{sco.row.userName}}</a>
+                            <a style="color:#20a0ff;cursor: pointer;" @click="getPersonStats(sco.row.userId)">{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="taskName" label="任务名称" align="center">
@@ -353,23 +393,23 @@
                             <div style="white-space: pre-wrap;text-align: left">{{sco.row.taskName}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="hours" label="周工作量"  sortable  width="120">
+                    <el-table-column prop="hours" label="周工作量" sortable width="120">
                         <template slot-scope="scope">
                             <span type="text" v-show="scope.row.hours<=40">{{scope.row.hours}}</span>
                             <span type="text" style="color: red;" v-show="scope.row.hours>40">{{scope.row.hours}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="leaveHours" label="请假时间"  width="100"></el-table-column>
+                    <el-table-column prop="leaveHours" label="请假时间" width="100"></el-table-column>
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="月度统计" name="monthStats">
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="monthStats.queryDTO.jobRole" clearable filterable   placeholder="筛选角色">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="monthStats.queryDTO.jobRole" clearable filterable placeholder="筛选角色">
                         <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
                                    :value="item.roleId"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl" >
+                <div class="add-member-basic-msg fl">
                     <el-date-picker
                             v-model="monthStats.queryDTO.queryDate"
                             type="month"
@@ -377,25 +417,27 @@
                             placeholder="选择年月">
                     </el-date-picker>
                 </div>
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="getMonthStats()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt="" @click="getMonthStats()"
+                                                          class="search-btn"></div>
                 <el-table :data="monthStats.statsData" border
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column  type="index"  label="序号" align="center" width="80"></el-table-column>
-                    <el-table-column prop="userName" label="用户" align="center" width="80" ></el-table-column>
-                    <el-table-column prop="workHours" label="月工作量"  sortable  ></el-table-column>
-                    <el-table-column prop="checkHours" label="月打卡时长" sortable ></el-table-column>
-                    <el-table-column prop="totalExtraHours" label="月加班时长" sortable ></el-table-column>
-                    <el-table-column prop="leaveHours" label="月请假时长" sortable ></el-table-column>
+                    <el-table-column type="index" label="序号" align="center" width="80"></el-table-column>
+                    <el-table-column prop="userName" label="用户" align="center" width="80"></el-table-column>
+                    <el-table-column prop="workHours" label="月工作量" sortable></el-table-column>
+                    <el-table-column prop="checkHours" label="月打卡时长" sortable></el-table-column>
+                    <el-table-column prop="totalExtraHours" label="月加班时长" sortable></el-table-column>
+                    <el-table-column prop="leaveHours" label="月请假时长" sortable></el-table-column>
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="周人员投入表" name="weekUserCost">
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="userCostReqDTO.groupId" clearable filterable  placeholder="筛选团队" style="width: 200px">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="userCostReqDTO.groupId" clearable filterable placeholder="筛选团队"
+                               style="width: 200px">
                         <el-option v-for="item in groupList" :key="item.id" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl" >
+                <div class="add-member-basic-msg fl">
                     <el-date-picker
                             v-model="userCostReqDTO.date"
                             :picker-options="userCostPickerWeek"
@@ -405,16 +447,19 @@
                             placeholder="选择周">
                     </el-date-picker>
                 </div>
-                <div class="add-member-basic-msg fl"><el-button type="text" @click="getUserCostCurrentWeek()">当前第{{currentWeek}}周</el-button></div>
+                <div class="add-member-basic-msg fl">
+                    <el-button type="text" @click="getUserCostCurrentWeek()">当前第{{currentWeek}}周</el-button>
+                </div>
 
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchWeekUserCost()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt=""
+                                                          @click="fetchWeekUserCost()" class="search-btn"></div>
                 <el-table :data="weekUserCostList" border
                           :header-cell-style="{background:'#D9D9D9',color:'black'}"
                           :span-method="objectSpanMethod">
-                    <el-table-column prop="jobRoleName" label="岗位" align="center" width="130" >
+                    <el-table-column prop="jobRoleName" label="岗位" align="center" width="130">
                         <template slot-scope="sco">{{sco.row.jobRoleName}}</template>
                     </el-table-column>
-                    <el-table-column prop="userName" label="人员" align="center" width="90" >
+                    <el-table-column prop="userName" label="人员" align="center" width="90">
                         <template slot-scope="sco">
                             {{sco.row.userName}}
                         </template>
@@ -424,40 +469,45 @@
                             {{sco.row.taskName}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="workHours" label="任务工作量" align="center" width="130" >
+                    <el-table-column prop="workHours" label="任务工作量" align="center" width="130">
                         <template slot-scope="sco">
                             {{sco.row.workHours}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="totalHours" label="周工作量" align="center" width="130" >
+                    <el-table-column prop="totalHours" label="周工作量" align="center" width="130">
                         <template slot-scope="sco">
                             {{sco.row.totalHours}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="leaveHours" label="周请假时长" align="center" width="130" >
+                    <el-table-column prop="leaveHours" label="周请假时长" align="center" width="130">
                         <template slot-scope="sco">
                             {{sco.row.leaveHours}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="hourPercent" label="成员工作量饱和度" align="center" width="150" >
+                    <el-table-column prop="hourPercent" label="成员工作量饱和度" align="center" width="150">
                         <template slot-scope="sco">
                             <div v-if="sco.row.upColor === 0">{{sco.row.hourPercent}}</div>
                             <div v-if="sco.row.upColor === 1" style="color: orangered">{{sco.row.hourPercent}}</div>
-                            <div v-if="sco.row.upColor === 2" style="background-color: #FFF129;color: blue">{{sco.row.hourPercent}}</div>
+                            <div v-if="sco.row.upColor === 2" style="background-color: #FFF129;color: blue">
+                                {{sco.row.hourPercent}}
+                            </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="positionHourPercent" label="岗位工作量饱和度" align="center" width="150"  >
+                    <el-table-column prop="positionHourPercent" label="岗位工作量饱和度" align="center" width="150">
                         <template slot-scope="sco">
                             <div v-if="sco.row.ppColor === 0">{{sco.row.positionHourPercent}}</div>
-                            <div v-if="sco.row.ppColor === 1" style="color: orangered">{{sco.row.positionHourPercent}}</div>
-                            <div v-if="sco.row.ppColor === 2" style="background-color: #FFF129;color: blue;">{{sco.row.positionHourPercent}}</div>
+                            <div v-if="sco.row.ppColor === 1" style="color: orangered">{{sco.row.positionHourPercent}}
+                            </div>
+                            <div v-if="sco.row.ppColor === 2" style="background-color: #FFF129;color: blue;">
+                                {{sco.row.positionHourPercent}}
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="请假统计" name="leave"  style="" v-if="admin" >
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="leaveList.userId" clearable filterable   placeholder="筛选用户">
+            <el-tab-pane label="请假统计" name="leave" style="" v-if="admin">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="leaveList.userId" clearable filterable placeholder="筛选用户">
                         <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                                    :value="item.userId"></el-option>
                     </el-select>
@@ -483,7 +533,8 @@
                     >
                     </el-date-picker>
                 </div>
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchLeaveList()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt="" @click="fetchLeaveList()"
+                                                          class="search-btn"></div>
                 <el-table :data="leaveManage" border
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
@@ -491,14 +542,14 @@
                     <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
                     <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
                     <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
-                    <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
+                    <el-table-column prop="beginTime" label="开始日期" width="150" align="center">
                         <template slot-scope="scope">
-                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                            <div type="text" size="small">{{scope.row.beginTime | formatDate}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
+                    <el-table-column prop="endTime" label="结束日期" width="150" align="center">
                         <template slot-scope="scope">
-                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                            <div type="text" size="small">{{scope.row.endTime | formatDate}}</div>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -512,7 +563,7 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="年度总结" name="task"  style="" v-if="admin" >
+            <el-tab-pane label="年度总结" name="task" style="" v-if="admin">
                 <div class="stats-con">
                     <div class="steps" style="width: 1000px">
                         <div class="card-title-con" style="font-size: 20px;margin-top: -30px;">
@@ -546,8 +597,10 @@
                             <el-button type="primary" @click="selectFeedbackByYear">查询</el-button>
                         </div>
                         <div class="steps-body">
-                            <div id="myChart3" :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
-                            <div id="myChart6" :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <div id="myChart3"
+                                 :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <div id="myChart6"
+                                 :style="{width:'500px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
                             <!--<div v-else class="steps-body" style="height: 300px">
                                 <h1 style="text-align: center;width: 100%;font-size: 50px">暂无数据</h1>
                             </div>-->
@@ -568,7 +621,8 @@
                             <el-button type="primary" @click="selectTaskByYear4">查询</el-button>
                         </div>
                         <div class="steps-body">
-                            <div id="myChart4" :style="{width:'600px',height:'400px',left:'230px',float:'left',marginTop:'50px'}"></div>
+                            <div id="myChart4"
+                                 :style="{width:'600px',height:'400px',left:'230px',float:'left',marginTop:'50px'}"></div>
                             <!--<div v-else class="steps-body" style="height: 300px">
                                 <h1 style="text-align: center;width: 100%;font-size: 50px">暂无数据</h1>
                             </div>-->
@@ -589,11 +643,14 @@
                             <el-button type="primary" @click="selectVacationByYear">查询</el-button>
                         </div>
                         <div class="steps-body" style="height: 600px;margin-left: 120px">
-                            <div id="myChart5" :style="{width:'600px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
+                            <div id="myChart5"
+                                 :style="{width:'600px',height:'400px',left:'80px',float:'left',marginTop:'50px'}"></div>
                             <div style="width: 300px;margin-left: 100px">
                                 <ol type="A" style="margin-left: -250px">
-                                    <li><span class="task-span">年度请假总数:</span><span style="margin-left: 71px">{{vacationData.totalCount}}次</span></li>
-                                    <li><span class="task-span">年度请假时长:</span><span style="margin-left: 71px">{{vacationData.totalTime}}小时</span></li>
+                                    <li><span class="task-span">年度请假总数:</span><span style="margin-left: 71px">{{vacationData.totalCount}}次</span>
+                                    </li>
+                                    <li><span class="task-span">年度请假时长:</span><span style="margin-left: 71px">{{vacationData.totalTime}}小时</span>
+                                    </li>
                                 </ol>
                             </div>
                         </div>
@@ -616,11 +673,15 @@
                             <el-button type="primary" @click="selectTaskTimeByYear">查询</el-button>
                         </div>
                         <div class="steps-body">
-                            <div id="myChart7" :style="{width:'600px',height:'400px',left:'40px',float:'left',marginTop:'30px'}"></div>
+                            <div id="myChart7"
+                                 :style="{width:'600px',height:'400px',left:'40px',float:'left',marginTop:'30px'}"></div>
                             <div style="width: 300px;margin-top: 100px;margin-left: 100px">
                                 <div style="font-size: 16px;margin-bottom: 20px;color: black">最耗时的任务Top10</div>
                                 <ol v-for="task in top10TaskList">
-                                    <a style="cursor: pointer;text-decoration: underline" @click="fetchTaskDetail(task.id)"><li>{{task.name}}</li></a>
+                                    <a style="cursor: pointer;text-decoration: underline"
+                                       @click="fetchTaskDetail(task.id)">
+                                        <li>{{task.name}}</li>
+                                    </a>
                                 </ol>
                             </div>
                         </div>
@@ -650,7 +711,8 @@
                     >
                     </el-date-picker>
                 </div>
-                <el-button type="primary" @click="selectVacationByDate" style="margin-left: 10px" size="small">查询</el-button>
+                <el-button type="primary" @click="selectVacationByDate" style="margin-left: 10px" size="small">查询
+                </el-button>
                 <el-table :data="personVacationData" border
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" width="80"></el-table-column>
@@ -664,13 +726,15 @@
                             <pre class="pre">{{scope.row.remarkList}}</pre>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="vacationNum" label="请假次数" align="center" width="120" sortable></el-table-column>
-                    <el-table-column prop="vacationTime" label="请假时长" align="center" width="120" sortable></el-table-column>
+                    <el-table-column prop="vacationNum" label="请假次数" align="center" width="120"
+                                     sortable></el-table-column>
+                    <el-table-column prop="vacationTime" label="请假时长" align="center" width="120"
+                                     sortable></el-table-column>
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="考勤统计" name="signIn" v-if="groupLeader">
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="signInReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="signInReqDTO.userId" clearable filterable placeholder="筛选用户">
                         <el-option v-for="item in checkInUsersGroup" :key="item.userId" :label="item.userName"
                                    :value="item.userId"></el-option>
                     </el-select>
@@ -696,7 +760,8 @@
                     >
                     </el-date-picker>
                 </div>
-                <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询</el-button>
+                <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询
+                </el-button>
                 <!--<el-button type="primary" @click="showTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>-->
                 <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
                 <el-table :data="signInData" border
@@ -717,14 +782,14 @@
                             {{scope.row.checkTimeList}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="checkInTime" label="上班时间" align="center" width="120" >
+                    <el-table-column prop="checkInTime" label="上班时间" align="center" width="120">
                         <template slot-scope="scope">
                             <span style="color: red" v-if="scope.row.isRecheckIn === 1">(补)</span>
                             <span v-if="scope.row.isCheckInAfterTen === 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
                             <span v-else>{{scope.row.checkInTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120" >
+                    <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120">
                         <template slot-scope="scope">
                             <span style="color: red" v-if="scope.row.isRecheckOut === 1">(补)</span>
                             <span style="color: green" v-if="scope.row.isWorkToNextDay === 1">(+1)</span>
@@ -732,23 +797,23 @@
                             <span v-else>{{scope.row.checkOutTime | formatTime2}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="workTime" label="上班时长" align="center" width="120" >
+                    <el-table-column prop="workTime" label="上班时长" align="center" width="120">
                         <template slot-scope="scope">
                             <span v-if="scope.row.lessThanNine === 1" style="color: red">{{scope.row.workTime}}</span>
                             <span v-else>{{scope.row.workTime}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >
+                    <el-table-column prop="eWorkTime" label="加班时长" align="center" width="120">
                         <template slot-scope="scope">
                             {{scope.row.eWorkTime}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100" >
+                    <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100">
                         <template slot-scope="scope">
                             {{scope.row.eWorkHours}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="leaveTime" label="请假时长" align="center" width="100" >
+                    <el-table-column prop="leaveTime" label="请假时长" align="center" width="100">
                         <template slot-scope="scope">
                             {{scope.row.leaveTime}}
                         </template>
@@ -764,9 +829,9 @@
                     </el-pagination>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="加班申请统计" name="eWork"  style="" v-if="admin" >
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="extraWorkReqDTO.userId" clearable filterable   placeholder="筛选用户">
+            <el-tab-pane label="加班申请统计" name="eWork" style="" v-if="admin">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="extraWorkReqDTO.userId" clearable filterable placeholder="筛选用户">
                         <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                                    :value="item.userId"></el-option>
                     </el-select>
@@ -793,7 +858,8 @@
                     >
                     </el-date-picker>
                 </div>
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="searchEWorkStats()" class="search-btn"></div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt=""
+                                                          @click="searchEWorkStats()" class="search-btn"></div>
                 <el-table :data="extraWorkStatsList" border
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
                     <el-table-column type="index" label="序号" align="center" width="80">
@@ -804,14 +870,14 @@
                     <el-table-column prop="reason" label="加班原因" align="center"></el-table-column>
                     <el-table-column prop="userName" label="申请人" align="center" width="130"></el-table-column>
                     <el-table-column prop="workHours" label="时长" align="center" width="80"></el-table-column>
-                    <el-table-column prop="beginTime" label="开始日期"  width="150"  align="center">
+                    <el-table-column prop="beginTime" label="开始日期" width="150" align="center">
                         <template slot-scope="scope">
-                            <div type="text" size="small" >{{scope.row.beginTime | formatDate}}</div>
+                            <div type="text" size="small">{{scope.row.beginTime | formatDate}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="endTime" label="结束日期"  width="150"  align="center">
+                    <el-table-column prop="endTime" label="结束日期" width="150" align="center">
                         <template slot-scope="scope">
-                            <div type="text" size="small" >{{scope.row.endTime | formatDate}}</div>
+                            <div type="text" size="small">{{scope.row.endTime | formatDate}}</div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="checkRecords" label="打卡记录" align="left">
@@ -833,32 +899,34 @@
             </el-tab-pane>
             <el-tab-pane label="加班调休统计" name="restHours" v-if="admin">
                 <!--<div class="add-member-basic-msg fl" >-->
-                    <!--<el-date-picker-->
-                            <!--v-model="restHourYear"-->
-                            <!--align="right"-->
-                            <!--type="year"-->
-                            <!--placeholder="选择年份">-->
-                    <!--</el-date-picker>-->
+                <!--<el-date-picker-->
+                <!--v-model="restHourYear"-->
+                <!--align="right"-->
+                <!--type="year"-->
+                <!--placeholder="选择年份">-->
+                <!--</el-date-picker>-->
                 <!--</div>-->
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="restHourReqDTO.jobRole" clearable filterable   placeholder="筛选角色">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="restHourReqDTO.jobRole" clearable filterable placeholder="筛选角色">
                         <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
                                    :value="item.roleId"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl" >
-                    <el-select v-model="restHourReqDTO.userId" clearable filterable   placeholder="筛选用户">
+                <div class="add-member-basic-msg fl">
+                    <el-select v-model="restHourReqDTO.userId" clearable filterable placeholder="筛选用户">
                         <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                                    :value="item.userId"></el-option>
                     </el-select>
                 </div>
-                <div class="add-member-basic-msg fl" ><img src="../assets/img/u1221.png" alt="" @click="fetchAllUsersRestHours" class="search-btn"></div>
+                <div class="add-member-basic-msg fl"><img src="../assets/img/u1221.png" alt=""
+                                                          @click="fetchAllUsersRestHours" class="search-btn"></div>
                 <el-table :data="restHoursData" border
                           :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column  type="index"  label="序号"  width="80"></el-table-column>
+                    <el-table-column type="index" label="序号" width="80"></el-table-column>
                     <el-table-column prop="userName" label="用户" align="center" width="100">
                         <template slot-scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;" @click="showUserRestHoursLog2(sco.row.userId,sco.row.userName)" >{{sco.row.userName}}</a>
+                            <a style="color:#20a0ff;cursor: pointer;"
+                               @click="showUserRestHoursLog2(sco.row.userId,sco.row.userName)">{{sco.row.userName}}</a>
                         </template>
                     </el-table-column>
                     <el-table-column prop="totalRestHours" label="总调休" sortable align="center">
@@ -866,207 +934,76 @@
                             <div style="white-space: pre-wrap;text-align: center">{{sco.row.totalRestHours}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="goneRestHours" label="已用调休"  sortable  align="center">
+                    <el-table-column prop="goneRestHours" label="已用调休" sortable align="center">
                         <template slot-scope="scope">
                             <span type="text">{{scope.row.goneRestHours}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="leftRestHours" label="剩余调休" sortable align="center"></el-table-column>
-                    <el-table-column prop="endDate" label="截止日期"  width="200" align="center"></el-table-column>
+                    <el-table-column prop="endDate" label="截止日期" width="200" align="center"></el-table-column>
                 </el-table>
             </el-tab-pane>
         </el-tabs>
         <el-dialog title="创建Bug处理结果"
-                @close="closeDialog()"
-                class="aaa"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-                :visible.sync="createBugSolvingVisible">
-                <div class="ctpc-con" style="height: 400px">
+                   @close="closeDialog()"
+                   class="aaa"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   :visible.sync="createBugSolvingVisible">
+            <div class="ctpc-con" style="height: 400px">
 
-                    <div style="margin-top: 10px;float: left">
-                        <div  style="display: inline"><span class="star">*</span>反馈人</div>
-                        <div style="display: inline;margin-left: 44px">
-                            <el-select v-model="onlineBugForm.origin" placeholder="请选择" style="width: 150px;">
-                                <el-option  v-for="item in originList" :key="item.id" :label="item.name" :value="item.name"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;float: left;margin-left: 60px">
-                        <div  style="display: inline"><span class="star">*</span>问题类型</div>
-                        <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.type" placeholder="请选择" style="width: 150px;">
-                                <el-option  v-for="item in typeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 10px;float: left">
-                        <div  style="display: inline;margin-left: 10px"><span class="star">*</span>是否解决</div>
-                        <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.isSolved" placeholder="请选择" style="width: 150px;">
-                                <el-option  v-for="item in solveList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;float: left;margin-left: 0px">
-                        <div  style="display: inline"><span class="star">*</span>反馈系统</div>
-                        <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择" style="width: 200px;">
-                                <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;float: left">
-                        <div  style="display: inline;margin-left: 10px"><span class="star">*</span>影响范围</div>
-                        <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.affectScope" placeholder="请选择" style="width: 150px;">
-                                <el-option  v-for="item in affectScopeList" :key="item.id" :label="item.value" :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;float: left;margin-left: 10px">
-                        <div  style="display: inline"><span class="star">*</span>业务组</div>
-                        <div style="display: inline;margin-left: 44px">
-                            <el-select v-model="onlineBugForm.groupId" placeholder="请选择" style="width: 150px;">
-                                <el-option  v-for="item in groupList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div style="margin-top: -10px;float: left">
-                        <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>发现日期</div>
-                        <el-date-picker
-                                v-model="onlineBugForm.discoverTime"
-                                type="date"
-                                placeholder="选择发现日期"
-                                style="position: relative;margin-left: 100px">
-                        </el-date-picker>
-                    </div>
-                    <div style="margin-top: -10px;float: left;margin-left: 33px">
-                        <div style="margin-top: 20px;margin-bottom: -20px">	处理日期</div>
-                        <el-date-picker
-                                v-model="onlineBugForm.processTime"
-                                type="date"
-                                placeholder="未处理无需填写"
-                                style="position: relative;margin-left: 100px">
-                        </el-date-picker>
-                    </div>
-                    <div style="margin-top: 160px;margin-left: 10px">
-                        <div  style="display: inline">关联任务</div>
-                        <div style="display: inline;margin-left: 30px">
-                            <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px" filterable clearable>
-                                <el-option  v-for="item in doingTaskList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="margin-top: 10px"><span class="star">*</span>问题描述</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="2"></el-input>
-                    </div>
-                    <div>
-                        <div style="margin-top: 10px">账号信息</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.accountInfo" :rows="2"></el-input>
-                    </div>
-                    <div>
-                        <div style="margin-top: 10px">备注</div>
-                        <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.remark" :rows="2"></el-input>
-                    </div>
-                </div>
-
-                <div class="ctpc-member-con">
-                    <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
-                        <span class="fl ctpc-member-head">{{item.userName}}</span>
-                        <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
-                        <span style="position: absolute;right: 10px;">
-                            <el-button type="text" icon="el-icon-edit" @click="modifyMember(index,bugUsers)"></el-button>
-                            <el-button type="text" icon="el-icon-close" @click="deleteMember(index)"></el-button>
-                        </span>
-                    </div>
-                </div>
-                <div class="ctpc-add-member-detail" v-if="showAddDetail">
-                    <div class="add-member-basic">
-                        <div class="add-member-basic-list clearfix">
-                            <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
-                            <div class="add-member-basic-msg fl">
-                                <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
-                                    <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
-                                               :value="item.userId"></el-option>
-                                </el-select>
-                            </div>
-                            <div class="add-member-basic-menu add-member-basic-time fl">积分：
-                            </div>
-                            <div class="add-member-basic-msg fl">
-                                <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ctpc-btns">
-                        <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
-                        <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
-                    </div>
-                </div>
-                <div class="add-member-opt" v-show="!showAddDetail" @click="showAddDetail = !showAddDetail;">
-                    <span class="add-member-icon">+</span>
-                    <span class="add-member-msg" style="">添加成员</span>
-                </div>
-            <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveOnlineBugForm()" :loading="isSaving">立即创建</el-button>
-            <el-button @click="createBugSolvingVisible = false">取 消</el-button>
-          </span>
-        </el-dialog>
-        <el-dialog title="更新Bug处理"
-                @close="closeDialog()"
-                class="aaa"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-                :visible.sync="updateBugSolvingVisible">
-            <div class="ctpc-con" style="height: 400px;">
                 <div style="margin-top: 10px;float: left">
-                    <div  style="display: inline"><span class="star">*</span>反馈人</div>
+                    <div style="display: inline"><span class="star">*</span>反馈人</div>
                     <div style="display: inline;margin-left: 44px">
-                        <el-select v-model="onlineBugForm.origin" placeholder="请选择" style="width: 150px;">
-                            <el-option  v-for="item in originList" :key="item.id" :label="item.name" :value="item.name"></el-option>
+                        <el-select v-model="onlineBugForm.origin" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in originList" :key="item.id" :label="item.name"
+                                       :value="item.name"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div style="margin-top: 10px;float: left;margin-left: 60px">
-                    <div  style="display: inline"><span class="star">*</span>问题类型</div>
+                    <div style="display: inline"><span class="star">*</span>问题类型</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.type" placeholder="请选择" style="width: 150px;">
-                            <el-option  v-for="item in typeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-select v-model="onlineBugForm.type" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in typeList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
 
                 <div style="margin-top: 10px;float: left">
-                    <div  style="display: inline;margin-left: 10px"><span class="star">*</span>是否解决</div>
+                    <div style="display: inline;margin-left: 10px"><span class="star">*</span>是否解决</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.isSolved" placeholder="请选择" style="width: 150px;">
-                            <el-option  v-for="item in solveList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-select v-model="onlineBugForm.isSolved" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in solveList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div style="margin-top: 10px;float: left;margin-left: 0px">
-                    <div  style="display: inline"><span class="star">*</span>反馈系统</div>
+                    <div style="display: inline"><span class="star">*</span>反馈系统</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择" style="width: 200px;">
-                            <el-option  v-for="item in demandSystemList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择" style="width: 200px;" filterable clearable>
+                            <el-option v-for="item in demandSystemList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div style="margin-top: 10px;float: left">
-                    <div  style="display: inline;margin-left: 10px"><span class="star">*</span>影响范围</div>
+                    <div style="display: inline;margin-left: 10px"><span class="star">*</span>影响范围</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.affectScope" placeholder="请选择" style="width: 150px;">
-                            <el-option  v-for="item in affectScopeList" :key="item.id" :label="item.value" :value="item.id"></el-option>
+                        <el-select v-model="onlineBugForm.affectScope" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in affectScopeList" :key="item.id" :label="item.value"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div style="margin-top: 10px;float: left;margin-left: 10px">
-                    <div  style="display: inline"><span class="star">*</span>业务组</div>
+                    <div style="display: inline"><span class="star">*</span>业务组</div>
                     <div style="display: inline;margin-left: 44px">
-                        <el-select v-model="onlineBugForm.groupId" placeholder="请选择" style="width: 150px;">
-                            <el-option  v-for="item in groupList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-select v-model="onlineBugForm.groupId" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in groupList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
@@ -1080,7 +1017,158 @@
                     </el-date-picker>
                 </div>
                 <div style="margin-top: -10px;float: left;margin-left: 33px">
-                    <div style="margin-top: 20px;margin-bottom: -20px">	处理日期</div>
+                    <div style="margin-top: 20px;margin-bottom: -20px"> 处理日期</div>
+                    <el-date-picker
+                            v-model="onlineBugForm.processTime"
+                            type="date"
+                            placeholder="未处理无需填写"
+                            style="position: relative;margin-left: 100px">
+                    </el-date-picker>
+                </div>
+                <div style="margin-top: 160px;margin-left: 10px">
+                    <div style="display: inline">关联任务</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px" filterable
+                                   clearable>
+                            <el-option v-for="item in doingTaskList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div>
+                    <div style="margin-top: 10px"><span class="star">*</span>问题描述</div>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%"
+                              v-model="onlineBugForm.description" :rows="2"></el-input>
+                </div>
+                <div>
+                    <div style="margin-top: 10px">账号信息</div>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%"
+                              v-model="onlineBugForm.accountInfo" :rows="2"></el-input>
+                </div>
+                <div>
+                    <div style="margin-top: 10px">备注</div>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%"
+                              v-model="onlineBugForm.remark" :rows="2"></el-input>
+                </div>
+            </div>
+
+            <div class="ctpc-member-con">
+                <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers" :class="item.cssClass">
+                    <span class="fl ctpc-member-head">{{item.userName}}</span>
+                    <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
+                    <span style="position: absolute;right: 10px;">
+                            <el-button type="text" icon="el-icon-edit"
+                                       @click="modifyMember(index,bugUsers)"></el-button>
+                            <el-button type="text" icon="el-icon-close" @click="deleteMember(index)"></el-button>
+                        </span>
+                </div>
+            </div>
+            <div class="ctpc-add-member-detail" v-if="showAddDetail">
+                <div class="add-member-basic">
+                    <div class="add-member-basic-list clearfix">
+                        <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
+                        <div class="add-member-basic-msg fl">
+                            <el-select v-model="addMemberIndex.userId" filterable placeholder="请选择"
+                                       @change="stepUserChange">
+                                <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
+                                           :value="item.userId"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="add-member-basic-menu add-member-basic-time fl">积分：
+                        </div>
+                        <div class="add-member-basic-msg fl">
+                            <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6"
+                                   style="width:80px">
+                        </div>
+                    </div>
+                </div>
+                <div class="ctpc-btns">
+                    <input type="button" class="ctpc-cancel" @click="cancelAddMember" value="取消">
+                    <input type="button" class="ctpc-save" @click="saveAddMember" value="确定">
+                </div>
+            </div>
+            <div class="add-member-opt" v-show="!showAddDetail" @click="showAddDetail = !showAddDetail;">
+                <span class="add-member-icon">+</span>
+                <span class="add-member-msg" style="">添加成员</span>
+            </div>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveOnlineBugForm()" :loading="isSaving">立即创建</el-button>
+            <el-button @click="createBugSolvingVisible = false">取 消</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog title="更新Bug处理"
+                   @close="closeDialog()"
+                   class="aaa"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   :visible.sync="updateBugSolvingVisible">
+            <div class="ctpc-con" style="height: 400px;">
+                <div style="margin-top: 10px;float: left">
+                    <div style="display: inline"><span class="star">*</span>反馈人</div>
+                    <div style="display: inline;margin-left: 44px">
+                        <el-select v-model="onlineBugForm.origin" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in originList" :key="item.id" :label="item.name"
+                                       :value="item.name"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;float: left;margin-left: 60px">
+                    <div style="display: inline"><span class="star">*</span>问题类型</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.type" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in typeList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 10px;float: left">
+                    <div style="display: inline;margin-left: 10px"><span class="star">*</span>是否解决</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.isSolved" placeholder="请选择" style="width: 150px;" filterable clearable>
+                            <el-option v-for="item in solveList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;float: left;margin-left: 0px">
+                    <div style="display: inline"><span class="star">*</span>反馈系统</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.demandSystemId" placeholder="请选择" style="width: 200px;" filterable clearable>
+                            <el-option v-for="item in demandSystemList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;float: left">
+                    <div style="display: inline;margin-left: 10px"><span class="star">*</span>影响范围</div>
+                    <div style="display: inline;margin-left: 30px">
+                        <el-select v-model="onlineBugForm.affectScope" placeholder="请选择" style="width: 150px;">
+                            <el-option v-for="item in affectScopeList" :key="item.id" :label="item.value"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;float: left;margin-left: 10px">
+                    <div style="display: inline"><span class="star">*</span>业务组</div>
+                    <div style="display: inline;margin-left: 44px">
+                        <el-select v-model="onlineBugForm.groupId" placeholder="请选择" style="width: 150px;">
+                            <el-option v-for="item in groupList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div style="margin-top: -10px;float: left">
+                    <div style="margin-top: 20px;margin-bottom: -20px"><span class="star">*</span>发现日期</div>
+                    <el-date-picker
+                            v-model="onlineBugForm.discoverTime"
+                            type="date"
+                            placeholder="选择发现日期"
+                            style="position: relative;margin-left: 100px">
+                    </el-date-picker>
+                </div>
+                <div style="margin-top: -10px;float: left;margin-left: 33px">
+                    <div style="margin-top: 20px;margin-bottom: -20px"> 处理日期</div>
                     <el-date-picker
                             v-model="onlineBugForm.processTime"
                             type="date"
@@ -1089,29 +1177,34 @@
                     </el-date-picker>
                 </div>
                 <div style="margin-top: 150px;margin-left: 10px">
-                    <div  style="display: inline">关联任务</div>
+                    <div style="display: inline">关联任务</div>
                     <div style="display: inline;margin-left: 30px">
-                        <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px" filterable clearable>
-                            <el-option  v-for="item in doingTaskList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        <el-select v-model="onlineBugForm.taskId" placeholder="请选择关联任务" style="width: 555px" filterable
+                                   clearable>
+                            <el-option v-for="item in doingTaskList" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div>
                     <div style="margin-top: 10px"><span class="star">*</span>问题描述</div>
-                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.description" :rows="2"></el-input>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%"
+                              v-model="onlineBugForm.description" :rows="2"></el-input>
                 </div>
                 <div>
                     <div style="margin-top: 10px">账号信息</div>
-                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.accountInfo" :rows="2"></el-input>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%"
+                              v-model="onlineBugForm.accountInfo" :rows="2"></el-input>
                 </div>
                 <div>
                     <div style="margin-top: 10px">备注</div>
-                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%" v-model="onlineBugForm.remark" :rows="2"></el-input>
+                    <el-input type="textarea" style="position: relative;margin-left: 100px;margin-top:-20px;width: 80%"
+                              v-model="onlineBugForm.remark" :rows="2"></el-input>
                 </div>
             </div>
 
             <div class="ctpc-member-con">
-                <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers"  :class="item.cssClass">
+                <div class="ctpc-member-list clearfix in" v-for="(item,index) in bugUsers" :class="item.cssClass">
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
                     <span style="position: absolute;right: 10px;">
@@ -1125,7 +1218,8 @@
                     <div class="add-member-basic-list clearfix">
                         <div class="add-member-basic-menu fl"><span class="star">*</span>姓名：</div>
                         <div class="add-member-basic-msg fl">
-                            <el-select v-model="addMemberIndex.userId" filterable  placeholder="请选择" @change="stepUserChange">
+                            <el-select v-model="addMemberIndex.userId" filterable placeholder="请选择"
+                                       @change="stepUserChange">
                                 <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                                            :value="item.userId"></el-option>
                             </el-select>
@@ -1133,7 +1227,8 @@
                         <div class="add-member-basic-menu add-member-basic-time fl"><span class="star">*</span>积分：
                         </div>
                         <div class="add-member-basic-msg fl">
-                            <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6" style="width:80px">
+                            <input class="member-time-count" v-model="addMemberIndex.integral" :maxlength="6"
+                                   style="width:80px">
                         </div>
                     </div>
                 </div>
@@ -1153,13 +1248,14 @@
         </el-dialog>
 
         <el-dialog title="Bug处理结果详情" size="tiny" :close-on-click-modal="false"
-            :close-on-press-escape="false"
-            :visible.sync="bugDetailVisible">
+                   :close-on-press-escape="false"
+                   :visible.sync="bugDetailVisible">
             <el-form>
                 <el-form-item class="task-form" label="bug编号：">{{bugDetailForm.bugNoStr}}</el-form-item>
                 <el-form-item class="task-form" label="关联任务：">{{bugDetailForm.taskName}}</el-form-item>
                 <el-form-item class="task-form" label="反馈人：">{{bugDetailForm.origin}}</el-form-item>
-                <el-form-item class="task-form" label="反馈日期：">{{bugDetailForm.discoverTime | formatDate1}}</el-form-item>
+                <el-form-item class="task-form" label="反馈日期：">{{bugDetailForm.discoverTime | formatDate1}}
+                </el-form-item>
                 <el-form-item class="task-form" label="解决日期：">{{bugDetailForm.processTime | formatDate1}}</el-form-item>
                 <el-form-item class="task-form" label="反馈系统：">{{bugDetailForm.demandSystemName}}</el-form-item>
                 <el-form-item class="task-form" label="业务组：">{{bugDetailForm.groupName}}</el-form-item>
@@ -1184,12 +1280,12 @@
                 <el-form-item class="task-form" label="备注：">
                     {{bugDetailForm.remark}}
                 </el-form-item>
-                <div class="ctpc-member-list clearfix"  v-for="(item,index) in bugDetailForm.bugUsers">
+                <div class="ctpc-member-list clearfix" v-for="(item,index) in bugDetailForm.bugUsers">
                     <span class="fl ctpc-member-head">{{item.userName}}</span>
                     <span class="fl ctpc-member-job-time">积分:{{item.integral}}</span>
                 </div>
             </el-form>
-            <span slot="footer" class="dialog-footer" >
+            <span slot="footer" class="dialog-footer">
                 <div v-show="permit">
                     <el-tooltip content="编辑该任务" placement="top">
                      <el-button type="primary" @click="editBugDetail(bugDetailForm)">编辑</el-button>
@@ -1203,24 +1299,24 @@
         </el-dialog>
 
         <el-dialog title="任务详情"
-                top="10%"
-                :visible.sync="showTaskVisible"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-                custom-class="myDialog"
-                size="tiny">
+                   top="10%"
+                   :visible.sync="showTaskVisible"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   custom-class="myDialog"
+                   size="tiny">
             <el-form>
                 <el-form-item class="task-form" label="任务名称：">{{taskDetail.name}}</el-form-item>
                 <!--<el-form-item class="task-form" label="任务描述：">{{taskDetail.description}}</el-form-item>-->
                 <el-form-item class="task-form" label="项目：">{{taskDetail.projectName}}</el-form-item>
                 <el-form-item class="task-form" label="阶段：">{{taskDetail.stageName}}</el-form-item>
-                <el-form-item class="task-form"  label="优先级："><span v-for="item in priorityList"
-                                                                    v-if="item.value === taskDetail.priority">{{item.label}}</span>
+                <el-form-item class="task-form" label="优先级："><span v-for="item in priorityList"
+                                                                   v-if="item.value === taskDetail.priority">{{item.label}}</span>
                 </el-form-item>
                 <el-form-item class="task-form" label="开始时间：">{{taskDetail.createTime | formatDate2}}</el-form-item>
                 <el-form-item class="task-form" label="截止时间：">{{taskDetail.endTime | formatDate2}}</el-form-item>
                 <el-form-item class="task-form" label="完成时间：">{{taskDetail.completeTime | formatDate2}}</el-form-item>
-                <el-form-item label="任务总时长" >{{taskTotalTime}}小时</el-form-item>
+                <el-form-item label="任务总时长">{{taskTotalTime}}小时</el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="toTask(taskDetail.id)">跳转到任务</el-button>
@@ -1235,12 +1331,14 @@
                 <el-option v-for="item in workMonths" :key="item.id" :label="item.name"
                            :value="item.id"></el-option>
             </el-select>
-            <el-select v-model="eWorkTimeUserId" clearable filterable   placeholder="筛选用户">
+            <el-select v-model="eWorkTimeUserId" clearable filterable placeholder="筛选用户">
                 <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                            :value="item.userId"></el-option>
             </el-select>
-            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{eWorkTimeUserName}}</span></div>
-            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">加班总时长：<span>{{totalEWorkTime}}</span></div>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{eWorkTimeUserName}}</span>
+            </div>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">加班总时长：<span>{{totalEWorkTime}}</span>
+            </div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="success" @click="fetchTotalEWorkTime">查询</el-button>
             </span>
@@ -1264,7 +1362,7 @@
         <el-dialog title="导入线上bug" :visible.sync="importOnlineBugVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" size="tiny"
                    @close="closeOnlineBugVisible"
-                    width="400px">
+                   width="400px">
             <el-upload
                     ref="onlineBugData"
                     action=""
@@ -1295,16 +1393,18 @@
         <el-dialog title="修改用户调休时长" :visible.sync="modifyUserRestHoursVisible" custom-class="myDialog"
                    :close-on-click-modal="false" :close-on-press-escape="false" top="25%" size="tiny"
                    @close="closeRestHoursDialog">
-            <el-select v-model="restHoursUserId" clearable filterable   placeholder="筛选用户" @change="fetchUserRestHours">
+            <el-select v-model="restHoursUserId" clearable filterable placeholder="筛选用户" @change="fetchUserRestHours">
                 <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
                            :value="item.userId"></el-option>
             </el-select>
-            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{restHoursUserName}}</span></div>
+            <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">用户：<span>{{restHoursUserName}}</span>
+            </div>
             <div class="mic-item-title" style="font-size: 14px;margin-top: 10px">
                 <span style="margin-left: 0px">截止上月底调休时长: </span>
-                <el-input style="width:100px;margin-left: 22px" v-model="restHours" :maxlength="5" type="number"></el-input>
+                <el-input style="width:100px;margin-left: 22px" v-model="restHours" :maxlength="5"
+                          type="number"></el-input>
                 <!--<span style="margin-left: 0px;cursor: pointer;text-decoration: underline"-->
-                      <!--@click="showUserRestHoursLog">查看详情</span>-->
+                <!--@click="showUserRestHoursLog">查看详情</span>-->
             </div>
             <span slot="footer" class="dialog-footer">
                 <!--<el-button type="primary" @click="fetchUserRestHours">查询</el-button>-->
@@ -1324,9 +1424,9 @@
                 <el-table-column prop="userName" label="用户" align="center" width="100"></el-table-column>
                 <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
                 <el-table-column prop="content" label="事由" align="center"></el-table-column>
-                <el-table-column prop="recordTime" label="记录日期"  width="200"  align="center">
+                <el-table-column prop="recordTime" label="记录日期" width="200" align="center">
                     <template slot-scope="scope">
-                        <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
+                        <div type="text" size="small">{{scope.row.recordTime | formatTime}}</div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -1356,9 +1456,9 @@
                 <el-table-column prop="userName" label="用户" align="center" width="100"></el-table-column>
                 <el-table-column prop="restHours" label="调整时长" align="center" width="100"></el-table-column>
                 <el-table-column prop="content" label="事由" align="center"></el-table-column>
-                <el-table-column prop="recordTime" label="记录日期"  width="200"  align="center">
+                <el-table-column prop="recordTime" label="记录日期" width="200" align="center">
                     <template slot-scope="scope">
-                        <div type="text" size="small" >{{scope.row.recordTime | formatTime}}</div>
+                        <div type="text" size="small">{{scope.row.recordTime | formatTime}}</div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -1372,10 +1472,10 @@
                 </el-pagination>
             </div>
         </el-dialog>
-        <el-dialog  title="新增个人加班/调休记录"  size="tiny"  :close-on-click-modal="false"
-                    :close-on-press-escape="false" :visible.sync="editRestHoursVisible"
-        @close="cancelAddRestHoursLog">
-            <el-form :model="userRestHoursLogForm"  ref="userRestHoursLogForm" label-width="80px">
+        <el-dialog title="新增个人加班/调休记录" size="tiny" :close-on-click-modal="false"
+                   :close-on-press-escape="false" :visible.sync="editRestHoursVisible"
+                   @close="cancelAddRestHoursLog">
+            <el-form :model="userRestHoursLogForm" ref="userRestHoursLogForm" label-width="80px">
                 <el-form-item label="用户 ">
                     <span>{{this.userRestHoursLogReqDTO2.userName}}</span>
                 </el-form-item>
@@ -1404,7 +1504,8 @@
                    :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="900px">
             <el-form label-position="left" label-width="120px">
                 <el-form-item label="发版计划名称：">
-                    <el-input v-model="weekPublishStat.addPublishPlanDTO.wppName" placeholder="填写发布计划名称" style="width: 740px"></el-input>
+                    <el-input v-model="weekPublishStat.addPublishPlanDTO.wppName" placeholder="填写发布计划名称"
+                              style="width: 740px"></el-input>
                 </el-form-item>
                 <el-form-item label="发版时间：">
                     <el-date-picker
@@ -1433,21 +1534,22 @@
                 </el-form-item>
                 <el-form-item label="发布平台：">
                     <!--<el-select-->
-                            <!--v-model="weekPublishStat.addPublishPlanDTO.platformIds"-->
-                            <!--multiple-->
-                            <!--filterable-->
-                            <!--clearable-->
-                            <!--placeholder="请选择平台"-->
-                            <!--style="width: 500px;">-->
-                        <!--<el-option-->
-                                <!--v-for="item in platformList"-->
-                                <!--:key="item.id"-->
-                                <!--:label="item.name"-->
-                                <!--:value="item.id">-->
-                        <!--</el-option>-->
+                    <!--v-model="weekPublishStat.addPublishPlanDTO.platformIds"-->
+                    <!--multiple-->
+                    <!--filterable-->
+                    <!--clearable-->
+                    <!--placeholder="请选择平台"-->
+                    <!--style="width: 500px;">-->
+                    <!--<el-option-->
+                    <!--v-for="item in platformList"-->
+                    <!--:key="item.id"-->
+                    <!--:label="item.name"-->
+                    <!--:value="item.id">-->
+                    <!--</el-option>-->
                     <!--</el-select>-->
                     <div class="clearfix">
-                        <div class="fl" style="width: 100px;line-height: 32px;border: 1px solid #ebeef5;border-radius: 4px;height: 303px">
+                        <div class="fl"
+                             style="width: 100px;line-height: 32px;border: 1px solid #ebeef5;border-radius: 4px;height: 303px">
                             <h4 style="padding: 0 10px;color: #000000;background-color: #f5f7fa;height: 40px">分组</h4>
                             <ul style="overflow: auto;margin-left: 5px">
                                 <li v-for="li in weekPublishStat.groupMarkList" :key="li.id"
@@ -1479,11 +1581,13 @@
                 </el-form-item>
                 <el-form-item label="多次发版：">
                     <div class="ctpc-member-con">
-                        <div class="ctpc-member-list clearfix in" v-for="(item,index) in weekPublishStat.platformUserList"  :class="item.cssClass">
+                        <div class="ctpc-member-list clearfix in"
+                             v-for="(item,index) in weekPublishStat.platformUserList" :class="item.cssClass">
                             <span class="fl" style="margin-left: 10px">平台:{{item.platformName}}</span>
                             <span class="fr" style="margin-left: 10px">用户:{{item.userName}}</span>
                             <span style="position: absolute;right: 10px;">
-                        <el-button type="text" icon="el-icon-edit" @click="modifyPlatformUser(index,weekPublishStat.platformUserList)"></el-button>
+                        <el-button type="text" icon="el-icon-edit"
+                                   @click="modifyPlatformUser(index,weekPublishStat.platformUserList)"></el-button>
                         <el-button type="text" icon="el-icon-delete" @click="deletePlatformUser(index)"></el-button>
                     </span>
                         </div>
@@ -1530,7 +1634,8 @@
                     </div>
                 </el-form-item>
                 <el-form-item label="备注：">
-                    <el-input v-model="weekPublishStat.addPublishPlanDTO.remark" placeholder="填写备注" style="width: 740px"></el-input>
+                    <el-input v-model="weekPublishStat.addPublishPlanDTO.remark" placeholder="填写备注"
+                              style="width: 740px"></el-input>
                 </el-form-item>
             </el-form>
             <div style="text-align: right">
@@ -1542,7 +1647,8 @@
                    :close-on-click-modal="false" :close-on-press-escape="false" size="small" width="900px">
             <el-form label-width="120px" label-position="left">
                 <el-form-item label="发版计划名称：">
-                    <el-input v-model="weekPublishStat.editPublishPlanDTO.wppName" placeholder="填写发版计划名称" style="width: 740px"></el-input>
+                    <el-input v-model="weekPublishStat.editPublishPlanDTO.wppName" placeholder="填写发版计划名称"
+                              style="width: 740px"></el-input>
                 </el-form-item>
                 <el-form-item label="发版时间：">
                     <el-date-picker
@@ -1571,21 +1677,22 @@
                 </el-form-item>
                 <el-form-item label="发布平台：">
                     <!--<el-select-->
-                            <!--v-model="weekPublishStat.editPublishPlanDTO.platformIds"-->
-                            <!--multiple-->
-                            <!--filterable-->
-                            <!--clearable-->
-                            <!--placeholder="请选择平台"-->
-                            <!--style="width: 500px;">-->
-                        <!--<el-option-->
-                                <!--v-for="item in platformList"-->
-                                <!--:key="item.id"-->
-                                <!--:label="item.name"-->
-                                <!--:value="item.id">-->
-                        <!--</el-option>-->
+                    <!--v-model="weekPublishStat.editPublishPlanDTO.platformIds"-->
+                    <!--multiple-->
+                    <!--filterable-->
+                    <!--clearable-->
+                    <!--placeholder="请选择平台"-->
+                    <!--style="width: 500px;">-->
+                    <!--<el-option-->
+                    <!--v-for="item in platformList"-->
+                    <!--:key="item.id"-->
+                    <!--:label="item.name"-->
+                    <!--:value="item.id">-->
+                    <!--</el-option>-->
                     <!--</el-select>-->
                     <div class="clearfix">
-                        <div class="fl" style="width: 100px;line-height: 32px;border: 1px solid #ebeef5;border-radius: 4px;height: 303px">
+                        <div class="fl"
+                             style="width: 100px;line-height: 32px;border: 1px solid #ebeef5;border-radius: 4px;height: 303px">
                             <h4 style="padding: 0 10px;color: #000000;background-color: #f5f7fa;height: 40px">分组</h4>
                             <ul style="overflow: auto;margin-left: 5px">
                                 <li v-for="li in weekPublishStat.groupMarkList" :key="li.id"
@@ -1617,11 +1724,13 @@
                 </el-form-item>
                 <el-form-item label="多次发版：">
                     <div class="ctpc-member-con">
-                        <div class="ctpc-member-list clearfix in" v-for="(item,index) in weekPublishStat.platformUserList"  :class="item.cssClass">
+                        <div class="ctpc-member-list clearfix in"
+                             v-for="(item,index) in weekPublishStat.platformUserList" :class="item.cssClass">
                             <span class="fl" style="margin-left: 10px">平台:{{item.platformName}}</span>
                             <span class="fr" style="margin-left: 10px">用户:{{item.userName}}</span>
                             <span style="position: absolute;right: 10px;">
-                        <el-button type="text" icon="el-icon-edit" @click="modifyPlatformUser(index,weekPublishStat.platformUserList)"></el-button>
+                        <el-button type="text" icon="el-icon-edit"
+                                   @click="modifyPlatformUser(index,weekPublishStat.platformUserList)"></el-button>
                         <el-button type="text" icon="el-icon-delete" @click="deletePlatformUser(index)"></el-button>
                     </span>
                         </div>
@@ -1668,7 +1777,8 @@
                     </div>
                 </el-form-item>
                 <el-form-item label="备注：">
-                    <el-input v-model="weekPublishStat.editPublishPlanDTO.remark" placeholder="填写备注" style="width: 740px"></el-input>
+                    <el-input v-model="weekPublishStat.editPublishPlanDTO.remark" placeholder="填写备注"
+                              style="width: 740px"></el-input>
                 </el-form-item>
             </el-form>
 
@@ -1694,77 +1804,82 @@
         name: 'IntegralHistory',
         data() {
             return {
-                isSaving:false,
-                activeName:'stat',
-                createBugSolvingVisible:false,
-                updateBugSolvingVisible:false,
-                statsData:[],
-                pesonalTaskData:[],
-                modifyId:'',
-                bugList:{
-                  userId:'',
-                  startTime:'',
-                  endTime:'',
-                  pageNum:1,
+                isSaving: false,
+                activeName: 'stat',
+                createBugSolvingVisible: false,
+                updateBugSolvingVisible: false,
+                statsData: [],
+                pesonalTaskData: [],
+                modifyId: '',
+                bugList: {
+                    userId: '',
+                    startTime: '',
+                    endTime: '',
+                    pageNum: 1,
                 },
-                oldBugList:{
-                    userId:'',
-                    startTime:'',
-                    endTime:'',
-                    pageNum:1,
+                oldBugList: {
+                    userId: '',
+                    startTime: '',
+                    endTime: '',
+                    pageNum: 1,
                 },
-                leaveList:{
-                    userId:'',
-                    beginTime:'',
-                    endTime:'',
-                    pageNum:1,
+                leaveList: {
+                    userId: '',
+                    beginTime: '',
+                    endTime: '',
+                    pageNum: 1,
                 },
-                bugFormPage:{
+                bugFormPage: {
                     pageSize: 10,
                     total: 0,
                 },
-                oldBugFormPage:{
+                oldBugFormPage: {
                     pageSize: 10,
                     total: 0,
                 },
-                leaveFormPage:{
+                leaveFormPage: {
                     pageSize: 10,
                     total: 0,
                 },
-                bugForm:{
-                    projectId:'',
-                    description:'',
-                    createTime:'',
-                    processTime:''
+                bugForm: {
+                    projectId: '',
+                    description: '',
+                    createTime: '',
+                    processTime: ''
                 },
-                persanalForm:{
-                    userId:'',
-                    startTime:'',
-                    endTime:'',
+                persanalForm: {
+                    userId: null,
+                    taskType: null,
+                    startTime: '',
+                    endTime: '',
                 },
-                daterange:'',
-                bugDaterange:'',
-                bugDaterange2:'',
-                leaveDaterange:'',
-                leaveBeginTime:null,
-                leaveEndTime:null,
-                bugDetailForm:{},
-                bugManage:[],
-                leaveManage:[],
-                addMemberIndex:{
-                    index:'',
-                    userId:'',
-                    integral:0,
-                    userName:'',
+                daterange: '',
+                bugDaterange: '',
+                bugDaterange2: '',
+                leaveDaterange: '',
+                leaveBeginTime: null,
+                leaveEndTime: null,
+                bugDetailForm: {},
+                bugManage: [],
+                leaveManage: [],
+                addMemberIndex: {
+                    index: '',
+                    userId: '',
+                    integral: 0,
+                    userName: '',
                 },
                 stepTemp: {},
-                bugDetailVisible:false,
-                projectForm:[],
-                userList:[],
-                checkInUsers:[],
-                checkInUsersGroup:[],
-                bugUsers:[],
-                showAddDetail:false,
+                bugDetailVisible: false,
+                projectForm: [],
+                userList: [],
+                checkInUsers: [],
+                taskTypeList: [
+                    {id: 1, name: '个人任务'},
+                    {id: 2, name: '多人任务'}
+                ],
+                checkInUsersGroup: [],
+                bugUsers: [],
+                showAddDetail: false,
                 statsPage: {
                     layout: "total, pager",
                     currentPage: 1,
@@ -1772,15 +1887,15 @@
                     totals: 0,
                     pageNum: 0
                 },
-                userWeekForm:{
-                    weekNumber:'',
-                    date:'',
-                    jobRole:''
+                userWeekForm: {
+                    weekNumber: '',
+                    date: '',
+                    jobRole: ''
                 },
-                userWeekData:[],
-                currentWeek:moment().week(),
-                lastWeek:moment().week()-1,
-                nextWeek:moment().week()+1,
+                userWeekData: [],
+                currentWeek: moment().week(),
+                lastWeek: moment().week() - 1,
+                nextWeek: moment().week() + 1,
                 pickerOptions: {
                     shortcuts: [{
                         text: '本周',
@@ -1811,91 +1926,92 @@
                         }
                     }]
                 },
-                pickerWeek:{
-                    firstDayOfWeek:1
+                pickerWeek: {
+                    firstDayOfWeek: 1
                 },
 
                 // sch --
-                whichYear1:'2019',
-                whichYear2:'2019',
-                whichYear4:'2019',
-                whichYear5:'2019',
-                whichYear7:'2019',
-                taskReqDTO:{
-                    whichYear:'2019'
+                whichYear1: '2019',
+                whichYear2: '2019',
+                whichYear4: '2019',
+                whichYear5: '2019',
+                whichYear7: '2019',
+                taskReqDTO: {
+                    whichYear: '2019'
                 },
-                fbReqDTO:{
-                    whichYear:'2019'
+                fbReqDTO: {
+                    whichYear: '2019'
                 },
-                taskMonthReqDTO:{
-                    whichYear:'2019'
+                taskMonthReqDTO: {
+                    whichYear: '2019'
                 },
-                taskTimeReqDTO:{
-                    whichYear:'2019'
+                taskTimeReqDTO: {
+                    whichYear: '2019'
                 },
-                taskData1:[],
-                taskData2:[],
-                taskLegend:[],
-                projectTaskNum:0,
-                priorityTask:{
-                    totalNum:0,
-                    normalNum:0,
-                    urgentNum:0,
-                    veryUrgentNum:0
+                taskData1: [],
+                taskData2: [],
+                taskLegend: [],
+                projectTaskNum: 0,
+                priorityTask: {
+                    totalNum: 0,
+                    normalNum: 0,
+                    urgentNum: 0,
+                    veryUrgentNum: 0
                 },
-                projectTaskList:[],
-                feedbackMonthList:[],
-                feedbackTotal:0,
-                fbTotalCount:0,
-                fromCoach:0,
-                other:0,
-                feedbackData:[],
-                taskMonthList:[],
-                taskTotal:0,
+                projectTaskList: [],
+                feedbackMonthList: [],
+                feedbackTotal: 0,
+                fbTotalCount: 0,
+                fromCoach: 0,
+                other: 0,
+                feedbackData: [],
+                taskMonthList: [],
+                taskTotal: 0,
 
-                vacationReqDTO:{
-                    whichYear:'2019'
+                vacationReqDTO: {
+                    whichYear: '2019'
                 },
-                vacationData:{
-                    totalCount:0,
-                    totalTime:0
+                vacationData: {
+                    totalCount: 0,
+                    totalTime: 0
                 },
-                vacationCountList:[],
-                vacationTimeList:[],
-                beginTime:null,
-                endTime:null,
-                personVacationData:[],
-                personVacationReqDTO:{
-                    beginTime:null,
-                    endTime:null
+                vacationCountList: [],
+                vacationTimeList: [],
+                beginTime: null,
+                endTime: null,
+                personVacationData: [],
+                personVacationReqDTO: {
+                    beginTime: null,
+                    endTime: null
                 },
 
                 //新增bug相关
-                originList:[
-                    {id:1,name:'冯丽芸'},
-                    {id:2,name:'方迪智'},
-                    {id:3,name:'蔡雁'},
-                    {id:4,name:'刘利利'},
-                    {id:5,name:'冷毅剑'},
-                    {id:6,name:'张怡硕'},
-                    {id:7,name:'杜仲'},
-                    {id:8,name:'万永强'},
-                    {id:9,name:'邦昭强'},
-                    {id:10,name:'题库老师'},
-                    {id:11,name:'知春'},
-                    {id:12,name:'直播老师'}
+                originList: [
+                    {id: 1, name: '冯丽芸'},
+                    {id: 2, name: '方迪智'},
+                    {id: 3, name: '蔡雁'},
+                    {id: 4, name: '刘利利'},
+                    {id: 5, name: '冷毅剑'},
+                    {id: 6, name: '张怡硕'},
+                    {id: 7, name: '杜仲'},
+                    {id: 8, name: '万永强'},
+                    {id: 9, name: '邦昭强'},
+                    {id: 10, name: '题库老师'},
+                    {id: 11, name: '知春'},
+                    {id: 12, name: '直播老师'},
+                    {id: 13, name: '商务'}
                 ],
-                typeList:[
-                    {id:0,name:'bug'},
-                    {id:1,name:'优化'},
-                    {id:2,name:'协助'}
+                typeList: [
+                    {id: 0, name: 'bug'},
+                    {id: 1, name: '优化'},
+                    {id: 2, name: '协助'}
                 ],
-                solveList:[
-                    {id:0,name:'未解决'},
-                    {id:1,name:'已解决'},
-                    {id:2,name:'暂搁置'}
+                solveList: [
+                    {id: 0, name: '未解决'},
+                    {id: 1, name: '已解决'},
+                    {id: 2, name: '暂搁置'}
                 ],
-                demandSystemList:[
+                demandSystemList: [
                     // {id:1,name:'知心慧学'},
                     // {id:2,name:'教师端'},
                     // {id:3,name:'安卓教师端'},
@@ -1919,175 +2035,176 @@
                     // {id:21,name:'IOS家长端'},
                     // {id:22,name:'校长端'},
                 ],
-                onlineBugForm:{
-                    projectId:'',
-                    taskId:'',
-                    discoverTime:'',
-                    processTime:'',
-                    description:'',
-                    origin:'',
-                    accountInfo:'',
-                    type:0,
-                    demandSystemId:'',
-                    demandSystemName:'',
-                    remark:'',
-                    isSolved:0,
-                    groupId:null,
-                    affectScope:null
+                onlineBugForm: {
+                    projectId: '',
+                    taskId: '',
+                    discoverTime: '',
+                    processTime: '',
+                    description: '',
+                    origin: '',
+                    accountInfo: '',
+                    type: 0,
+                    demandSystemId: '',
+                    demandSystemName: '',
+                    remark: '',
+                    isSolved: 0,
+                    groupId: null,
+                    affectScope: null
                 },
-                affectScopeList:[
-                    {id:0,value:'单个学校'},
-                    {id:1,value:'多个学校'},
-                    {id:2,value:'所有学校'}
+                affectScopeList: [
+                    {id: 0, value: '单个学校'},
+                    {id: 1, value: '多个学校'},
+                    {id: 2, value: '所有学校'}
                 ],
-                bugReqDTO:{
-                    userId:null,
-                    beginTime:null,
-                    endTime:null,
-                    type:null,
-                    isSolved:null,
-                    groupId:null,
-                    year:null,
-                    pageNum:1,
-                    departmentId:null
+                bugReqDTO: {
+                    userId: null,
+                    beginTime: null,
+                    endTime: null,
+                    type: null,
+                    isSolved: null,
+                    groupId: null,
+                    year: null,
+                    demandSystemId: null,
+                    pageNum: 1,
+                    departmentId: null
                 },
-                bugTypeList:[
-                    {id:0,name:'bug'},
-                    {id:1,name:'优化'},
-                    {id:2,name:'协助'}
+                bugTypeList: [
+                    {id: 0, name: 'bug'},
+                    {id: 1, name: '优化'},
+                    {id: 2, name: '协助'}
                 ],
-                isSolvedList:[
-                    {id:0,name:'未解决'},
-                    {id:1,name:'已解决'},
-                    {id:2,name:'暂搁置'}
+                isSolvedList: [
+                    {id: 0, name: '未解决'},
+                    {id: 1, name: '已解决'},
+                    {id: 2, name: '暂搁置'}
                 ],
-                oldBugReqDTO:{
-                    userId:null,
-                    beginTime:null,
-                    endTime:null,
-                    type:null,
-                    isSolved:null,
-                    pageNum:1,
-                    departmentId:null
+                oldBugReqDTO: {
+                    userId: null,
+                    beginTime: null,
+                    endTime: null,
+                    type: null,
+                    isSolved: null,
+                    pageNum: 1,
+                    departmentId: null
                 },
-                bugPage:[],
-                oldBugPage:[],
-                BugNumData:{},
-                taskTimeData:{
-                    taskNum:0,
-                    totalTaskTime:0,
-                    designTime:0,
-                    productTime:0,
-                    developTime:0,
-                    testTime:0,
-                    designTaskNum:0,
-                    productTaskNum:0,
-                    developTaskNum:0,
-                    testTaskNum:0,
-                    avgDesignTime:0,
-                    avgProductTime:0,
-                    avgDevelopTime:0,
-                    avgTestTime:0
+                bugPage: [],
+                oldBugPage: [],
+                BugNumData: {},
+                taskTimeData: {
+                    taskNum: 0,
+                    totalTaskTime: 0,
+                    designTime: 0,
+                    productTime: 0,
+                    developTime: 0,
+                    testTime: 0,
+                    designTaskNum: 0,
+                    productTaskNum: 0,
+                    developTaskNum: 0,
+                    testTaskNum: 0,
+                    avgDesignTime: 0,
+                    avgProductTime: 0,
+                    avgDevelopTime: 0,
+                    avgTestTime: 0
                 },
-                diffStageTime:[],
-                diffStageAvgTime:[],
-                top10TaskList:[],
-                showTaskVisible:false,
-                taskDetail:{},
+                diffStageTime: [],
+                diffStageAvgTime: [],
+                top10TaskList: [],
+                showTaskVisible: false,
+                taskDetail: {},
                 priorityList: [
                     {label: '普通', value: 0},
                     {label: '紧急', value: 1},
                     {label: '非常紧急', value: 2},
                 ],
-                taskTotalTime:0,
+                taskTotalTime: 0,
 
                 //考勤
-                signInReqDTO:{
-                    userId:'',
-                    beginTime:'',
-                    endTime:'',
-                    pageNum:1,
+                signInReqDTO: {
+                    userId: '',
+                    beginTime: '',
+                    endTime: '',
+                    pageNum: 1,
                     userIds: [],
                 },
-                signInDaterange:'',
-                signInData:[],
-                signInPage:{
+                signInDaterange: '',
+                signInData: [],
+                signInPage: {
                     pageSize: 20,
                     total: 0,
                 },
                 showTotalEWrokTime: false,
-                workMonth1:'',
-                eWorkTimeReqDTO1:{
-                    yearAndMonth:''
+                workMonth1: '',
+                eWorkTimeReqDTO1: {
+                    yearAndMonth: ''
                 },
-                eWorkTimeUserId:'',
-                eWorkTimeUserName:'',
-                workMonths:[
-                    {id:1,name:'一月'},
-                    {id:2,name:'二月'},
-                    {id:3,name:'三月'},
-                    {id:4,name:'四月'},
-                    {id:5,name:'五月'},
-                    {id:6,name:'六月'},
-                    {id:7,name:'七月'},
-                    {id:8,name:'八月'},
-                    {id:9,name:'九月'},
-                    {id:10,name:'十月'},
-                    {id:11,name:'十一月'},
-                    {id:12,name:'十二月'}
+                eWorkTimeUserId: '',
+                eWorkTimeUserName: '',
+                workMonths: [
+                    {id: 1, name: '一月'},
+                    {id: 2, name: '二月'},
+                    {id: 3, name: '三月'},
+                    {id: 4, name: '四月'},
+                    {id: 5, name: '五月'},
+                    {id: 6, name: '六月'},
+                    {id: 7, name: '七月'},
+                    {id: 8, name: '八月'},
+                    {id: 9, name: '九月'},
+                    {id: 10, name: '十月'},
+                    {id: 11, name: '十一月'},
+                    {id: 12, name: '十二月'}
                 ],
-                totalEWorkTime:'',
+                totalEWorkTime: '',
 
                 //mantis-bug统计
-                mantisBugReqDTO1:{
-                    beginTime:'',
-                    endTime:'',
+                mantisBugReqDTO1: {
+                    beginTime: '',
+                    endTime: '',
                 },
-                mantisBugReqDTO2:{
-                    beginTime:'',
-                    endTime:'',
+                mantisBugReqDTO2: {
+                    beginTime: '',
+                    endTime: '',
                 },
-                mantisBugReqDTO3:{
-                    beginTime:'',
-                    endTime:'',
+                mantisBugReqDTO3: {
+                    beginTime: '',
+                    endTime: '',
                 },
-                mantisBugReqDTO4:{
-                    beginTime:'',
-                    endTime:'',
-                    pageNum:1
+                mantisBugReqDTO4: {
+                    beginTime: '',
+                    endTime: '',
+                    pageNum: 1
                 },
-                mantisUserBugStatsList:[],
-                taskBugStatsList:[],
-                mantisUserBugWeekList:[],
-                mantisUserBugMonthList:[],
-                mantisDeveloperBugMonthList:[],
-                onlineBugUserList:[],
-                onlineBugDeveloperList:[],
-                seriesDataList:[],
-                seriesDataList2:[],
-                seriesDataList3:[],
-                onlineBugTotalNum:0,
-                onlineBugTotalNum3:0,
-                dateList:[],
-                weekdayList:[],
-                userNameList:[],
-                yearMonth1:'',
-                yearMonth2:'',
-                yearMonth3:'',
-                yearMonth4:'',
-                yearWeek:'',
-                taskBugPage:{
+                mantisUserBugStatsList: [],
+                taskBugStatsList: [],
+                mantisUserBugWeekList: [],
+                mantisUserBugMonthList: [],
+                mantisDeveloperBugMonthList: [],
+                onlineBugUserList: [],
+                onlineBugDeveloperList: [],
+                seriesDataList: [],
+                seriesDataList2: [],
+                seriesDataList3: [],
+                onlineBugTotalNum: 0,
+                onlineBugTotalNum3: 0,
+                dateList: [],
+                weekdayList: [],
+                userNameList: [],
+                yearMonth1: '',
+                yearMonth2: '',
+                yearMonth3: '',
+                yearMonth4: '',
+                yearWeek: '',
+                taskBugPage: {
                     pageSize: 10,
                     total: 0,
                 },
-                mantisProjectList:[
-                    {id:53,name:'知心慧学2018'},
-                    {id:57,name:'知心慧学2019'}
+                mantisProjectList: [
+                    {id: 53, name: '知心慧学2018'},
+                    {id: 57, name: '知心慧学2019'}
                 ],
-                selectMantisProjectVisible:false,
-                mantisProject:'',
-                fullscreenLoading:false,
-                rolesList:[
+                selectMantisProjectVisible: false,
+                mantisProject: '',
+                fullscreenLoading: false,
+                rolesList: [
                     {
                         roleId: 3,
                         roleName: '产品经理'
@@ -2133,179 +2250,179 @@
                         roleName: '其他'
                     }
                 ],
-                urlList:[],
-                environment:'',
-                importBugVisible:false,
-                importOnlineBugVisible:false,
-                uploadToMysqlVisible:false,
-                platformList:[],
+                urlList: [],
+                environment: '',
+                importBugVisible: false,
+                importOnlineBugVisible: false,
+                uploadToMysqlVisible: false,
+                platformList: [],
 
                 //加班统计
-                ewBeginTime:null,
-                ewEndTime:null,
-                extraWorkReqDTO:{
-                    pageNum:1,
-                    userId:null,
+                ewBeginTime: null,
+                ewEndTime: null,
+                extraWorkReqDTO: {
+                    pageNum: 1,
+                    userId: null,
                 },
-                extraWorkStatsList:[],
-                extraWorkPage:{
-                    pageSize:10,
-                    total:0
+                extraWorkStatsList: [],
+                extraWorkPage: {
+                    pageSize: 10,
+                    total: 0
                 },
                 //修改调休时间
                 modifyUserRestHoursVisible: false,
-                restHoursUserId:'',
-                restHoursUserName:'',
-                restHours:0,
+                restHoursUserId: '',
+                restHoursUserName: '',
+                restHours: 0,
                 restHourLoading: false,
 
-                userRestHoursLogData:[],
+                userRestHoursLogData: [],
                 userRestHoursDetailVisible: false,
-                userRestHoursLogReqDTO:{
-                    userId:'',
-                    pageNum:1
+                userRestHoursLogReqDTO: {
+                    userId: '',
+                    pageNum: 1
                 },
-                userRestHoursLogPage:{
+                userRestHoursLogPage: {
                     pageNum: 1,
                     pageSize: 10,
                     total: 0
                 },
-                restHourYear:'',
-                restHourReqDTO:{
-                    year:'',
-                    jobRole:'',
-                    userId:''
+                restHourYear: '',
+                restHourReqDTO: {
+                    year: '',
+                    jobRole: '',
+                    userId: ''
                 },
-                restHoursData:[],
-                userRestHoursLogData2:[],
+                restHoursData: [],
+                userRestHoursLogData2: [],
                 userRestHoursDetailVisible2: false,
-                userRestHoursLogPage2:{
+                userRestHoursLogPage2: {
                     pageNum: 1,
                     pageSize: 10,
                     total: 0
                 },
-                userRestHoursLogReqDTO2:{
-                    userId:'',
-                    userName:'',
-                    pageNum:1
+                userRestHoursLogReqDTO2: {
+                    userId: '',
+                    userName: '',
+                    pageNum: 1
                 },
-                userRestHoursLogForm:{
-                    restHour:0,
-                    content:'',
-                    userId:null,
-                    recordTime:null
+                userRestHoursLogForm: {
+                    restHour: 0,
+                    content: '',
+                    userId: null,
+                    recordTime: null
                 },
                 editRestHoursVisible: false,
-                bugHistogramReqDTO:{
-                    startTime:null,
-                    endTime:null,
-                    year:null,
-                    groupId:null
+                bugHistogramReqDTO: {
+                    startTime: null,
+                    endTime: null,
+                    year: null,
+                    groupId: null
                 },
-                doingTaskList:[],
-                bugHistogramDateRange:'',
+                doingTaskList: [],
+                bugHistogramDateRange: '',
 
-                systemBugNumList:[],
-                systemX:[],
-                systemBugList:[],
-                systemOpsList:[],
-                systemAssList:[],
-                userBugList:[],
-                userOpsList:[],
-                userAssList:[],
-                userX:[],
-                userBugNumList:[],
+                systemBugNumList: [],
+                systemX: [],
+                systemBugList: [],
+                systemOpsList: [],
+                systemAssList: [],
+                userBugList: [],
+                userOpsList: [],
+                userAssList: [],
+                userX: [],
+                userBugNumList: [],
 
                 //周人员投入表相关
-                weekUserCostList:[],
-                groupList:[],
-                userCostReqDTO:{
-                    date:null,
-                    weekNumber:null,
-                    groupId:null
+                weekUserCostList: [],
+                groupList: [],
+                userCostReqDTO: {
+                    date: null,
+                    weekNumber: null,
+                    groupId: null
                 },
-                userCostPickerWeek:{
-                    firstDayOfWeek:1
+                userCostPickerWeek: {
+                    firstDayOfWeek: 1
                 },
-                spanArr:[],
-                userSpanArr:[],
-                weekHourSpanArr:[],
-                leaveHourSpanArr:[],
-                userPercentSpanArr:[],
-                positionPercentSpanArr:[],
-                pos:0,
-                userPos:0,
-                weekHourPos:0,
-                leaveHourPos:0,
-                userPercentPos:0,
-                positionPercentPos:0,
-                weekPublishStat:{
-                    queryDTO:{
-                        pageNum:1,
-                        beginTime:null,
-                        endTime:null,
-                        pageSize:1,
-                        total:0
+                spanArr: [],
+                userSpanArr: [],
+                weekHourSpanArr: [],
+                leaveHourSpanArr: [],
+                userPercentSpanArr: [],
+                positionPercentSpanArr: [],
+                pos: 0,
+                userPos: 0,
+                weekHourPos: 0,
+                leaveHourPos: 0,
+                userPercentPos: 0,
+                positionPercentPos: 0,
+                weekPublishStat: {
+                    queryDTO: {
+                        pageNum: 1,
+                        beginTime: null,
+                        endTime: null,
+                        pageSize: 1,
+                        total: 0
                     },
-                    publishPlanData:[],
-                    addPublishPlanDTO:{
-                        wppName:'',
-                        publishTime:null,
-                        remark:'',
-                        testReport:null,
-                        taskIds:[],
-                        platformIds:[],
-                        platformAndUserList:[],
+                    publishPlanData: [],
+                    addPublishPlanDTO: {
+                        wppName: '',
+                        publishTime: null,
+                        remark: '',
+                        testReport: null,
+                        taskIds: [],
+                        platformIds: [],
+                        platformAndUserList: [],
                     },
-                    editPublishPlanDTO:{
-                        wppId:null,
-                        wppName:'',
-                        publishTime:null,
-                        remark:'',
-                        testReport:null,
-                        taskIds:[],
-                        platformIds:[],
-                        platformAndUserList:[],
+                    editPublishPlanDTO: {
+                        wppId: null,
+                        wppName: '',
+                        publishTime: null,
+                        remark: '',
+                        testReport: null,
+                        taskIds: [],
+                        platformIds: [],
+                        platformAndUserList: [],
                     },
-                    publishPlanDetail:{},
-                    addVisible:false,
-                    editVisible:false,
-                    taskList:[],
-                    waitDeployTaskList:[],
-                    platformUserList:[],
-                    addPlatformUserVisible:false,
-                    addPlatformUserDTO:{
-                        index:null,
-                        platformId:null,
-                        platformName:'',
-                        userId:null,
-                        userName:''
+                    publishPlanDetail: {},
+                    addVisible: false,
+                    editVisible: false,
+                    taskList: [],
+                    waitDeployTaskList: [],
+                    platformUserList: [],
+                    addPlatformUserVisible: false,
+                    addPlatformUserDTO: {
+                        index: null,
+                        platformId: null,
+                        platformName: '',
+                        userId: null,
+                        userName: ''
                     },
-                    publishUserList:[],
+                    publishUserList: [],
                     groupMarkList: [
                         {id: 0, name: 'java'},
                         {id: 1, name: 'php'},
                         {id: 2, name: '前端'},
                         {id: 3, name: 'app&客户端'},
                     ],
-                    activeGroup:null,
-                    showSelectedPlatform:[],
-                    showPlatform:[],
+                    activeGroup: null,
+                    showSelectedPlatform: [],
+                    showPlatform: [],
                 },
-                monthStats:{
-                    queryDTO:{
-                        queryDate:null,
-                        jobRole:null
+                monthStats: {
+                    queryDTO: {
+                        queryDate: null,
+                        jobRole: null
                     },
-                    statsData:[]
+                    statsData: []
                 },
                 groupLeader: false,
                 // -- sch
             }
         },
-        beforeMount:function () {
+        beforeMount: function () {
             let sss = this.$route.query.activeName;
-            if (sss != null && sss!== undefined && sss != ''){
+            if (sss != null && sss !== undefined && sss != '') {
                 this.activeName = this.$route.query.activeName;
             }
             this.handleClick()
@@ -2316,7 +2433,7 @@
             this.fetchPlatformList();
             this.fetchAllDoingTasks();
         },
-        mounted: function() {
+        mounted: function () {
             this.getStats();
             this.fetchSignInUserGroup();
         },
@@ -2401,109 +2518,122 @@
             },
         },
         methods: {
-            handleClick(){
-                this.$router.push({query:{activeName:this.activeName}})
-              if (this.activeName === 'stat'){
-                  this.getStats();
-              }else if (this.activeName === 'weekPublish'){
-                  // this.initTime();
-                  this.fetchPublishPlanPage(this.weekPublishStat.queryDTO)
-              } else if (this.activeName === 'bug'){
-                  this.fetchGroupList()
-                  this.fetchBugPage();
-                  this.getSystemHistogram();
-                  this.getUserBugHistogram();
-              } else if (this.activeName === 'mantisBug'){
-                  this.getEnv();
-                  this.fetchMantisBugStatsGroupByUser();
-                  this.fetchBugWeekGroupByUser();
-                  this.fetchOnlineBugGroupByUser();
-                  this.fetchBugStatsGroupByTask();
-                  this.fetchOnlineBugGroupByDeveloper();
-              } else if (this.activeName === 'personal'){
-                    // this.fetchSignInUser();
-              } else if (this.activeName === 'week'){
+            handleClick() {
+                this.$router.push({query: {activeName: this.activeName}})
+                if (this.activeName === 'stat') {
+                    this.getStats();
+                } else if (this.activeName === 'weekPublish') {
+                    this.fetchPublishPlanPage(this.weekPublishStat.queryDTO)
+                } else if (this.activeName === 'bug') {
+                    this.fetchGroupList()
+                    this.fetchBugPage();
+                    this.getSystemHistogram();
+                    this.getUserBugHistogram();
+                } else if (this.activeName === 'mantisBug') {
+                    this.getEnv();
+                    this.fetchMantisBugStatsGroupByUser();
+                    this.fetchBugWeekGroupByUser();
+                    this.fetchOnlineBugGroupByUser();
+                    this.fetchBugStatsGroupByTask();
+                    this.fetchOnlineBugGroupByDeveloper();
+                } else if (this.activeName === 'personal') {
+                    let userId = window.localStorage.getItem('priTaskUser');
+                    let taskType = window.localStorage.getItem('priTaskType');
+                    let startTime = window.localStorage.getItem('priTaskStart');
+                    let endTime = window.localStorage.getItem('priTaskEnd');
+                    if (userId != null && userId !== undefined){
+                        this.persanalForm.userId = userId
+                    }
+                    if (taskType != null && taskType !== undefined){
+                        this.persanalForm.taskType = Number(taskType)
+                    }
+                    if (startTime != null && startTime !== undefined){
+                        this.persanalForm.startTime = startTime
+                    }
+                    if (endTime != null && endTime !== undefined){
+                        this.persanalForm.endTime = endTime
+                    }
+                } else if (this.activeName === 'week') {
 
-              } else if (this.activeName === 'monthStats'){
+                } else if (this.activeName === 'monthStats') {
 
-              } else if (this.activeName === 'leave'){
-                    // this.getLeaveList();
-                   this.initTime3()
-              } else if (this.activeName === 'task'){
-                  this.fetchAnnualTaskByPriority();
-                  this.fetchAnnualProjectTaskNum();
-                  this.fetchEveryMonthFeedback();
-                  this.fetchEveryMonthTask();
-                  this.fetchEveryMonthVacation();
-                  this.fetchAnnualVacation();
-                  this.fetchAnnualFeedback();
-                  this.fetchDiffStageTaskTime();
-                  this.fetchTop10MostTimeTask();
-              } else if (this.activeName === 'personalLeave'){
-                  this.initTime2();
-              } else if (this.activeName === 'signIn'){
-                  this.initSignInTime();
-                  this.fetchSignInData();
-              } else if (this.activeName === 'eWork'){
-                  this.initTime4();
-              }else if (this.activeName === 'restHours'){
-                  this.fetchAllUsersRestHours();
-              }else if (this.activeName === 'weekUserCost'){
-                  this.fetchGroupList()
-              }
+                } else if (this.activeName === 'leave') {
+                    this.initTime3()
+                } else if (this.activeName === 'task') {
+                    this.fetchAnnualTaskByPriority();
+                    this.fetchAnnualProjectTaskNum();
+                    this.fetchEveryMonthFeedback();
+                    this.fetchEveryMonthTask();
+                    this.fetchEveryMonthVacation();
+                    this.fetchAnnualVacation();
+                    this.fetchAnnualFeedback();
+                    this.fetchDiffStageTaskTime();
+                    this.fetchTop10MostTimeTask();
+                } else if (this.activeName === 'personalLeave') {
+                    this.initTime2();
+                } else if (this.activeName === 'signIn') {
+                    this.initSignInTime();
+                    this.fetchSignInData();
+                } else if (this.activeName === 'eWork') {
+                    this.initTime4();
+                } else if (this.activeName === 'restHours') {
+                    this.fetchAllUsersRestHours();
+                } else if (this.activeName === 'weekUserCost') {
+                    this.fetchGroupList()
+                }
             },
             //查询所有可用团队
-            fetchGroupList(){
-                Http.zsyGetHttp('/work-group/list',{},res=>{
-                    this.groupList= res.data;
+            fetchGroupList() {
+                Http.zsyGetHttp('/work-group/list', {}, res => {
+                    this.groupList = res.data;
                 })
             },
-            getStats(currentPage){
+            getStats(currentPage) {
                 Http.zsyGetHttp(`/user/group-leader`, {}, (resp) => {
-                    if(resp.data === 'true' || resp.data === true){
-                        this.groupLeader =  true
+                    if (resp.data === 'true' || resp.data === true) {
+                        this.groupLeader = true
                     }
                 });
                 Http.zsyGetHttp(`/stats/list`, {}, (resp) => {
-                    this.statsData =  resp.data;
+                    this.statsData = resp.data;
                 });
             },
-            getCurrentWeek(){
-                this.userWeekForm.date=moment().toDate()
+            getCurrentWeek() {
+                this.userWeekForm.date = moment().toDate()
             },
-            getUserCostCurrentWeek(){
-                this.userCostReqDTO.date=moment().toDate()
+            getUserCostCurrentWeek() {
+                this.userCostReqDTO.date = moment().toDate()
             },
-            getTask(index){
-                this.$router.push({name:'taskList', params:{ userId:this.statsData[index].id }})
+            getTask(index) {
+                this.$router.push({name: 'taskList', params: {userId: this.statsData[index].id}})
             },
-            getPersonTask(taskId){
-                this.$router.push({name:'taskListFormComments', params:{ taskId:taskId }})
+            getPersonTask(taskId) {
+                this.$router.push({name: 'taskListFormComments', params: {taskId: taskId}})
             },
-            getBugList(){
+            getBugList() {
                 Http.zsyGetHttp(`/bug/list/`, this.bugList, (resp) => {
-                    this.bugManage =  resp.data.list;
+                    this.bugManage = resp.data.list;
                     this.bugFormPage.total = resp.data.total;
                 });
             },
-            fetchLeaveList(){
+            fetchLeaveList() {
                 this.leaveList.pageNum = 1;
                 this.leaveList.beginTime = this.leaveList.endTime = null;
                 if (this.leaveBeginTime != null
-                && this.leaveBeginTime !== undefined
-                && this.leaveBeginTime !== ''){
+                    && this.leaveBeginTime !== undefined
+                    && this.leaveBeginTime !== '') {
                     this.leaveList.beginTime = moment(this.leaveBeginTime).format('YYYY-MM-DD 00:00:00');
                 }
                 if (this.leaveEndTime != null
                     && this.leaveEndTime !== undefined
-                    && this.leaveEndTime !== ''){
+                    && this.leaveEndTime !== '') {
                     this.leaveList.endTime = moment(this.leaveEndTime).format('YYYY-MM-DD 23:59:59');
                 }
                 this.getLeaveList()
             },
-            getLeaveList(){
+            getLeaveList() {
                 Http.zsyPostHttp(`/userLeave/list`, this.leaveList, (resp) => {
-                    this.leaveManage =  resp.data.list;
+                    this.leaveManage = resp.data.list;
                     this.leaveFormPage.total = resp.data.total;
                 });
             },
@@ -2559,16 +2689,32 @@
                     this.persanalForm.startTime = moment(time[0]).format('YYYY-MM-DD HH:mm:ss');
                     this.persanalForm.endTime = moment(time[1]).format('YYYY-MM-DD HH:mm:ss');
                 } else {
-                    this.persanalForm.startTime = this.persanalForm.endTime = this.daterange =  ''
+                    this.persanalForm.startTime = this.persanalForm.endTime = this.daterange = ''
                 }
             },
-            getPersonalData(){
-                if(this.persanalForm.userId == null||this.persanalForm.userId===''){
+            getPersonalData() {
+                if (this.persanalForm.userId == null || this.persanalForm.userId === '') {
                     this.errorMsg("请选择你想查询的用户")
                     return;
                 }
+
+                //将筛选条件存入localstorage
+                if (this.persanalForm.userId != null && this.persanalForm.userId !== undefined){
+                    window.localStorage.setItem("priTaskUser", this.persanalForm.userId);
+                }
+                if (this.persanalForm.taskType != null && this.persanalForm.taskType !== undefined){
+                    window.localStorage.setItem("priTaskType", this.persanalForm.taskType);
+                }
+                if (this.persanalForm.startTime != null && this.persanalForm.startTime !== undefined){
+                    window.localStorage.setItem("priTaskStart", this.persanalForm.startTime);
+                    this.weekPublishStat.queryDTO.beginTime = moment(this.weekPublishStat.queryDTO.beginTime).format('YYYY-MM-DD 00:00:00')
+                }
+                if (this.persanalForm.endTime != null && this.persanalForm.endTime !== undefined){
+                    window.localStorage.setItem("priTaskEnd", this.persanalForm.endTime);
+                    this.weekPublishStat.queryDTO.beginTime = moment(this.weekPublishStat.queryDTO.beginTime).format('YYYY-MM-DD 23:59:59')
+                }
                 Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
-                    this.pesonalTaskData =  resp.data;
+                    this.pesonalTaskData = resp.data;
                 });
             },
 
@@ -2587,9 +2733,9 @@
 
             },
 
-            saveAddMember(){
+            saveAddMember() {
                 // this.addMemberIndex.integral = 0;
-                if (this.addMemberIndex.userId === ''||this.addMemberIndex.integral === '') {
+                if (this.addMemberIndex.userId === '' || this.addMemberIndex.integral === '') {
                     this.errorMsg('请将积分信息填写完整');
                     return
                 }
@@ -2648,10 +2794,10 @@
                     }
                 }
             },
-            cancelAddMember(){
+            cancelAddMember() {
                 this.showAddDetail = !this.showAddDetail;
             },
-            editBugDetail(bugDetailForm){
+            editBugDetail(bugDetailForm) {
                 this.onlineBugForm.projectId = bugDetailForm.projectId;
                 this.onlineBugForm.taskId = bugDetailForm.taskId;
                 this.onlineBugForm.createTime = bugDetailForm.createTime;
@@ -2672,13 +2818,13 @@
                 this.updateBugSolvingVisible = true;
                 this.bugDetailVisible = false;
             },
-            deleteBug(){
+            deleteBug() {
                 this.$confirm('确认删除?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    Http.zsyDeleteHttp('/bug/'+this.modifyId, null, (resp) => {
+                    Http.zsyDeleteHttp('/bug/' + this.modifyId, null, (resp) => {
                         this.$message({
                             showClose: true,
                             message: 'Bug处理结果删除成功',
@@ -2713,30 +2859,30 @@
                     }
                 })
             },
-            bugDetail(row){
-                Http.zsyGetHttp('/bug/detail/'+row.id, null, (resp) => {
+            bugDetail(row) {
+                Http.zsyGetHttp('/bug/detail/' + row.id, null, (resp) => {
                     this.bugDetailForm = resp.data
                 });
                 this.bugDetailVisible = true;
                 this.modifyId = row.id;
             },
-            handleCurrentChange(currentPage){
+            handleCurrentChange(currentPage) {
                 this.bugList.pageNum = currentPage;
                 this.fetchBugPage();
             },
-            handleOldBugChange(currentPage){
+            handleOldBugChange(currentPage) {
                 this.oldBugList.pageNum = currentPage;
                 this.fetchOldBugPage();
             },
-            handleTaskBugChange(currentPage){
+            handleTaskBugChange(currentPage) {
                 this.mantisBugReqDTO4.pageNum = currentPage;
                 this.fetchBugStatsGroupByTask();
             },
-            leaveHandleCurrentChange(currentPage){
+            leaveHandleCurrentChange(currentPage) {
                 this.leaveList.pageNum = currentPage;
                 this.getLeaveList();
             },
-            eWorkHandleCurrentChange(currentPage){
+            eWorkHandleCurrentChange(currentPage) {
                 this.extraWorkReqDTO.pageNum = currentPage;
                 this.getExtraWorkStats();
             },
@@ -2748,7 +2894,7 @@
                 });
             },
             getSummaries(param) {
-                const { columns, data } = param;
+                const {columns, data} = param;
                 const sums = [];
                 columns.forEach((column, index) => {
                     if (index === 0) {
@@ -2774,10 +2920,10 @@
 
                 return sums;
             },
-            getUserWeekStats(){
-                if(this.userWeekForm.date == null
-                || this.userWeekForm.date === undefined
-                || this.userWeekForm.date === ''){
+            getUserWeekStats() {
+                if (this.userWeekForm.date == null
+                    || this.userWeekForm.date === undefined
+                    || this.userWeekForm.date === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择时间',
@@ -2787,52 +2933,52 @@
                 }
                 this.userWeekForm.date = moment(this.userWeekForm.date).format('YYYY-MM-DD 00:00:00');
                 this.userWeekForm.weekNumber = moment(this.userWeekForm.date).week();
-                Http.zsyPostHttp('/stats/weekStats',this.userWeekForm , (resp) => {
+                Http.zsyPostHttp('/stats/weekStats', this.userWeekForm, (resp) => {
                     this.userWeekData = resp.data;
                 })
             },
-            getPersonStats(id){
-                this.activeName='personal';
+            getPersonStats(id) {
+                this.activeName = 'personal';
                 this.persanalForm.userId = id;
                 this.persanalForm.startTime = moment(this.userWeekForm.date).startOf('week').format("YYYY-MM-DD 00:00:00");
-                this.persanalForm.endTime =  moment(this.userWeekForm.date).endOf('week').format("YYYY-MM-DD 23:59:59");
+                this.persanalForm.endTime = moment(this.userWeekForm.date).endOf('week').format("YYYY-MM-DD 23:59:59");
                 Http.zsyGetHttp(`/stats/personTaskList`, this.persanalForm, (resp) => {
-                    this.pesonalTaskData =  resp.data;
+                    this.pesonalTaskData = resp.data;
                 });
             },
 
             // sch --
-            drawLine1(){
+            drawLine1() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart1');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '年度任务(优先级)',
-                        x:'center',
-                        subtext:'任务总数: '+this.priorityTask.totalNum ,
-                        subtextStyle:{
-                            fontSize:16
+                        x: 'center',
+                        subtext: '任务总数: ' + this.priorityTask.totalNum,
+                        subtextStyle: {
+                            fontSize: 16
                         }
                     },
-                    tooltip : {
+                    tooltip: {
                         trigger: 'item',
                         formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                        data: ['普通','紧急','非常紧急']
+                        data: ['普通', '紧急', '非常紧急']
                     },
-                    series : [
+                    series: [
                         {
                             name: '优先级',
                             type: 'pie',
-                            radius : '55%',
+                            radius: '55%',
                             center: ['50%', '60%'],
-                            data:this.taskData1,
+                            data: this.taskData1,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -2844,22 +2990,22 @@
                     ]
                 });
             },
-            drawLine2(){
+            drawLine2() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart2');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '年度任务(项目)',
-                        x:'center',
-                        subtext: '任务总数: '+this.projectTaskNum,
+                        x: 'center',
+                        subtext: '任务总数: ' + this.projectTaskNum,
                         subtextStyle: {
                             fontSize: 16
                         }
                     },
-                    tooltip : {
+                    tooltip: {
                         trigger: 'item',
                         formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
@@ -2868,13 +3014,13 @@
                         left: 'left',
                         data: this.taskLegend
                     },
-                    series : [
+                    series: [
                         {
                             name: '项目',
                             type: 'pie',
-                            radius : '55%',
+                            radius: '55%',
                             center: ['50%', '60%'],
-                            data:this.taskData2,
+                            data: this.taskData2,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -2886,18 +3032,18 @@
                     ]
                 });
             },
-            drawLine3(){
+            drawLine3() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart3');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '每月需求',
-                        x:'center',
-                        subtext:'需求总数: ' + this.feedbackTotal,
-                        subtextStyle:{
+                        x: 'center',
+                        subtext: '需求总数: ' + this.feedbackTotal,
+                        subtextStyle: {
                             fontSize: 16
                         }
                     },
@@ -2912,14 +3058,14 @@
                         data: ['个数']
                     },
                     xAxis: {
-                        data: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+                        data: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
                     },
                     yAxis: [
                         {
                             type: 'value',
                             min: 0,
-                            splitLine:{
-                                show:false
+                            splitLine: {
+                                show: false
                             },
                         }
                     ],
@@ -2933,37 +3079,37 @@
                     ]
                 });
             },
-            drawLine6(){
+            drawLine6() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart6');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '年度需求 ',
-                        x:'center' ,
-                        subtext:'需求总数: ' + this.fbTotalCount,
-                        subtextStyle:{
+                        x: 'center',
+                        subtext: '需求总数: ' + this.fbTotalCount,
+                        subtextStyle: {
                             fontSize: 16
                         }
                     },
-                    tooltip : {
+                    tooltip: {
                         trigger: 'item',
                         formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                        data: ['学管端','其他']
+                        data: ['学管端', '其他']
                     },
-                    series : [
+                    series: [
                         {
                             name: '需求来源',
                             type: 'pie',
-                            radius : '55%',
+                            radius: '55%',
                             center: ['50%', '60%'],
-                            data:this.feedbackData,
+                            data: this.feedbackData,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -2975,18 +3121,18 @@
                     ]
                 });
             },
-            drawLine4(){
+            drawLine4() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart4');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '每月任务',
-                        x:'center',
-                        subtext:'任务总数: ' + this.taskTotal,
-                        subtextStyle:{
+                        x: 'center',
+                        subtext: '任务总数: ' + this.taskTotal,
+                        subtextStyle: {
                             fontSize: 16
                         }
                     },
@@ -3001,14 +3147,14 @@
                         data: ['个数']
                     },
                     xAxis: {
-                        data: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+                        data: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
                     },
                     yAxis: [
                         {
                             type: 'value',
                             min: 0,
-                            splitLine:{
-                                show:false
+                            splitLine: {
+                                show: false
                             },
                         }
                     ],
@@ -3022,14 +3168,14 @@
                     ]
                 });
             },
-            drawLine5(){
+            drawLine5() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart5');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
-                    title: { text: '年度请假分布',x:'center' },
+                    title: {text: '年度请假分布', x: 'center'},
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
@@ -3041,7 +3187,7 @@
                         data: ['次数', '时长']
                     },
                     xAxis: {
-                        data: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+                        data: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
                     },
                     yAxis: [
                         {
@@ -3049,8 +3195,8 @@
                             name: '次数',
                             min: 0,
                             interval: 5,
-                            splitLine:{
-                                show:false
+                            splitLine: {
+                                show: false
                             },
                         },
                         {
@@ -3061,8 +3207,8 @@
                             axisLabel: {
                                 formatter: '{value} h'
                             },
-                            splitLine:{
-                                show:false
+                            splitLine: {
+                                show: false
                             },
                         }
                     ],
@@ -3077,23 +3223,23 @@
                             name: '时长',
                             type: 'bar',
                             data: this.vacationTimeList,
-                            yAxisIndex:1
+                            yAxisIndex: 1
                         }
                     ]
                 });
             },
-            drawLine7(){
+            drawLine7() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart7');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '各个阶段任务时长',
-                        x:'center',
-                        subtext:'任务总耗时: ' + this.taskTimeData.totalTaskTime,
-                        subtextStyle:{
+                        x: 'center',
+                        subtext: '任务总耗时: ' + this.taskTimeData.totalTaskTime,
+                        subtextStyle: {
                             fontSize: 16
                         }
                     },
@@ -3108,15 +3254,15 @@
                         data: ['总耗时', '平均耗时']
                     },
                     xAxis: {
-                        data: ["设计","产品","开发","测试"]
+                        data: ["设计", "产品", "开发", "测试"]
                     },
                     yAxis: [
                         {
                             type: 'value',
                             name: '总耗时',
                             min: 0,
-                            splitLine:{
-                                show:false
+                            splitLine: {
+                                show: false
                             },
                         },
                         {
@@ -3127,8 +3273,8 @@
                             axisLabel: {
                                 formatter: '{value} h'
                             },
-                            splitLine:{
-                                show:false
+                            splitLine: {
+                                show: false
                             },
                         }
                     ],
@@ -3143,27 +3289,27 @@
                             name: '平均耗时',
                             type: 'bar',
                             data: this.diffStageAvgTime,
-                            yAxisIndex:1
+                            yAxisIndex: 1
                         }
                     ]
                 });
             },
-            drawLine8(){
+            drawLine8() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart8');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '测试bug月统计折线图',
-                        x:'left'
+                        x: 'left'
                     },
                     tooltip: {
                         trigger: 'axis'
                     },
                     legend: {
-                        x:'right',
+                        x: 'right',
                         data: this.userNameList
                     },
                     xAxis: {
@@ -3174,25 +3320,25 @@
                             type: 'value',
                             name: '数量',
                             min: 0,
-                            splitLine:{
-                                show:false
+                            splitLine: {
+                                show: false
                             },
                         }
                     ],
                     series: this.seriesDataList
                 });
             },
-            drawLine9(){
+            drawLine9() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart9');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '线上bug统计图',
-                        x:'center',
-                        subtext:'总计: '+this.onlineBugTotalNum+ ' 个'
+                        x: 'center',
+                        subtext: '总计: ' + this.onlineBugTotalNum + ' 个'
                     },
                     tooltip: {
                         trigger: 'item',
@@ -3207,9 +3353,9 @@
                         {
                             name: '线上bug',
                             type: 'pie',
-                            radius : '60%',
+                            radius: '60%',
                             center: ['50%', '50%'],
-                            data:this.seriesDataList2,
+                            data: this.seriesDataList2,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -3221,17 +3367,17 @@
                     ]
                 });
             },
-            drawLine10(){
+            drawLine10() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart10');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
                     title: {
                         text: '开发解决bug统计图',
-                        x:'center',
-                        subtext:'总计: '+this.onlineBugTotalNum3+ ' 个'
+                        x: 'center',
+                        subtext: '总计: ' + this.onlineBugTotalNum3 + ' 个'
                     },
                     tooltip: {
                         trigger: 'item',
@@ -3246,9 +3392,9 @@
                         {
                             name: '线上bug',
                             type: 'pie',
-                            radius : '60%',
+                            radius: '60%',
                             center: ['50%', '50%'],
-                            data:this.seriesDataList3,
+                            data: this.seriesDataList3,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -3260,10 +3406,10 @@
                     ]
                 });
             },
-            drawLine11(){
+            drawLine11() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart11');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
@@ -3276,26 +3422,24 @@
                         trigger: 'item',
                         // formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
-                    legend: {
-
-                    },
+                    legend: {},
                     xAxis: {
                         type: 'category',
                         data: this.systemX,
-                        axisLabel:{
-                            interval:0,
-                            rotate:-45,//倾斜度 -90 至 90 默认为0
-                            margin:2,
-                            textStyle:{
-                                color:"#000000",
-                                fontSize:15
+                        axisLabel: {
+                            interval: 0,
+                            rotate: -45,//倾斜度 -90 至 90 默认为0
+                            margin: 2,
+                            textStyle: {
+                                color: "#000000",
+                                fontSize: 15
                             }
                         }
                     },
                     yAxis: [
                         {
                             type: 'value',
-                            name:'个数',
+                            name: '个数',
                             // interval: 5,
                             axisLabel: {
                                 formatter: '{value} 个'
@@ -3321,15 +3465,15 @@
                         bottom: '3%',
                         containLabel: true
                     },
-                    series : [
+                    series: [
                         {
-                            name:'bug',
-                            type:'bar',
-                            stack:'总量',
-                            data:this.systemBugList,
-                            barWidth:30,
-                            barGap:0,
-                            label:{
+                            name: 'bug',
+                            type: 'bar',
+                            stack: '总量',
+                            data: this.systemBugList,
+                            barWidth: 30,
+                            barGap: 0,
+                            label: {
                                 normal: {
                                     show: true,
                                     position: 'inside'
@@ -3337,13 +3481,13 @@
                             }
                         },
                         {
-                            name:'优化',
-                            type:'bar',
-                            stack:'总量',
-                            data:this.systemOpsList,
-                            barWidth:30,
+                            name: '优化',
+                            type: 'bar',
+                            stack: '总量',
+                            data: this.systemOpsList,
+                            barWidth: 30,
                             // barGap:10
-                            label:{
+                            label: {
                                 normal: {
                                     show: true,
                                     position: 'inside',
@@ -3352,13 +3496,13 @@
                             }
                         },
                         {
-                            name:'协助',
-                            type:'bar',
-                            stack:'总量',
-                            data:this.systemAssList,
-                            barWidth:30,
+                            name: '协助',
+                            type: 'bar',
+                            stack: '总量',
+                            data: this.systemAssList,
+                            barWidth: 30,
                             // barGap:10
-                            label:{
+                            label: {
                                 normal: {
                                     show: true,
                                     position: 'inside'
@@ -3368,10 +3512,10 @@
                     ]
                 });
             },
-            drawLine12(){
+            drawLine12() {
                 // 基于准备好的dom，初始化echarts实例
                 let dom = document.getElementById('myChart12');
-                if(!dom)return;
+                if (!dom) return;
                 let myChart = this.$echarts.init(dom);
                 // 绘制图表
                 myChart.setOption({
@@ -3384,9 +3528,7 @@
                         trigger: 'item',
                         // formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
-                    legend: {
-
-                    },
+                    legend: {},
                     dataZoom: [{
                         type: 'slider',
                         show: true, //flase直接隐藏图形
@@ -3400,20 +3542,20 @@
                     xAxis: {
                         type: 'category',
                         data: this.userX,
-                        axisLabel:{
-                            interval:0,
-                            rotate:-45,//倾斜度 -90 至 90 默认为0
-                            margin:2,
-                            textStyle:{
-                                color:"#000000",
-                                fontSize:15
+                        axisLabel: {
+                            interval: 0,
+                            rotate: -45,//倾斜度 -90 至 90 默认为0
+                            margin: 2,
+                            textStyle: {
+                                color: "#000000",
+                                fontSize: 15
                             }
                         }
                     },
                     yAxis: [
                         {
                             type: 'value',
-                            name:'个数',
+                            name: '个数',
                             // interval: 5,
                             axisLabel: {
                                 formatter: '{value} 个'
@@ -3430,15 +3572,15 @@
                         bottom: '3%',
                         containLabel: true
                     },
-                    series : [
+                    series: [
                         {
-                            name:'bug',
-                            type:'bar',
-                            stack:'总量',
-                            data:this.userBugList,
-                            barWidth:30,
-                            barGap:0,
-                            label:{
+                            name: 'bug',
+                            type: 'bar',
+                            stack: '总量',
+                            data: this.userBugList,
+                            barWidth: 30,
+                            barGap: 0,
+                            label: {
                                 normal: {
                                     show: true,
                                     position: 'inside'
@@ -3446,13 +3588,13 @@
                             }
                         },
                         {
-                            name:'优化',
-                            type:'bar',
-                            stack:'总量',
-                            data:this.userOpsList,
-                            barWidth:30,
+                            name: '优化',
+                            type: 'bar',
+                            stack: '总量',
+                            data: this.userOpsList,
+                            barWidth: 30,
                             // barGap:10
-                            label:{
+                            label: {
                                 normal: {
                                     show: true,
                                     position: 'inside',
@@ -3461,13 +3603,13 @@
                             }
                         },
                         {
-                            name:'协助',
-                            type:'bar',
-                            stack:'总量',
-                            data:this.userAssList,
-                            barWidth:30,
+                            name: '协助',
+                            type: 'bar',
+                            stack: '总量',
+                            data: this.userAssList,
+                            barWidth: 30,
                             // barGap:10
-                            label:{
+                            label: {
                                 normal: {
                                     show: true,
                                     position: 'inside'
@@ -3477,10 +3619,10 @@
                     ]
                 });
             },
-            selectTaskByYear(){
-                if(this.whichYear1 == null
-                || this.whichYear1 === undefined
-                || this.whichYear1 === ''){
+            selectTaskByYear() {
+                if (this.whichYear1 == null
+                    || this.whichYear1 === undefined
+                    || this.whichYear1 === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择年份',
@@ -3488,9 +3630,9 @@
                     });
                     return;
                 }
-                if(this.whichYear1){
+                if (this.whichYear1) {
                     this.taskReqDTO.whichYear = moment(this.whichYear1).format("YYYY-MM-DD");
-                    this.taskReqDTO.whichYear = this.taskReqDTO.whichYear.substring(0,4)
+                    this.taskReqDTO.whichYear = this.taskReqDTO.whichYear.substring(0, 4)
                 }
                 // if (Number(this.taskReqDTO.whichYear) < )
                 this.taskData1 = [];
@@ -3499,42 +3641,42 @@
                 this.fetchAnnualProjectTaskNum();
                 this.fetchAnnualTaskByPriority()
             },
-            selectTaskTimeByYear(){
-              if (this.whichYear7){
-                  this.taskTimeReqDTO.whichYear = moment(this.whichYear7).format("YYYY-MM-DD");
-                  this.taskTimeReqDTO.whichYear = this.taskTimeReqDTO.whichYear.substring(0,4);
-                  // this.taskTimeData = {};
-                  this.taskTimeData.totalTaskTime = 0;
-                  this.diffStageTime = [];
-                  this.diffStageAvgTime = [];
-                  this.top10TaskList = [];
-                  this.fetchDiffStageTaskTime();
-                  this.fetchTop10MostTimeTask();
-              }
+            selectTaskTimeByYear() {
+                if (this.whichYear7) {
+                    this.taskTimeReqDTO.whichYear = moment(this.whichYear7).format("YYYY-MM-DD");
+                    this.taskTimeReqDTO.whichYear = this.taskTimeReqDTO.whichYear.substring(0, 4);
+                    // this.taskTimeData = {};
+                    this.taskTimeData.totalTaskTime = 0;
+                    this.diffStageTime = [];
+                    this.diffStageAvgTime = [];
+                    this.top10TaskList = [];
+                    this.fetchDiffStageTaskTime();
+                    this.fetchTop10MostTimeTask();
+                }
             },
-            selectTaskByYear4(){
-                if(this.whichYear4){
+            selectTaskByYear4() {
+                if (this.whichYear4) {
                     this.taskMonthReqDTO.whichYear = moment(this.whichYear4).format("YYYY-MM-DD");
-                    this.taskMonthReqDTO.whichYear = this.taskMonthReqDTO.whichYear.substring(0,4)
+                    this.taskMonthReqDTO.whichYear = this.taskMonthReqDTO.whichYear.substring(0, 4)
                 }
                 this.taskTotal = 0;
                 this.taskMonthList = [];
                 this.fetchEveryMonthTask()
             },
-            selectVacationByYear(){
-                if (this.whichYear5){
+            selectVacationByYear() {
+                if (this.whichYear5) {
                     this.vacationReqDTO.whichYear = moment(this.whichYear5).format("YYYY-MM-DD");
-                    this.vacationReqDTO.whichYear = this.vacationReqDTO.whichYear.substring(0,4)
+                    this.vacationReqDTO.whichYear = this.vacationReqDTO.whichYear.substring(0, 4)
                 }
                 this.vacationCountList = [];
                 this.vacationTimeList = [];
                 this.fetchEveryMonthVacation();
                 this.fetchAnnualVacation();
             },
-            selectFeedbackByYear(){
-                if(this.whichYear2 == null
+            selectFeedbackByYear() {
+                if (this.whichYear2 == null
                     || this.whichYear2 === undefined
-                    || this.whichYear2 === ''){
+                    || this.whichYear2 === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择年份',
@@ -3542,23 +3684,23 @@
                     });
                     return;
                 }
-              if (this.whichYear2){
-                  this.fbReqDTO.whichYear = moment(this.whichYear2).format("YYYY-MM-DD");
-                  this.fbReqDTO.whichYear = this.fbReqDTO.whichYear.substring(0,4)
-              }
-              this.feedbackMonthList = [];
-              this.feedbackTotal = 0;
+                if (this.whichYear2) {
+                    this.fbReqDTO.whichYear = moment(this.whichYear2).format("YYYY-MM-DD");
+                    this.fbReqDTO.whichYear = this.fbReqDTO.whichYear.substring(0, 4)
+                }
+                this.feedbackMonthList = [];
+                this.feedbackTotal = 0;
                 this.feedbackData = [];
-              this.fetchEveryMonthFeedback();
-              this.fetchAnnualFeedback();
+                this.fetchEveryMonthFeedback();
+                this.fetchAnnualFeedback();
             },
             //查询年度需求
-            fetchAnnualFeedback(){
-                if (this.admin){
+            fetchAnnualFeedback() {
+                if (this.admin) {
                     this.feedbackTotal = 0;
                     this.feedbackData = [];
-                    Http.zsyPostHttp('/data/annual/feedback-num',this.fbReqDTO,(res)=>{
-                        if (res){
+                    Http.zsyPostHttp('/data/annual/feedback-num', this.fbReqDTO, (res) => {
+                        if (res) {
                             this.fbTotalCount = res.data.totalNum;
                             this.fromCoach = res.data.fromCoachNum;
                             this.other = res.data.otherNum;
@@ -3570,7 +3712,7 @@
                             fbData2.value = this.other;
                             fbData2.name = '其他';
                             this.feedbackData.push(fbData2);
-                            this.$nextTick(()=>{
+                            this.$nextTick(() => {
                                 this.drawLine6()
                             })
                         }
@@ -3578,16 +3720,16 @@
                 }
             },
             //查询年度每个月的需求数
-            fetchEveryMonthFeedback(){
-                if (this.admin){
+            fetchEveryMonthFeedback() {
+                if (this.admin) {
                     this.feedbackMonthList = [];
-                    Http.zsyPostHttp('/data/annual/feedback/month',this.fbReqDTO,(res)=>{
-                        if (res){
+                    Http.zsyPostHttp('/data/annual/feedback/month', this.fbReqDTO, (res) => {
+                        if (res) {
                             this.feedbackMonthList = res.data;
-                            this.feedbackMonthList.forEach(feedbackNum=>{
+                            this.feedbackMonthList.forEach(feedbackNum => {
                                 this.feedbackTotal = this.feedbackTotal + feedbackNum
                             });
-                            this.$nextTick(()=>{
+                            this.$nextTick(() => {
                                 this.drawLine3();
                                 this.drawLine6()
                             })
@@ -3596,17 +3738,17 @@
                 }
             },
             //查询年度每月完成的任务数
-            fetchEveryMonthTask(){
-                if (this.admin){
+            fetchEveryMonthTask() {
+                if (this.admin) {
                     this.taskTotal = 0;
                     this.taskMonthList = [];
-                    Http.zsyPostHttp('/data/annual/task/month',this.taskMonthReqDTO,(res)=>{
-                        if (res){
+                    Http.zsyPostHttp('/data/annual/task/month', this.taskMonthReqDTO, (res) => {
+                        if (res) {
                             this.taskMonthList = res.data;
-                            this.taskMonthList.forEach(taskNum=>{
+                            this.taskMonthList.forEach(taskNum => {
                                 this.taskTotal = this.taskTotal + taskNum
                             });
-                            this.$nextTick(()=>{
+                            this.$nextTick(() => {
                                 this.drawLine4()
                             })
                         }
@@ -3614,16 +3756,16 @@
                 }
             },
             //年度 每月请假次数和时长集合
-            fetchEveryMonthVacation(){
-                if (this.admin){
+            fetchEveryMonthVacation() {
+                if (this.admin) {
                     this.vacationCountList = [];
                     this.vacationTimeList = [];
-                    Http.zsyPostHttp('/data/annual/vacation/month',this.vacationReqDTO,(res)=>{
-                        if (res){
+                    Http.zsyPostHttp('/data/annual/vacation/month', this.vacationReqDTO, (res) => {
+                        if (res) {
                             this.vacationCountList = res.data.vacationCountList;
                             this.vacationTimeList = res.data.vacationTimeList;
 
-                            this.$nextTick(()=>{
+                            this.$nextTick(() => {
                                 this.drawLine5()
                             })
                         }
@@ -3631,10 +3773,10 @@
                 }
             },
             //年度请假总次数,总时长
-            fetchAnnualVacation(){
-                if (this.admin){
-                    Http.zsyPostHttp('/data/annual/vacation',this.vacationReqDTO,(res)=>{
-                        if (res){
+            fetchAnnualVacation() {
+                if (this.admin) {
+                    Http.zsyPostHttp('/data/annual/vacation', this.vacationReqDTO, (res) => {
+                        if (res) {
                             this.vacationData.totalCount = res.data.vacationCount;
                             this.vacationData.totalTime = res.data.vacationTime;
                         }
@@ -3642,14 +3784,14 @@
                 }
             },
             //查询年度各个项目对应的任务数
-            fetchAnnualProjectTaskNum(){
-                if (this.admin){
+            fetchAnnualProjectTaskNum() {
+                if (this.admin) {
                     this.taskData2 = [];
                     this.projectTaskNum = 0;
-                    Http.zsyPostHttp('/data/annual/task/project-task',this.taskReqDTO,(res) =>{
-                        if (res){
+                    Http.zsyPostHttp('/data/annual/task/project-task', this.taskReqDTO, (res) => {
+                        if (res) {
                             this.projectTaskList = res.data;
-                            this.projectTaskList.forEach(project =>{
+                            this.projectTaskList.forEach(project => {
                                 const tData = {};
                                 tData.value = project.taskNum;
                                 tData.name = project.projectName;
@@ -3657,7 +3799,7 @@
                                 this.taskLegend.push(project.projectName);
                                 this.projectTaskNum = this.projectTaskNum + project.taskNum
                             });
-                            this.$nextTick(()=>{
+                            this.$nextTick(() => {
                                 this.drawLine2()
                             })
                         }
@@ -3665,12 +3807,12 @@
                 }
             },
             //根据优先级查询年度任务完成数
-            fetchAnnualTaskByPriority(){
-                if (this.admin){
+            fetchAnnualTaskByPriority() {
+                if (this.admin) {
                     this.taskData1 = [];
 
-                    Http.zsyPostHttp('data/annual/task/priority',this.taskReqDTO,(res)=>{
-                        if (res){
+                    Http.zsyPostHttp('data/annual/task/priority', this.taskReqDTO, (res) => {
+                        if (res) {
                             this.priorityTask = res.data;
                             const tData3 = {};
                             tData3.value = this.priorityTask.veryUrgentNum;
@@ -3687,7 +3829,7 @@
                             this.taskData1.push(tData);
                             this.priorityTask.totalNum = this.priorityTask.normalNum + this.priorityTask.urgentNum + this.priorityTask.veryUrgentNum;
 
-                            this.$nextTick(()=>{
+                            this.$nextTick(() => {
                                 this.drawLine1()
                             })
                         }
@@ -3696,29 +3838,29 @@
             },
 
             //查询个人请假情况
-            fetchPersonVacation(){
-              Http.zsyPostHttp('data/annual/person-vacation',this.personVacationReqDTO,(res)=>{
-                  if (res){
-                      this.personVacationData = res.data;
-                  }
-              })
+            fetchPersonVacation() {
+                Http.zsyPostHttp('data/annual/person-vacation', this.personVacationReqDTO, (res) => {
+                    if (res) {
+                        this.personVacationData = res.data;
+                    }
+                })
             },
 
             //按条件查询个人请假情况
-            selectVacationByDate(){
+            selectVacationByDate() {
                 this.personVacationReqDTO.beginTime = null;
                 this.personVacationReqDTO.endTime = null;
-                if (this.beginTime){
+                if (this.beginTime) {
                     this.personVacationReqDTO.beginTime = moment(this.beginTime).format('YYYY-MM-DD 00:00:00')
                 }
-                if (this.endTime){
+                if (this.endTime) {
                     this.personVacationReqDTO.endTime = moment(this.endTime).format('YYYY-MM-DD 23:59:59')
                 }
                 this.fetchPersonVacation()
             },
 
             //打开新增bug窗口
-            openBugDialog(){
+            openBugDialog() {
                 this.createBugSolvingVisible = true;
                 this.onlineBugForm.description
                     = this.onlineBugForm.projectId
@@ -3742,45 +3884,45 @@
             },
 
             //保存新增bug
-            saveOnlineBugForm(){
+            saveOnlineBugForm() {
                 this.isSaving = true;
-                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin === ''){
+                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin === '') {
                     this.errorMsg("反馈人不能为空");
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.type == null || this.onlineBugForm.type === ''){
+                if (this.onlineBugForm.type == null || this.onlineBugForm.type === '') {
                     this.errorMsg("问题类型不能为空");
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.isSolved == null || this.onlineBugForm.isSolved === ''){
+                if (this.onlineBugForm.isSolved == null || this.onlineBugForm.isSolved === '') {
                     this.errorMsg("是否解决不能为空");
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.demandSystemId == null || this.onlineBugForm.demandSystemId === ''){
+                if (this.onlineBugForm.demandSystemId == null || this.onlineBugForm.demandSystemId === '') {
                     this.errorMsg("反馈系统不能为空");
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.description == null || this.onlineBugForm.description === ''){
+                if (this.onlineBugForm.description == null || this.onlineBugForm.description === '') {
                     this.errorMsg("问题描述不能为空");
                     this.isSaving = false;
                     return
                 }
-                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime === ''){
+                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime === '') {
                     this.errorMsg("反馈时间不能为空");
                     this.isSaving = false;
                     return
                 }
-                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss');
+                this.onlineBugForm.discoverTime = moment(this.onlineBugForm.discoverTime).format('YYYY-MM-DD HH:mm:ss');
                 if (this.onlineBugForm.processTime) {
-                    this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                    this.onlineBugForm.processTime = moment(this.onlineBugForm.processTime).format('YYYY-MM-DD HH:mm:ss')
                 }
                 let param = this.onlineBugForm;
-                if (param.demandSystemId != null && param.demandSystemId !== ''){
-                    let demandSystems = this.demandSystemList.filter(demandSystem1=>
+                if (param.demandSystemId != null && param.demandSystemId !== '') {
+                    let demandSystems = this.demandSystemList.filter(demandSystem1 =>
                         demandSystem1.id === param.demandSystemId
                     );
                     param.demandSystemName = demandSystems[0].name
@@ -3802,7 +3944,7 @@
                     this.changeMonth1();
                     this.changeMonth2();
                     this.isSaving = false
-                },(fail)=>{
+                }, (fail) => {
                     this.$message({
                         showClose: true,
                         message: fail.errMsg,
@@ -3812,33 +3954,33 @@
                     this.bugUsers = [];
                 })
             },
-            editBugForm(){
-                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin === ''){
+            editBugForm() {
+                if (this.onlineBugForm.origin == null || this.onlineBugForm.origin === '') {
                     this.errorMsg("反馈人不能为空");
                     return
                 }
-                if (this.onlineBugForm.description == null || this.onlineBugForm.description === ''){
+                if (this.onlineBugForm.description == null || this.onlineBugForm.description === '') {
                     this.errorMsg("问题描述不能为空");
                     return
                 }
-                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime === ''){
+                if (this.onlineBugForm.discoverTime == null || this.onlineBugForm.discoverTime === '') {
                     this.errorMsg("反馈时间不能为空");
                     return
                 }
-                this.onlineBugForm.discoverTime  = moment(this.onlineBugForm.discoverTime ).format('YYYY-MM-DD HH:mm:ss');
+                this.onlineBugForm.discoverTime = moment(this.onlineBugForm.discoverTime).format('YYYY-MM-DD HH:mm:ss');
                 if (this.onlineBugForm.processTime != null && this.onlineBugForm.processTime !== '') {
-                    this.onlineBugForm.processTime  = moment(this.onlineBugForm.processTime ).format('YYYY-MM-DD HH:mm:ss')
+                    this.onlineBugForm.processTime = moment(this.onlineBugForm.processTime).format('YYYY-MM-DD HH:mm:ss')
                 }
                 let param = this.onlineBugForm;
                 param.description = param.description.trim();
                 param['bugUsers'] = this.bugUsers;
-                if (param.demandSystemId != null && param.demandSystemId !== ''){
-                    let demandSystems = this.demandSystemList.filter(demandSystem1=>
+                if (param.demandSystemId != null && param.demandSystemId !== '') {
+                    let demandSystems = this.demandSystemList.filter(demandSystem1 =>
                         demandSystem1.id === param.demandSystemId
                     );
                     param.demandSystemName = demandSystems[0].name
                 }
-                Http.zsyPutHttp('/bug/update-bug/'+this.modifyId, param, (resp) => {
+                Http.zsyPutHttp('/bug/update-bug/' + this.modifyId, param, (resp) => {
                     this.$message({
                         showClose: true,
                         message: 'Bug处理更新成功',
@@ -3851,7 +3993,7 @@
                     this.fetchBugPage();
                     this.changeMonth1();
                     this.changeMonth2();
-                },(fail)=>{
+                }, (fail) => {
                     this.$message({
                         showClose: true,
                         message: fail.errMsg,
@@ -3862,41 +4004,41 @@
                 })
             },
             //查询各个分类bug数量
-            fetchDiffTypeBugNum(){
-                Http.zsyPostHttp('/bug/num/type',this.bugReqDTO,(res)=>{
-                    if (res){
+            fetchDiffTypeBugNum() {
+                Http.zsyPostHttp('/bug/num/type', this.bugReqDTO, (res) => {
+                    if (res) {
                         this.BugNumData = res.data;
                     }
                 })
             },
             //按时间查询
-            fetchHistogram(){
-                if(this.bugHistogramReqDTO.year != null && this.bugHistogramReqDTO.year !== undefined && this.bugHistogramReqDTO.year !== ''){
+            fetchHistogram() {
+                if (this.bugHistogramReqDTO.year != null && this.bugHistogramReqDTO.year !== undefined && this.bugHistogramReqDTO.year !== '') {
                     this.bugHistogramReqDTO.year = moment(this.bugHistogramReqDTO.year).format("YYYY-MM-DD");
-                    this.bugHistogramReqDTO.year = this.bugHistogramReqDTO.year.substring(0,4)
+                    this.bugHistogramReqDTO.year = this.bugHistogramReqDTO.year.substring(0, 4)
                 }
                 this.systemX = [];
-                this.systemBugList= [];
-                this.systemOpsList= [];
-                this.systemAssList= [];
+                this.systemBugList = [];
+                this.systemOpsList = [];
+                this.systemAssList = [];
                 this.getSystemHistogram();
 
                 this.userX = [];
-                this.userBugList= [];
-                this.userOpsList= [];
-                this.userAssList= [];
+                this.userBugList = [];
+                this.userOpsList = [];
+                this.userAssList = [];
                 this.getUserBugHistogram();
             },
             //查询系统bug柱状图
-            getSystemHistogram(){
-              Http.zsyPostHttp('/bug/system/histogram',this.bugHistogramReqDTO,res=>{
-                  this.systemX = [];
-                  this.systemBugList= [];
-                  this.systemOpsList= [];
-                  this.systemAssList= [];
+            getSystemHistogram() {
+                Http.zsyPostHttp('/bug/system/histogram', this.bugHistogramReqDTO, res => {
+                    this.systemX = [];
+                    this.systemBugList = [];
+                    this.systemOpsList = [];
+                    this.systemAssList = [];
                     this.systemBugNumList = res.data;
-                    if (this.systemBugNumList.length>0){
-                        this.systemBugNumList.forEach(systemBugNum=>{
+                    if (this.systemBugNumList.length > 0) {
+                        this.systemBugNumList.forEach(systemBugNum => {
                             this.systemX.push(systemBugNum.groupName);
                             this.systemBugList.push(systemBugNum.bugNum);
                             this.systemOpsList.push(systemBugNum.optimizationNum);
@@ -3904,20 +4046,20 @@
                         });
 
                     }
-                  this.drawLine11()
+                    this.drawLine11()
 
-              })
+                })
             },
             //查询用户bug分类柱状图
-            getUserBugHistogram(){
-                Http.zsyPostHttp('/bug/user/histogram',this.bugHistogramReqDTO,res=>{
+            getUserBugHistogram() {
+                Http.zsyPostHttp('/bug/user/histogram', this.bugHistogramReqDTO, res => {
                     this.userX = [];
-                    this.userBugList= [];
-                    this.userOpsList= [];
-                    this.userAssList= [];
+                    this.userBugList = [];
+                    this.userOpsList = [];
+                    this.userAssList = [];
                     this.userBugNumList = res.data;
-                    if (this.userBugNumList.length>0){
-                        this.userBugNumList.forEach(userBugNum=>{
+                    if (this.userBugNumList.length > 0) {
+                        this.userBugNumList.forEach(userBugNum => {
                             this.userX.push(userBugNum.userName);
                             this.userBugList.push(userBugNum.bugNum);
                             this.userOpsList.push(userBugNum.optimizationNum);
@@ -3929,29 +4071,29 @@
                 })
             },
             //分页查询bug
-            fetchBugPage(){
-                if(this.bugReqDTO.year != null && this.bugReqDTO.year !== undefined && this.bugReqDTO.year !== ''){
+            fetchBugPage() {
+                if (this.bugReqDTO.year != null && this.bugReqDTO.year !== undefined && this.bugReqDTO.year !== '') {
                     this.bugReqDTO.year = moment(this.bugReqDTO.year).format("YYYY-MM-DD");
-                    this.bugReqDTO.year = this.bugReqDTO.year.substring(0,4)
+                    this.bugReqDTO.year = this.bugReqDTO.year.substring(0, 4)
                 }
-              Http.zsyPostHttp('/bug/new/page',this.bugReqDTO,(res)=>{
-                  if (res){
-                      this.bugPage = res.data.list;
-                      this.bugFormPage.total = res.data.total
-                  }
-              });
+                Http.zsyPostHttp('/bug/new/page', this.bugReqDTO, (res) => {
+                    if (res) {
+                        this.bugPage = res.data.list;
+                        this.bugFormPage.total = res.data.total
+                    }
+                });
                 this.fetchDiffTypeBugNum()
             },
             //分页查询bug(老数据)
-            fetchOldBugPage(){
-                Http.zsyPostHttp('/bug/old/page',this.oldBugReqDTO,(res)=>{
-                    if (res){
+            fetchOldBugPage() {
+                Http.zsyPostHttp('/bug/old/page', this.oldBugReqDTO, (res) => {
+                    if (res) {
                         this.oldBugPage = res.data.list;
                         this.oldBugFormPage.total = res.data.total
                     }
                 })
             },
-            closeDialog(){
+            closeDialog() {
                 this.onlineBugForm.projectId = null;
                 this.onlineBugForm.taskId = null;
                 this.onlineBugForm.origin = null;
@@ -3967,13 +4109,13 @@
             },
 
             //查询年度已完成任务总耗时(设计,产品,开发,测试)
-            fetchDiffStageTaskTime(){
-                if (this.admin){
+            fetchDiffStageTaskTime() {
+                if (this.admin) {
                     this.taskTimeData.totalTaskTime = 0;
                     this.diffStageTime = [];
                     this.diffStageAvgTime = [];
-                    Http.zsyPostHttp('/data/annual/diff-stage/task-time',this.taskTimeReqDTO,(res)=>{
-                        if (res){
+                    Http.zsyPostHttp('/data/annual/diff-stage/task-time', this.taskTimeReqDTO, (res) => {
+                        if (res) {
                             this.taskTimeData = res.data;
                             this.taskTimeData.totalTaskTime = res.data.totalTaskTime;
                             this.diffStageTime.push(res.data.designTime);
@@ -3985,7 +4127,7 @@
                             this.diffStageAvgTime.push(res.data.avgProductTime);
                             this.diffStageAvgTime.push(res.data.avgDevelopTime);
                             this.diffStageAvgTime.push(res.data.avgTestTime);
-                            this.$nextTick(()=>{
+                            this.$nextTick(() => {
                                 this.drawLine7()
                             })
                         }
@@ -3994,35 +4136,35 @@
             },
 
             //查询耗时前十名的多人任务
-            fetchTop10MostTimeTask(){
+            fetchTop10MostTimeTask() {
                 this.top10TaskList = [];
-                Http.zsyPostHttp('/data/annual/most-time-task/top10',this.taskTimeReqDTO,(res)=>{
-                    if (res){
+                Http.zsyPostHttp('/data/annual/most-time-task/top10', this.taskTimeReqDTO, (res) => {
+                    if (res) {
                         this.top10TaskList = res.data.taskList;
                     }
                 })
             },
 
             //查询任务总耗时
-            fetchTaskTotalTime(taskId){
-              Http.zsyGetHttp(`/data/annual/task/time/${taskId}`,{},(res)=>{
-                  if (res){
-                      this.taskTotalTime = res.data.taskHours;
-                  }
-              })
+            fetchTaskTotalTime(taskId) {
+                Http.zsyGetHttp(`/data/annual/task/time/${taskId}`, {}, (res) => {
+                    if (res) {
+                        this.taskTotalTime = res.data.taskHours;
+                    }
+                })
             },
 
             //跳转到任务
-            toTask(taskId){
+            toTask(taskId) {
                 if (taskId != null && taskId !== '') {
                     this.$router.push({name: 'taskListFormComments', params: {taskId: taskId}})
                 }
             },
 
             //查询任务详情
-            fetchTaskDetail(id){
-                Http.zsyGetHttp(`/task/detail/${id}`, {},(res)=>{
-                    if (res){
+            fetchTaskDetail(id) {
+                Http.zsyGetHttp(`/task/detail/${id}`, {}, (res) => {
+                    if (res) {
                         this.taskDetail = res.data;
                         this.fetchTaskTotalTime(id);
                         this.showTaskVisible = true;
@@ -4040,24 +4182,24 @@
                     this.signInReqDTO.beginTime = this.signInReqDTO.endTime = this.signInDaterange = ''
                 }
             },
-            initSignInTime(){
+            initSignInTime() {
                 let date1 = new Date();
-                let time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
+                let time1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();//time1表示当前时间
                 let date2 = new Date(date1);
                 let date3 = new Date(date1);
                 date3.setDate(date1.getDate() - 1);
                 date2.setDate(date1.getDate() - 7);
-                let time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
-                let time3 = date3.getFullYear()+"-"+(date3.getMonth()+1)+"-"+date3.getDate();
+                let time2 = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate();
+                let time3 = date3.getFullYear() + "-" + (date3.getMonth() + 1) + "-" + date3.getDate();
                 // this.signInReqDTO.beginTime = moment(time2).format('YYYY-MM-DD 00:00:00');
                 // this.signInReqDTO.endTime = moment(time3).format('YYYY-MM-DD 23:59:59');
                 this.signInReqDTO.beginTime = time2 + ' 00:00:00';
                 this.signInReqDTO.endTime = time3 + ' 23:59:59';
 
             },
-            selectSignInData(){
+            selectSignInData() {
                 this.signInReqDTO.pageNum = 1;
-                if (this.signInReqDTO.beginTime != null && this.signInReqDTO.beginTime !== ''){
+                if (this.signInReqDTO.beginTime != null && this.signInReqDTO.beginTime !== '') {
                     this.signInReqDTO.beginTime = moment(this.signInReqDTO.beginTime).format('YYYY-MM-DD 00:00:00');
                 }
                 if (this.signInReqDTO.endTime != null && this.signInReqDTO.endTime !== '') {
@@ -4068,76 +4210,76 @@
             },
 
             //查询考勤情况
-            fetchSignInData(){
-                if (this.groupLeader){
-                    Http.zsyPostHttp('/sign-in/page',this.signInReqDTO,(res)=>{
-                        if (res){
+            fetchSignInData() {
+                if (this.groupLeader) {
+                    Http.zsyPostHttp('/sign-in/page', this.signInReqDTO, (res) => {
+                        if (res) {
                             this.signInData = res.data.list;
                             this.signInPage.total = res.data.total;
-                            this.signInData.forEach(signIn =>{
+                            this.signInData.forEach(signIn => {
                                 if (signIn.workTime) {
                                     signIn.workTime = this.getTime(signIn.workTime);
                                 }
-                                if(signIn.eWorkTime){
+                                if (signIn.eWorkTime) {
                                     signIn.eWorkTime = this.getTime(signIn.eWorkTime);
                                 }
                                 let checkTimeStr = '';
                                 signIn.checkTimeList.forEach(checkTime => {
                                     checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
                                 });
-                                signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
+                                signIn.checkTimeList = checkTimeStr.substring(0, checkTimeStr.length - 2)
                             })
                         }
                     })
                 } else {
-                    Http.zsyPostHttp('/sign-in/page/personal',this.signInReqDTO,(res)=>{
-                        if (res){
+                    Http.zsyPostHttp('/sign-in/page/personal', this.signInReqDTO, (res) => {
+                        if (res) {
                             this.signInData = res.data.list;
                             this.signInPage.total = res.data.total;
-                            this.signInData.forEach(signIn =>{
+                            this.signInData.forEach(signIn => {
                                 if (signIn.workTime) {
                                     signIn.workTime = this.getTime(signIn.workTime);
                                 }
-                                if(signIn.eWorkTime){
+                                if (signIn.eWorkTime) {
                                     signIn.eWorkTime = this.getTime(signIn.eWorkTime);
                                 }
                                 let checkTimeStr = '';
                                 signIn.checkTimeList.forEach(checkTime => {
                                     checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
                                 });
-                                signIn.checkTimeList = checkTimeStr.substring(0,checkTimeStr.length-2)
+                                signIn.checkTimeList = checkTimeStr.substring(0, checkTimeStr.length - 2)
                             })
                         }
                     })
                 }
             },
-            signInHandleCurrentChange(currentPage){
+            signInHandleCurrentChange(currentPage) {
                 this.signInPage.pageNum = currentPage;
                 this.fetchSignInData();
             },
             //格式化时间
-            getTime(time){
-                const hours = this.addZero(parseInt(time/1000/60/60));
-                const mins = this.addZero(parseInt(time/1000/60%60));
-                const secs = this.addZero(parseInt(time/1000%60));
-                return hours+'h'+mins+'m'+secs+'s'
+            getTime(time) {
+                const hours = this.addZero(parseInt(time / 1000 / 60 / 60));
+                const mins = this.addZero(parseInt(time / 1000 / 60 % 60));
+                const secs = this.addZero(parseInt(time / 1000 % 60));
+                return hours + 'h' + mins + 'm' + secs + 's'
             },
-            addZero(time){
-                if (time < 10){
-                    return "0"+time;
+            addZero(time) {
+                if (time < 10) {
+                    return "0" + time;
                 } else {
-                    return time+"";
+                    return time + "";
                 }
             },
-            closeEWorkCounter(){
+            closeEWorkCounter() {
                 this.workMonth1 = '';
                 this.totalEWorkTime = '';
                 this.eWorkTimeUserId = '';
                 this.eWorkTimeUserName = '';
                 this.eWorkTimeReqDTO1.yearAndMonth = '';
             },
-            fetchTotalEWorkTime(){
-                if (this.eWorkTimeUserId == null || this.eWorkTimeUserId === ''){
+            fetchTotalEWorkTime() {
+                if (this.eWorkTimeUserId == null || this.eWorkTimeUserId === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择查询的用户',
@@ -4145,21 +4287,21 @@
                     });
                     return false;
                 }
-                if (this.workMonth1 != null && this.workMonth1 !== ''){
+                if (this.workMonth1 != null && this.workMonth1 !== '') {
                     const month = this.workMonth1;
                     const year = moment(new Date()).format('YYYY');
-                    const yearAndMonth = year+"-"+this.addZero(month);
+                    const yearAndMonth = year + "-" + this.addZero(month);
                     this.eWorkTimeReqDTO1.yearAndMonth = yearAndMonth;
-                    Http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO1,(res)=>{
+                    Http.zsyPostHttp('/sign-in/extra-hours/total/' + this.eWorkTimeUserId, this.eWorkTimeReqDTO1, (res) => {
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
                             this.eWorkTimeUserName = res.data.userName;
                         }
                     })
-                }else {
+                } else {
                     const year = moment(new Date()).format('YYYY');
                     this.eWorkTimeReqDTO1.yearAndMonth = year;
-                    Http.zsyPostHttp('/sign-in/extra-hours/total/'+this.eWorkTimeUserId,this.eWorkTimeReqDTO1,(res)=>{
+                    Http.zsyPostHttp('/sign-in/extra-hours/total/' + this.eWorkTimeUserId, this.eWorkTimeReqDTO1, (res) => {
                         if (res) {
                             this.totalEWorkTime = this.getTime(res.data.extraTime);
                             this.eWorkTimeUserName = res.data.userName;
@@ -4168,63 +4310,63 @@
                 }
             },
             //获取考勤人员列表
-            fetchSignInUser(){
-                Http.zsyGetHttp('/sign-in/users',{},(res)=>{
-                    if (res){
+            fetchSignInUser() {
+                Http.zsyGetHttp('/sign-in/users', {}, (res) => {
+                    if (res) {
                         this.checkInUsers = res.data
                     }
                 })
             },
             // 获取考勤人员列表
-            fetchSignInUserGroup(){
+            fetchSignInUserGroup() {
                 let _this = this;
-                Http.zsyGetHttp('/sign-in/users-group',{},(res)=>{
-                    if (res){
+                Http.zsyGetHttp('/sign-in/users-group', {}, (res) => {
+                    if (res) {
                         _this.checkInUsersGroup = res.data
                     }
                 })
             },
 
             //查询反馈系统
-            fetchDemandSystem(){
-                Http.zsyGetHttp('/mantis-bug/category/list',{},(res=>{
+            fetchDemandSystem() {
+                Http.zsyGetHttp('/mantis-bug/category/list', {}, (res => {
                     this.demandSystemList = res.data;
                 }))
             },
             //按年月查询测试人员bug统计情况
-            fetchMantisBugStatsGroupByUser(){
-                Http.zsyPostHttp('/mantis-bug/stats/user',this.mantisBugReqDTO1,(res=>{
+            fetchMantisBugStatsGroupByUser() {
+                Http.zsyPostHttp('/mantis-bug/stats/user', this.mantisBugReqDTO1, (res => {
                     this.mantisUserBugStatsList = res.data
                 }))
             },
-            changeMonth1(){
-                if (this.yearMonth1 != null && this.yearMonth1 !== ''){
+            changeMonth1() {
+                if (this.yearMonth1 != null && this.yearMonth1 !== '') {
                     let today = new Date(this.yearMonth1);
-                    let month=today.getMonth();
-                    let nextMonth=++month;
-                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    let oneDay=1000*60*60*24;
-                    let dateString=new Date(nextMonthFirstDay-oneDay);
-                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
+                    let month = today.getMonth();
+                    let nextMonth = ++month;
+                    let nextMonthFirstDay = new Date(today.getFullYear(), nextMonth, 1);
+                    let oneDay = 1000 * 60 * 60 * 24;
+                    let dateString = new Date(nextMonthFirstDay - oneDay);
+                    //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth1).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
                     this.mantisBugReqDTO1.beginTime = beginTime;
                     this.mantisBugReqDTO1.endTime = endTime;
                     this.fetchMantisBugStatsGroupByUser();
-                }else {
+                } else {
                     this.mantisBugReqDTO1.beginTime = '';
                     this.mantisBugReqDTO1.endTime = '';
                     this.fetchMantisBugStatsGroupByUser();
                 }
             },
-            changeMonth2(){
-                if (this.yearMonth2 != null && this.yearMonth2 !== ''){
+            changeMonth2() {
+                if (this.yearMonth2 != null && this.yearMonth2 !== '') {
                     let today = new Date(this.yearMonth2);
-                    let month=today.getMonth();
-                    let nextMonth=++month;
-                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    let oneDay=1000*60*60*24;
-                    let dateString=new Date(nextMonthFirstDay-oneDay);
+                    let month = today.getMonth();
+                    let nextMonth = ++month;
+                    let nextMonthFirstDay = new Date(today.getFullYear(), nextMonth, 1);
+                    let oneDay = 1000 * 60 * 60 * 24;
+                    let dateString = new Date(nextMonthFirstDay - oneDay);
                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth2).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
@@ -4241,7 +4383,7 @@
                     this.onlineBugDeveloperList = [];
                     this.onlineBugTotalNum3 = 0;
                     this.fetchOnlineBugGroupByDeveloper();
-                }else {
+                } else {
                     this.onlineBugTotalNum = 0;
                     this.mantisUserBugMonthList = [];
                     this.seriesDataList2 = [];
@@ -4258,34 +4400,34 @@
                     this.fetchOnlineBugGroupByDeveloper();
                 }
             },
-            changeMonth3(){
-                if (this.yearMonth3 != null && this.yearMonth3 !== ''){
+            changeMonth3() {
+                if (this.yearMonth3 != null && this.yearMonth3 !== '') {
                     let today = new Date(this.yearMonth3);
-                    let month=today.getMonth();
-                    let nextMonth=++month;
-                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    let oneDay=1000*60*60*24;
-                    let dateString=new Date(nextMonthFirstDay-oneDay);
+                    let month = today.getMonth();
+                    let nextMonth = ++month;
+                    let nextMonthFirstDay = new Date(today.getFullYear(), nextMonth, 1);
+                    let oneDay = 1000 * 60 * 60 * 24;
+                    let dateString = new Date(nextMonthFirstDay - oneDay);
                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth3).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
                     this.mantisBugReqDTO4.beginTime = beginTime;
                     this.mantisBugReqDTO4.endTime = endTime;
                     this.fetchBugStatsGroupByTask();
-                }else {
+                } else {
                     this.mantisBugReqDTO4.beginTime = '';
                     this.mantisBugReqDTO4.endTime = '';
                     this.fetchBugStatsGroupByTask();
                 }
             },
-            changeMonth4(){
-                if (this.yearMonth4 != null && this.yearMonth4 !== ''){
+            changeMonth4() {
+                if (this.yearMonth4 != null && this.yearMonth4 !== '') {
                     let today = new Date(this.yearMonth4);
-                    let month=today.getMonth();
-                    let nextMonth=++month;
-                    let nextMonthFirstDay=new Date(today.getFullYear(),nextMonth,1);
-                    let oneDay=1000*60*60*24;
-                    let dateString=new Date(nextMonthFirstDay-oneDay);
+                    let month = today.getMonth();
+                    let nextMonth = ++month;
+                    let nextMonthFirstDay = new Date(today.getFullYear(), nextMonth, 1);
+                    let oneDay = 1000 * 60 * 60 * 24;
+                    let dateString = new Date(nextMonthFirstDay - oneDay);
                     //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
                     let beginTime = moment(this.yearMonth4).format("YYYY-MM-DD 00:00:00");
                     let endTime = moment(dateString).format("YYYY-MM-DD 23:59:59");
@@ -4294,7 +4436,7 @@
                     this.mantisBugReqDTO2.beginTime = beginTime;
                     this.mantisBugReqDTO2.endTime = endTime;
                     this.fetchBugWeekGroupByUser();
-                }else {
+                } else {
                     this.mantisUserBugWeekList = [];
                     this.seriesDataList = [];
                     this.mantisBugReqDTO2.beginTime = '';
@@ -4302,44 +4444,44 @@
                     this.fetchBugWeekGroupByUser();
                 }
             },
-            changeWeek(){
-              if (this.yearWeek != null && this.yearWeek !== ''){
-                  let weekFisrt = new Date(this.yearWeek);
-                  let time1=weekFisrt.getFullYear()+"-"+(weekFisrt.getMonth()+1)+"-"+weekFisrt.getDate();//time1表示当前时间
-                  let date2 = new Date(weekFisrt);
-                  date2.setDate(weekFisrt.getDate() + 6);
-                  let time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
-                  let beginTime = time1+' 00:00:00';
-                  let endTime = time2+' 23:59:59';
-                  this.mantisUserBugWeekList = [];
-                  this.seriesDataList = [];
-                  this.mantisBugReqDTO2.beginTime = beginTime;
-                  this.mantisBugReqDTO2.endTime = endTime;
-                  this.fetchBugWeekGroupByUser();
-              }else {
-                  this.mantisUserBugWeekList = [];
-                  this.seriesDataList = [];
-                  this.mantisBugReqDTO2.beginTime = beginTime;
-                  this.mantisBugReqDTO2.endTime = endTime;
-                  this.fetchBugWeekGroupByUser();
-              }
+            changeWeek() {
+                if (this.yearWeek != null && this.yearWeek !== '') {
+                    let weekFisrt = new Date(this.yearWeek);
+                    let time1 = weekFisrt.getFullYear() + "-" + (weekFisrt.getMonth() + 1) + "-" + weekFisrt.getDate();//time1表示当前时间
+                    let date2 = new Date(weekFisrt);
+                    date2.setDate(weekFisrt.getDate() + 6);
+                    let time2 = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate();
+                    let beginTime = time1 + ' 00:00:00';
+                    let endTime = time2 + ' 23:59:59';
+                    this.mantisUserBugWeekList = [];
+                    this.seriesDataList = [];
+                    this.mantisBugReqDTO2.beginTime = beginTime;
+                    this.mantisBugReqDTO2.endTime = endTime;
+                    this.fetchBugWeekGroupByUser();
+                } else {
+                    this.mantisUserBugWeekList = [];
+                    this.seriesDataList = [];
+                    this.mantisBugReqDTO2.beginTime = beginTime;
+                    this.mantisBugReqDTO2.endTime = endTime;
+                    this.fetchBugWeekGroupByUser();
+                }
             },
-            selectMantisProject(){
+            selectMantisProject() {
                 this.selectMantisProjectVisible = true;
                 this.mantisProject = '';
             },
-            closeMantisVisible(){
+            closeMantisVisible() {
                 this.selectMantisProjectVisible = false;
             },
-            closeOnlineBugVisible(){
+            closeOnlineBugVisible() {
                 this.importOnlineBugVisible = false;
             },
-            importBugInfo(file){
+            importBugInfo(file) {
                 this.fullscreenLoading = true;
                 this.importBugVisible = false;
                 let data = new FormData();
                 data.append('uploadFile', file.file);
-                Http.zsyPostHttp('/mantis-bug/import',data,(res)=> {
+                Http.zsyPostHttp('/mantis-bug/import', data, (res) => {
                     if (res.errMsg === "执行成功") {
                         this.$refs.bugData.clearFiles();
                         this.$message({
@@ -4358,10 +4500,10 @@
                         this.fetchOnlineBugGroupByUser();
                         this.fetchBugStatsGroupByTask();
                         this.fetchMantisBugStatsGroupByUser();
-                    }else {
+                    } else {
                         this.fullscreenLoading = false;
                     }
-                },(fail)=>{
+                }, (fail) => {
                     this.$message({
                         showClose: true,
                         message: fail.errMsg,
@@ -4370,12 +4512,12 @@
                     this.fullscreenLoading = false;
                 })
             },
-            importOnlineBug(file){
+            importOnlineBug(file) {
                 this.fullscreenLoading = true;
                 this.importOnlineBugVisible = false;
                 let data = new FormData();
                 data.append('uploadFile', file.file);
-                Http.zsyPostHttp('/bug/import',data,(res)=> {
+                Http.zsyPostHttp('/bug/import', data, (res) => {
                     if (res.errMsg === "执行成功") {
                         this.$refs.onlineBugData.clearFiles();
                         this.$message({
@@ -4386,10 +4528,10 @@
                         this.fullscreenLoading = false;
                         this.bugReqDTO.pageNum = 1
                         this.fetchBugPage()
-                    }else {
+                    } else {
                         this.fullscreenLoading = false;
                     }
-                },(fail)=>{
+                }, (fail) => {
                     this.$message({
                         showClose: true,
                         message: fail.errMsg,
@@ -4398,21 +4540,21 @@
                     this.fullscreenLoading = false;
                 })
             },
-            closeSignInDialog(){
+            closeSignInDialog() {
                 this.$refs.record.clearFiles();
             },
-            exportBugInfo(){
-                if (this.mantisProject != null &&  this.mantisProject !== ''){
+            exportBugInfo() {
+                if (this.mantisProject != null && this.mantisProject !== '') {
                     this.selectMantisProjectVisible = false;
-                    let project = this.mantisProjectList.filter(mantisProject=>(mantisProject.id === this.mantisProject))[0];
-                    this.$confirm('确认导出 <'+project.name+'> 的bug信息?', '提示', {
+                    let project = this.mantisProjectList.filter(mantisProject => (mantisProject.id === this.mantisProject))[0];
+                    this.$confirm('确认导出 <' + project.name + '> 的bug信息?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
                         this.fullscreenLoading = true;
-                        Http.zsyGetHttp('/mantis-bug/export/'+this.mantisProject,{},(res)=>{
-                            if (res.errMsg === '执行成功'){
+                        Http.zsyGetHttp('/mantis-bug/export/' + this.mantisProject, {}, (res) => {
+                            if (res.errMsg === '执行成功') {
                                 this.$message({
                                     showClose: true,
                                     message: '导出成功',
@@ -4420,11 +4562,11 @@
                                 });
                                 this.fullscreenLoading = false;
                                 this.urlList = res.data;
-                                this.urlList.forEach(url=>{
-                                    window.open (url)
+                                this.urlList.forEach(url => {
+                                    window.open(url)
                                 })
                             }
-                        },err=>{
+                        }, err => {
                             this.fullscreenLoading = false;
                             this.$message({
                                 showClose: true,
@@ -4443,95 +4585,95 @@
                     this.fullscreenLoading = false;
                 }
             },
-            fetchBugWeekGroupByUser(){
+            fetchBugWeekGroupByUser() {
                 this.mantisUserBugWeekList = [];
                 this.seriesDataList = [];
-                Http.zsyPostHttp('/mantis-bug/bug-week/user',this.mantisBugReqDTO2,(res)=>{
+                Http.zsyPostHttp('/mantis-bug/bug-week/user', this.mantisBugReqDTO2, (res) => {
                     this.mantisUserBugWeekList = res.data;
 
-                    this.mantisUserBugWeekList.forEach(bugWeek=>{
+                    this.mantisUserBugWeekList.forEach(bugWeek => {
                         this.dateList = bugWeek.dateStrList;
                         this.weekdayList = bugWeek.weekdayList;
                         this.userNameList.push(bugWeek.userName);
                         let seriesData = {
-                            'name':bugWeek.userName,
-                            'type':'line',
-                            'data':bugWeek.bugNumList
+                            'name': bugWeek.userName,
+                            'type': 'line',
+                            'data': bugWeek.bugNumList
                         };
                         this.seriesDataList.push(seriesData)
                     });
-                    if (this.permit){
-                        this.$nextTick(()=>{
+                    if (this.permit) {
+                        this.$nextTick(() => {
                             this.drawLine8()
                         })
                     }
 
                 })
             },
-            fetchOnlineBugGroupByUser(){
+            fetchOnlineBugGroupByUser() {
                 this.onlineBugTotalNum = 0;
                 this.mantisUserBugMonthList = [];
                 this.seriesDataList2 = [];
                 this.onlineBugUserList = [];
-                Http.zsyPostHttp('/mantis-bug/online-bug/user',this.mantisBugReqDTO3,(res)=>{
+                Http.zsyPostHttp('/mantis-bug/online-bug/user', this.mantisBugReqDTO3, (res) => {
                     this.mantisUserBugMonthList = res.data;
 
-                    this.mantisUserBugMonthList.forEach(bugUserMonth=>{
+                    this.mantisUserBugMonthList.forEach(bugUserMonth => {
                         let bugUserMonthData = {
-                            'name': bugUserMonth.userName+'('+ bugUserMonth.bugNum+')',
+                            'name': bugUserMonth.userName + '(' + bugUserMonth.bugNum + ')',
                             'value': bugUserMonth.bugNum
                         };
-                        this.onlineBugUserList.push(bugUserMonth.userName+'('+ bugUserMonth.bugNum+')');
+                        this.onlineBugUserList.push(bugUserMonth.userName + '(' + bugUserMonth.bugNum + ')');
                         this.seriesDataList2.push(bugUserMonthData);
                         this.onlineBugTotalNum += bugUserMonth.bugNum;
                     });
-                    if (this.permit){
-                        this.$nextTick(()=>{
+                    if (this.permit) {
+                        this.$nextTick(() => {
                             this.drawLine9()
                         })
                     }
                 })
             },
-            fetchOnlineBugGroupByDeveloper(){
+            fetchOnlineBugGroupByDeveloper() {
                 this.mantisDeveloperBugMonthList = [];
                 this.seriesDataList3 = [];
                 this.onlineBugDeveloperList = [];
                 this.onlineBugTotalNum3 = 0;
-                Http.zsyPostHttp('/mantis-bug/online-bug/develop',this.mantisBugReqDTO3,(res)=>{
+                Http.zsyPostHttp('/mantis-bug/online-bug/develop', this.mantisBugReqDTO3, (res) => {
                     this.mantisDeveloperBugMonthList = res.data;
 
-                    this.mantisDeveloperBugMonthList.forEach(bugUserMonth=>{
+                    this.mantisDeveloperBugMonthList.forEach(bugUserMonth => {
                         let bugUserMonthData = {
-                            'name': bugUserMonth.userName+'('+ bugUserMonth.bugNum+')',
+                            'name': bugUserMonth.userName + '(' + bugUserMonth.bugNum + ')',
                             'value': bugUserMonth.bugNum
                         };
-                        this.onlineBugDeveloperList.push(bugUserMonth.userName+'('+ bugUserMonth.bugNum+')');
+                        this.onlineBugDeveloperList.push(bugUserMonth.userName + '(' + bugUserMonth.bugNum + ')');
                         this.seriesDataList3.push(bugUserMonthData);
                         this.onlineBugTotalNum3 += bugUserMonth.bugNum;
                     });
-                    if (this.permit){
-                        this.$nextTick(()=>{
+                    if (this.permit) {
+                        this.$nextTick(() => {
                             this.drawLine10()
                         })
                     }
                 })
             },
-            fetchBugStatsGroupByTask(){
-                Http.zsyPostHttp('/mantis-bug/stats/task',this.mantisBugReqDTO4,(res)=>{
+            fetchBugStatsGroupByTask() {
+                Http.zsyPostHttp('/mantis-bug/stats/task', this.mantisBugReqDTO4, (res) => {
                     this.taskBugStatsList = res.data.list;
                     this.taskBugPage.total = res.data.total;
                 })
             },
             //查看当前环境,用于显示  导出mantisbug按钮
-            getEnv(){
-                Http.zsyGetHttp('/mantis-bug/env',{},(res)=>{
+            getEnv() {
+                Http.zsyGetHttp('/mantis-bug/env', {}, (res) => {
                     this.environment = res.data;
                 })
             },
-            handleRecordPreview(){
+            handleRecordPreview() {
 
             },
-            handleRecordRemove(){
+            handleRecordRemove() {
 
             },
             beforeUpload(file) {
@@ -4554,12 +4696,12 @@
                 })
             },
             //查询进行中的任务
-            fetchAllDoingTasks(){
-                Http.zsyGetHttp('/task/doing/all',{},res=>{
+            fetchAllDoingTasks() {
+                Http.zsyGetHttp('/task/doing/all', {}, res => {
                     this.doingTaskList = res.data;
                 })
             },
-            initTime(){
+            initTime() {
                 let date = new Date();
                 // 本周一的日期
                 date.setDate(date.getDate() - date.getDay() + 1);
@@ -4571,7 +4713,7 @@
                 // this.weekPublishReqDTO.beginTime = begin;
                 // this.weekPublishReqDTO.endTime = end;
             },
-            initTime2(){
+            initTime2() {
                 let date = new Date();
                 // 本周一的日期
                 date.setDate(date.getDate() - date.getDay() + 1);
@@ -4587,7 +4729,7 @@
 
                 this.fetchPersonVacation()
             },
-            initTime3(){
+            initTime3() {
                 let date = new Date();
                 // 本周一的日期
                 date.setDate(date.getDate() - date.getDay() + 1);
@@ -4603,7 +4745,7 @@
 
                 this.getLeaveList()
             },
-            initTime4(){
+            initTime4() {
                 let date = new Date();
                 // 本周一的日期
                 date.setDate(date.getDate() - date.getDay() + 1);
@@ -4638,51 +4780,51 @@
                     }
                 }
             },
-            getExtraWorkStats(){
-                Http.zsyPostHttp('/stats/extra-work/page',this.extraWorkReqDTO,(res)=>{
+            getExtraWorkStats() {
+                Http.zsyPostHttp('/stats/extra-work/page', this.extraWorkReqDTO, (res) => {
                     this.extraWorkStatsList = res.data.list;
                     this.extraWorkPage.total = res.data.total;
-                    this.extraWorkStatsList.forEach(extraWork=>{
+                    this.extraWorkStatsList.forEach(extraWork => {
                         if (extraWork.checkRecords.length > 0) {
                             let checkTimeStr = '';
                             extraWork.checkRecords.forEach(checkTime => {
                                 checkTimeStr = checkTimeStr + moment(checkTime).format("HH:mm:ss") + ', '
                             });
-                            extraWork.checkRecords = checkTimeStr.substring(0,checkTimeStr.length-2)
+                            extraWork.checkRecords = checkTimeStr.substring(0, checkTimeStr.length - 2)
                         }
                     })
                 })
             },
-            searchEWorkStats(){
+            searchEWorkStats() {
                 this.extraWorkReqDTO.pageNum = 1;
                 this.extraWorkReqDTO.beginTime = null;
                 this.extraWorkReqDTO.endTime = null;
-                if (this.ewBeginTime !== undefined && this.ewBeginTime !== null && this.ewBeginTime !== ''){
+                if (this.ewBeginTime !== undefined && this.ewBeginTime !== null && this.ewBeginTime !== '') {
                     this.extraWorkReqDTO.beginTime = moment(this.ewBeginTime).format('YYYY-MM-DD 00:00:00');
                 }
-                if (this.ewEndTime !== undefined && this.ewEndTime !== null && this.ewEndTime !== ''){
+                if (this.ewEndTime !== undefined && this.ewEndTime !== null && this.ewEndTime !== '') {
                     this.extraWorkReqDTO.endTime = moment(this.ewEndTime).format('YYYY-MM-DD 23:59:59');
                 }
                 this.getExtraWorkStats()
             },
 
-            closeRestHoursDialog(){
+            closeRestHoursDialog() {
                 this.restHours = 0;
                 this.restHoursUserId = '';
                 this.restHoursUserName = '';
             },
-            fetchUserRestHours(){
-                if (this.restHoursUserId != null && this.restHoursUserId !== undefined && this.restHoursUserId !==  ''){
-                    Http.zsyGetHttp('/user/'+this.restHoursUserId,{},(res)=>{
+            fetchUserRestHours() {
+                if (this.restHoursUserId != null && this.restHoursUserId !== undefined && this.restHoursUserId !== '') {
+                    Http.zsyGetHttp('/user/' + this.restHoursUserId, {}, (res) => {
                         this.restHoursUserName = res.data.name;
                         this.restHours = res.data.restHours;
                     });
                 }
             },
             //管理员重置用户调休时间
-            modifyUserRestHours(){
+            modifyUserRestHours() {
                 this.restHourLoading = true;
-                if (this.restHoursUserId == null || this.restHoursUserId === undefined || this.restHoursUserId === ''){
+                if (this.restHoursUserId == null || this.restHoursUserId === undefined || this.restHoursUserId === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择要修改的用户',
@@ -4691,7 +4833,7 @@
                     this.restHourLoading = false;
                     return false;
                 }
-                if (this.restHours == null || this.restHours === undefined){
+                if (this.restHours == null || this.restHours === undefined) {
                     this.$message({
                         showClose: true,
                         message: '请填写调休时长',
@@ -4707,11 +4849,11 @@
                 }
 
                 let reqDTO = {
-                    userId:this.restHoursUserId,
-                    restHours:this.restHours
+                    userId: this.restHoursUserId,
+                    restHours: this.restHours
                 };
-                Http.zsyPostHttp('/user/rest-hours/update',reqDTO,res=>{
-                    if (res.errMsg == "执行成功"){
+                Http.zsyPostHttp('/user/rest-hours/update', reqDTO, res => {
+                    if (res.errMsg == "执行成功") {
                         this.$message({
                             showClose: true,
                             message: '修改成功',
@@ -4719,26 +4861,26 @@
                         });
                         this.restHourLoading = false;
                         // this.modifyUserRestHoursVisible = false;
-                    }else {
+                    } else {
                         this.restHourLoading = false;
                         // this.modifyUserRestHoursVisible = false;
                     }
-                },err=>{
+                }, err => {
 
-                },errrr=>{
+                }, errrr => {
                     this.restHourLoading = false;
                 })
             },
 
-            showUserRestHoursLog(){
-                if (this.restHoursUserId != null && this.restHoursUserId !== undefined && this.restHoursUserId !==  '') {
+            showUserRestHoursLog() {
+                if (this.restHoursUserId != null && this.restHoursUserId !== undefined && this.restHoursUserId !== '') {
                     this.userRestHoursLogReqDTO.userId = this.restHoursUserId;
-                    Http.zsyPostHttp('/sign-in/rest-hours-log/page',this.userRestHoursLogReqDTO,res=>{
+                    Http.zsyPostHttp('/sign-in/rest-hours-log/page', this.userRestHoursLogReqDTO, res => {
                         this.userRestHoursLogData = res.data.list;
                         this.userRestHoursLogPage.total = res.data.total;
                         this.userRestHoursDetailVisible = true;
                     })
-                }else {
+                } else {
                     this.$message({
                         showClose: true,
                         message: '请选择用户',
@@ -4746,7 +4888,7 @@
                     });
                 }
             },
-            showUserRestHoursLog2(userId,userName){
+            showUserRestHoursLog2(userId, userName) {
                 if (userId != null && userId !== undefined && userId !== '') {
                     // this.userRestHoursLogReqDTO2.userId = userId;
                     // this.userRestHoursLogReqDTO2.userName = userName;
@@ -4755,8 +4897,8 @@
                     //     this.userRestHoursLogPage2.total = res.data.total;
                     //     this.userRestHoursDetailVisible2 = true;
                     // })
-                    this.$router.push({ path: '/index/UserRestHoursPage', query: { userId: userId,userName:userName }});
-                }else {
+                    this.$router.push({path: '/index/UserRestHoursPage', query: {userId: userId, userName: userName}});
+                } else {
                     this.$message({
                         showClose: true,
                         message: '请选择用户',
@@ -4764,19 +4906,19 @@
                     });
                 }
             },
-            userRestHoursLogHandleCurrentChange(currentPage){
+            userRestHoursLogHandleCurrentChange(currentPage) {
                 this.userRestHoursLogReqDTO.pageNum = currentPage;
                 this.showUserRestHoursLog();
             },
-            userRestHoursLogHandleCurrentChange2(currentPage){
+            userRestHoursLogHandleCurrentChange2(currentPage) {
                 this.userRestHoursLogReqDTO2.pageNum = currentPage;
                 this.showUserRestHoursLog2(this.userRestHoursLogReqDTO2.userId);
             },
             //查看周人员投入表
-            fetchWeekUserCost(){
+            fetchWeekUserCost() {
                 if (this.userCostReqDTO.groupId == null
-                || this.userCostReqDTO.groupId === undefined
-                || this.userCostReqDTO.groupId === ''){
+                    || this.userCostReqDTO.groupId === undefined
+                    || this.userCostReqDTO.groupId === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择团队',
@@ -4786,7 +4928,7 @@
                 }
                 if (this.userCostReqDTO.date == null
                     || this.userCostReqDTO.date === undefined
-                    || this.userCostReqDTO.date === ''){
+                    || this.userCostReqDTO.date === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择时间',
@@ -4796,7 +4938,7 @@
                 }
                 this.userCostReqDTO.date = moment(this.userCostReqDTO.date).format('YYYY-MM-DD HH:mm:ss');
                 this.userCostReqDTO.weekNumber = moment(this.userCostReqDTO.date).week();
-                Http.zsyPostHttp('/stats/week-user-cost/v2',this.userCostReqDTO , (resp) => {
+                Http.zsyPostHttp('/stats/week-user-cost/v2', this.userCostReqDTO, (resp) => {
                     this.weekUserCostList = resp.data;
                     this.getSpanArr(this.weekUserCostList)
                 })
@@ -4859,7 +5001,7 @@
 
                         //不是第一项时，就根据标识去存储
                         if (data[index].totalHours === data[index - 1].totalHours
-                        && data[index].userName === data[index - 1].userName) {
+                            && data[index].userName === data[index - 1].userName) {
                             // 查找到符合条件的数据时每次要把之前存储的数据+1
                             this.weekHourSpanArr[this.weekHourPos] += 1;
                             this.weekHourSpanArr.push(0)
@@ -4895,7 +5037,7 @@
 
                         //不是第一项时，就根据标识去存储
                         if (data[index].positionHourPercent === data[index - 1].positionHourPercent
-                        && data[index].jobRoleName === data[index - 1].jobRoleName) {
+                            && data[index].jobRoleName === data[index - 1].jobRoleName) {
                             // 查找到符合条件的数据时每次要把之前存储的数据+1
                             this.positionPercentSpanArr[this.positionPercentPos] += 1;
                             this.positionPercentSpanArr.push(0)
@@ -4908,10 +5050,10 @@
                 })
             },
             // 列表方法
-            objectSpanMethod({row, column,rowIndex, columnIndex}) {
+            objectSpanMethod({row, column, rowIndex, columnIndex}) {
 
-            // 页面列表上 表格合并行 -> 第几列(从0开始)
-            // 需要合并多个单元格时 依次增加判断条件即可
+                // 页面列表上 表格合并行 -> 第几列(从0开始)
+                // 需要合并多个单元格时 依次增加判断条件即可
                 if (columnIndex === 0) {
                     // 二维数组存储的数据 取出
                     const _row = this.spanArr[rowIndex]
@@ -4921,71 +5063,69 @@
                         colspan: _col
                     }
                     //不可以return {rowspan：0， colspan: 0} 会造成数据不渲染， 也可以不写else，eslint过不了的话就返回false
-                } else if(columnIndex === 1){
+                } else if (columnIndex === 1) {
                     const _row = this.userSpanArr[rowIndex]
                     const _col = _row > 0 ? 1 : 0
                     return {
                         rowspan: _row,
                         colspan: _col
                     }
-                } else if(columnIndex === 4){
+                } else if (columnIndex === 4) {
                     const _row = this.weekHourSpanArr[rowIndex]
                     const _col = _row > 0 ? 1 : 0
                     return {
                         rowspan: _row,
                         colspan: _col
                     }
-                } else if(columnIndex === 5){
+                } else if (columnIndex === 5) {
                     const _row = this.leaveHourSpanArr[rowIndex]
                     const _col = _row > 0 ? 1 : 0
                     return {
                         rowspan: _row,
                         colspan: _col
                     }
-                } else if(columnIndex === 6){
+                } else if (columnIndex === 6) {
                     const _row = this.userPercentSpanArr[rowIndex]
                     const _col = _row > 0 ? 1 : 0
                     return {
                         rowspan: _row,
                         colspan: _col
                     }
-                } else if(columnIndex === 7){
+                } else if (columnIndex === 7) {
                     const _row = this.positionPercentSpanArr[rowIndex]
                     const _col = _row > 0 ? 1 : 0
                     return {
                         rowspan: _row,
                         colspan: _col
                     }
-                }
-
-                else {
+                } else {
                     return false
                 }
             },
 
             //查看用户调休
-            fetchAllUsersRestHours(){
-                if (this.restHourYear != null && this.restHourYear  !== undefined && this.restHourYear !== ''){
+            fetchAllUsersRestHours() {
+                if (this.restHourYear != null && this.restHourYear !== undefined && this.restHourYear !== '') {
                     this.restHourReqDTO.year = moment(this.restHourYear).format("YYYY-MM-DD");
-                    this.restHourReqDTO.year = this.restHourReqDTO.year.substring(0,4);
-                }else {
+                    this.restHourReqDTO.year = this.restHourReqDTO.year.substring(0, 4);
+                } else {
                     this.restHourReqDTO.year = null
                 }
-                Http.zsyPostHttp('sign-in/rest-hours/list',this.restHourReqDTO,res=>{
+                Http.zsyPostHttp('sign-in/rest-hours/list', this.restHourReqDTO, res => {
                     this.restHoursData = res.data;
                 })
             },
             //手动 新增调休记录
-            addRestHoursLog(){
+            addRestHoursLog() {
                 this.userRestHoursDetailVisible2 = false;
                 this.editRestHoursVisible = true;
             },
             //保存修改调休日志
-            saveAddRestHoursLog(){
+            saveAddRestHoursLog() {
                 this.restHourLoading = true;
                 this.userRestHoursLogForm.userId = this.userRestHoursLogReqDTO2.userId;
                 if (this.userRestHoursLogForm.userId == null || this.userRestHoursLogForm.userId === undefined
-                    || this.userRestHoursLogForm.userId === ''){
+                    || this.userRestHoursLogForm.userId === '') {
                     this.$message({
                         showClose: true,
                         message: '请选择用户',
@@ -4995,7 +5135,7 @@
                     return false;
                 }
                 if (this.userRestHoursLogForm.restHour == null || this.userRestHoursLogForm.restHour === undefined
-                || this.userRestHoursLogForm.restHour === ''){
+                    || this.userRestHoursLogForm.restHour === '') {
                     this.$message({
                         showClose: true,
                         message: '请填写调休时长',
@@ -5010,7 +5150,7 @@
                     return false;
                 }
                 if (this.userRestHoursLogForm.content == null || this.userRestHoursLogForm.content === undefined
-                || this.userRestHoursLogForm.content.trim() === ''){
+                    || this.userRestHoursLogForm.content.trim() === '') {
                     this.$message({
                         showClose: true,
                         message: '请填写事由',
@@ -5029,8 +5169,8 @@
                     return false;
                 }
                 this.userRestHoursLogForm.recordTime = moment(this.userRestHoursLogForm.recordTime).format("YYYY-MM-DD HH:mm:00");
-                Http.zsyPostHttp('/sign-in/rest-hours-log/add',this.userRestHoursLogForm,res=>{
-                    if (res.errMsg == "执行成功"){
+                Http.zsyPostHttp('/sign-in/rest-hours-log/add', this.userRestHoursLogForm, res => {
+                    if (res.errMsg == "执行成功") {
                         this.$message({
                             showClose: true,
                             message: '修改成功',
@@ -5039,23 +5179,23 @@
                         this.restHourLoading = false;
                         this.editRestHoursVisible = false;
                         this.fetchAllUsersRestHours()
-                    }else {
+                    } else {
                         this.restHourLoading = false;
                         this.editRestHoursVisible = false;
                     }
-                },err=>{
+                }, err => {
                     this.$message({
                         showClose: true,
                         message: err.errMsg,
                         type: 'error'
                     });
                     this.restHourLoading = false;
-                },error=>{
+                }, error => {
                     this.restHourLoading = false;
                 })
             },
             //取消添加
-            cancelAddRestHoursLog(){
+            cancelAddRestHoursLog() {
                 this.userRestHoursLogForm.userId = null;
                 this.userRestHoursLogForm.recordTime = null;
                 this.userRestHoursLogForm.restHour = 0;
@@ -5065,35 +5205,35 @@
             },
 
             //分页查询周发版计划
-            fetchPublishPlanPage(reqDTO){
-                Http.zsyPostHttp('/week-publish/page',reqDTO,res=>{
+            fetchPublishPlanPage(reqDTO) {
+                Http.zsyPostHttp('/week-publish/page', reqDTO, res => {
                     this.weekPublishStat.publishPlanData = res.data.list;
                     this.weekPublishStat.queryDTO.total = res.data.total;
                 })
             },
             //条件搜索发版计划
-            searchPublishPlan(){
+            searchPublishPlan() {
                 this.weekPublishStat.queryDTO.pageNum = 1;
                 if (this.weekPublishStat.queryDTO.beginTime != null
                     && this.weekPublishStat.queryDTO.beginTime !== undefined
-                    && this.weekPublishStat.queryDTO.beginTime !== ''){
+                    && this.weekPublishStat.queryDTO.beginTime !== '') {
                     this.weekPublishStat.queryDTO.beginTime = moment(this.weekPublishStat.queryDTO.beginTime).format('YYYY-MM-DD 00:00:00')
                 }
                 if (this.weekPublishStat.queryDTO.endTime != null
                     && this.weekPublishStat.queryDTO.endTime !== undefined
-                    && this.weekPublishStat.queryDTO.endTime !== ''){
+                    && this.weekPublishStat.queryDTO.endTime !== '') {
                     this.weekPublishStat.queryDTO.endTime = moment(this.weekPublishStat.queryDTO.endTime).format('YYYY-MM-DD 23:59:59')
                 }
                 this.fetchPublishPlanPage(this.weekPublishStat.queryDTO)
             },
             //周发版计划翻页
-            publishPlanPageChange(curPage){
+            publishPlanPageChange(curPage) {
                 this.weekPublishStat.queryDTO.pageNum = curPage;
                 this.fetchPublishPlanPage(this.weekPublishStat.queryDTO)
             },
             //查询发版计划详情
-            fetchPublishPlanDetail(wppId){
-                Http.zsyGetHttp('/week-publish/'+wppId,{},res=>{
+            fetchPublishPlanDetail(wppId) {
+                Http.zsyGetHttp('/week-publish/' + wppId, {}, res => {
                     this.weekPublishStat.publishPlanDetail.wppId = res.data.wppId;
                     this.weekPublishStat.publishPlanDetail.wppName = res.data.wppName;
                     this.weekPublishStat.publishPlanDetail.remark = res.data.remark;
@@ -5117,7 +5257,7 @@
                 })
             },
             //打开编辑发版计划弹框
-            openEditPublishPlan(wppId){
+            openEditPublishPlan(wppId) {
                 this.weekPublishStat.taskList = [];
                 this.fetchAllTaskCanSelect(wppId);
                 this.fetchPublishPlanDetail(wppId);
@@ -5126,58 +5266,58 @@
                 // this.weekPublishStat.showPlatform = []
             },
             //查询待发布任务
-            fetchWaitDeployTasks(){
-                Http.zsyGetHttp('/week-publish/task-wait-deploy',{},res=>{
+            fetchWaitDeployTasks() {
+                Http.zsyGetHttp('/week-publish/task-wait-deploy', {}, res => {
                     this.weekPublishStat.waitDeployTaskList = res.data;
-                    if (this.weekPublishStat.waitDeployTaskList.length>0){
-                        this.weekPublishStat.waitDeployTaskList.forEach(item=>{
+                    if (this.weekPublishStat.waitDeployTaskList.length > 0) {
+                        this.weekPublishStat.waitDeployTaskList.forEach(item => {
                             this.weekPublishStat.addPublishPlanDTO.taskIds.push(item.id)
                         })
                     }
                 })
             },
             //查询可选任务
-            fetchAllTaskCanSelect(wppId){
+            fetchAllTaskCanSelect(wppId) {
                 let id = 0;
-                if (wppId != null && wppId !== undefined && wppId !== ''){
+                if (wppId != null && wppId !== undefined && wppId !== '') {
                     id = wppId
                 }
-                Http.zsyGetHttp('/week-publish/task-dev-test?wppIdStr='+id,{},res=>{
+                Http.zsyGetHttp('/week-publish/task-dev-test?wppIdStr=' + id, {}, res => {
                     this.weekPublishStat.taskList = res.data;
                 })
             },
-            clearPublishPlanDTO(type){
-                if (type==0){
+            clearPublishPlanDTO(type) {
+                if (type == 0) {
                     this.weekPublishStat.addPublishPlanDTO = {
-                        wppName:'',
-                        publishTime:null,
-                        remark:'',
-                        testReport:null,
-                        taskIds:[],
-                        platformIds:[],
+                        wppName: '',
+                        publishTime: null,
+                        remark: '',
+                        testReport: null,
+                        taskIds: [],
+                        platformIds: [],
                     };
                     this.weekPublishStat.addVisible = false;
                     this.weekPublishStat.addPlatformUserVisible = false;
-                } else if (type == 1){
+                } else if (type == 1) {
                     this.weekPublishStat.editPublishPlanDTO = {
-                        wppId:null,
-                            wppName:'',
-                            publishTime:null,
-                            remark:'',
-                            testReport:null,
-                            taskIds:[],
-                            platformIds:[],
+                        wppId: null,
+                        wppName: '',
+                        publishTime: null,
+                        remark: '',
+                        testReport: null,
+                        taskIds: [],
+                        platformIds: [],
                     };
                     this.weekPublishStat.editVisible = false;
                     this.weekPublishStat.addPlatformUserVisible = false;
                 }
             },
             //更新发版计划
-            saveEditPublishPlan(){
+            saveEditPublishPlan() {
                 this.isSaving = true;
                 if (this.weekPublishStat.editPublishPlanDTO.wppId == null
-                || this.weekPublishStat.editPublishPlanDTO.wppId === undefined
-                || this.weekPublishStat.editPublishPlanDTO.wppId === ''){
+                    || this.weekPublishStat.editPublishPlanDTO.wppId === undefined
+                    || this.weekPublishStat.editPublishPlanDTO.wppId === '') {
                     this.isSaving = false;
                     this.$message({
                         showClose: true,
@@ -5199,7 +5339,7 @@
                 }
                 if (this.weekPublishStat.editPublishPlanDTO.publishTime == null
                     || this.weekPublishStat.editPublishPlanDTO.publishTime === undefined
-                    || this.weekPublishStat.editPublishPlanDTO.publishTime === ''){
+                    || this.weekPublishStat.editPublishPlanDTO.publishTime === '') {
                     this.isSaving = false;
                     this.$message({
                         showClose: true,
@@ -5210,7 +5350,7 @@
                 }
                 this.weekPublishStat.editPublishPlanDTO.platformAndUserList = this.weekPublishStat.platformUserList;
                 this.weekPublishStat.editPublishPlanDTO.publishTime = moment(this.weekPublishStat.editPublishPlanDTO.publishTime).format('YYYY-MM-DD 23:59:59');
-                Http.zsyPutHttp('/week-publish/'+this.weekPublishStat.editPublishPlanDTO.wppId,this.weekPublishStat.editPublishPlanDTO,res=>{
+                Http.zsyPutHttp('/week-publish/' + this.weekPublishStat.editPublishPlanDTO.wppId, this.weekPublishStat.editPublishPlanDTO, res => {
                     this.isSaving = false;
                     this.$message({
                         showClose: true,
@@ -5219,7 +5359,7 @@
                     });
                     this.clearPublishPlanDTO(1);
                     this.searchPublishPlan()
-                },err=>{
+                }, err => {
                     this.isSaving = false;
                     this.$message({
                         showClose: true,
@@ -5229,7 +5369,7 @@
                 })
             },
             //打开新增发布计划弹框
-            openAddPublishPlan(){
+            openAddPublishPlan() {
                 this.weekPublishStat.taskList = [];
                 this.weekPublishStat.showPlatform = [];
                 this.weekPublishStat.showSelectedPlatform = [];
@@ -5241,7 +5381,7 @@
                 this.weekPublishStat.addVisible = true;
                 this.weekPublishStat.addPlatformUserVisible = false;
             },
-            saveAddPublishPlan(){
+            saveAddPublishPlan() {
                 this.isSaving = true;
                 if (this.weekPublishStat.addPublishPlanDTO.wppName == null
                     || this.weekPublishStat.addPublishPlanDTO.wppName === undefined
@@ -5256,7 +5396,7 @@
                 }
                 if (this.weekPublishStat.addPublishPlanDTO.publishTime == null
                     || this.weekPublishStat.addPublishPlanDTO.publishTime === undefined
-                    || this.weekPublishStat.addPublishPlanDTO.publishTime === ''){
+                    || this.weekPublishStat.addPublishPlanDTO.publishTime === '') {
                     this.isSaving = false;
                     this.$message({
                         showClose: true,
@@ -5267,7 +5407,7 @@
                 }
                 this.weekPublishStat.addPublishPlanDTO.platformAndUserList = this.weekPublishStat.platformUserList;
                 this.weekPublishStat.addPublishPlanDTO.publishTime = moment(this.weekPublishStat.addPublishPlanDTO.publishTime).format('YYYY-MM-DD 23:59:59');
-                Http.zsyPostHttp('/week-publish',this.weekPublishStat.addPublishPlanDTO,res=>{
+                Http.zsyPostHttp('/week-publish', this.weekPublishStat.addPublishPlanDTO, res => {
                     this.isSaving = false;
                     this.$message({
                         showClose: true,
@@ -5276,7 +5416,7 @@
                     });
                     this.clearPublishPlanDTO(0);
                     this.searchPublishPlan()
-                },err=>{
+                }, err => {
                     this.isSaving = false;
                     this.$message({
                         showClose: true,
@@ -5286,7 +5426,7 @@
                 })
             },
             //保存添加多次发版平台和用户
-            saveAddPlatformUser(){
+            saveAddPlatformUser() {
                 if (this.weekPublishStat.addPlatformUserDTO.platformId == null
                     || this.weekPublishStat.addPlatformUserDTO.platformId === undefined
                     || this.weekPublishStat.addPlatformUserDTO.platformId === '') {
@@ -5294,8 +5434,8 @@
                     return
                 }
                 if (this.weekPublishStat.addPlatformUserDTO.userId == null
-                    ||this.weekPublishStat.addPlatformUserDTO.userId === undefined
-                    ||this.weekPublishStat.addPlatformUserDTO.userId === '') {
+                    || this.weekPublishStat.addPlatformUserDTO.userId === undefined
+                    || this.weekPublishStat.addPlatformUserDTO.userId === '') {
                     this.errorMsg('请选择关联用户');
                     return
                 }
@@ -5308,17 +5448,17 @@
                     platformUser.platformName = this.weekPublishStat.addPlatformUserDTO.platformName;
                     platformUser.userId = this.weekPublishStat.addPlatformUserDTO.userId;
                     platformUser.userName = this.weekPublishStat.addPlatformUserDTO.userName;
-                    if (this.weekPublishStat.platformUserList.length>0){
-                        for (let i = 0;i<this.weekPublishStat.platformUserList.length;i++){
+                    if (this.weekPublishStat.platformUserList.length > 0) {
+                        for (let i = 0; i < this.weekPublishStat.platformUserList.length; i++) {
                             let item = this.weekPublishStat.platformUserList[i];
-                            if (item.platformId == platformUser.platformId && item.userId == platformUser.userId){
+                            if (item.platformId == platformUser.platformId && item.userId == platformUser.userId) {
                                 this.errorMsg('请勿添加重复数据');
                                 this.weekPublishStat.addPlatformUserDTO = {
-                                    index:null,
-                                    platformId:null,
-                                    platformName:'',
-                                    userId:null,
-                                    userName:''
+                                    index: null,
+                                    platformId: null,
+                                    platformName: '',
+                                    userId: null,
+                                    userName: ''
                                 };
                                 return
                             }
@@ -5331,11 +5471,11 @@
                 }
 
                 this.weekPublishStat.addPlatformUserDTO = {
-                    index:null,
-                    platformId:null,
-                    platformName:'',
-                    userId:null,
-                    userName:''
+                    index: null,
+                    platformId: null,
+                    platformName: '',
+                    userId: null,
+                    userName: ''
                 };
                 // this.stepTemp = {}
 
@@ -5362,22 +5502,22 @@
                 if (this.weekPublishStat.platformUserList.length === 0) {
                     this.weekPublishStat.addPlatformUserVisible = false;
                     this.weekPublishStat.addPlatformUserDTO = {
-                        index:null,
-                        platformId:null,
-                        platformName:'',
-                        userId:null,
-                        userName:''
+                        index: null,
+                        platformId: null,
+                        platformName: '',
+                        userId: null,
+                        userName: ''
                     }
                 }
             },
-            cancelAddPlatformUser(){
+            cancelAddPlatformUser() {
                 this.weekPublishStat.addPlatformUserVisible = !this.weekPublishStat.addPlatformUserVisible;
                 this.weekPublishStat.addPlatformUserDTO = {
-                    index:null,
-                    platformId:null,
-                    platformName:'',
-                    userId:null,
-                    userName:''
+                    index: null,
+                    platformId: null,
+                    platformName: '',
+                    userId: null,
+                    userName: ''
                 }
             },
             puUserChange(val) {
@@ -5397,8 +5537,8 @@
                 })
             },
             //根据分组筛选平台
-            findPlatform(group){
-                let obj =[];
+            findPlatform(group) {
+                let obj = [];
                 this.platformList.forEach(item => {
                     if (item.groupMark === group) {
                         obj.push(item)
@@ -5406,31 +5546,31 @@
                 });
                 this.weekPublishStat.showPlatform = obj;
             },
-            cancelPlatform(){
+            cancelPlatform() {
                 this.weekPublishStat.addPublishPlanDTO.platformIds = [];
-                this.weekPublishStat.showSelectedPlatform=[];
+                this.weekPublishStat.showSelectedPlatform = [];
                 this.weekPublishStat.showPlatform = [];
             },
-            savePlatform(type){
-                if (type == 0){
+            savePlatform(type) {
+                if (type == 0) {
                     this.weekPublishStat.addPublishPlanDTO.platformIds = [];
                     this.weekPublishStat.addPublishPlanDTO.platformIds = this.weekPublishStat.showSelectedPlatform;
-                } else if (type == 1){
+                } else if (type == 1) {
                     this.weekPublishStat.editPublishPlanDTO.platformIds = [];
                     this.weekPublishStat.editPublishPlanDTO.platformIds = this.weekPublishStat.showSelectedPlatform;
                 }
             },
             findId(val) {
-                return  val.map(item => item.id);
+                return val.map(item => item.id);
             },
             //查询月度统计
-            getMonthStats(){
-                if (this.monthStats.queryDTO.queryDate == null || this.monthStats.queryDTO.queryDate === undefined || this.monthStats.queryDTO.queryDate === ''){
+            getMonthStats() {
+                if (this.monthStats.queryDTO.queryDate == null || this.monthStats.queryDTO.queryDate === undefined || this.monthStats.queryDTO.queryDate === '') {
                     this.errorMsg('请选择年月');
                     return
                 }
                 this.monthStats.queryDTO.queryDate = moment(this.monthStats.queryDTO.queryDate).format('YYYY-MM-DD 23:59:59');
-                Http.zsyPostHttp('stats/month-stats',this.monthStats.queryDTO,res=>{
+                Http.zsyPostHttp('stats/month-stats', this.monthStats.queryDTO, res => {
                     this.monthStats.statsData = res.data;
                 })
             }
@@ -5693,7 +5833,7 @@
     }
 
     .card-title-con {
-      padding-bottom: 5px;
+        padding-bottom: 5px;
         position: relative;
         padding-left: 10px;
         margin: 0 0 16px;
@@ -5704,7 +5844,7 @@
         color: #304156;
     }
 
-    .task-span{
+    .task-span {
         font-size: 18px;
         width: 200px;
         color: black;
@@ -5719,6 +5859,7 @@
         margin: auto;
         height: 500px;
     }
+
     .bug-stats-con {
         width: 1300px;
         font-size: 14px;
@@ -5738,7 +5879,6 @@
     }
 
 
-
 </style>
 <style>
     .aaa .el-dialog--small {
@@ -5748,12 +5888,13 @@
     .wpp .el-dialog--small {
         width: 500px;
     }
-    .pre{
-        white-space:pre-wrap;
-        white-space:-moz-pre-wrap;
-        white-space:-pre-wrap;
-        white-space:-o-pre-wrap;
-        word-wrap:break-word;
+
+    .pre {
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
     }
 
     .publish-css .el-form-item__label {
@@ -5781,12 +5922,14 @@
         box-sizing: border-box;
         position: relative;
     }
+
     .platform-transfer .el-checkbox .el-checkbox__input {
         display: inline;
         /*position: relative;*/
         white-space: nowrap;
     }
-    .platform-transfer .el-transfer-panel__item{
+
+    .platform-transfer .el-transfer-panel__item {
         display: block;
     }
 
