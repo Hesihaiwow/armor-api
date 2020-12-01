@@ -11,9 +11,28 @@ public class PersonalTaskListReqDTO {
      */
     private Long userId;
 
+    /**
+     * 任务类型
+     */
+    private Integer taskType;
+
+    /**
+     * 开始时间
+     */
     private Date startTime;
 
+    /**
+     * 截止时间
+     */
     private Date endTime;
+
+    public Integer getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(Integer taskType) {
+        this.taskType = taskType;
+    }
 
     public Long getUserId() {
         return userId;

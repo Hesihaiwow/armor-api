@@ -16,6 +16,7 @@ import com.zhixinhuixue.armor.service.IZSYStatsService;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYSignInType;
+import com.zhixinhuixue.armor.source.enums.ZSYTaskType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -105,9 +106,12 @@ public class ZSYStatsService implements IZSYStatsService {
         }
         List<PersonTaskBO> personTaskBOS = taskUserMapper.getPersonalList(personalTaskListReqDTO);
         BeanUtils.copyProperties(personTaskBOS, personTaskResDTOS);
-        personTaskBOS.stream().forEach(personTaskBO -> {
+        personTaskBOS.forEach(personTaskBO -> {
             PersonTaskResDTO dto = new PersonTaskResDTO();
             BeanUtils.copyProperties(personTaskBO, dto);
+            if (personTaskBO.getTaskType() != null){
+                dto.setTaskTypeName(ZSYTaskType.getName(personTaskBO.getTaskType()));
+            }
             dto.setCreateTime(DateHelper.dateFormatter(personTaskBO.getBeginTime(), DateHelper.DATE_FORMAT));
             dto.setEndTime(DateHelper.dateFormatter(personTaskBO.getEndTime(), DateHelper.DATE_FORMAT));
             dto.setTaskHours(personTaskBO.getTaskHours());

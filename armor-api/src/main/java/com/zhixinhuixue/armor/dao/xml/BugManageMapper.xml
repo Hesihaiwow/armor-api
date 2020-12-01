@@ -149,6 +149,9 @@
             <if test="bugListReqDTO.userId != null">
                 and bu.user_id = #{bugListReqDTO.userId}
             </if>
+            <if test="bugListReqDTO.demandSystemId != null">
+                and bm.demand_system_id = #{bugListReqDTO.demandSystemId}
+            </if>
             <if test="bugListReqDTO.startTime != null">
                 <![CDATA[  and bm.create_time >= #{bugListReqDTO.startTime} ]]>
             </if>

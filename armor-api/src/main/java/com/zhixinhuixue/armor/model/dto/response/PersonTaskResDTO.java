@@ -5,21 +5,58 @@ package com.zhixinhuixue.armor.model.dto.response;
  */
 public class PersonTaskResDTO {
 
+    /**
+     * 主键
+     */
     private Long id;
 
+    /**
+     * 任务名称
+     */
     private String taskName;
 
+    /**
+     * 任务id
+     */
     private Long taskId;
 
+    /**
+     * 个人填写任务描述
+     */
     private String description;
 
+    /**
+     * 任务描述
+     */
     private String taskDescription;
 
+    /**
+     * 创建时间
+     */
     private String createTime;
 
+    /**
+     * 截止时间
+     */
     private String endTime;
 
+    /**
+     * 任务时长
+     */
     private Double taskHours;
+
+    /**
+     * 任务类型
+     */
+    private String taskTypeName;
+
+    public String getTaskTypeName() {
+        return taskTypeName;
+    }
+
+    public void setTaskTypeName(String taskTypeName) {
+        this.taskTypeName = taskTypeName;
+    }
 
     public Long getId() {
         return id;

@@ -11,12 +11,24 @@ public class BugListReqDTO {
      */
     private Long userId;
 
+    /**
+     * 开始时间
+     */
     private Date startTime;
 
+    /**
+     * 截止时间
+     */
     private Date endTime;
 
+    /**
+     * 页码
+     */
     private Integer pageNum;
 
+    /**
+     * 部门id
+     */
     private Long departmentId;
 
     /**
@@ -35,9 +47,22 @@ public class BugListReqDTO {
     private Long groupId;
 
     /**
+     * 业务组
+     */
+    private Long demandSystemId;
+
+    /**
      * 年份
      */
     private Integer year;
+
+    public Long getDemandSystemId() {
+        return demandSystemId;
+    }
+
+    public void setDemandSystemId(Long demandSystemId) {
+        this.demandSystemId = demandSystemId;
+    }
 
     public Long getGroupId() {
         return groupId;

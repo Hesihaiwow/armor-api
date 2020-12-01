@@ -11,7 +11,6 @@ import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.helper.UFileHelper;
-import com.zhixinhuixue.armor.helper.ZSYQinuHelper;
 import com.zhixinhuixue.armor.model.bo.*;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.MantisBugWeekQueryReqDTO;
@@ -25,7 +24,6 @@ import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import com.zhixinhuixue.armor.source.enums.MantisBugSeverity;
 import com.zhixinhuixue.armor.source.enums.MantisBugStatus;
-import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
@@ -43,10 +41,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -86,6 +82,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询mantis中bug信息并导入到任务系统
+     *
      * @author sch
      */
     @Override
@@ -93,10 +90,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
     public void importMantisBug(Integer projectId) {
 //        List<Integer> bugIdList = bugStatisticsMapper.selectBugIdList();
         List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
-        Map<String,Long> userMap = new HashMap<>();
-        if (!CollectionUtils.isEmpty(users)){
+        Map<String, Long> userMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(users)) {
             for (User user : users) {
-                userMap.put(user.getName(),user.getId());
+                userMap.put(user.getName(), user.getId());
             }
         }
         Set<String> userNameSet = userMap.keySet();
@@ -123,8 +120,8 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         String userSql = "SELECT id,username,realname FROM mantis_user_table";
         String categorySql =
                 "SELECT mct.id categoryId,mct.name categoryName,mct.user_id userId,mct.project_id projectId,mut.realName userName FROM mantis_category_table mct \n" +
-                "LEFT JOIN mantis_user_table mut on mut.id = mct.user_id\n" +
-                "WHERE mct.project_id = 57";
+                        "LEFT JOIN mantis_user_table mut on mut.id = mct.user_id\n" +
+                        "WHERE mct.project_id = 57";
         long time1 = System.currentTimeMillis();
         List<MantisBugStatistics> list = jdbcTemplate.query(bugSql, new MyRowMapper());
         List<MantisBugStatistics> list2 = jdbcTemplate.query(bugSql2, new MyRowMapper());
@@ -162,10 +159,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 mantisCategory.setCategoryName(name);
                 mantisCategory.setUserId(Integer.valueOf(userId));
                 mantisCategory.setProjectId(Integer.valueOf(projectId1));
-                if (userNameSet.contains(userName)){
+                if (userNameSet.contains(userName)) {
                     mantisCategory.setSysUserId(userMap.get(userName));
-                }else {
-                    throw new ZSYServiceException("姓名为: "+userName+" 的用户在积分系统中没有找到,请检查");
+                } else {
+                    throw new ZSYServiceException("姓名为: " + userName + " 的用户在积分系统中没有找到,请检查");
                 }
                 mantisCategory.setUserName(userName);
                 return mantisCategory;
@@ -175,23 +172,23 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         mantisBugStatisticsList.addAll(list);
         mantisBugStatisticsList.addAll(list2);
         long time2 = System.currentTimeMillis();
-        logger.info("查询+准备耗时: "+(time2-time1)+"ms");
-        if (!CollectionUtils.isEmpty(mantisBugStatisticsList)){
+        logger.info("查询+准备耗时: " + (time2 - time1) + "ms");
+        if (!CollectionUtils.isEmpty(mantisBugStatisticsList)) {
 
             userList = userList.stream().distinct().collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(userList)){
+            if (!CollectionUtils.isEmpty(userList)) {
                 //清空原来的mantis_user
                 bugStatisticsMapper.deleteAllUsers();
-                if (bugStatisticsMapper.insertUserBatch(userList) == 0){
+                if (bugStatisticsMapper.insertUserBatch(userList) == 0) {
                     throw new ZSYServiceException("批量插入用户失败");
                 }
             }
 
             categoryList = categoryList.stream().distinct().collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(categoryList)){
+            if (!CollectionUtils.isEmpty(categoryList)) {
                 //清空原来的mantis_category
                 bugStatisticsMapper.deleteAllCategory();
-                if (bugStatisticsMapper.insertCategoryBatch(categoryList) == 0){
+                if (bugStatisticsMapper.insertCategoryBatch(categoryList) == 0) {
                     throw new ZSYServiceException("批量插入分类失败");
                 }
             }
@@ -201,15 +198,15 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
             mantisBugStatisticsList = mantisBugStatisticsList.stream().sorted(Comparator.comparing(MantisBugStatistics::getBugId))
                     .collect(Collectors.collectingAndThen(Collectors.toCollection(
                             () -> new TreeSet<>(Comparator.comparing(MantisBugStatistics::getBugId))
-                            ),ArrayList::new));
-            if (!CollectionUtils.isEmpty(mantisBugStatisticsList)){
-                if (bugStatisticsMapper.insertBatch(mantisBugStatisticsList) == 0){
+                    ), ArrayList::new));
+            if (!CollectionUtils.isEmpty(mantisBugStatisticsList)) {
+                if (bugStatisticsMapper.insertBatch(mantisBugStatisticsList) == 0) {
                     throw new ZSYServiceException("导入bug信息失败");
                 }
                 long time3 = System.currentTimeMillis();
-                logger.info("批量插入耗时: "+(time3-time2)+"ms");
+                logger.info("批量插入耗时: " + (time3 - time2) + "ms");
             }
-        }else {
+        } else {
             throw new ZSYServiceException("暂无数据需要导入,请检查");
         }
 
@@ -217,16 +214,17 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询mantis中的bug信息导出Excel
-     * @author sch
+     *
      * @param projectId
+     * @author sch
      */
     @Override
     public List<String> exportMantisBug(Integer projectId) {
         List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
-        Map<String,Long> userMap = new HashMap<>();
-        if (!CollectionUtils.isEmpty(users)){
+        Map<String, Long> userMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(users)) {
             for (User user : users) {
-                userMap.put(user.getName(),user.getId());
+                userMap.put(user.getName(), user.getId());
             }
         }
         Set<String> userNameSet = userMap.keySet();
@@ -290,10 +288,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 mantisCategory.setCategoryName(name);
                 mantisCategory.setUserId(Integer.valueOf(userId));
                 mantisCategory.setProjectId(Integer.valueOf(projectId1));
-                if (userNameSet.contains(userName)){
+                if (userNameSet.contains(userName)) {
                     mantisCategory.setSysUserId(userMap.get(userName));
-                }else {
-                    throw new ZSYServiceException("姓名为: "+userName+" 的用户在积分系统中没有找到,请检查");
+                } else {
+                    throw new ZSYServiceException("姓名为: " + userName + " 的用户在积分系统中没有找到,请检查");
                 }
                 mantisCategory.setUserName(userName);
                 return mantisCategory;
@@ -305,9 +303,9 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         mantisBugStatisticsList = mantisBugStatisticsList.stream().sorted(Comparator.comparing(MantisBugStatistics::getBugId))
                 .collect(Collectors.collectingAndThen(Collectors.toCollection(
                         () -> new TreeSet<>(Comparator.comparing(MantisBugStatistics::getBugId))
-                ),ArrayList::new));
+                ), ArrayList::new));
         long time2 = System.currentTimeMillis();
-        logger.info("准备数据耗时: "+(time2-time1)+"ms");
+        logger.info("准备数据耗时: " + (time2 - time1) + "ms");
 
         String bugExcel = exportBugExcel(mantisBugStatisticsList);
         String userExcel = exportUserExcel(userList);
@@ -318,19 +316,20 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         urls.add(categoryExcel);
 
         long time3 = System.currentTimeMillis();
-        logger.info("下载耗时: "+(time3-time2)+"ms");
+        logger.info("下载耗时: " + (time3 - time2) + "ms");
 
         return urls;
     }
 
     /**
      * 导出category表
+     *
      * @param categoryList
      * @return
      */
     private String exportCategoryExcel(List<MantisCategory> categoryList) {
 
-        if (CollectionUtils.isEmpty(categoryList)){
+        if (CollectionUtils.isEmpty(categoryList)) {
             throw new ZSYServiceException("mantisCategory数据为空,无法导出,请检查");
         }
 
@@ -346,7 +345,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         //设置文件名
         String fileName = "mantisCategory信息" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();
-             HSSFWorkbook workbook = new HSSFWorkbook()){
+             HSSFWorkbook workbook = new HSSFWorkbook()) {
             //创建sheet
             HSSFSheet sheet = workbook.createSheet("mantisCategory信息");
             //设置列宽
@@ -387,14 +386,14 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 //项目id
                 row.createCell(3).setCellValue(categoryList.get(i).getProjectId());
                 //系统用户id
-                row.createCell(4).setCellValue(categoryList.get(i).getSysUserId()+"");
+                row.createCell(4).setCellValue(categoryList.get(i).getSysUserId() + "");
                 //真实姓名
                 row.createCell(5).setCellValue(categoryList.get(i).getUserName());
                 num++;
             }
             workbook.write(os);
-            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel",uFileProperties);
-        }catch (Exception e){
+            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel", uFileProperties);
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ZSYServiceException("导出category表失败");
         }
@@ -402,11 +401,12 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 导出user表
+     *
      * @param userList
      * @return
      */
     private String exportUserExcel(List<MantisUser> userList) {
-        if (CollectionUtils.isEmpty(userList)){
+        if (CollectionUtils.isEmpty(userList)) {
             throw new ZSYServiceException("mantisUser数据为空,无法导出,请检查");
         }
         List<String> headers = new ArrayList<>();
@@ -416,7 +416,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         //设置文件名
         String fileName = "mantisUser信息" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();
-             HSSFWorkbook workbook = new HSSFWorkbook()){
+             HSSFWorkbook workbook = new HSSFWorkbook()) {
             //创建sheet
             HSSFSheet sheet = workbook.createSheet("mantisUser信息");
             //设置列宽
@@ -457,8 +457,8 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 num++;
             }
             workbook.write(os);
-            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel",uFileProperties);
-        }catch (Exception e){
+            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel", uFileProperties);
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ZSYServiceException("导出user表失败");
         }
@@ -466,11 +466,12 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 导出bug表
+     *
      * @param mantisBugStatisticsList
      * @return
      */
     private String exportBugExcel(List<MantisBugStatistics> mantisBugStatisticsList) {
-        if(CollectionUtils.isEmpty(mantisBugStatisticsList)){
+        if (CollectionUtils.isEmpty(mantisBugStatisticsList)) {
             throw new ZSYServiceException("mantisBug数据为空,无法导出,请检查");
         }
 
@@ -494,7 +495,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         //设置文件名
         String fileName = "mantisBug信息" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();
-             HSSFWorkbook workbook = new HSSFWorkbook()){
+             HSSFWorkbook workbook = new HSSFWorkbook()) {
             //创建sheet
             HSSFSheet sheet = workbook.createSheet("mantisBug信息");
             //设置列宽
@@ -527,13 +528,13 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 row = sheet.createRow(num + 1);
                 row.setRowStyle(style);
                 //任务id
-                if (mantisBugStatisticsList.get(i).getTaskId() != null){
-                    row.createCell(0).setCellValue(mantisBugStatisticsList.get(i).getTaskId()+"");
-                }else {
+                if (mantisBugStatisticsList.get(i).getTaskId() != null) {
+                    row.createCell(0).setCellValue(mantisBugStatisticsList.get(i).getTaskId() + "");
+                } else {
                     row.createCell(0).setCellValue("");
                 }
                 //bugId
-                row.createCell(1).setCellValue(mantisBugStatisticsList.get(i).getBugId()+"");
+                row.createCell(1).setCellValue(mantisBugStatisticsList.get(i).getBugId() + "");
                 //提交人id
                 row.createCell(2).setCellValue(mantisBugStatisticsList.get(i).getReporterId());
                 //处理人id
@@ -553,23 +554,23 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 //分类名称
                 row.createCell(10).setCellValue(mantisBugStatisticsList.get(i).getCategoryName());
                 //提出时间
-                row.createCell(11).setCellValue(mantisBugStatisticsList.get(i).getDateSubmitted()+"");
+                row.createCell(11).setCellValue(mantisBugStatisticsList.get(i).getDateSubmitted() + "");
                 //最后更新时间
-                row.createCell(12).setCellValue(mantisBugStatisticsList.get(i).getLastUpdated()+"");
+                row.createCell(12).setCellValue(mantisBugStatisticsList.get(i).getLastUpdated() + "");
                 num++;
             }
             workbook.write(os);
-            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel",uFileProperties);
-        }catch (Exception e){
+            return UFileHelper.upload(os.toByteArray(), fileName, "application/vnd.ms-excel", uFileProperties);
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ZSYServiceException("导出bug表失败");
         }
     }
 
     /**
+     * @return
      * @author sch
      * 查询mantis用户信息
-     * @return
      */
     @Override
     public List<MantisBugUserBaseInfoResDTO> getMantisUserList() {
@@ -588,8 +589,9 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询mantis反馈系统信息
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     @Override
     public List<MantisCategoryResDTO> getMantisCategory() {
@@ -608,16 +610,17 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询反馈系统(分类)
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     @Override
     public List<MantisCategoryResDTO> getCategoryList() {
         List<MantisCategory> categoryList = bugStatisticsMapper.selectCategoryList();
         List<MantisCategoryResDTO> categoryResDTOList = new ArrayList<>();
-        BeanUtils.copyProperties(categoryList,categoryResDTOList);
-        if (!CollectionUtils.isEmpty(categoryList)){
-            categoryList.stream().forEach(category -> {
+        BeanUtils.copyProperties(categoryList, categoryResDTOList);
+        if (!CollectionUtils.isEmpty(categoryList)) {
+            categoryList.forEach(category -> {
                 MantisCategoryResDTO mantisCategoryResDTO = new MantisCategoryResDTO();
                 mantisCategoryResDTO.setId(category.getCategoryId());
                 mantisCategoryResDTO.setName(category.getCategoryName());
@@ -629,9 +632,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 按年月查询测试人员bug统计情况
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public List<MantisBugStatisticsResDTO> getBugStatsGroupByUser(MantisBugQueryReqDTO reqDTO) {
@@ -639,16 +643,16 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         Date endTime = reqDTO.getEndTime();
         Long dateSubmittedBegin = 0l;
         Long dateSubmittedEnd = 0l;
-        if (beginTime != null){
+        if (beginTime != null) {
             dateSubmittedBegin = beginTime.getTime() / 1000;
         }
-        if (endTime != null){
+        if (endTime != null) {
             dateSubmittedEnd = endTime.getTime() / 1000;
         }
-        List<MantisBugStatisticsBO> bugStatisticsBOList = bugStatisticsMapper.selectBugStatsGroupByUser(dateSubmittedBegin,dateSubmittedEnd);
+        List<MantisBugStatisticsBO> bugStatisticsBOList = bugStatisticsMapper.selectBugStatsGroupByUser(dateSubmittedBegin, dateSubmittedEnd);
         List<MantisBugStatisticsResDTO> bugStatisticsResDTOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(bugStatisticsBOList)){
-            bugStatisticsBOList.stream().forEach(bugStatisticsBO ->{
+        if (!CollectionUtils.isEmpty(bugStatisticsBOList)) {
+            bugStatisticsBOList.stream().forEach(bugStatisticsBO -> {
                 MantisBugStatisticsResDTO resDTO = new MantisBugStatisticsResDTO();
                 resDTO.setUserId(bugStatisticsBO.getUserId());
                 resDTO.setRealName(bugStatisticsBO.getUserName());
@@ -656,8 +660,8 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 List<MantisCategory> categoryList = bugStatisticsBO.getCategoryList();
                 List<Integer> categoryIds = categoryList.stream().map(MantisCategory::getCategoryId).collect(Collectors.toList());
                 List<MantisCategoryResDTO> categoryResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(categoryList)){
-                    categoryList.stream().forEach(category ->{
+                if (!CollectionUtils.isEmpty(categoryList)) {
+                    categoryList.stream().forEach(category -> {
                         MantisCategoryResDTO mantisCategoryResDTO = new MantisCategoryResDTO();
                         mantisCategoryResDTO.setId(category.getCategoryId());
                         mantisCategoryResDTO.setName(category.getCategoryName());
@@ -667,8 +671,8 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
                 List<MantisBugSeverityNumBO> bugSeverityNumBOS = bugStatisticsBO.getBugSeverityNumBOS();
                 List<MantisBugSeverityNumResDTO> bugSeverityNumResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(bugSeverityNumBOS)){
-                    bugSeverityNumBOS.stream().forEach(bugSeverityNumBO ->{
+                if (!CollectionUtils.isEmpty(bugSeverityNumBOS)) {
+                    bugSeverityNumBOS.stream().forEach(bugSeverityNumBO -> {
                         MantisBugSeverityNumResDTO mantisBugSeverityNumResDTO = new MantisBugSeverityNumResDTO();
                         mantisBugSeverityNumResDTO.setSeverity(bugSeverityNumBO.getSeverity());
                         mantisBugSeverityNumResDTO.setBugNum(bugSeverityNumBO.getBugNum());
@@ -680,8 +684,8 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
                 List<MantisBugStatusNumBO> bugStatusNumBOS = bugStatisticsBO.getBugStatusNumBOS();
                 List<MantisBugStatusNumResDTO> bugStatusNumResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(bugStatusNumBOS)){
-                    bugStatusNumBOS.stream().forEach(bugStatusNumBO ->{
+                if (!CollectionUtils.isEmpty(bugStatusNumBOS)) {
+                    bugStatusNumBOS.stream().forEach(bugStatusNumBO -> {
                         MantisBugStatusNumResDTO mantisBugStatusNumResDTO = new MantisBugStatusNumResDTO();
                         mantisBugStatusNumResDTO.setStatus(bugStatusNumBO.getStatus());
                         mantisBugStatusNumResDTO.setStatusName(MantisBugStatus.getName(bugStatusNumBO.getStatus()));
@@ -693,17 +697,17 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
                 List<MantisBugCategoryNumBO> bugCategoryNumBOS = bugStatisticsBO.getBugCategoryNumBOS();
                 List<MantisBugCategoryNumResDTO> bugCategoryNumResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(bugCategoryNumBOS)){
-                    bugCategoryNumBOS.stream().forEach(bugCategoryNumBO->{
+                if (!CollectionUtils.isEmpty(bugCategoryNumBOS)) {
+                    bugCategoryNumBOS.stream().forEach(bugCategoryNumBO -> {
                         MantisBugCategoryNumResDTO mantisBugCategoryNumResDTO = new MantisBugCategoryNumResDTO();
                         mantisBugCategoryNumResDTO.setCategory(bugCategoryNumBO.getCategory());
                         mantisBugCategoryNumResDTO.setCategoryName(bugCategoryNumBO.getCategoryName());
                         mantisBugCategoryNumResDTO.setUserId(bugCategoryNumBO.getUserId());
                         mantisBugCategoryNumResDTO.setRealName(bugCategoryNumBO.getRealName());
                         mantisBugCategoryNumResDTO.setBugNum(bugCategoryNumBO.getBugNum());
-                        if (categoryIds.contains(bugCategoryNumBO.getCategory())){
+                        if (categoryIds.contains(bugCategoryNumBO.getCategory())) {
                             mantisBugCategoryNumResDTO.setIsInCharge(1);
-                        }else {
+                        } else {
                             mantisBugCategoryNumResDTO.setIsInCharge(0);
                         }
                         bugCategoryNumResDTOList.add(mantisBugCategoryNumResDTO);
@@ -713,9 +717,9 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 resDTO.setCategoryResDTOList(categoryResDTOList);
                 resDTO.setMantisBugTotalNum(bugStatisticsBO.getMantisBugTotalNum());
 
-                List<OnlineBugCategoryNumBO> onlineBugCategoryNumBOS = bugStatisticsMapper.selectBugCategoryNum(bugStatisticsBO.getSysUserId(),beginTime,endTime);
+                List<OnlineBugCategoryNumBO> onlineBugCategoryNumBOS = bugStatisticsMapper.selectBugCategoryNum(bugStatisticsBO.getSysUserId(), beginTime, endTime);
                 List<OnlineBugCategoryNumResDTO> onlineBugCategoryNumResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(onlineBugCategoryNumBOS)){
+                if (!CollectionUtils.isEmpty(onlineBugCategoryNumBOS)) {
                     onlineBugCategoryNumBOS.stream().forEach(onlineBugCategoryNumBO -> {
                         OnlineBugCategoryNumResDTO onlineBugCategoryNumResDTO = new OnlineBugCategoryNumResDTO();
                         onlineBugCategoryNumResDTO.setUserId(bugStatisticsBO.getUserId());
@@ -723,9 +727,9 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                         onlineBugCategoryNumResDTO.setDemandSystemId(onlineBugCategoryNumBO.getDemandSystemId());
                         onlineBugCategoryNumResDTO.setDemandSystemName(onlineBugCategoryNumBO.getDemandSystemName());
                         onlineBugCategoryNumResDTO.setBugNum(onlineBugCategoryNumBO.getBugNum());
-                        if (categoryIds.contains(onlineBugCategoryNumBO.getDemandSystemId())){
+                        if (categoryIds.contains(onlineBugCategoryNumBO.getDemandSystemId())) {
                             onlineBugCategoryNumResDTO.setIsInCharge(1);
-                        }else {
+                        } else {
                             onlineBugCategoryNumResDTO.setIsInCharge(0);
                         }
                         onlineBugCategoryNumResDTOList.add(onlineBugCategoryNumResDTO);
@@ -740,8 +744,9 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询测试人员周bug数量图表
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     public List<MantisBugUserWeekResDTO> getBugWeekGroupByUser(MantisBugWeekQueryReqDTO reqDTO) {
         SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
@@ -751,17 +756,17 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         Date endTime = reqDTO.getEndTime();
         Long beginTimeInt = 0l;
         Long endTimeInt = 0l;
-        if (beginTime != null){
+        if (beginTime != null) {
             beginTimeInt = beginTime.getTime() / 1000;
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(beginTime);
-            for (int i = 0;i < 7;i ++){
-                if (i!=0){
+            for (int i = 0; i < 7; i++) {
+                if (i != 0) {
                     calendar.add(Calendar.DAY_OF_WEEK, 1);
                 }
                 String dateStr = dateSDF.format(calendar.getTime());
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                switch (dayOfWeek){
+                switch (dayOfWeek) {
                     case 1:
                         weekdayList.add("星期日");
                         break;
@@ -789,11 +794,11 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 }
                 dateList.add(dateStr);
             }
-        }else {
+        } else {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             for (int i = 0; i < 7; i++) {
-                if (i!=0){
+                if (i != 0) {
                     calendar.add(Calendar.DAY_OF_WEEK, 1);
                 }
                 String dateStr = dateSDF.format(calendar.getTime());
@@ -827,29 +832,29 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 dateList.add(dateStr);
             }
         }
-        if (endTime != null){
+        if (endTime != null) {
             endTimeInt = endTime.getTime() / 1000;
         }
-        List<MantisBugUserWeekBO> bugUserWeekBOS = bugStatisticsMapper.selectBugWeekGroupByUser(beginTimeInt,endTimeInt);
+        List<MantisBugUserWeekBO> bugUserWeekBOS = bugStatisticsMapper.selectBugWeekGroupByUser(beginTimeInt, endTimeInt);
         List<MantisBugUserWeekResDTO> bugUserWeekResDTOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(bugUserWeekBOS)){
-            bugUserWeekBOS.stream().forEach(bugUserWeekBO->{
+        if (!CollectionUtils.isEmpty(bugUserWeekBOS)) {
+            bugUserWeekBOS.stream().forEach(bugUserWeekBO -> {
                 MantisBugUserWeekResDTO mantisBugUserWeekResDTO = new MantisBugUserWeekResDTO();
                 mantisBugUserWeekResDTO.setUserId(bugUserWeekBO.getUserId());
                 mantisBugUserWeekResDTO.setUserName(bugUserWeekBO.getUserName());
                 List<MantisBugWeekNumBO> mantisBugWeekNumBOS = bugUserWeekBO.getMantisBugWeekNumBOS();
-                Map<String,Integer> dateBugNumMap = new HashMap<>();
-                if (!CollectionUtils.isEmpty(mantisBugWeekNumBOS)){
+                Map<String, Integer> dateBugNumMap = new HashMap<>();
+                if (!CollectionUtils.isEmpty(mantisBugWeekNumBOS)) {
                     for (MantisBugWeekNumBO mantisBugWeekNumBO : mantisBugWeekNumBOS) {
-                        dateBugNumMap.put(mantisBugWeekNumBO.getDate(),mantisBugWeekNumBO.getBugNum());
+                        dateBugNumMap.put(mantisBugWeekNumBO.getDate(), mantisBugWeekNumBO.getBugNum());
                     }
                 }
                 Set<String> dateSet = dateBugNumMap.keySet();
                 List<Integer> bugNumList = new ArrayList<>();
                 for (String dateStr : dateList) {
-                    if (dateSet.contains(dateStr)){
+                    if (dateSet.contains(dateStr)) {
                         bugNumList.add(dateBugNumMap.get(dateStr));
-                    }else {
+                    } else {
                         bugNumList.add(0);
                     }
                 }
@@ -865,6 +870,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询测试人员月bug数量图表
+     *
      * @param reqDTO
      * @return
      */
@@ -878,20 +884,20 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         Long beginTimeInt = 0l;
         Long endTimeInt = 0l;
         Integer range = 0;
-        if (beginTime != null && endTime != null){
+        if (beginTime != null && endTime != null) {
             List<String> daysBetweenTwoDate = DateHelper.getDaysBetweenTwoDate(beginTime, endTime);
             range = daysBetweenTwoDate.size();
             beginTimeInt = beginTime.getTime() / 1000;
             endTimeInt = endTime.getTime() / 1000;
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(beginTime);
-            for (int i = 0;i < range;i ++){
-                if (i!=0){
+            for (int i = 0; i < range; i++) {
+                if (i != 0) {
                     calendar.add(Calendar.DAY_OF_WEEK, 1);
                 }
                 String dateStr = dateSDF.format(calendar.getTime());
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                switch (dayOfWeek){
+                switch (dayOfWeek) {
                     case 1:
                         weekdayList.add("星期日");
                         break;
@@ -919,7 +925,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 }
                 dateList.add(dateStr);
             }
-        }else {
+        } else {
             String thisMonthFirstDay = DateHelper.getThisMonthFirstDay();
             String thisMonthLastDay = DateHelper.getThisMonthLastDay();
             Date firstDay = new Date();
@@ -928,14 +934,14 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
             try {
                 firstDay = timeSDF.parse(thisMonthFirstDay);
                 lastDay = timeSDF.parse(thisMonthLastDay);
-                range = DateHelper.getDaysBetweenTwoDate(firstDay,lastDay).size();
+                range = DateHelper.getDaysBetweenTwoDate(firstDay, lastDay).size();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(firstDay);
             for (int i = 0; i < range; i++) {
-                if (i!=0){
+                if (i != 0) {
                     calendar.add(Calendar.DAY_OF_WEEK, 1);
                 }
                 String dateStr = dateSDF.format(calendar.getTime());
@@ -970,26 +976,26 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
             }
         }
 
-        List<MantisBugUserWeekBO> bugUserWeekBOS = bugStatisticsMapper.selectBugWeekGroupByUser(beginTimeInt,endTimeInt);
+        List<MantisBugUserWeekBO> bugUserWeekBOS = bugStatisticsMapper.selectBugWeekGroupByUser(beginTimeInt, endTimeInt);
         List<MantisBugUserWeekResDTO> bugUserWeekResDTOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(bugUserWeekBOS)){
-            bugUserWeekBOS.stream().forEach(bugUserWeekBO->{
+        if (!CollectionUtils.isEmpty(bugUserWeekBOS)) {
+            bugUserWeekBOS.stream().forEach(bugUserWeekBO -> {
                 MantisBugUserWeekResDTO mantisBugUserWeekResDTO = new MantisBugUserWeekResDTO();
                 mantisBugUserWeekResDTO.setUserId(bugUserWeekBO.getUserId());
                 mantisBugUserWeekResDTO.setUserName(bugUserWeekBO.getUserName());
                 List<MantisBugWeekNumBO> mantisBugWeekNumBOS = bugUserWeekBO.getMantisBugWeekNumBOS();
-                Map<String,Integer> dateBugNumMap = new HashMap<>();
-                if (!CollectionUtils.isEmpty(mantisBugWeekNumBOS)){
+                Map<String, Integer> dateBugNumMap = new HashMap<>();
+                if (!CollectionUtils.isEmpty(mantisBugWeekNumBOS)) {
                     for (MantisBugWeekNumBO mantisBugWeekNumBO : mantisBugWeekNumBOS) {
-                        dateBugNumMap.put(mantisBugWeekNumBO.getDate(),mantisBugWeekNumBO.getBugNum());
+                        dateBugNumMap.put(mantisBugWeekNumBO.getDate(), mantisBugWeekNumBO.getBugNum());
                     }
                 }
                 Set<String> dateSet = dateBugNumMap.keySet();
                 List<Integer> bugNumList = new ArrayList<>();
                 for (String dateStr : dateList) {
-                    if (dateSet.contains(dateStr)){
+                    if (dateSet.contains(dateStr)) {
                         bugNumList.add(dateBugNumMap.get(dateStr));
-                    }else {
+                    } else {
                         bugNumList.add(0);
                     }
                 }
@@ -1004,6 +1010,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询测试人员线上bug月数量图表
+     *
      * @param reqDTO
      * @return
      */
@@ -1011,12 +1018,12 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
     public List<OnlineBugUserMonthResDTO> getOnlineBugGroupByUser(MantisBugWeekQueryReqDTO reqDTO) {
         Date beginTime = reqDTO.getBeginTime();
         Date endTime = reqDTO.getEndTime();
-        List<OnlineBugUserMonthBO> onlineBugUserMonthBOS = bugStatisticsMapper.selectBugMonthGroupByUser(beginTime,endTime);
+        List<OnlineBugUserMonthBO> onlineBugUserMonthBOS = bugStatisticsMapper.selectBugMonthGroupByUser(beginTime, endTime);
         List<OnlineBugUserMonthResDTO> onlineBugUserMonthResDTOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(onlineBugUserMonthBOS)){
+        if (!CollectionUtils.isEmpty(onlineBugUserMonthBOS)) {
             onlineBugUserMonthBOS.stream().forEach(onlineBugUserMonthBO -> {
                 OnlineBugUserMonthResDTO resDTO = new OnlineBugUserMonthResDTO();
-                BeanUtils.copyProperties(onlineBugUserMonthBO,resDTO);
+                BeanUtils.copyProperties(onlineBugUserMonthBO, resDTO);
                 onlineBugUserMonthResDTOList.add(resDTO);
             });
         }
@@ -1026,20 +1033,21 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 查询开发人员解决bug饼形图
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public List<OnlineBugUserMonthResDTO> getOnlineBugGroupByDeveloper(MantisBugWeekQueryReqDTO reqDTO) {
         Date beginTime = reqDTO.getBeginTime();
         Date endTime = reqDTO.getEndTime();
-        List<OnlineBugUserMonthBO> onlineBugUserMonthBOS = bugStatisticsMapper.selectBugMonthGroupByDeveloper(beginTime,endTime);
+        List<OnlineBugUserMonthBO> onlineBugUserMonthBOS = bugStatisticsMapper.selectBugMonthGroupByDeveloper(beginTime, endTime);
         List<OnlineBugUserMonthResDTO> onlineBugUserMonthResDTOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(onlineBugUserMonthBOS)){
+        if (!CollectionUtils.isEmpty(onlineBugUserMonthBOS)) {
             onlineBugUserMonthBOS.stream().forEach(onlineBugUserMonthBO -> {
                 OnlineBugUserMonthResDTO resDTO = new OnlineBugUserMonthResDTO();
-                BeanUtils.copyProperties(onlineBugUserMonthBO,resDTO);
+                BeanUtils.copyProperties(onlineBugUserMonthBO, resDTO);
                 onlineBugUserMonthResDTOList.add(resDTO);
             });
         }
@@ -1048,6 +1056,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 按任务统计bug
+     *
      * @param reqDTO
      * @return
      */
@@ -1057,17 +1066,17 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         Date endTime = reqDTO.getEndTime();
         Long dateSubmittedBegin = 0l;
         Long dateSubmittedEnd = 0l;
-        if (beginTime != null){
+        if (beginTime != null) {
             dateSubmittedBegin = beginTime.getTime() / 1000;
         }
-        if (endTime != null){
+        if (endTime != null) {
             dateSubmittedEnd = endTime.getTime() / 1000;
         }
         PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
-        Page<MantisBugGroupByTaskBO> mantisBugGroupByTaskBOS = bugStatisticsMapper.selectBugStatsGroupByTask(dateSubmittedBegin,dateSubmittedEnd);
+        Page<MantisBugGroupByTaskBO> mantisBugGroupByTaskBOS = bugStatisticsMapper.selectBugStatsGroupByTask(dateSubmittedBegin, dateSubmittedEnd);
         Page<MantisBugGroupByTaskResDTO> mantisBugGroupByTaskResDTOList = new Page<>();
-        BeanUtils.copyProperties(mantisBugGroupByTaskBOS,mantisBugGroupByTaskResDTOList);
-        if (!CollectionUtils.isEmpty(mantisBugGroupByTaskBOS)){
+        BeanUtils.copyProperties(mantisBugGroupByTaskBOS, mantisBugGroupByTaskResDTOList);
+        if (!CollectionUtils.isEmpty(mantisBugGroupByTaskBOS)) {
             mantisBugGroupByTaskBOS.stream().forEach(mantisBugGroupByTaskBO -> {
                 MantisBugGroupByTaskResDTO resDTO = new MantisBugGroupByTaskResDTO();
                 resDTO.setTaskId(mantisBugGroupByTaskBO.getTaskId());
@@ -1076,10 +1085,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
                 List<MantisBugTesterNumBO> mantisBugTesterNumBOS = mantisBugGroupByTaskBO.getMantisBugTesterNumBOS();
                 List<MantisBugTesterNumResDTO> mantisBugTesterNumResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(mantisBugTesterNumBOS)){
+                if (!CollectionUtils.isEmpty(mantisBugTesterNumBOS)) {
                     mantisBugTesterNumBOS.stream().forEach(mantisBugTesterNumBO -> {
                         MantisBugTesterNumResDTO mantisBugTesterNumResDTO = new MantisBugTesterNumResDTO();
-                        BeanUtils.copyProperties(mantisBugTesterNumBO,mantisBugTesterNumResDTO);
+                        BeanUtils.copyProperties(mantisBugTesterNumBO, mantisBugTesterNumResDTO);
                         mantisBugTesterNumResDTOList.add(mantisBugTesterNumResDTO);
                     });
                 }
@@ -1087,10 +1096,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
                 List<MantisBugDeveloperNumBO> mantisBugDeveloperNumBOS = mantisBugGroupByTaskBO.getMantisBugDeveloperNumBOS();
                 List<MantisBugDeveloperNumResDTO> mantisBugDeveloperNumResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(mantisBugDeveloperNumBOS)){
+                if (!CollectionUtils.isEmpty(mantisBugDeveloperNumBOS)) {
                     mantisBugDeveloperNumBOS.stream().forEach(mantisBugDeveloperNumBO -> {
                         MantisBugDeveloperNumResDTO mantisBugDeveloperNumResDTO = new MantisBugDeveloperNumResDTO();
-                        BeanUtils.copyProperties(mantisBugDeveloperNumBO,mantisBugDeveloperNumResDTO);
+                        BeanUtils.copyProperties(mantisBugDeveloperNumBO, mantisBugDeveloperNumResDTO);
                         mantisBugDeveloperNumResDTOList.add(mantisBugDeveloperNumResDTO);
                     });
                 }
@@ -1098,7 +1107,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
                 List<MantisBugSeverityNumBO> mantisBugSeverityNumBOS = mantisBugGroupByTaskBO.getMantisBugSeverityNumBOS();
                 List<MantisBugSeverityNumResDTO> mantisBugSeverityNumResDTOList = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(mantisBugSeverityNumBOS)){
+                if (!CollectionUtils.isEmpty(mantisBugSeverityNumBOS)) {
                     mantisBugSeverityNumBOS.stream().forEach(mantisBugSeverityNumBO -> {
                         MantisBugSeverityNumResDTO mantisBugSeverityNumResDTO = new MantisBugSeverityNumResDTO();
                         mantisBugSeverityNumResDTO.setSeverity(mantisBugSeverityNumBO.getSeverity());
@@ -1116,19 +1125,20 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 导入Excel到数据库
-     * @author sch
+     *
      * @param uploadFile
+     * @author sch
      */
     @Override
     @Transactional
     public void importExcel(MultipartFile uploadFile) {
         String originalFilename = uploadFile.getOriginalFilename();
-        if (!originalFilename.contains("mantisBug")){
+        if (!originalFilename.contains("mantisBug")) {
             throw new ZSYServiceException("请检查文件是否选择正确");
         }
         long time1 = System.currentTimeMillis();
         String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
-        if (!isExcel(suffix)){
+        if (!isExcel(suffix)) {
             throw new ZSYServiceException("只能上传Excel");
         }
         Workbook book = null;
@@ -1139,20 +1149,20 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Sheet sheet = getSheetByNum(book,0);
+        Sheet sheet = getSheetByNum(book, 0);
         int lastRowNum = sheet.getLastRowNum();
         List<MantisBugStatistics> beforeFilter = new ArrayList<>();
         List<MantisBugStatistics> afterFilter = new ArrayList<>();
-        for(int i = 1 ; i <= lastRowNum ; i++){
+        for (int i = 1; i <= lastRowNum; i++) {
             List<String> fields = new ArrayList<>();
             Row row = null;
             row = sheet.getRow(i);
-            if( row != null ){
+            if (row != null) {
                 int lastCellNum = row.getLastCellNum();
                 Cell cell = null;
-                for( int j = 0 ; j <= lastCellNum ; j++ ){
+                for (int j = 0; j <= lastCellNum; j++) {
                     cell = row.getCell(j);
-                    if( cell != null ){
+                    if (cell != null) {
                         cell.setCellType(CellType.STRING);
                         String cellValue = cell.getStringCellValue();
                         fields.add(cellValue);
@@ -1160,9 +1170,9 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
                 }
             }
             MantisBugStatistics mantisBugStatistics = new MantisBugStatistics();
-            if (fields.get(0).equals("")){
+            if (fields.get(0).equals("")) {
                 mantisBugStatistics.setTaskId(null);
-            }else {
+            } else {
                 mantisBugStatistics.setTaskId(Long.valueOf(fields.get(0)));
             }
             mantisBugStatistics.setBugId(Integer.valueOf(fields.get(1)));
@@ -1181,24 +1191,24 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
             beforeFilter.add(mantisBugStatistics);
         }
         Integer lastImportBugId = bugStatisticsMapper.selectLastImportBugId();
-        if (lastImportBugId != null){
+        if (lastImportBugId != null) {
             beforeFilter = beforeFilter.stream().filter(mantisBugStatistics -> mantisBugStatistics.getBugId() > lastImportBugId).collect(Collectors.toList());
         }
-        if (!CollectionUtils.isEmpty(beforeFilter)){
+        if (!CollectionUtils.isEmpty(beforeFilter)) {
             beforeFilter.stream().forEach(mantisBugStatistics -> {
                 mantisBugStatistics.setBsId(snowFlakeIDHelper.nextId());
                 afterFilter.add(mantisBugStatistics);
             });
         }
         long time2 = System.currentTimeMillis();
-        logger.info("准备数据耗时: "+(time2-time1)+"ms");
-        if (!CollectionUtils.isEmpty(afterFilter)){
-            if (bugStatisticsMapper.insertBatch(afterFilter) == 0){
+        logger.info("准备数据耗时: " + (time2 - time1) + "ms");
+        if (!CollectionUtils.isEmpty(afterFilter)) {
+            if (bugStatisticsMapper.insertBatch(afterFilter) == 0) {
                 throw new ZSYServiceException("批量导入bug信息失败");
             }
             long time3 = System.currentTimeMillis();
-            logger.info("插入数据耗时: "+(time3-time2)+"ms");
-        }else {
+            logger.info("插入数据耗时: " + (time3 - time2) + "ms");
+        } else {
             throw new ZSYServiceException("暂无数据需要导入,请检查");
         }
 
@@ -1206,15 +1216,16 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * 导入user信息到数据库
-     * @author sch
+     *
      * @param uploadFile
+     * @author sch
      */
     @Override
     @Transactional
     public void importUser(MultipartFile uploadFile) {
         long time1 = System.currentTimeMillis();
         String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
-        if (!isExcel(suffix)){
+        if (!isExcel(suffix)) {
             throw new ZSYServiceException("只能上传Excel");
         }
         Workbook book = null;
@@ -1225,19 +1236,19 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Sheet sheet = getSheetByNum(book,0);
+        Sheet sheet = getSheetByNum(book, 0);
         int lastRowNum = sheet.getLastRowNum();
         List<MantisUser> mantisUsers = new ArrayList<>();
-        for(int i = 1 ; i <= lastRowNum ; i++){
+        for (int i = 1; i <= lastRowNum; i++) {
             List<String> fields = new ArrayList<>();
             Row row = null;
             row = sheet.getRow(i);
-            if( row != null ){
+            if (row != null) {
                 int lastCellNum = row.getLastCellNum();
                 Cell cell = null;
-                for( int j = 0 ; j <= lastCellNum ; j++ ){
+                for (int j = 0; j <= lastCellNum; j++) {
                     cell = row.getCell(j);
-                    if( cell != null ){
+                    if (cell != null) {
                         cell.setCellType(CellType.STRING);
                         String cellValue = cell.getStringCellValue();
                         fields.add(cellValue);
@@ -1252,31 +1263,32 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
             mantisUsers.add(mantisUser);
         }
         long time2 = System.currentTimeMillis();
-        logger.info("准备数据耗时: "+(time2-time1)+"ms");
-        if (!CollectionUtils.isEmpty(mantisUsers)){
+        logger.info("准备数据耗时: " + (time2 - time1) + "ms");
+        if (!CollectionUtils.isEmpty(mantisUsers)) {
             //删除原来的user
             bugStatisticsMapper.deleteAllUsers();
-            if (bugStatisticsMapper.insertUserBatch(mantisUsers) == 0){
+            if (bugStatisticsMapper.insertUserBatch(mantisUsers) == 0) {
                 throw new ZSYServiceException("批量导入user信息失败");
             }
             long time3 = System.currentTimeMillis();
-            logger.info("插入数据耗时: "+(time3-time2)+"ms");
-        }else {
+            logger.info("插入数据耗时: " + (time3 - time2) + "ms");
+        } else {
             throw new ZSYServiceException("暂无数据需要导入,请检查");
         }
     }
 
     /**
      * 导入category信息到数据库
-     * @author sch
+     *
      * @param uploadFile
+     * @author sch
      */
     @Override
     @Transactional
     public void importCategory(MultipartFile uploadFile) {
         long time1 = System.currentTimeMillis();
         String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
-        if (!isExcel(suffix)){
+        if (!isExcel(suffix)) {
             throw new ZSYServiceException("只能上传Excel");
         }
         Workbook book = null;
@@ -1287,19 +1299,19 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Sheet sheet = getSheetByNum(book,0);
+        Sheet sheet = getSheetByNum(book, 0);
         int lastRowNum = sheet.getLastRowNum();
         List<MantisCategory> mantisCategoryList = new ArrayList<>();
-        for(int i = 1 ; i <= lastRowNum ; i++){
+        for (int i = 1; i <= lastRowNum; i++) {
             List<String> fields = new ArrayList<>();
             Row row = null;
             row = sheet.getRow(i);
-            if( row != null ){
+            if (row != null) {
                 int lastCellNum = row.getLastCellNum();
                 Cell cell = null;
-                for( int j = 0 ; j <= lastCellNum ; j++ ){
+                for (int j = 0; j <= lastCellNum; j++) {
                     cell = row.getCell(j);
-                    if( cell != null ){
+                    if (cell != null) {
                         cell.setCellType(CellType.STRING);
                         String cellValue = cell.getStringCellValue();
                         fields.add(cellValue);
@@ -1317,24 +1329,25 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
             mantisCategoryList.add(mantisCategory);
         }
         long time2 = System.currentTimeMillis();
-        logger.info("准备数据耗时: "+(time2-time1)+"ms");
-        if (!CollectionUtils.isEmpty(mantisCategoryList)){
+        logger.info("准备数据耗时: " + (time2 - time1) + "ms");
+        if (!CollectionUtils.isEmpty(mantisCategoryList)) {
             //删除原来的category
             bugStatisticsMapper.deleteAllCategory();
-            if (bugStatisticsMapper.insertCategoryBatch(mantisCategoryList) == 0){
+            if (bugStatisticsMapper.insertCategoryBatch(mantisCategoryList) == 0) {
                 throw new ZSYServiceException("批量导入category信息失败");
             }
             long time3 = System.currentTimeMillis();
-            logger.info("插入数据耗时: "+(time3-time2)+"ms");
-        }else {
+            logger.info("插入数据耗时: " + (time3 - time2) + "ms");
+        } else {
             throw new ZSYServiceException("暂无数据需要导入,请检查");
         }
     }
 
     /**
      * 获取当前环境
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     @Override
     public String getEnvironment() {
@@ -1352,10 +1365,10 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
     }
 
     //判断是否是excel
-    public static boolean isExcel(String url){
-        Pattern p=Pattern.compile("\\.(xls|XLS)");
-        Matcher m=p.matcher(url);
-        if(m.find()){
+    public static boolean isExcel(String url) {
+        Pattern p = Pattern.compile("\\.(xls|XLS)");
+        Matcher m = p.matcher(url);
+        if (m.find()) {
             return true;
         }
         return false;
@@ -1363,15 +1376,16 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
 
     /**
      * MultipartFile 转 File
+     *
      * @param file
      * @throws Exception
      */
-    public static File multipartFileToFile( @RequestParam MultipartFile file ) throws Exception {
+    public static File multipartFileToFile(@RequestParam MultipartFile file) throws Exception {
 
         File toFile = null;
-        if(file.equals("")||file.getSize()<=0){
+        if (file.equals("") || file.getSize() <= 0) {
             file = null;
-        }else {
+        } else {
             InputStream ins = null;
             ins = file.getInputStream();
             toFile = new File(file.getOriginalFilename());
@@ -1382,14 +1396,12 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
     }
 
     public static void inputStreamToFile(InputStream ins, File file) {
-        try {
-            OutputStream os = new FileOutputStream(file);
+        try (OutputStream os = new FileOutputStream(file);) {
             int bytesRead = 0;
             byte[] buffer = new byte[8192];
             while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
                 os.write(buffer, 0, bytesRead);
             }
-            os.close();
             ins.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1419,7 +1431,7 @@ public class ZSYMantisBugService implements IZSYMantisBugService {
         return book;
     }
 
-    public static Sheet getSheetByNum(Workbook book,int number){
+    public static Sheet getSheetByNum(Workbook book, int number) {
         Sheet sheet = null;
         try {
             sheet = book.getSheetAt(number);

@@ -44,6 +44,7 @@
     </resultMap>
 
     <resultMap id="personResultMap" type="com.zhixinhuixue.armor.model.bo.PersonTaskBO" extends="BaseResultMap">
+        <result column="task_type" jdbcType="INTEGER" property="taskType"/>
         <result column="taskName" jdbcType="VARCHAR" property="taskName"/>
         <result column="taskDescription" jdbcType="VARCHAR" property="taskDescription"/>
     </resultMap>
@@ -163,9 +164,13 @@
 
     <select id="getPersonalList" parameterType="com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO" resultMap="personResultMap">
         SELECT (@rowid := @rowid+1) AS id,a.* FROM(
-            SELECT u.*,t.description as taskDescription,t.`name` as taskName FROM task_user u
+            SELECT u.*,t.description as taskDescription,t.`name` as taskName,t.type AS `task_type`
+            FROM task_user u
             JOIN task t on u.task_id = t.id
             where t.is_delete = 0 AND t.review_status = 3  AND  user_id = #{userId}
+                <if test="taskType != null">
+                    AND t.type = #{taskType}
+                </if>
                 <if test="startTime != null">
                     <![CDATA[ AND  (u.begin_time >= #{startTime,jdbcType=TIMESTAMP} or u.end_time >= #{startTime,jdbcType=TIMESTAMP}) ]]>
                 </if>
