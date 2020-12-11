@@ -619,6 +619,84 @@
                             </div>
                         </el-tab-pane>
                     </el-tabs>
+
+                    <p class="mic-title">个人任务审核</p>
+                    <el-tabs v-model="priTaskTempActive" @tab-click="handleClickPriTaskTemp">
+                        <el-tab-pane label="待审核" name="wait">
+                            <div class="task-lis" v-for="item in taskTemp.priTaskWait"
+                                 @click="getPriTaskTempDetail(item.id)">
+                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name" style="width: 700px">
+                                        <span style="color: red">(待审核 个人任务)</span>
+                                        <span>{{item.taskName}}:({{item.description}})</span>
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-mark" style="position:relative; left:-10px">
+                                    <img v-if="item.projectImage" :src="item.projectImage"
+                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
+                                    <!--<img src="../assets/img/u431.png" alt="">-->
+                                    <span class="mark-msg">{{item.projectName}}</span>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
+                                         :src="item.avatarUrl" :alt="item.userName">
+                                    <span v-else="">{{item.userName}}</span>
+                                </div>
+                            </div>
+                            <div v-show="this.taskTemp.priTaskWait.length===0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="审核通过" name="access">
+                            <div class="task-lis" v-for="item in taskTemp.priTaskAccept"
+                                 @click="getPriTaskTempDetail(item.id)">
+                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name" style="width: 700px;">
+                                        <span>{{item.taskName}}:({{item.description}})</span>
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
+                                        <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-mark" style="position:relative; left:-10px">
+                                    <img v-if="item.projectImage" :src="item.projectImage"
+                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle;">
+                                    <!--<img src="../assets/img/u431.png" alt="">-->
+                                    <span class="mark-msg">{{item.projectName}}</span>
+                                </div>
+                                <div class="task-data-show">
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
+                                         :src="item.avatarUrl" :alt="item.userName">
+                                    <span v-else="">{{item.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.taskTemp.priTaskAccept.length>0">
+                                <el-pagination
+                                        @current-change="priTaskTempChangePage"
+                                        :current-page.sync="taskTemp.priTaskTempPage.pageNum"
+                                        :page-size="taskTemp.priTaskTempPage.pageSize"
+                                        layout="total, prev, pager, next"
+                                        :total="taskTemp.priTaskTempPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="this.taskTemp.priTaskAccept.length===0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
                 </div>
                 <p class="mic-title">我的任务</p>
                 <div class="my-task-detail">
@@ -1041,50 +1119,124 @@
                             </div>
                         </el-tab-pane>
                     </el-tabs>
+
+                    <p class="mic-title">个人任务审核</p>
+                    <el-tabs v-model="priTaskTempActive" @tab-click="handleClickPriTaskTemp">
+                        <el-tab-pane label="待审核" name="wait">
+                            <div class="task-lis" v-for="item in taskTemp.priTaskWait"
+                                 @click="getPriTaskTempDetail(item.id)">
+                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name" style="width: 700px">
+                                        <span style="color: red">(待审核 个人任务)</span>
+                                        <span>{{item.taskName}}:({{item.description}})</span>
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
+                                    </div>
+                                </div>
+                                <div class="task-mark" style="position:relative; left:-10px">
+                                    <img v-if="item.projectImage" :src="item.projectImage"
+                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
+                                    <!--<img src="../assets/img/u431.png" alt="">-->
+                                    <span class="mark-msg">{{item.projectName}}</span>
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
+                                         :src="item.avatarUrl" :alt="item.userName">
+                                    <span v-else="">{{item.userName}}</span>
+                                </div>
+                            </div>
+                            <div v-show="this.taskTemp.priTaskWait.length===0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="审核通过" name="access">
+                            <div class="task-lis" v-for="item in taskTemp.priTaskAccept"
+                                 @click="getPriTaskTempDetail(item.id)">
+                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
+                                <div class="main-task-detail">
+                                    <div class="task-name" style="width: 700px;">
+                                        <span>{{item.taskName}}:({{item.description}})</span>
+                                    </div>
+                                    <div class="task-state">
+                                        <span class="task-end blue">申请人：{{item.userName}}</span>
+                                        <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
+                                        <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
+                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
+                                    </div>
+                                </div>
+                                <div class="task-mark" style="position:relative; left:-10px">
+                                    <img v-if="item.projectImage" :src="item.projectImage"
+                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
+                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle;">
+                                    <!--<img src="../assets/img/u431.png" alt="">-->
+                                    <span class="mark-msg">{{item.projectName}}</span>
+                                </div>
+                                <div class="task-data-show">
+                                </div>
+                                <div class="task-username">
+                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
+                                         :src="item.avatarUrl" :alt="item.userName">
+                                    <span v-else="">{{item.userName}}</span>
+                                </div>
+                            </div>
+                            <div class="pagination" v-show="this.taskTemp.priTaskAccept.length>0">
+                                <el-pagination
+                                        @current-change="priTaskTempChangePage"
+                                        :current-page.sync="taskTemp.priTaskTempPage.pageNum"
+                                        :page-size="taskTemp.priTaskTempPage.pageSize"
+                                        layout="total, prev, pager, next"
+                                        :total="taskTemp.priTaskTempPage.total">
+                                </el-pagination>
+                            </div>
+                            <div v-show="this.taskTemp.priTaskAccept.length===0" class="empty">
+                                <h2>暂无数据</h2>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
                 </div>
-                <p class="mic-title">个人任务审核</p>
-                <div class="add-task" style="float: left;margin-top: -22px;margin-right: 400px;font-size: 14px"
-                     @click="integralBasicVisible=true">
-                    <!--<span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分-->
-                </div>
-                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClickPrivateTask">
-                    <el-tab-pane label="待审核" name="wait">
-                        <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"
-                                   taskStatus="WaitAuditing"
-                                   :projectList="projectList"
-                                   :userList="checkInUsers"
-                                   :stageList="stageList"
-                                   :viewType="1"
-                                   :tagList="tagList"></task-item>
-                        <div class="pagination" v-show="this.task.waitAudit.length>0">
-                            <el-pagination
-                                    @current-change="handleWaitAuditPage"
-                                    :current-page.sync="waitAuditPage.pageNum"
-                                    :page-size="waitAuditPage.pageSize"
-                                    :layout="waitAuditPageLayout"
-                                    :total="waitAuditPage.total">
-                            </el-pagination>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="审核通过" name="completed">
-                        <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"
-                                   taskStatus="auditSuccess"
-                                   :projectList="projectList"
-                                   :userList="checkInUsers"
-                                   :stageList="stageList"
-                                   :viewType="1"
-                                   :tagList="tagList"></task-item>
-                        <div class="pagination" v-show="this.task.auditSuccess.length>0">
-                            <el-pagination
-                                    @current-change="handleAuditSuccessPage"
-                                    :current-page.sync="auditSuccessPage.pageNum"
-                                    :page-size="auditSuccessPage.pageSize"
-                                    :layout="auditSuccessPageLayout"
-                                    :total="auditSuccessPage.total">
-                            </el-pagination>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
+<!--                <p class="mic-title">个人任务审核</p>-->
+<!--                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClickPrivateTask">-->
+<!--                    <el-tab-pane label="待审核" name="wait">-->
+<!--                        <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"-->
+<!--                                   taskStatus="WaitAuditing"-->
+<!--                                   :projectList="projectList"-->
+<!--                                   :userList="checkInUsers"-->
+<!--                                   :stageList="stageList"-->
+<!--                                   :viewType="1"-->
+<!--                                   :tagList="tagList"></task-item>-->
+<!--                        <div class="pagination" v-show="this.task.waitAudit.length>0">-->
+<!--                            <el-pagination-->
+<!--                                    @current-change="handleWaitAuditPage"-->
+<!--                                    :current-page.sync="waitAuditPage.pageNum"-->
+<!--                                    :page-size="waitAuditPage.pageSize"-->
+<!--                                    :layout="waitAuditPageLayout"-->
+<!--                                    :total="waitAuditPage.total">-->
+<!--                            </el-pagination>-->
+<!--                        </div>-->
+<!--                    </el-tab-pane>-->
+<!--                    <el-tab-pane label="审核通过" name="completed">-->
+<!--                        <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"-->
+<!--                                   taskStatus="auditSuccess"-->
+<!--                                   :projectList="projectList"-->
+<!--                                   :userList="checkInUsers"-->
+<!--                                   :stageList="stageList"-->
+<!--                                   :viewType="1"-->
+<!--                                   :tagList="tagList"></task-item>-->
+<!--                        <div class="pagination" v-show="this.task.auditSuccess.length>0">-->
+<!--                            <el-pagination-->
+<!--                                    @current-change="handleAuditSuccessPage"-->
+<!--                                    :current-page.sync="auditSuccessPage.pageNum"-->
+<!--                                    :page-size="auditSuccessPage.pageSize"-->
+<!--                                    :layout="auditSuccessPageLayout"-->
+<!--                                    :total="auditSuccessPage.total">-->
+<!--                            </el-pagination>-->
+<!--                        </div>-->
+<!--                    </el-tab-pane>-->
+<!--                </el-tabs>-->
 
                 <p class="mic-title">任务修改申请审核</p>
                 <el-tabs v-model="taskModifyTabsActiveName" @tab-click="handleClickTaskModify">
@@ -1501,6 +1653,83 @@
             <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="saveTaskInfo('taskForm')" :disabled="taskAble">立即创建</el-button>
             <el-button @click="createPrivateTaskVisible = false">取 消</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog title="创建个人任务(临时)"
+                   size="tiny"
+                   custom-class="myDialog"
+                   @close="clearPrivateTaskTemp"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false"
+                   :visible.sync="priTaskTemp.addVisible">
+            <el-form :model="priTaskTemp.taskForm" ref="priTaskTempForm" label-width="80px">
+                <el-form-item label="项目" prop="projectId">
+                    <el-select v-model="priTaskTemp.taskForm.projectId" placeholder="请选择" clearable filterable>
+                        <el-option
+                                v-for="item in projectList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="开始日期">
+                    <el-date-picker
+                            v-model="priTaskTemp.taskForm.beginTime"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="截止日期">
+                    <el-date-picker
+                            v-model="priTaskTemp.taskForm.endTime"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="工作量" prop="taskHours">
+                    <el-input style="width:100px" type="number" v-model="priTaskTemp.taskForm.workHours"
+                              :maxlength="6"></el-input>
+                    小时
+                </el-form-item>
+                <el-form-item label="任务名称" prop="taskName">
+                    <el-input v-model="priTaskTemp.taskForm.taskName"></el-input>
+                </el-form-item>
+                <el-form-item label="任务描述" prop="description">
+                    <el-input type="textarea" v-model="priTaskTemp.taskForm.description" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="关联任务">
+                    <el-select v-model="priTaskTemp.taskForm.linkTaskId" placeholder="请选择" filterable clearable>
+                        <el-option
+                                v-for="item in joinRunningTaskList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <span>(非必选)</span>
+                </el-form-item>
+                <el-form-item label="标签" prop="tags">
+                    <el-select
+                            v-model="priTaskTemp.taskForm.tagList"
+                            multiple
+                            clearable filterable
+                            placeholder="请选择标签">
+                        <el-option
+                                v-for="item in tagList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveAddPriTaskTemp('priTaskTempForm')"
+                       :disabled="taskAble">立即创建</el-button>
+            <el-button @click="clearPrivateTaskTemp,priTaskTemp.addVisible = false">取 消</el-button>
           </span>
         </el-dialog>
         <el-dialog title="创建线上问题(数据)记录"
@@ -2497,8 +2726,8 @@
                 <div class="ctpc-ins-edit" v-show="addSuggestVisible">
                     <textarea class="ctpc-instruction" placeholder="审核建议" v-model="taskTempDetail.suggest"></textarea>
                     <div class="ctpc-btns">
-                        <input type="button" class="ctpc-cancel" @click="cancelEdit" value="取消">
-                        <input type="button" class="ctpc-save" @click="saveEdit" value="确定">
+                        <input type="button" class="ctpc-cancel" @click="cancelEdit(2)" value="取消">
+                        <input type="button" class="ctpc-save" @click="saveEdit(2)" value="确定">
                     </div>
                 </div>
                 <el-form-item v-show="taskTempDetail.taskReviewLogResDTOList.length > 0"><span>-------------------------------------------------------------------------------------------</span>
@@ -2672,6 +2901,149 @@
                 </div>
             </span>
         </el-dialog>
+
+        <el-dialog title="个人任务申请详情" custom-class="myDialog" :visible.sync="taskTemp.priTaskVisible"
+                   :close-on-click-modal="false" :close-on-press-escape="false" size="tiny">
+            <el-form :model="taskTemp.priTaskTempDetail" ref="priTaskTempDetailForm" label-width="80px">
+                <div v-for="(item,index) in taskTemp.priTaskTempDetail.taskReviewLogResDTOList">
+                    <div>审核阶段: {{item.level}}; 审核人: {{item.checkUserName}}; 审核时间: {{item.reviewTime | formatTime}}</div>
+                    <div>审核意见: {{item.suggest}}</div>
+                </div>
+                <div class="ctpc-instruction-msg"
+                     v-show="!addPriSuggestVisible && taskTemp.priTaskTempDetail.isChecked === 0"
+                     @click="showInsPriChange" style="color:deepskyblue;">
+                    {{insMsgShowPriTask}}
+                </div>
+                <div class="ctpc-ins-edit" v-show="addPriSuggestVisible">
+                    <textarea class="ctpc-instruction" placeholder="审核建议"
+                              v-model="taskTemp.priTaskTempDetail.suggest"></textarea>
+                    <div class="ctpc-btns">
+                        <input type="button" class="ctpc-cancel" @click="cancelEdit(1)" value="取消">
+                        <input type="button" class="ctpc-save" @click="saveEdit(1)" value="确定">
+                    </div>
+                </div>
+                <div v-show="taskTemp.priTaskTempDetail.taskReviewLogResDTOList.length > 0">
+                    <span>-------------------------------------------------------------------------------------------</span>
+                </div>
+                <el-form-item label="项目">
+                    <el-select v-model="taskTemp.priTaskTempDetail.projectId" placeholder="请选择" size="small"
+                               clearable filterable :disabled="taskTempAble">
+                        <el-option
+                                v-for="item in projectList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="开始日期">
+                    <el-date-picker
+                            :disabled="taskTempAble"
+                            v-model="taskTemp.priTaskTempDetail.beginTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            size="small"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="截止日期">
+                    <el-date-picker
+                            :disabled="taskTempAble"
+                            v-model="taskTemp.priTaskTempDetail.endTime"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            size="small"
+                            placeholder="选择日期时间">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="任务名称" style="margin-top: 0px">
+                    <el-input type="text" :disabled="taskTempAble" v-model="taskTemp.priTaskTempDetail.taskName"
+                              :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="任务描述" style="margin-top: 0px">
+                    <el-input type="textarea" :disabled="taskTempAble" v-model="taskTemp.priTaskTempDetail.description"
+                              :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="关联任务">
+                    <el-select v-model="taskTemp.priTaskTempDetail.linkTaskId" placeholder="请选择" clearable
+                               filterable size="small" :disabled="taskTempAble">
+                        <el-option
+                                v-for="item in joinRunningTaskList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <span>(非必选)</span>
+                </el-form-item>
+                <el-form-item style="margin-top: 5px;" label="标签" size="small">
+                    <el-select
+                            :disabled="taskTempAble"
+                            v-model="taskTemp.priTaskTempDetail.tagList"
+                            multiple
+                            clearable filterable
+                            placeholder="请选择标签">
+                        <el-option
+                                v-for="item in tagList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="任务时长" style="">
+                    <el-input type="number" v-model="taskTemp.priTaskTempDetail.workHours" :disabled="taskTempAble"
+                              style="width: 40%" size="small"></el-input>
+                    小时
+                </el-form-item>
+                <el-form-item label="任务级别" style="">
+                    <el-select v-model="taskTemp.priTaskTempDetail.taskLevel" clearable filterable placeholder="请选择任务级别"
+                               style="width: 150px;" size="small" :disabled="taskTempAble">
+                        <el-option v-for="item in taskLevelList"
+                                   :key="item.id"
+                                   :label="item.name"
+                                   :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <div v-if="userRole === 0">
+                    <el-button type="danger" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
+                               @click="deleteMultipleTask(taskTemp.priTaskTempDetail.id)">
+                        删除
+                    </el-button>
+                    <el-button type="primary" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
+                               @click="saveEditPriTaskTemp" :loading="taskAble">
+                        编辑
+                    </el-button>
+                    <el-button type="success" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
+                               @click="savePassPriTaskTemp(taskTemp.priTaskTempDetail.id)"
+                               :loading="taskAble">
+                        审核
+                    </el-button>
+                    <el-button @click="clearEditPrivateTaskTemp,taskTemp.priTaskVisible = false">取消</el-button>
+                </div>
+                <div v-else>
+                     <el-button type="danger" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
+                                @click="deleteMultipleTask(taskTemp.priTaskTempDetail.id)">
+                         删除
+                     </el-button>
+                    <el-button type="primary" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
+                               @click="saveEditPriTaskTemp" :loading="taskAble">
+                         编辑
+                    </el-button>
+                     <el-button type="success" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
+                                @click="savePassPriTaskTemp(taskTemp.priTaskTempDetail.id)"
+                                :loading="taskAble">
+                         审核
+                     </el-button>
+                    <el-button @click="clearEditPrivateTaskTemp,taskTemp.priTaskVisible = false">取消</el-button>
+                </div>
+
+            </span>
+        </el-dialog>
+
         <el-dialog class="el-dialog--small" style="margin-left: 570px" title="创建任务" :visible.sync="createTaskVisible"
                    :close-on-click-modal="false" :close-on-press-escape="false"
                    :center="Boolean(true)">
@@ -3006,6 +3378,20 @@
                 expandDetailVisible: false,
                 createTaskVisible: false,
                 createPrivateTaskVisible: false,
+                //个人任务临时任务相关
+                priTaskTemp: {
+                    addVisible: false,
+                    taskForm: {
+                        taskName: '',
+                        description: '',
+                        projectId: null,
+                        linkTaskId: null,
+                        endTime: null,
+                        beginTime: null,
+                        tagList: [],
+                        workHours: null
+                    }
+                },
                 createMultipleTaskVisible: false,
                 editLeaveDetailVisible: false,
                 developVisible: false,
@@ -3563,6 +3949,7 @@
                 },
                 taskTempActiveName: 'wait',
                 taskTempActiveName2: 'wait',
+                priTaskTempActive: 'wait',
                 taskTempStageList: [
                     {id: '212754785051344891', name: '待设计'},
                     {id: '212754785051344892', name: '设计中'},
@@ -3669,6 +4056,33 @@
                     waitAssess2: [],
                     auditSuccess: [],
                     auditSuccess2: [],
+                    //待审核个人任务
+                    priTaskWait: [],
+                    //审核通过个人任务
+                    priTaskAccept: [],
+                    //审核通过个人任务分页
+                    priTaskTempPage: {
+                        pageNum: 1,
+                        pageSize: 5,
+                        total: 0
+                    },
+                    //是否展示详情
+                    priTaskVisible: false,
+                    //个人任务(临时)详情
+                    priTaskTempDetail: {
+                        id: null,
+                        taskName: '',
+                        description: '',
+                        suggest: '',
+                        projectId: null,
+                        linkTaskId: null,
+                        endTime: null,
+                        beginTime: null,
+                        tagList: [],
+                        workHours: null,
+                        taskLevel: null,
+                        taskReviewLogResDTOList: []
+                    }
                 },
                 taskDetail: {},
                 showTaskDetailVisible: false,
@@ -3681,6 +4095,7 @@
                 showTaskReviewTabVisible: false,
                 controlledPeopleList: [],
                 addSuggestVisible: false,
+                addPriSuggestVisible: false,
                 personalTaskModifyData: {
                     waitAssess: [],
                     auditSuccess: []
@@ -3976,6 +4391,13 @@
                     return '点击添加审核意见'
                 } else {
                     return this.taskTempDetail.suggest
+                }
+            },
+            insMsgShowPriTask() {
+                if (this.taskTemp.priTaskTempDetail.suggest == '') {
+                    return '点击添加审核意见'
+                } else {
+                    return this.taskTemp.priTaskTempDetail.suggest
                 }
             },
             sortWeekNumber() {
@@ -4359,6 +4781,13 @@
                     this.fetchMultipleAccess();
                 }
             },
+            handleClickPriTaskTemp() {
+                if (this.priTaskTempActive === 'wait') {
+                    this.fetchPendingPriTaskTemp();
+                } else {
+                    this.fetchPriTaskTempAccept();
+                }
+            },
             handleClickPrivateTask() {
                 if (this.auditTabsActiveName === 'wait') {
                     this.fetchTaskWaitAudit();
@@ -4419,9 +4848,11 @@
             createPrivateTask() {
                 // this.clearMultipleTask();
                 this.fetchProjectList();
-                this.fetchJoinRunningTasks();
+                this.fetchJoinRunningTasks(this.userId);
                 this.createTaskVisible = false;
-                this.createPrivateTaskVisible = true;
+                // this.createPrivateTaskVisible = true;
+                this.clearPrivateTaskTemp();
+                this.priTaskTemp.addVisible = true;
             },
             reload() {
                 this.task.doing = [];
@@ -4843,16 +5274,19 @@
                         this.reload();
                         this.fetchPendingTaskTemp();
                         this.taskTempDetailVisible = false;
+                        this.taskTemp.priTaskVisible = false;
                     }, err => {
                         this.$message({showClose: true, message: err.errMsg, type: 'error'});
                         this.reload();
                         this.$emit('reload');
                         this.taskTempDetailVisible = false;
+                        this.taskTemp.priTaskVisible = false;
                     }, error => {
                         this.$message({showClose: true, message: error.errMsg, type: 'error'});
                         this.reload();
                         this.$emit('reload');
                         this.taskTempDetailVisible = false;
+                        this.taskTemp.priTaskVisible = false;
                     })
                 }).catch(() => {
                 });
@@ -5485,7 +5919,6 @@
                 this.taskTempDetail.taskLevelName = taskTemp.taskLevelName;
                 this.taskTempDetail.functionResDTOList = taskTemp.functionResDTOList;
                 this.description = taskTemp.description;
-                // this.taskTempDetail.reviewStatus = taskTemp.reviewStatus;
                 this.taskTempDetail.workHours = taskTemp.workHours;
                 this.taskTempDetail.reviewStatus = taskTemp.reviewStatus;
                 this.taskTempDetail.userWeeks = taskTemp.userWeekTempList;
@@ -5503,6 +5936,43 @@
                 if (this.taskDetail) {
                     this.taskTempDetailVisible = true;
                 }
+            },
+
+            //查询个人任务(临时)详情
+            getPriTaskTempDetail(ttId) {
+                this.taskTemp.priTaskTempDetail.suggest = '';
+                this.addPriSuggestVisible = false;
+                http.zsyGetHttp(`/task-temp/personal/${ttId}`, {}, (resp) => {
+                    let taskTemp = resp.data;
+                    if (this.taskTempActiveName === 'access'
+                        || this.taskTempActiveName2 === 'access'
+                        || this.priTaskTempActive === 'access'
+                        || taskTemp.isChecked === 1) {
+                        this.taskTempAble = true
+                    } else {
+                        this.taskTempAble = false
+                    }
+                    this.fetchJoinRunningTasks(taskTemp.userId)
+                    this.taskTemp.priTaskTempDetail.id = taskTemp.id;
+                    this.taskTemp.priTaskTempDetail.projectId = taskTemp.projectId;
+                    this.taskTemp.priTaskTempDetail.linkTaskId = taskTemp.linkTaskId;
+                    this.taskTemp.priTaskTempDetail.taskName = taskTemp.taskName;
+                    this.taskTemp.priTaskTempDetail.userName = taskTemp.userName;
+                    this.taskTemp.priTaskTempDetail.userId = taskTemp.userId;
+                    this.taskTemp.priTaskTempDetail.beginTime = taskTemp.beginTime;
+                    this.taskTemp.priTaskTempDetail.endTime = taskTemp.endTime;
+                    this.taskTemp.priTaskTempDetail.createTime = taskTemp.createTime;
+                    this.taskTemp.priTaskTempDetail.description = taskTemp.description;
+                    this.taskTemp.priTaskTempDetail.isChecked = taskTemp.isChecked;
+                    this.taskTemp.priTaskTempDetail.taskLevel = taskTemp.taskLevel;
+                    this.taskTemp.priTaskTempDetail.taskLevelName = taskTemp.taskLevelName;
+                    this.taskTemp.priTaskTempDetail.workHours = taskTemp.workHours;
+                    this.taskTemp.priTaskTempDetail.reviewStatus = taskTemp.reviewStatus;
+                    this.taskTemp.priTaskTempDetail.taskReviewLogResDTOList = taskTemp.taskReviewLogResDTOList;
+                    this.taskTemp.priTaskTempDetail.tagList = taskTemp.tagList;
+                    this.taskTemp.priTaskVisible = true
+                })
+
             },
             //积分转移详情
             reviewDetail(help) {
@@ -6002,6 +6472,11 @@
                 this.taskTempPage4.pageNum = currentPage;
                 this.fetchMultipleAccess()
             },
+            //审核通过个人任务翻页
+            priTaskTempChangePage(currentPage) {
+                this.taskTemp.priTaskTempPage.pageNum = currentPage;
+                this.fetchPriTaskTempAccept()
+            },
             handleExpandPage(currentPage) {
                 this.expandPage.pageNum = currentPage;
                 this.fetchTaskExpandSuccess()
@@ -6265,19 +6740,6 @@
                             param.push(weekData)
                         })
                     }
-                    // for (let i = 1; i < this.taskTempDetail.endWeek + 1; i++) {
-                    //     http.zsyGetHttp('/userWeek/'+ this.taskTempDetail.taskId +'/' + this.taskTempDetail.userId + '/' + beginYear + '/' + i, {}, (resp) => {
-                    //         weekData = {
-                    //             'weekHours':resp.data,
-                    //             'weekNumber': i,
-                    //             'hours': userWeeks[i-1].hours,
-                    //             'year': endYear,
-                    //             'range': moment().year(endYear).week(i).startOf('week').format('MM-DD') + '至' + moment().year(endYear).week(i).endOf('week').format('MM-DD')
-                    //         };
-                    //         param.push(weekData)
-                    //     })
-                    //
-                    // }
                 } else {
                     if (this.taskTempDetail.beginWeek === this.taskTempDetail.endWeek) {
                         http.zsyGetHttp('/userWeek/' + this.taskTempDetail.taskId + '/' + this.taskTempDetail.userId + '/' + beginYear + '/' + this.taskTempDetail.beginWeek, {}, (resp) => {
@@ -7711,6 +8173,13 @@
                     this.taskTempPage4.total = res.data.total;
                 }))
             },
+            //查询审核通过的个人任务
+            fetchPriTaskTempAccept() {
+                http.zsyGetHttp('/task-temp/accessed/private/page/' + this.taskTemp.priTaskTempPage.pageNum + '/' + this.userId, {}, (res => {
+                    this.taskTemp.priTaskAccept = res.data.list;
+                    this.taskTemp.priTaskTempPage.total = res.data.total;
+                }))
+            },
             clearMultipleTask() {
                 this.taskTempForm.taskId = this.taskTempForm.description = this.taskTempForm.beginTime
                     = this.taskTempForm.endTime = this.taskTempForm.workHours = this.taskTempForm.createTime
@@ -7727,7 +8196,8 @@
                     this.controlledPeopleList = res.data;
                     if (this.controlledPeopleList.length > 0) {
                         this.showTaskReviewTabVisible = true;
-                        this.fetchPendingTaskTemp()
+                        this.fetchPendingTaskTemp();
+                        this.fetchPendingPriTaskTemp();
                     }
                 }))
             },
@@ -7736,15 +8206,32 @@
                     this.taskTemp.waitAssess2 = res.data;
                 }))
             },
-            cancelEdit() {
-                this.addSuggestVisible = false;
-                this.taskTempDetail.suggest = '';
+            fetchPendingPriTaskTemp() {
+                http.zsyGetHttp(`/task-temp/private/pending/list/` + this.userId, {}, (res => {
+                    this.taskTemp.priTaskWait = res.data;
+                }))
             },
-            saveEdit() {
-                this.addSuggestVisible = false;
+            cancelEdit(type) {
+                if (type == 1) {
+                    this.addPriSuggestVisible = false;
+                    this.taskTemp.priTaskTempDetail.suggest = '';
+                } else if (type == 2) {
+                    this.addSuggestVisible = false;
+                    this.taskTempDetail.suggest = '';
+                }
+            },
+            saveEdit(type) {
+                if (type == 1) {
+                    this.addPriSuggestVisible = false;
+                } else if (type == 2) {
+                    this.addSuggestVisible = false;
+                }
             },
             showInsChange() {
                 this.addSuggestVisible = true;
+            },
+            showInsPriChange() {
+                this.addPriSuggestVisible = true;
             },
             fetchPersonalTaskModifyWait() {
                 http.zsyGetHttp('/task-modify/personal/list', {}, (res => {
@@ -9137,18 +9624,273 @@
                 })
             },
             //查询我参与的进行中的多人任务
-            fetchJoinRunningTasks() {
-                http.zsyGetHttp('/task/join-running/' + this.userId, {}, res => {
+            fetchJoinRunningTasks(userId) {
+                http.zsyGetHttp('/task/join-running/' + userId, {}, res => {
                     this.joinRunningTaskList = res.data
                 })
             },
 
             // 查询未删除的用户
             fetchNotDeleteUserList() {
-                http.zsyGetHttp('/user/not-delete-lists',{},res=>{
+                http.zsyGetHttp('/user/not-delete-lists', {}, res => {
                     this.notDeleteUserList = res.data;
                 })
-            }
+            },
+            //清空新建个人任务
+            clearPrivateTaskTemp() {
+                this.taskAble = false;
+                this.priTaskTemp.taskForm = {
+                    taskName: '',
+                    description: '',
+                    projectId: null,
+                    linkTaskId: null,
+                    endTime: null,
+                    beginTime: null,
+                    tagList: [],
+                    workHours: null
+                }
+            },
+            //清空编辑/审核 个人任务(临时)表单
+            clearEditPrivateTaskTemp() {
+                this.taskAble = false;
+                this.taskTemp.priTaskTempDetail = {
+                    id: null,
+                    taskName: '',
+                    description: '',
+                    suggest: '',
+                    projectId: null,
+                    linkTaskId: null,
+                    endTime: null,
+                    beginTime: null,
+                    tagList: [],
+                    workHours: null,
+                    taskLevel: null,
+                    taskReviewLogResDTOList: []
+                }
+            },
+            saveAddPriTaskTemp(formName) {
+                this.taskAble = true;
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let param = this.priTaskTemp.taskForm;
+                        if (param.projectId == null || param.projectId === undefined || param.projectId === '') {
+                            this.$message({showClose: true, message: '项目不能为空', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        if (param.beginTime == null || param.beginTime === undefined || param.beginTime === '') {
+                            this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        if (param.endTime == null || param.endTime === undefined || param.endTime === '') {
+                            this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        if (param.workHours == null || param.workHours === undefined || param.workHours === '') {
+                            this.$message({showClose: true, message: '工作量不能为空', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        if (param.taskName == null || param.taskName === undefined || param.taskName.trim() === '') {
+                            this.$message({showClose: true, message: '任务名称不能为空', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        if (param.description == null || param.description === undefined || param.description.trim() === '') {
+                            this.$message({showClose: true, message: '描述不能为空', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        if (param.tagList == null || param.tagList === undefined || param.tagList.length < 1) {
+                            this.$message({showClose: true, message: '标签不能为空', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        param.taskName = param.taskName.trim();
+                        param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
+                        param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
+                        if ((moment(this.priTaskTemp.taskForm.endTime)).isBefore((moment(this.priTaskTemp.taskForm.beginTime)))) {
+                            this.$message({showClose: true, message: '开始时间不能再截止时间后面', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        // if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                        //     this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                        //     this.taskAble = false;
+                        //     return false;
+                        // }
+                        if (param.workHours > 40 || param.workHours < 1) {
+                            this.$message({showClose: true, message: '工作量正确值应为1~40', type: 'error'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        if (moment(param.endTime).week() !== moment(param.beginTime).week()) {
+                            this.$message({showClose: true, message: '请检查日期，个人任务请勿跨周进行', type: 'warning'});
+                            this.taskAble = false;
+                            return false;
+                        }
+                        http.zsyPostHttp('/task-temp/add-private', param, (resp) => {
+                            this.$message({showClose: true, message: '个人任务创建成功', type: 'success'});
+                            this.$refs[formName].resetFields();
+                            this.clearPrivateTaskTemp();
+                            this.priTaskTemp.addVisible = false;
+                            this.taskAble = false;
+                            this.reload()
+                        });
+                    } else {
+                        this.taskAble = false
+                    }
+                }, err => {
+                    this.taskAble = false
+                });
+            },
+            //审核人编辑个人任务申请
+            saveEditPriTaskTemp() {
+                this.taskAble = true;
+                let param = this.taskTemp.priTaskTempDetail;
+                if (param.projectId == null || param.projectId === undefined || param.projectId === '') {
+                    this.$message({showClose: true, message: '项目不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.beginTime == null || param.beginTime === undefined || param.beginTime === '') {
+                    this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.endTime == null || param.endTime === undefined || param.endTime === '') {
+                    this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.workHours == null || param.workHours === undefined || param.workHours === '') {
+                    this.$message({showClose: true, message: '工作量不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.taskName == null || param.taskName === undefined || param.taskName.trim() === '') {
+                    this.$message({showClose: true, message: '任务名称不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.description == null || param.description === undefined || param.description.trim() === '') {
+                    this.$message({showClose: true, message: '描述不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.tagList == null || param.tagList === undefined || param.tagList.length < 1) {
+                    this.$message({showClose: true, message: '标签不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                param.taskName = param.taskName.trim();
+                param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
+                param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
+                if ((moment(param.endTime)).isBefore((moment(param.beginTime)))) {
+                    this.$message({showClose: true, message: '开始时间不能再截止时间后面', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                // if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                //     this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                //     this.taskAble = false;
+                //     return false;
+                // }
+                if (param.workHours > 40 || param.workHours < 1) {
+                    this.$message({showClose: true, message: '工作量正确值应为1~40', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (moment(param.endTime).week() !== moment(param.beginTime).week()) {
+                    this.$message({showClose: true, message: '请检查日期，个人任务请勿跨周进行', type: 'warning'});
+                    this.taskAble = false;
+                    return false;
+                }
+                http.zsyPutHttp('/task-temp/private/' + param.id, param, (resp) => {
+                    this.$message({showClose: true, message: '个人任务修改成功', type: 'success'});
+                    this.clearEditPrivateTaskTemp();
+                    this.taskTemp.priTaskVisible = false;
+                    this.taskAble = false;
+                    this.reload()
+                });
+            },
+            //审核通过个人任务申请
+            savePassPriTaskTemp() {
+                this.taskAble = true;
+                let param = this.taskTemp.priTaskTempDetail;
+                if (param.projectId == null || param.projectId === undefined || param.projectId === '') {
+                    this.$message({showClose: true, message: '项目不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.beginTime == null || param.beginTime === undefined || param.beginTime === '') {
+                    this.$message({showClose: true, message: '开始时间不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.endTime == null || param.endTime === undefined || param.endTime === '') {
+                    this.$message({showClose: true, message: '截止时间不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.workHours == null || param.workHours === undefined || param.workHours === '') {
+                    this.$message({showClose: true, message: '工作量不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.taskName == null || param.taskName === undefined || param.taskName.trim() === '') {
+                    this.$message({showClose: true, message: '任务名称不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.description == null || param.description === undefined || param.description.trim() === '') {
+                    this.$message({showClose: true, message: '描述不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.tagList == null || param.tagList === undefined || param.tagList.length < 1) {
+                    this.$message({showClose: true, message: '标签不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (param.taskLevel == null || param.taskLevel === undefined || param.taskLevel === '') {
+                    this.$message({showClose: true, message: '任务级别不能为空', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                param.taskName = param.taskName.trim();
+                param.beginTime = moment(param.beginTime).format('YYYY-MM-DD HH:00:00');
+                param.endTime = moment(param.endTime).format('YYYY-MM-DD 23:59:59');
+                if ((moment(param.endTime)).isBefore((moment(param.beginTime)))) {
+                    this.$message({showClose: true, message: '开始时间不能再截止时间后面', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                // if (param.workHours.length !== parseFloat(param.workHours).toString().length || parseFloat(param.workHours) == "NaN") {
+                //     this.$message({showClose: true, message: '工作量只能为数字或者小数', type: 'error'});
+                //     this.taskAble = false;
+                //     return false;
+                // }
+                if (param.workHours > 40 || param.workHours < 1) {
+                    this.$message({showClose: true, message: '工作量正确值应为1~40', type: 'error'});
+                    this.taskAble = false;
+                    return false;
+                }
+                if (moment(param.endTime).week() !== moment(param.beginTime).week()) {
+                    this.$message({showClose: true, message: '请检查日期，个人任务请勿跨周进行', type: 'warning'});
+                    this.taskAble = false;
+                    return false;
+                }
+                http.zsyPutHttp('/task-temp/private/accept/' + param.id, param, (resp) => {
+                    this.$message({showClose: true, message: '个人任务审核成功', type: 'success'});
+                    this.clearEditPrivateTaskTemp();
+                    this.taskTemp.priTaskVisible = false;
+                    this.taskAble = false;
+                    this.reload()
+                });
+            },
             // -- sch
         },
         components: {
