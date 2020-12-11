@@ -1,26 +1,43 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 /**
+ * 我参与的需求
  * Created by SCH on 2018-10-22
  */
-@ApiModel("我参与的需求")
 public class DemandJoinedBO {
-    @ApiModelProperty("需求id")
+    /**
+     * 需求id
+     */
     private Long id;
-    @ApiModelProperty("需求标题")
+
+    /**
+     * 需求标题
+     */
     private String title;
-    @ApiModelProperty("状态")
+
+    /**
+     * 状态
+     */
     private Integer status;
-    @ApiModelProperty("点赞数")
+
+    /**
+     * 点赞数
+     */
     private Integer likesNum;
-    @ApiModelProperty("项目id")
+
+    /**
+     * 项目id
+     */
     private Long projectId;
-    @ApiModelProperty("负责人")
+
+    /**
+     * 负责人
+     */
     private String chargeMan;
-    @ApiModelProperty("来源(需求实际提出人)")
+
+    /**
+     * 来源(需求实际提出人)
+     */
     private String origin;
 
     public String getOrigin() {

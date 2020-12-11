@@ -1,9 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.models.auth.In;
-
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Tate on 2017/8/10.

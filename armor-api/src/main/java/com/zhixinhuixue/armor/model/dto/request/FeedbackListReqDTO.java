@@ -1,10 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import io.swagger.models.auth.In;
-
-import java.util.Date;
-import java.util.List;
-
 /**
  * Created by Lang on 2018/2/27.
  */

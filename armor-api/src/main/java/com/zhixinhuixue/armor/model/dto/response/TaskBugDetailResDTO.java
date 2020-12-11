@@ -1,8 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.Date;
 import java.util.List;
 
@@ -10,54 +7,57 @@ import java.util.List;
  * @author sch
  * @time 2019/10/14 13:16
  */
-@ApiModel
 public class TaskBugDetailResDTO {
     /**
      * ID
      */
-    @ApiModelProperty("任务bugId")
     private Long tbId;
 
     private Long taskId;
-    @ApiModelProperty("任务名称")
+
+    /**
+     * 任务名称
+     */
     private String taskName;
 
     /**
      * 摘要
      */
-    @ApiModelProperty("摘要")
     private String title;
 
     /**
      * 描述
      */
-    @ApiModelProperty("描述")
     private String description;
 
     /**
      * 报告日期
      */
-    @ApiModelProperty("报告日期")
     private Date createTime;
 
     /**
      * 提交人
      */
     private Long createBy;
-    @ApiModelProperty("提交人")
+
+    /**
+     * 提交人
+     */
     private String createName;
 
     /**
      * 分派人
      */
     private Long handlerId;
-    @ApiModelProperty("分派人")
+
+    /**
+     * 分派人
+     */
     private String handlerName;
 
     /**
      * 状态
      */
-    @ApiModelProperty("状态")
     private Integer status;
     private String statusName;
 
@@ -65,14 +65,20 @@ public class TaskBugDetailResDTO {
      * 频率
      */
     private Integer frequency;
-    @ApiModelProperty("频率")
+
+    /**
+     * 频率
+     */
     private String frequencyName;
 
     /**
      * 严重程度
      */
     private Integer severity;
-    @ApiModelProperty("严重程度")
+
+    /**
+     * 严重程度
+     */
     private String severityName;
 
     /**
@@ -84,19 +90,16 @@ public class TaskBugDetailResDTO {
     /**
      * 是否为创建人
      */
-    @ApiModelProperty("是否为创建人")
     private Integer isCreater;
 
     /**
      * 修改备注
      */
-    @ApiModelProperty("备注集合")
     private List<TaskBugRemarkResDTO> remarkResDTOS;
 
     /**
      * 修改日志
      */
-    @ApiModelProperty("日志集合")
     private List<TaskBugLogResDTO> logResDTOList;
 
     public Integer getProblemType() {

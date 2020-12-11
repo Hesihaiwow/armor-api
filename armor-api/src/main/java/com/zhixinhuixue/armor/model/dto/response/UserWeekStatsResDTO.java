@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
-
 import java.util.List;
 
 /**

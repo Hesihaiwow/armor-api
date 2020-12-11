@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import com.zhixinhuixue.armor.model.dto.request.BugUserReqDTO;
 import com.zhixinhuixue.armor.model.pojo.BugManage;
 
 import java.util.List;

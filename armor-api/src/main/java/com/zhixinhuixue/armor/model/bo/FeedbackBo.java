@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import com.zhixinhuixue.armor.model.pojo.Department;
 import com.zhixinhuixue.armor.model.pojo.Feedback;
 
 /**

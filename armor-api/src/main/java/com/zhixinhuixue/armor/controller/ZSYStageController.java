@@ -2,26 +2,23 @@ package com.zhixinhuixue.armor.controller;
 
 
 import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
-import com.zhixinhuixue.armor.model.dto.request.TaskMoveReqDTO;
 import com.zhixinhuixue.armor.service.IZSYStageService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
 /**
+ * 阶段接口
  * Created by Lang on 2017/8/9 0007.
  */
-@Api(value = "阶段接口", description = "阶段相关操作接口", tags = "/stage")
 @RequestMapping("/api/stage")
 @RestController
 public class ZSYStageController extends ZSYController {
 
-    @Autowired
+    @Resource
     private IZSYStageService stageService;
 
     /**
@@ -29,7 +26,6 @@ public class ZSYStageController extends ZSYController {
      *
      * @return
      */
-    @ApiOperation("阶段列表")
     @GetMapping(value = "/list")
     public String getStage() {
         List<StageResDTO> stageDTOS = stageService.getStage();
@@ -41,7 +37,6 @@ public class ZSYStageController extends ZSYController {
      *
      * @return
      */
-    @ApiOperation("添加阶段")
     @PostMapping(value = "/add")
     public String addStage(@RequestBody StageResDTO stageResDTO) {
         Long id = stageService.addStage(stageResDTO);
@@ -53,7 +48,6 @@ public class ZSYStageController extends ZSYController {
      *
      * @return
      */
-    @ApiOperation("编辑阶段")
     @PostMapping(value = "/edit")
     public String editStage(@RequestBody StageResDTO stageResDTO) {
         stageService.editStage(stageResDTO);
@@ -65,7 +59,6 @@ public class ZSYStageController extends ZSYController {
      *
      * @return
      */
-    @ApiOperation("删除阶段")
     @DeleteMapping(value = "/{stageId}")
     public String deleteStage(@PathVariable Long stageId) {
         stageService.deleteStage(stageId);
@@ -74,24 +67,24 @@ public class ZSYStageController extends ZSYController {
 
     /**
      * 移动阶段
+     *
      * @param id
      * @param sort
      * @return
      */
-    @ApiOperation("移动阶段")
     @PutMapping(value = "/move/{id}/{sort}")
-    public String moveStage(@PathVariable("id") Long id,@PathVariable("sort") Integer sort){
-        return  stageService.moveStage(id,sort).build();
+    public String moveStage(@PathVariable("id") Long id, @PathVariable("sort") Integer sort) {
+        return stageService.moveStage(id, sort).build();
     }
 
     /**
      * 移动阶段
+     *
      * @param stageResDTO
      * @return
      */
-    @ApiOperation("移动阶段")
     @PutMapping(value = "/move")
-    public String moveStage(@Valid @RequestBody StageResDTO stageResDTO){
+    public String moveStage(@Valid @RequestBody StageResDTO stageResDTO) {
         stageService.moveStage(stageResDTO);
         return ZSYResult.success().build();
     }

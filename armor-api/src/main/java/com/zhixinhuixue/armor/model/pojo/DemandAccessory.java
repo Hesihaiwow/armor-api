@@ -1,22 +1,29 @@
 package com.zhixinhuixue.armor.model.pojo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.Date;
 
 /**
  * Created by SCH on 2018-10-29
  */
-@ApiModel("需求附件")
 public class DemandAccessory {
-    @ApiModelProperty("附件id")
+    /**
+     * 附件id
+     */
     private Long id;
-    @ApiModelProperty("需求id")
+
+    /**
+     * 需求id
+     */
     private Long demandId;
-    @ApiModelProperty("url")
+
+    /**
+     * url
+     */
     private String url;
-    @ApiModelProperty("添加时间")
+
+    /**
+     * 添加时间
+     */
     private Date createTime;
 
     public Long getId() {

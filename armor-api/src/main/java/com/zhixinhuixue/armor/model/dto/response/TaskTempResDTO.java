@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import org.omg.CORBA.PRIVATE_MEMBER;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +24,7 @@ public class TaskTempResDTO {
      */
     private Long taskId;
     private String taskName;
+    private Long projectId;
     private String projectName;
     private String projectImage;
 
@@ -78,6 +77,16 @@ public class TaskTempResDTO {
     private String taskLevelName;
 
     /**
+     * 个人任务关联任务
+     */
+    private Long linkTaskId;
+
+    /**
+     * 标签
+     */
+    private List<String> tagList;
+
+    /**
      * 功能点
      */
     private List<TaskTempFunctionResDTO> functionResDTOList;
@@ -86,6 +95,30 @@ public class TaskTempResDTO {
      * 用户-周工作量
      */
     private List<UserWeekTempResDTO> userWeekTempList;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getLinkTaskId() {
+        return linkTaskId;
+    }
+
+    public void setLinkTaskId(Long linkTaskId) {
+        this.linkTaskId = linkTaskId;
+    }
+
+    public List<String> getTagList() {
+        return tagList;
+    }
+
+    public void setTagList(List<String> tagList) {
+        this.tagList = tagList;
+    }
 
     public List<TaskTempFunctionResDTO> getFunctionResDTOList() {
         return functionResDTOList;

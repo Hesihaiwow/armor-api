@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import java.util.List;
-
 /**
  * @author sch
  * @DATE 2019/4/19 16:07

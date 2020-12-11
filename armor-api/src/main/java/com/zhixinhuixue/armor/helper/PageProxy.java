@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.helper;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.zhixinhuixue.armor.source.ZSYPageInfo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +8,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
+
+import static com.github.pagehelper.page.PageMethod.startPage;
 
 /**
  * Created by Akuma on 16/2/3.
@@ -24,7 +25,7 @@ public class PageProxy<T> implements InvocationHandler {
         this.sub = object;
         Integer pageIndex = (Integer) map.get("pageIndex");
         if (pageIndex == null) {
-            this.pageIndex = new Integer(1);
+            this.pageIndex = 1;
         } else {
             this.pageIndex = pageIndex;
         }
@@ -35,7 +36,7 @@ public class PageProxy<T> implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Integer pageSize = (Integer) map.get("pageSize");
-        PageHelper.startPage(this.pageIndex, pageSize == null ? 10 : pageSize);
+        startPage(this.pageIndex, pageSize == null ? 10 : pageSize);
         Page<T> list = (Page<T>) method.invoke(sub, args);
         ZSYPageInfo page = new ZSYPageInfo(list);
         map.put("page", page);

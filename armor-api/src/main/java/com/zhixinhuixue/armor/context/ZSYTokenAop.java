@@ -67,14 +67,14 @@ public class ZSYTokenAop {
                         .map(userId->Long.parseLong(userId.toString()))
                         .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
                 loginInfo.setUserName(Optional.ofNullable(request.getAttribute("userName"))
-                        .map(userName->userName.toString())
+                        .map(Object::toString)
                         .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
                 loginInfo.setUserRole(Optional.ofNullable(request.getAttribute("userRole"))
                         .map(userRole->Integer.parseInt(userRole.toString()))
                         .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
                 loginInfo.setDepartmentId(Optional.ofNullable(request.getAttribute("departmentId"))
                         .map(departmentId->Long.parseLong(departmentId.toString()))
-                        .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));;
+                        .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
                 ZSYTokenRequestContext.set(loginInfo);
             }
         }

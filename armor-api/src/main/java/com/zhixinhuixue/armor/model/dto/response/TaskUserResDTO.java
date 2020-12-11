@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import org.springframework.util.CollectionUtils;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.List;
 /**
  * Created by Tate on 2017/8/10.
  */
-public class TaskUserResDTO{
+public class TaskUserResDTO {
 
     private Long id;
 
@@ -194,13 +196,13 @@ public class TaskUserResDTO{
     }
 
     public String getCommentGrade() {
-        if (comments!=null && comments.size()>0) {
+        if (!CollectionUtils.isEmpty(comments)) {
             double average = comments.stream().mapToInt(TaskCommentResDTO::getIntegral).average().getAsDouble();
-            if (average>80) {
+            if (average > 80) {
                 return "A";
-            }else if(average>60){
+            } else if (average > 60) {
                 return "B";
-            }else{
+            } else {
                 return "C";
             }
         }

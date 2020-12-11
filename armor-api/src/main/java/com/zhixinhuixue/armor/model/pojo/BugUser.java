@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.model.pojo;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Created by Lang on 2017/11/7 0007.

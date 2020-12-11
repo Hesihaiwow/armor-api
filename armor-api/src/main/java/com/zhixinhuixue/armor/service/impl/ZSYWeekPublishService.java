@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Strings;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
@@ -32,6 +31,8 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.github.pagehelper.page.PageMethod.startPage;
 
 /**
  * @author sch
@@ -347,7 +348,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
      */
     @Override
     public PageInfo<WeekPublishPlanPageResDTO> getPage(WeekPublishQueryReqDTO reqDTO) {
-        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 1);
+        startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 1);
         Page<WeekPublishPlanBO> weekPublishPlanBOs = weekPublishPlanMapper.selectPage(reqDTO);
         Page<WeekPublishPlanPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(weekPublishPlanBOs,page);
@@ -490,7 +491,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
      */
     @Override
     public List<EffectUserResDTO> getPublishUsers(Long wppId) {
-        return null;
+        return new ArrayList<>();
     }
 
     /**

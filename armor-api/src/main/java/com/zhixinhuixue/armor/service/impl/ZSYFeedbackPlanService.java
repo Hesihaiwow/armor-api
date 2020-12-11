@@ -4,24 +4,19 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackMapper;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanMapper;
-import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanTaskMapper;
-import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.model.bo.FeedbackPlanTaskListBO;
-import com.zhixinhuixue.armor.model.bo.TaskDetailBO;
 import com.zhixinhuixue.armor.model.dto.request.DemandPlanQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.FeedbackPlanListReqDTO;
-import com.zhixinhuixue.armor.model.dto.response.DemandPlanListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.FeedbackPlanListResDTO;
 import com.zhixinhuixue.armor.model.dto.response.FeedbackTaskDetailResDTO;
-import com.zhixinhuixue.armor.model.pojo.BugUser;
 import com.zhixinhuixue.armor.service.IZSYFeedbackPlanService;
 import com.zhixinhuixue.armor.source.enums.ZSYPlanSort;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,16 +30,9 @@ import java.util.stream.Collectors;
 @Service
 public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
-    @Autowired
+    @Resource
     private IZSYFeedbackPlanMapper izsyFeedbackPlanMapper;
-
-    @Autowired
-    private IZSYFeedbackPlanTaskMapper izsyFeedbackPlanTaskMapper;
-
-    @Autowired
-    private IZSYTaskMapper izsyTaskMapper;
-
-    @Autowired
+    @Resource
     private IZSYFeedbackMapper feedbackMapper;
 
     @Override
@@ -52,15 +40,12 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
         List<FeedbackPlanTaskListBO> feedbackPlanBOS = izsyFeedbackPlanMapper.getFeedbackPlanBySort(feedbackPlanListReqDTO);
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
 
-        feedbackPlanBOS.stream().forEach(planTask -> {
-            if(planTask==null){
-                System.out.println(1);
-            }
+        feedbackPlanBOS.forEach(planTask -> {
             FeedbackPlanListResDTO feedbackPlanListResDTO = new FeedbackPlanListResDTO();
             BeanUtils.copyProperties(planTask, feedbackPlanListResDTO);
 
             List<FeedbackTaskDetailResDTO> task = Lists.newArrayList();
-            planTask.getPlanTask().stream().forEach(planTaskBO -> {
+            planTask.getPlanTask().forEach(planTaskBO -> {
                 FeedbackTaskDetailResDTO taskDetailResDTO = new FeedbackTaskDetailResDTO();
                 BeanUtils.copyProperties(planTaskBO.getPlanTask(),taskDetailResDTO);
                 taskDetailResDTO.setTaskName(planTaskBO.getPlanTask().getName());
@@ -109,15 +94,12 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         List<FeedbackPlanTaskListBO> feedbackPlanBOS = izsyFeedbackPlanMapper.getDemandPlanBySort(reqDTO);
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
-        feedbackPlanBOS.stream().forEach(planTask -> {
-            if(planTask==null){
-                System.out.println(1);
-            }
+        feedbackPlanBOS.forEach(planTask -> {
             FeedbackPlanListResDTO feedbackPlanListResDTO = new FeedbackPlanListResDTO();
             BeanUtils.copyProperties(planTask, feedbackPlanListResDTO);
             List<String> chargeManList = new ArrayList<>();
             List<FeedbackTaskDetailResDTO> task = Lists.newArrayList();
-            planTask.getPlanTask().stream().forEach(planTaskBO -> {
+            planTask.getPlanTask().forEach(planTaskBO -> {
                 FeedbackTaskDetailResDTO taskDetailResDTO = new FeedbackTaskDetailResDTO();
                 BeanUtils.copyProperties(planTaskBO.getPlanTask(),taskDetailResDTO);
                 taskDetailResDTO.setTaskName(planTaskBO.getPlanTask().getName());
@@ -170,7 +152,7 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         //查询各个阶段的计划
         if (!Strings.isNullOrEmpty(reqDTO.getStage())){
-            feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
+            feedbackPlanListResDTOS.forEach(feedbackPlanListResDTO -> {
                 List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
                 filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
                         child.getStageId()!= null && child.getStageId().equals(Long.valueOf(reqDTO.getStage()))).collect(Collectors.toList()));
@@ -187,10 +169,10 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         //查询暂停计划
         if (reqDTO.getStatus()!= null && reqDTO.getStatus() == 0){
-            feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
+            feedbackPlanListResDTOS.forEach(feedbackPlanListResDTO -> {
                 List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
                 filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
-                        child.getStatus() != null && child.getStatus() == reqDTO.getStatus()).collect(Collectors.toList()));
+                        child.getStatus() != null && child.getStatus().equals( reqDTO.getStatus())).collect(Collectors.toList()));
                 feedbackPlanListResDTO.setChilds(filterChilds);
                 if (!CollectionUtils.isEmpty(feedbackPlanListResDTO.getChilds())){
                     filterList.add(feedbackPlanListResDTO);
@@ -208,16 +190,13 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
     public List<FeedbackPlanListResDTO> getDemandPlanListByCoach(DemandPlanQueryReqDTO reqDTO) {
         List<FeedbackPlanTaskListBO> feedbackPlanBOS = izsyFeedbackPlanMapper.getDemandPlanBySort(reqDTO);
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
-        feedbackPlanBOS.stream().forEach(planTask -> {
-            if(planTask==null){
-                System.out.println(1);
-            }
+        feedbackPlanBOS.forEach(planTask -> {
             FeedbackPlanListResDTO feedbackPlanListResDTO = new FeedbackPlanListResDTO();
             BeanUtils.copyProperties(planTask, feedbackPlanListResDTO);
 
             List<FeedbackTaskDetailResDTO> task = Lists.newArrayList();
             List<String> chargeManList = new ArrayList<>();
-            planTask.getPlanTask().stream().forEach(planTaskBO -> {
+            planTask.getPlanTask().forEach(planTaskBO -> {
                 FeedbackTaskDetailResDTO taskDetailResDTO = new FeedbackTaskDetailResDTO();
                 BeanUtils.copyProperties(planTaskBO.getPlanTask(),taskDetailResDTO);
                 taskDetailResDTO.setTaskName(planTaskBO.getPlanTask().getName());
@@ -283,7 +262,7 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
             }else if (reqDTO.getStage().equals("6")){
                 reqDTO.setStage("212754785051344898");
             }
-            feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
+            feedbackPlanListResDTOS.forEach(feedbackPlanListResDTO -> {
                 List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
                 filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
                         child.getStageId()!= null && child.getStageId().equals(Long.valueOf(reqDTO.getStage()))).collect(Collectors.toList()));
@@ -300,10 +279,10 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
         //查询暂停计划
         if (reqDTO.getStatus()!= null && reqDTO.getStatus() == 0){
-            feedbackPlanListResDTOS.stream().forEach(feedbackPlanListResDTO -> {
+            feedbackPlanListResDTOS.forEach(feedbackPlanListResDTO -> {
                 List<FeedbackTaskDetailResDTO> filterChilds = new ArrayList<>();
                 filterChilds.addAll(feedbackPlanListResDTO.getChilds().stream().filter(child ->
-                        child.getStatus() != null && child.getStatus() == reqDTO.getStatus()).collect(Collectors.toList()));
+                        child.getStatus() != null && child.getStatus().equals( reqDTO.getStatus())).collect(Collectors.toList()));
                 feedbackPlanListResDTO.setChilds(filterChilds);
                 if (!CollectionUtils.isEmpty(feedbackPlanListResDTO.getChilds())){
                     filterList.add(feedbackPlanListResDTO);

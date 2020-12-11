@@ -22,7 +22,6 @@ public interface IZSYFeedbackPlanMapper {
     List<FeedbackPlanBO> getFeedbackPlanById(Long feedbackId);
 
     List<FeedbackPlanTaskListBO> getFeedbackPlanBySort(FeedbackPlanListReqDTO feedbackPlanListReqDTO);
-//    List<FeedbackPlanTaskListBO> getFeedbackPlanBySort(FeedbackPlanListReqDTO feedbackPlanListReqDTO);
 
     List<FeedbackPlanTaskBO> getTaskIdFromPlan(Long taskId);
 

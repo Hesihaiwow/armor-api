@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import javax.validation.constraints.NotNull;
 
 /**

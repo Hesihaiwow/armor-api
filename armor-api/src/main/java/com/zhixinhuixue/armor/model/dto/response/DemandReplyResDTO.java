@@ -1,29 +1,45 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**
+ * 需求回复详情
  * Created by SCH on 2018-10-22
  */
-@ApiModel("需求回复详情")
 public class DemandReplyResDTO {
-    @ApiModelProperty("需求回复id")
+    /**
+     * 需求回复id
+     */
     private Long id;
-    @ApiModelProperty("需求id")
+
+    /**
+     * 需求id
+     */
     private Long demandId;
-    @ApiModelProperty("需求回复人姓名")
+
+    /**
+     * 需求回复人姓名
+     */
     private String replyPeople;
-    @ApiModelProperty("需求回复时间")
+
+    /**
+     * 需求回复时间
+     */
     private Date replyTime;
-    @ApiModelProperty("需求回复内容")
+
+    /**
+     * 需求回复内容
+     */
     private String content;
-    @ApiModelProperty("任务系统回复人id")
+
+    /**
+     * 任务系统回复人id
+     */
     private Long userId;
-    @ApiModelProperty("学管端回复人id")
+
+    /**
+     * 学管端回复人id
+     */
     private Integer coachId;
 
     public Long getUserId() {

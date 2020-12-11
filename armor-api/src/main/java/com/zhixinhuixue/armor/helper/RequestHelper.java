@@ -9,7 +9,7 @@ public class RequestHelper {
 	//将getParameterMap转String
 	public static String mapToUrl(Map<String,String[]> map){
 		
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		
 		for (String key : map.keySet()) {  
 			if("pageIndex".equals(key)){

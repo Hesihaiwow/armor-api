@@ -1,9 +1,7 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Created by Lang on 2017/8/22 0022.

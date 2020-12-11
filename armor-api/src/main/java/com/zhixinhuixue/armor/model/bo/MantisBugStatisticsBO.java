@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import com.zhixinhuixue.armor.model.dto.response.OnlineBugCategoryNumResDTO;
 import com.zhixinhuixue.armor.model.pojo.MantisCategory;
 
 import java.util.List;
@@ -42,11 +41,6 @@ public class MantisBugStatisticsBO{
      */
     private List<MantisBugCategoryNumBO> bugCategoryNumBOS;
 
-    /**
-     * 不同分类的线上bug数量
-     */
-//    private List<OnlineBugCategoryNumBO> onlineBugCategoryNumBOS;
-
     public Long getSysUserId() {
         return sysUserId;
     }
@@ -55,13 +49,6 @@ public class MantisBugStatisticsBO{
         this.sysUserId = sysUserId;
     }
 
-//    public List<OnlineBugCategoryNumBO> getOnlineBugCategoryNumBOS() {
-//        return onlineBugCategoryNumBOS;
-//    }
-//
-//    public void setOnlineBugCategoryNumBOS(List<OnlineBugCategoryNumBO> onlineBugCategoryNumBOS) {
-//        this.onlineBugCategoryNumBOS = onlineBugCategoryNumBOS;
-//    }
 
     public Integer getUserId() {
         return userId;

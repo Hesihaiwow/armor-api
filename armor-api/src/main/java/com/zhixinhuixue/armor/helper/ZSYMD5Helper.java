@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.helper;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -35,9 +35,9 @@ public class ZSYMD5Helper {
     private static String core(String str) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(str.getBytes("utf-8"));
-            byte b[] = md.digest();
-            StringBuffer buf = new StringBuffer();
+            md.update(str.getBytes(StandardCharsets.UTF_8));
+            byte[] b = md.digest();
+            StringBuilder buf = new StringBuilder();
             for (int offset = 0; offset < b.length; offset++) {
                 int i = b[offset];
                 if (i < 0){
@@ -50,8 +50,6 @@ public class ZSYMD5Helper {
             }
             return buf.toString();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return "";

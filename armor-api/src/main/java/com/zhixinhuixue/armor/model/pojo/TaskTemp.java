@@ -21,6 +21,21 @@ public class TaskTemp {
     private Long taskId;
 
     /**
+     * 项目id
+     */
+    private Long projectId;
+
+    /**
+     * 个人任务关联任务id
+     */
+    private Long linkTaskId;
+
+    /**
+     * 个人任务名称
+     */
+    private String priTaskName;
+
+    /**
      * 用户id
      */
     private Long userId;
@@ -75,6 +90,30 @@ public class TaskTemp {
      * 创建时间
      */
     private Date createTime;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getLinkTaskId() {
+        return linkTaskId;
+    }
+
+    public void setLinkTaskId(Long linkTaskId) {
+        this.linkTaskId = linkTaskId;
+    }
+
+    public String getPriTaskName() {
+        return priTaskName;
+    }
+
+    public void setPriTaskName(String priTaskName) {
+        this.priTaskName = priTaskName;
+    }
 
     public Integer getTaskLevel() {
         return taskLevel;

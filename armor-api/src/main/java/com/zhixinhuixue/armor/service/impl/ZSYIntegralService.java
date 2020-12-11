@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYTaskUserMapper;
@@ -22,15 +21,16 @@ import com.zhixinhuixue.armor.source.enums.ZSYIntegralOrigin;
 import com.zhixinhuixue.armor.source.enums.ZSYJobRole;
 import com.zhixinhuixue.armor.source.enums.ZSYReviewStatus;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.github.pagehelper.page.PageMethod.startPage;
 import static com.zhixinhuixue.armor.helper.DateHelper.getCurrYearFirst;
 import static com.zhixinhuixue.armor.helper.DateHelper.getCurrYearLast;
 
@@ -42,16 +42,13 @@ import static com.zhixinhuixue.armor.helper.DateHelper.getCurrYearLast;
 public class ZSYIntegralService implements IZSYIntegralService {
 
 
-    @Autowired
+    @Resource
     private IZSYUserIntegralMapper userIntegralMapper;
-
-    @Autowired
+    @Resource
     private IZSYUserMapper userMapper;
-
-    @Autowired
+    @Resource
     private SnowFlakeIDHelper snowFlakeIDHelper;
-
-    @Autowired
+    @Resource
     private IZSYTaskUserMapper taskUserMapper;
 
     /**
@@ -63,10 +60,10 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime) {
-        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime, endTime,ZSYTokenRequestContext.get().getDepartmentId());
+        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime, endTime, ZSYTokenRequestContext.get().getDepartmentId());
         List<IntegralPageResDTO> integralPageResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(userIntegralInfoBOS, integralPageResDTOS);
-        userIntegralInfoBOS.stream().forEach(userIntegralInfoBO -> {
+        userIntegralInfoBOS.forEach(userIntegralInfoBO -> {
             IntegralPageResDTO integralPageResDTO = new IntegralPageResDTO();
             BeanUtils.copyProperties(userIntegralInfoBO, integralPageResDTO);
             integralPageResDTOS.add(integralPageResDTO);
@@ -77,17 +74,18 @@ public class ZSYIntegralService implements IZSYIntegralService {
     /**
      * 获取积分列数
      * 大于结束时间计数，小于开始时间计数
+     *
      * @param startTime
      * @param endTime
      * @return
      */
     @Override
-    public Map getIntegralCount(String startTime, String endTime){
-        int prev = userIntegralMapper.getIntegralCount(null, startTime,ZSYTokenRequestContext.get().getDepartmentId());
-        int next = userIntegralMapper.getIntegralCount(endTime, null,ZSYTokenRequestContext.get().getDepartmentId());
+    public Map getIntegralCount(String startTime, String endTime) {
+        int prev = userIntegralMapper.getIntegralCount(null, startTime, ZSYTokenRequestContext.get().getDepartmentId());
+        int next = userIntegralMapper.getIntegralCount(endTime, null, ZSYTokenRequestContext.get().getDepartmentId());
         Map map = new HashMap();
-        map.put("prev",prev);
-        map.put("next",next);
+        map.put("prev", prev);
+        map.put("next", next);
         return map;
     }
 
@@ -104,12 +102,10 @@ public class ZSYIntegralService implements IZSYIntegralService {
         userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(), DateHelper.getThisWeekLastDay(), id));
         userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(), DateHelper.getThisMonthLastDay(), id));
         userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id));
-        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id,ZSYTokenRequestContext.get().getDepartmentId());//季度排名为空设为0
+        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id, ZSYTokenRequestContext.get().getDepartmentId());//季度排名为空设为0
         userIntegralResDTO.setQuarterRank(quarterRank != null ? quarterRank : 0);
         Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId());//年度排名为空设为0
         userIntegralResDTO.setYearRank(yearRank != null ? yearRank : 0);
-        User user = userMapper.selectById(id);
-//        userIntegralResDTO.setDevelopRole(user.getJobRole() == ZSYJobRole.PROGRAMER.getValue());
         return userIntegralResDTO;
     }
 
@@ -124,18 +120,17 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public PageInfo<IntegralHistoryPageResDTO> getIntegralHistory(Long id, int pageIndex, String startTime, String endTime) {
-        PageHelper.startPage(pageIndex, ZSYConstants.PAGE_SIZE);
+        startPage(pageIndex, ZSYConstants.PAGE_SIZE);
         Page<UserIntegralHistoryBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralHistory(id, startTime, endTime);
         Page<IntegralHistoryPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralHistoryBOS, page);
-        userIntegralHistoryBOS.stream().forEach(userIntegralHistoryBO -> {
+        userIntegralHistoryBOS.forEach(userIntegralHistoryBO -> {
             IntegralHistoryPageResDTO integralHistoryPageResDTO = new IntegralHistoryPageResDTO();
             BeanUtils.copyProperties(userIntegralHistoryBO, integralHistoryPageResDTO);
             integralHistoryPageResDTO.setCreateTime(userIntegralHistoryBO.getCreateTime());
             page.add(integralHistoryPageResDTO);
         });
-        PageInfo<IntegralHistoryPageResDTO> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+        return new PageInfo<>(page);
     }
 
     /**
@@ -146,7 +141,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
     @Override
     public void addIntegral(IntegralResDTO integralResDTO) {
         User user = userMapper.selectById(integralResDTO.getUserId());
-        if(integralResDTO.getTime()!=null){//积分转移求助添加
+        if (integralResDTO.getTime() != null) {//积分转移求助添加
             UserIntegral userIntegral = new UserIntegral();
             userIntegral.setId(snowFlakeIDHelper.nextId());
             userIntegral.setCreateTime(integralResDTO.getTime());
@@ -157,7 +152,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
             userIntegral.setOrigin(ZSYIntegralOrigin.TRANSFORM.getValue());//求助转移积分
             userIntegral.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
             userIntegralMapper.insert(userIntegral);
-        }else{//积分记录添加
+        } else {//积分记录添加
             BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
             user.setIntegral(integral);
             if (userMapper.updateSelectiveById(user) == 0) {
@@ -178,46 +173,48 @@ public class ZSYIntegralService implements IZSYIntegralService {
 
     /**
      * 根据审核状态查询求助转移积分
+     *
      * @return
      */
     @Override
-    public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status,int pageIndex){
+    public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status, int pageIndex) {
         Long userId = ZSYTokenRequestContext.get().getUserId();
         Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
-        return this.getIntegralByReviewStatus(status,pageIndex,userId,departmentId);
+        return this.getIntegralByReviewStatus(status, pageIndex, userId, departmentId);
     }
 
     /**
      * 根据审核状态查询所有求助转移积分
+     *
      * @return
      */
     @Override
-    public PageInfo<IntegralReviewResDTO> getAllIntegralByReviewStatus(int status,int pageIndex){
-        return this.getIntegralByReviewStatus(status,pageIndex,null,ZSYTokenRequestContext.get().getDepartmentId());
+    public PageInfo<IntegralReviewResDTO> getAllIntegralByReviewStatus(int status, int pageIndex) {
+        return this.getIntegralByReviewStatus(status, pageIndex, null, ZSYTokenRequestContext.get().getDepartmentId());
     }
 
-    public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status,int pageIndex,Long userId,Long departmentId){
-        PageHelper.startPage(pageIndex, 5);
-        Page<UserIntegralInfoBO> userIntegralHistoryBOS= userIntegralMapper.getIntegralByReviewStatus(userId, status, departmentId);
+    public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status, int pageIndex, Long userId, Long departmentId) {
+        startPage(pageIndex, 5);
+        Page<UserIntegralInfoBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralByReviewStatus(userId, status, departmentId);
         Page<IntegralReviewResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralHistoryBOS, page);
-        userIntegralHistoryBOS.stream().forEach(userIntegralHistoryBO -> {
+        userIntegralHistoryBOS.forEach(userIntegralHistoryBO -> {
             IntegralReviewResDTO integralReviewResDTO = new IntegralReviewResDTO();
             BeanUtils.copyProperties(userIntegralHistoryBO, integralReviewResDTO);
             integralReviewResDTO.setTime(userIntegralHistoryBO.getCreateTime());
             page.add(integralReviewResDTO);
         });
-        PageInfo<IntegralReviewResDTO> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+        return new PageInfo<>(page);
     }
 
     /**
      * 删除积分求助转移
+     *
      * @param id
      */
     @Override
-    public void deleteHelpDetail(Long id){
-        if(userIntegralMapper.deleteIntegralById(id)==0)
+    public void deleteHelpDetail(Long id) {
+        if (userIntegralMapper.deleteIntegralById(id) == 0)
             throw new ZSYServiceException("删除失败");
     }
 
@@ -225,25 +222,26 @@ public class ZSYIntegralService implements IZSYIntegralService {
      * 编辑积分求助转移
      */
     @Override
-    public void updateHelpDetail(IntegralResDTO integralResDTO, Long id){
+    public void updateHelpDetail(IntegralResDTO integralResDTO, Long id) {
         UserIntegral userIntegral = new UserIntegral();
         userIntegral.setId(id);
         userIntegral.setDescription(integralResDTO.getDescription());
         userIntegral.setUserId(integralResDTO.getUserId());
         userIntegral.setIntegral(integralResDTO.getIntegral());
         userIntegral.setCreateTime(integralResDTO.getTime());
-        if( userIntegralMapper.updateIntegralById(userIntegral)==0){
+        if (userIntegralMapper.updateIntegralById(userIntegral) == 0) {
             throw new ZSYServiceException("更新求助信息失败");
         }
     }
 
     /**
      * 审核通过积分转移
+     *
      * @param id
      */
     @Override
-    public void passReview(Long id){
-        if(userIntegralMapper.updateReview(id)==0){
+    public void passReview(Long id) {
+        if (userIntegralMapper.updateReview(id) == 0) {
             throw new ZSYServiceException("更新求助信息失败");
         }
         //求助目标添加积分
@@ -251,7 +249,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
         User user = userMapper.selectById(userIntegralFirst.getUserId());
         BigDecimal integral = user.getIntegral().add(userIntegralFirst.getIntegral());
         user.setIntegral(integral);
-        userIntegralFirst.setDescription("求助转移积分："+userIntegralFirst.getDescription());
+        userIntegralFirst.setDescription("求助转移积分：" + userIntegralFirst.getDescription());
         if (userIntegralMapper.updateIntegralById(userIntegralFirst) == 0) {
             throw new ZSYServiceException("用户积分更新失败");
         }
@@ -279,20 +277,20 @@ public class ZSYIntegralService implements IZSYIntegralService {
         Long userId = ZSYTokenRequestContext.get().getUserId();
         User user = userMapper.selectById(userId);
         Integer userLevel = user.getLevel();
-        if (userLevel == null){
+        if (userLevel == null) {
             throw new ZSYServiceException("当前用户暂无级别,请联系超管");
         }
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH)+1;
-        String seasonOneBeginStr = year+"-01-01 00:00:00";
-        String seasonOneEndStr = year+"-03-31 23:59:59";
-        String seasonTwoBeginStr = year+"-04-01 00:00:00";
-        String seasonTwoEndStr = year+"-06-30 23:59:59";
-        String seasonThreeBeginStr = year+"-07-01 00:00:00";
-        String seasonThreeEndStr = year+"-09-30 23:59:59";
-        String seasonFourBeginStr = year+"-10-01 00:00:00";
-        String seasonFourEndStr = year+"-12-31 23:59:59";
+        int month = calendar.get(Calendar.MONTH) + 1;
+        String seasonOneBeginStr = year + "-01-01 00:00:00";
+        String seasonOneEndStr = year + "-03-31 23:59:59";
+        String seasonTwoBeginStr = year + "-04-01 00:00:00";
+        String seasonTwoEndStr = year + "-06-30 23:59:59";
+        String seasonThreeBeginStr = year + "-07-01 00:00:00";
+        String seasonThreeEndStr = year + "-09-30 23:59:59";
+        String seasonFourBeginStr = year + "-10-01 00:00:00";
+        String seasonFourEndStr = year + "-12-31 23:59:59";
         Date seasonOneBegin;
         Date seasonOneEnd;
         Date seasonTwoBegin;
@@ -313,8 +311,6 @@ public class ZSYIntegralService implements IZSYIntegralService {
         SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat timeSDF2 = new SimpleDateFormat("yyyy-MM-dd");
         String currYearLastStr = timeSDF2.format(currYearLast);
-        Date weekFirstDay;
-        Date weekLastDay;
         Date monthFirstDay;
         Date monthLastDay;
         UserTaskIntegralResDTO resDTO = new UserTaskIntegralResDTO();
@@ -328,60 +324,58 @@ public class ZSYIntegralService implements IZSYIntegralService {
             seasonThreeEnd = timeSDF.parse(seasonThreeEndStr);
             seasonFourBegin = timeSDF.parse(seasonFourBeginStr);
             seasonFourEnd = timeSDF.parse(seasonFourEndStr);
-            if (month>=1 && month<=3){
+            if (month >= 1 && month <= 3) {
                 seasonBegin = seasonOneBegin;
                 seasonEnd = seasonOneEnd;
-            }else if (month>=4 && month<=6){
+            } else if (month >= 4 && month <= 6) {
                 seasonBegin = seasonTwoBegin;
                 seasonEnd = seasonTwoEnd;
-            }else if (month>=7 && month<=9){
+            } else if (month >= 7 && month <= 9) {
                 seasonBegin = seasonThreeBegin;
                 seasonEnd = seasonThreeEnd;
-            }else if (month>=10 && month<=12){
+            } else if (month >= 10 && month <= 12) {
                 seasonBegin = seasonFourBegin;
                 seasonEnd = seasonFourEnd;
             }
-            currYearLast = timeSDF.parse(currYearLastStr+" 23:59:59");
+            currYearLast = timeSDF.parse(currYearLastStr + " 23:59:59");
             calendar.setTime(timeSDF.parse(thisWeekFirstDayStr));
-            calendar.add(Calendar.DAY_OF_WEEK,1);
-            weekFirstDay = calendar.getTime();
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
 
             calendar.setTime(timeSDF.parse(thisWeekLastDayStr));
-            calendar.add(Calendar.DAY_OF_WEEK,1);
-            weekLastDay = calendar.getTime();
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
 
             monthFirstDay = timeSDF.parse(thisMonthFirstDayStr);
             monthLastDay = timeSDF.parse(thisMonthLastDayStr);
 
             //查询用户已完成且已评价完且含有功能点的任务  功能点的复杂度集合
-            List<TaskIntegralBO> monthIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,monthFirstDay,monthLastDay);
-            List<TaskIntegralBO> seasonIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,seasonBegin,seasonEnd);
-            List<TaskIntegralBO> yearIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId,currYearFirst,currYearLast);
+            List<TaskIntegralBO> monthIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, monthFirstDay, monthLastDay);
+            List<TaskIntegralBO> seasonIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, seasonBegin, seasonEnd);
+            List<TaskIntegralBO> yearIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, currYearFirst, currYearLast);
 
             //个人任务
-            List<TaskUser> monthTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(),monthFirstDay,monthLastDay);
-            List<TaskUser> seasonTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(),seasonBegin,seasonEnd);
-            List<TaskUser> yearTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(),currYearFirst,currYearLast);
+            List<TaskUser> monthTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(), monthFirstDay, monthLastDay);
+            List<TaskUser> seasonTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(), seasonBegin, seasonEnd);
+            List<TaskUser> yearTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(), currYearFirst, currYearLast);
 
             //用戶级别系数
             BigDecimal userCoefficient = BigDecimal.ZERO;
-            if (userLevel == 1){
+            if (userLevel == 1) {
                 userCoefficient = BigDecimal.valueOf(0.9);
-            }else if (userLevel == 2){
+            } else if (userLevel == 2) {
                 userCoefficient = BigDecimal.valueOf(0.8);
-            }else if (userLevel == 3){
+            } else if (userLevel == 3) {
                 userCoefficient = BigDecimal.valueOf(0.7);
-            }else if (userLevel == 4){
+            } else if (userLevel == 4) {
                 userCoefficient = BigDecimal.valueOf(0.6);
-            }else if (userLevel == 5){
+            } else if (userLevel == 5) {
                 userCoefficient = BigDecimal.valueOf(0.5);
-            }else if (userLevel == 6){
+            } else if (userLevel == 6) {
                 userCoefficient = BigDecimal.valueOf(0.4);
-            }else if (userLevel == 7){
+            } else if (userLevel == 7) {
                 userCoefficient = BigDecimal.valueOf(0.3);
-            }else if (userLevel == 8){
+            } else if (userLevel == 8) {
                 userCoefficient = BigDecimal.valueOf(0.2);
-            }else if (userLevel == 9){
+            } else if (userLevel == 9) {
                 userCoefficient = BigDecimal.valueOf(0.1);
             }
             resDTO.setMonthIntegral(BigDecimal.ZERO);
@@ -395,30 +389,30 @@ public class ZSYIntegralService implements IZSYIntegralService {
             BigDecimal seasonPrivateIntegral = BigDecimal.ZERO;
             BigDecimal yearPrivateIntegral = BigDecimal.ZERO;
             //月多人任务积分
-            if (!CollectionUtils.isEmpty(monthIntegralList)){
+            if (!CollectionUtils.isEmpty(monthIntegralList)) {
                 monthIntegral = getIntegral(monthIntegralList, userCoefficient);
                 resDTO.setMonthIntegral(monthIntegral);
             }
             //季度多人任务积分
-            if (!CollectionUtils.isEmpty(seasonIntegralList)){
+            if (!CollectionUtils.isEmpty(seasonIntegralList)) {
                 seasonIntegral = getIntegral(seasonIntegralList, userCoefficient);
                 resDTO.setSeasonIntegral(seasonIntegral);
             }
             //年度多人任务积分
-            if (!CollectionUtils.isEmpty(yearIntegralList)){
+            if (!CollectionUtils.isEmpty(yearIntegralList)) {
                 yearIntegral = getIntegral(yearIntegralList, userCoefficient);
                 resDTO.setYearIntegral(yearIntegral);
             }
 
             //月度个人任务积分
             BigDecimal privateTaskCoefficient = BigDecimal.valueOf(0.8);
-            if (!CollectionUtils.isEmpty(monthTaskUsers)){
+            if (!CollectionUtils.isEmpty(monthTaskUsers)) {
                 monthPrivateIntegral = getPrivateIntegral(monthTaskUsers, userCoefficient, privateTaskCoefficient);
             }
-            if (!CollectionUtils.isEmpty(seasonTaskUsers)){
+            if (!CollectionUtils.isEmpty(seasonTaskUsers)) {
                 seasonPrivateIntegral = getPrivateIntegral(seasonTaskUsers, userCoefficient, privateTaskCoefficient);
             }
-            if (!CollectionUtils.isEmpty(yearTaskUsers)){
+            if (!CollectionUtils.isEmpty(yearTaskUsers)) {
                 yearPrivateIntegral = getPrivateIntegral(yearTaskUsers, userCoefficient, privateTaskCoefficient);
             }
             resDTO.setMonthIntegral(monthIntegral.add(monthPrivateIntegral));
@@ -441,9 +435,10 @@ public class ZSYIntegralService implements IZSYIntegralService {
 
     /**
      * 验证当前角色是否为开发人员
+     *
      * @param jobRole 角色
      */
-    private Boolean getIsDeveloper(Integer jobRole){
+    private Boolean getIsDeveloper(Integer jobRole) {
         return jobRole == ZSYJobRole.JAVA.getValue()
                 || jobRole == ZSYJobRole.C.getValue()
                 || jobRole == ZSYJobRole.PHP.getValue()
@@ -451,7 +446,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
                 || jobRole == ZSYJobRole.IOS.getValue()
                 || jobRole == ZSYJobRole.ANDROID.getValue()
                 || jobRole == ZSYJobRole.ARTIFICIAL.getValue();
-    };
+    }
 
     private BigDecimal getPrivateIntegral(List<TaskUser> monthTaskUsers, BigDecimal userCoefficient, BigDecimal privateTaskCoefficient) {
         Integer totalOriginIntegral = 0;
@@ -459,24 +454,23 @@ public class ZSYIntegralService implements IZSYIntegralService {
             //
             Integer privateTaskIntegral = 0;
             Integer taskLevel = taskUser.getTaskLevel();
-            if (taskLevel != null){
-                if (taskLevel == 1){
+            if (taskLevel != null) {
+                if (taskLevel == 1) {
                     privateTaskIntegral = 1;
-                }else if (taskLevel == 2){
+                } else if (taskLevel == 2) {
                     privateTaskIntegral = 3;
-                }else if (taskLevel == 3){
+                } else if (taskLevel == 3) {
                     privateTaskIntegral = 8;
-                }else if (taskLevel == 4){
+                } else if (taskLevel == 4) {
                     privateTaskIntegral = 20;
-                }else if (taskLevel == 5){
+                } else if (taskLevel == 5) {
                     privateTaskIntegral = 40;
                 }
                 totalOriginIntegral += privateTaskIntegral;
             }
         }
-        BigDecimal privateTotalIntegral = BigDecimal.valueOf(totalOriginIntegral).multiply(userCoefficient)
-                .multiply(privateTaskCoefficient).setScale(2,BigDecimal.ROUND_HALF_UP);
-        return privateTotalIntegral;
+        return BigDecimal.valueOf(totalOriginIntegral).multiply(userCoefficient)
+                .multiply(privateTaskCoefficient).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     private BigDecimal getIntegral(List<TaskIntegralBO> weekIntegralList, BigDecimal userCoefficient) {
@@ -484,43 +478,43 @@ public class ZSYIntegralService implements IZSYIntegralService {
         for (TaskIntegralBO weekIntegral : weekIntegralList) {
             //评分系数
             BigDecimal evaluateCoefficient = BigDecimal.ZERO;
-            Integer originIntegral = 0;
+            int originIntegral = 0;
             List<TaskTempFunctionBO> functions = weekIntegral.getFunctions();
-            if (!CollectionUtils.isEmpty(functions)){
+            if (!CollectionUtils.isEmpty(functions)) {
                 for (TaskTempFunctionBO function : functions) {
-                    Integer integral = 0;
+                    int integral = 0;
                     Integer level = function.getLevel();
-                    if (level == 1){
+                    if (level == 1) {
                         integral = 1;
-                    }else if (level == 2){
+                    } else if (level == 2) {
                         integral = 3;
-                    }else if (level == 3){
+                    } else if (level == 3) {
                         integral = 8;
-                    }else if (level == 4){
+                    } else if (level == 4) {
                         integral = 20;
-                    }else if (level == 5){
+                    } else if (level == 5) {
                         integral = 40;
                     }
                     originIntegral += integral;
                 }
 
                 TaskEvaluationScoreAndNumBO evaluationScoreAndNumBO = weekIntegral.getEvaluationScoreAndNumBO();
-                if (evaluationScoreAndNumBO != null){
-                    BigDecimal avgScore = evaluationScoreAndNumBO.getTotalScore().divide(BigDecimal.valueOf(evaluationScoreAndNumBO.getTotalNum()),2, BigDecimal.ROUND_HALF_UP);
-                    if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
+                if (evaluationScoreAndNumBO != null) {
+                    BigDecimal avgScore = evaluationScoreAndNumBO.getTotalScore().divide(BigDecimal.valueOf(evaluationScoreAndNumBO.getTotalNum()), 2, BigDecimal.ROUND_HALF_UP);
+                    if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0) {
                         evaluateCoefficient = BigDecimal.valueOf(1);
-                    }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
+                    } else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0) {
                         evaluateCoefficient = BigDecimal.valueOf(0.9);
-                    }else if (avgScore.compareTo(BigDecimal.valueOf(4.6)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.3)) >= 0){
+                    } else if (avgScore.compareTo(BigDecimal.valueOf(4.6)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.3)) >= 0) {
                         evaluateCoefficient = BigDecimal.valueOf(0.8);
-                    }else if (avgScore.compareTo(BigDecimal.valueOf(4.3)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4)) >= 0){
+                    } else if (avgScore.compareTo(BigDecimal.valueOf(4.3)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4)) >= 0) {
                         evaluateCoefficient = BigDecimal.valueOf(0.7);
-                    }else if (avgScore.compareTo(BigDecimal.valueOf(4)) < 0){
+                    } else if (avgScore.compareTo(BigDecimal.valueOf(4)) < 0) {
                         evaluateCoefficient = BigDecimal.valueOf(0.6);
                     }
                 }
 
-                BigDecimal resultIntegral = BigDecimal.valueOf(originIntegral).multiply(userCoefficient).multiply(evaluateCoefficient).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal resultIntegral = BigDecimal.valueOf(originIntegral).multiply(userCoefficient).multiply(evaluateCoefficient).setScale(2, BigDecimal.ROUND_HALF_UP);
                 totalIntegral = totalIntegral.add(resultIntegral);
             }
         }

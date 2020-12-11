@@ -29,7 +29,7 @@ public class FeedbackListResDTO {
 
     private Long feedbackPlanId;
 
-    private Date FeedbackTime;
+    private Date feedbackTime;
 
     private  int taskNo;
 
@@ -74,11 +74,11 @@ public class FeedbackListResDTO {
     }
 
     public Date getFeedbackTime() {
-        return FeedbackTime;
+        return feedbackTime;
     }
 
     public void setFeedbackTime(Date feedbackTime) {
-        FeedbackTime = feedbackTime;
+        this.feedbackTime = feedbackTime;
     }
 
     public int getNo() {

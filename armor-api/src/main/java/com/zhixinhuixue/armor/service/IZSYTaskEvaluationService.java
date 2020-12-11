@@ -7,7 +7,6 @@ import com.zhixinhuixue.armor.model.dto.request.EvaluationPageQueryReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.PersonEvaluationResDTO;
 import com.zhixinhuixue.armor.model.dto.response.TaskEvaluationPageResDTO;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 

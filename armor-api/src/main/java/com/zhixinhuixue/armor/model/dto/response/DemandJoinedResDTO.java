@@ -1,30 +1,53 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 /**
+ * 我参与的需求
  * Created by SCH on 2018-10-22
  */
-@ApiModel("我参与的需求")
 public class DemandJoinedResDTO {
-    @ApiModelProperty("需求id")
+    /**
+     * 需求id
+     */
     private Long id;
-    @ApiModelProperty("提出人")
+
+    /**
+     * 提出人
+     */
     private String createBy;
-    @ApiModelProperty("需求标题")
+
+    /**
+     * 需求标题
+     */
     private String title;
-    @ApiModelProperty("当前队列(状态)")
+
+    /**
+     * 当前队列(状态)
+     */
     private Integer status;
-    @ApiModelProperty("点赞数")
+
+    /**
+     * 点赞数
+     */
     private Integer likesNum;
-    @ApiModelProperty("回复数")
+
+    /**
+     * 回复数
+     */
     private Integer replyNum;
-    @ApiModelProperty("负责人")
+
+    /**
+     * 负责人
+     */
     private String chargeMan;
-    @ApiModelProperty("项目id")
+
+    /**
+     * 项目id
+     */
     private Long projectId;
-    @ApiModelProperty("来源(需求实际提出人)")
+
+    /**
+     * 来源(需求实际提出人)
+     */
     private String origin;
 
     public String getOrigin() {

@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
@@ -35,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.github.pagehelper.page.PageMethod.startPage;
+
 /**
  * @author sch
  * @DATE 2019/5/22 10:59
@@ -65,16 +66,17 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     /**
      * 评价
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     @Transactional
     public ZSYResult evaluate(AddEvaluationReqDTO reqDTO) {
         Long taskId = reqDTO.getTaskId();
         TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
-        if (taskDetailBO.getTaskUsers() == null || taskDetailBO.getTaskUsers().size() == 0) {
+        if (CollectionUtils.isEmpty(taskDetailBO.getTaskUsers())) {
             throw new ZSYServiceException("任务阶段为空，无法评价");
         }
         if (taskDetailBO.getStatus() != ZSYTaskStatus.COMPLETED.getValue()) {
@@ -83,44 +85,40 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         if (taskDetailBO.getType() == ZSYTaskType.PRIVATE_TASK.getValue() || taskDetailBO.getTaskUsers().size() == 1) {
             throw new ZSYServiceException("该任务为单人任务无需评价");
         }
-        List<EvaluationBO> evaluationBOS = evaluationMapper.selectByTaskAndUser(taskId,ZSYTokenRequestContext.get().getUserId());
-        if (!CollectionUtils.isEmpty(evaluationBOS)){
+        List<EvaluationBO> evaluationBOS = evaluationMapper.selectByTaskAndUser(taskId, ZSYTokenRequestContext.get().getUserId());
+        if (!CollectionUtils.isEmpty(evaluationBOS)) {
             throw new ZSYServiceException("您已评价该任务");
         }
-        List<Long> userIds = taskDetailBO.getTaskUsers().stream().map(TaskUser::getUserId).distinct().collect(Collectors.toList());
 
         List<TaskEvaluation> taskEvaluationList = new ArrayList<>();
         List<EvaluationUserReqDTO> evaluationUserReqDTOS = reqDTO.getEvaluationUserReqDTOS();
-        if (CollectionUtils.isEmpty(evaluationUserReqDTOS)){
+        if (CollectionUtils.isEmpty(evaluationUserReqDTOS)) {
             throw new ZSYServiceException("任务评价不能为空");
         }
-//        if (userIds.size() - evaluationUserReqDTOS.size() > 1){
-//            throw new ZSYServiceException("请对所有用户同时进行评价");
-//        }
 
-        evaluationUserReqDTOS.stream().forEach(evaluationUserReqDTO -> {
+        evaluationUserReqDTOS.forEach(evaluationUserReqDTO -> {
             Long taskUserId = evaluationUserReqDTO.getTaskUserId();
             Double score = evaluationUserReqDTO.getScore();
-            Integer integral = 0;
-            if (score == 0.5){
+            int integral = 0;
+            if (score == 0.5) {
                 integral = 10;
-            }else if (score == 1.0){
+            } else if (score == 1.0) {
                 integral = 20;
-            }else if (score == 1.5){
+            } else if (score == 1.5) {
                 integral = 30;
-            }else if (score == 2.0){
+            } else if (score == 2.0) {
                 integral = 40;
-            }else if (score == 2.5){
+            } else if (score == 2.5) {
                 integral = 50;
-            }else if (score == 3.0){
+            } else if (score == 3.0) {
                 integral = 60;
-            }else if (score == 3.5){
+            } else if (score == 3.5) {
                 integral = 70;
-            }else if (score == 4.0){
+            } else if (score == 4.0) {
                 integral = 80;
-            }else if (score == 4.5){
+            } else if (score == 4.5) {
                 integral = 90;
-            }else if (score == 5.0){
+            } else if (score == 5.0) {
                 integral = 100;
             }
             TaskEvaluation taskEvaluation = new TaskEvaluation();
@@ -135,10 +133,8 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
             taskEvaluation.setEvaluateTime(new Date());
             taskEvaluationList.add(taskEvaluation);
         });
-        if (!CollectionUtils.isEmpty(taskEvaluationList)){
-            if (evaluationMapper.insertBatch(taskEvaluationList) == 0){
-                throw new ZSYServiceException("新增任务评价失败");
-            }
+        if (!CollectionUtils.isEmpty(taskEvaluationList)) {
+            evaluationMapper.insertBatch(taskEvaluationList);
         }
 
         finishTask(taskId);
@@ -147,8 +143,9 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     /**
      * 完成任务
-     * @author sch
+     *
      * @param taskId
+     * @author sch
      */
     @Override
     @Transactional
@@ -162,39 +159,38 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         }
         List<Long> userIds = taskDetailBO.getTaskUsers().stream().map(TaskUser::getUserId).distinct().collect(Collectors.toList());
         List<Long> evaluatedUsers = evaluationMapper.selectEvaluatedUsersByTask(taskId);
-        boolean commentCompleted = false;
-        if (!CollectionUtils.isEmpty(userIds)){
+        if (!CollectionUtils.isEmpty(userIds)) {
             //当评价人员不为空,检查有几人已完成评价
-            if (!CollectionUtils.isEmpty(evaluatedUsers)){
+            if (!CollectionUtils.isEmpty(evaluatedUsers)) {
                 //此时,所有人完成评价
-                if (userIds.size() == evaluatedUsers.size()){
+                if (userIds.size() == evaluatedUsers.size()) {
                     // 计算积分
-                    taskDetailBO.getTaskUsers().stream().forEach(taskUserBO -> {
+                    taskDetailBO.getTaskUsers().forEach(taskUserBO -> {
                         User user = userMapper.selectById(taskUserBO.getUserId());
                         Integer userLevel = user.getLevel();
-                        if (userLevel==null){
+                        if (userLevel == null) {
                             throw new ZSYServiceException("用户暂无级别,请检查");
                         }
-                        List<EvaluationScoreBO> taskEvaluations = evaluationMapper.selectByTaskAndTaskUser(taskId,taskUserBO.getUserId(),null);
+                        List<EvaluationScoreBO> taskEvaluations = evaluationMapper.selectByTaskAndTaskUser(taskId, taskUserBO.getUserId(), null);
 
                         //评分系数
                         BigDecimal evaluateCoefficient = BigDecimal.ONE;
                         BigDecimal avgScore = BigDecimal.ZERO;
-                        if (!CollectionUtils.isEmpty(taskEvaluations)){
+                        if (!CollectionUtils.isEmpty(taskEvaluations)) {
                             avgScore = getAvgScore(taskEvaluations);
-                            evaluateCoefficient = getEvaluateCoefficient(taskEvaluations,avgScore);
-                        }else {
+                            evaluateCoefficient = getEvaluateCoefficient(taskEvaluations);
+                        } else {
                             evaluateCoefficient = BigDecimal.valueOf(0.9);
                         }
 
                         //查询功能点计算积分
                         Integer taskLevel = taskUserBO.getTaskLevel();
-                        if (taskLevel == null){
-                            throw new ZSYServiceException(taskUserBO.getUserName()+" 在任务: "+taskUserBO.getTaskId()+" 中,没有任务级别,请检查");
+                        if (taskLevel == null) {
+                            throw new ZSYServiceException(taskUserBO.getUserName() + " 在任务: " + taskUserBO.getTaskId() + " 中,没有任务级别,请检查");
                         }
                         BigDecimal originIntegral = getOriginIntegral(taskLevel);
                         BigDecimal userIntegral = originIntegral.multiply(evaluateCoefficient)
-                                .setScale(2,BigDecimal.ROUND_HALF_UP);
+                                .setScale(2, BigDecimal.ROUND_HALF_UP);
                         UserTaskIntegral integral = new UserTaskIntegral();
                         integral.setId(snowFlakeIDHelper.nextId());
                         integral.setTaskId(taskUserBO.getTaskId());
@@ -220,25 +216,18 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                     task.setUpdateTime(new Date());
                     task.setCompleteTime(new Date());
                     taskMapper.updateByPrimaryKeySelective(task);
-                    //查看当前任务是否有人总结
-                    List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskId);
-                    if (!CollectionUtils.isEmpty(taskSummaryBOS)){
-                        commentCompleted = true;
-                    }
                 }
             }
-            if (commentCompleted){
-                // 计算积分
-            }
-        }else {
+        } else {
             throw new ZSYServiceException("当前任务没有用户参与,请检查");
         }
     }
 
     /**
      * 查询待评价任务
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     @Override
     public List<TaskDetailBO> getWaitEvaluated() {
@@ -246,7 +235,7 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         List<TaskDetailBO> taskDetailBOS = taskMapper.selectAllNotClosed(userId);
         List<TaskDetailBO> resultList = new ArrayList<>();
         List<Long> evaluatedTaskIds = evaluationMapper.selectEvaluatedTaskIdsByUser(userId);
-        if (!CollectionUtils.isEmpty(taskDetailBOS)){
+        if (!CollectionUtils.isEmpty(taskDetailBOS)) {
             resultList = taskDetailBOS.stream().filter(taskDetailBO -> !evaluatedTaskIds.contains(taskDetailBO.getId())).collect(Collectors.toList());
         }
         return resultList;
@@ -254,18 +243,19 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     /**
      * 分页查看已经评价的任务
-     * @author sch
+     *
      * @param pageNum
      * @return
+     * @author sch
      */
     @Override
     public PageInfo<TaskDetailBO> getEvaluated(Integer pageNum) {
-        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
+        startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<Long> taskIds = evaluationMapper.selectEvaluatedTaskIdsByUserPage(ZSYTokenRequestContext.get().getUserId());
         Page<TaskDetailBO> page = new Page<>();
-        BeanUtils.copyProperties(taskIds,page);
-        if (!CollectionUtils.isEmpty(taskIds)){
-            taskIds.stream().forEach(taskId ->{
+        BeanUtils.copyProperties(taskIds, page);
+        if (!CollectionUtils.isEmpty(taskIds)) {
+            taskIds.forEach(taskId -> {
                 TaskDetailBO taskDetailBO = taskMapper.selectTaskDetailByTaskId(taskId);
                 taskDetailBO.setIsEvaluate(1);
                 page.add(taskDetailBO);
@@ -277,34 +267,35 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     /**
      * 管理员分页查看用户所有任务综合评价
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public PageInfo<TaskEvaluationPageResDTO> getUserAvgEvaluation(EvaluationPageQueryReqDTO reqDTO) {
-        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
         Page<TaskEvaluationPageBO> taskEvaluationPageBOS = evaluationMapper.selectUserAvgEvaluation(reqDTO);
         Page<TaskEvaluationPageResDTO> page = new Page<>();
-        BeanUtils.copyProperties(taskEvaluationPageBOS,page);
-        if (!CollectionUtils.isEmpty(taskEvaluationPageBOS)){
-            taskEvaluationPageBOS.stream().forEach(taskEvaluationPageBO -> {
+        BeanUtils.copyProperties(taskEvaluationPageBOS, page);
+        if (!CollectionUtils.isEmpty(taskEvaluationPageBOS)) {
+            taskEvaluationPageBOS.forEach(taskEvaluationPageBO -> {
                 TaskEvaluationPageResDTO resDTO = new TaskEvaluationPageResDTO();
                 resDTO.setUserId(taskEvaluationPageBO.getUserId());
                 resDTO.setUserName(taskEvaluationPageBO.getUserName());
                 resDTO.setJobRole(taskEvaluationPageBO.getJobRole());
-                List<TaskBaseBO> taskBaseBOS = evaluationMapper.selectTaskBaseInfoByTaskUser(reqDTO,taskEvaluationPageBO.getUserId());
+                List<TaskBaseBO> taskBaseBOS = evaluationMapper.selectTaskBaseInfoByTaskUser(reqDTO, taskEvaluationPageBO.getUserId());
                 List<OptionScoreBO> optionScoreBOS = new ArrayList<>();
 
                 List<TaskBaseResDTO> taskBaseResDTOList = new ArrayList<>();
                 Integer evaluationNum = 0;
-                if (!CollectionUtils.isEmpty(taskBaseBOS)){
+                if (!CollectionUtils.isEmpty(taskBaseBOS)) {
                     List<Long> taskIds = taskBaseBOS.stream().map(TaskBaseBO::getTaskId).collect(Collectors.toList());
-                    Integer taskNum = evaluationMapper.selectTaskNumByTaskUser(taskIds,taskEvaluationPageBO.getUserId());
+                    Integer taskNum = evaluationMapper.selectTaskNumByTaskUser(taskIds, taskEvaluationPageBO.getUserId());
                     resDTO.setTaskNum(taskNum);
-                    optionScoreBOS = evaluationMapper.selectOptionScoreByTaskUser(taskIds,taskEvaluationPageBO.getUserId());
-                    evaluationNum = evaluationMapper.selectEvaluationNumByTaskUser(taskIds,taskEvaluationPageBO.getUserId());
-                    taskBaseBOS.stream().forEach(taskBaseBO -> {
+                    optionScoreBOS = evaluationMapper.selectOptionScoreByTaskUser(taskIds, taskEvaluationPageBO.getUserId());
+                    evaluationNum = evaluationMapper.selectEvaluationNumByTaskUser(taskIds, taskEvaluationPageBO.getUserId());
+                    taskBaseBOS.forEach(taskBaseBO -> {
                         TaskBaseResDTO taskBaseResDTO = new TaskBaseResDTO();
                         taskBaseResDTO.setId(taskBaseBO.getTaskId());
                         taskBaseResDTO.setName(taskBaseBO.getTaskName());
@@ -316,41 +307,41 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                 List<AvgEvaluationScoreResDTO> avgEvaluationScoreResDTOList = new ArrayList<>();
                 Integer jobRole = taskEvaluationPageBO.getJobRole();
                 Integer optionNum = 0;
-                if (jobRole == 0){
+                if (jobRole == 0) {
                     optionNum = 2;
-                }else if (jobRole == 1){
+                } else if (jobRole == 1) {
                     optionNum = 4;
-                }else if (jobRole == 2){
+                } else if (jobRole == 2) {
                     optionNum = 3;
-                }else if (jobRole == 3){
+                } else if (jobRole == 3) {
                     optionNum = 4;
-                }else if (jobRole == 4){
+                } else if (jobRole == 4) {
                     optionNum = 4;
-                }else if (jobRole == 5){
+                } else if (jobRole == 5) {
                     optionNum = 4;
-                }else if (jobRole == 6){
+                } else if (jobRole == 6) {
                     optionNum = 4;
-                }else if (jobRole == 7){
+                } else if (jobRole == 7) {
                     optionNum = 4;
-                }else if (jobRole == 8){
+                } else if (jobRole == 8) {
                     optionNum = 4;
-                }else if (jobRole == 9){
+                } else if (jobRole == 9) {
                     optionNum = 4;
                 }
-                Integer evaluateTimes = evaluationNum/optionNum;
-                if (!CollectionUtils.isEmpty(optionScoreBOS)){
+                Integer evaluateTimes = evaluationNum / optionNum;
+                if (!CollectionUtils.isEmpty(optionScoreBOS)) {
                     for (OptionScoreBO optionScoreBO : optionScoreBOS) {
                         AvgEvaluationScoreResDTO avgEvaluationScoreResDTO = new AvgEvaluationScoreResDTO();
                         avgEvaluationScoreResDTO.setEvaluationOption(optionScoreBO.getOption());
                         avgEvaluationScoreResDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(optionScoreBO.getOption()));
                         BigDecimal avgScore = BigDecimal.valueOf(optionScoreBO.getTotalScore())
-                                .divide(BigDecimal.valueOf(evaluateTimes),2,BigDecimal.ROUND_HALF_UP);
+                                .divide(BigDecimal.valueOf(evaluateTimes), 2, BigDecimal.ROUND_HALF_UP);
                         avgEvaluationScoreResDTO.setAvgScore(avgScore);
                         avgEvaluationScoreResDTOList.add(avgEvaluationScoreResDTO);
                     }
                 }
                 resDTO.setScoreResDTOS(avgEvaluationScoreResDTOList);
-                if (!CollectionUtils.isEmpty(taskBaseBOS)){
+                if (!CollectionUtils.isEmpty(taskBaseBOS)) {
                     page.add(resDTO);
                 }
             });
@@ -362,7 +353,6 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
     public PersonEvaluationResDTO getPersonalAverageEva() {
         Long userId = ZSYTokenRequestContext.get().getUserId();
         Calendar calendar = Calendar.getInstance();
-        Date today = new Date();
         String thisWeekFirstDayStr = DateHelper.getThisWeekFirstDay();
         String thisWeekLastDayStr = DateHelper.getThisWeekLastDay();
         String thisMonthFirstDayStr = DateHelper.getThisMonthFirstDay();
@@ -378,57 +368,57 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
         Date monthLastDay = null;
         PersonEvaluationResDTO personEvaluationResDTO = new PersonEvaluationResDTO();
         try {
-            currYearLast = timeSDF.parse(currYearLastStr+" 23:59:59");
+            currYearLast = timeSDF.parse(currYearLastStr + " 23:59:59");
             calendar.setTime(timeSDF.parse(thisWeekFirstDayStr));
-            calendar.add(Calendar.DAY_OF_WEEK,1);
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
             weekFirstDay = calendar.getTime();
 
             calendar.setTime(timeSDF.parse(thisWeekLastDayStr));
-            calendar.add(Calendar.DAY_OF_WEEK,1);
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
             weekLastDay = calendar.getTime();
 
             monthFirstDay = timeSDF.parse(thisMonthFirstDayStr);
             monthLastDay = timeSDF.parse(thisMonthLastDayStr);
 
             //查询本周评价
-            List<PersonTotalEvaBO> weekTotalEvaluations = evaluationMapper.selectPersonalTotalEva(userId,weekFirstDay,weekLastDay);
+            List<PersonTotalEvaBO> weekTotalEvaluations = evaluationMapper.selectPersonalTotalEva(userId, weekFirstDay, weekLastDay);
             List<PersonTotalEvaBO> monthTotalEvaluations = evaluationMapper.selectPersonalTotalEva(userId, monthFirstDay, monthLastDay);
             List<PersonTotalEvaBO> yearTotalEvaluations = evaluationMapper.selectPersonalTotalEva(userId, currYearFirst, currYearLast);
 
             List<AvgEvaluationScoreResDTO> weekAvgEvaList = new ArrayList<>();
             List<AvgEvaluationScoreResDTO> monthAvgEvaList = new ArrayList<>();
             List<AvgEvaluationScoreResDTO> yearAvgEvaList = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(weekTotalEvaluations)){
+            if (!CollectionUtils.isEmpty(weekTotalEvaluations)) {
                 for (PersonTotalEvaBO weekTotalEvaluation : weekTotalEvaluations) {
                     AvgEvaluationScoreResDTO resDTO = new AvgEvaluationScoreResDTO();
                     resDTO.setEvaluationOption(weekTotalEvaluation.getOption());
                     resDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(weekTotalEvaluation.getOption()));
                     BigDecimal avgScore = BigDecimal.valueOf(weekTotalEvaluation.getTotalScore())
-                            .divide(BigDecimal.valueOf(weekTotalEvaluation.getTimes()),2,BigDecimal.ROUND_HALF_UP);
+                            .divide(BigDecimal.valueOf(weekTotalEvaluation.getTimes()), 2, BigDecimal.ROUND_HALF_UP);
                     resDTO.setAvgScore(avgScore);
                     weekAvgEvaList.add(resDTO);
                 }
             }
 
-            if (!CollectionUtils.isEmpty(monthTotalEvaluations)){
+            if (!CollectionUtils.isEmpty(monthTotalEvaluations)) {
                 for (PersonTotalEvaBO monthTotalEvaluation : monthTotalEvaluations) {
                     AvgEvaluationScoreResDTO resDTO = new AvgEvaluationScoreResDTO();
                     resDTO.setEvaluationOption(monthTotalEvaluation.getOption());
                     resDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(monthTotalEvaluation.getOption()));
                     BigDecimal avgScore = BigDecimal.valueOf(monthTotalEvaluation.getTotalScore())
-                            .divide(BigDecimal.valueOf(monthTotalEvaluation.getTimes()),2,BigDecimal.ROUND_HALF_UP);
+                            .divide(BigDecimal.valueOf(monthTotalEvaluation.getTimes()), 2, BigDecimal.ROUND_HALF_UP);
                     resDTO.setAvgScore(avgScore);
                     monthAvgEvaList.add(resDTO);
                 }
             }
 
-            if (!CollectionUtils.isEmpty(yearTotalEvaluations)){
+            if (!CollectionUtils.isEmpty(yearTotalEvaluations)) {
                 for (PersonTotalEvaBO yearTotalEvaluation : yearTotalEvaluations) {
                     AvgEvaluationScoreResDTO resDTO = new AvgEvaluationScoreResDTO();
                     resDTO.setEvaluationOption(yearTotalEvaluation.getOption());
                     resDTO.setEvaluationOptionName(ZSYTaskEvaluationOption.getName(yearTotalEvaluation.getOption()));
                     BigDecimal avgScore = BigDecimal.valueOf(yearTotalEvaluation.getTotalScore())
-                            .divide(BigDecimal.valueOf(yearTotalEvaluation.getTimes()),2,BigDecimal.ROUND_HALF_UP);
+                            .divide(BigDecimal.valueOf(yearTotalEvaluation.getTimes()), 2, BigDecimal.ROUND_HALF_UP);
                     resDTO.setAvgScore(avgScore);
                     yearAvgEvaList.add(resDTO);
                 }
@@ -446,69 +436,72 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     /**
      * 获取当年的第一天
+     *
      * @return
      */
-    public Date getCurrYearFirst(){
-        Calendar currCal=Calendar.getInstance();
+    public Date getCurrYearFirst() {
+        Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getYearFirst(currentYear);
     }
 
     /**
      * 获取当年的最后一天
+     *
      * @return
      */
-    public Date getCurrYearLast(){
-        Calendar currCal=Calendar.getInstance();
+    public Date getCurrYearLast() {
+        Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getYearLast(currentYear);
     }
 
     /**
      * 获取某年第一天日期
+     *
      * @param year 年份
      * @return Date
      */
-    public Date getYearFirst(int year){
+    public Date getYearFirst(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
-        Date currYearFirst = calendar.getTime();
-        return currYearFirst;
+        return calendar.getTime();
     }
 
     /**
      * 获取某年最后一天日期
+     *
      * @param year 年份
      * @return Date
      */
-    public Date getYearLast(int year){
+    public Date getYearLast(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
         calendar.roll(Calendar.DAY_OF_YEAR, -1);
-        Date currYearLast = calendar.getTime();
-        return currYearLast;
+        return calendar.getTime();
     }
 
     /**
      * 获取原始积分
+     *
      * @param taskLevel
      * @return
      */
-    private BigDecimal getOriginIntegral(Integer taskLevel){
-        BigDecimal originIntegral = BigDecimal.ZERO;
-        if (taskLevel == 1){
+    private BigDecimal getOriginIntegral(Integer taskLevel) {
+        BigDecimal originIntegral;
+        if (taskLevel == 1) {
             originIntegral = BigDecimal.valueOf(2);
-        }else if (taskLevel == 2){
+        } else if (taskLevel == 2) {
             originIntegral = BigDecimal.valueOf(6);
-        }else if (taskLevel == 3){
+        } else if (taskLevel == 3) {
             originIntegral = BigDecimal.valueOf(18);
-        }else if (taskLevel == 4){
+        } else if (taskLevel == 4) {
             originIntegral = BigDecimal.valueOf(54);
-        }else if (taskLevel == 5){
+        } else if (taskLevel == 5) {
             originIntegral = BigDecimal.valueOf(108);
-        }else {
+        } else {
             throw new ZSYServiceException("任务级别有误,请检查");
         }
 
@@ -517,24 +510,24 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     /**
      * 获取评价系数
+     *
      * @param evaluationList
-     * @param avgScore
      * @return
      */
-    private  BigDecimal getEvaluateCoefficient(List<EvaluationScoreBO> evaluationList,BigDecimal avgScore){
+    private BigDecimal getEvaluateCoefficient(List<EvaluationScoreBO> evaluationList) {
         BigDecimal evaluateCoefficient = BigDecimal.ONE;
         double totalScore = evaluationList.stream().mapToDouble(EvaluationScoreBO::getScore).sum();
-        avgScore = BigDecimal.valueOf(totalScore)
-                .divide(BigDecimal.valueOf(evaluationList.size()),2,BigDecimal.ROUND_HALF_UP);
-        if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
+        BigDecimal avgScore = BigDecimal.valueOf(totalScore)
+                .divide(BigDecimal.valueOf(evaluationList.size()), 2, BigDecimal.ROUND_HALF_UP);
+        if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0) {
             evaluateCoefficient = BigDecimal.valueOf(1);
-        }else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0){
+        } else if (avgScore.compareTo(BigDecimal.valueOf(4.85)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.6)) >= 0) {
             evaluateCoefficient = BigDecimal.valueOf(0.9);
-        }else if (avgScore.compareTo(BigDecimal.valueOf(4.6)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.3)) >= 0){
+        } else if (avgScore.compareTo(BigDecimal.valueOf(4.6)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4.3)) >= 0) {
             evaluateCoefficient = BigDecimal.valueOf(0.8);
-        }else if (avgScore.compareTo(BigDecimal.valueOf(4.3)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4)) >= 0){
+        } else if (avgScore.compareTo(BigDecimal.valueOf(4.3)) < 0 && avgScore.compareTo(BigDecimal.valueOf(4)) >= 0) {
             evaluateCoefficient = BigDecimal.valueOf(0.7);
-        }else if (avgScore.compareTo(BigDecimal.valueOf(4)) < 0){
+        } else if (avgScore.compareTo(BigDecimal.valueOf(4)) < 0) {
             evaluateCoefficient = BigDecimal.valueOf(0.6);
         }
         return evaluateCoefficient;
@@ -542,13 +535,13 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
 
     /**
      * 获取综合评价
+     *
      * @param evaluationList
      * @return
      */
-    private BigDecimal getAvgScore(List<EvaluationScoreBO> evaluationList){
+    private BigDecimal getAvgScore(List<EvaluationScoreBO> evaluationList) {
         double totalScore = evaluationList.stream().mapToDouble(EvaluationScoreBO::getScore).sum();
-        BigDecimal avgScore = BigDecimal.valueOf(totalScore)
-                .divide(BigDecimal.valueOf(evaluationList.size()),2,BigDecimal.ROUND_HALF_UP);
-        return avgScore;
+        return BigDecimal.valueOf(totalScore)
+                .divide(BigDecimal.valueOf(evaluationList.size()), 2, BigDecimal.ROUND_HALF_UP);
     }
 }

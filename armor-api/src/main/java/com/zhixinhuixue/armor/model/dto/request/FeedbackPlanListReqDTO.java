@@ -1,11 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import io.swagger.models.auth.In;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Lang on 2012/3/7 0007.

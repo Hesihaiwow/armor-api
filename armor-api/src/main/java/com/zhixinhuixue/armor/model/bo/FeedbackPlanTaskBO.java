@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import com.zhixinhuixue.armor.model.pojo.FeedbackPlan;
-
 /**
  * Created by Tate on 2017/8/10.
  */

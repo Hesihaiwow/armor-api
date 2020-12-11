@@ -1,57 +1,115 @@
 package com.zhixinhuixue.armor.model.pojo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.Date;
 
 
 /**
  * Created by SCH on 2018-10-22
  */
-@ApiModel("新需求")
 public class Demand {
-    @ApiModelProperty("需求标题")
+    /**
+     * 需求标题
+     */
     private String title;
-    @ApiModelProperty("类型(0:个人建议,1:市场反馈,2:公司决策)")
+
+    /**
+     * 类型(0:个人建议,1:市场反馈,2:公司决策)
+     */
     private Long type;
-    @ApiModelProperty("优先级(0：普通,1:紧急;2:非常紧急)")
+
+    /**
+     * 优先级(0：普通,1:紧急;2:非常紧急)
+     */
     private Long priority;
-    @ApiModelProperty("来源(需求实际提出人)")
+
+    /**
+     * 来源(需求实际提出人)
+     */
     private String origin;
-    @ApiModelProperty("问题")
+
+    /**
+     * 问题
+     */
     private String question;
-    @ApiModelProperty("目标")
+
+    /**
+     * 目标
+     */
     private String target;
-    @ApiModelProperty("期待上线时间")
+
+    /**
+     * 期待上线时间
+     */
     private Date releaseTime;
-    @ApiModelProperty("需求id")
+
+    /**
+     * 需求id
+     */
     private Long id;
-    @ApiModelProperty("内容")
+
+    /**
+     * 内容
+     */
     private String content;
-    @ApiModelProperty("项目id")
+
+    /**
+     * 项目id
+     */
     private Long projectId;
-    @ApiModelProperty("提出时间")
+
+    /**
+     * 提出时间
+     */
     private Date feedbackTime;
-    @ApiModelProperty("状态(0:新需求 1:进行中 2:已完成 3:不采纳 4:排队中)")
+
+    /**
+     * 状态(0:新需求 1:进行中 2:已完成 3:不采纳 4:排队中)
+     */
     private Integer status;
-    @ApiModelProperty("创建人")
+
+    /**
+     * 创建人
+     */
     private Long createBy;
-    @ApiModelProperty("创建时间")
+
+    /**
+     * 创建时间
+     */
     private Date createTime;
-    @ApiModelProperty("更新时间")
+
+    /**
+     * 更新时间
+     */
     private Date updateTime;
-    @ApiModelProperty("是否删除(0，正常；1，已删除)")
+
+    /**
+     * 是否删除(0，正常；1，已删除)
+     */
     private Integer isDelete;
-    @ApiModelProperty("点赞数")
+
+    /**
+     * 点赞数
+     */
     private Integer likesNum;
-    @ApiModelProperty("上线时间")
+
+    /**
+     * 上线时间
+     */
     private Date onlineTime;
-    @ApiModelProperty("创建需求学管id")
+
+    /**
+     * 创建需求学管id
+     */
     private Integer coachId;
-    @ApiModelProperty("来源(0:其他,1:直播,2:小程序,3:IMS,4:学管端)")
+
+    /**
+     * 来源(0:其他,1:直播,2:小程序,3:IMS,4:学管端)
+     */
     private Integer source;
-    @ApiModelProperty("需求负责人id")
+
+    /**
+     * 需求负责人id
+     */
     private Long chargeMan;
 
     public Integer getSource() {

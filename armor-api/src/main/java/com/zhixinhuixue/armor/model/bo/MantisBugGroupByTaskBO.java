@@ -1,9 +1,5 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import com.zhixinhuixue.armor.model.dto.response.MantisBugCategoryNumResDTO;
-import com.zhixinhuixue.armor.model.dto.response.MantisBugDeveloperNumResDTO;
-import com.zhixinhuixue.armor.model.dto.response.MantisBugTesterNumResDTO;
-
 import java.util.List;
 
 /**
@@ -36,7 +32,6 @@ public class MantisBugGroupByTaskBO {
      * 不同严重程度bug数量
      */
     private List<MantisBugSeverityNumBO> mantisBugSeverityNumBOS;
-//    private List<MantisBugCategoryNumBO> mantisBugCategoryNumBOS;
 
     public Long getTaskId() {
         return taskId;

@@ -1,16 +1,8 @@
 package com.zhixinhuixue.armor.helper;
 
 import com.google.common.base.Strings;
-import com.qiniu.common.QiniuException;
-import com.qiniu.common.Zone;
-import com.qiniu.http.Response;
-import com.qiniu.storage.Configuration;
-import com.qiniu.storage.UploadManager;
-import com.qiniu.util.Auth;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
-import com.zhixinhuixue.armor.service.impl.ZSYTaskService;
 import com.zhixinhuixue.armor.source.ZSYQinuOssProperty;
-import com.zhixinhuixue.armor.source.ZSYResult;
 import com.zhixinhuixue.armor.source.ZSYUFileProperties;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -18,7 +10,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -32,8 +23,6 @@ public class UFileHelper {
     private static final Logger logger = LoggerFactory.getLogger(UFileHelper.class);
 
     private UFileHelper(){}
-
-    private ZSYUFileProperties uFileProperties;
 
     /**
      * 上传到ufile

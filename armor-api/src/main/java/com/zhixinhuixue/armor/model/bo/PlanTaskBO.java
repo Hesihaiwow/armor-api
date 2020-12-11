@@ -1,9 +1,6 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import com.zhixinhuixue.armor.model.pojo.FeedbackPlan;
 import com.zhixinhuixue.armor.model.pojo.FeedbackPlanTask;
-
-import java.util.Date;
 
 /**
  * Created by Tate on 2017/8/10.

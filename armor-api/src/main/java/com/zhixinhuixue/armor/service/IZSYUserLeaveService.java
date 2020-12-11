@@ -5,8 +5,6 @@ import com.zhixinhuixue.armor.model.dto.request.UserLeaveListReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserLeaveReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.UserLeaveResDTO;
 
-import java.util.List;
-
 /**
  * Created by Lang on 2017/12/4 0004.
  */

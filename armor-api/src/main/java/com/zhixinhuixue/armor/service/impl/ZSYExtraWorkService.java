@@ -1,11 +1,11 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
+import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.dto.request.AddExtraWorkReqDTO;
 import com.zhixinhuixue.armor.model.dto.response.ExtraWorkDetailResDTO;
@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.github.pagehelper.page.PageMethod.startPage;
 
 /**
  * @author SCH
@@ -61,14 +63,13 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         if (userTemp == null || userTemp.getIsDelete() == 1) {
             throw new ZSYServiceException("用户不存在");
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateHelper.DATE_FORMAT);
         String dateStr = dateFormat.format(reqDTO.getBeginTime());
         List<Long> taskIds = extraWorkMapper.selectTaskIdsByUserAndTime(userTemp.getId(),dateStr);
         if (!CollectionUtils.isEmpty(taskIds)){
             List<Long> intersection = taskIds.stream()
                     .filter(item -> reqDTO.getTaskIds().contains(item)).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(intersection)){
-                intersection.forEach(i-> System.out.println("i = " + i));
                 throw new ZSYServiceException("存在一个任务当天多次申请加班,请检查");
             }
         }
@@ -82,14 +83,14 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         extraWork.setUserId(ZSYTokenRequestContext.get().getUserId());
         Float workHours = reqDTO.getWorkHours();
         int i = workHours.intValue();
-        extraWork.setWorkHours(Float.valueOf(i));
+        extraWork.setWorkHours((float) i);
         if (extraWorkMapper.addExtraWork(extraWork) == 0){
             throw new ZSYServiceException("新增加班申请失败");
         }
 
         List<ExtraWorkTask> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(reqDTO.getTaskIds())){
-            reqDTO.getTaskIds().stream().forEach(taskId->{
+            reqDTO.getTaskIds().forEach(taskId->{
                 if (taskId != null){
                     ExtraWorkTask extraWorkTask = new ExtraWorkTask();
                     extraWorkTask.setId(snowFlakeIDHelper.nextId());
@@ -129,13 +130,12 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         }
         //审核前,先校验当前加班关联的任务,在申请当天是否已经提交加班申请
         List<Long> collect = reqDTO.getTaskIds();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateHelper.DATE_FORMAT);
         List<Long> taskIds = extraWorkMapper.selectTaskIdsByUserAndTimeReviewed(extraWork.getUserId(),dateFormat.format(extraWork.getBeginTime()));
         if (!CollectionUtils.isEmpty(taskIds)){
             List<Long> intersection = taskIds.stream()
-                    .filter(item -> collect.contains(item)).collect(Collectors.toList());
+                    .filter(collect::contains).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(intersection)){
-                intersection.forEach(i-> System.out.println("i = " + i));
                 throw new ZSYServiceException("该用户存在一个任务当天多次申请加班,请检查");
             }
         }
@@ -152,7 +152,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
 
         List<ExtraWorkTask> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(reqDTO.getTaskIds())){
-            reqDTO.getTaskIds().stream().forEach(taskId->{
+            reqDTO.getTaskIds().forEach(taskId->{
                 if (taskId != null){
                     ExtraWorkTask extraWorkTask = new ExtraWorkTask();
                     extraWorkTask.setId(snowFlakeIDHelper.nextId());
@@ -211,13 +211,12 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         //审核前,先校验当前加班关联的任务,在申请当天是否已经提交加班申请
         List<Task> taskList = extraWorkMapper.selectTasksByEwId(ewId);
         List<Long> collect = taskList.stream().map(Task::getId).collect(Collectors.toList());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateHelper.DATE_FORMAT);
         List<Long> taskIds = extraWorkMapper.selectTaskIdsByUserAndTimeReviewed(extraWork.getUserId(),dateFormat.format(extraWork.getBeginTime()));
         if (!CollectionUtils.isEmpty(taskIds)){
             List<Long> intersection = taskIds.stream()
-                    .filter(item -> collect.contains(item)).collect(Collectors.toList());
+                    .filter(collect::contains).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(intersection)){
-                intersection.forEach(i-> System.out.println("i = " + i));
                 throw new ZSYServiceException("该用户存在一个任务当天多次申请加班,请检查");
             }
         }
@@ -267,7 +266,6 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
                 () -> new TreeSet<>(Comparator.comparing(Task::getId))
         ), ArrayList::new));
         return total;
-//        return list;
     }
 
     /**
@@ -277,12 +275,12 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
      */
     @Override
     public PageInfo<ExtraWorkResDTO> getWaitExtraWorkByPage(Integer pageNum) {
-        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
+        startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectWaitExtraWorkByPage(ZSYTokenRequestContext.get().getUserId());
         Page<ExtraWorkResDTO> list = new Page<>();
         BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            page.stream().forEach(extraWork -> {
+            page.forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
                 List<Task> tasks = extraWorkMapper.selectTasksByEwId(extraWork.getId());
@@ -299,12 +297,12 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
 
     @Override
     public PageInfo<ExtraWorkResDTO> getAccessExtraWorkByPage(Integer pageNum) {
-        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
+        startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectAccessExtraWorkByPage(ZSYTokenRequestContext.get().getUserId());
         Page<ExtraWorkResDTO> list = new Page<>();
         BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            page.stream().forEach(extraWork -> {
+            page.forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
                 List<Task> tasks = extraWorkMapper.selectTasksByEwId(extraWork.getId());
@@ -326,12 +324,12 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
      */
     @Override
     public PageInfo<ExtraWorkResDTO> getCheckingExtraWorkByPage(Integer pageNum) {
-        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
+        startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectCheckingExtraWorkByPage();
         Page<ExtraWorkResDTO> list = new Page<>();
         BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            page.stream().forEach(extraWork -> {
+            page.forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
                 List<Task> tasks = extraWorkMapper.selectTasksByEwId(extraWork.getId());
@@ -353,12 +351,12 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
      */
     @Override
     public PageInfo<ExtraWorkResDTO> getCheckedExtraWorkByPage(Integer pageNum) {
-        PageHelper.startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
+        startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<ExtraWork> page = extraWorkMapper.selectCheckedExtraWorkByPage();
         Page<ExtraWorkResDTO> list = new Page<>();
         BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
-            page.stream().forEach(extraWork -> {
+            page.forEach(extraWork -> {
                 ExtraWorkResDTO extraWorkResDTO = new ExtraWorkResDTO();
                 BeanUtils.copyProperties(extraWork,extraWorkResDTO);
                 List<Task> tasks = extraWorkMapper.selectTasksByEwId(extraWork.getId());
@@ -384,7 +382,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         User user = userMapper.selectByEwId(extraWork.getId());
         Date beginTime = extraWork.getBeginTime();
         SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateSDF = new SimpleDateFormat(DateHelper.DATE_FORMAT);
         SimpleDateFormat timeSDF2 = new SimpleDateFormat("HH:mm:ss");
         String dateStr = dateSDF.format(beginTime);
         Date begin = null;

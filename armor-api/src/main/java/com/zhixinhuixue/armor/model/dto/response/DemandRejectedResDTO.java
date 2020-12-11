@@ -1,52 +1,100 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**
+ * 被驳回需求
  * Created by SCH on 2018-10-18
  */
-@ApiModel("被驳回需求")
 public class DemandRejectedResDTO {
-    @ApiModelProperty("需求id")
+    /**
+     * 需求id
+     */
     private Long id;
-    @ApiModelProperty("需求标题")
+
+    /**
+     * 需求标题
+     */
     private String title;
-    @ApiModelProperty("来源(需求实际提出人)")
+
+    /**
+     * 来源(需求实际提出人)
+     */
     private String origin;
-    @ApiModelProperty("类型")
+
+    /**
+     * 类型
+     */
     private Integer type;
-    @ApiModelProperty("优先级")
+
+    /**
+     * 优先级
+     */
     private Integer priority;
-    @ApiModelProperty("提出时间")
+
+    /**
+     * 提出时间
+     */
     private Date feedbackTime;
-    @ApiModelProperty("创建时间")
+
+    /**
+     * 创建时间
+     */
     private Date createTime;
-    @ApiModelProperty("期待上线日期")
+
+    /**
+     * 期待上线日期
+     */
     private Date releaseTime;
-    @ApiModelProperty("点赞数")
+
+    /**
+     * 点赞数
+     */
     private Integer likesNum;
-    @ApiModelProperty("驳回人id")
+
+    /**
+     * 驳回人id
+     */
     private String rejectUser;
-    @ApiModelProperty("驳回时间")
+
+    /**
+     * 驳回时间
+     */
     private Date rejectedTime;
-    @ApiModelProperty("问题")
+
+    /**
+     * 问题
+     */
     private String question;
-    @ApiModelProperty("目标")
+
+    /**
+     * 目标
+     */
     private String target;
-    @ApiModelProperty("项目id")
+
+    /**
+     * 项目id
+     */
     private Long projectId;
-    @ApiModelProperty("状态")
+
+    /**
+     * 状态
+     */
     private Integer status;
-    @ApiModelProperty("是否已读")
+
+    /**
+     * 是否已读
+     */
     private Integer readStatus;
-    @ApiModelProperty("来源")
+
+    /**
+     * 来源
+     */
     private Integer source;
-    @ApiModelProperty("负责人")
+
+    /**
+     * 负责人
+     */
     private Long chargeMan;
     private String chargeManName;
 

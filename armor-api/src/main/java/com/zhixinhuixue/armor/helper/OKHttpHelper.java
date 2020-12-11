@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.helper;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.zhixinhuixue.armor.exception.ZSYApiException;
@@ -8,6 +7,7 @@ import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -17,6 +17,9 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.alibaba.fastjson.JSON.parseObject;
+import static com.alibaba.fastjson.JSON.toJSONString;
 
 
 /**
@@ -50,36 +53,38 @@ public class OKHttpHelper {
     /**
      * Post空数据
      */
-    private final static RequestBody EMPTY_BODY = RequestBody.create(APPLICATION_JSON, new JSONObject().toJSONString());
+    private static final RequestBody EMPTY_BODY = RequestBody.create(APPLICATION_JSON, new JSONObject().toJSONString());
 
     /**
      * 日志
      */
-    private final static Logger logger = LoggerFactory.getLogger(OKHttpHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(OKHttpHelper.class);
 
     /**
      * 客户端
      */
-    private final static OkHttpClient client = new OkHttpClient.Builder()
+    private static final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(READ_TIMEOUT,TimeUnit.SECONDS)
-            .writeTimeout(WRITE_TIMEOUT,TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             .build();
 
 
     /**
      * SSL客户端
      */
-    private final static OkHttpClient sslClient = new OkHttpClient().newBuilder()
+    private static final OkHttpClient sslClient = new OkHttpClient().newBuilder()
             .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(READ_TIMEOUT,TimeUnit.SECONDS)
-            .writeTimeout(WRITE_TIMEOUT,TimeUnit.SECONDS)
-            .sslSocketFactory(createSSLSocketFactory(),new X509TrustManager() {
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .sslSocketFactory(createSSLSocketFactory(), new X509TrustManager() {
                 @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType){}
+                public void checkClientTrusted(X509Certificate[] chain, String authType) {
+                }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType){}
+                public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                }
 
                 @Override
                 public X509Certificate[] getAcceptedIssuers() {
@@ -90,141 +95,152 @@ public class OKHttpHelper {
 
     /**
      * GET请求
+     *
      * @param url 请求URL(参数可加在URL后)
      * @return
      */
-    public static String get(String url){
+    public static String get(String url) {
         isUrlNullOrEmpty(url);
         Request request = new Request.Builder().url(url).build();
-        return handleResponse(request,client);
+        return handleResponse(request, client);
     }
 
     /**
      * GET请求
-     * @param url 请求URL
+     *
+     * @param url    请求URL
      * @param params 参数 k-v
      * @return
      */
-    public static String get(String url, List<OkHttpParam> params){
+    public static String get(String url, List<OkHttpParam> params) {
         isUrlNullOrEmpty(url);
-        Request request = new Request.Builder().url(componentUrl(url,params)).build();
-        return handleResponse(request,client);
+        Request request = new Request.Builder().url(componentUrl(url, params)).build();
+        return handleResponse(request, client);
     }
 
     /**
      * GET请求(basic验证)
-     * @param url 请求URL(参数可加在URL后)
+     *
+     * @param url      请求URL(参数可加在URL后)
      * @param userName 用户名
      * @param password 密码
      * @return
      */
-    public static String getWithBasic(String url,String userName,String password){
+    public static String getWithBasic(String url, String userName, String password) {
         isUrlNullOrEmpty(url);
         String credential = Credentials.basic(userName, password);
         Request request = new Request.Builder().header(HTTP_REQUEST_HEAD, credential).url(url).build();
-        return handleResponse(request,client);
+        return handleResponse(request, client);
     }
 
     /**
      * GET请求(basic验证)
-     * @param url 请求URL
-     * @param params 参数 k-v
+     *
+     * @param url      请求URL
+     * @param params   参数 k-v
      * @param userName 用户名
      * @param password 密码
      * @return
      */
-    public static String getWithBasic(String url, List<OkHttpParam> params,String userName,String password){
+    public static String getWithBasic(String url, List<OkHttpParam> params, String userName, String password) {
         isUrlNullOrEmpty(url);
         String credential = Credentials.basic(userName, password);
-        Request request = new Request.Builder().header(HTTP_REQUEST_HEAD, credential).url(componentUrl(url,params)).build();
-        return handleResponse(request,client);
+        Request request = new Request.Builder().header(HTTP_REQUEST_HEAD, credential).url(componentUrl(url, params)).build();
+        return handleResponse(request, client);
     }
 
 
-   /**
+    /**
      * GET请求
+     *
      * @param url 请求URL(参数可加在URL后)
      * @return
      */
-    public static String sslGet(String url){
+    public static String sslGet(String url) {
         isUrlNullOrEmpty(url);
         Request request = new Request.Builder().url(url).build();
-        return handleResponse(request,sslClient);
+        return handleResponse(request, sslClient);
     }
 
     /**
      * GET请求
-     * @param url 请求URL
+     *
+     * @param url    请求URL
      * @param params 参数 k-v
      * @return
      */
-    public static String sslGet(String url, List<OkHttpParam> params){
+    public static String sslGet(String url, List<OkHttpParam> params) {
         isUrlNullOrEmpty(url);
-        Request request = new Request.Builder().url(componentUrl(url,params)).build();
-        return handleResponse(request,sslClient);
+        Request request = new Request.Builder().url(componentUrl(url, params)).build();
+        return handleResponse(request, sslClient);
     }
 
 
     /**
      * POST请求
+     *
      * @param url 请求URL(参数可加在URL后)
      * @return
      */
-    public static String post(String url){
+    public static String post(String url) {
         isUrlNullOrEmpty(url);
         Request request = new Request.Builder().url(url).post(EMPTY_BODY).build();
-        return handleResponse(request,client);
+        return handleResponse(request, client);
     }
 
     /**
      * POST请求
-     * @param url 请求URL
+     *
+     * @param url    请求URL
      * @param params 参数 k-v
      * @return
      */
-    public static String post(String url, List<OkHttpParam> params){
+    public static String post(String url, List<OkHttpParam> params) {
         isUrlNullOrEmpty(url);
         RequestBody body = RequestBody.create(APPLICATION_JSON, convertListToJson(params));
         Request request = new Request.Builder().url(url).post(body).build();
-        return handleResponse(request,client);
+        return handleResponse(request, client);
     }
 
     /**
      * POST请求
-     * @param url 请求URL
+     *
+     * @param url  请求URL
      * @param json 参数 k-v
      * @return
      */
-    public static String post(String url, String json){
+    public static String post(String url, String json) {
         isUrlNullOrEmpty(url);
         RequestBody body = RequestBody.create(APPLICATION_JSON, json);
         Request request = new Request.Builder().url(url).post(body).build();
-        return handleResponse(request,client);
+        return handleResponse(request, client);
     }
 
     /**
      * POST请求(basic验证)
-     * @param url 请求URL
+     *
+     * @param url      请求URL
      * @param userName 用户名
      * @param password 密码
      * @return
      */
-    public static String postWithBasic(String url,String userName,String password){
+    public static String postWithBasic(String url, String userName, String password) {
         isUrlNullOrEmpty(url);
         String credential = Credentials.basic(userName, password);
         Request request = new Request.Builder().header(HTTP_REQUEST_HEAD, credential).url(url).post(EMPTY_BODY).build();
-        return handleResponse(request,client);
+        return handleResponse(request, client);
     }
 
     /**
      * GET请求(basic验证)
-     * @param url 请求URL
-     * @param params 参数 k-v
+     *
+     * @param url      请求URL
+     * @param params   参数 k-v
      * @param userName 用户名
      * @param password 密码
      * @return
      */
-    public static String postWithBasic(String url, List<OkHttpParam> params,String userName,String password) {
+    public static String postWithBasic(String url, List<OkHttpParam> params, String userName, String password) {
         isUrlNullOrEmpty(url);
         RequestBody body = RequestBody.create(APPLICATION_JSON, convertListToJson(params));
         String credential = Credentials.basic(userName, password);
@@ -234,87 +250,92 @@ public class OKHttpHelper {
 
     /**
      * GET请求(basic验证)
-     * @param url 请求URL
-     * @param json 参数 k-v
+     *
+     * @param url      请求URL
+     * @param json     参数 k-v
      * @param userName 用户名
      * @param password 密码
      * @return
      */
-    public static String postWithBasic(String url, String json,String userName,String password){
+    public static String postWithBasic(String url, String json, String userName, String password) {
         isUrlNullOrEmpty(url);
-        if (logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("Http Request Parameters:{}", json);
         }
         RequestBody body = RequestBody.create(APPLICATION_JSON, json);
         String credential = Credentials.basic(userName, password);
         Request request = new Request.Builder().header(HTTP_REQUEST_HEAD, credential).url(url).post(body).build();
-        return handleResponse(request,client);
+        return handleResponse(request, client);
     }
 
 
-   /**
+    /**
      * POST请求
+     *
      * @param url 请求URL(参数可加在URL后)
      * @return
      */
-    public static String sslPost(String url){
+    public static String sslPost(String url) {
         isUrlNullOrEmpty(url);
         Request request = new Request.Builder().url(url).post(EMPTY_BODY).build();
-        return handleResponse(request,sslClient);
+        return handleResponse(request, sslClient);
     }
 
     /**
      * POST请求
-     * @param url 请求URL
+     *
+     * @param url    请求URL
      * @param params 参数 k-v
      * @return
      */
-    public static String sslPost(String url, List<OkHttpParam> params){
+    public static String sslPost(String url, List<OkHttpParam> params) {
         isUrlNullOrEmpty(url);
         RequestBody body = RequestBody.create(APPLICATION_JSON, convertListToJson(params));
         Request request = new Request.Builder().url(url).post(body).build();
-        return handleResponse(request,sslClient);
+        return handleResponse(request, sslClient);
     }
 
     /**
      * POST请求
-     * @param url 请求URL
+     *
+     * @param url  请求URL
      * @param json 参数 k-v
      * @return
      */
-    public static String sslPost(String url, String json){
+    public static String sslPost(String url, String json) {
         isUrlNullOrEmpty(url);
-        if (logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("Http Request Parameters:{}", json);
         }
         RequestBody body = RequestBody.create(APPLICATION_JSON, json);
         Request request = new Request.Builder().url(url).post(body).build();
-        return handleResponse(request,sslClient);
+        return handleResponse(request, sslClient);
     }
 
 
-    public static OkHttpClient getClient(){
+    public static OkHttpClient getClient() {
         return client;
     }
 
     /**
      * 组装URl
-     * @param url 请求url
+     *
+     * @param url    请求url
      * @param params 请求参数
      * @return
      */
-    public static String componentUrl(String url,List<OkHttpParam> params){
-        if (params!=null&&params.size()>0){
-            StringBuffer stringBuffer = new StringBuffer(url);
-            if (!url.substring(url.length()-1).equals("?")){
+    public static String componentUrl(String url, List<OkHttpParam> params) {
+        if (!CollectionUtils.isEmpty(params)) {
+            StringBuilder stringBuffer = new StringBuilder(url);
+            if (!url.substring(url.length() - 1).equals("?")) {
                 stringBuffer.append("?");
             }
-            params.stream().forEach(okHttpParam->{
-                stringBuffer.append(String.format("%s=%s&",okHttpParam.getKey(),okHttpParam.getValue()));
-            });
-            url = stringBuffer.toString().substring(0,stringBuffer.toString().length()-1);
-            if (logger.isDebugEnabled()){
-                logger.debug("Http Request Parameters:{}", JSONArray.toJSONString(params));
+            params.forEach(okHttpParam ->
+                    stringBuffer.append(String.format("%s=%s&", okHttpParam.getKey(), okHttpParam.getValue()))
+            );
+            url = stringBuffer.toString().substring(0, stringBuffer.toString().length() - 1);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Http Request Parameters:{}", toJSONString(params));
             }
         }
         return url;
@@ -322,21 +343,22 @@ public class OKHttpHelper {
 
     /**
      * 发送请求，处理请求
+     *
      * @param request
      * @return
      */
-    public static String handleResponse(Request request, OkHttpClient client){
+    public static String handleResponse(Request request, OkHttpClient client) {
         try {
             long var1 = System.currentTimeMillis();
             Response response = client.newCall(request).execute();
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 String result = response.body().string();
-                if (logger.isDebugEnabled()){
-                    logger.debug(String.format("Request Time: %s,Request Result: %s.",String.valueOf(System.currentTimeMillis()-var1),result));
+                if (logger.isDebugEnabled()) {
+                    logger.debug(String.format("Request Time: %s,Request Result: %s.", String.valueOf(System.currentTimeMillis() - var1), result));
                 }
                 return result;
-            }else{
-                throw new ZSYServiceException(String.format("Request %s Fail,Error Code: %s.",request.url().url(),response.code()));
+            } else {
+                throw new ZSYServiceException(String.format("Request %s Fail,Error Code: %s.", request.url().url(), response.code()));
             }
         } catch (IOException e) {
             throw new ZSYServiceException(e.getMessage());
@@ -345,17 +367,18 @@ public class OKHttpHelper {
 
     /**
      * 将List转化成JSON
+     *
      * @param params
      * @return
      */
-    private static String convertListToJson(List<OkHttpParam> params){
+    private static String convertListToJson(List<OkHttpParam> params) {
         JSONObject object = new JSONObject();
-        if (params!=null&&params.size()>0){
-            params.stream().forEach(okHttpParam -> {
-                object.put(okHttpParam.getKey(),okHttpParam.getValue());
-            });
+        if (!CollectionUtils.isEmpty(params)) {
+            params.forEach(okHttpParam ->
+                    object.put(okHttpParam.getKey(), okHttpParam.getValue())
+            );
         }
-        if (logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("Http Request Parameters:{}", object.toJSONString());
         }
         return object.toJSONString();
@@ -363,24 +386,25 @@ public class OKHttpHelper {
 
     /**
      * 校验请求url
+     *
      * @param url
      */
-    private static void isUrlNullOrEmpty(String url){
-        if (Strings.isNullOrEmpty(url)){
+    private static void isUrlNullOrEmpty(String url) {
+        if (Strings.isNullOrEmpty(url)) {
             throw new ZSYServiceException("Http Request Uri is null or empty!");
         }
-        logger.info("Http Request Uri:{}",url);
+        logger.info("Http Request Uri:{}", url);
     }
 
     /**
      * OKHttp请求参数
      */
-    public static class OkHttpParam{
+    public static class OkHttpParam {
 
         private String key;
         private String value;
 
-        public OkHttpParam(String key,String value){
+        public OkHttpParam(String key, String value) {
             this.key = key;
             this.value = value;
         }
@@ -404,34 +428,36 @@ public class OKHttpHelper {
 
     /**
      * 判断zsy接口返回是否正常
+     *
      * @param result
      * @return
      */
-    public static ZsyApiResult convertZsyApiCallBack(String result){
-        if (result.contains("{\"status\":0,\"error\":")){
-            return new ZsyApiResult(false, JSONObject.parseObject(result).getString("error"),null);
+    public static ZsyApiResult convertZsyApiCallBack(String result) {
+        if (result.contains("{\"status\":0,\"error\":")) {
+            return new ZsyApiResult(false, parseObject(result).getString("error"), null);
         }
-        if (result.contains("{\"success\":0,")){
-            return new ZsyApiResult(false, JSONObject.parseObject(result).getString("msg"),null);
+        if (result.contains("{\"success\":0,")) {
+            return new ZsyApiResult(false, parseObject(result).getString("msg"), null);
         }
-        return new ZsyApiResult(true, "",result);
+        return new ZsyApiResult(true, "", result);
     }
 
     /**
      * 判断api接口返回是否正常
+     *
      * @param result
      * @return
      */
-    public static ZsyApiResult convertApiCallBack4Java(String result){
-        if(!result.contains("\"errCode\":\"00\"")){
-            return new ZsyApiResult(false, JSONObject.parseObject(result).getString("errMsg"),null);
+    public static ZsyApiResult convertApiCallBack4Java(String result) {
+        if (!result.contains("\"errCode\":\"00\"")) {
+            return new ZsyApiResult(false, parseObject(result).getString("errMsg"), null);
         }
-        return new ZsyApiResult(true, "",result);
+        return new ZsyApiResult(true, "", result);
     }
 
-    public static class ZsyApiResult{
+    public static class ZsyApiResult {
 
-        public ZsyApiResult(boolean success,String errMsg,String data){
+        public ZsyApiResult(boolean success, String errMsg, String data) {
             this.success = success;
             this.errMsg = errMsg;
             this.data = data;
@@ -453,19 +479,19 @@ public class OKHttpHelper {
             this.errMsg = errMsg;
         }
 
-        public String get(){
-            if (this.success){
+        public String get() {
+            if (this.success) {
                 return this.data;
-            }else{
+            } else {
                 throw new ZSYApiException(this.errMsg);
             }
         }
     }
 
 
-
     /**
      * 创建SSL链接工厂
+     *
      * @return
      */
     private static SSLSocketFactory createSSLSocketFactory() {
@@ -475,7 +501,9 @@ public class OKHttpHelper {
             sslContext.init(null, null, new SecureRandom());
             // Create an ssl socket factory with our all-trusting manager
             sSLSocketFactory = sslContext.getSocketFactory();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            throw new ZSYServiceException(e.getMessage());
+        }
         return sSLSocketFactory;
     }
 

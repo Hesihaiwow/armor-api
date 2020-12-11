@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
@@ -11,17 +9,14 @@ import javax.validation.constraints.Size;
  * @author sch
  * @time 2019/10/14 14:51
  */
-@ApiModel
 public class EditTaskBugReqDTO {
     /**
      * ID
      */
     @NotNull(message = "任务bugId不能为空")
-    @ApiModelProperty("任务bugId")
     private Long tbId;
 
     @NotNull(message = "任务Id不能为空")
-    @ApiModelProperty("任务Id")
     private Long taskId;
 
     /**
@@ -29,41 +24,35 @@ public class EditTaskBugReqDTO {
      */
     @NotBlank(message ="标题不能为空")
     @Size(min = 1,max = 500,message = "标题长度在{min}~{max}之间")
-    @ApiModelProperty("标题")
     private String title;
 
     /**
      * 描述
      */
     @NotBlank(message = "描述不能为空")
-    @ApiModelProperty("描述")
     private String description;
 
     /**
      * 备注
      */
-    @ApiModelProperty("备注")
     private String remark;
 
     /**
      * 状态
      */
     @NotNull(message = "状态不能为空")
-    @ApiModelProperty("bug状态")
     private Integer status;
 
     /**
      * 出现频率
      */
     @NotNull(message = "出现频率不能为空")
-    @ApiModelProperty("出现频率")
     private Integer frequency;
 
     /**
      * 严重性
      */
     @NotNull(message = "严重性不能为空")
-    @ApiModelProperty("严重性")
     private Integer severity;
 
     /**
@@ -76,7 +65,6 @@ public class EditTaskBugReqDTO {
      * 分派人
      */
     @NotNull(message = "分派人不能为空")
-    @ApiModelProperty("分派人")
     private Long handlerId;
 
     public Integer getProblemType() {

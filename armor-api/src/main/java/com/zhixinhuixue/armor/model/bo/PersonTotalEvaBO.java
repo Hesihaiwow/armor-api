@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import java.math.BigDecimal;
-
 /**
  * @author sch
  * @DATE 2019/6/14 13:16

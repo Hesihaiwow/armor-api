@@ -3,7 +3,9 @@ package com.zhixinhuixue.armor.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
-import com.zhixinhuixue.armor.dao.*;
+import com.zhixinhuixue.armor.dao.IZSYTaskBugMapper;
+import com.zhixinhuixue.armor.dao.IZSYTaskMapper;
+import com.zhixinhuixue.armor.dao.IZSYUserMapper;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
 import com.zhixinhuixue.armor.model.bo.*;
@@ -20,11 +22,11 @@ import com.zhixinhuixue.armor.source.ArmorPageInfo;
 import com.zhixinhuixue.armor.source.ZSYConstants;
 import com.zhixinhuixue.armor.source.enums.*;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,17 +39,13 @@ import static com.github.pagehelper.page.PageMethod.startPage;
  */
 @Service
 public class ZSYTaskBugService implements IZSYTaskBugService {
-    @Autowired
+    @Resource
     private IZSYTaskBugMapper taskBugMapper;
-    @Autowired
+    @Resource
     private IZSYTaskMapper taskMapper;
-    @Autowired
+    @Resource
     private IZSYUserMapper userMapper;
-    @Autowired
-    private IZSYTaskBugLogMapper bugLogMapper;
-    @Autowired
-    private IZSYTaskBugRemarkMapper remarkMapper;
-    @Autowired
+    @Resource
     private SnowFlakeIDHelper snowFlakeIDHelper;
 
     /**

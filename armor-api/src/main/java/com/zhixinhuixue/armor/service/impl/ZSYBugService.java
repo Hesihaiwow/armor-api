@@ -1,12 +1,12 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
+import com.zhixinhuixue.armor.exception.ZSYServerException;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 import com.zhixinhuixue.armor.helper.DateHelper;
 import com.zhixinhuixue.armor.helper.SnowFlakeIDHelper;
@@ -42,6 +42,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.github.pagehelper.page.PageMethod.startPage;
+
 
 /**
  * Created by Lang on 2017/11/7
@@ -71,22 +73,23 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * bug处理结果表
+     *
      * @param bugListReqDTO
      * @return
      */
     @Override
     public PageInfo<BugPageResDTO> getBugList(BugListReqDTO bugListReqDTO) {
-        PageHelper.startPage(bugListReqDTO.getPageNum(), ZSYConstants.PAGE_SIZE);
+        startPage(bugListReqDTO.getPageNum(), ZSYConstants.PAGE_SIZE);
         bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<BugManageListBO> bugListBOS = bugManageMapper.getBugList(bugListReqDTO);
         Page<BugPageResDTO> bugPageResDTOS = new Page();
         BeanUtils.copyProperties(bugListBOS, bugPageResDTOS);
-        bugListBOS.stream().forEach(bugListBO -> {
+        bugListBOS.forEach(bugListBO -> {
             BugPageResDTO bugPageResDTO = new BugPageResDTO();
             BeanUtils.copyProperties(bugListBO, bugPageResDTO);
-            bugPageResDTO.setCreateTime(DateHelper.dateFormatter(bugListBO.getCreateTime(),DateHelper.DATE_FORMAT));
-            bugPageResDTO.setProcessTime(DateHelper.dateFormatter(bugListBO.getProcessTime(),DateHelper.DATE_FORMAT));
-            bugPageResDTO.setProjectId(new Long((bugListReqDTO.getPageNum()-1)*10)+bugListBO.getProjectId());//projectId这里用于序号值
+            bugPageResDTO.setCreateTime(DateHelper.dateFormatter(bugListBO.getCreateTime(), DateHelper.DATE_FORMAT));
+            bugPageResDTO.setProcessTime(DateHelper.dateFormatter(bugListBO.getProcessTime(), DateHelper.DATE_FORMAT));
+            bugPageResDTO.setProjectId((long) ((bugListReqDTO.getPageNum() - 1) * 10) + bugListBO.getProjectId());//projectId这里用于序号值
             bugPageResDTOS.add(bugPageResDTO);
         });
 
@@ -96,58 +99,59 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 分页查询线上bug
-     * @author sch
+     *
      * @param bugListReqDTO
      * @return
+     * @author sch
      */
     @Override
     public PageInfo<OnlineBugResDTO> getBugManagePage(BugListReqDTO bugListReqDTO) {
-        PageHelper.startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
         bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<OnlineBugBO> onlineBugBOS = bugManageMapper.selectOnlineBugPage(bugListReqDTO);
         Page<OnlineBugResDTO> page = new Page<>();
-        if (!CollectionUtils.isEmpty(onlineBugBOS)){
-            BeanUtils.copyProperties(onlineBugBOS,page);
-            onlineBugBOS.stream().forEach(onlineBugBO -> {
+        if (!CollectionUtils.isEmpty(onlineBugBOS)) {
+            BeanUtils.copyProperties(onlineBugBOS, page);
+            onlineBugBOS.forEach(onlineBugBO -> {
                 OnlineBugResDTO onlineBugResDTO = new OnlineBugResDTO();
-                BeanUtils.copyProperties(onlineBugBO,onlineBugResDTO);
+                BeanUtils.copyProperties(onlineBugBO, onlineBugResDTO);
                 String developers = "";
                 String testers = "";
                 String others = "";
                 String users = "";
-                if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())){
+                if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())) {
                     for (Long userId : onlineBugBO.getUserIds()) {
                         User user = userMapper.selectById(userId);
-                        if (user.getJobRole()==ZSYJobRole.TEST.getValue()){
-                            testers = testers  + user.getName()+ " ";
-                        }else if (user.getJobRole()==ZSYJobRole.JAVA.getValue()
-                                || user.getJobRole()==ZSYJobRole.PHP.getValue()
-                                || user.getJobRole()==ZSYJobRole.C.getValue()
-                                || user.getJobRole()==ZSYJobRole.IOS.getValue()
-                                || user.getJobRole()==ZSYJobRole.ANDROID.getValue()
-                                || user.getJobRole()==ZSYJobRole.FRONT.getValue()
-                                || user.getJobRole()==ZSYJobRole.ARTIFICIAL.getValue()){
-                            developers = developers  + user.getName()+ " ";
-                        }else {
+                        if (user.getJobRole() == ZSYJobRole.TEST.getValue()) {
+                            testers = testers + user.getName() + " ";
+                        } else if (user.getJobRole() == ZSYJobRole.JAVA.getValue()
+                                || user.getJobRole() == ZSYJobRole.PHP.getValue()
+                                || user.getJobRole() == ZSYJobRole.C.getValue()
+                                || user.getJobRole() == ZSYJobRole.IOS.getValue()
+                                || user.getJobRole() == ZSYJobRole.ANDROID.getValue()
+                                || user.getJobRole() == ZSYJobRole.FRONT.getValue()
+                                || user.getJobRole() == ZSYJobRole.ARTIFICIAL.getValue()) {
+                            developers = developers + user.getName() + " ";
+                        } else {
                             others = others + user.getName() + " ";
                         }
                         users = users + user.getName() + " ";
                     }
                 }
-                if (onlineBugBO.getAffectScope() != null){
+                if (onlineBugBO.getAffectScope() != null) {
                     onlineBugResDTO.setAffectScopeStr(AffectScopeEnum.getName(onlineBugBO.getAffectScope()));
                 }
                 onlineBugResDTO.setUsers(users);
                 onlineBugResDTO.setOthers(others);
                 onlineBugResDTO.setDevelopers(developers);
                 onlineBugResDTO.setTesters(testers);
-                if (onlineBugBO.getProjectId() != null){
+                if (onlineBugBO.getProjectId() != null) {
                     onlineBugResDTO.setDemandSystemName("知心慧学");
                 }
-                if (onlineBugBO.getProcessTime() != null && onlineBugBO.getProjectId() != null){
+                if (onlineBugBO.getProcessTime() != null && onlineBugBO.getProjectId() != null) {
                     onlineBugResDTO.setIsSolved(1);
                 }
-                if (onlineBugBO.getType() == null){
+                if (onlineBugBO.getType() == null) {
                     onlineBugResDTO.setType(0);
                 }
                 String bugNoStr = getBugNoStr(onlineBugBO.getBugNo());
@@ -160,24 +164,25 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 线上bug详情
-     * @author sch
+     *
      * @param id
      * @return
+     * @author sch
      */
     @Override
     public OnlineBugDetailResDTO getOnlineBugDetail(Long id) {
         OnlineBugDetailResDTO resDTO = new OnlineBugDetailResDTO();
         OnlineBugBO onlineBugBO = bugManageMapper.selectOnlineBugDetailById(id);
-        if (onlineBugBO == null){
+        if (onlineBugBO == null) {
             throw new ZSYServiceException("无法找到Bug处理结果,id:" + id);
         }
-        BeanUtils.copyProperties(onlineBugBO,resDTO);
-        if (onlineBugBO.getAffectScope() != null){
+        BeanUtils.copyProperties(onlineBugBO, resDTO);
+        if (onlineBugBO.getAffectScope() != null) {
             resDTO.setAffectScopeStr(AffectScopeEnum.getName(onlineBugBO.getAffectScope()));
         }
         String bugNoStr = getBugNoStr(onlineBugBO.getBugNo());
         resDTO.setBugNoStr(bugNoStr);
-        if (resDTO.getDemandSystemName() == null){
+        if (resDTO.getDemandSystemName() == null) {
             resDTO.setDemandSystemName("知心慧学");
         }
         return resDTO;
@@ -186,6 +191,7 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 添加bug处理结果
+     *
      * @param bugReqDTO
      */
     @Override
@@ -198,7 +204,7 @@ public class ZSYBugService implements IZSYBugService {
             throw new ZSYServiceException("用户不存在");
         }
         // 判断含有重复的负责人
-        if (bugReqDTO.getBugUsers() != null && bugReqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(bugReqDTO.getBugUsers())) {
             List<Long> users = bugReqDTO.getBugUsers().stream().map(BugUserReqDTO::getUserId).distinct().collect(Collectors.toList());
             if (users.size() < bugReqDTO.getBugUsers().size()) {
                 throw new ZSYServiceException("负责人重复");
@@ -214,7 +220,7 @@ public class ZSYBugService implements IZSYBugService {
         bugManageMapper.insertBug(bugManage);
 
         // 插入Bug处理用户
-        if (bugReqDTO.getBugUsers() != null && bugReqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(bugReqDTO.getBugUsers())) {
             List<BugUser> bugUsers = Lists.newArrayList();
             bugReqDTO.getBugUsers().forEach(user -> {
                 BugUser bugUser = new BugUser();
@@ -251,8 +257,9 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 添加新bug
-     * @author sch
+     *
      * @param reqDTO
+     * @author sch
      */
     @Override
     public void addNewBug(BugManageAddReqDTO reqDTO) {
@@ -264,7 +271,7 @@ public class ZSYBugService implements IZSYBugService {
             throw new ZSYServiceException("用户不存在");
         }
         // 判断含有重复的负责人
-        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(reqDTO.getBugUsers())) {
             List<Long> users = reqDTO.getBugUsers().stream().map(BugUserReqDTO::getUserId).distinct().collect(Collectors.toList());
             if (users.size() < reqDTO.getBugUsers().size()) {
                 throw new ZSYServiceException("负责人重复");
@@ -275,13 +282,13 @@ public class ZSYBugService implements IZSYBugService {
         OnlineBugManage lastBug = bugManageMapper.selectLastBugNo();
 
         OnlineBugManage bugManage = new OnlineBugManage();
-        if (lastBug != null && lastBug.getBugNo() > 0){
-            bugManage.setBugNo(lastBug.getBugNo()+1);
-        }else {
+        if (lastBug != null && lastBug.getBugNo() > 0) {
+            bugManage.setBugNo(lastBug.getBugNo() + 1);
+        } else {
             bugManage.setBugNo(1);
         }
         bugManage.setId(snowFlakeIDHelper.nextId());
-        if (reqDTO.getTaskId() != null){
+        if (reqDTO.getTaskId() != null) {
             bugManage.setTaskId(reqDTO.getTaskId());
         }
         bugManage.setCreateTime(reqDTO.getDiscoverTime());
@@ -304,7 +311,7 @@ public class ZSYBugService implements IZSYBugService {
         bugManageMapper.insertBugManager(bugManage);
 
         // 插入Bug处理用户
-        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(reqDTO.getBugUsers())) {
             List<BugUser> bugUsers = Lists.newArrayList();
             reqDTO.getBugUsers().forEach(user -> {
                 BugUser bugUser = new BugUser();
@@ -328,7 +335,7 @@ public class ZSYBugService implements IZSYBugService {
             integral.setCreateTime(new Date());
             integral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
             String bugNoStr = getBugNoStr(bugManage.getBugNo());
-            integral.setDescription("线上任务bug: 编号 "+bugNoStr);
+            integral.setDescription("线上任务bug: 编号 " + bugNoStr);
             integral.setBugId(bugManage.getId());
             integralMapper.insert(integral);
 
@@ -338,11 +345,12 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 更新Bug处理
+     *
      * @param id
      * @param bugReqDTO
      */
     @Override
-    public void updateBug(Long id,BugReqDTO bugReqDTO) {
+    public void updateBug(Long id, BugReqDTO bugReqDTO) {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.EMPLOYEE.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
         }
@@ -357,7 +365,7 @@ public class ZSYBugService implements IZSYBugService {
         }
 
         // 判断含有重复的负责人
-        if (bugReqDTO.getBugUsers() != null && bugReqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(bugReqDTO.getBugUsers())) {
             List<Long> users = bugReqDTO.getBugUsers().stream().map(BugUserReqDTO::getUserId).distinct().collect(Collectors.toList());
             if (users.size() < bugReqDTO.getBugUsers().size()) {
                 throw new ZSYServiceException("负责人重复");
@@ -378,7 +386,7 @@ public class ZSYBugService implements IZSYBugService {
         }
 
         // 插入Bug处理用户
-        if (bugReqDTO.getBugUsers() != null && bugReqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(bugReqDTO.getBugUsers())) {
             List<BugUser> bugUsers = Lists.newArrayList();
             bugReqDTO.getBugUsers().forEach(user -> {
                 BugUser bugUser = new BugUser();
@@ -401,7 +409,7 @@ public class ZSYBugService implements IZSYBugService {
             userBO.setId(userBug.getId());
             userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
             userMapper.updateSelectiveById(userBO);
-            userIntegralMapper.deleteUserIntegral(id,userIntegral.getUserId());
+            userIntegralMapper.deleteUserIntegral(id, userIntegral.getUserId());
         });
 
         bugReqDTO.getBugUsers().forEach(user -> {
@@ -427,9 +435,10 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 更新线上bug
-     * @author sch
+     *
      * @param reqDTO
      * @param id
+     * @author sch
      */
     @Override
     public void updateOnlineBug(BugManageAddReqDTO reqDTO, Long id) {
@@ -447,7 +456,7 @@ public class ZSYBugService implements IZSYBugService {
         }
 
         // 判断含有重复的负责人
-        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(reqDTO.getBugUsers())) {
             List<Long> users = reqDTO.getBugUsers().stream().map(BugUserReqDTO::getUserId).distinct().collect(Collectors.toList());
             if (users.size() < reqDTO.getBugUsers().size()) {
                 throw new ZSYServiceException("负责人重复");
@@ -456,7 +465,7 @@ public class ZSYBugService implements IZSYBugService {
 
         OnlineBugManage bugManage = new OnlineBugManage();
         bugManage.setId(id);
-        if (reqDTO.getTaskId()!=null){
+        if (reqDTO.getTaskId() != null) {
             bugManage.setTaskId(reqDTO.getTaskId());
         }
         bugManage.setCreateTime(reqDTO.getDiscoverTime());
@@ -478,12 +487,8 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setYear(localDateTime.getYear());
         bugManageMapper.updateBugManager(bugManage);
         bugUserMapper.deleteById(id);
-//        if (bugUserMapper.deleteById(id) == 0) {
-//            throw new ZSYServiceException("删除Bug用户失败");
-//        }
-
         // 插入Bug处理用户
-        if (reqDTO.getBugUsers() != null && reqDTO.getBugUsers().size() > 0) {
+        if (!CollectionUtils.isEmpty(reqDTO.getBugUsers())) {
             List<BugUser> bugUsers = Lists.newArrayList();
             reqDTO.getBugUsers().forEach(user -> {
                 BugUser bugUser = new BugUser();
@@ -509,7 +514,7 @@ public class ZSYBugService implements IZSYBugService {
             integral.setCreateTime(new Date());
             integral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
             String bugNoStr = getBugNoStr(bugManageBO.getBugNo());
-            integral.setDescription("线上任务bug: 编号 "+bugNoStr);
+            integral.setDescription("线上任务bug: 编号 " + bugNoStr);
             integral.setBugId(id);
             integralMapper.insert(integral);
 
@@ -519,14 +524,15 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 查询各个分类的线上bug数量
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     @Override
     public OnlineBugNumResDTO getDiffTypeBugNum(BugListReqDTO bugListReqDTO) {
-        Integer optimizationNum = bugManageMapper.selectCountByType(1,bugListReqDTO);
-        Integer assistanceNum = bugManageMapper.selectCountByType(2,bugListReqDTO);
-        Integer bugNum = bugManageMapper.selectCountByType(0,bugListReqDTO);
+        Integer optimizationNum = bugManageMapper.selectCountByType(1, bugListReqDTO);
+        Integer assistanceNum = bugManageMapper.selectCountByType(2, bugListReqDTO);
+        Integer bugNum = bugManageMapper.selectCountByType(0, bugListReqDTO);
         Integer totalNum = bugManageMapper.selectCountTotal();
         OnlineBugNumResDTO resDTO = new OnlineBugNumResDTO();
         resDTO.setAssistanceNum(assistanceNum);
@@ -538,43 +544,44 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 分页查询线上bug(旧数据)
-     * @author sch
+     *
      * @param bugListReqDTO
      * @return
+     * @author sch
      */
     @Override
     public PageInfo<OnlineBugResDTO> getOldBugManagePage(BugListReqDTO bugListReqDTO) {
-        PageHelper.startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1),ZSYConstants.PAGE_SIZE);
+        startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
         bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         Page<OnlineBugBO> onlineBugBOS = bugManageMapper.selectOldOnlineBugPage(bugListReqDTO);
         Page<OnlineBugResDTO> page = new Page<>();
-        if (!CollectionUtils.isEmpty(onlineBugBOS)){
-            BeanUtils.copyProperties(onlineBugBOS,page);
-            onlineBugBOS.stream().forEach(onlineBugBO -> {
+        if (!CollectionUtils.isEmpty(onlineBugBOS)) {
+            BeanUtils.copyProperties(onlineBugBOS, page);
+            onlineBugBOS.forEach(onlineBugBO -> {
                 OnlineBugResDTO onlineBugResDTO = new OnlineBugResDTO();
-                BeanUtils.copyProperties(onlineBugBO,onlineBugResDTO);
+                BeanUtils.copyProperties(onlineBugBO, onlineBugResDTO);
                 String developers = "";
                 String testers = "";
-                if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())){
+                if (!CollectionUtils.isEmpty(onlineBugBO.getUserIds())) {
                     for (Long userId : onlineBugBO.getUserIds()) {
                         User user = userMapper.selectById(userId);
-                        if (user.getDepartmentId().equals(87526048211664896L)){
-                            developers = developers  + user.getName()+ " ";
+                        if (user.getDepartmentId().equals(87526048211664896L)) {
+                            developers = developers + user.getName() + " ";
                         }
-                        if (user.getDepartmentId().equals(87526088225325056L)){
-                            testers = testers  + user.getName()+ " ";
+                        if (user.getDepartmentId().equals(87526088225325056L)) {
+                            testers = testers + user.getName() + " ";
                         }
                     }
                 }
                 onlineBugResDTO.setDevelopers(developers);
                 onlineBugResDTO.setTesters(testers);
-                if (onlineBugBO.getProjectId() != null){
+                if (onlineBugBO.getProjectId() != null) {
                     onlineBugResDTO.setDemandSystemName("知心慧学");
                 }
-                if (onlineBugBO.getProcessTime() != null && onlineBugBO.getProjectId() != null){
+                if (onlineBugBO.getProcessTime() != null && onlineBugBO.getProjectId() != null) {
                     onlineBugResDTO.setIsSolved(1);
                 }
-                if (onlineBugBO.getType() == null){
+                if (onlineBugBO.getType() == null) {
                     onlineBugResDTO.setType(0);
                 }
                 page.add(onlineBugResDTO);
@@ -585,44 +592,42 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 更新老数据状态为已解决
+     *
      * @author sch
      */
     @Override
     public void updateStatus() {
         List<OnlineBugManage> onlineBugManages = bugManageMapper.selectIsSolvedIsNull();
         List<OnlineBugManage> newList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(onlineBugManages)){
-            onlineBugManages.stream().forEach(onlineBugManage -> {
+        if (!CollectionUtils.isEmpty(onlineBugManages)) {
+            onlineBugManages.forEach(onlineBugManage -> {
                 onlineBugManage.setIsSolved(1);
                 newList.add(onlineBugManage);
             });
         }
-        if (!CollectionUtils.isEmpty(newList)){
-            if (bugManageMapper.updateStatusBatch(newList) == 0){
-                throw new ZSYServiceException("批量更新bug处理状态失败");
-            }
+        if (!CollectionUtils.isEmpty(newList)) {
+            bugManageMapper.updateStatusBatch(newList);
         }
     }
 
     /**
      * 各个系统bug分类柱状图
-     * @author sch
+     *
      * @param reqDTO 参数
+     * @author sch
      */
     @Override
     public List<SystemBugResDTO> getSystemHistogram(BugListReqDTO reqDTO) {
         List<SystemBugResDTO> list = new ArrayList<>();
-        //查询时间段内线上bug的系统数量
-//        List<Integer> systemIds = bugManageMapper.selectSystemsByTime(reqDTO.getStartTime(),reqDTO.getEndTime());
         //查询时间段内线上bug的业务组数量
-        List<Long> groupIds = bugManageMapper.selectGroupsByTime(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
+        List<Long> groupIds = bugManageMapper.selectGroupsByTime(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear());
         //查询时间段内线上bug各个系统对应的各个类型的数量
-        List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear());
-        bugTypeBOS = bugTypeBOS.stream().filter(item->item.getGroupId() != null).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(groupIds)){
+        List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear());
+        bugTypeBOS = bugTypeBOS.stream().filter(item -> item.getGroupId() != null).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(groupIds)) {
             for (Long groupId : groupIds) {
                 SystemBugResDTO systemBugResDTO = new SystemBugResDTO();
-                if (!CollectionUtils.isEmpty(bugTypeBOS)){
+                if (!CollectionUtils.isEmpty(bugTypeBOS)) {
                     systemBugResDTO.setGroupId(groupId);
                     systemBugResDTO.setBugNum(0);
                     systemBugResDTO.setOptimizationNum(0);
@@ -630,9 +635,9 @@ public class ZSYBugService implements IZSYBugService {
                     List<SystemBugTypeBO> bugBOS = bugTypeBOS.stream()
                             .filter(bugTypeBO -> bugTypeBO.getGroupId().equals(groupId) && bugTypeBO.getType() == ZSYBugType.BUG.getValue())
                             .collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(bugBOS)){
+                    if (!CollectionUtils.isEmpty(bugBOS)) {
                         SystemBugTypeBO bugBO = bugBOS.get(0);
-                        if (bugBO!=null){
+                        if (bugBO != null) {
                             systemBugResDTO.setBugNum(bugBO.getNum());
                             systemBugResDTO.setGroupName(bugBO.getGroupName());
                         }
@@ -642,9 +647,9 @@ public class ZSYBugService implements IZSYBugService {
                     List<SystemBugTypeBO> optimizationBOS = bugTypeBOS.stream()
                             .filter(bugTypeBO -> bugTypeBO.getGroupId().equals(groupId) && bugTypeBO.getType() == ZSYBugType.OPTIMIZATION.getValue())
                             .collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(optimizationBOS)){
+                    if (!CollectionUtils.isEmpty(optimizationBOS)) {
                         SystemBugTypeBO optimizationBO = optimizationBOS.get(0);
-                        if (optimizationBO!=null){
+                        if (optimizationBO != null) {
                             systemBugResDTO.setOptimizationNum(optimizationBO.getNum());
                             systemBugResDTO.setGroupName(optimizationBO.getGroupName());
                         }
@@ -654,9 +659,9 @@ public class ZSYBugService implements IZSYBugService {
                     List<SystemBugTypeBO> assistanceBOS = bugTypeBOS.stream()
                             .filter(bugTypeBO -> bugTypeBO.getGroupId().equals(groupId) && bugTypeBO.getType() == ZSYBugType.ASSISTANCE.getValue())
                             .collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(assistanceBOS)){
+                    if (!CollectionUtils.isEmpty(assistanceBOS)) {
                         SystemBugTypeBO assistanceBO = assistanceBOS.get(0);
-                        if (assistanceBO!=null){
+                        if (assistanceBO != null) {
                             systemBugResDTO.setAssistanceNum(assistanceBO.getNum());
                             systemBugResDTO.setGroupName(assistanceBO.getGroupName());
                         }
@@ -665,12 +670,6 @@ public class ZSYBugService implements IZSYBugService {
                 }
                 list.add(systemBugResDTO);
             }
-//            groupIds.forEach(groupId->{
-//                Integer bugNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.BUG.getValue());
-//                Integer optimizationNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.OPTIMIZATION.getValue());
-//                Integer assistanceNum = bugManageMapper.selectNumBySystemAndType(systemId,ZSYBugType.ASSISTANCE.getValue());
-
-//            });
 
         }
         return list;
@@ -678,30 +677,31 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 用户bug分类柱状图
-     * @author sch
+     *
      * @param reqDTO 参数
+     * @author sch
      */
     @Override
     public List<UserBugResDTO> getUserBugHistogram(BugListReqDTO reqDTO) {
         List<UserBugResDTO> list = new ArrayList<>();
         //查询时间段内bug人员
-        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear(),reqDTO.getGroupId());
+        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(), reqDTO.getGroupId());
         //查询时间段内用户参与的bug
-        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(),reqDTO.getEndTime(),reqDTO.getYear(),reqDTO.getGroupId());
-        if (!CollectionUtils.isEmpty(userIds)){
-            userIds.forEach(userId->{
+        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(), reqDTO.getGroupId());
+        if (!CollectionUtils.isEmpty(userIds)) {
+            userIds.forEach(userId -> {
                 UserBugResDTO userBugResDTO = new UserBugResDTO();
                 userBugResDTO.setUserId(userId);
                 userBugResDTO.setBugNum(0);
                 userBugResDTO.setAssistanceNum(0);
                 userBugResDTO.setOptimizationNum(0);
-                if (!CollectionUtils.isEmpty(userBugTypeBOS)){
+                if (!CollectionUtils.isEmpty(userBugTypeBOS)) {
                     List<UserBugTypeBO> bugBOS = userBugTypeBOS.stream()
                             .filter(userBugTypeBO -> userBugTypeBO.getUserId().equals(userId) && userBugTypeBO.getType() == ZSYBugType.BUG.getValue())
                             .collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(bugBOS)){
+                    if (!CollectionUtils.isEmpty(bugBOS)) {
                         UserBugTypeBO bugBO = bugBOS.get(0);
-                        if (bugBO!=null){
+                        if (bugBO != null) {
                             userBugResDTO.setUserName(bugBO.getUserName());
                             userBugResDTO.setBugNum(bugBO.getNum());
                         }
@@ -710,9 +710,9 @@ public class ZSYBugService implements IZSYBugService {
                     List<UserBugTypeBO> optimizationBOS = userBugTypeBOS.stream()
                             .filter(userBugTypeBO -> userBugTypeBO.getUserId().equals(userId) && userBugTypeBO.getType() == ZSYBugType.OPTIMIZATION.getValue())
                             .collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(optimizationBOS)){
+                    if (!CollectionUtils.isEmpty(optimizationBOS)) {
                         UserBugTypeBO optimizationBO = optimizationBOS.get(0);
-                        if (optimizationBO!=null){
+                        if (optimizationBO != null) {
                             userBugResDTO.setUserName(optimizationBO.getUserName());
                             userBugResDTO.setOptimizationNum(optimizationBO.getNum());
                         }
@@ -721,9 +721,9 @@ public class ZSYBugService implements IZSYBugService {
                     List<UserBugTypeBO> assistanceBOS = userBugTypeBOS.stream()
                             .filter(userBugTypeBO -> userBugTypeBO.getUserId().equals(userId) && userBugTypeBO.getType() == ZSYBugType.ASSISTANCE.getValue())
                             .collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(assistanceBOS)){
+                    if (!CollectionUtils.isEmpty(assistanceBOS)) {
                         UserBugTypeBO assistanceBO = assistanceBOS.get(0);
-                        if (assistanceBO!=null){
+                        if (assistanceBO != null) {
                             userBugResDTO.setUserName(assistanceBO.getUserName());
                             userBugResDTO.setAssistanceNum(assistanceBO.getNum());
                         }
@@ -737,42 +737,42 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 导入bug
+     *
      * @param uploadFile 文件
      */
     @Override
     @Transactional
     public void importBug(MultipartFile uploadFile) {
         String suffix = "." + getUploadSuffix(uploadFile.getOriginalFilename());
-        if (!isExcel(suffix)){
+        if (!isExcel(suffix)) {
             throw new ZSYServiceException("只能上传Excel");
         }
         Workbook book;
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat timeSDF2 = new SimpleDateFormat("yyyy.MM.dd");
         SimpleDateFormat dateSDF = new SimpleDateFormat("yyyy-MM-dd");
         try {
             File file = multipartFileToFile(uploadFile);
-            String file_dir = file.getAbsolutePath();
-            book = getExcelWorkbook(file_dir);
+            String fileDir = file.getAbsolutePath();
+            book = getExcelWorkbook(fileDir);
 
-            Sheet sheet = getSheetByNum(book,0);
+            Sheet sheet = getSheetByNum(book, 0);
             int lastRowNum = sheet.getLastRowNum();
 
             List<List<String>> bugList = new ArrayList<>();
-            for(int i = 1 ; i <= lastRowNum ; i++){
+            for (int i = 1; i <= lastRowNum; i++) {
                 List<String> bugFields = new ArrayList<>();
                 Row row;
                 row = sheet.getRow(i);
-                if( row != null ){
+                if (row != null) {
                     int lastCellNum = 12;
                     Cell cell;
-                    for( int j = 0 ; j <= lastCellNum ; j++ ){
+                    for (int j = 0; j <= lastCellNum; j++) {
                         cell = row.getCell(j);
-                        if( cell != null ){
+                        if (cell != null) {
                             cell.setCellType(CellType.STRING);
                             String cellValue = cell.getStringCellValue();
-                            if ((j == 1 || j == 11) && !Strings.isNullOrEmpty(cellValue)){
+                            if ((j == 1 || j == 11) && !Strings.isNullOrEmpty(cellValue)) {
                                 //将Excel表中的日期转换成字符串
                                 calendar.set(1900, 0, 1);
                                 calendar.add(Calendar.DATE, Integer.valueOf(cellValue) - 2);
@@ -785,7 +785,7 @@ public class ZSYBugService implements IZSYBugService {
                                 calendar.set(Calendar.MINUTE, minute);
                                 calendar.set(Calendar.SECOND, second);
                                 Date d = calendar.getTime();//Date
-                                cellValue = dateSDF.format(d)+" 00:00:00";
+                                cellValue = dateSDF.format(d) + " 00:00:00";
                             }
                             bugFields.add(cellValue);
                         }
@@ -793,8 +793,8 @@ public class ZSYBugService implements IZSYBugService {
                 }
                 bugList.add(bugFields);
             }
-            bugList = bugList.stream().filter(item->!CollectionUtils.isEmpty(item) && !Strings.isNullOrEmpty(item.get(0))).collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(bugList)){
+            bugList = bugList.stream().filter(item -> !CollectionUtils.isEmpty(item) && !Strings.isNullOrEmpty(item.get(0))).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(bugList)) {
                 throw new ZSYServiceException("暂无数据导入,请检查");
             }
             //查询所有用户
@@ -807,60 +807,57 @@ public class ZSYBugService implements IZSYBugService {
             Integer lastBugNo = lastBug.getBugNo();
             List<OnlineBugManage> bugManageList = new ArrayList<>();
             List<BugUser> bugUsers = new ArrayList<>();
-//            int i = 2;
             for (List<String> bugDetail : bugList) {
                 lastBugNo++;
-//                System.out.println("第"+ i+"行 = " + bugDetail.get(1));
-//                i++;
                 OnlineBugManage bugManage = new OnlineBugManage();
                 bugManage.setId(snowFlakeIDHelper.nextId());
                 bugManage.setBugNo(lastBugNo);
                 bugManage.setDescription(bugDetail.get(4));
                 bugManage.setCreateTime(timeSDF.parse(bugDetail.get(1)));
                 bugManage.setDiscoverTime(timeSDF.parse(bugDetail.get(1)));
-                if (!Strings.isNullOrEmpty(bugDetail.get(11))){
+                if (!Strings.isNullOrEmpty(bugDetail.get(11))) {
                     bugManage.setProcessTime(timeSDF.parse(bugDetail.get(11)));
                 }
                 bugManage.setOrigin(bugDetail.get(0));
                 bugManage.setAccountInfo(bugDetail.get(3));
                 bugManage.setDemandSystemId(1);
-                if (!Strings.isNullOrEmpty(bugDetail.get(6))){
-                    if (bugDetail.get(6).equals(ZSYBugType.BUG.getName())){
+                if (!Strings.isNullOrEmpty(bugDetail.get(6))) {
+                    if (bugDetail.get(6).equals(ZSYBugType.BUG.getName())) {
                         bugManage.setType(ZSYBugType.BUG.getValue());
-                    }else if (bugDetail.get(6).equals(ZSYBugType.OPTIMIZATION.getName())){
+                    } else if (bugDetail.get(6).equals(ZSYBugType.OPTIMIZATION.getName())) {
                         bugManage.setType(ZSYBugType.OPTIMIZATION.getValue());
-                    }else if (bugDetail.get(6).equals(ZSYBugType.ASSISTANCE.getName())){
+                    } else if (bugDetail.get(6).equals(ZSYBugType.ASSISTANCE.getName())) {
                         bugManage.setType(ZSYBugType.ASSISTANCE.getValue());
                     }
                 }
-                if (!Strings.isNullOrEmpty(bugDetail.get(7))){
-                    if (bugDetail.get(7).equals("已解决")){
+                if (!Strings.isNullOrEmpty(bugDetail.get(7))) {
+                    if (bugDetail.get(7).equals("已解决")) {
                         bugManage.setIsSolved(1);
-                    }else if (bugDetail.get(7).equals("未解决")){
+                    } else if (bugDetail.get(7).equals("未解决")) {
                         bugManage.setIsSolved(0);
-                    }else if (bugDetail.get(7).equals("暂搁置")){
+                    } else if (bugDetail.get(7).equals("暂搁置")) {
                         bugManage.setIsSolved(2);
                     }
                 }
                 bugManage.setRemark(bugDetail.get(12));
                 bugManage.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
-                if (!Strings.isNullOrEmpty(bugDetail.get(2))){
+                if (!Strings.isNullOrEmpty(bugDetail.get(2))) {
                     List<WorkGroup> collect = groupList.stream()
                             .filter(group -> group.getName().contains(bugDetail.get(2))).collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(collect) && collect.get(0) != null){
+                    if (!CollectionUtils.isEmpty(collect) && collect.get(0) != null) {
                         bugManage.setGroupId(collect.get(0).getId());
-                    }else {
+                    } else {
                         WorkGroup workGroup = groupList.stream()
                                 .filter(group -> group.getName().contains("家教生校")).collect(Collectors.toList()).get(0);
                         bugManage.setGroupId(workGroup.getId());
                     }
                 }
-                if (!Strings.isNullOrEmpty(bugDetail.get(5))){
-                    if (AffectScopeEnum.SINGLE.getName().equals(bugDetail.get(5))){
+                if (!Strings.isNullOrEmpty(bugDetail.get(5))) {
+                    if (AffectScopeEnum.SINGLE.getName().equals(bugDetail.get(5))) {
                         bugManage.setAffectScope(AffectScopeEnum.SINGLE.getValue());
-                    }else if (AffectScopeEnum.MULTIPLE.getName().equals(bugDetail.get(5))){
+                    } else if (AffectScopeEnum.MULTIPLE.getName().equals(bugDetail.get(5))) {
                         bugManage.setAffectScope(AffectScopeEnum.MULTIPLE.getValue());
-                    }else if (AffectScopeEnum.ALL.getName().equals(bugDetail.get(5))){
+                    } else if (AffectScopeEnum.ALL.getName().equals(bugDetail.get(5))) {
                         bugManage.setAffectScope(AffectScopeEnum.ALL.getValue());
                     }
                 }
@@ -873,13 +870,13 @@ public class ZSYBugService implements IZSYBugService {
                 String developerStr = bugDetail.get(9);
                 String testerStr = bugDetail.get(10);
                 List<BugUser> bugUserList = new ArrayList<>();
-                if (!Strings.isNullOrEmpty(productStr)){
+                if (!Strings.isNullOrEmpty(productStr)) {
                     bugUserList = getBugUserList(userMap, bugManage, productStr, bugUserList);
                 }
-                if (!Strings.isNullOrEmpty(developerStr)){
+                if (!Strings.isNullOrEmpty(developerStr)) {
                     bugUserList = getBugUserList(userMap, bugManage, developerStr, bugUserList);
                 }
-                if (!Strings.isNullOrEmpty(testerStr)){
+                if (!Strings.isNullOrEmpty(testerStr)) {
                     bugUserList = getBugUserList(userMap, bugManage, testerStr, bugUserList);
                 }
                 bugUsers.addAll(bugUserList);
@@ -910,13 +907,16 @@ public class ZSYBugService implements IZSYBugService {
 
     /**
      * 获取bug处理详情
+     *
      * @param id
      * @return
      */
     @Override
     public ZSYResult<BugDetailResDTO> getBugDetail(Long id) {
         BugManageBO bugManageBO = bugManageMapper.selectDetailById(id);
-        Optional.ofNullable(bugManageBO).orElseThrow(() -> new ZSYServiceException("无法找到Bug处理结果,id:" + id));
+        if (bugManageBO == null) {
+            throw new ZSYServiceException(String.format("无法找到Bug处理结果,id:{%s}", id));
+        }
         BugDetailResDTO bugDetailResDTO = new BugDetailResDTO();
         BeanUtils.copyProperties(bugManageBO, bugDetailResDTO);
 
@@ -929,7 +929,7 @@ public class ZSYBugService implements IZSYBugService {
             throw new ZSYServiceException("当前账号无权限");
         }
         OnlineBugManage bugManage = bugManageMapper.selectById(id);
-        if (bugManage==null){
+        if (bugManage == null) {
             throw new ZSYServiceException("当前bug不存在,请检查");
         }
         bugManage.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
@@ -939,43 +939,24 @@ public class ZSYBugService implements IZSYBugService {
 
         //将旧的Bug处理积分还原
         integralMapper.deleteByBugId(id);
-
-
-//        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
-//        userIntegrals.forEach(userIntegral -> {
-//            // 修改用户积分
-//            User userBug = userMapper.selectById(userIntegral.getUserId());
-//            BigDecimal currentIntegral = userBug.getIntegral();
-//            User userBO = new User();
-//            userBO.setId(userBug.getId());
-//            userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
-//            userMapper.updateSelectiveById(userBO);
-//            if (userIntegralMapper.deleteUserIntegral(id , userIntegral.getUserId()) == 0) {
-//                throw new ZSYServiceException("删除积分信息失败");
-//            }
-//        });
-//
-//        if (bugUserMapper.deleteById(id) == 0) {
-//            throw new ZSYServiceException("删除Bug用户处理记录失败");
-//        }
         bugUserMapper.deleteById(id);
     }
 
-    private String getBugNoStr(Integer bugNo){
+    private String getBugNoStr(Integer bugNo) {
         String bugNoStr = "";
-        if (bugNo!=null && bugNo>0){
-            if (bugNo<10){
-                bugNoStr = "00000"+bugNo;
-            }else if (bugNo<100){
-                bugNoStr = "0000"+bugNo;
-            }else if (bugNo<1000){
-                bugNoStr = "000"+bugNo;
-            }else if (bugNo<10000){
-                bugNoStr = "00"+bugNo;
-            }else if (bugNo<100000){
-                bugNoStr = "0"+bugNo;
-            }else {
-                bugNoStr = ""+bugNo;
+        if (bugNo != null && bugNo > 0) {
+            if (bugNo < 10) {
+                bugNoStr = "00000" + bugNo;
+            } else if (bugNo < 100) {
+                bugNoStr = "0000" + bugNo;
+            } else if (bugNo < 1000) {
+                bugNoStr = "000" + bugNo;
+            } else if (bugNo < 10000) {
+                bugNoStr = "00" + bugNo;
+            } else if (bugNo < 100000) {
+                bugNoStr = "0" + bugNo;
+            } else {
+                bugNoStr = "" + bugNo;
             }
         }
         return bugNoStr;
@@ -992,28 +973,23 @@ public class ZSYBugService implements IZSYBugService {
     }
 
     //判断是否是excel
-    public static boolean isExcel(String url){
-        Pattern p=Pattern.compile("\\.(xls|XLS)");
-        Matcher m=p.matcher(url);
-        if(m.find()){
-            return true;
-        }
-        return false;
+    public static boolean isExcel(String url) {
+        Pattern p = Pattern.compile("\\.(xls|XLS)");
+        Matcher m = p.matcher(url);
+        return m.find();
     }
 
     /**
      * MultipartFile 转 File
+     *
      * @param file
      * @throws Exception
      */
-    public static File multipartFileToFile( @RequestParam MultipartFile file ) throws Exception {
+    public static File multipartFileToFile(@RequestParam MultipartFile file) throws Exception {
 
         File toFile = null;
-        if(file.equals("")||file.getSize()<=0){
-            file = null;
-        }else {
-            InputStream ins = null;
-            ins = file.getInputStream();
+        if (file != null) {
+            InputStream ins = file.getInputStream();
             toFile = new File(file.getOriginalFilename());
             inputStreamToFile(ins, toFile);
             ins.close();
@@ -1022,14 +998,12 @@ public class ZSYBugService implements IZSYBugService {
     }
 
     public static void inputStreamToFile(InputStream ins, File file) {
-        try {
-            OutputStream os = new FileOutputStream(file);
-            int bytesRead = 0;
+        try (OutputStream os = new FileOutputStream(file);) {
+            int bytesRead;
             byte[] buffer = new byte[8192];
             while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
                 os.write(buffer, 0, bytesRead);
             }
-            os.close();
             ins.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1037,34 +1011,26 @@ public class ZSYBugService implements IZSYBugService {
     }
 
     public static Workbook getExcelWorkbook(String filePath) throws IOException {
-        Workbook book = null;
-        File file  = null;
-        FileInputStream fis = null;
-
-        try {
-            file = new File(filePath);
-            if(!file.exists()){
-                throw new RuntimeException("文件不存在");
-            }else{
-                fis = new FileInputStream(file);
-                book = WorkbookFactory.create(fis);
-            }
+        Workbook book;
+        File file;
+        file = new File(filePath);
+        if (!file.exists()) {
+            throw new ZSYServiceException("文件不存在");
+        }
+        try (FileInputStream fis = new FileInputStream(file);) {
+            book = WorkbookFactory.create(fis);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            if(fis != null){
-                fis.close();
-            }
+            throw new ZSYServiceException(e.getMessage());
         }
         return book;
     }
 
-    public static Sheet getSheetByNum(Workbook book,int number){
-        Sheet sheet = null;
+    public static Sheet getSheetByNum(Workbook book, int number) {
+        Sheet sheet;
         try {
             sheet = book.getSheetAt(number);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new ZSYServerException(e.getMessage());
         }
         return sheet;
     }

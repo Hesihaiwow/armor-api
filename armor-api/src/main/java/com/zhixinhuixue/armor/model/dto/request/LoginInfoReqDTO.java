@@ -12,7 +12,6 @@ public class LoginInfoReqDTO {
     private String userName;
 
     //用户权限
-//    private String[] permissions;
     private Integer userRole;
 
     private Long departmentId;

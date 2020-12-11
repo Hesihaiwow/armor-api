@@ -70,13 +70,13 @@ public class IntegralHistoryPageResDTO {
     }
 
     public String getGrade() {
-        if (grade!=null&&grade!="") {
-            double average = Double.valueOf(grade);
-            if (average>80) {
+        if (grade != null && !grade.equals("")) {
+            double average = Double.parseDouble(grade);
+            if (average > 80) {
                 return "A";
-            }else if(average>60){
+            } else if (average > 60) {
                 return "B";
-            }else{
+            } else {
                 return "C";
             }
         }

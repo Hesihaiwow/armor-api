@@ -1,16 +1,12 @@
 package com.zhixinhuixue.armor.dao;
 
 import com.github.pagehelper.Page;
-import com.zhixinhuixue.armor.model.bo.StatsUserWeekBO;
 import com.zhixinhuixue.armor.model.bo.TaskExpandBO;
 import com.zhixinhuixue.armor.model.pojo.TaskExpand;
-import com.zhixinhuixue.armor.model.pojo.TaskLog;
-import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Lang on 2017/11/28 0028.

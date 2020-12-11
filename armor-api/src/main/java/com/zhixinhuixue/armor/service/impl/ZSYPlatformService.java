@@ -12,11 +12,15 @@ import com.zhixinhuixue.armor.model.dto.response.PlatformResDTO;
 import com.zhixinhuixue.armor.model.pojo.Platform;
 import com.zhixinhuixue.armor.service.IZSYPlatformService;
 import com.zhixinhuixue.armor.source.enums.PlatformGroupEnum;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,12 +32,13 @@ import java.util.Random;
  */
 @Service
 public class ZSYPlatformService implements IZSYPlatformService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZSYPlatformService.class);
 
-    @Autowired
+    @Resource
     private IZSYPlatformMapper platformMapper;
-    @Autowired
+    @Resource
     private SnowFlakeIDHelper snowFlakeIDHelper;
-    @Autowired
+    @Resource
     private IZSYWeekPublishPlanPlatformMapper planPlatformMapper;
 
     /**
@@ -102,17 +107,24 @@ public class ZSYPlatformService implements IZSYPlatformService {
         List<Platform> platforms = platformMapper.selectList(group);
         List<PlatformResDTO> platformResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(platforms)){
-            platforms.forEach(platform -> {
+            Random random = null;
+            try {
+                random = SecureRandom.getInstanceStrong();
+            } catch (NoSuchAlgorithmException e) {
+                LOGGER.error(e.getMessage());
+            }
+            for (Platform platform : platforms) {
                 PlatformResDTO res = new PlatformResDTO();
                 res.setId(platform.getId());
                 res.setName(platform.getName());
-                Random random = new Random();
-                int i = random.nextInt(8);
-                res.setColor(i);
-                res.setGroupMark(platform.getGroupMark());
-                res.setGroupMarkText(PlatformGroupEnum.getName(platform.getGroupMark()));
-                platformResDTOList.add(res);
-            });
+                if (random != null){
+                    int i = random.nextInt(8);
+                    res.setColor(i);
+                    res.setGroupMark(platform.getGroupMark());
+                    res.setGroupMarkText(PlatformGroupEnum.getName(platform.getGroupMark()));
+                    platformResDTOList.add(res);
+                }
+            }
         }
         return platformResDTOList;
     }

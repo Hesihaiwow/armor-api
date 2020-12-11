@@ -2,7 +2,6 @@ package com.zhixinhuixue.armor.model.bo;
 
 import com.zhixinhuixue.armor.model.pojo.TaskExpand;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**

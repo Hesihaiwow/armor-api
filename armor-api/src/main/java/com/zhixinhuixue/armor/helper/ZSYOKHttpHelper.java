@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.helper;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.zhixinhuixue.armor.exception.ZSYApiException;
@@ -16,6 +15,9 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.alibaba.fastjson.JSON.parseObject;
+import static com.alibaba.fastjson.JSON.toJSONString;
 
 
 /**
@@ -335,13 +337,13 @@ public class ZSYOKHttpHelper {
      */
     public static String componentUrl(String url, List<OkHttpParam> params) {
         if (params != null && !params.isEmpty()) {
-            StringBuffer stringBuffer = new StringBuffer(url);
+            StringBuilder stringBuffer = new StringBuilder(url);
             if (!url.substring(url.length() - 1, url.length()).equals("?")) {
                 stringBuffer.append("?");
             }
             params.forEach(okHttpParam -> stringBuffer.append(String.format("%s=%s&", okHttpParam.getKey(), okHttpParam.getValue())));
             url = stringBuffer.toString().substring(0, stringBuffer.toString().length() - 1);
-            logger.info("请求参数:{}", JSONArray.toJSONString(params));
+            logger.info("请求参数:{}", toJSONString(params));
         }
         return url;
     }
@@ -434,7 +436,7 @@ public class ZSYOKHttpHelper {
      * @return
      */
     public static ZSYOKHttpHelper.IMSApiResult convertAPICallBack(String result) {
-        JSONObject resultObj = JSONObject.parseObject(result);
+        JSONObject resultObj = parseObject(result);
         Object errCode = resultObj.get("errCode");
         if (errCode == null || !String.valueOf(errCode).equals("00")) {
             logger.info("调用远程接口失败：{}", resultObj.getString("errMsg"));

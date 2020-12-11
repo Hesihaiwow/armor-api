@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * @author SCH

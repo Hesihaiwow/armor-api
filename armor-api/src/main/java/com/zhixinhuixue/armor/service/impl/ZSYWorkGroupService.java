@@ -51,25 +51,26 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
 
     /**
      * 新增团队
-     * @author sch
+     *
      * @param reqDTO 参数
+     * @author sch
      */
     @Override
     @Transactional
     public void addGroup(AddWorkGroupReqDTO reqDTO) {
         //根据名称查询,确保没有重名
         WorkGroup existGroup = groupMapper.selectByName(reqDTO.getName().trim());
-        if (existGroup != null && existGroup.getIsDelete().equals(0)){
+        if (existGroup != null && existGroup.getIsDelete().equals(0)) {
             throw new ZSYServiceException("当前团队名已存在,请修改名称");
         }
         User user = userMapper.selectById(reqDTO.getLeader());
-        if (user == null){
+        if (user == null) {
             throw new ZSYServiceException("设置的团队负责人不存在,请检查");
         }
-        if (user.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+        if (user.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()) {
             throw new ZSYServiceException("设置的团队负责人已删除,请检查");
         }
-        if (user.getStatus() != ZSYUserStatus.NORMAL.getValue()){
+        if (user.getStatus() != ZSYUserStatus.NORMAL.getValue()) {
             throw new ZSYServiceException("设置的团队负责人已冻结,请检查");
         }
         WorkGroup workGroup = new WorkGroup();
@@ -83,7 +84,7 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         workGroup.setUpdateTime(new Date());
         workGroup.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
 
-        if (groupMapper.insertGroup(workGroup) == 0){
+        if (groupMapper.insertGroup(workGroup) == 0) {
             throw new ZSYServiceException("新增团队失败");
         }
 
@@ -96,27 +97,28 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
 
     /**
      * 编辑团队
-     * @author sch
+     *
      * @param reqDTO 参数
+     * @author sch
      */
     @Override
     @Transactional
     public void updateGroup(EditWorkGroupReqDTO reqDTO) {
         WorkGroup workGroup = groupMapper.selectById(reqDTO.getId());
-        if (workGroup == null){
+        if (workGroup == null) {
             throw new ZSYServiceException("当前团队不存在,请检查");
         }
-        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()) {
             throw new ZSYServiceException("当前团队已删除,请检查");
         }
         User user = userMapper.selectById(reqDTO.getLeader());
-        if (user == null){
+        if (user == null) {
             throw new ZSYServiceException("设置的团队负责人不存在,请检查");
         }
-        if (user.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+        if (user.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()) {
             throw new ZSYServiceException("设置的团队负责人已删除,请检查");
         }
-        if (user.getStatus() != ZSYUserStatus.NORMAL.getValue()){
+        if (user.getStatus() != ZSYUserStatus.NORMAL.getValue()) {
             throw new ZSYServiceException("设置的团队负责人已冻结,请检查");
         }
         Long oldLeader = workGroup.getLeader();
@@ -126,11 +128,11 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         workGroup.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
         workGroup.setUpdateTime(new Date());
 
-        if (groupMapper.updateById(workGroup) == 0){
+        if (groupMapper.updateById(workGroup) == 0) {
             throw new ZSYServiceException("更新团队失败");
         }
 
-        if (!reqDTO.getLeader().equals(oldLeader)){
+        if (!reqDTO.getLeader().equals(oldLeader)) {
             UserGroup userGroup = new UserGroup();
             userGroup.setUgId(snowFlakeIDHelper.nextId());
             userGroup.setGroupId(workGroup.getId());
@@ -142,55 +144,48 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
 
     /**
      * 删除团队
-     * @author sch
+     *
      * @param id id
+     * @author sch
      */
     @Override
     @Transactional
     public void deleteGroup(Long id) {
         WorkGroup workGroup = groupMapper.selectById(id);
-        if (workGroup == null){
+        if (workGroup == null) {
             throw new ZSYServiceException("当前团队不存在,请检查");
         }
-        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()) {
             throw new ZSYServiceException("当前团队已删除,请检查");
         }
         //查询是否有用户在当前团队中
         List<User> users = userMapper.selectUsersByGroup(id);
-        if (!CollectionUtils.isEmpty(users)){
-            if(users.size() > 1 ){
+        if (!CollectionUtils.isEmpty(users)) {
+            if (users.size() > 1) {
                 throw new ZSYServiceException("当前团队内有用户存在,请先调整用户团队,再进行删除");
-            }else {
-                if(!users.get(0).getId().equals(workGroup.getLeader())){
+            } else {
+                if (!users.get(0).getId().equals(workGroup.getLeader())) {
                     throw new ZSYServiceException("当前团队内有用户存在,且不为组内leader,请先调整用户团队,再进行删除");
                 }
             }
         }
-//        workGroup.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
-//        workGroup.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
-//        workGroup.setUpdateTime(new Date());
-//
-//        if (groupMapper.updateById(workGroup) == 0){
-//            throw new ZSYServiceException("删除团队失败");
-//        }
-
-        if(groupMapper.deleteById(id) != 1){
+        if (groupMapper.deleteById(id) != 1) {
             throw new ZSYServiceException("删除团队失败");
-        };
-
+        }
         userGroupMapper.deleteByGroup(id);
     }
 
     /**
      * 查询团队列表
+     *
      * @author sch
      */
     @Override
     public List<WorkGroupListResDTO> getList() {
         List<WorkGroup> groups = groupMapper.selectList();
         List<WorkGroupListResDTO> resDTOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(groups)){
-            groups.forEach(group->{
+        if (!CollectionUtils.isEmpty(groups)) {
+            groups.forEach(group -> {
                 WorkGroupListResDTO resDTO = new WorkGroupListResDTO();
                 resDTO.setId(group.getId());
                 resDTO.setName(group.getName());
@@ -202,22 +197,24 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
 
     /**
      * 查询团队详情
-     * @author sch
+     *
      * @param id id
+     * @author sch
      */
     @Override
     public WorkGroupDetailResDTO getGroupDetail(Long id) {
         WorkGroupBO workGroupBO = groupMapper.selectDetailById(id);
-        if (workGroupBO == null){
+        if (workGroupBO == null) {
             throw new ZSYServiceException("当前团队不存在,请检查");
         }
         WorkGroupDetailResDTO resDTO = new WorkGroupDetailResDTO();
-        BeanUtils.copyProperties(workGroupBO,resDTO);
+        BeanUtils.copyProperties(workGroupBO, resDTO);
         return resDTO;
     }
 
     /**
      * 树结构
+     *
      * @author sch
      */
     @Override
@@ -227,7 +224,7 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
         resDTO.setId(1L);
         resDTO.setLabel("团队");
         List<WorkGroupTreeResDTO> children = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(workGroups)){
+        if (!CollectionUtils.isEmpty(workGroups)) {
             workGroups.forEach(workGroup -> {
                 WorkGroupTreeResDTO dto = new WorkGroupTreeResDTO();
                 dto.setId(workGroup.getId());
@@ -242,25 +239,26 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
 
     /**
      * 添加成员
-     * @author sch
+     *
      * @param reqDTO 参数
+     * @author sch
      */
     @Override
     @Transactional
     public void addGroupUsers(AddGroupUserReqDTO reqDTO) {
         WorkGroup workGroup = groupMapper.selectById(reqDTO.getGroupId());
-        if (workGroup == null){
+        if (workGroup == null) {
             throw new ZSYServiceException("当前团队不存在,请检查");
         }
-        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()) {
             throw new ZSYServiceException("当前团队已删除,请检查");
         }
 
         List<Long> userIds = reqDTO.getUserIds();
         //删除原来的团队_成员关系
         userGroupMapper.deleteByGroup(reqDTO.getGroupId());
-        if (!CollectionUtils.isEmpty(userIds)){
-            if (!userIds.contains(workGroup.getLeader())){
+        if (!CollectionUtils.isEmpty(userIds)) {
+            if (!userIds.contains(workGroup.getLeader())) {
                 userIds.add(workGroup.getLeader());
             }
             List<UserGroup> collect = userIds.stream().map(userId -> {
@@ -271,7 +269,7 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
                 return userGroup;
             }).collect(Collectors.toList());
             userGroupMapper.insertBatch(collect);
-        }else {
+        } else {
             UserGroup userGroup = new UserGroup();
             userGroup.setUgId(snowFlakeIDHelper.nextId());
             userGroup.setGroupId(reqDTO.getGroupId());
@@ -282,24 +280,25 @@ public class ZSYWorkGroupService implements IZSYWorkGroupService {
 
     /**
      * 查询团队成员
+     *
      * @param groupId 团队id
      * @return List<EffectUserResDTO>
      */
     @Override
     public List<EffectUserResDTO> getGroupUsers(Long groupId) {
         WorkGroup workGroup = groupMapper.selectById(groupId);
-        if (workGroup == null){
+        if (workGroup == null) {
             throw new ZSYServiceException("当前团队不存在,请检查");
         }
-        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()){
+        if (workGroup.getIsDelete() == ZSYDeleteStatus.DELETED.getValue()) {
             throw new ZSYServiceException("当前团队已删除,请检查");
         }
         List<User> users = userMapper.selectUsersByGroup(groupId);
         List<EffectUserResDTO> list = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(users)){
+        if (!CollectionUtils.isEmpty(users)) {
             list = users.stream().map(user -> {
                 EffectUserResDTO resDTO = new EffectUserResDTO();
-                BeanUtils.copyProperties(user,resDTO);
+                BeanUtils.copyProperties(user, resDTO);
                 return resDTO;
             }).collect(Collectors.toList());
         }

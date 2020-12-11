@@ -51,10 +51,6 @@ public class ZSYStatsService implements IZSYStatsService {
     @Resource
     private IZSYSignInMapper signInMapper;
     @Resource
-    private IZSYWorkGroupMapper workGroupMapper;
-    @Resource
-    private IZSYUserMapper userMapper;
-    @Resource
     private IZSYUserLeaveMapper userLeaveMapper;
 
     @Override

@@ -1,20 +1,22 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
+ * 新增需求所属项目
  * Created by SCH on 2018-10-26
  */
-@ApiModel("新增需求所属项目")
 public class DemandProjectReqDTO {
 
-    @ApiModelProperty("需求id")
+    /**
+     * 需求id
+     */
     @NotBlank(message = "需求id不能为空")
     private String id;
 
-    @ApiModelProperty("项目id")
+    /**
+     * 项目id
+     */
     @NotBlank(message = "项目id不能为空")
     private String projectId;
 

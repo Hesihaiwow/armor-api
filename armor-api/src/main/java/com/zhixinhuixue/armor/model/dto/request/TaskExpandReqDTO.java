@@ -3,7 +3,6 @@ package com.zhixinhuixue.armor.model.dto.request;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Lang on 2017/12/7 0007.

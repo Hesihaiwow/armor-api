@@ -1,6 +1,5 @@
 package com.zhixinhuixue.armor.model.pojo;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 

@@ -1,50 +1,40 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
 /**
  * @author sch
  * @time 2019/11/26 16:08
  */
-@ApiModel
 public class MyBugResDTO {
     /**
      * 分派给我的bug(未解决)
      */
-    @ApiModelProperty("分派给我的bug(未解决)")
     private List<TaskBugPageResDTO> solvingBugList;
 
     /**
      * 已解决的bug
      */
-    @ApiModelProperty("已解决的bug")
     private List<TaskBugPageResDTO> solvedBugList;
 
     /**
      * 我报告的bug
      */
-    @ApiModelProperty("我报告的bug")
     private List<TaskBugPageResDTO> reportBugList;
 
     /**
      * 我报告的bug数量
      */
-    @ApiModelProperty("我报告的bug数量")
     private Integer reportBugNum;
 
     /**
      * 未解决的bug数量
      */
-    @ApiModelProperty("未解决的bug数量")
     private Integer solvingBugNum;
 
     /**
      * 已解决的bug数量
      */
-    @ApiModelProperty("已解决的bug数量")
     private Integer solvedBugNum;
 
     public Integer getReportBugNum() {

@@ -12,9 +12,9 @@ import com.zhixinhuixue.armor.model.pojo.Project;
 import com.zhixinhuixue.armor.service.IZSYProjectService;
 import com.zhixinhuixue.armor.source.enums.ZSYUserRole;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,13 +25,11 @@ import java.util.List;
 @Service
 public class ZSYProjectService implements IZSYProjectService {
 
-    @Autowired
+    @Resource
     private IZSYProjectMapper projectMapper;
-
-    @Autowired
+    @Resource
     private IZSYTaskMapper taskMapper;
-
-    @Autowired
+    @Resource
     private SnowFlakeIDHelper snowFlakeIDHelper;
 
     /**
@@ -44,7 +42,7 @@ public class ZSYProjectService implements IZSYProjectService {
         List<Project> projects = projectMapper.selectAll(ZSYTokenRequestContext.get().getDepartmentId());
         List<ProjectResDTO> projectDTOS = new ArrayList<>();
 
-        projects.stream().forEach(project -> {
+        projects.forEach(project -> {
             ProjectResDTO projectResDTO = new ProjectResDTO();
             BeanUtils.copyProperties(project, projectResDTO);
             projectDTOS.add(projectResDTO);

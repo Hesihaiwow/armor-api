@@ -83,7 +83,7 @@ public class ZSYDeptService implements IZSYDeptService {
     public List<DeptResDTO> getAllDept() {
         List<DeptBo> deptBos = departmentMapper.getAllDept();
         List<DeptResDTO> deptResDTOS =  Lists.newArrayList();
-        deptBos.stream().forEach(deptBo->{
+        deptBos.forEach(deptBo->{
                 DeptResDTO deptResDTO = new DeptResDTO();
                 BeanUtils.copyProperties(deptBo,deptResDTO);
                 deptResDTO.setLabel(deptBo.getName());
@@ -134,7 +134,7 @@ public class ZSYDeptService implements IZSYDeptService {
      */
     private List<DeptResDTO> deepCopy(List<DeptBo> children){
         List<DeptResDTO> childDept = new ArrayList<>();
-        children.stream().forEach(child->{
+        children.forEach(child->{
             DeptResDTO tmp = new DeptResDTO();
             BeanUtils.copyProperties(child,tmp);
             tmp.setLabel(child.getName());
@@ -151,7 +151,7 @@ public class ZSYDeptService implements IZSYDeptService {
      */
     private List<DeptLevelResDTO> deepLevelCopy(int level,List<DeptBo> children){
         List<DeptLevelResDTO> childDept = new ArrayList<>();
-        children.stream().forEach(child->{
+        children.forEach(child->{
             DeptLevelResDTO tmp = new DeptLevelResDTO();
             tmp.setId(child.getId());
             StringBuilder sb = new StringBuilder();

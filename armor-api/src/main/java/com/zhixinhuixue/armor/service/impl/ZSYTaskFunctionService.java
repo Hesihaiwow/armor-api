@@ -9,10 +9,10 @@ import com.zhixinhuixue.armor.model.dto.response.UserAndLevelResDTO;
 import com.zhixinhuixue.armor.service.IZSYTaskFunctionService;
 import com.zhixinhuixue.armor.source.enums.FunctionAction;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +22,9 @@ import java.util.List;
  */
 @Service
 public class ZSYTaskFunctionService implements IZSYTaskFunctionService {
-    @Autowired
+    @Resource
     private IZSYTaskFunctionMapper functionMapper;
-    @Autowired
+    @Resource
     private IZSYTaskTempFunctionMapper tempFunctionMapper;
 
 
@@ -32,12 +32,12 @@ public class ZSYTaskFunctionService implements IZSYTaskFunctionService {
     public List<TaskFunctionListResDTO> getFunctionListByTask(Long taskId) {
         List<TaskFunctionBO> functions = functionMapper.selectBOListByTaskId(taskId);
         List<TaskFunctionListResDTO> list = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(functions)){
-            functions.forEach(function->{
+        if (!CollectionUtils.isEmpty(functions)) {
+            functions.forEach(function -> {
                 TaskFunctionListResDTO resDTO = new TaskFunctionListResDTO();
-                BeanUtils.copyProperties(function,resDTO);
+                BeanUtils.copyProperties(function, resDTO);
                 String actionName = FunctionAction.getName(function.getAction());
-                String functionStr = "【"+actionName+"】"+function.getFunction()+"【"+function.getModuleName()+"】";
+                String functionStr = "【" + actionName + "】" + function.getFunction() + "【" + function.getModuleName() + "】";
                 resDTO.setFunctionStr(functionStr);
                 list.add(resDTO);
             });
@@ -47,6 +47,7 @@ public class ZSYTaskFunctionService implements IZSYTaskFunctionService {
 
     /**
      * 根据功能点查询相关人员等级
+     *
      * @param functionId
      * @return
      */
@@ -54,20 +55,20 @@ public class ZSYTaskFunctionService implements IZSYTaskFunctionService {
     public List<UserAndLevelResDTO> getUserAndLevel(Long functionId) {
         List<UserAndLevelBO> userAndLevelBOS = tempFunctionMapper.selectUserAndLevelByFunction(functionId);
         List<UserAndLevelResDTO> userAndLevelResDTOS = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(userAndLevelBOS)){
+        if (!CollectionUtils.isEmpty(userAndLevelBOS)) {
             userAndLevelBOS.forEach(userAndLevelBO -> {
                 UserAndLevelResDTO userAndLevelResDTO = new UserAndLevelResDTO();
-                BeanUtils.copyProperties(userAndLevelBO,userAndLevelResDTO);
+                BeanUtils.copyProperties(userAndLevelBO, userAndLevelResDTO);
                 Integer level2 = userAndLevelBO.getLevel();
-                if (level2 == 1){
+                if (level2 == 1) {
                     userAndLevelResDTO.setLevelName("一级");
-                }else if(level2 == 2){
+                } else if (level2 == 2) {
                     userAndLevelResDTO.setLevelName("二级");
-                }else if (level2 == 3){
+                } else if (level2 == 3) {
                     userAndLevelResDTO.setLevelName("三级");
-                }else if (level2 == 4){
+                } else if (level2 == 4) {
                     userAndLevelResDTO.setLevelName("四级");
-                }else if (level2 == 5){
+                } else if (level2 == 5) {
                     userAndLevelResDTO.setLevelName("五级");
                 }
                 userAndLevelResDTOS.add(userAndLevelResDTO);

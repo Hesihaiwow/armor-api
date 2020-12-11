@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.model.bo;
 
 import com.zhixinhuixue.armor.model.pojo.TaskTemp;
-import com.zhixinhuixue.armor.model.pojo.TaskTempFunction;
 import com.zhixinhuixue.armor.model.pojo.UserWeekTemp;
 
 import java.util.List;

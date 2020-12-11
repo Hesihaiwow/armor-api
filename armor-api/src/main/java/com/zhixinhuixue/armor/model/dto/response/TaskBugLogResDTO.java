@@ -1,38 +1,30 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.Date;
 
 /**
  * @author sch
  * @time 2019/10/14 13:16
  */
-@ApiModel
 public class TaskBugLogResDTO {
     /**
      * id
      */
-    @ApiModelProperty("日志id")
     private Long tblId;
 
     /**
      * bugid
      */
-    @ApiModelProperty("任务bugId")
     private Long tbId;
 
     /**
      * 内容
      */
-    @ApiModelProperty("日志内容 ")
     private String content;
 
     /**
      * 时间
      */
-    @ApiModelProperty("时间")
     private Date createTime;
 
     public Long getTblId() {

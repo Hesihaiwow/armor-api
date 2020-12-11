@@ -21,10 +21,10 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -40,41 +40,39 @@ import java.util.stream.Collectors;
 @Service
 public class ZSYDataService implements IZSYDataService {
 
-    @Autowired
+    @Resource
     private IZSYDataMapper dataMapper;
-
-    @Autowired
+    @Resource
     private IZSYTaskMapper taskMapper;
-
-    @Autowired
+    @Resource
     private IZSYUserMapper userMapper;
-
-    @Autowired
+    @Resource
     private IZSYUserWeekMapper userWeekMapper;
-
-    @Autowired
+    @Resource
     private IZSYUserLeaveMapper userLeaveMapper;
-
-    @Autowired
+    @Resource
     private IZSYTaskReviewMapper reviewMapper;
-    @Autowired
+    @Resource
     private IZSYTaskSummaryMapper summaryMapper;
-    @Autowired
+    @Resource
     private ZSYUFileProperties uFileProperties;
+
     private static final Logger logger = LoggerFactory.getLogger(ZSYDataService.class);
+
     /**
      * 年度需求总数(学管端,其他)
-     * @Author sch
+     *
      * @param reqDTO
      * @return
+     * @Author sch
      */
     @Override
     public AnnualFeedbackResDTO getAnnualFeedbackData(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
 
-        Integer fromCoachNum = dataMapper.selectAnnualFeedbackFromCoach(beginTime,endTime);
-        Integer otherNum = dataMapper.selectAnnualFeedbackOhter(beginTime,endTime);
+        Integer fromCoachNum = dataMapper.selectAnnualFeedbackFromCoach(beginTime, endTime);
+        Integer otherNum = dataMapper.selectAnnualFeedbackOhter(beginTime, endTime);
         Integer totalNum = (fromCoachNum != null ? fromCoachNum : 0) + (otherNum != null ? otherNum : 0);
         AnnualFeedbackResDTO resDTO = new AnnualFeedbackResDTO();
         resDTO.setFromCoachNum(fromCoachNum != null ? fromCoachNum : 0);
@@ -85,16 +83,17 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度任务总数(多人任务,个人任务)
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public AnnualTaskResDTO getAnnualTaskData(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer multiTaskNum = dataMapper.selectAnnualMultiTaskNum(beginTime,endTime);
-        Integer singleTaskNum = dataMapper.selectAnnualSingleTaskNum(beginTime,endTime);
+        Integer multiTaskNum = dataMapper.selectAnnualMultiTaskNum(beginTime, endTime);
+        Integer singleTaskNum = dataMapper.selectAnnualSingleTaskNum(beginTime, endTime);
         Integer totalNum = (multiTaskNum != null ? multiTaskNum : 0) + (singleTaskNum != null ? singleTaskNum : 0);
         AnnualTaskResDTO annualTaskResDTO = new AnnualTaskResDTO();
         annualTaskResDTO.setMultiTaskNum(multiTaskNum != null ? multiTaskNum : 0);
@@ -105,24 +104,25 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度需求各个分类数量
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public AnnualFeedbackInTypeResDTO getAnnualFbTypeNum(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer allFbNum = dataMapper.selectAnnualAllFbNum(beginTime,endTime);
-        Integer personSuggestion = dataMapper.selectDiffFbNumByType(beginTime,endTime,ZSYFeedbackType.PERSON_SUGGESTION.getValue());
+        Integer allFbNum = dataMapper.selectAnnualAllFbNum(beginTime, endTime);
+        Integer personSuggestion = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.PERSON_SUGGESTION.getValue());
         Integer marketDemand = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.MARKET_DEMAND.getValue());
         Integer companyDecision = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.COMPANY_DECISION.getValue());
         AnnualFeedbackInTypeResDTO resDTO = new AnnualFeedbackInTypeResDTO();
-        if (allFbNum == (personSuggestion+marketDemand+companyDecision)){
+        if (allFbNum == (personSuggestion + marketDemand + companyDecision)) {
             resDTO.setPersonSuggestion(personSuggestion != null ? personSuggestion : 0);
             resDTO.setMarketDemand(marketDemand != null ? marketDemand : 0);
             resDTO.setCompanyDecision(companyDecision != null ? companyDecision : 0);
-        }else {
+        } else {
             resDTO.setPersonSuggestion(personSuggestion != null ? personSuggestion : 0);
             resDTO.setMarketDemand(allFbNum - personSuggestion - companyDecision);
             resDTO.setCompanyDecision(companyDecision != null ? companyDecision : 0);
@@ -132,20 +132,21 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度需求最多和最少的月份
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public MaxAndMinFbMonthResDTO getAnnualFbMaxAndMinMonth(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<FeedbackMonthBO> feedbackMonthBOS = dataMapper.selectFbMonthList(beginTime,endTime);
+        List<FeedbackMonthBO> feedbackMonthBOS = dataMapper.selectFbMonthList(beginTime, endTime);
         MaxAndMinFbMonthResDTO resDTO = new MaxAndMinFbMonthResDTO();
-        if (!CollectionUtils.isEmpty(feedbackMonthBOS)){
+        if (!CollectionUtils.isEmpty(feedbackMonthBOS)) {
             List<FeedbackMonthBO> collect = feedbackMonthBOS.stream().sorted(Comparator.comparing(FeedbackMonthBO::getFeedbackNum)).collect(Collectors.toList());
-            resDTO.setMaxFbMonth(collect.get(collect.size()-1).getMonth());
-            resDTO.setMaxFbNum(collect.get(collect.size()-1).getFeedbackNum());
+            resDTO.setMaxFbMonth(collect.get(collect.size() - 1).getMonth());
+            resDTO.setMaxFbNum(collect.get(collect.size() - 1).getFeedbackNum());
             resDTO.setMinFbMonth(collect.get(0).getMonth());
             resDTO.setMinFbNum(collect.get(0).getFeedbackNum());
         }
@@ -155,26 +156,27 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度任务总耗时,耗时最长(最短)任务
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public TaskTotalHoursResDTO getAnnualTaskTotalHours(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer totalHours = dataMapper.selectTotalHours(beginTime,endTime);
-        Long mostTimeTaskId = dataMapper.selectMostTimeTaskId(beginTime,endTime);
-        Long lessTimeTaskId = dataMapper.selectLessTimeTaskId(beginTime,endTime);
+        Integer totalHours = dataMapper.selectTotalHours(beginTime, endTime);
+        Long mostTimeTaskId = dataMapper.selectMostTimeTaskId(beginTime, endTime);
+        Long lessTimeTaskId = dataMapper.selectLessTimeTaskId(beginTime, endTime);
         Task mostTimeTask = new Task();
         Task lessTimeTask = new Task();
         Float mostTime = 0f;
         Float lessTime = 0f;
-        if (mostTimeTaskId != null){
+        if (mostTimeTaskId != null) {
             mostTimeTask = taskMapper.selectByPrimaryKey(mostTimeTaskId);
             mostTime = dataMapper.selectTaskTimeById(mostTimeTaskId);
         }
-        if (lessTimeTaskId != null){
+        if (lessTimeTaskId != null) {
             lessTimeTask = taskMapper.selectByPrimaryKey(lessTimeTaskId);
             lessTime = dataMapper.selectTaskTimeById(lessTimeTaskId);
         }
@@ -191,21 +193,22 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度各个项目任务数
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public List<ProjectTaskResDTO> getAnnualProjectTaskNum(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<ProjectTaskBO> projectTaskBOS = dataMapper.selectProjectTaskList(beginTime,endTime);
+        List<ProjectTaskBO> projectTaskBOS = dataMapper.selectProjectTaskList(beginTime, endTime);
         List<ProjectTaskResDTO> projectTaskResDTOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(projectTaskBOS)){
-            BeanUtils.copyProperties(projectTaskBOS,projectTaskResDTOList);
-            projectTaskBOS.stream().forEach(projectTaskBO -> {
+        if (!CollectionUtils.isEmpty(projectTaskBOS)) {
+            BeanUtils.copyProperties(projectTaskBOS, projectTaskResDTOList);
+            projectTaskBOS.forEach(projectTaskBO -> {
                 ProjectTaskResDTO resDTO = new ProjectTaskResDTO();
-                BeanUtils.copyProperties(projectTaskBO,resDTO);
+                BeanUtils.copyProperties(projectTaskBO, resDTO);
                 projectTaskResDTOList.add(resDTO);
             });
         }
@@ -214,6 +217,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度任务数(优先级)
+     *
      * @param reqDTO
      * @return
      */
@@ -221,7 +225,7 @@ public class ZSYDataService implements IZSYDataService {
     public DiffPriorityTaskResDTO getAnnualTaskByPriority(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer normalNum = dataMapper.selectPriorityTaskNum(beginTime,endTime, ZSYTaskPriority.NORMAL.getValue());
+        Integer normalNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.NORMAL.getValue());
         Integer urgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.URGENT.getValue());
         Integer veryUrgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.VERY_URGENT.getValue());
         DiffPriorityTaskResDTO resDTO = new DiffPriorityTaskResDTO();
@@ -234,16 +238,17 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度请假次数,总时长
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public AnnualVacationResDTO getAnnualVacationCount(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer vacationCount = dataMapper.selectVacationCount(beginTime,endTime);
-        Float vacationTime = dataMapper.selectVacationTime(beginTime,endTime);
+        Integer vacationCount = dataMapper.selectVacationCount(beginTime, endTime);
+        Float vacationTime = dataMapper.selectVacationTime(beginTime, endTime);
         AnnualVacationResDTO resDTO = new AnnualVacationResDTO();
         resDTO.setVacationCount(vacationCount != null ? vacationCount : 0);
         resDTO.setVacationTime(vacationTime != null ? vacationTime : 0f);
@@ -253,26 +258,27 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度请假每月次数及时长
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public EveryMonthVacationResDTO getEveryMonthVacation(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<String> monthAndCountAndTimeList = dataMapper.getMonthAndCountAndTimeList(beginTime,endTime);
-        Map<Integer,String> treeMap = new TreeMap<>();
+        List<String> monthAndCountAndTimeList = dataMapper.getMonthAndCountAndTimeList(beginTime, endTime);
+        Map<Integer, String> treeMap = new TreeMap<>();
         List<Integer> counts = new ArrayList<>();
         List<Float> times = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(monthAndCountAndTimeList)){
-            monthAndCountAndTimeList.stream().forEach(monthAndCountAndTime ->{
+        if (!CollectionUtils.isEmpty(monthAndCountAndTimeList)) {
+            monthAndCountAndTimeList.forEach(monthAndCountAndTime -> {
                 String[] split = monthAndCountAndTime.split("-");
-                treeMap.put(Integer.valueOf(split[0]),split[1]+"-"+split[2]);
+                treeMap.put(Integer.valueOf(split[0]), split[1] + "-" + split[2]);
             });
-            for (int i = 1;i <= 12;i ++){
-                if (!treeMap.keySet().contains(i)){
-                    treeMap.put(i,0+"-"+0);
+            for (int i = 1; i <= 12; i++) {
+                if (!treeMap.keySet().contains(i)) {
+                    treeMap.put(i, 0 + "-" + 0);
                 }
             }
             for (Map.Entry<Integer, String> entry : treeMap.entrySet()) {
@@ -290,6 +296,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 个人年度每月请假情况
+     *
      * @param reqDTO
      * @return
      */
@@ -297,18 +304,18 @@ public class ZSYDataService implements IZSYDataService {
     public EveryMonthVacationResDTO getPersonEveryMonthVacation(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<String> monthAndCountAndTimeList = dataMapper.getMonthAndCountAndTimeListByUser(beginTime,endTime,ZSYTokenRequestContext.get().getUserId());
-        Map<Integer,String> treeMap = new TreeMap<>();
+        List<String> monthAndCountAndTimeList = dataMapper.getMonthAndCountAndTimeListByUser(beginTime, endTime, ZSYTokenRequestContext.get().getUserId());
+        Map<Integer, String> treeMap = new TreeMap<>();
         List<Integer> counts = new ArrayList<>();
         List<Float> times = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(monthAndCountAndTimeList)){
-            monthAndCountAndTimeList.stream().forEach(monthAndCountAndTime ->{
+        if (!CollectionUtils.isEmpty(monthAndCountAndTimeList)) {
+            monthAndCountAndTimeList.forEach(monthAndCountAndTime -> {
                 String[] split = monthAndCountAndTime.split("-");
-                treeMap.put(Integer.valueOf(split[0]),split[1]+"-"+split[2]);
+                treeMap.put(Integer.valueOf(split[0]), split[1] + "-" + split[2]);
             });
-            for (int i = 1;i <= 12;i ++){
-                if (!treeMap.keySet().contains(i)){
-                    treeMap.put(i,0+"-"+0);
+            for (int i = 1; i <= 12; i++) {
+                if (!treeMap.keySet().contains(i)) {
+                    treeMap.put(i, 0 + "-" + 0);
                 }
             }
             for (Map.Entry<Integer, String> entry : treeMap.entrySet()) {
@@ -325,6 +332,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度已完成任务总耗时(设计,产品,开发,测试)
+     *
      * @param reqDTO
      * @return
      */
@@ -332,19 +340,19 @@ public class ZSYDataService implements IZSYDataService {
     public DiffStageTaskTimeResDTO getDiffStageTaskTime(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer totalTaskNum = dataMapper.selectTotalTaskNum(beginTime,endTime);
-        Float taskTotalTime = dataMapper.selectTaskTotalTime(beginTime,endTime);
+        Integer totalTaskNum = dataMapper.selectTotalTaskNum(beginTime, endTime);
+        Float taskTotalTime = dataMapper.selectTaskTotalTime(beginTime, endTime);
         //设计阶段总耗时
         Float designTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.DESIGN.getValue());
         //产品阶段总耗时
-        Float productTime = dataMapper.selectDiffStageTime(beginTime,endTime, ZSYJobRole.PRODUCT.getValue());
+        Float productTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.PRODUCT.getValue());
         //开发阶段总耗时
         Float developTime = dataMapper.selectDevStageTime(beginTime, endTime);
         //测试阶段总耗时
         Float testTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.TEST.getValue());
 
         //参与设计的任务数量
-        Integer designTaskNum = dataMapper.selectDiffStageTaskNum(beginTime,endTime,ZSYJobRole.DESIGN.getValue());
+        Integer designTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.DESIGN.getValue());
         //参与产品的任务数量
         Integer productTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.PRODUCT.getValue());
         //参与开发的任务数量
@@ -363,24 +371,24 @@ public class ZSYDataService implements IZSYDataService {
         resDTO.setProductTaskNum(productTaskNum);
         resDTO.setDevelopTaskNum(developTaskNum);
         resDTO.setTestTaskNum(testTaskNum);
-        if (designTime != null && designTaskNum != null && designTime != 0 && designTaskNum != 0){
-            resDTO.setAvgDesignTime(new BigDecimal(designTime/designTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
-        }else {
+        if (designTime != null && designTaskNum != null && designTime != 0 && designTaskNum != 0) {
+            resDTO.setAvgDesignTime(BigDecimal.valueOf(designTime / designTaskNum).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue());
+        } else {
             resDTO.setAvgDesignTime(0f);
         }
-        if (productTime != null && productTime != 0 && productTaskNum != null && productTaskNum != 0){
-            resDTO.setAvgProductTime(new BigDecimal(productTime/productTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
-        }else {
+        if (productTime != null && productTime != 0 && productTaskNum != null && productTaskNum != 0) {
+            resDTO.setAvgProductTime(BigDecimal.valueOf(productTime / productTaskNum).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue());
+        } else {
             resDTO.setAvgProductTime(0f);
         }
-        if (developTime != null && developTime != 0 && developTaskNum != null && developTaskNum != 0){
-            resDTO.setAvgDevelopTime(new BigDecimal(developTime/developTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
-        }else {
+        if (developTime != null && developTime != 0 && developTaskNum != null && developTaskNum != 0) {
+            resDTO.setAvgDevelopTime(BigDecimal.valueOf(developTime / developTaskNum).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue());
+        } else {
             resDTO.setAvgDevelopTime(0f);
         }
-        if (testTime != null && testTime != 0 && testTaskNum != null && testTaskNum != 0){
-            resDTO.setAvgTestTime(new BigDecimal(testTime/testTaskNum).setScale(2,BigDecimal.ROUND_HALF_UP).floatValue());
-        }else {
+        if (testTime != null && testTime != 0 && testTaskNum != null && testTaskNum != 0) {
+            resDTO.setAvgTestTime(BigDecimal.valueOf(testTime / testTaskNum).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue());
+        } else {
             resDTO.setAvgTestTime(0f);
         }
         return resDTO;
@@ -388,6 +396,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度已完成多人任务耗时最多的前10个
+     *
      * @param reqDTO
      * @return
      */
@@ -397,8 +406,8 @@ public class ZSYDataService implements IZSYDataService {
         Date endTime = getEndTime(reqDTO);
         List<Task> taskList = new ArrayList<>();
         AnnualTop10Task annualTop10Task = new AnnualTop10Task();
-        List<Long> taskIds = dataMapper.selectTop10Task(beginTime,endTime);
-        taskIds.stream().forEach(taskId->{
+        List<Long> taskIds = dataMapper.selectTop10Task(beginTime, endTime);
+        taskIds.forEach(taskId -> {
             Task task = taskMapper.selectByPrimaryKey(taskId);
             taskList.add(task);
         });
@@ -408,6 +417,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 单个任务总耗时
+     *
      * @param taskId
      * @return
      */
@@ -421,8 +431,9 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 近6周工作量
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     @Override
     public List<WeekHourStatsResDTO> getWeekHourStats() {
@@ -432,58 +443,55 @@ public class ZSYDataService implements IZSYDataService {
         int year = calendar.get(Calendar.YEAR);
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
-        if (dayOfWeek == 1){
+        if (dayOfWeek == 1) {
             weekOfYear = weekOfYear - 1;
         }
-//        if (weekOfYear == 1){
-//            year = year + 1;
-//        }
         User user = userMapper.selectById(userId);
-        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat timeSDF = new SimpleDateFormat(DateHelper.DATETIME_FORMAT);
         String firstDayStr = DateHelper.getThisWeekFirstDay();
         String lastDayStr = DateHelper.getThisWeekLastDay();
         try {
             Date firstDay = timeSDF.parse(firstDayStr);
             calendar.setTime(firstDay);
-            calendar.add(Calendar.DAY_OF_WEEK,1);
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
             firstDay = calendar.getTime();
 
             Date lastDay = timeSDF.parse(lastDayStr);
             calendar.setTime(lastDay);
-            calendar.add(Calendar.DAY_OF_WEEK,1);
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
             lastDay = calendar.getTime();
-            for (int i = 0;i < 12; i ++){
+            for (int i = 0; i < 12; i++) {
                 Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
-                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId,firstDay,lastDay);
-                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(),year,weekOfYear);
+                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId, firstDay, lastDay);
+                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(), year, weekOfYear);
                 Double totalHours = avgUserWeekHourBO.getTotalHours();
                 Integer workerNum = avgUserWeekHourBO.getWorkerNum();
                 Double avgWeekHours = 0.0;
-                if (totalHours != null && totalHours != 0 && workerNum != null && workerNum !=0){
-                    avgWeekHours = new BigDecimal((totalHours/workerNum)).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+                if (totalHours != null && totalHours != 0 && workerNum != null && workerNum != 0) {
+                    avgWeekHours = BigDecimal.valueOf((totalHours / workerNum)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 }
                 WeekHourStatsResDTO resDTO = new WeekHourStatsResDTO();
                 resDTO.setAvgWeekHours(avgWeekHours);
-                String week = year+"年 第"+weekOfYear+"周";
+                String week = year + "年 第" + weekOfYear + "周";
                 resDTO.setWeek(week);
                 resDTO.setWeekHours(userWeekHours);
 
                 //查询请假
                 //开始时间
                 calendar.setTime(firstDay);
-                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                calendar.add(Calendar.DAY_OF_YEAR, -7);
                 firstDay = calendar.getTime();
                 //结束时间
                 calendar.setTime(lastDay);
-                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                calendar.add(Calendar.DAY_OF_YEAR, -7);
                 lastDay = calendar.getTime();
                 resDTO.setLeaveHours(leaveHours);
                 list.add(resDTO);
-                if (weekOfYear == 1){
+                if (weekOfYear == 1) {
                     year = year - 1;
                     weekOfYear = 53;
                 }
-                weekOfYear --;
+                weekOfYear--;
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -499,58 +507,55 @@ public class ZSYDataService implements IZSYDataService {
         int year = calendar.get(Calendar.YEAR);
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
-        if (dayOfWeek == 1){
+        if (dayOfWeek == 1) {
             weekOfYear = weekOfYear - 1;
         }
-//        if (weekOfYear == 1){
-//            year = year + 1;
-//        }
         User user = userMapper.selectById(userId);
-        SimpleDateFormat timeSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat timeSDF = new SimpleDateFormat(DateHelper.DATETIME_FORMAT);
         String firstDayStr = DateHelper.getThisWeekFirstDay();
         String lastDayStr = DateHelper.getThisWeekLastDay();
         try {
             Date firstDay = timeSDF.parse(firstDayStr);
             calendar.setTime(firstDay);
-            calendar.add(Calendar.DAY_OF_WEEK,1);
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
             firstDay = calendar.getTime();
 
             Date lastDay = timeSDF.parse(lastDayStr);
             calendar.setTime(lastDay);
-            calendar.add(Calendar.DAY_OF_WEEK,1);
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
             lastDay = calendar.getTime();
-            for (int i = 0;i < 12; i ++){
+            for (int i = 0; i < 12; i++) {
                 Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
-                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId,firstDay,lastDay);
-                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(),year,weekOfYear);
+                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId, firstDay, lastDay);
+                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(), year, weekOfYear);
                 Double totalHours = avgUserWeekHourBO.getTotalHours();
                 Integer workerNum = avgUserWeekHourBO.getWorkerNum();
                 Double avgWeekHours = 0.0;
-                if (totalHours != null && totalHours != 0 && workerNum != null && workerNum !=0){
-                    avgWeekHours = new BigDecimal((totalHours/workerNum)).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+                if (totalHours != null && totalHours != 0 && workerNum != null && workerNum != 0) {
+                    avgWeekHours = BigDecimal.valueOf((totalHours / workerNum)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 }
                 WeekHourStatsResDTO resDTO = new WeekHourStatsResDTO();
                 resDTO.setAvgWeekHours(avgWeekHours);
-                String week = year+"年 第"+weekOfYear+"周";
+                String week = year + "年 第" + weekOfYear + "周";
                 resDTO.setWeek(week);
                 resDTO.setWeekHours(userWeekHours);
 
                 //查询请假
                 //开始时间
                 calendar.setTime(firstDay);
-                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                calendar.add(Calendar.DAY_OF_YEAR, -7);
                 firstDay = calendar.getTime();
                 //结束时间
                 calendar.setTime(lastDay);
-                calendar.add(Calendar.DAY_OF_YEAR,-7);
+                calendar.add(Calendar.DAY_OF_YEAR, -7);
                 lastDay = calendar.getTime();
                 resDTO.setLeaveHours(leaveHours);
                 list.add(resDTO);
-                if (weekOfYear == 1){
+                if (weekOfYear == 1) {
                     year = year - 1;
                     weekOfYear = 53;
                 }
-                weekOfYear --;
+                weekOfYear--;
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -560,14 +565,15 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 查询任务负责人负责任务相关信息
-     * @author sch
+     *
      * @return
+     * @author sch
      */
     @Override
     public List<PrincipalTaskNumResDTO> getPrincipalTaskStats() {
         Integer userRole = ZSYTokenRequestContext.get().getUserRole();
         Long userId = ZSYTokenRequestContext.get().getUserId();
-        if (userRole > ZSYUserRole.PROJECT_MANAGER.getValue()){
+        if (userRole > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYServiceException("当前用户暂无权限");
         }
         PrincipalTaskNumResDTO resDTO = new PrincipalTaskNumResDTO();
@@ -583,21 +589,21 @@ public class ZSYDataService implements IZSYDataService {
         Integer aboutDelayDesignTaskNum = 0;
         Integer aboutDelayDevelopTaskNum = 0;
         Integer aboutDelayTestTaskNum = 0;
-        BigDecimal messageFee = BigDecimal.ZERO;
+        BigDecimal messageFee;
         //查询当前负责的进行中的任务
         List<Task> taskList = taskMapper.selectDoingListByUser(userId);
 
-        if (!CollectionUtils.isEmpty(taskList)){
+        if (!CollectionUtils.isEmpty(taskList)) {
             chargeTaskNum = taskList.size();
 
             //待评审任务
             List<Task> reviewTaskList = taskList.stream()
                     .filter(task -> task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L))
                     .collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(reviewTaskList)){
+            if (!CollectionUtils.isEmpty(reviewTaskList)) {
                 for (Task task : reviewTaskList) {
                     List<TaskReviewBO> taskReviewBOS = reviewMapper.selectListByTask(task.getId());
-                    if (CollectionUtils.isEmpty(taskReviewBOS)){
+                    if (CollectionUtils.isEmpty(taskReviewBOS)) {
                         reviewTaskNum += 1;
                     }
                 }
@@ -605,68 +611,38 @@ public class ZSYDataService implements IZSYDataService {
 
             for (Task task : taskList) {
                 //设计相关阶段
-                if (task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L)){
-//                    if (task.getBeginTime() != null && task.getBeginTime().compareTo(new Date()) < 0){
-//                        delayedDesignTaskNum += 1;
-//                    }
-
-                    if (task.getBeginTime() != null){
-//                        long time = task.getBeginTime().getTime();
-//                        long time1 = new Date().getTime();
-//                        BigDecimal cha = BigDecimal.valueOf(time-time1).divide(BigDecimal.valueOf(86400000),2,BigDecimal.ROUND_HALF_UP);
-//                        if (cha.compareTo(BigDecimal.ZERO)>=0 && cha.compareTo(BigDecimal.valueOf(3))<0){
-//                            aboutDelayDesignTaskNum += 1;
-//                        }
-                        Integer workDays = getWorkDays(new Date(),task.getBeginTime());
-                        if (workDays >= 1 && workDays <= 2){
+                if (task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L)) {
+                    if (task.getBeginTime() != null) {
+                        Integer workDays = getWorkDays(new Date(), task.getBeginTime());
+                        if (workDays >= 1 && workDays <= 2) {
                             aboutDelayDesignTaskNum += 1;
                         }
-                        if (workDays < 1){
+                        if (workDays < 1) {
                             delayedDesignTaskNum += 1;
                         }
 
                     }
                 }
                 //开发相关阶段
-                else if (task.getStageId().equals(212754785051344890L) || task.getStageId().equals(212754785051344894L)){
-//                    if (task.getTestTime() != null && task.getTestTime().compareTo(new Date()) < 0){
-//                        delayedDevelopTaskNum += 1;
-//                    }
-
-                    if (task.getTestTime() != null){
-//                        long time = task.getTestTime().getTime();
-//                        long time1 = new Date().getTime();
-//                        BigDecimal cha = BigDecimal.valueOf(time-time1).divide(BigDecimal.valueOf(86400000),2,BigDecimal.ROUND_HALF_UP);
-//                        if (cha.compareTo(BigDecimal.ZERO)>=0 && cha.compareTo(BigDecimal.valueOf(3))<0){
-//                            aboutDelayDevelopTaskNum += 1;
-//                        }
-                        Integer workDays = getWorkDays(new Date(),task.getTestTime());
-                        if (workDays >= 1 && workDays <= 2){
+                else if (task.getStageId().equals(212754785051344890L) || task.getStageId().equals(212754785051344894L)) {
+                    if (task.getTestTime() != null) {
+                        Integer workDays = getWorkDays(new Date(), task.getTestTime());
+                        if (workDays >= 1 && workDays <= 2) {
                             aboutDelayDevelopTaskNum += 1;
                         }
-                        if (workDays<1){
+                        if (workDays < 1) {
                             delayedDevelopTaskNum += 1;
                         }
                     }
                 }
                 //其他阶段
                 else {
-//                    if (task.getEndTime() != null && task.getEndTime().compareTo(new Date()) < 0){
-//                        delayedTestTaskNum += 1;
-//                    }
-
-                    if (task.getEndTime() != null){
-//                        long time = task.getEndTime().getTime();
-//                        long time1 = new Date().getTime();
-//                        BigDecimal cha = BigDecimal.valueOf(time-time1).divide(BigDecimal.valueOf(86400000),2,BigDecimal.ROUND_HALF_UP);
-//                        if (cha.compareTo(BigDecimal.ZERO)>=0 && cha.compareTo(BigDecimal.valueOf(3))<0){
-//                            aboutDelayTestTaskNum += 1;
-//                        }
-                        Integer workDays = getWorkDays(new Date(),task.getEndTime());
-                        if (workDays >= 1 && workDays <= 2){
+                    if (task.getEndTime() != null) {
+                        Integer workDays = getWorkDays(new Date(), task.getEndTime());
+                        if (workDays >= 1 && workDays <= 2) {
                             aboutDelayTestTaskNum += 1;
                         }
-                        if (workDays<1){
+                        if (workDays < 1) {
                             delayedTestTaskNum += 1;
                         }
                     }
@@ -677,18 +653,18 @@ public class ZSYDataService implements IZSYDataService {
         //待发布任务
         List<TaskListBO> summarizeTaskList =
                 taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), userId);
-        if (!CollectionUtils.isEmpty(summarizeTaskList)){
+        if (!CollectionUtils.isEmpty(summarizeTaskList)) {
             summarizeTaskList = summarizeTaskList.stream().filter(taskListBO -> taskListBO.getStatus() > 1).collect(Collectors.toList());
             for (TaskListBO taskListBO : summarizeTaskList) {
                 List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskListBO.getId());
-                if (CollectionUtils.isEmpty(taskSummaryBOS)){
+                if (CollectionUtils.isEmpty(taskSummaryBOS)) {
                     summarizeTaskNum += 1;
                 }
             }
         }
 
         delayedTaskNum = delayedDesignTaskNum + delayedDevelopTaskNum + delayedTestTaskNum;
-        aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum +aboutDelayTestTaskNum;
+        aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum + aboutDelayTestTaskNum;
         messageFee = BigDecimal.valueOf(delayedTaskNum).multiply(BigDecimal.ONE);
 
         resDTO.setChargeTaskNum(chargeTaskNum);
@@ -703,146 +679,17 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 超管查看所有负责人负责任务数
+     *
      * @author sch
      */
-//    @Override
-    public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats2() {
-        long t1 = System.currentTimeMillis();
-        List<User> users = userMapper.selectManagers();
-        long t4 = System.currentTimeMillis();
-        logger.info("查询全部任务负责人耗时 "+(t4-t1)+"ms");
-
-        //所有任务评审
-        List<TaskReview> allReviews = reviewMapper.selectAll();
-        long t5 = System.currentTimeMillis();
-        logger.info("查询全部任务评审耗时 "+(t5-t4)+"ms");
-
-        //所有任务总结
-        List<TaskSummary> allSummaries = summaryMapper.selectAll();
-        long t6 = System.currentTimeMillis();
-        logger.info("查询全部任务总结耗时 "+(t6-t5)+"ms");
-        List<PrincipalTaskNumResDTO> list = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(users)){
-            users.forEach(user -> {
-                PrincipalTaskNumResDTO resDTO = new PrincipalTaskNumResDTO();
-                Integer chargeTaskNum = 0;
-                Integer reviewTaskNum = 0;
-                Integer summarizeTaskNum = 0;
-                Integer delayedTaskNum = 0;
-                Integer delayedDesignTaskNum = 0;
-                Integer delayedDevelopTaskNum = 0;
-                Integer delayedTestTaskNum = 0;
-                Integer aboutDelayTaskNum = 0;
-                Integer aboutDelayDesignTaskNum = 0;
-                Integer aboutDelayDevelopTaskNum = 0;
-                Integer aboutDelayTestTaskNum = 0;
-                BigDecimal messageFee = BigDecimal.ZERO;
-                //查询当前负责的进行中的任务
-                long t2 = System.currentTimeMillis();
-                List<Task> taskList = taskMapper.selectDoingListByUser(user.getId());
-                long t3 = System.currentTimeMillis();
-                logger.info("查询用户: "+user.getName()+" 进行中任务耗时 "+(t3-t2)+"ms");
-                if (!CollectionUtils.isEmpty(taskList)){
-                    chargeTaskNum = taskList.size();
-
-                    //待评审任务
-                    List<Task> reviewTaskList = taskList.stream()
-                            .filter(task -> task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L))
-                            .collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(reviewTaskList)){
-                        for (Task task : reviewTaskList) {
-                            List<TaskReview> taskReviewBOS = allReviews.stream().filter(taskReview -> taskReview.getTaskId().equals(task.getId())).collect(Collectors.toList());
-//                            List<TaskReviewBO> taskReviewBOS = reviewMapper.selectListByTask(task.getId());
-                            if (CollectionUtils.isEmpty(taskReviewBOS)){
-                                reviewTaskNum += 1;
-                            }
-                        }
-                    }
-
-                    for (Task task : taskList) {
-                        //设计相关阶段
-                        if (task.getStageId().equals(212754785051344891L) || task.getStageId().equals(212754785051344892L)){
-                            if (task.getBeginTime() != null){
-                                Integer workDays = getWorkDays(new Date(), task.getBeginTime());
-                                if (workDays < 1){
-                                    delayedDesignTaskNum += 1;
-                                }
-                                if (workDays >= 1 && workDays <= 2){
-                                    aboutDelayDesignTaskNum += 1;
-                                }
-                            }
-
-                        }
-                        //开发相关阶段
-                        else if (task.getStageId().equals(212754785051344890L) || task.getStageId().equals(212754785051344894L)){
-                            if (task.getTestTime() != null){
-                                Integer workDays = getWorkDays(new Date(), task.getTestTime());
-                                if (workDays < 1){
-                                    delayedDevelopTaskNum += 1;
-                                }
-                                if (workDays >= 1 && workDays <= 2){
-                                    aboutDelayDevelopTaskNum += 1;
-                                }
-                            }
-                        }
-                        //其他阶段
-                        else {
-                            if (task.getEndTime() != null){
-                                Integer workDays = getWorkDays(new Date(), task.getEndTime());
-                                if (workDays < 1){
-                                    delayedTestTaskNum += 1;
-                                }
-                                if (workDays >= 1 && workDays <= 2){
-                                    aboutDelayTestTaskNum += 1;
-                                }
-                            }
-                        }
-                    }
-                }
-                long t7 = System.currentTimeMillis();
-                logger.info("计算待评审,已超时,即将超时任务数 耗时: "+(t7-t3)+"ms");
-
-                //已发布任务(完成未结束)
-                List<TaskListBO> summarizeTaskList =
-                        taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), user.getId());
-                if (!CollectionUtils.isEmpty(summarizeTaskList)){
-                    summarizeTaskList = summarizeTaskList.stream().filter(taskListBO -> taskListBO.getStatus() > 1).collect(Collectors.toList());
-                    for (TaskListBO taskListBO : summarizeTaskList) {
-                        List<TaskSummary> taskSummaryBOS = allSummaries.stream().filter(taskSummary -> taskSummary.getTaskId().equals(taskListBO.getId())).collect(Collectors.toList());
-//                        List<TaskSummaryBO> taskSummaryBOS = summaryMapper.selectListByTask(taskListBO.getId());
-                        if (CollectionUtils.isEmpty(taskSummaryBOS)){
-                            summarizeTaskNum += 1;
-                        }
-                    }
-                }
-                long t8 = System.currentTimeMillis();
-                logger.info("计算待总结任务数 耗时: "+(t8-t7)+"ms");
-                delayedTaskNum = delayedDesignTaskNum + delayedDevelopTaskNum + delayedTestTaskNum;
-                aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum +aboutDelayTestTaskNum;
-                messageFee = BigDecimal.valueOf(delayedTaskNum).multiply(BigDecimal.ONE);
-
-                resDTO.setChargeTaskNum(chargeTaskNum);
-                resDTO.setReviewTaskNum(reviewTaskNum);
-                resDTO.setSummarizeTaskNum(summarizeTaskNum);
-                resDTO.setDelayedTaskNum(delayedTaskNum);
-                resDTO.setAboutDelayTaskNum(aboutDelayTaskNum);
-                resDTO.setMessageFee(messageFee);
-                resDTO.setUserName(user.getName());
-                list.add(resDTO);
-            });
-        }
-        logger.info("整体耗时: "+(System.currentTimeMillis()-t1)+"ms");
-        return list;
-    }
-
     @Override
-    public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats(){
+    public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats() {
         //查询全部负责人
         long t1 = System.currentTimeMillis();
         List<User> users = userMapper.selectManagers();
-        Map<Long,String> userMap = new HashMap<>();
+        Map<Long, String> userMap = new HashMap<>();
         for (User user : users) {
-            userMap.put(user.getId(),user.getName());
+            userMap.put(user.getId(), user.getName());
         }
         //查询全部进行中的任务
         List<Task> doingTaskList = taskMapper.selectAllDoingTasks();
@@ -857,25 +704,25 @@ public class ZSYDataService implements IZSYDataService {
         long t8 = System.currentTimeMillis();
         List<PrincipalTaskNumResDTO> collect = userTaskMap.values().stream().map(tasks -> {
             PrincipalTaskNumResDTO resDTO = new PrincipalTaskNumResDTO();
-            Integer chargeTaskNum = 0;
-            Integer reviewTaskNum = 0;
-            Integer summarizeTaskNum = 0;
-            Integer delayedTaskNum = 0;
-            Integer delayedDesignTaskNum = 0;
-            Integer delayedDevelopTaskNum = 0;
-            Integer delayedTestTaskNum = 0;
-            Integer aboutDelayTaskNum = 0;
-            Integer aboutDelayDesignTaskNum = 0;
-            Integer aboutDelayDevelopTaskNum = 0;
-            Integer aboutDelayTestTaskNum = 0;
-            BigDecimal messageFee = BigDecimal.ZERO;
+            int chargeTaskNum = 0;
+            int reviewTaskNum = 0;
+            int summarizeTaskNum = 0;
+            int delayedTaskNum;
+            int delayedDesignTaskNum = 0;
+            int delayedDevelopTaskNum = 0;
+            int delayedTestTaskNum = 0;
+            int aboutDelayTaskNum;
+            int aboutDelayDesignTaskNum = 0;
+            int aboutDelayDevelopTaskNum = 0;
+            int aboutDelayTestTaskNum = 0;
+            BigDecimal messageFee;
 
-            if(!CollectionUtils.isEmpty(tasks)){
+            if (!CollectionUtils.isEmpty(tasks)) {
                 resDTO.setUserId(tasks.get(0).getCreateBy());
                 resDTO.setUserName(userMap.get(tasks.get(0).getCreateBy()));
                 chargeTaskNum = tasks.size();
                 //待评审任务
-                reviewTaskNum = (int)(tasks.stream().filter(task -> task.getStageId().equals(ZSYTaskStage.WAIT_DESIGN.getValue())
+                reviewTaskNum = (int) (tasks.stream().filter(task -> task.getStageId().equals(ZSYTaskStage.WAIT_DESIGN.getValue())
                         || task.getStageId().equals(ZSYTaskStage.DESIGNING.getValue()))
                         .filter(task ->
                                 allReviews.stream().noneMatch(taskReview -> taskReview.getTaskId().equals(task.getId()))
@@ -888,9 +735,9 @@ public class ZSYDataService implements IZSYDataService {
                         .collect(Collectors.toList());
 
 
-                delayedDesignTaskNum = (int)(designTasks.stream()
-                        .filter(day -> day < 1 ).count());
-                aboutDelayDesignTaskNum = (int)(designTasks.stream()
+                delayedDesignTaskNum = (int) (designTasks.stream()
+                        .filter(day -> day < 1).count());
+                aboutDelayDesignTaskNum = (int) (designTasks.stream()
                         .filter(day -> (day >= 1) && (day <= 2)).count());
 
                 //开发阶段
@@ -899,9 +746,9 @@ public class ZSYDataService implements IZSYDataService {
                         .filter(task -> task.getTestTime() != null).map(task -> getWorkDays(new Date(), task.getTestTime()))
                         .collect(Collectors.toList());
 
-                delayedDevelopTaskNum = (int)(developTasks.stream()
+                delayedDevelopTaskNum = (int) (developTasks.stream()
                         .filter(day -> day < 1).count());
-                aboutDelayDevelopTaskNum = (int)(developTasks.stream()
+                aboutDelayDevelopTaskNum = (int) (developTasks.stream()
                         .filter(day -> day >= 1 && day <= 2).count());
 
                 //测试阶段
@@ -912,15 +759,15 @@ public class ZSYDataService implements IZSYDataService {
                         .filter(task -> task.getEndTime() != null).map(task -> getWorkDays(new Date(), task.getEndTime()))
                         .collect(Collectors.toList());
 
-                delayedTestTaskNum = (int)(testTasks.stream()
+                delayedTestTaskNum = (int) (testTasks.stream()
                         .filter(day -> day < 1).count());
-                aboutDelayTestTaskNum = (int)(testTasks.stream()
+                aboutDelayTestTaskNum = (int) (testTasks.stream()
                         .filter(day -> (day >= 1) && (day <= 2)).count());
 
 
             }
             delayedTaskNum = delayedDesignTaskNum + delayedDevelopTaskNum + delayedTestTaskNum;
-            aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum +aboutDelayTestTaskNum;
+            aboutDelayTaskNum = aboutDelayDesignTaskNum + aboutDelayDevelopTaskNum + aboutDelayTestTaskNum;
             messageFee = BigDecimal.valueOf(delayedTaskNum).multiply(BigDecimal.ONE);
 
             resDTO.setChargeTaskNum(chargeTaskNum);
@@ -929,41 +776,41 @@ public class ZSYDataService implements IZSYDataService {
             resDTO.setDelayedTaskNum(delayedTaskNum);
             resDTO.setAboutDelayTaskNum(aboutDelayTaskNum);
             resDTO.setMessageFee(messageFee);
-//            resDTO.setUserName(user.getName());
             return resDTO;
 
         }).collect(Collectors.toList());
         long t9 = System.currentTimeMillis();
-        logger.info("封装数据耗时: "+(t9-t8)+"ms");
-        if (!CollectionUtils.isEmpty(collect)){
+        logger.info("封装数据耗时: {}ms", (t9 - t8));
+        if (!CollectionUtils.isEmpty(collect)) {
             collect.forEach(principalTaskNumResDTO -> {
                 principalTaskNumResDTO.setSummarizeTaskNum(0);
                 //已发布任务(完成未结束)
                 List<Task> taskList = userPublishTaskMap.get(principalTaskNumResDTO.getUserId());
-                if (!CollectionUtils.isEmpty(taskList)){
+                if (!CollectionUtils.isEmpty(taskList)) {
                     long count = taskList.stream().filter(task -> allSummaries.stream().noneMatch(taskSummary -> taskSummary.getTaskId().equals(task.getId()))).count();
-                    principalTaskNumResDTO.setSummarizeTaskNum((int)count);
+                    principalTaskNumResDTO.setSummarizeTaskNum((int) count);
                 }
 
             });
         }
         long t10 = System.currentTimeMillis();
-        logger.info("计算待总结任务数耗时: "+(t10-t9)+"ms");
-        logger.info("整体耗时: "+(t10-t1)+"ms");
+        logger.info("计算待总结任务数耗时: {}ms", (t10 - t9));
+        logger.info("整体耗时: {}ms", (t10 - t1));
         return collect;
     }
 
     /**
      * 导出月度用户加班,调休统计表
-     * @author sch
+     *
      * @param reqDTO 参数
+     * @author sch
      */
     @Override
     public String exportLeaveAndEwork(ExportLeaveAndEworkReqDTO reqDTO) {
         Date yearAndMonth = reqDTO.getYearAndMonth();
         String yearMonthStr = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
         List<LeaveAndEworkBO> list = dataMapper.selectLeaveAndEWork(yearMonthStr);
-        if (!CollectionUtils.isEmpty(list)){
+        if (!CollectionUtils.isEmpty(list)) {
             //设置表头
             List<String> headers = new ArrayList<>();
             headers.add("工号");
@@ -974,9 +821,9 @@ public class ZSYDataService implements IZSYDataService {
             headers.add("当月加班天数");
 
             //设置文件名
-            String fileName = yearMonthStr+"月调休和加班统计" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
+            String fileName = yearMonthStr + "月调休和加班统计" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xls";
             try (ByteArrayOutputStream os = new ByteArrayOutputStream();
-                 HSSFWorkbook workbook = new HSSFWorkbook()){
+                 HSSFWorkbook workbook = new HSSFWorkbook()) {
                 //创建sheet
                 HSSFSheet sheet = workbook.createSheet("调休和加班统计");
                 //设置列宽
@@ -1020,7 +867,7 @@ public class ZSYDataService implements IZSYDataService {
                 }
                 workbook.write(os);
                 return ZSYQinuHelper.uploadToUfile(os.toByteArray(), fileName, "application/vnd.ms-excel", uFileProperties);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw new ZSYServiceException("导出表失败");
             }
@@ -1031,6 +878,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度每月需求总数
+     *
      * @param reqDTO
      * @return
      */
@@ -1038,17 +886,17 @@ public class ZSYDataService implements IZSYDataService {
     public List<Integer> getEveryMonthFeedback(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<String> monthAndCountList = dataMapper.selectMonthAndFbCountList(beginTime,endTime);
-        Map<Integer,Integer> treeMap = new TreeMap<>();
+        List<String> monthAndCountList = dataMapper.selectMonthAndFbCountList(beginTime, endTime);
+        Map<Integer, Integer> treeMap = new TreeMap<>();
         List<Integer> counts = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(monthAndCountList)){
-            monthAndCountList.stream().forEach(monthAndCount->{
+        if (!CollectionUtils.isEmpty(monthAndCountList)) {
+            monthAndCountList.forEach(monthAndCount -> {
                 String[] split = monthAndCount.split("-");
-                treeMap.put(Integer.valueOf(split[0]),Integer.valueOf(split[1]));
+                treeMap.put(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
             });
-            for (int i = 1;i <= 12;i ++){
-                if (!treeMap.keySet().contains(i)){
-                    treeMap.put(i,0);
+            for (int i = 1; i <= 12; i++) {
+                if (!treeMap.keySet().contains(i)) {
+                    treeMap.put(i, 0);
                 }
             }
             for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
@@ -1060,6 +908,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度每月任务完成总数
+     *
      * @param reqDTO
      * @return
      */
@@ -1067,17 +916,17 @@ public class ZSYDataService implements IZSYDataService {
     public List<Integer> getEveryMonthTask(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<String> monthAndCountList = dataMapper.selectMonthAndTaskCountList(beginTime,endTime);
-        Map<Integer,Integer> treeMap = new TreeMap<>();
+        List<String> monthAndCountList = dataMapper.selectMonthAndTaskCountList(beginTime, endTime);
+        Map<Integer, Integer> treeMap = new TreeMap<>();
         List<Integer> counts = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(monthAndCountList)){
-            monthAndCountList.stream().forEach(monthAndCount->{
+        if (!CollectionUtils.isEmpty(monthAndCountList)) {
+            monthAndCountList.forEach(monthAndCount -> {
                 String[] split = monthAndCount.split("-");
-                treeMap.put(Integer.valueOf(split[0]),Integer.valueOf(split[1]));
+                treeMap.put(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
             });
-            for (int i = 1;i <= 12;i ++){
-                if (!treeMap.keySet().contains(i)){
-                    treeMap.put(i,0);
+            for (int i = 1; i <= 12; i++) {
+                if (!treeMap.keySet().contains(i)) {
+                    treeMap.put(i, 0);
                 }
             }
             for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
@@ -1089,6 +938,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 查看个人请假情况
+     *
      * @param reqDTO
      * @return
      */
@@ -1096,31 +946,31 @@ public class ZSYDataService implements IZSYDataService {
     public List<PersonVacationResDTO> getPersonVacation(PersonVacationReqDTO reqDTO) {
         Date beginTime = null;
         Date endTime = null;
-        if (reqDTO.getBeginTime() != null){
+        if (reqDTO.getBeginTime() != null) {
             beginTime = reqDTO.getBeginTime();
         }
-        if (reqDTO.getEndTime() != null){
+        if (reqDTO.getEndTime() != null) {
             endTime = reqDTO.getEndTime();
         }
-        List<Long> userIds = dataMapper.selectUserIds(beginTime,endTime);
+        List<Long> userIds = dataMapper.selectUserIds(beginTime, endTime);
         List<PersonVacationResDTO> list = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(userIds)){
+        if (!CollectionUtils.isEmpty(userIds)) {
             for (Long userId : userIds) {
                 PersonVacationResDTO personVacationResDTO = new PersonVacationResDTO();
                 User user = userMapper.selectById(userId);
                 personVacationResDTO.setUserId(userId);
                 personVacationResDTO.setUserName(user.getName());
-                List<UserLeave> userLeaves = dataMapper.selectUserLeaveById(beginTime,endTime,userId);
+                List<UserLeave> userLeaves = dataMapper.selectUserLeaveById(beginTime, endTime, userId);
                 String remarkStr = "";
                 BigDecimal vacationTime = BigDecimal.ZERO;
-                if (!CollectionUtils.isEmpty(userLeaves)){
+                if (!CollectionUtils.isEmpty(userLeaves)) {
                     for (UserLeave userLeave : userLeaves) {
                         BigDecimal hours = userLeave.getHours();
                         vacationTime = vacationTime.add(hours);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
                         String begin = sdf.format(userLeave.getBeginTime());
                         String end = sdf.format(userLeave.getEndTime());
-                        String remark ="( " + begin + " 至 " + end + "; 原因: " + userLeave.getDescription() + "; 时长: " + userLeave.getHours() + " 小时 )\n";
+                        String remark = "( " + begin + " 至 " + end + "; 原因: " + userLeave.getDescription() + "; 时长: " + userLeave.getHours() + " 小时 )\n";
                         remarkStr = remarkStr + remark;
                     }
                     personVacationResDTO.setRemarkList(remarkStr);
@@ -1137,33 +987,34 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 年度个人数据
-     * @author sch
+     *
      * @param reqDTO
      * @return
+     * @author sch
      */
     @Override
     public PersonDataResDTO getPersonData(YearReqDTO reqDTO) {
         PersonDataResDTO resDTO = new PersonDataResDTO();
-        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.ADMINISTRATOR.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.ADMINISTRATOR.getValue()) {
             Long userId = ZSYTokenRequestContext.get().getUserId();
             Date beginTime = getBeginTime(reqDTO);
             Date endTime = getEndTime(reqDTO);
-            PersonCompleteTaskBO personTaskBO = dataMapper.selectPersonTask(beginTime,endTime,userId);
-            PersonVacationBO personVacationBO = dataMapper.selectPersonVacation(beginTime,endTime,userId);
-            Integer multiTaskNum = dataMapper.selectPersonMultiTaskNum(beginTime,endTime,userId);
-            Long mostTimeTaskId = dataMapper.selectPersonMostTimeTaskId(beginTime,endTime,userId);
-            Long lessTimeTaskId = dataMapper.selectPersonLessTimeTaskId(beginTime,endTime,userId);
+            PersonCompleteTaskBO personTaskBO = dataMapper.selectPersonTask(beginTime, endTime, userId);
+            PersonVacationBO personVacationBO = dataMapper.selectPersonVacation(beginTime, endTime, userId);
+            Integer multiTaskNum = dataMapper.selectPersonMultiTaskNum(beginTime, endTime, userId);
+            Long mostTimeTaskId = dataMapper.selectPersonMostTimeTaskId(beginTime, endTime, userId);
+            Long lessTimeTaskId = dataMapper.selectPersonLessTimeTaskId(beginTime, endTime, userId);
             Task mostTimeTask = new Task();
             Task lessTimeTask = new Task();
             Float mostTime = 0f;
             Float lessTime = 0f;
-            if (mostTimeTaskId != null){
+            if (mostTimeTaskId != null) {
                 mostTimeTask = taskMapper.selectByPrimaryKey(mostTimeTaskId);
-                mostTime = dataMapper.selectPersonTaskTimeById(mostTimeTaskId,userId);
+                mostTime = dataMapper.selectPersonTaskTimeById(mostTimeTaskId, userId);
             }
-            if (lessTimeTaskId != null){
+            if (lessTimeTaskId != null) {
                 lessTimeTask = taskMapper.selectByPrimaryKey(lessTimeTaskId);
-                lessTime = dataMapper.selectPersonTaskTimeById(lessTimeTaskId,userId);
+                lessTime = dataMapper.selectPersonTaskTimeById(lessTimeTaskId, userId);
             }
             resDTO.setMultiTaskNum(multiTaskNum != null ? multiTaskNum : 0);
             resDTO.setSingleTaskNum(multiTaskNum != null ? personTaskBO.getTaskNum() - multiTaskNum : personTaskBO.getTaskNum());
@@ -1178,7 +1029,7 @@ public class ZSYDataService implements IZSYDataService {
             resDTO.setVacationCount(personVacationBO.getVacationCount() != null ? personVacationBO.getVacationCount() : 0);
             resDTO.setVacationTime(personVacationBO.getVacationTime() != null ? personVacationBO.getVacationTime() : 0);
             return resDTO;
-        }else {
+        } else {
             return resDTO;
         }
 
@@ -1186,6 +1037,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 查看个人年度数据
+     *
      * @param reqDTO
      * @param userId
      * @return
@@ -1193,27 +1045,27 @@ public class ZSYDataService implements IZSYDataService {
     @Override
     public PersonDataResDTO getPersonDataByUserId(YearReqDTO reqDTO, Long userId) {
         PersonDataResDTO resDTO = new PersonDataResDTO();
-        if (ZSYTokenRequestContext.get().getUserRole() < ZSYUserRole.ADMINISTRATOR.getValue()){
+        if (ZSYTokenRequestContext.get().getUserRole() < ZSYUserRole.ADMINISTRATOR.getValue()) {
             throw new ZSYServiceException("您没有权限!");
-        }else {
+        } else {
             Date beginTime = getBeginTime(reqDTO);
             Date endTime = getEndTime(reqDTO);
-            PersonCompleteTaskBO personTaskBO = dataMapper.selectPersonTask(beginTime,endTime,userId);
-            PersonVacationBO personVacationBO = dataMapper.selectPersonVacation(beginTime,endTime,userId);
-            Integer multiTaskNum = dataMapper.selectPersonMultiTaskNum(beginTime,endTime,userId);
-            Long mostTimeTaskId = dataMapper.selectPersonMostTimeTaskId(beginTime,endTime,userId);
-            Long lessTimeTaskId = dataMapper.selectPersonLessTimeTaskId(beginTime,endTime,userId);
+            PersonCompleteTaskBO personTaskBO = dataMapper.selectPersonTask(beginTime, endTime, userId);
+            PersonVacationBO personVacationBO = dataMapper.selectPersonVacation(beginTime, endTime, userId);
+            Integer multiTaskNum = dataMapper.selectPersonMultiTaskNum(beginTime, endTime, userId);
+            Long mostTimeTaskId = dataMapper.selectPersonMostTimeTaskId(beginTime, endTime, userId);
+            Long lessTimeTaskId = dataMapper.selectPersonLessTimeTaskId(beginTime, endTime, userId);
             Task mostTimeTask = new Task();
             Task lessTimeTask = new Task();
             Float mostTime = 0f;
             Float lessTime = 0f;
-            if (mostTimeTaskId != null){
+            if (mostTimeTaskId != null) {
                 mostTimeTask = taskMapper.selectByPrimaryKey(mostTimeTaskId);
-                mostTime = dataMapper.selectPersonTaskTimeById(mostTimeTaskId,userId);
+                mostTime = dataMapper.selectPersonTaskTimeById(mostTimeTaskId, userId);
             }
-            if (lessTimeTaskId != null){
+            if (lessTimeTaskId != null) {
                 lessTimeTask = taskMapper.selectByPrimaryKey(lessTimeTaskId);
-                lessTime = dataMapper.selectPersonTaskTimeById(lessTimeTaskId,userId);
+                lessTime = dataMapper.selectPersonTaskTimeById(lessTimeTaskId, userId);
             }
             resDTO.setMultiTaskNum(multiTaskNum != null ? multiTaskNum : 0);
             resDTO.setSingleTaskNum(multiTaskNum != null ? personTaskBO.getTaskNum() - multiTaskNum : personTaskBO.getTaskNum());
@@ -1234,6 +1086,7 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 获取两个日期之间的天数
+     *
      * @param beginTime
      * @param endTime
      * @return
@@ -1251,22 +1104,22 @@ public class ZSYDataService implements IZSYDataService {
         int endTimeDay = calendar.get(Calendar.DAY_OF_MONTH);
         LocalDate start = LocalDate.of(beginTimeYear, beginTimeMonth, beginTimeDay);
         LocalDate end = LocalDate.of(endTimeYear, endTimeMonth, endTimeDay);
-        Integer workDays = (int)(end.toEpochDay() - start.toEpochDay() + 1);
-        return workDays;
+        return (int) (end.toEpochDay() - start.toEpochDay() + 1);
     }
 
     /**
      * 获取开始时间
+     *
      * @param reqDTO
      * @return
      */
-    private Date getBeginTime(YearReqDTO reqDTO){
+    private Date getBeginTime(YearReqDTO reqDTO) {
         Date beginTime = new Date();
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if (reqDTO.getWhichYear() == null){
+        SimpleDateFormat sdf2 = new SimpleDateFormat(DateHelper.DATETIME_FORMAT);
+        if (reqDTO.getWhichYear() == null) {
             Date firstDate = DateHelper.getCurrYearFirst();
             beginTime = firstDate;
-        }else {
+        } else {
             Integer year = reqDTO.getWhichYear();
             String firstDay = year + "-01-01 00:00:00";
             try {
@@ -1280,14 +1133,15 @@ public class ZSYDataService implements IZSYDataService {
 
     /**
      * 获取截止时间
+     *
      * @param reqDTO
      * @return
      */
-    private Date getEndTime(YearReqDTO reqDTO){
+    private Date getEndTime(YearReqDTO reqDTO) {
         Date endTime = new Date();
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if (reqDTO.getWhichYear() == null){
+        SimpleDateFormat sdf1 = new SimpleDateFormat(DateHelper.DATE_FORMAT);
+        SimpleDateFormat sdf2 = new SimpleDateFormat(DateHelper.DATETIME_FORMAT);
+        if (reqDTO.getWhichYear() == null) {
             Date lastDay = DateHelper.getCurrYearFirst();
             String formatDay = sdf1.format(lastDay);
             formatDay = formatDay + " 23:59:59";
@@ -1297,7 +1151,7 @@ public class ZSYDataService implements IZSYDataService {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-        }else {
+        } else {
             Integer year = reqDTO.getWhichYear();
             String lastDay = year + "-12-31 23:59:59";
             try {
@@ -1307,15 +1161,5 @@ public class ZSYDataService implements IZSYDataService {
             }
         }
         return endTime;
-    }
-
-
-    /**
-     * 给定年度 获取当年第一天
-     */
-    private Date getFirstDayOfYear(Integer year){
-        Calendar calendar = Calendar.getInstance();
-
-        return null;
     }
 }

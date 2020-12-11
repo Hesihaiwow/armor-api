@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
@@ -37,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static com.github.pagehelper.page.PageMethod.startPage;
 
 /**
  * Created by Lang on 2017/12/7 0007.
@@ -121,7 +122,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      */
     @Override
     public PageInfo<UserLeaveResDTO> getLeaveList(UserLeaveListReqDTO userLeaveListReqDTO) {
-        PageHelper.startPage(userLeaveListReqDTO.getPageNum(), ZSYConstants.PAGE_SIZE);
+        startPage(userLeaveListReqDTO.getPageNum(), ZSYConstants.PAGE_SIZE);
         userLeaveListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
         if(userLeaveListReqDTO.getBeginTime()==null){
             userLeaveListReqDTO.setBeginTime(null);
@@ -133,7 +134,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
 
         Page<UserLeaveResDTO> page = new Page<>();
         BeanUtils.copyProperties(userLeaveBOS, page);
-        userLeaveBOS.stream().forEach(userLeaveBO -> {
+        userLeaveBOS.forEach(userLeaveBO -> {
             UserLeaveResDTO userLeaveResDTO = new UserLeaveResDTO();
             BeanUtils.copyProperties(userLeaveBO, userLeaveResDTO);
             userLeaveResDTO.setTypeName(ZSYUserLeaveType.getName(userLeaveResDTO.getType()));
@@ -141,8 +142,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             page.add(userLeaveResDTO);
         });
 
-        PageInfo<UserLeaveResDTO> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+        return new PageInfo<>(page);
     }
 
     /**
@@ -153,10 +153,10 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      */
     @Override
     public PageInfo<UserLeaveResDTO> getUserLeaveList(Integer status, Integer pageIndex) {
-        PageHelper.startPage(pageIndex, 5);
+        startPage(pageIndex, 5);
         Long userId = ZSYTokenRequestContext.get().getUserId();
         Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
-        Page<UserLeaveBO> userLeaveBOS = new Page<UserLeaveBO>();
+        Page<UserLeaveBO> userLeaveBOS;
         if(ZSYTokenRequestContext.get().getUserRole()==0){
              userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(null, status, departmentId);
         }else{
@@ -164,13 +164,13 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         }
         Page<UserLeaveResDTO> page = new Page<>();
         BeanUtils.copyProperties(userLeaveBOS, page);
-        userLeaveBOS.stream().forEach(userLeaveBO -> {
+        userLeaveBOS.forEach(userLeaveBO -> {
             UserLeaveResDTO userLeaveResDTO = new UserLeaveResDTO();
             BeanUtils.copyProperties(userLeaveBO, userLeaveResDTO);
             userLeaveResDTO.setTypeName(ZSYUserLeaveType.getName(userLeaveResDTO.getType()));
 
             List<UserWeekResDTO> userWeekResDTOS = new ArrayList<>();
-            userLeaveBO.getUserWeeks().stream().forEach(userWeekBO -> {
+            userLeaveBO.getUserWeeks().forEach(userWeekBO -> {
                 UserWeekResDTO userWeekResDTO = new UserWeekResDTO();
                 BeanUtils.copyProperties(userWeekBO, userWeekResDTO);
                 userWeekResDTOS.add(userWeekResDTO);
@@ -179,8 +179,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
 
             page.add(userLeaveResDTO);
         });
-        PageInfo<UserLeaveResDTO> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+        return new PageInfo<>(page);
     }
 
     /**
@@ -274,10 +273,6 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             throw new ZSYServiceException("更新审核信息失败");
         }
         if (userLeave.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
-            //减少调休时间
-//            user.setRestHours(user.getRestHours().subtract(userLeave.getHours()));
-//            userMapper.updateSelectiveById(user);
-
 
             //新增调休日志
             UserRestHoursLog restHoursLog = new UserRestHoursLog();

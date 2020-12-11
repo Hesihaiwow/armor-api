@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import com.zhixinhuixue.armor.model.pojo.UserWeek;
-
 /**
  * Created by Lang on 2017/11/29 0029.
  */

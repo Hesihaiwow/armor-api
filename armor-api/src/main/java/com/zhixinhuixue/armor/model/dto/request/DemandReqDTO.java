@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
@@ -10,52 +8,74 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 新需求参数
  * Created by SCH on 2018-10-22
  */
-@ApiModel("新需求参数")
 public class DemandReqDTO {
+    /**
+     * 需求标题
+     */
     @NotBlank(message = "需求标题不能为空")
     @Size(min = 1,max = 100,message = "需求标题长度为{min}~{max}之间")
-    @ApiModelProperty("需求标题")
     private String title;
 
+    /**
+     * 类型
+     */
     @NotNull(message = "需求类型不能为空")
-    @ApiModelProperty("类型")
     private Long type;
 
+    /**
+     * 优先级
+     */
     @NotNull(message = "需求优先级不能为空")
-    @ApiModelProperty("优先级")
     private Long priority;
 
+    /**
+     * 来源
+     */
     @NotBlank(message = "需求来源不能为空")
     @Size(min = 1,max = 50,message = "来源长度为{min}~{max}之间")
-    @ApiModelProperty("来源")
     private String origin;
 
+    /**
+     * 问题
+     */
     @NotBlank(message = "需求问题不能为空")
     @Size(min = 5,max = 200,message = "问题长度为{min}~{max}之间")
-    @ApiModelProperty("问题")
     private String question;
 
+    /**
+     * 目标
+     */
     @NotBlank(message = "需求目标不能为空")
     @Size(min = 5,max = 200,message = "目标长度为{min}~{max}之间")
-    @ApiModelProperty("目标")
     private String target;
 
+    /**
+     * 期待上线时间
+     */
     @NotNull(message = "期待上线时间不能为空")
-    @ApiModelProperty("期待上线时间")
     private Date releaseTime;
 
-    @ApiModelProperty("提出时间")
+    /**
+     * 提出时间
+     */
     private Date feedbackTime;
 
-    @ApiModelProperty("来源(0:其他,1:直播,2:小程序,3:IMS,4:学管端)")
+    /**
+     * 来源(0:其他,1:直播,2:小程序,3:IMS,4:学管端)
+     */
     private Integer source;
 
-    @ApiModelProperty("负责人")
+    /**
+     * 负责人
+     */
     private Long chargeMan;
 
-    @ApiModelProperty("附件地址")
+    /**
+     * 附件地址
+     */
     private List<String> urlList;
 
     public Integer getSource() {

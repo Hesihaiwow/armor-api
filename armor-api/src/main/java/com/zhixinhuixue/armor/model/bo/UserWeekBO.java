@@ -1,9 +1,5 @@
 package com.zhixinhuixue.armor.model.bo;
 
-import com.zhixinhuixue.armor.model.pojo.UserWeek;
-
-import java.math.BigDecimal;
-
 /**
  * Created by Lang on 2017/11/29 0029.
  */

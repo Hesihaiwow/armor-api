@@ -40,4 +40,10 @@ public interface IZSYProjectMapper {
      */
     int deleteProjectById(Long projectId);
 
+    /**
+     * 根据id查询
+     * @param projectId 项目id
+     * @return Project
+     */
+    Project selectById(@Param("projectId") Long projectId);
 }

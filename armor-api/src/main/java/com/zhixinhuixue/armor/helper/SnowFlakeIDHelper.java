@@ -39,7 +39,6 @@ public class SnowFlakeIDHelper {
         }
         this.workerId = workerId;
         this.dataCenterId = dataCenterId;
-       // System.out.println(String.format("worker starting. timestamp left shift %d, datacenter id bits %d, worker id bits %d, sequence bits %d, workerid %d", timestampLeftShift, dataCenterIdBits, workerIdBits, sequenceBits, workerId));
     }
 
     public synchronized long nextId() {

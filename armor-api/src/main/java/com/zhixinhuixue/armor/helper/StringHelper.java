@@ -15,16 +15,13 @@ public class StringHelper {
      * @return
      */
     public static String toJSONString(Object o){
-        return JSONObject.toJSONString(o, new ValueFilter() {
-            @Override
-            public Object process(Object o, String s, Object o1) {
-                if (o1 instanceof Long){
-                    if (((Long) o1).longValue()>9007199254740992L){
-                        return o1.toString();
-                    }
+        return JSONObject.toJSONString(o, (ValueFilter) (o12, s, o1) -> {
+            if (o1 instanceof Long){
+                if ((Long) o1 >9007199254740992L){
+                    return o1.toString();
                 }
-                return o1;
             }
+            return o1;
         });
     }
 

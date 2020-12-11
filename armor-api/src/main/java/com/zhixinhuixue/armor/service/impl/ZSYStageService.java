@@ -8,13 +8,10 @@ import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
 import com.zhixinhuixue.armor.model.pojo.Stage;
 import com.zhixinhuixue.armor.service.IZSYStageService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -24,58 +21,57 @@ import java.util.List;
 @Service
 public class ZSYStageService implements IZSYStageService {
 
-    @Autowired
+    @Resource
     private IZSYStageMapper stageMapper;
-
-    @Autowired
+    @Resource
     private SnowFlakeIDHelper snowFlakeIDHelper;
-
-    private static final Logger logger = LoggerFactory.getLogger(ZSYTaskService.class);
 
     /**
      * 获取阶段列表
+     *
      * @return
      */
     @Override
-    public List<StageResDTO> getStage(){
-        List<StageResDTO> stageResDTOS = stageMapper.selectStage(ZSYTokenRequestContext.get().getDepartmentId());
-        return stageResDTOS;
+    public List<StageResDTO> getStage() {
+        return stageMapper.selectStage(ZSYTokenRequestContext.get().getDepartmentId());
     }
 
     /**
      * 添加阶段
+     *
      * @param stageResDTO
      */
     @Override
-    public Long addStage(StageResDTO stageResDTO){
-        if(stageMapper.validateStage(stageResDTO.getName().trim(),ZSYTokenRequestContext.get().getDepartmentId())>0){
+    public Long addStage(StageResDTO stageResDTO) {
+        if (stageMapper.validateStage(stageResDTO.getName().trim(), ZSYTokenRequestContext.get().getDepartmentId()) > 0) {
             throw new ZSYServiceException("阶段名称已存在，请修改后重试");
         }
-            Stage stage = new Stage();
-            stage.setCreateBy(ZSYTokenRequestContext.get().getUserId());
-            stage.setCreateTime(new Date());
-            stage.setId(snowFlakeIDHelper.nextId());
-            stage.setName(stageResDTO.getName());
-            stage.setSort(new Date().getTime());
-            stage.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
-            stageMapper.insert(stage);
-            return stage.getId();
+        Stage stage = new Stage();
+        stage.setCreateBy(ZSYTokenRequestContext.get().getUserId());
+        stage.setCreateTime(new Date());
+        stage.setId(snowFlakeIDHelper.nextId());
+        stage.setName(stageResDTO.getName());
+        stage.setSort(new Date().getTime());
+        stage.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
+        stageMapper.insert(stage);
+        return stage.getId();
     }
 
     /**
      * 编辑阶段
+     *
      * @param stageResDTO
      */
     @Override
-    public void editStage(StageResDTO stageResDTO){
+    public void editStage(StageResDTO stageResDTO) {
         Stage stage = stageMapper.selectById(stageResDTO.getId());
-        if(stage.getName()==stageResDTO.getName()&&stageMapper.validateStage(stageResDTO.getName().trim(),ZSYTokenRequestContext.get().getDepartmentId())>0){
+        if (stage.getName().equals(stageResDTO.getName()) && stageMapper.validateStage(stageResDTO.getName().trim(), ZSYTokenRequestContext.get().getDepartmentId()) > 0) {
             throw new ZSYServiceException("阶段名称或优先级已存在");
         }
         stage.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         stage.setId(stageResDTO.getId());
         stage.setName(stageResDTO.getName());
-        if( stageMapper.update(stage)==0){
+        if (stageMapper.update(stage) == 0) {
             throw new ZSYServiceException("更新阶段信息失败");
         }
 
@@ -83,14 +79,15 @@ public class ZSYStageService implements IZSYStageService {
 
     /**
      * 删除阶段
+     *
      * @param id
      */
     @Override
-    public void deleteStage(Long id){
-        if(stageMapper.countStage(id)!=0){
+    public void deleteStage(Long id) {
+        if (stageMapper.countStage(id) != 0) {
             throw new ZSYServiceException("阶段正在使用中，请修改或停止使用后删除");
         }
-        if(stageMapper.deleteStage(id)==0){
+        if (stageMapper.deleteStage(id) == 0) {
             throw new ZSYServiceException("删除失败");
         }
     }
@@ -153,38 +150,9 @@ public class ZSYStageService implements IZSYStageService {
         return ZSYResult.success().msg("移动位置成功");
     }
 
-
-//    /**
-//     * board移动阶段
-//     * @param stageResDTO
-//     */
-//    @Override
-//    public void moveStage(StageResDTO stageResDTO){
-//        if(stageResDTO.getId()==0){
-//            throw new ZSYServiceException("移动失败，阶段不存在");
-//        }
-//        Stage stage = stageMapper.selectById(stageResDTO.getId());
-//        if (stage == null) {
-//            throw new ZSYServiceException("移动失败，阶段不存在");
-//        }
-//        Long sort = 0L;//优先级
-//        if(stageResDTO.getNum()!=1){//直接移动到最后
-//            if( stageMapper.updateSortById(sort,stage.getId())==0){
-//                throw new ZSYServiceException("更新优先级失败，请稍后重试");
-//            }
-//        }
-//        if(stageResDTO.getNum()!=2){//移动到开始
-//            //根据顺序查询目标上一个阶段的优先级，+1获得当前优先级
-//            sort = stageMapper.selectBySort(stage.getSort()-1L)+1L;
-//        }
-//        stage.setSort(sort);
-//        if( stageMapper.update(stage)==0){
-//            throw new ZSYServiceException("更新阶段信息失败")   ;
-//        }
-//    }
-
     /**
      * board移动阶段
+     *
      * @param stageResDTO
      * @return
      */
@@ -197,12 +165,12 @@ public class ZSYStageService implements IZSYStageService {
         Stage change = children.get(stageResDTO.getSort().intValue());
 
         stage.setId(stage.getId());
-        if (stage.getSort()<change.getSort()) {
-            stage.setSort(change.getSort()+1L);
-        }else{
-            stage.setSort(change.getSort()-1L);
+        if (stage.getSort() < change.getSort()) {
+            stage.setSort(change.getSort() + 1L);
+        } else {
+            stage.setSort(change.getSort() - 1L);
         }
-        if( stageMapper.update(stage)==0){
+        if (stageMapper.update(stage) == 0) {
             throw new ZSYServiceException("更新阶段信息失败");
         }
     }

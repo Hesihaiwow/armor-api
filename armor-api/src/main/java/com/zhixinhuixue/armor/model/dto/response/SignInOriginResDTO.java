@@ -1,7 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.models.auth.In;
-
 import java.util.Date;
 
 /**

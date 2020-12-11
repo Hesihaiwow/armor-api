@@ -1,10 +1,5 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import com.zhixinhuixue.armor.model.pojo.BugUser;
-
-import java.util.Date;
-import java.util.List;
-
 /**
  * Created by Lang on 2017/11/7 0009.
  */

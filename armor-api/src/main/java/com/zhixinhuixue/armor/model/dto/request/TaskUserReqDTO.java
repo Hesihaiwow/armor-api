@@ -3,7 +3,6 @@ package com.zhixinhuixue.armor.model.dto.request;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -11,13 +10,6 @@ import java.util.List;
  * Created by Tate on 2017/8/7.
  */
 public class TaskUserReqDTO {
-    /**
-     * 阶段id
-     */
-/*
-    @NotNull(message = "阶段id不能为空")
-    private Long stageId;
-*/
 
     /**
      * 负责人

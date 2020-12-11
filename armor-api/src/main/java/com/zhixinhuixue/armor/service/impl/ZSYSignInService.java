@@ -2824,7 +2824,6 @@ public class ZSYSignInService implements IZSYSignInService {
                 workbook.write(os);
                 return ZSYQinuHelper.uploadToUfile(os.toByteArray(), fileName, "application/vnd.ms-excel", uFileProperties);
             } catch (Exception e) {
-                logger.error("导出表失败: " + e);
                 throw new ZSYServiceException("导出表失败" + e);
             }
         }

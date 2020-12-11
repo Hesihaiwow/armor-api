@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author sch

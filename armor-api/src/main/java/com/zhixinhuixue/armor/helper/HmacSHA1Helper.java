@@ -1,10 +1,10 @@
 package com.zhixinhuixue.armor.helper;
 
-import com.google.common.base.Charsets;
 import com.zhixinhuixue.armor.exception.ZSYServiceException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
@@ -24,8 +24,8 @@ public class HmacSHA1Helper {
     public static String sign(String encryptKey, String encryptText){
         try{
             Mac mac = Mac.getInstance(ALGORITHM);
-            mac.init(new SecretKeySpec(encryptKey.getBytes(Charsets.UTF_8), ALGORITHM));
-            return toBase64String(mac.doFinal(encryptText.getBytes(Charsets.UTF_8)));
+            mac.init(new SecretKeySpec(encryptKey.getBytes(StandardCharsets.UTF_8), ALGORITHM));
+            return toBase64String(mac.doFinal(encryptText.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e){
           e.printStackTrace();
           throw new ZSYServiceException("加密失败");

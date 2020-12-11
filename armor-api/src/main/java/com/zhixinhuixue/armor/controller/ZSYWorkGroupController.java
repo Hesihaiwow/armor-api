@@ -5,29 +5,26 @@ import com.zhixinhuixue.armor.model.dto.request.AddWorkGroupReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.EditWorkGroupReqDTO;
 import com.zhixinhuixue.armor.service.IZSYWorkGroupService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 /**
+ * 团队服务
  * @author sch
  * @time 2020/1/8 9:33
  */
 
 @RestController
 @RequestMapping("/api/work-group")
-@Api(value = "团队服务",description="任务管理系统团队相关接口",tags = "/work-group")
 public class ZSYWorkGroupController {
-    @Autowired
+    @Resource
     private IZSYWorkGroupService groupService;
 
     /**
      * 新增团队
      */
-    @ApiOperation("新增团队")
     @PostMapping("/add")
     public String addGroup(@Valid @RequestBody AddWorkGroupReqDTO reqDTO){
         groupService.addGroup(reqDTO);
@@ -37,7 +34,6 @@ public class ZSYWorkGroupController {
     /**
      * 编辑团队
      */
-    @ApiOperation("编辑团队")
     @PutMapping("/update")
     public String updateGroup(@Valid @RequestBody EditWorkGroupReqDTO reqDTO){
         groupService.updateGroup(reqDTO);
@@ -47,7 +43,6 @@ public class ZSYWorkGroupController {
     /**
      * 删除团队
      */
-    @ApiOperation("删除")
     @DeleteMapping("/delete/{id}")
     public String deleteGroup(@PathVariable("id")Long id){
         groupService.deleteGroup(id);
@@ -57,7 +52,6 @@ public class ZSYWorkGroupController {
     /**
      * 查询团队详情
      */
-    @ApiOperation("查询团队详情")
     @GetMapping("/{id}")
     public String getGroupDetail(@PathVariable("id")Long id){
         return ZSYResult.success().data(groupService.getGroupDetail(id)).build();
@@ -66,7 +60,6 @@ public class ZSYWorkGroupController {
     /**
      * 查询团队列表
      */
-    @ApiOperation("查询团队列表")
     @GetMapping("/list")
     public String getList(){
         return ZSYResult.success().data(groupService.getList()).build();
@@ -75,7 +68,6 @@ public class ZSYWorkGroupController {
     /**
      * 树结构
      */
-    @ApiOperation("树结构")
     @GetMapping("/tree")
     public String getTree(){
         return ZSYResult.success().data(groupService.getTree()).build();
@@ -84,7 +76,6 @@ public class ZSYWorkGroupController {
     /**
      * 新增成员
      */
-    @ApiOperation("添加成员")
     @PostMapping("/add-user")
     public String addGroupUsers(@Valid @RequestBody AddGroupUserReqDTO reqDTO){
         groupService.addGroupUsers(reqDTO);
@@ -94,7 +85,6 @@ public class ZSYWorkGroupController {
     /**
      * 查询团队成员
      */
-    @ApiOperation("查询团队成员")
     @GetMapping("/user/{groupId}")
     public String getGroupUsers(@PathVariable("groupId")Long groupId){
         return ZSYResult.success().data(groupService.getGroupUsers(groupId)).build();

@@ -4,23 +4,20 @@ import com.zhixinhuixue.armor.model.dto.request.AddUserTaskIntegralReqDTO;
 import com.zhixinhuixue.armor.model.dto.request.UserTaskIntegralReqDTO;
 import com.zhixinhuixue.armor.service.IZSYUserTaskIntegralService;
 import com.zhixinhuixue.armor.source.ZSYResult;
-import com.zhixinhuixue.armor.source.enums.ZSYRestHoursType;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 /**
+ * 用户任务积分接口
  * @author sch
  * @DATE 2019/9/9 9:44
  */
-@Api(value = "用户任务积分接口",description="用户任务积分接口",tags = "/user_task_integral")
 @RequestMapping("/api/user-task-integral")
 @RestController
 public class UserTaskIntegralController {
-    @Autowired
+    @Resource
     private IZSYUserTaskIntegralService userTaskIntegralService;
 
 //    @ApiOperation("统计7月之后的没有功能点的多人任务积分")
@@ -66,31 +63,50 @@ public class UserTaskIntegralController {
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("个人积分信息")
+    /**
+     * 个人积分信息
+     * @return
+     */
     @GetMapping("/personal")
     public String getPersonalIntegral(){
         return ZSYResult.success().data(userTaskIntegralService.getPersonalIntegral()).build();
     }
 
-    @ApiOperation("查看积分列表")
+    /**
+     * 查看积分列表
+     * @param reqDTO
+     * @return
+     */
     @PostMapping("/rank")
     public String getIntegralRank(@RequestBody UserTaskIntegralReqDTO reqDTO){
         return ZSYResult.success().data(userTaskIntegralService.getIntegralRank(reqDTO)).build();
     }
 
-    @ApiOperation("获取积分列数")
+    /**
+     * 获取积分列数
+     * @param reqDTO
+     * @return
+     */
     @PostMapping("/count")
     public String getIntegralCount(@RequestBody UserTaskIntegralReqDTO reqDTO){
         return ZSYResult.success().data(userTaskIntegralService.getIntegralCount(reqDTO)).build();
     }
 
-    @ApiOperation("获取用户积分历史")
+    /**
+     * 获取用户积分历史
+     * @param reqDTO
+     * @return
+     */
     @PostMapping("/history")
     public String getIntegralHistoryPage(@RequestBody UserTaskIntegralReqDTO reqDTO){
         return ZSYResult.success().data(userTaskIntegralService.getIntegralHistoryPage(reqDTO)).build();
     }
 
-    @ApiOperation("添加积分")
+    /**
+     * 添加积分
+     * @param reqDTO
+     * @return
+     */
     @PostMapping("/add")
     public String addIntegral(@Valid @RequestBody AddUserTaskIntegralReqDTO reqDTO){
         userTaskIntegralService.addIntegral(reqDTO);
@@ -98,35 +114,50 @@ public class UserTaskIntegralController {
     }
 
 
-    @ApiOperation("更新7月之后,没有任务级别的个人任务,新增级别")
+    /**
+     * 更新7月之后,没有任务级别的个人任务,新增级别
+     * @return
+     */
     @PutMapping("/private-task/add-level")
     public String privateTaskAddLevel(){
         userTaskIntegralService.privateTaskAddLevel();
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("更新7月之后,没有任务级别的多人任务,根据工时新增级别")
+    /**
+     * 更新7月之后,没有任务级别的多人任务,根据工时新增级别
+     * @return
+     */
     @PutMapping("/multi-task/add-level")
     public String multiTaskAddLevel(){
         userTaskIntegralService.multiTaskAddLevel();
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("计算7月之后完成的个人任务积分")
+    /**
+     * 计算7月之后完成的个人任务积分
+     * @return
+     */
     @PutMapping("/private-task/finished/count")
     public String countPrivateIntegral(){
         userTaskIntegralService.countPrivateIntegral();
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("计算7月之后结束的多人任务积分")
+    /**
+     * 计算7月之后结束的多人任务积分
+     * @return
+     */
     @PutMapping("/multi-task/finished/count")
     public String countMultiIntegral(){
         userTaskIntegralService.countMultiIntegral();
         return ZSYResult.success().build();
     }
 
-    @ApiOperation("计算7月之后完成的未结束的多人任务积分")
+    /**
+     * 计算7月之后完成的未结束的多人任务积分
+     * @return
+     */
     @PutMapping("/multi-task/completed/count")
     public String countMultiCompletedIntegral(){
         userTaskIntegralService.countMultiCompletedIntegral();

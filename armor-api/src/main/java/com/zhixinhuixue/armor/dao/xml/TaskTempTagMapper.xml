@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTempTagMapper">
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskTempTag">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="tt_id" property="ttId" jdbcType="BIGINT"/>
+        <result column="tag_id" property="tagId" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!--批量插入-->
+    <insert id="insertBatch">
+        INSERT INTO `task_temp_tag`
+        (`id`,`tt_id`,`tag_id`)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id,jdbcType=BIGINT},
+            #{item.ttId,jdbcType=BIGINT},
+            #{item.tagId,jdbcType=BIGINT}
+            )
+        </foreach>
+    </insert>
+
+    <!--根据临时任务id删除-->
+    <delete id="deleteByTtId">
+        DELETE FROM `task_temp_tag` WHERE `tt_id` = #{ttId}
+    </delete>
+
+    <!--根据临时任务id查询集合-->
+    <select id="selectByTtId" resultMap="BaseMap">
+        SELECT * FROM `task_temp_tag` WHERE `tt_id` = #{ttId}
+    </select>
+
+
+</mapper>

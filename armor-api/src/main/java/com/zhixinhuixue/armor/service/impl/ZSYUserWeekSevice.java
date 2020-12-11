@@ -6,22 +6,23 @@ import com.zhixinhuixue.armor.model.dto.response.UserWeekResDTO;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
 import com.zhixinhuixue.armor.service.IZSYUserWeekService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * Created by Lang on 2017/12/4 0004.
  */
 @Service
-public class ZSYUserWeekSevice implements IZSYUserWeekService{
+public class ZSYUserWeekSevice implements IZSYUserWeekService {
 
-    @Autowired
+    @Resource
     private IZSYUserWeekMapper userWeekMapper;
 
     /**
      * 获取周工作量
+     *
      * @param id
      * @param year
      * @param weekNumber
@@ -49,19 +50,18 @@ public class ZSYUserWeekSevice implements IZSYUserWeekService{
 
     /**
      * 获取去除某个任务后的周工时
-     * @author sch
+     *
      * @param taskId
      * @param userId
      * @param year
      * @param weekNumber
      * @return
+     * @author sch
      */
     @Override
     public Double getUserWeekHoursWithoutTask(Long taskId, Long userId, int year, int weekNumber) {
         Double userWeekHours = userWeekMapper.getUserWeekHours(0l, userId, weekNumber, year);
-        Double userWeekHoursByTask = userWeekMapper.selectHoursByTaskAndUser(taskId,userId,weekNumber,year);
-        Double userWeekHoursWithoutTask = userWeekHours - userWeekHoursByTask;
-
-        return userWeekHoursWithoutTask;
+        Double userWeekHoursByTask = userWeekMapper.selectHoursByTaskAndUser(taskId, userId, weekNumber, year);
+        return (userWeekHours - userWeekHoursByTask);
     }
 }

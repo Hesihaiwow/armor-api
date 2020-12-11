@@ -170,6 +170,5 @@ public interface IZSYTaskUserMapper {
      */
     List<TaskAndHourBO> selectUserPrivateTaskHours(@Param("taskId") Long taskId, @Param("userId") Long userId);
 
-//    List<Long> selectUserIdByTaskId(@Param("taskId")Long taskId);
     // -- sch
 }

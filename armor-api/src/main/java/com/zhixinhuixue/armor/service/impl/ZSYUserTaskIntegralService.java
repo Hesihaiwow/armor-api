@@ -1,7 +1,6 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.*;
@@ -35,6 +34,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.github.pagehelper.page.PageMethod.startPage;
 
 /**
  * @author sch
@@ -323,7 +324,6 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUserHoursBO.getTaskId());
                     integral.setUserId(taskUserHoursBO.getUserId());
                     integral.setIntegral(userIntegral);
-//                    integral.setScore(BigDecimal.ZERO);
                     integral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
                     integral.setDescription("个人任务积分");
                     integral.setReviewStatus(3);
@@ -407,7 +407,6 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integral.setTaskId(taskUserHoursBO.getTaskId());
                     integral.setUserId(taskUserHoursBO.getUserId());
                     integral.setIntegral(userIntegral);
-//                    integral.setScore(BigDecimal.ZERO);
                     integral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
                     integral.setDescription("个人任务积分");
                     integral.setReviewStatus(3);
@@ -555,7 +554,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 || jobRole == ZSYJobRole.IOS.getValue()
                 || jobRole == ZSYJobRole.ANDROID.getValue()
                 || jobRole == ZSYJobRole.ARTIFICIAL.getValue();
-    };
+    }
 
     /**
      * 查看积分列表
@@ -601,19 +600,18 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
         if (reqDTO.getUserId() == null){
             throw new ZSYServiceException("用户id为空,请检查");
         }
-        PageHelper.startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
+        startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
         Page<UserIntegralHistoryPageBO> userIntegralHistoryBOS =
                 userTaskIntegralMapper.getIntegralHistory(reqDTO.getUserId(), reqDTO.getBeginTime(), reqDTO.getEndTime());
         Page<UserIntegralHistoryPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralHistoryBOS, page);
-        userIntegralHistoryBOS.stream().forEach(userIntegralHistoryBO -> {
+        userIntegralHistoryBOS.forEach(userIntegralHistoryBO -> {
             UserIntegralHistoryPageResDTO resDTO = new UserIntegralHistoryPageResDTO();
             BeanUtils.copyProperties(userIntegralHistoryBO, resDTO);
             resDTO.setCreateTime(userIntegralHistoryBO.getCreateTime());
             page.add(resDTO);
         });
-        PageInfo<UserIntegralHistoryPageResDTO> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+        return new PageInfo<>(page);
     }
 
     /**
@@ -896,7 +894,6 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 taskUserMapper.updateByPrimaryKeySelective(taskUser);
             });
         }
-        System.out.println(taskUserList.size());
     }
 
     /**
@@ -979,8 +976,6 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void countMultiIntegral() {
         List<UserTaskIntegral> integralList = new ArrayList<>();
-        //查询7月之后的任务
-        List<Task> taskList = taskMapper.selectListAfterJuly();
         //查询7月之后已结束的多人任务
         List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJulyWithLevel(3);
         if (!CollectionUtils.isEmpty(taskUserList)){
@@ -997,7 +992,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 List<TaskEvaluation> taskEvaluations = evaluationMapper.selectListByTaskAndUser(taskUser.getTaskId(), taskUser.getUserId());
                 if (!CollectionUtils.isEmpty(taskEvaluations)){
                     avgScore = getAvgScore(taskEvaluations);
-                    evaluateCoefficient = getEvaluateCoefficient(taskEvaluations,avgScore);
+                    evaluateCoefficient = getEvaluateCoefficient(taskEvaluations);
                 }else {
                     evaluateCoefficient = BigDecimal.valueOf(0.9);
                 }
@@ -1034,12 +1029,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void countMultiCompletedIntegral() {
         List<UserTaskIntegral> integralList = new ArrayList<>();
-        //查询7月之后的任务
-        List<Task> taskList = taskMapper.selectListAfterJuly();
         //查询7月之后完成但未结束的多人任务
         List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJulyWithLevel(2);
         if (!CollectionUtils.isEmpty(taskUserList)){
-            System.out.println("taskUserList = " + taskUserList.size());
             for (TaskUser taskUser : taskUserList) {
                 //查询当前用户对别人的评价,如果没有评价,则当前任务没有完全评价完,过滤
                 List<EvaluationBO> evaluationBOS = evaluationMapper.selectMeToOthers(taskUser.getTaskId(), taskUser.getUserId());
@@ -1048,7 +1040,6 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 }
             }
             if (!CollectionUtils.isEmpty(taskUserList)){
-                System.out.println("taskUserList = " + taskUserList.size());
                 taskUserList.forEach(taskUser -> {
                     Integer taskLevel = taskUser.getTaskLevel();
                     if (taskLevel == null){
@@ -1062,7 +1053,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     List<TaskEvaluation> taskEvaluations = evaluationMapper.selectListByTaskAndUser(taskUser.getTaskId(), taskUser.getUserId());
                     if (!CollectionUtils.isEmpty(taskEvaluations)){
                         avgScore = getAvgScore(taskEvaluations);
-                        evaluateCoefficient = getEvaluateCoefficient(taskEvaluations,avgScore);
+                        evaluateCoefficient = getEvaluateCoefficient(taskEvaluations);
                     }else {
                         evaluateCoefficient = BigDecimal.valueOf(0.9);
                     }
@@ -1097,7 +1088,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
      * @return
      */
     private BigDecimal getOriginIntegral(Integer taskLevel){
-        BigDecimal originIntegral = BigDecimal.ZERO;
+        BigDecimal originIntegral;
         if (taskLevel == 1){
             originIntegral = BigDecimal.valueOf(2);
         }else if (taskLevel == 2){
@@ -1118,13 +1109,12 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     /**
      * 获取评价系数
      * @param evaluationList
-     * @param avgScore
      * @return
      */
-    private BigDecimal getEvaluateCoefficient(List<TaskEvaluation> evaluationList,BigDecimal avgScore){
+    private BigDecimal getEvaluateCoefficient(List<TaskEvaluation> evaluationList){
         BigDecimal evaluateCoefficient = BigDecimal.ONE;
         double totalScore = evaluationList.stream().mapToDouble(TaskEvaluation::getScore).sum();
-        avgScore = BigDecimal.valueOf(totalScore)
+        BigDecimal avgScore = BigDecimal.valueOf(totalScore)
                 .divide(BigDecimal.valueOf(evaluationList.size()),2,BigDecimal.ROUND_HALF_UP);
         if (avgScore.compareTo(BigDecimal.valueOf(4.85)) >= 0){
             evaluateCoefficient = BigDecimal.valueOf(1);
@@ -1147,8 +1137,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
      */
     private BigDecimal getAvgScore(List<TaskEvaluation> evaluationList){
         double totalScore = evaluationList.stream().mapToDouble(TaskEvaluation::getScore).sum();
-        BigDecimal avgScore = BigDecimal.valueOf(totalScore)
+        return BigDecimal.valueOf(totalScore)
                 .divide(BigDecimal.valueOf(evaluationList.size()),2,BigDecimal.ROUND_HALF_UP);
-        return avgScore;
     }
 }

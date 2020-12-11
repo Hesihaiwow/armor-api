@@ -5,7 +5,6 @@ import com.zhixinhuixue.armor.model.bo.NotificationBO;
 import com.zhixinhuixue.armor.model.dto.request.NoticeReqDTO;
 import com.zhixinhuixue.armor.model.pojo.Notification;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Date;
 import java.util.List;

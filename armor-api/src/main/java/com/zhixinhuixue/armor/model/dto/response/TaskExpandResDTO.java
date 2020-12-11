@@ -2,7 +2,6 @@ package com.zhixinhuixue.armor.model.dto.response;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Lang on 2017/12/7 0007.

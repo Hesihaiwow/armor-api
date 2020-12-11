@@ -1,51 +1,95 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
-
 import java.util.Date;
 
 /**
+ * 新需求列表
  * Created by SCH on 2018-10-16
  */
-@ApiModel("新需求列表")
 public class DemandResDTO {
-    @ApiModelProperty("需求Id")
+    /**
+     * 需求Id
+     */
     private Long id;
-    @ApiModelProperty("标题")
+
+    /**
+     * 标题
+     */
     private String title;
-    @ApiModelProperty("来源(即为需求实际提出人)")
+
+    /**
+     * 来源(即为需求实际提出人)
+     */
     private String origin;
-    @ApiModelProperty("类型(0:个人建议,1:市场反馈,2:公司决策)")
+
+    /**
+     * 类型(0:个人建议,1:市场反馈,2:公司决策)
+     */
     private Integer type;
-    @ApiModelProperty("优先级")
+
+    /**
+     * 优先级
+     */
     private Integer priority;
-//    @ApiModelProperty("提出人(需求新增人)")
-//    private String createBy;
-    @ApiModelProperty("提出日期")
+
+    /**
+     * 提出日期
+     */
     private Date feedbackTime;
-    @ApiModelProperty("创建日期")
+
+    /**
+     * 创建日期
+     */
     private Date createTime;
-    @ApiModelProperty("期待上线日期")
+
+    /**
+     * 期待上线日期
+     */
     private Date releaseTime;
-    @ApiModelProperty("点赞数")
+
+    /**
+     * 点赞数
+     */
     private Integer likesNum;
-    @ApiModelProperty("状态(0:未读,1:已读)")
+
+    /**
+     * 状态(0:未读,1:已读)
+     */
     private Integer readStatus;
-    @ApiModelProperty("问题")
+
+    /**
+     * 问题
+     */
     private String question;
-    @ApiModelProperty("目标")
+
+    /**
+     * 目标
+     */
     private String target;
-    @ApiModelProperty("项目id")
+
+    /**
+     * 项目id
+     */
     private Long projectId;
-    @ApiModelProperty("状态")
+
+    /**
+     * 状态
+     */
     private Integer status;
-    @ApiModelProperty("学管id")
+
+    /**
+     * 学管id
+     */
     private Integer coachId;
-    @ApiModelProperty("来源")
+
+    /**
+     * 来源
+     */
     private Integer source;
-    @ApiModelProperty("负责人")
+
+    /**
+     * 负责人
+     */
     private Long chargeMan;
     private String chargeManName;
 
