@@ -4890,6 +4890,7 @@
                     this.fetchMyRestHours();
                     this.fetchPersonalMultipleWait();
                     this.fetchPersonalTaskModifyWait();
+                    this.fetchPendingPriTaskTemp();
                     if (this.userRole > 1) {
                         this.fetchPersonalTaskIntegral();
                     } else {
