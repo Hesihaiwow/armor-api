@@ -4890,7 +4890,6 @@
                     this.fetchMyRestHours();
                     this.fetchPersonalMultipleWait();
                     this.fetchPersonalTaskModifyWait();
-                    this.fetchPendingPriTaskTemp();
                     if (this.userRole > 1) {
                         this.fetchPersonalTaskIntegral();
                     } else {
@@ -6456,10 +6455,6 @@
             handleWaitAuditPage(currentPage) {
                 this.waitAuditPage.pageNum = currentPage;
                 this.fetchTaskWaitAudit()
-            },
-            handleWaitAuditTaskTempPage(currentPage) {
-                this.taskTempPage.pageNum = currentPage;
-                this.fetchPersonalMultipleWait()
             },
             handleWaitAuditTaskTempPage2(currentPage) {
                 this.taskTempPage3.pageNum = currentPage;
@@ -8152,7 +8147,9 @@
                     res.data.forEach((task) => {
                         // task.name = '(待审核 多人任务)' + task.name;
                     });
-                    this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
+                    this.$nextTick(function() {
+                        this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
+                    })
                 }))
 
             },
@@ -8701,10 +8698,6 @@
                         });
                         if (this.userRole > 0) {
                             this.reload();
-                            // this.fetchPersonalTaskModifyWait();
-                            // this.fetchTaskDoing();
-                            // this.fetchPersonalMultipleWait();
-                            // window.history.go(0)
                         } else {
                             this.fetchTaskModifyWait();
                             this.fetchTaskModifyAccessed();
