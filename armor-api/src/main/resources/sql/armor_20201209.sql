@@ -9,7 +9,7 @@ ALTER TABLE `task_temp`
     MODIFY COLUMN `task_id` bigint(20) NULL COMMENT '任务id',
     ADD COLUMN `link_task_id` bigint(20) NULL COMMENT '关联任务id(个人任务用)',
     ADD COLUMN `project_id`   bigint(20) NULL COMMENT '项目id(个人任务用)',
-    ADD COLUMN `task_name`  varchar(256) NULL COMMENT '任务名称(个人任务用)';
+    ADD COLUMN `pri_task_name`  varchar(256) NULL COMMENT '任务名称(个人任务用)';
 
 ALTER TABLE `task_review_log`
 MODIFY COLUMN `task_id`  bigint(20) NULL COMMENT '任务id';
