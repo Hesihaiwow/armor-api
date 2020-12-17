@@ -3015,7 +3015,7 @@
                     </el-button>
                     <el-button type="primary" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
                                @click="saveEditPriTaskTemp" :loading="taskAble">
-                        编辑
+                        保存
                     </el-button>
                     <el-button type="success" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
                                @click="savePassPriTaskTemp(taskTemp.priTaskTempDetail.id)"
@@ -3031,7 +3031,7 @@
                      </el-button>
                     <el-button type="primary" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
                                @click="saveEditPriTaskTemp" :loading="taskAble">
-                         编辑
+                         保存
                     </el-button>
                      <el-button type="success" v-show="taskTemp.priTaskTempDetail.isChecked === 0"
                                 @click="savePassPriTaskTemp(taskTemp.priTaskTempDetail.id)"
@@ -9729,9 +9729,9 @@
                             this.$message({showClose: true, message: '个人任务创建成功', type: 'success'});
                             this.$refs[formName].resetFields();
                             this.clearPrivateTaskTemp();
-                            this.priTaskTemp.addVisible = false;
                             this.taskAble = false;
                             this.reload()
+                            this.priTaskTemp.addVisible = false;
                         });
                     } else {
                         this.taskAble = false
@@ -9805,9 +9805,9 @@
                 http.zsyPutHttp('/task-temp/private/' + param.id, param, (resp) => {
                     this.$message({showClose: true, message: '个人任务修改成功', type: 'success'});
                     this.clearEditPrivateTaskTemp();
-                    this.taskTemp.priTaskVisible = false;
                     this.taskAble = false;
                     this.reload()
+                    this.taskTemp.priTaskVisible = false;
                 });
             },
             //审核通过个人任务申请
@@ -9880,9 +9880,9 @@
                 http.zsyPutHttp('/task-temp/private/accept/' + param.id, param, (resp) => {
                     this.$message({showClose: true, message: '个人任务审核成功', type: 'success'});
                     this.clearEditPrivateTaskTemp();
-                    this.taskTemp.priTaskVisible = false;
                     this.taskAble = false;
                     this.reload()
+                    this.taskTemp.priTaskVisible = false;
                 });
             },
             // -- sch

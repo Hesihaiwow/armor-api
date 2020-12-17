@@ -3530,9 +3530,9 @@
                 http.zsyPutHttp('/task-temp/private/' + param.id, param, (resp) => {
                     this.$message({showClose: true, message: '个人任务修改成功', type: 'success'});
                     this.clearEditPriTaskTemp();
-                    this.priTaskTemp.editVisible = false;
                     this.$emit('reload');
                     this.isSaving = false;
+                    this.priTaskTemp.editVisible = false;
                 },err=>{
                     this.$message({showClose: true, message: err.errMsg, type: 'error'});
                     this.isSaving = false;
