@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -107,24 +105,17 @@ public class ZSYPlatformService implements IZSYPlatformService {
         List<Platform> platforms = platformMapper.selectList(group);
         List<PlatformResDTO> platformResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(platforms)){
-            Random random = null;
-            try {
-                random = SecureRandom.getInstanceStrong();
-            } catch (NoSuchAlgorithmException e) {
-                LOGGER.error(e.getMessage());
-            }
-            for (Platform platform : platforms) {
+            platforms.forEach(platform -> {
                 PlatformResDTO res = new PlatformResDTO();
                 res.setId(platform.getId());
                 res.setName(platform.getName());
-                if (random != null){
-                    int i = random.nextInt(8);
-                    res.setColor(i);
-                    res.setGroupMark(platform.getGroupMark());
-                    res.setGroupMarkText(PlatformGroupEnum.getName(platform.getGroupMark()));
-                    platformResDTOList.add(res);
-                }
-            }
+                Random random = new Random();
+                int i = random.nextInt(8);
+                res.setColor(i);
+                res.setGroupMark(platform.getGroupMark());
+                res.setGroupMarkText(PlatformGroupEnum.getName(platform.getGroupMark()));
+                platformResDTOList.add(res);
+            });
         }
         return platformResDTOList;
     }
