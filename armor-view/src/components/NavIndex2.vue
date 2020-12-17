@@ -1198,45 +1198,45 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
-<!--                <p class="mic-title">个人任务审核</p>-->
-<!--                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClickPrivateTask">-->
-<!--                    <el-tab-pane label="待审核" name="wait">-->
-<!--                        <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"-->
-<!--                                   taskStatus="WaitAuditing"-->
-<!--                                   :projectList="projectList"-->
-<!--                                   :userList="checkInUsers"-->
-<!--                                   :stageList="stageList"-->
-<!--                                   :viewType="1"-->
-<!--                                   :tagList="tagList"></task-item>-->
-<!--                        <div class="pagination" v-show="this.task.waitAudit.length>0">-->
-<!--                            <el-pagination-->
-<!--                                    @current-change="handleWaitAuditPage"-->
-<!--                                    :current-page.sync="waitAuditPage.pageNum"-->
-<!--                                    :page-size="waitAuditPage.pageSize"-->
-<!--                                    :layout="waitAuditPageLayout"-->
-<!--                                    :total="waitAuditPage.total">-->
-<!--                            </el-pagination>-->
-<!--                        </div>-->
-<!--                    </el-tab-pane>-->
-<!--                    <el-tab-pane label="审核通过" name="completed">-->
-<!--                        <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"-->
-<!--                                   taskStatus="auditSuccess"-->
-<!--                                   :projectList="projectList"-->
-<!--                                   :userList="checkInUsers"-->
-<!--                                   :stageList="stageList"-->
-<!--                                   :viewType="1"-->
-<!--                                   :tagList="tagList"></task-item>-->
-<!--                        <div class="pagination" v-show="this.task.auditSuccess.length>0">-->
-<!--                            <el-pagination-->
-<!--                                    @current-change="handleAuditSuccessPage"-->
-<!--                                    :current-page.sync="auditSuccessPage.pageNum"-->
-<!--                                    :page-size="auditSuccessPage.pageSize"-->
-<!--                                    :layout="auditSuccessPageLayout"-->
-<!--                                    :total="auditSuccessPage.total">-->
-<!--                            </el-pagination>-->
-<!--                        </div>-->
-<!--                    </el-tab-pane>-->
-<!--                </el-tabs>-->
+                <!--                <p class="mic-title">个人任务审核</p>-->
+                <!--                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClickPrivateTask">-->
+                <!--                    <el-tab-pane label="待审核" name="wait">-->
+                <!--                        <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"-->
+                <!--                                   taskStatus="WaitAuditing"-->
+                <!--                                   :projectList="projectList"-->
+                <!--                                   :userList="checkInUsers"-->
+                <!--                                   :stageList="stageList"-->
+                <!--                                   :viewType="1"-->
+                <!--                                   :tagList="tagList"></task-item>-->
+                <!--                        <div class="pagination" v-show="this.task.waitAudit.length>0">-->
+                <!--                            <el-pagination-->
+                <!--                                    @current-change="handleWaitAuditPage"-->
+                <!--                                    :current-page.sync="waitAuditPage.pageNum"-->
+                <!--                                    :page-size="waitAuditPage.pageSize"-->
+                <!--                                    :layout="waitAuditPageLayout"-->
+                <!--                                    :total="waitAuditPage.total">-->
+                <!--                            </el-pagination>-->
+                <!--                        </div>-->
+                <!--                    </el-tab-pane>-->
+                <!--                    <el-tab-pane label="审核通过" name="completed">-->
+                <!--                        <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"-->
+                <!--                                   taskStatus="auditSuccess"-->
+                <!--                                   :projectList="projectList"-->
+                <!--                                   :userList="checkInUsers"-->
+                <!--                                   :stageList="stageList"-->
+                <!--                                   :viewType="1"-->
+                <!--                                   :tagList="tagList"></task-item>-->
+                <!--                        <div class="pagination" v-show="this.task.auditSuccess.length>0">-->
+                <!--                            <el-pagination-->
+                <!--                                    @current-change="handleAuditSuccessPage"-->
+                <!--                                    :current-page.sync="auditSuccessPage.pageNum"-->
+                <!--                                    :page-size="auditSuccessPage.pageSize"-->
+                <!--                                    :layout="auditSuccessPageLayout"-->
+                <!--                                    :total="auditSuccessPage.total">-->
+                <!--                            </el-pagination>-->
+                <!--                        </div>-->
+                <!--                    </el-tab-pane>-->
+                <!--                </el-tabs>-->
 
                 <p class="mic-title">任务修改申请审核</p>
                 <el-tabs v-model="taskModifyTabsActiveName" @tab-click="handleClickTaskModify">
@@ -4735,6 +4735,10 @@
                     this.fetchTaskFinished();
                 } else if (this.activeName === 'taskBug') {
                     this.fetchMyTaskBugPage()
+                } else if (this.activeName === 'doing') {
+                    this.task.doing = []
+                    this.fetchPersonalMultipleWait();
+                    this.fetchTaskDoing();
                 }
             },
             handleClickLeave() {
@@ -4881,15 +4885,15 @@
                     this.fetchUserLeaveList();
                 } else if (this.userRole > 0 && this.userRole < 3) {
                     this.fetchUserLeaveList();
-                    this.fetchTaskDoing();
                     this.fetchWaitEvaluate();
                     this.fetchQuestionDoing();
                     this.fetchMyRunningExtraWork();
                     this.fetchMyRecheckWait();
                     this.fetchMySignInData();
                     this.fetchMyRestHours();
-                    this.fetchPersonalMultipleWait();
                     this.fetchPersonalTaskModifyWait();
+                    this.fetchPersonalMultipleWait();
+                    this.fetchTaskDoing();
                     if (this.userRole > 1) {
                         this.fetchPersonalTaskIntegral();
                     } else {
@@ -5608,8 +5612,7 @@
             fetchTaskDoing() {
                 let vm = this;
                 http.zsyGetHttp('/task/doing', {}, (resp) => {
-                    vm.task.doing = this.makeUpItems(resp.data);
-                    vm.fetchMyTaskWaitAudit()
+                    vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data));
                 })
             },
             // 获取用户测试中的任务
@@ -5698,15 +5701,15 @@
                 })
             },
             // 获取我的待审核任务
-            fetchMyTaskWaitAudit() {
-                let vm = this;
-                http.zsyGetHttp('/task/pending', {}, (resp) => {
-                    resp.data.forEach((task) => {
-                        // task.name = '(待审核 个人任务)' + task.name;
-                    });
-                    vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data))
-                })
-            },
+            // fetchMyTaskWaitAudit() {
+            //     let vm = this;
+            //     http.zsyGetHttp('/task/pending', {}, (resp) => {
+            //         resp.data.forEach((task) => {
+            //             // task.name = '(待审核 个人任务)' + task.name;
+            //         });
+            //         vm.task.doing = vm.task.doing.concat(this.makeUpItems(resp.data))
+            //     })
+            // },
             //获取个人请假信息
             fetchUserLeaveList() {
                 let vm = this;
@@ -8144,12 +8147,7 @@
             },
             fetchPersonalMultipleWait() {
                 http.zsyGetHttp('/task-temp/personal/pending', {}, (res => {
-                    res.data.forEach((task) => {
-                        // task.name = '(待审核 多人任务)' + task.name;
-                    });
-                    this.$nextTick(function() {
-                        this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
-                    })
+                    this.task.doing = this.task.doing.concat(this.makeUpItems2(res.data))
                 }))
 
             },
