@@ -1,9 +1,11 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdAndIsAdminField;
+
 /**
  * Created by Akuma on 2017/8/7.
  */
-public class LoginInfoReqDTO {
+public class LoginInfoReqDTO extends OrgIdAndIsAdminField {
 
     //用户ID
     private Long userId;

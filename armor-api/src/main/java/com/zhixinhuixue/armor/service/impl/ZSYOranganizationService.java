@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -81,6 +82,7 @@ public class ZSYOranganizationService implements IZSYOranganizatinService {
      *
      * @param orgReqDTO
      */
+    @Transactional
     @Override
     public void addOrg(OrgReqDTO orgReqDTO) {
 
@@ -111,11 +113,13 @@ public class ZSYOranganizationService implements IZSYOranganizatinService {
         department.setName(orgReqDTO.getName());
         department.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         department.setParentId(uuid);
+        department.setOrgId(uuid);
 
         izsyDepartmentMapper.insertDept(department);
 
     }
 
+    @Transactional
     @Override
     public void modifyOrg(OrgReqDTO orgReqDTO, Long orgId) {
         if(oranganizationMapper.selectById(orgId) == null){
@@ -147,6 +151,7 @@ public class ZSYOranganizationService implements IZSYOranganizatinService {
             throw new ZSYServiceException(String.format("用户账户[%s]已存在", userReqDTO.getAccount()));
         }
 
+
         User user = new User();
         BeanUtils.copyProperties(userReqDTO, user);
         user.setJobNumber(userReqDTO.getJobNumber().trim());
@@ -156,32 +161,37 @@ public class ZSYOranganizationService implements IZSYOranganizatinService {
         user.setIsAdmin(0);
         user.setUserRole(0);
         user.setDepartmentId(userReqDTO.getOrgId());
+        user.setOrgId(userReqDTO.getOrgId());
         user.setIntegral(new BigDecimal(ZSYConstants.DEFAULT_INTEGRAL));
         if (userReqDTO.getPassword() == null || "".equals(userReqDTO.getPassword())) {
             user.setPassword(MD5Helper.convert(
                     String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
                             ZSYConstants.HINT_PASSWORD_KEY), 32, false));
         }
-        izsyUserMapper.insertUser(user);
 
         if(oranganizationMapper.selectById(user.getOrgId()) == null){
             throw new ZSYServiceException("该机构不存在");
         }
+
+        izsyUserMapper.insertUser(user);
+
         oranganizationMapper.updateOrgUser(user.getOrgId(),user.getId());
     }
 
+    @Transactional
     @Override
     public void modifyUser(OrgUserReqDTO userReqDTO) {
 
-//        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
-//            throw new ZSYAuthException("没有权限执行此操作");
-//        }
+        if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
+            throw new ZSYAuthException("没有权限执行此操作");
+        }
 
         User user = new User();
         BeanUtils.copyProperties(userReqDTO, user);
-        System.out.println(user.toString());
+
         user.setId(userReqDTO.getUserId());
         user.setJobNumber(userReqDTO.getJobNumber().trim());
+
         if (izsyUserMapper.updateSelectiveById(user) == 0) {
             throw new ZSYServiceException("更新用户失败");
         }
@@ -191,13 +201,14 @@ public class ZSYOranganizationService implements IZSYOranganizatinService {
     @Transactional
     @Override
     public void deleteByUserId(Long userId,Long orgId) {
-        // 删除user表
+        // 删除user表中超管
         izsyUserMapper.deleteById(userId);
 
-        // 删除org表
+        // 删除org表 表中超管
         oranganizationMapper.updateOrgUser(orgId,null);
     }
 
+    @Transactional
     @Override
     public void deleteByOrgId(Long orgId) {
 

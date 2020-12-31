@@ -115,6 +115,11 @@ public class ZSYUserService implements IZSYUserService {
         if (user.getDepartmentId() != 0) {
             departmentId = departmentMapper.selectById(user.getDepartmentId()).getParentId();
         }
+
+        // token 中 增加 org_id,is_admin
+        Long orgId = user.getOrgId();
+        Integer isAdmin = user.getIsAdmin();
+
         String jwt = JWT.create()
                 .withIssuer(jwtIssuer)
                 .withExpiresAt(DateHelper.afterDate(new Date(), jwtExp))
@@ -124,6 +129,8 @@ public class ZSYUserService implements IZSYUserService {
                 .withClaim("avatarUrl", user.getAvatarUrl())
                 .withClaim("userRole", user.getUserRole())
                 .withClaim("departmentId", departmentId)
+                .withClaim("orgId",orgId)
+                .withClaim("isAdmin",isAdmin)
                 .sign(algorithm);
 
         String loginKey = String.format(ZSYConstants.LOGIN_KEY, user.getId());
@@ -157,6 +164,8 @@ public class ZSYUserService implements IZSYUserService {
         if (user.getDepartmentId() != 0) {
             departmentId = departmentMapper.selectById(user.getDepartmentId()).getParentId();
         }
+        Long orgId = user.getOrgId();
+        Integer isAdmin = user.getIsAdmin();
         String jwt = JWT.create()
                 .withIssuer(jwtIssuer)
                 .withExpiresAt(DateHelper.afterDate(new Date(), jwtExp))
@@ -166,6 +175,8 @@ public class ZSYUserService implements IZSYUserService {
                 .withClaim("avatarUrl", user.getAvatarUrl())
                 .withClaim("userRole", user.getUserRole())
                 .withClaim("departmentId", departmentId)
+                .withClaim("orgId", orgId)
+                .withClaim("isAdmin", isAdmin)
                 .sign(algorithm);
 
         String loginKey = String.format(ZSYConstants.LOGIN_KEY, user.getId());
@@ -272,6 +283,9 @@ public class ZSYUserService implements IZSYUserService {
                     String.format("%s%s", SHA1Helper.Sha1(ZSYConstants.DEFAULT_PASSWORD),
                             ZSYConstants.HINT_PASSWORD_KEY), 32, false));
         }
+        Long orgId = ZSYTokenRequestContext.get().getOrgId();
+        user.setIsAdmin(0);
+        user.setOrgId(orgId);
         userMapper.insertUser(user);
 
         List<UserCheckPeopleReqDTO> checkUsers = userReqDTO.getCheckUserList();
@@ -422,6 +436,10 @@ public class ZSYUserService implements IZSYUserService {
 
     @Override
     public List<EffectUserResDTO> getEffectiveUsers() {
+        Long orgId = ZSYTokenRequestContext.get().getOrgId();
+        List<User> tmp = userMapper.selectByOrdId(orgId);
+        List<Long> userIds = tmp.stream().map(User::getId).collect(Collectors.toList());
+
         List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
         List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
         users.stream().forEach(user -> {
@@ -434,6 +452,9 @@ public class ZSYUserService implements IZSYUserService {
 
     @Override
     public List<EffectUserResDTO> getManageUsers() {
+        Long orgId = ZSYTokenRequestContext.get().getOrgId();
+        List<User> tmp = userMapper.selectByOrdId(orgId);
+        List<Long> userIds = tmp.stream().map(User::getId).collect(Collectors.toList());
         List<User> users = userMapper.selectEffectiveUsers(ZSYTokenRequestContext.get().getDepartmentId());
         List<EffectUserResDTO> effectUserResDTOS = Lists.newArrayList();
         users.stream().forEach(user -> {
@@ -630,6 +651,10 @@ public class ZSYUserService implements IZSYUserService {
      */
     @Override
     public List<EffectUserResDTO> getProductManagers() {
+        Long orgId = ZSYTokenRequestContext.get().getOrgId();
+        List<User> tmp = userMapper.selectByOrdId(orgId);
+        List<Long> userIds = tmp.stream().map(User::getId).collect(Collectors.toList());
+
         List<User> users = userMapper.selectManagers();
         List<EffectUserResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(users)) {

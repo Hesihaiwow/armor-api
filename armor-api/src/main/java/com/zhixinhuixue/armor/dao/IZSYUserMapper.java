@@ -50,7 +50,7 @@ public interface IZSYUserMapper {
      *
      * @return
      */
-    List<User> selectEffectiveUsers(Long id);
+    List<User> selectEffectiveUsers(@Param("id")Long id);
 
     /**
      * 删除用户(逻辑删除)
@@ -236,5 +236,13 @@ public interface IZSYUserMapper {
      * @author sch
      */
     List<User> selectNotDeleteUsers();
+
+    /**
+     * 查询机构下人员
+     *
+     * @param orgId
+     * @return
+     */
+    List<User> selectByOrdId(@Param("orgId") Long orgId);
     // -- sch
 }

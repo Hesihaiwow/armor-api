@@ -20,10 +20,10 @@
   <!-- 添加部门 -->
   <insert id="insertDept" parameterType="com.zhixinhuixue.armor.model.pojo.Department">
     insert into department (id, name, description,
-    parent_id, is_delete, create_time
+    parent_id, is_delete, create_time,org_id
     )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
-    #{parentId,jdbcType=BIGINT}, #{isDelete,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+    #{parentId,jdbcType=BIGINT}, #{isDelete,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{orgId,jdbcType=BIGINT}
     )
   </insert>
 
