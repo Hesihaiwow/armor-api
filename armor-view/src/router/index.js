@@ -28,6 +28,12 @@ import TestExamplesLook from '@/components/test-examples/Look'
 import { cancelArr } from '../lib/Http'
 
 import bug from '@/components/bug-system/Index.vue'
+
+import IndexAdmin from '@/components/IndexAdmin'
+import LoginAdmin from '@/components/LoginAdmin'
+import NavIndexAdmin from '@/components/NavIndexAdmin'
+
+
 Vue.use(Router)
 
 const router = new Router({
@@ -36,6 +42,23 @@ const router = new Router({
             path: '/',
             name: 'Login',
             component: Login
+        },
+        {
+            path: '/admin',
+            // name: 'LoginAdmin',
+            component: LoginAdmin
+        },
+        {
+            path: '/indexAdmin',
+            name: 'IndexAdmin',
+            component: IndexAdmin,
+            children: [
+                {
+                    name:'NavIndexAdmin',
+                    path: 'navIndexAdmin',
+                    component: NavIndexAdmin
+                },
+            ]
         },
         {
             path: '/index',

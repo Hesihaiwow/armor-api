@@ -75,6 +75,15 @@ public class ZSYTokenAop {
                 loginInfo.setDepartmentId(Optional.ofNullable(request.getAttribute("departmentId"))
                         .map(departmentId->Long.parseLong(departmentId.toString()))
                         .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
+
+
+                loginInfo.setOrgId(Optional.ofNullable(request.getAttribute("orgId"))
+                        .map(orgId->Long.parseLong(orgId.toString()))
+                        .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
+                loginInfo.setIsAdmin(Optional.ofNullable(request.getAttribute("isAdmin"))
+                        .map(isAdmin->Integer.parseInt(isAdmin.toString()))
+                        .orElseThrow(()->new ZSYUserInfoException("用户信息异常,请重新登录.")));
+
                 ZSYTokenRequestContext.set(loginInfo);
             }
         }

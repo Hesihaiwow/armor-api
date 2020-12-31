@@ -131,6 +131,9 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                         String userName = jwt.getClaim("userName").asString();
                         Integer userRole = jwt.getClaim("userRole").asInt();
 
+                        Long orgId = jwt.getClaim("orgId").asLong();
+                        Integer isAdmin = jwt.getClaim("isAdmin").asInt();
+
 //                    String[] permissions = jwt.getClaim("permissions").asArray(String.class);
 
 
@@ -147,6 +150,8 @@ public class ZSYUrlFilter extends ZSYAbstractFilter implements Filter {
                             request.setAttribute("userName",userName);
                             request.setAttribute("userRole",userRole);
                             request.setAttribute("departmentId",departmentId);
+                            request.setAttribute("orgId",orgId);
+                            request.setAttribute("isAdmin",isAdmin);
 
                             //将当前登陆用户信息注入到Authentication
                             UsernamePasswordAuthenticationToken authentication

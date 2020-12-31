@@ -13,6 +13,8 @@ export default {
             tmp.userId = null;
             tmp.userRole = null;
             tmp.departmentId = null;
+            tmp.orgId = null;
+            tmp.isAdmin = null;
             return tmp;
         }
         let tokens = token.split(".");

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhixinhuixue.armor.dao.IZSYOranganizationMapper">
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Oranganization">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="org_name" jdbcType="VARCHAR" property="name" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+
+    </resultMap>
+
+    <resultMap id="PageResultMap" type="com.zhixinhuixue.armor.model.bo.OranganizationBo" extends="BaseResultMap">
+        <result column="name" property="userName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <insert id="insert">
+        insert into oranganization(`id`,`org_name`,`description`,`create_time`,`is_delete`) values (#{org.id},#{org.name},#{org.description},#{org.createTime},#{org.isDelete})
+    </insert>
+
+    <!--  根据id,更新name 和 描述  -->
+    <update id="updateOrg">
+        update oranganization set org_name = #{orgReqDTO.name}, description = #{orgReqDTO.desc} where id = #{orgId}
+    </update>
+
+    <!--  更新超管Id  -->
+    <update id="updateOrgUser">
+        update oranganization set user_id = #{userId}  where id = #{orgId}
+    </update>
+
+    <!-- 删除机构   -->
+    <update id="deleteOrgById">
+        update oranganization set is_delete = 1  where id = #{orgId}
+    </update>
+
+    <!-- 查询机构   -->
+    <select id="selectOrgByPage" resultMap="PageResultMap">
+        select org.*,tmp.name from oranganization org left join (select * from `user` where is_delete = 0) tmp on org.user_id = tmp.id  where org.is_delete = 0 order by create_time desc
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select * from oranganization where `org_name` = #{name} and is_delete = 0
+    </select>
+
+    <!--根据id获取机构    -->
+    <select id="selectById" resultMap="BaseResultMap">
+        select * from oranganization where `id` = #{orgId} and is_delete = 0
+    </select>
+
+
+</mapper>
