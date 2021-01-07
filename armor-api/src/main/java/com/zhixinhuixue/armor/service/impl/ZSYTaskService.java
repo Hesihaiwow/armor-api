@@ -1175,15 +1175,6 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskDetailResDTO.setCanReview(true);
             }
 
-            // 每个机构sort最大stage id 作为已发布 stage id
-            List<Stage> stages = stageMapper.selectByDeptId(ZSYTokenRequestContext.get().getDepartmentId());
-            if(CollectionUtils.isEmpty(stages)){
-                throw new ZSYServiceException("未设置stage,请先设置stage!");
-            }
-            Collections.sort(stages, (o1, o2) -> o1.getSort().compareTo(o2.getSort()));
-            if (taskDetailBO.getStageId().equals(stages.get(stages.size() - 1).getId())) {
-                taskDetailResDTO.setCanSummarize(true);
-            }
             //已发布任务
             if (taskDetailBO.getStageId().equals(ZSYTaskStage.DEPLOYED.getValue())) {
                 taskDetailResDTO.setCanSummarize(true);
