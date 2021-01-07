@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTestMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTest">
+
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTest" extends="OrgIdFieldMap">
     <id column="tt_id" jdbcType="BIGINT" property="ttId" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
@@ -17,18 +23,18 @@
   </resultMap>
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Test">
-    insert into task_test (tt_id, task_id, user_id, percent, begin_time,end_time )
+    insert into task_test (tt_id, task_id, user_id, percent, begin_time,end_time,org_id )
     values (#{ttId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
-     #{percent,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP})
+     #{percent,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
   </insert>
 
 
   <insert id="insertList" parameterType="java.util.List">
-    insert into task_test (tt_id, task_id, user_id,  percent, begin_time, end_time)
+    insert into task_test (tt_id, task_id, user_id,  percent, begin_time, end_time,org_id)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.ttId,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT},
-      #{item.percent,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP})
+      #{item.percent,jdbcType=INTEGER}, #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP},#{item.orgId,jdbcType=TIMESTAMP})
     </foreach>
 
   </insert>

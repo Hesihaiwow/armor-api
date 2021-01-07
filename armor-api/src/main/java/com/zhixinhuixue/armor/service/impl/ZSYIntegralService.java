@@ -60,7 +60,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public List<IntegralPageResDTO> getIntegralPage(String startTime, String endTime) {
-        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime, endTime, ZSYTokenRequestContext.get().getDepartmentId());
+        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getIntegralPage(startTime, endTime, ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
         List<IntegralPageResDTO> integralPageResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(userIntegralInfoBOS, integralPageResDTOS);
         userIntegralInfoBOS.forEach(userIntegralInfoBO -> {
@@ -81,8 +81,8 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public Map getIntegralCount(String startTime, String endTime) {
-        int prev = userIntegralMapper.getIntegralCount(null, startTime, ZSYTokenRequestContext.get().getDepartmentId());
-        int next = userIntegralMapper.getIntegralCount(endTime, null, ZSYTokenRequestContext.get().getDepartmentId());
+        int prev = userIntegralMapper.getIntegralCount(null, startTime, ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
+        int next = userIntegralMapper.getIntegralCount(endTime, null, ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
         Map map = new HashMap();
         map.put("prev", prev);
         map.put("next", next);
@@ -99,12 +99,12 @@ public class ZSYIntegralService implements IZSYIntegralService {
         Long id = ZSYTokenRequestContext.get().getUserId();
         UserIntegralResDTO userIntegralResDTO = new UserIntegralResDTO();
         userIntegralResDTO.setId(id);
-        userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(), DateHelper.getThisWeekLastDay(), id));
-        userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(), DateHelper.getThisMonthLastDay(), id));
-        userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id));
-        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id, ZSYTokenRequestContext.get().getDepartmentId());//季度排名为空设为0
+        userIntegralResDTO.setWeek(userIntegralMapper.getUserIntegral(DateHelper.getThisWeekFirstDay(), DateHelper.getThisWeekLastDay(), id,ZSYTokenRequestContext.get().getOrgId()));
+        userIntegralResDTO.setMonth(userIntegralMapper.getUserIntegral(DateHelper.getThisMonthFirstDay(), DateHelper.getThisMonthLastDay(), id,ZSYTokenRequestContext.get().getOrgId()));
+        userIntegralResDTO.setYear(userIntegralMapper.getUserIntegral(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id,ZSYTokenRequestContext.get().getOrgId()));
+        Integer quarterRank = userIntegralMapper.getRank(DateHelper.getThisQuarterFirstDay(), DateHelper.getThisQuarterLastDay(), id, ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());//季度排名为空设为0
         userIntegralResDTO.setQuarterRank(quarterRank != null ? quarterRank : 0);
-        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId());//年度排名为空设为0
+        Integer yearRank = userIntegralMapper.getRank(DateHelper.dateFormatter(getCurrYearFirst(), DateHelper.DATETIME_FORMAT), DateHelper.dateFormatter(getCurrYearLast(), DateHelper.DATETIME_FORMAT), id, ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());//年度排名为空设为0
         userIntegralResDTO.setYearRank(yearRank != null ? yearRank : 0);
         return userIntegralResDTO;
     }
@@ -121,7 +121,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
     @Override
     public PageInfo<IntegralHistoryPageResDTO> getIntegralHistory(Long id, int pageIndex, String startTime, String endTime) {
         startPage(pageIndex, ZSYConstants.PAGE_SIZE);
-        Page<UserIntegralHistoryBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralHistory(id, startTime, endTime);
+        Page<UserIntegralHistoryBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralHistory(id, startTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         Page<IntegralHistoryPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralHistoryBOS, page);
         userIntegralHistoryBOS.forEach(userIntegralHistoryBO -> {
@@ -151,6 +151,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
             userIntegral.setDescription(integralResDTO.getDescription());
             userIntegral.setOrigin(ZSYIntegralOrigin.TRANSFORM.getValue());//求助转移积分
             userIntegral.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
+            userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             userIntegralMapper.insert(userIntegral);
         } else {//积分记录添加
             BigDecimal integral = user.getIntegral().add(integralResDTO.getIntegral());
@@ -166,6 +167,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
             userIntegral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
             userIntegral.setDescription(integralResDTO.getDescription());
             userIntegral.setOrigin(ZSYIntegralOrigin.ARTIFICIAL.getValue());//手动添加
+            userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             userIntegralMapper.insert(userIntegral);
         }
     }
@@ -195,7 +197,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
 
     public PageInfo<IntegralReviewResDTO> getIntegralByReviewStatus(int status, int pageIndex, Long userId, Long departmentId) {
         startPage(pageIndex, 5);
-        Page<UserIntegralInfoBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralByReviewStatus(userId, status, departmentId);
+        Page<UserIntegralInfoBO> userIntegralHistoryBOS = userIntegralMapper.getIntegralByReviewStatus(userId, status, departmentId,ZSYTokenRequestContext.get().getOrgId());
         Page<IntegralReviewResDTO> page = new Page<>();
         BeanUtils.copyProperties(userIntegralHistoryBOS, page);
         userIntegralHistoryBOS.forEach(userIntegralHistoryBO -> {
@@ -214,7 +216,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
      */
     @Override
     public void deleteHelpDetail(Long id) {
-        if (userIntegralMapper.deleteIntegralById(id) == 0)
+        if (userIntegralMapper.deleteIntegralById(id,ZSYTokenRequestContext.get().getOrgId()) == 0)
             throw new ZSYServiceException("删除失败");
     }
 
@@ -245,7 +247,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
             throw new ZSYServiceException("更新求助信息失败");
         }
         //求助目标添加积分
-        UserIntegral userIntegralFirst = userIntegralMapper.getHelpDetail(id);
+        UserIntegral userIntegralFirst = userIntegralMapper.getHelpDetail(id,ZSYTokenRequestContext.get().getOrgId());
         User user = userMapper.selectById(userIntegralFirst.getUserId());
         BigDecimal integral = user.getIntegral().add(userIntegralFirst.getIntegral());
         user.setIntegral(integral);
@@ -266,6 +268,7 @@ public class ZSYIntegralService implements IZSYIntegralService {
         userIntegralFirst.setIntegral(new BigDecimal(0).subtract(userIntegralFirst.getIntegral()));
         userIntegralFirst.setUserId(userIntegralFirst.getCreateBy());
         userIntegralFirst.setReviewStatus(ZSYReviewStatus.PASS.getValue());
+        userIntegralFirst.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         userIntegralMapper.insert(userIntegralFirst);
     }
 
@@ -348,9 +351,9 @@ public class ZSYIntegralService implements IZSYIntegralService {
             monthLastDay = timeSDF.parse(thisMonthLastDayStr);
 
             //查询用户已完成且已评价完且含有功能点的任务  功能点的复杂度集合
-            List<TaskIntegralBO> monthIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, monthFirstDay, monthLastDay);
-            List<TaskIntegralBO> seasonIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, seasonBegin, seasonEnd);
-            List<TaskIntegralBO> yearIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, currYearFirst, currYearLast);
+            List<TaskIntegralBO> monthIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, monthFirstDay, monthLastDay,ZSYTokenRequestContext.get().getOrgId());
+            List<TaskIntegralBO> seasonIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, seasonBegin, seasonEnd,ZSYTokenRequestContext.get().getOrgId());
+            List<TaskIntegralBO> yearIntegralList = userIntegralMapper.selectTaskIntegralByUser(userId, currYearFirst, currYearLast,ZSYTokenRequestContext.get().getOrgId());
 
             //个人任务
             List<TaskUser> monthTaskUsers = taskUserMapper.selectByUserAndTime(user.getId(), monthFirstDay, monthLastDay);

@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 /**
  * 新需求列表
  * Created by SCH on 2018-10-16
  */
-public class DemandBO {
+public class DemandBO extends OrgIdField {
     /**
      * 需求Id
      */

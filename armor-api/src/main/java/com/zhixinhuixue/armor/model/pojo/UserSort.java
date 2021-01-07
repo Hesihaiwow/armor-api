@@ -4,7 +4,7 @@ package com.zhixinhuixue.armor.model.pojo;
  * @author SCH
  * @date 2019/2/21 16:42
  */
-public class UserSort {
+public class UserSort extends OrgIdField{
     /**
      * 序号
      */

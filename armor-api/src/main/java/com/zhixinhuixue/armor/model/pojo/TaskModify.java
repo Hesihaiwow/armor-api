@@ -8,7 +8,7 @@ import java.util.Date;
  * @DATE 2019/5/9 10:18
  * 任务修改
  */
-public class TaskModify {
+public class TaskModify extends OrgIdField{
     /**
      * 主键
      */

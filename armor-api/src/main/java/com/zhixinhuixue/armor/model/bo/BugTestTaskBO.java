@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * bug统计测试任务bo
  *
  * @author SCH
  * @create 2020年11月10日
  */
-public class BugTestTaskBO {
+public class BugTestTaskBO extends OrgIdField {
     /**
      * 任务id
      */

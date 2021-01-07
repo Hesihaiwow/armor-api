@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.List;
 
 /**
  * @author sch
  * @DATE 2019/5/29 10:41
  */
-public class TaskEvaluationPageBO {
+public class TaskEvaluationPageBO extends OrgIdField {
     /**
      * 用户
      */

@@ -1,5 +1,8 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+import org.aspectj.weaver.ast.Or;
+
 import java.util.List;
 
 /**
@@ -8,7 +11,7 @@ import java.util.List;
  *
  * 任务积分
  */
-public class TaskIntegralBO {
+public class TaskIntegralBO extends OrgIdField {
 
     /**
      * 用户id

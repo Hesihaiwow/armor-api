@@ -62,14 +62,14 @@ public interface IZSYTaskBugMapper {
      * @param userId 用户id
      * @author sch
      */
-    Integer selectTaskBugNum(@Param("status") Integer status, @Param("userId") Long userId, @Param("taskId") Long taskId);
+    Integer selectTaskBugNum(@Param("status") Integer status, @Param("userId") Long userId, @Param("taskId") Long taskId, @Param("orgId")Long orgId);
 
     /**
      * 查询最后一个bug编号
      *
      * @author sch
      */
-    Integer selectLastBugNo();
+    Integer selectLastBugNo(@Param("orgId")Long orgId);
 
     /**
      * 根据条件查询
@@ -114,7 +114,7 @@ public interface IZSYTaskBugMapper {
      * @return List<TaskBugStatusPieBO>
      * @author sch
      */
-    List<TaskBugStatusPieBO> selectBugStatusPie(@Param("yearMonth") String yearMonth);
+    List<TaskBugStatusPieBO> selectBugStatusPie(@Param("yearMonth") String yearMonth,@Param("orgId")Long orgId);
 
     /**
      * bug按类型分类
@@ -122,7 +122,7 @@ public interface IZSYTaskBugMapper {
      * @return List<TaskBugTypePieBO>
      * @author sch
      */
-    List<TaskBugTypePieBO> selectBugTypePie(@Param("yearMonth") String yearMonth);
+    List<TaskBugTypePieBO> selectBugTypePie(@Param("yearMonth") String yearMonth,@Param("orgId")Long orgId);
 
     /**
      * 查询分配人的bug统计
@@ -141,7 +141,7 @@ public interface IZSYTaskBugMapper {
      * @return List<TaskBugUserHistogramBO>
      * @author sch
      */
-    List<TaskBugUserHistogramBO> selectBugCreatorHistogram(@Param("yearMonth") String yearMonth);
+    List<TaskBugUserHistogramBO> selectBugCreatorHistogram(@Param("yearMonth") String yearMonth,@Param("orgId")Long orgId);
 
     /**
      * 查询任务bug
@@ -150,7 +150,7 @@ public interface IZSYTaskBugMapper {
      * @param taskName  任务名称
      * @return List<TaskBugBO>
      */
-    Page<TaskBugBO> selectTaskStat(@Param("yearMonth") String yearMonth, @Param("taskName") String taskName);
+    Page<TaskBugBO> selectTaskStat(@Param("yearMonth") String yearMonth, @Param("taskName") String taskName,@Param("orgId")Long orgId);
 
     /**
      * 测试阶段相关任务,按当前登录人是否参与排序
@@ -158,5 +158,5 @@ public interface IZSYTaskBugMapper {
      * @param userId 用户id
      * @return List<BugTestTaskBO>
      */
-    List<BugTestTaskBO> selectBugTestTaskList(@Param("userId") Long userId);
+    List<BugTestTaskBO> selectBugTestTaskList(@Param("userId") Long userId,@Param("orgId")Long orgId);
 }

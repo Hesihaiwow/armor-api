@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.aspectj.weaver.ast.Or;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * Created by Lang on 2018/10/30 0030.
  */
-public class TaskExpand {
+public class TaskExpand extends OrgIdField {
 
     private Long teId;
 

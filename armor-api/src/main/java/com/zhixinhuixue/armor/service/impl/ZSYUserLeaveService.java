@@ -86,6 +86,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         userLeave.setUserId(ZSYTokenRequestContext.get().getUserId());
         userLeave.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
         userLeave.setCreateTime(new Date());
+        userLeave.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         userLeaveMapper.insertLeave(userLeave);
 
         List<UserWeek> userWeeks = Lists.newArrayList();
@@ -96,6 +97,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         userWeek.setTaskId(userLeave.getId());
         userWeek.setHours(userLeaveReqDTO.getHours().doubleValue());
         userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime()));
+        userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         userWeeks.add(userWeek);
         userWeekMapper.insertList(userWeeks);
 
@@ -108,7 +110,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
      */
     @Override
     public UserLeaveResDTO getUserLeaveDetail(Long id) {
-        UserLeaveBO userLeaveBO =  userLeaveMapper.getUserLeaveById(id);
+        UserLeaveBO userLeaveBO =  userLeaveMapper.getUserLeaveById(id,ZSYTokenRequestContext.get().getOrgId());
         UserLeaveResDTO userLeaveResDTO = new UserLeaveResDTO();
         BeanUtils.copyProperties(userLeaveBO,userLeaveResDTO);
         userLeaveResDTO.setTypeName(ZSYUserLeaveType.getName(userLeaveResDTO.getType()));
@@ -130,6 +132,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         if (userLeaveListReqDTO.getEndTime() == null){
             userLeaveListReqDTO.setEndTime(null);
         }
+        userLeaveListReqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<UserLeaveBO> userLeaveBOS = userLeaveMapper.getLeaveList(userLeaveListReqDTO);
 
         Page<UserLeaveResDTO> page = new Page<>();
@@ -158,9 +161,9 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         Long departmentId = ZSYTokenRequestContext.get().getDepartmentId();
         Page<UserLeaveBO> userLeaveBOS;
         if(ZSYTokenRequestContext.get().getUserRole()==0){
-             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(null, status, departmentId);
+             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(null, status, departmentId,ZSYTokenRequestContext.get().getOrgId());
         }else{
-             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(userId, status,departmentId);
+             userLeaveBOS= userLeaveMapper.getLeaveByReviewStatus(userId, status,departmentId,ZSYTokenRequestContext.get().getOrgId());
         }
         Page<UserLeaveResDTO> page = new Page<>();
         BeanUtils.copyProperties(userLeaveBOS, page);
@@ -192,7 +195,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     public void updateLeaveDetail(UserLeaveReqDTO userLeaveReqDTO, Long id) {
 
         UserLeave userLeave = new UserLeave();
-        UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id);
+        UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id,ZSYTokenRequestContext.get().getOrgId());
         if (userLeaveReqDTO.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(userLeaveReqDTO.getBeginTime());
@@ -212,7 +215,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             throw new ZSYServiceException("更新请假信息失败");
         }
 
-        userWeekMapper.deleteByTaskId(id);
+        userWeekMapper.deleteByTaskId(id,ZSYTokenRequestContext.get().getOrgId());
         List<UserWeek> userWeeks = Lists.newArrayList();
         UserWeek userWeek = new UserWeek();
         userWeek.setId(snowFlakeIDHelper.nextId());
@@ -221,6 +224,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
         userWeek.setTaskId(userLeave.getId());
         userWeek.setHours(userLeaveReqDTO.getHours().doubleValue());
         userWeek.setWeekNumber(DateHelper.getCurrentWeekNumber(userLeaveReqDTO.getBeginTime()));
+        userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         userWeeks.add(userWeek);
         userWeekMapper.insertList(userWeeks);
 
@@ -243,7 +247,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             }
         }
         userLeaveMapper.deleteById(id);
-        userWeekMapper.deleteByTaskId(id);
+        userWeekMapper.deleteByTaskId(id,ZSYTokenRequestContext.get().getOrgId());
         restHoursLogMapper.deleteByLeave(id);
     }
 
@@ -254,7 +258,7 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
     @Override
     @Transactional
     public void passLeave(Long id) {
-        UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id);
+        UserLeaveBO userLeaveBO = userLeaveMapper.getUserLeaveById(id,ZSYTokenRequestContext.get().getOrgId());
         User user = userMapper.selectById(userLeaveBO.getUserId());
         if (userLeaveBO.getType()==ZSYUserLeaveType.CHANGEREST.getValue()){
             Calendar calendar = Calendar.getInstance();
@@ -289,6 +293,8 @@ public class ZSYUserLeaveService implements IZSYUserLeaveService {
             calendar.setTime(userLeave.getBeginTime());
             int year = calendar.get(Calendar.YEAR);
             restHoursLog.setYear(year);
+            restHoursLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+
             restHoursLogMapper.insert(restHoursLog);
         }
 

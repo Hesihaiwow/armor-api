@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * @author sch
  * @DATE 2019/8/7 15:42
  *
  * 用户以及人物功能点等级
  */
-public class UserAndLevelBO {
+public class UserAndLevelBO extends OrgIdField {
     /**
      * 用户
      */

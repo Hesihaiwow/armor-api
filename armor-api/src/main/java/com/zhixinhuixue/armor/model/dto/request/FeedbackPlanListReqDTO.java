@@ -1,11 +1,13 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 /**
  * Created by Lang on 2012/3/7 0007.
  */
-public class FeedbackPlanListReqDTO {
+public class FeedbackPlanListReqDTO extends OrgIdField {
 
     private Date startTime;
 

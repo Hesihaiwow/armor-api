@@ -1,11 +1,13 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 /**
  * Created by Lang on 2017/12/7 0007.
  */
-public class UserLeaveListReqDTO {
+public class UserLeaveListReqDTO extends OrgIdField {
 
     private Date endTime;
 

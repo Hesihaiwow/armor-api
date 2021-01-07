@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskModifyFunctionMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskModifyFunction">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskModifyFunction" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="tm_id" jdbcType="BIGINT" property="tmId" />
         <result column="function_id" jdbcType="BIGINT" property="functionId" />
@@ -18,11 +24,11 @@
     <!--批量插入-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskModifyFunction">
         INSERT INTO `task_modify_function`
-        (`id`,`tm_id`,`function_id`,`level`)
+        (`id`,`tm_id`,`function_id`,`level`,`org_id`)
         VALUES
         <foreach collection="functionList" separator="," item="item">
             (#{item.id,jdbcType=BIGINT},#{item.tmId,jdbcType=BIGINT}
-            ,#{item.functionId,jdbcType=BIGINT},#{item.level,jdbcType=INTEGER})
+            ,#{item.functionId,jdbcType=BIGINT},#{item.level,jdbcType=INTEGER},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 

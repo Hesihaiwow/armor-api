@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYBugUserMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.BugUser">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="BIGINT" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.BugUser" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="user_id" jdbcType="BIGINT" property="userId" />
         <result column="bug_id" jdbcType="BIGINT" property="bugId" />
@@ -21,11 +27,11 @@
 
 
     <insert id="insertList" parameterType="java.util.List">
-        insert into bug_user (id, user_id, bug_id, integral)
+        insert into bug_user (id, user_id, bug_id, integral,org_id)
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT},
-            #{item.bugId,jdbcType=BIGINT}, #{item.integral,jdbcType=DECIMAL} )
+            #{item.bugId,jdbcType=BIGINT}, #{item.integral,jdbcType=DECIMAL}, #{item.orgId,jdbcType=BIGINT} )
         </foreach>
     </insert>
 
@@ -46,6 +52,7 @@
         LEFT JOIN `bug_manage` bm ON bm.`id` = but.`bug_id`
         LEFT JOIN `user` u ON u.`id` = but.`user_id`
         WHERE bm.`is_delete` = 0 AND bm.`demand_system_id` IS NOT NULL AND u.`is_delete` = 0 AND u.`status` = 0
+        and but.org_id = #{orgId}
         <if test="groupId != null">
             and bm.group_id = #{groupId}
         </if>
@@ -67,6 +74,7 @@
         LEFT JOIN `bug_manage` bm ON bm.`id` = but.`bug_id`
         LEFT JOIN `user` u ON u.`id` = but.`user_id`
         WHERE bm.`is_delete` = 0 AND bm.`demand_system_id` IS NOT NULL AND u.`is_delete` = 0 AND u.`status` = 0
+        and but.`org_id` = #{orgId}
         <if test="groupId != null">
             and bm.group_id = #{groupId}
         </if>

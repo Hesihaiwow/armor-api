@@ -7,6 +7,7 @@ import com.zhixinhuixue.armor.model.dto.request.QueryUserPageReqDTO;
 import com.zhixinhuixue.armor.model.pojo.User;
 import com.zhixinhuixue.armor.model.pojo.UserCheckPeople;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public interface IZSYUserMapper {
      * @param account 账户
      * @return
      */
-    List<User> selectByAccount(String account);
+    List<User> selectByAccount(@Param("account") String account);
 
     /**
      * 查询邮箱
@@ -34,7 +35,7 @@ public interface IZSYUserMapper {
      * @param email
      * @return
      */
-    int selectByEmail(String email);
+    int selectByEmail(@Param("email")String email);
 
     /**
      * 查询用户
@@ -82,7 +83,7 @@ public interface IZSYUserMapper {
      * @param deptIds 部门ID
      * @return
      */
-    Page<UserBo> selectPage(@Param("deptIds") List<Long> deptIds, @Param("reqDTO") QueryUserPageReqDTO reqDTO);
+    Page<UserBo> selectPage(@Param("deptIds") List<Long> deptIds, @Param("reqDTO") QueryUserPageReqDTO reqDTO,@Param("orgId")Long orgId);
 
 
     /**
@@ -155,13 +156,14 @@ public interface IZSYUserMapper {
     Long selectUserLastCheckUser(@Param("userId") Long userId);
 
     /**
+     * todo
      * 根据姓名查询
      *
      * @param name
      * @return
      * @author sch
      */
-    User selectByName(@Param("name") String name);
+    User selectByName(@Param("name") String name,@Param("orgId")Long orgId);
 
     /**
      * 查询任务人员信息
@@ -187,7 +189,7 @@ public interface IZSYUserMapper {
      * @return
      * @author sch
      */
-    List<User> selectManagers();
+    List<User> selectManagers(@Param("orgId")Long orgId);
 
     /**
      * 查询用户剩余调休
@@ -195,7 +197,7 @@ public interface IZSYUserMapper {
      * @param jobRole 角色
      * @param userId  用户id
      */
-    List<User> selectUserRestHours(@Param("jobRole") Integer jobRole, @Param("userId") Long userId);
+    List<User> selectUserRestHours(@Param("jobRole") Integer jobRole, @Param("userId") Long userId,@Param("orgId")Long orgId);
 
     /**
      * 根据任务id,查询相关人员
@@ -210,14 +212,14 @@ public interface IZSYUserMapper {
      *
      * @author sch
      */
-    List<User> selectBugReporters();
+    List<User> selectBugReporters(@Param("orgId")Long orgId);
 
     /**
      * 查询bug分派员
      *
      * @author sch
      */
-    List<User> selectBugHandlers();
+    List<User> selectBugHandlers(@Param("orgId")Long orgId);
 
     /**
      * 根据工作组id查询用户
@@ -225,9 +227,9 @@ public interface IZSYUserMapper {
      * @param groupId 工作组id
      * @author sch
      */
-    List<User> selectUsersByGroup(@Param("groupId") Long groupId);
+    List<User> selectUsersByGroup(@Param("groupId") Long groupId,@Param("orgId")Long orgId);
 
-    List<User> selectAll();
+    List<User> selectAll(@Param("orgId")Long orgId);
 
     /**
      * 查询所有未删除的用户
@@ -235,7 +237,7 @@ public interface IZSYUserMapper {
      * @return List<User>
      * @author sch
      */
-    List<User> selectNotDeleteUsers();
+    List<User> selectNotDeleteUsers(@Param("orgId")Long orgId);
 
     /**
      * 查询机构下人员

@@ -68,11 +68,11 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         if (task == null) {
             throw new ZSYServiceException("关联任务不存在,请检查");
         }
-        List<Long> functionIds = testFunctionMapper.selectListByTask(reqDTO.getTaskId()).stream().map(TestFunction::getId).collect(Collectors.toList());
+        List<Long> functionIds = testFunctionMapper.selectListByTask(reqDTO.getTaskId(),ZSYTokenRequestContext.get().getOrgId()).stream().map(TestFunction::getId).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(functionIds)) {
             throw new ZSYServiceException("关联任务暂无功能点");
         } else {
-            TestFunction function = testFunctionMapper.selectById(reqDTO.getFunctionId());
+            TestFunction function = testFunctionMapper.selectById(reqDTO.getFunctionId(),ZSYTokenRequestContext.get().getOrgId());
             if (function == null) {
                 throw new ZSYServiceException("任务功能点不存在,请检查");
             }
@@ -105,6 +105,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         testExample.setCreateTime(new Date());
         testExample.setUpdateTime(new Date());
 
+        testExample.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (exampleMapper.insert(testExample) == 0) {
             throw new ZSYServiceException("新增测试用例失败");
         }
@@ -127,7 +128,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
             taskTreeResDTO.setTreeName(task.getName());
             taskTreeResDTO.setLevel(1);
             taskTreeResDTO.setIsEdit(false);
-            List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId);
+            List<TestFunction> functions = testFunctionMapper.selectListByTask(taskId,ZSYTokenRequestContext.get().getOrgId());
             List<TaskTreeResDTO.TestFunctionTreeResDTO> functionTreeResDTOS = new ArrayList<>();
             if (!CollectionUtils.isEmpty(functions)) {
                 functions.forEach(function -> {
@@ -140,7 +141,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
                     taskFunctionTreeResDTO.setLevel(2);
                     taskFunctionTreeResDTO.setIsEdit(false);
                     List<TaskTreeResDTO.TestFunctionTreeResDTO.TestExampleTreeResDTO> testExampleTreeResDTOS = new ArrayList<>();
-                    List<TestExample> examples = exampleMapper.selectByFunction(function.getId());
+                    List<TestExample> examples = exampleMapper.selectByFunction(function.getId(),ZSYTokenRequestContext.get().getOrgId());
                     if (!CollectionUtils.isEmpty(examples)) {
                         examples.forEach(example -> {
                             TaskTreeResDTO.TestFunctionTreeResDTO.TestExampleTreeResDTO resDTO = new TaskTreeResDTO.TestFunctionTreeResDTO.TestExampleTreeResDTO();
@@ -171,7 +172,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
     @Override
     public ExampleDetailResDTO getExampleDetail(Long exampleId) {
         ExampleDetailResDTO resDTO = new ExampleDetailResDTO();
-        TestExampleBO exampleBO = exampleMapper.selectDetailById(exampleId);
+        TestExampleBO exampleBO = exampleMapper.selectDetailById(exampleId,ZSYTokenRequestContext.get().getOrgId());
         if (exampleBO == null) {
             throw new ZSYServiceException("当前测试用例不存在,请检查");
         }
@@ -332,6 +333,9 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
             long time3 = System.currentTimeMillis();
             logger.info("准备数据耗时: {}ms", (time3 - time2));
             testFunctionMapper.insertBatch(functionList);
+            for(TestExample testExample:exampleList){
+                testExample.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             exampleMapper.insertBatch(exampleList);
             logger.info("插入数据耗时: {}ms", (System.currentTimeMillis() - time3));
         }
@@ -347,7 +351,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
      */
     @Override
     public String exportExample(Long taskId) {
-        List<TestExampleBO> exampleBOS = exampleMapper.selectListByTaskId(taskId);
+        List<TestExampleBO> exampleBOS = exampleMapper.selectListByTaskId(taskId,ZSYTokenRequestContext.get().getOrgId());
         List<ExampleDetailResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(exampleBOS)) {
             exampleBOS.forEach(exampleBO -> {
@@ -399,6 +403,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
         testFunction.setUpdateName(ZSYTokenRequestContext.get().getUserName());
         testFunction.setCreateTime(new Date());
         testFunction.setUpdateTime(new Date());
+        testFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (testFunctionMapper.insert(testFunction) == 0) {
             throw new ZSYServiceException("新增功能点失败");
         }
@@ -455,7 +460,7 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
     @Override
     @Transactional
     public void editFunction(EditTestFunctionReqDTO reqDTO) {
-        TestFunction function = testFunctionMapper.selectById(reqDTO.getId());
+        TestFunction function = testFunctionMapper.selectById(reqDTO.getId(),ZSYTokenRequestContext.get().getOrgId());
         if (function == null) {
             throw new ZSYServiceException("当前功能点不存在,请检查");
         }
@@ -477,11 +482,11 @@ public class ZSYTestExampleService implements IZSYTestExampleService {
     @Override
     @Transactional
     public void deleteFunction(Long functionId) {
-        TestFunction function = testFunctionMapper.selectById(functionId);
+        TestFunction function = testFunctionMapper.selectById(functionId,ZSYTokenRequestContext.get().getOrgId());
         if (function == null) {
             throw new ZSYServiceException("当前功能点不存在,请检查");
         }
-        List<TestExample> examples = exampleMapper.selectByFunction(functionId);
+        List<TestExample> examples = exampleMapper.selectByFunction(functionId,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(examples)) {
             throw new ZSYServiceException("当前功能点下存在测试用例,请先删除测试用例后,再删除功能点");
         }

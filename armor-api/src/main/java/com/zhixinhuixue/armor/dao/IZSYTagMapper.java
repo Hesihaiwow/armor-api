@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.pojo.Tag;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public interface IZSYTagMapper {
      * 标签条数
      * @return
      */
-    int countTag();
+//    int countTag(@Param("orgId")Long orgId);
 
     /**
      * 验证标签是否存在
@@ -43,7 +44,7 @@ public interface IZSYTagMapper {
     /**
      * 查询阶段ID是否被使用
      */
-    int countTag(Long id);
+    int countTag(@Param("id") Long id,@Param("orgId")Long orgId);
 
 
 }

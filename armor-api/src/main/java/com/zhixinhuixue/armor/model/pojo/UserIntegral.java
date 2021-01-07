@@ -3,7 +3,7 @@ package com.zhixinhuixue.armor.model.pojo;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class UserIntegral {
+public class UserIntegral extends OrgIdField{
 
     private Long id;
 

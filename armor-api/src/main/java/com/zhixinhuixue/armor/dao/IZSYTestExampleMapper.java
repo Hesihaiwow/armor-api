@@ -16,7 +16,7 @@ public interface IZSYTestExampleMapper {
      * @param name
      * @return
      */
-    TestExample selectByNameAndTaskAndFunction(@Param("name") String name,@Param("taskId")Long taskId,@Param("functionId")Long functionId);
+    TestExample selectByNameAndTaskAndFunction(@Param("name") String name,@Param("taskId")Long taskId,@Param("functionId")Long functionId,@Param("orgId")Long orgId);
 
     /**
      * 新增
@@ -30,14 +30,14 @@ public interface IZSYTestExampleMapper {
      * @param functionId
      * @return
      */
-    List<TestExample> selectByFunction(@Param("functionId") Long functionId);
+    List<TestExample> selectByFunction(@Param("functionId") Long functionId,@Param("orgId")Long orgId);
 
     /**
      * 查看测试用例详情
      * @param exampleId
      * @return
      */
-    TestExampleBO selectDetailById(@Param("exampleId") Long exampleId);
+    TestExampleBO selectDetailById(@Param("exampleId") Long exampleId,@Param("orgId")Long orgId);
 
     /**
      * 根据id删除
@@ -70,5 +70,5 @@ public interface IZSYTestExampleMapper {
      * @param taskId
      * @return
      */
-    List<TestExampleBO> selectListByTaskId(@Param("taskId")Long taskId);
+    List<TestExampleBO> selectListByTaskId(@Param("taskId")Long taskId,@Param("orgId")Long orgId);
 }

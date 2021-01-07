@@ -8,7 +8,7 @@ import java.util.Date;
  * 发布平台
  */
 
-public class Platform {
+public class Platform extends OrgIdField{
     /**
      * 主键
      */

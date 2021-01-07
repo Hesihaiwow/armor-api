@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.aspectj.weaver.ast.Or;
+
 /**
  * @author sch
  * @DATE 2019/7/31 10:41
  *
  * 任务功能点
  */
-public class TaskFunction {
+public class TaskFunction extends OrgIdField{
     /**
      * id
      */

@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 
-public class BugListReqDTO {
+public class BugListReqDTO extends OrgIdField {
 
     /**
      * 用户Id

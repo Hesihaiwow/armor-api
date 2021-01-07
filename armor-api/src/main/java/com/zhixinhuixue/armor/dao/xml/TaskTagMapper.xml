@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTagMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTag">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTag" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="task_id" jdbcType="BIGINT" property="taskId"/>
         <result column="tag_id" jdbcType="BIGINT" property="tagId"/>
@@ -21,18 +27,18 @@
     </delete>
 
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTag">
-    insert into task_tag (id, task_id, tag_id
+    insert into task_tag (id, task_id, tag_id, org_id
       )
-    values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{tagId,jdbcType=BIGINT}
+    values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{tagId,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT}
       )
   </insert>
 
     <insert id="insertList" parameterType="java.util.List">
-        insert into task_tag (id, task_id, tag_id
+        insert into task_tag (id, task_id, tag_id, org_id
         )
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.tagId,jdbcType=BIGINT}
+            (#{item.id,jdbcType=BIGINT}, #{item.taskId,jdbcType=BIGINT}, #{item.tagId,jdbcType=BIGINT},#{item.orgId,jdbcType=BIGINT}
             )
         </foreach>
     </insert>

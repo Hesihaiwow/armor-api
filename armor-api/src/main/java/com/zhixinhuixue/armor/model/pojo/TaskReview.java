@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.aspectj.weaver.ast.Or;
+
 import java.util.Date;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Date;
  *
  * 任务评审
  */
-public class TaskReview {
+public class TaskReview extends OrgIdField {
     /**
      * id
      */

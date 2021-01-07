@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Tate on 2017/8/14.
  */
-public class TaskListReqDTO {
+public class TaskListReqDTO extends OrgIdField {
 
     private Integer pageNum;
     private Integer pageSize;

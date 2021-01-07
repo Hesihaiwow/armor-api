@@ -71,8 +71,8 @@ public class ZSYDataService implements IZSYDataService {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
 
-        Integer fromCoachNum = dataMapper.selectAnnualFeedbackFromCoach(beginTime, endTime);
-        Integer otherNum = dataMapper.selectAnnualFeedbackOhter(beginTime, endTime);
+        Integer fromCoachNum = dataMapper.selectAnnualFeedbackFromCoach(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
+        Integer otherNum = dataMapper.selectAnnualFeedbackOhter(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         Integer totalNum = (fromCoachNum != null ? fromCoachNum : 0) + (otherNum != null ? otherNum : 0);
         AnnualFeedbackResDTO resDTO = new AnnualFeedbackResDTO();
         resDTO.setFromCoachNum(fromCoachNum != null ? fromCoachNum : 0);
@@ -92,8 +92,8 @@ public class ZSYDataService implements IZSYDataService {
     public AnnualTaskResDTO getAnnualTaskData(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer multiTaskNum = dataMapper.selectAnnualMultiTaskNum(beginTime, endTime);
-        Integer singleTaskNum = dataMapper.selectAnnualSingleTaskNum(beginTime, endTime);
+        Integer multiTaskNum = dataMapper.selectAnnualMultiTaskNum(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
+        Integer singleTaskNum = dataMapper.selectAnnualSingleTaskNum(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         Integer totalNum = (multiTaskNum != null ? multiTaskNum : 0) + (singleTaskNum != null ? singleTaskNum : 0);
         AnnualTaskResDTO annualTaskResDTO = new AnnualTaskResDTO();
         annualTaskResDTO.setMultiTaskNum(multiTaskNum != null ? multiTaskNum : 0);
@@ -113,10 +113,10 @@ public class ZSYDataService implements IZSYDataService {
     public AnnualFeedbackInTypeResDTO getAnnualFbTypeNum(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer allFbNum = dataMapper.selectAnnualAllFbNum(beginTime, endTime);
-        Integer personSuggestion = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.PERSON_SUGGESTION.getValue());
-        Integer marketDemand = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.MARKET_DEMAND.getValue());
-        Integer companyDecision = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.COMPANY_DECISION.getValue());
+        Integer allFbNum = dataMapper.selectAnnualAllFbNum(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
+        Integer personSuggestion = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.PERSON_SUGGESTION.getValue(),ZSYTokenRequestContext.get().getOrgId());
+        Integer marketDemand = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.MARKET_DEMAND.getValue(),ZSYTokenRequestContext.get().getOrgId());
+        Integer companyDecision = dataMapper.selectDiffFbNumByType(beginTime, endTime, ZSYFeedbackType.COMPANY_DECISION.getValue(),ZSYTokenRequestContext.get().getOrgId());
         AnnualFeedbackInTypeResDTO resDTO = new AnnualFeedbackInTypeResDTO();
         if (allFbNum == (personSuggestion + marketDemand + companyDecision)) {
             resDTO.setPersonSuggestion(personSuggestion != null ? personSuggestion : 0);
@@ -141,7 +141,7 @@ public class ZSYDataService implements IZSYDataService {
     public MaxAndMinFbMonthResDTO getAnnualFbMaxAndMinMonth(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<FeedbackMonthBO> feedbackMonthBOS = dataMapper.selectFbMonthList(beginTime, endTime);
+        List<FeedbackMonthBO> feedbackMonthBOS = dataMapper.selectFbMonthList(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         MaxAndMinFbMonthResDTO resDTO = new MaxAndMinFbMonthResDTO();
         if (!CollectionUtils.isEmpty(feedbackMonthBOS)) {
             List<FeedbackMonthBO> collect = feedbackMonthBOS.stream().sorted(Comparator.comparing(FeedbackMonthBO::getFeedbackNum)).collect(Collectors.toList());
@@ -165,9 +165,9 @@ public class ZSYDataService implements IZSYDataService {
     public TaskTotalHoursResDTO getAnnualTaskTotalHours(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer totalHours = dataMapper.selectTotalHours(beginTime, endTime);
-        Long mostTimeTaskId = dataMapper.selectMostTimeTaskId(beginTime, endTime);
-        Long lessTimeTaskId = dataMapper.selectLessTimeTaskId(beginTime, endTime);
+        Integer totalHours = dataMapper.selectTotalHours(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
+        Long mostTimeTaskId = dataMapper.selectMostTimeTaskId(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
+        Long lessTimeTaskId = dataMapper.selectLessTimeTaskId(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         Task mostTimeTask = new Task();
         Task lessTimeTask = new Task();
         Float mostTime = 0f;
@@ -202,7 +202,7 @@ public class ZSYDataService implements IZSYDataService {
     public List<ProjectTaskResDTO> getAnnualProjectTaskNum(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<ProjectTaskBO> projectTaskBOS = dataMapper.selectProjectTaskList(beginTime, endTime);
+        List<ProjectTaskBO> projectTaskBOS = dataMapper.selectProjectTaskList(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         List<ProjectTaskResDTO> projectTaskResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(projectTaskBOS)) {
             BeanUtils.copyProperties(projectTaskBOS, projectTaskResDTOList);
@@ -225,9 +225,9 @@ public class ZSYDataService implements IZSYDataService {
     public DiffPriorityTaskResDTO getAnnualTaskByPriority(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer normalNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.NORMAL.getValue());
-        Integer urgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.URGENT.getValue());
-        Integer veryUrgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.VERY_URGENT.getValue());
+        Integer normalNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.NORMAL.getValue(),ZSYTokenRequestContext.get().getOrgId());
+        Integer urgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.URGENT.getValue(),ZSYTokenRequestContext.get().getOrgId());
+        Integer veryUrgentNum = dataMapper.selectPriorityTaskNum(beginTime, endTime, ZSYTaskPriority.VERY_URGENT.getValue(),ZSYTokenRequestContext.get().getOrgId());
         DiffPriorityTaskResDTO resDTO = new DiffPriorityTaskResDTO();
         resDTO.setNormalNum(normalNum);
         resDTO.setUrgentNum(urgentNum);
@@ -247,8 +247,8 @@ public class ZSYDataService implements IZSYDataService {
     public AnnualVacationResDTO getAnnualVacationCount(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer vacationCount = dataMapper.selectVacationCount(beginTime, endTime);
-        Float vacationTime = dataMapper.selectVacationTime(beginTime, endTime);
+        Integer vacationCount = dataMapper.selectVacationCount(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
+        Float vacationTime = dataMapper.selectVacationTime(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         AnnualVacationResDTO resDTO = new AnnualVacationResDTO();
         resDTO.setVacationCount(vacationCount != null ? vacationCount : 0);
         resDTO.setVacationTime(vacationTime != null ? vacationTime : 0f);
@@ -267,7 +267,7 @@ public class ZSYDataService implements IZSYDataService {
     public EveryMonthVacationResDTO getEveryMonthVacation(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<String> monthAndCountAndTimeList = dataMapper.getMonthAndCountAndTimeList(beginTime, endTime);
+        List<String> monthAndCountAndTimeList = dataMapper.getMonthAndCountAndTimeList(beginTime, endTime, ZSYTokenRequestContext.get().getOrgId());
         Map<Integer, String> treeMap = new TreeMap<>();
         List<Integer> counts = new ArrayList<>();
         List<Float> times = new ArrayList<>();
@@ -340,25 +340,25 @@ public class ZSYDataService implements IZSYDataService {
     public DiffStageTaskTimeResDTO getDiffStageTaskTime(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        Integer totalTaskNum = dataMapper.selectTotalTaskNum(beginTime, endTime);
-        Float taskTotalTime = dataMapper.selectTaskTotalTime(beginTime, endTime);
+        Integer totalTaskNum = dataMapper.selectTotalTaskNum(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
+        Float taskTotalTime = dataMapper.selectTaskTotalTime(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         //设计阶段总耗时
-        Float designTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.DESIGN.getValue());
+        Float designTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.DESIGN.getValue(),ZSYTokenRequestContext.get().getOrgId());
         //产品阶段总耗时
-        Float productTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.PRODUCT.getValue());
+        Float productTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.PRODUCT.getValue(),ZSYTokenRequestContext.get().getOrgId());
         //开发阶段总耗时
-        Float developTime = dataMapper.selectDevStageTime(beginTime, endTime);
+        Float developTime = dataMapper.selectDevStageTime(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         //测试阶段总耗时
-        Float testTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.TEST.getValue());
+        Float testTime = dataMapper.selectDiffStageTime(beginTime, endTime, ZSYJobRole.TEST.getValue(),ZSYTokenRequestContext.get().getOrgId());
 
         //参与设计的任务数量
-        Integer designTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.DESIGN.getValue());
+        Integer designTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.DESIGN.getValue(),ZSYTokenRequestContext.get().getOrgId());
         //参与产品的任务数量
-        Integer productTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.PRODUCT.getValue());
+        Integer productTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.PRODUCT.getValue(),ZSYTokenRequestContext.get().getOrgId());
         //参与开发的任务数量
-        Integer developTaskNum = dataMapper.selectDevStageTaskNum(beginTime, endTime);
+        Integer developTaskNum = dataMapper.selectDevStageTaskNum(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         //参与测试的任务数量
-        Integer testTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.TEST.getValue());
+        Integer testTaskNum = dataMapper.selectDiffStageTaskNum(beginTime, endTime, ZSYJobRole.TEST.getValue(),ZSYTokenRequestContext.get().getOrgId());
 
         DiffStageTaskTimeResDTO resDTO = new DiffStageTaskTimeResDTO();
         resDTO.setTaskNum(totalTaskNum);
@@ -406,7 +406,7 @@ public class ZSYDataService implements IZSYDataService {
         Date endTime = getEndTime(reqDTO);
         List<Task> taskList = new ArrayList<>();
         AnnualTop10Task annualTop10Task = new AnnualTop10Task();
-        List<Long> taskIds = dataMapper.selectTop10Task(beginTime, endTime);
+        List<Long> taskIds = dataMapper.selectTop10Task(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         taskIds.forEach(taskId -> {
             Task task = taskMapper.selectByPrimaryKey(taskId);
             taskList.add(task);
@@ -461,9 +461,9 @@ public class ZSYDataService implements IZSYDataService {
             calendar.add(Calendar.DAY_OF_WEEK, 1);
             lastDay = calendar.getTime();
             for (int i = 0; i < 12; i++) {
-                Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
-                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId, firstDay, lastDay);
-                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(), year, weekOfYear);
+                Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year,ZSYTokenRequestContext.get().getOrgId());
+                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId, firstDay, lastDay,ZSYTokenRequestContext.get().getOrgId());
+                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(), year, weekOfYear,ZSYTokenRequestContext.get().getOrgId());
                 Double totalHours = avgUserWeekHourBO.getTotalHours();
                 Integer workerNum = avgUserWeekHourBO.getWorkerNum();
                 Double avgWeekHours = 0.0;
@@ -525,9 +525,9 @@ public class ZSYDataService implements IZSYDataService {
             calendar.add(Calendar.DAY_OF_WEEK, 1);
             lastDay = calendar.getTime();
             for (int i = 0; i < 12; i++) {
-                Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year);
-                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId, firstDay, lastDay);
-                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(), year, weekOfYear);
+                Double userWeekHours = userWeekMapper.getUserWeekHours(0L, userId, weekOfYear, year,ZSYTokenRequestContext.get().getOrgId());
+                Double leaveHours = userLeaveMapper.selectWeekLeaveHoursByUser(userId, firstDay, lastDay,ZSYTokenRequestContext.get().getOrgId());
+                AvgUserWeekHourBO avgUserWeekHourBO = userWeekMapper.selectAvgWeekHour(user.getJobRole(), year, weekOfYear,ZSYTokenRequestContext.get().getOrgId());
                 Double totalHours = avgUserWeekHourBO.getTotalHours();
                 Integer workerNum = avgUserWeekHourBO.getWorkerNum();
                 Double avgWeekHours = 0.0;
@@ -652,7 +652,7 @@ public class ZSYDataService implements IZSYDataService {
 
         //待发布任务
         List<TaskListBO> summarizeTaskList =
-                taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), userId);
+                taskMapper.selectTaskByStageId(212754785051344898L, ZSYTokenRequestContext.get().getDepartmentId(), userId,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(summarizeTaskList)) {
             summarizeTaskList = summarizeTaskList.stream().filter(taskListBO -> taskListBO.getStatus() > 1).collect(Collectors.toList());
             for (TaskListBO taskListBO : summarizeTaskList) {
@@ -686,19 +686,19 @@ public class ZSYDataService implements IZSYDataService {
     public List<PrincipalTaskNumResDTO> getAllPrincipalTaskStats() {
         //查询全部负责人
         long t1 = System.currentTimeMillis();
-        List<User> users = userMapper.selectManagers();
+        List<User> users = userMapper.selectManagers(ZSYTokenRequestContext.get().getOrgId());
         Map<Long, String> userMap = new HashMap<>();
         for (User user : users) {
             userMap.put(user.getId(), user.getName());
         }
         //查询全部进行中的任务
-        List<Task> doingTaskList = taskMapper.selectAllDoingTasks();
+        List<Task> doingTaskList = taskMapper.selectAllDoingTasks(ZSYTokenRequestContext.get().getOrgId());
         //查询全部发布任务
-        List<Task> publishTaskList = taskMapper.selectAllCompleteTasks();
+        List<Task> publishTaskList = taskMapper.selectAllCompleteTasks(ZSYTokenRequestContext.get().getOrgId());
         //所有任务评审
-        List<TaskReview> allReviews = reviewMapper.selectAll();
+        List<TaskReview> allReviews = reviewMapper.selectAll(ZSYTokenRequestContext.get().getOrgId());
         //所有任务总结
-        List<TaskSummary> allSummaries = summaryMapper.selectAll();
+        List<TaskSummary> allSummaries = summaryMapper.selectAll(ZSYTokenRequestContext.get().getOrgId());
         Map<Long, List<Task>> userTaskMap = doingTaskList.stream().collect(Collectors.groupingBy(Task::getCreateBy));
         Map<Long, List<Task>> userPublishTaskMap = publishTaskList.stream().collect(Collectors.groupingBy(Task::getCreateBy));
         long t8 = System.currentTimeMillis();
@@ -809,7 +809,7 @@ public class ZSYDataService implements IZSYDataService {
     public String exportLeaveAndEwork(ExportLeaveAndEworkReqDTO reqDTO) {
         Date yearAndMonth = reqDTO.getYearAndMonth();
         String yearMonthStr = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
-        List<LeaveAndEworkBO> list = dataMapper.selectLeaveAndEWork(yearMonthStr);
+        List<LeaveAndEworkBO> list = dataMapper.selectLeaveAndEWork(yearMonthStr,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(list)) {
             //设置表头
             List<String> headers = new ArrayList<>();
@@ -886,7 +886,7 @@ public class ZSYDataService implements IZSYDataService {
     public List<Integer> getEveryMonthFeedback(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<String> monthAndCountList = dataMapper.selectMonthAndFbCountList(beginTime, endTime);
+        List<String> monthAndCountList = dataMapper.selectMonthAndFbCountList(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         Map<Integer, Integer> treeMap = new TreeMap<>();
         List<Integer> counts = new ArrayList<>();
         if (!CollectionUtils.isEmpty(monthAndCountList)) {
@@ -916,7 +916,7 @@ public class ZSYDataService implements IZSYDataService {
     public List<Integer> getEveryMonthTask(YearReqDTO reqDTO) {
         Date beginTime = getBeginTime(reqDTO);
         Date endTime = getEndTime(reqDTO);
-        List<String> monthAndCountList = dataMapper.selectMonthAndTaskCountList(beginTime, endTime);
+        List<String> monthAndCountList = dataMapper.selectMonthAndTaskCountList(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         Map<Integer, Integer> treeMap = new TreeMap<>();
         List<Integer> counts = new ArrayList<>();
         if (!CollectionUtils.isEmpty(monthAndCountList)) {
@@ -952,7 +952,7 @@ public class ZSYDataService implements IZSYDataService {
         if (reqDTO.getEndTime() != null) {
             endTime = reqDTO.getEndTime();
         }
-        List<Long> userIds = dataMapper.selectUserIds(beginTime, endTime);
+        List<Long> userIds = dataMapper.selectUserIds(beginTime, endTime,ZSYTokenRequestContext.get().getOrgId());
         List<PersonVacationResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userIds)) {
             for (Long userId : userIds) {

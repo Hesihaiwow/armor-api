@@ -134,7 +134,13 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
             taskEvaluationList.add(taskEvaluation);
         });
         if (!CollectionUtils.isEmpty(taskEvaluationList)) {
-            evaluationMapper.insertBatch(taskEvaluationList);
+            List<TaskEvaluation> collect = taskEvaluationList.stream().map(x -> {
+                TaskEvaluation taskEvaluation = new TaskEvaluation();
+                BeanUtils.copyProperties(x, taskEvaluation);
+                taskEvaluation.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return taskEvaluation;
+            }).collect(Collectors.toList());
+            evaluationMapper.insertBatch(collect);
         }
 
         finishTask(taskId);
@@ -202,6 +208,7 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
                         integral.setReviewStatus(3);
                         integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
                         integral.setCreateTime(new Date());
+                        integral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                         userTaskIntegralMapper.insert(integral);
 
                         // 修改子任务状态
@@ -275,6 +282,7 @@ public class ZSYTaskEvaluationService implements IZSYTaskEvaluationService {
     @Override
     public PageInfo<TaskEvaluationPageResDTO> getUserAvgEvaluation(EvaluationPageQueryReqDTO reqDTO) {
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<TaskEvaluationPageBO> taskEvaluationPageBOS = evaluationMapper.selectUserAvgEvaluation(reqDTO);
         Page<TaskEvaluationPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(taskEvaluationPageBOS, page);

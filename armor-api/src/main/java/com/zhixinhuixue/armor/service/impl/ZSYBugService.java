@@ -108,6 +108,7 @@ public class ZSYBugService implements IZSYBugService {
     public PageInfo<OnlineBugResDTO> getBugManagePage(BugListReqDTO bugListReqDTO) {
         startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
         bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
+        bugListReqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<OnlineBugBO> onlineBugBOS = bugManageMapper.selectOnlineBugPage(bugListReqDTO);
         Page<OnlineBugResDTO> page = new Page<>();
         if (!CollectionUtils.isEmpty(onlineBugBOS)) {
@@ -217,6 +218,7 @@ public class ZSYBugService implements IZSYBugService {
         bugManage.setProcessTime(bugReqDTO.getProcessTime());
         bugManage.setDescription(bugReqDTO.getDescription());
         bugManage.setProjectId(bugReqDTO.getProjectId());
+        bugManage.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         bugManageMapper.insertBug(bugManage);
 
         // 插入Bug处理用户
@@ -230,7 +232,14 @@ public class ZSYBugService implements IZSYBugService {
                 bugUser.setUserId(user.getUserId());
                 bugUsers.add(bugUser);
             });
-            bugUserMapper.insertList(bugUsers);
+            List<BugUser> collect = bugUsers.stream().map(bugUser -> {
+                BugUser bugUser1 = new BugUser();
+                BeanUtils.copyProperties(bugUser, bugUser1);
+                bugUser1.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return bugUser1;
+            }).collect(Collectors.toList());
+
+            bugUserMapper.insertList(collect);
         }
 
         bugReqDTO.getBugUsers().forEach(user -> {
@@ -242,6 +251,7 @@ public class ZSYBugService implements IZSYBugService {
             userIntegral.setTaskId(bugManage.getId());
             userIntegral.setDescription("线上Bug处理");
             userIntegral.setCreateTime(new Date());
+            userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             userIntegralMapper.insert(userIntegral);
             // 修改用户积分
             User userBug = userMapper.selectById(user.getUserId());
@@ -279,7 +289,7 @@ public class ZSYBugService implements IZSYBugService {
         }
 
         //查询最后一个bug编号
-        OnlineBugManage lastBug = bugManageMapper.selectLastBugNo();
+        OnlineBugManage lastBug = bugManageMapper.selectLastBugNo(ZSYTokenRequestContext.get().getOrgId());
 
         OnlineBugManage bugManage = new OnlineBugManage();
         if (lastBug != null && lastBug.getBugNo() > 0) {
@@ -308,6 +318,7 @@ public class ZSYBugService implements IZSYBugService {
         LocalDateTime localDateTime =
                 LocalDateTime.ofEpochSecond(reqDTO.getDiscoverTime().getTime() / 1000, 0, ZoneOffset.ofHours(8));
         bugManage.setYear(localDateTime.getYear());
+        bugManage.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         bugManageMapper.insertBugManager(bugManage);
 
         // 插入Bug处理用户
@@ -321,7 +332,13 @@ public class ZSYBugService implements IZSYBugService {
                 bugUser.setUserId(user.getUserId());
                 bugUsers.add(bugUser);
             });
-            bugUserMapper.insertList(bugUsers);
+            List<BugUser> collect = bugUsers.stream().map(bugUser -> {
+                BugUser bugUser1 = new BugUser();
+                BeanUtils.copyProperties(bugUser, bugUser1);
+                bugUser1.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return bugUser1;
+            }).collect(Collectors.toList());
+            bugUserMapper.insertList(collect);
         }
 
         reqDTO.getBugUsers().forEach(user -> {
@@ -337,6 +354,7 @@ public class ZSYBugService implements IZSYBugService {
             String bugNoStr = getBugNoStr(bugManage.getBugNo());
             integral.setDescription("线上任务bug: 编号 " + bugNoStr);
             integral.setBugId(bugManage.getId());
+            integral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             integralMapper.insert(integral);
 
         });
@@ -396,11 +414,17 @@ public class ZSYBugService implements IZSYBugService {
                 bugUser.setUserId(user.getUserId());
                 bugUsers.add(bugUser);
             });
-            bugUserMapper.insertList(bugUsers);
+            List<BugUser> collect = bugUsers.stream().map(bugUser -> {
+                BugUser bugUser1 = new BugUser();
+                BeanUtils.copyProperties(bugUser, bugUser1);
+                bugUser1.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return bugUser1;
+            }).collect(Collectors.toList());
+            bugUserMapper.insertList(collect);
         }
 
         //将旧的Bug处理积分还原
-        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id);
+        List<UserIntegral> userIntegrals = userIntegralMapper.getUserIntegralByTaskId(id,ZSYTokenRequestContext.get().getOrgId());
         userIntegrals.forEach(userIntegral -> {
             // 修改用户积分
             User userBug = userMapper.selectById(userIntegral.getUserId());
@@ -409,7 +433,7 @@ public class ZSYBugService implements IZSYBugService {
             userBO.setId(userBug.getId());
             userBO.setIntegral(currentIntegral.subtract(userIntegral.getIntegral()));
             userMapper.updateSelectiveById(userBO);
-            userIntegralMapper.deleteUserIntegral(id, userIntegral.getUserId());
+            userIntegralMapper.deleteUserIntegral(id, userIntegral.getUserId(),ZSYTokenRequestContext.get().getOrgId());
         });
 
         bugReqDTO.getBugUsers().forEach(user -> {
@@ -421,6 +445,7 @@ public class ZSYBugService implements IZSYBugService {
             userIntegral.setTaskId(bugManage.getId());
             userIntegral.setDescription("线上Bug处理");
             userIntegral.setCreateTime(new Date());
+            userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             userIntegralMapper.insert(userIntegral);
             // 修改用户积分
             User userBug = userMapper.selectById(user.getUserId());
@@ -498,7 +523,13 @@ public class ZSYBugService implements IZSYBugService {
                 bugUser.setUserId(user.getUserId());
                 bugUsers.add(bugUser);
             });
-            bugUserMapper.insertList(bugUsers);
+            List<BugUser> collect = bugUsers.stream().map(bugUser -> {
+                BugUser bugUser1 = new BugUser();
+                BeanUtils.copyProperties(bugUser, bugUser1);
+                bugUser1.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return bugUser1;
+            }).collect(Collectors.toList());
+            bugUserMapper.insertList(collect);
         }
 
         //删除原来的bug积分
@@ -516,6 +547,7 @@ public class ZSYBugService implements IZSYBugService {
             String bugNoStr = getBugNoStr(bugManageBO.getBugNo());
             integral.setDescription("线上任务bug: 编号 " + bugNoStr);
             integral.setBugId(id);
+            integral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             integralMapper.insert(integral);
 
 
@@ -530,10 +562,11 @@ public class ZSYBugService implements IZSYBugService {
      */
     @Override
     public OnlineBugNumResDTO getDiffTypeBugNum(BugListReqDTO bugListReqDTO) {
-        Integer optimizationNum = bugManageMapper.selectCountByType(1, bugListReqDTO);
-        Integer assistanceNum = bugManageMapper.selectCountByType(2, bugListReqDTO);
-        Integer bugNum = bugManageMapper.selectCountByType(0, bugListReqDTO);
-        Integer totalNum = bugManageMapper.selectCountTotal();
+        Long orgId = ZSYTokenRequestContext.get().getOrgId();
+        Integer optimizationNum = bugManageMapper.selectCountByType(1, bugListReqDTO,orgId);
+        Integer assistanceNum = bugManageMapper.selectCountByType(2, bugListReqDTO,orgId);
+        Integer bugNum = bugManageMapper.selectCountByType(0, bugListReqDTO,orgId);
+        Integer totalNum = bugManageMapper.selectCountTotal(orgId);
         OnlineBugNumResDTO resDTO = new OnlineBugNumResDTO();
         resDTO.setAssistanceNum(assistanceNum);
         resDTO.setBugNum(bugNum);
@@ -553,7 +586,8 @@ public class ZSYBugService implements IZSYBugService {
     public PageInfo<OnlineBugResDTO> getOldBugManagePage(BugListReqDTO bugListReqDTO) {
         startPage(Optional.ofNullable(bugListReqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
         bugListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
-        Page<OnlineBugBO> onlineBugBOS = bugManageMapper.selectOldOnlineBugPage(bugListReqDTO);
+        Long orgId = ZSYTokenRequestContext.get().getOrgId();
+        Page<OnlineBugBO> onlineBugBOS = bugManageMapper.selectOldOnlineBugPage(bugListReqDTO,orgId);
         Page<OnlineBugResDTO> page = new Page<>();
         if (!CollectionUtils.isEmpty(onlineBugBOS)) {
             BeanUtils.copyProperties(onlineBugBOS, page);
@@ -597,7 +631,7 @@ public class ZSYBugService implements IZSYBugService {
      */
     @Override
     public void updateStatus() {
-        List<OnlineBugManage> onlineBugManages = bugManageMapper.selectIsSolvedIsNull();
+        List<OnlineBugManage> onlineBugManages = bugManageMapper.selectIsSolvedIsNull(ZSYTokenRequestContext.get().getOrgId());
         List<OnlineBugManage> newList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(onlineBugManages)) {
             onlineBugManages.forEach(onlineBugManage -> {
@@ -620,9 +654,9 @@ public class ZSYBugService implements IZSYBugService {
     public List<SystemBugResDTO> getSystemHistogram(BugListReqDTO reqDTO) {
         List<SystemBugResDTO> list = new ArrayList<>();
         //查询时间段内线上bug的业务组数量
-        List<Long> groupIds = bugManageMapper.selectGroupsByTime(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear());
+        List<Long> groupIds = bugManageMapper.selectGroupsByTime(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(),ZSYTokenRequestContext.get().getOrgId());
         //查询时间段内线上bug各个系统对应的各个类型的数量
-        List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear());
+        List<SystemBugTypeBO> bugTypeBOS = bugManageMapper.selectSystemTypeNum(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(),ZSYTokenRequestContext.get().getOrgId());
         bugTypeBOS = bugTypeBOS.stream().filter(item -> item.getGroupId() != null).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(groupIds)) {
             for (Long groupId : groupIds) {
@@ -685,9 +719,9 @@ public class ZSYBugService implements IZSYBugService {
     public List<UserBugResDTO> getUserBugHistogram(BugListReqDTO reqDTO) {
         List<UserBugResDTO> list = new ArrayList<>();
         //查询时间段内bug人员
-        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(), reqDTO.getGroupId());
+        List<Long> userIds = bugUserMapper.selectBugUsersByTime(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(), reqDTO.getGroupId(),ZSYTokenRequestContext.get().getOrgId());
         //查询时间段内用户参与的bug
-        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(), reqDTO.getGroupId());
+        List<UserBugTypeBO> userBugTypeBOS = bugUserMapper.selectUserTypeNum(reqDTO.getStartTime(), reqDTO.getEndTime(), reqDTO.getYear(), reqDTO.getGroupId(),ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(userIds)) {
             userIds.forEach(userId -> {
                 UserBugResDTO userBugResDTO = new UserBugResDTO();
@@ -798,12 +832,12 @@ public class ZSYBugService implements IZSYBugService {
                 throw new ZSYServiceException("暂无数据导入,请检查");
             }
             //查询所有用户
-            List<User> users = userMapper.selectAll();
+            List<User> users = userMapper.selectAll(ZSYTokenRequestContext.get().getOrgId());
             Map<String, List<User>> userMap = users.stream().collect(Collectors.groupingBy(User::getName));
             //查询最近一条bug
-            OnlineBugManage lastBug = bugManageMapper.selectLastBugNo();
+            OnlineBugManage lastBug = bugManageMapper.selectLastBugNo(ZSYTokenRequestContext.get().getOrgId());
             //查询所有业务组
-            List<WorkGroup> groupList = groupMapper.selectList();
+            List<WorkGroup> groupList = groupMapper.selectList(ZSYTokenRequestContext.get().getOrgId());
             Integer lastBugNo = lastBug.getBugNo();
             List<OnlineBugManage> bugManageList = new ArrayList<>();
             List<BugUser> bugUsers = new ArrayList<>();
@@ -882,8 +916,20 @@ public class ZSYBugService implements IZSYBugService {
                 bugUsers.addAll(bugUserList);
                 bugManageList.add(bugManage);
             }
+            bugUsers = bugUsers.stream().map(bugUser -> {
+                BugUser bugUser1 = new BugUser();
+                BeanUtils.copyProperties(bugUser,bugUser1);
+                bugUser1.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return bugUser1;
+            }).collect(Collectors.toList());
             bugUserMapper.insertList(bugUsers);
-            bugManageMapper.insertBatch(bugManageList);
+            List<OnlineBugManage> bugManageListOrg = bugManageList.stream().map(bugManage -> {
+                OnlineBugManage onlineBugManage = new OnlineBugManage();
+                BeanUtils.copyProperties(bugManage, onlineBugManage);
+                onlineBugManage.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return onlineBugManage;
+            }).collect(Collectors.toList());
+            bugManageMapper.insertBatch(bugManageListOrg);
         } catch (Exception e) {
             throw new ZSYServiceException(e.getMessage());
         }

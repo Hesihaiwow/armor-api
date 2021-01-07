@@ -1,9 +1,11 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * Created by Lang on 2018/2/27.
  */
-public class FeedbackListReqDTO {
+public class FeedbackListReqDTO extends OrgIdField {
 
     private Integer pageNum;
 

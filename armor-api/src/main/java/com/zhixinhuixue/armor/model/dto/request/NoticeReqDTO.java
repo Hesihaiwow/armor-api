@@ -1,11 +1,13 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 /**
  * Created by SCH on 2018-12-07
  */
-public class NoticeReqDTO {
+public class NoticeReqDTO extends OrgIdField {
     /**
      * 页码
      */

@@ -54,7 +54,7 @@ public class ZSYTaskTempModuleService implements IZSYTaskTempModuleService {
         project.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         project.setCreateTime(new Date());
         project.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
-
+        project.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (projectMapper.insert(project) == 0){
             throw new ZSYServiceException("新增临时任务涉及项目失败");
         }
@@ -67,7 +67,7 @@ public class ZSYTaskTempModuleService implements IZSYTaskTempModuleService {
      */
     @Override
     public List<TaskTempModuleResDTO> getList() {
-        List<TaskTempModule> projectList = projectMapper.selectList();
+        List<TaskTempModule> projectList = projectMapper.selectList(ZSYTokenRequestContext.get().getOrgId());
         List<TaskTempModuleResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(projectList)){
             projectList.forEach(project->{
@@ -120,7 +120,7 @@ public class ZSYTaskTempModuleService implements IZSYTaskTempModuleService {
             throw new ZSYServiceException("当前模块不存在,请检查");
         }
         //校验是否关联任务
-        Integer count = projectMapper.selectCountInUse(id);
+        Integer count = projectMapper.selectCountInUse(id,ZSYTokenRequestContext.get().getOrgId());
         if (count > 0){
             throw new ZSYServiceException("当前模块已经关联任务,无法删除");
         }

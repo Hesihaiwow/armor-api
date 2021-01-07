@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.dao;
 import com.zhixinhuixue.armor.model.bo.WorkGroupBO;
 import com.zhixinhuixue.armor.model.pojo.WorkGroup;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface IZSYWorkGroupMapper {
      * @author sch
      * @param name 名称
      */
-    WorkGroup selectByName(@Param("name") String name);
+    WorkGroup selectByName(@Param("name") String name,@Param("orgId")Long orgId);
 
     /**
      * 新增团队
@@ -44,7 +45,7 @@ public interface IZSYWorkGroupMapper {
      * 查询团队列表
      * @author sch
      */
-    List<WorkGroup> selectList();
+    List<WorkGroup> selectList(@Param("orgId")Long orgId);
 
     /**
      * 查询团队详情
@@ -61,7 +62,7 @@ public interface IZSYWorkGroupMapper {
      * @author hsh
      * @create 2020/11/6-17:25
      */
-    List<WorkGroup> selectByLeaderId(@Param("userId")Long userId);
+    List<WorkGroup> selectByLeaderId(@Param("userId")Long userId, @Param("orgId")Long orgId);
 
 
     /**

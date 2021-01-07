@@ -1,6 +1,7 @@
 package com.zhixinhuixue.armor.service.impl;
 
 import com.google.common.collect.Lists;
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYUserWeekMapper;
 import com.zhixinhuixue.armor.model.dto.response.UserWeekResDTO;
 import com.zhixinhuixue.armor.model.pojo.UserWeek;
@@ -30,12 +31,12 @@ public class ZSYUserWeekSevice implements IZSYUserWeekService {
      */
     @Override
     public Double getUserWeekHours(Long taskId, Long id, int weekNumber, int year) {
-        return userWeekMapper.getUserWeekHours(0l, id, weekNumber, year);
+        return userWeekMapper.getUserWeekHours(0l, id, weekNumber, year, ZSYTokenRequestContext.get().getOrgId());
     }
 
     @Override
     public List<UserWeekResDTO> getTaskUserHours(Long taskId, Long id) {
-        List<UserWeek> weeks = userWeekMapper.getTaskUserHours(taskId, id);
+        List<UserWeek> weeks = userWeekMapper.getTaskUserHours(taskId, id,ZSYTokenRequestContext.get().getOrgId());
 
         List<UserWeekResDTO> resDTOS = Lists.newArrayList();
         weeks.forEach(userWeek -> {
@@ -60,7 +61,7 @@ public class ZSYUserWeekSevice implements IZSYUserWeekService {
      */
     @Override
     public Double getUserWeekHoursWithoutTask(Long taskId, Long userId, int year, int weekNumber) {
-        Double userWeekHours = userWeekMapper.getUserWeekHours(0l, userId, weekNumber, year);
+        Double userWeekHours = userWeekMapper.getUserWeekHours(0l, userId, weekNumber, year,ZSYTokenRequestContext.get().getOrgId());
         Double userWeekHoursByTask = userWeekMapper.selectHoursByTaskAndUser(taskId, userId, weekNumber, year);
         return (userWeekHours - userWeekHoursByTask);
     }

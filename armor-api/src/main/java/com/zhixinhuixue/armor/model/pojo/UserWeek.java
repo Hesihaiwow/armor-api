@@ -3,7 +3,7 @@ package com.zhixinhuixue.armor.model.pojo;
 /**
  * Created by Lang on 2017/11/28 0028.
  */
-public class UserWeek {
+public class UserWeek extends OrgIdField{
 
     private Long id;
 

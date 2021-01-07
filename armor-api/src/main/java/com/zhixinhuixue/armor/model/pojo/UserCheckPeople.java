@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.model.pojo;
  *
  * 用户创建任务审核人
  */
-public class UserCheckPeople {
+public class UserCheckPeople extends OrgIdField {
     /**
      * 主键
      */

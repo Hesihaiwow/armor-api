@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by Lang on 2018/2/27 0027.
  */
-public class Feedback {
+public class Feedback extends OrgIdField{
 
     private Long id;
 

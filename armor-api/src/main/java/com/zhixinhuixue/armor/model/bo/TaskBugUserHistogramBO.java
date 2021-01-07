@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * @author sch
  * @time 2020/8/27 14:45
  */
-public class TaskBugUserHistogramBO {
+public class TaskBugUserHistogramBO extends OrgIdField {
     /**
      * 用户id
      */

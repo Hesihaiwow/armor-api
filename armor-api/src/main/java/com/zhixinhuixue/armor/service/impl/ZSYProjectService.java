@@ -63,7 +63,7 @@ public class ZSYProjectService implements IZSYProjectService {
         }
 
         String name = projectReqDTO.getName();
-        if (projectMapper.validateProject(name.trim(), null) > 0) {
+        if (projectMapper.validateProject(name.trim(), null,ZSYTokenRequestContext.get().getOrgId()) > 0) {
             throw new ZSYServiceException("项目名称已存在");
         }
         Project project = new Project();
@@ -74,6 +74,7 @@ public class ZSYProjectService implements IZSYProjectService {
         project.setName(projectReqDTO.getName());
         project.setImageUrl(projectReqDTO.getImageUrl());
         project.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
+        project.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         projectMapper.insert(project);
 
     }
@@ -87,7 +88,7 @@ public class ZSYProjectService implements IZSYProjectService {
     @Override
     public void updateProject(Long projectId, ProjectReqDTO projectReqDTO) {
         String name = projectReqDTO.getName();
-        if (projectMapper.validateProject(name.trim(), projectId) > 0) {
+        if (projectMapper.validateProject(name.trim(), projectId,ZSYTokenRequestContext.get().getOrgId()) > 0) {
             throw new ZSYServiceException("项目名称已存在");
         }
         Project project = new Project();

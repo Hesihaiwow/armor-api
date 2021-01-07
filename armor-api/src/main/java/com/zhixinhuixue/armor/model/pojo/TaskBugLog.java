@@ -6,7 +6,7 @@ import java.util.Date;
  * @author sch
  * @time 2019/10/14 14:30
  */
-public class TaskBugLog {
+public class TaskBugLog{
     /**
      * id
      */

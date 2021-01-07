@@ -17,7 +17,7 @@ public interface IZSYWeekPublishPlanMapper {
      * @param name 名称
      * @return WeekPublishPlan
      */
-    WeekPublishPlan selectByName(@Param("name") String name);
+    WeekPublishPlan selectByName(@Param("name") String name,@Param("orgId")Long orgId);
 
     /**
      * 新增
@@ -30,7 +30,7 @@ public interface IZSYWeekPublishPlanMapper {
      * @param wppId 主键
      * @return WeekPublishPlan
      */
-    WeekPublishPlan selectById(@Param("wppId") Long wppId);
+    WeekPublishPlan selectById(@Param("wppId") Long wppId,@Param("orgId")Long orgId);
 
     /**
      * 更新

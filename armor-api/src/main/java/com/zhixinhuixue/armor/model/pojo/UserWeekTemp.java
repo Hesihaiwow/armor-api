@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * 用户-周工作量  临时表
  */
-public class UserWeekTemp {
+public class UserWeekTemp extends OrgIdField{
     /**
      * 主键
      */

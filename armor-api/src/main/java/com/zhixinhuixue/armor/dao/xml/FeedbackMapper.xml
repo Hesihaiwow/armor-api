@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYFeedbackMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Feedback">
+
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Feedback" extends="OrgIdFieldMap">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="origin" jdbcType="VARCHAR" property="origin" />
@@ -19,7 +26,7 @@
     id, title, origin, content, feedback_time, create_time, update_time, create_by project_id, priority, status, is_delete
   </sql>
 
-  <resultMap id="basicDemandMap" type="com.zhixinhuixue.armor.model.pojo.Demand">
+  <resultMap id="basicDemandMap" type="com.zhixinhuixue.armor.model.pojo.Demand" extends="OrgIdFieldMap">
     <id column="id" property="id" jdbcType="BIGINT"></id>
     <result column="title" property="title" jdbcType="VARCHAR"></result>
     <result column="origin" property="origin" jdbcType="VARCHAR"></result>
@@ -59,7 +66,7 @@
     <result column="feedbackPlanId" jdbcType="VARCHAR" property="users"/>
   </resultMap>
 
-  <resultMap id="demandMap" type="com.zhixinhuixue.armor.model.bo.DemandBO">
+  <resultMap id="demandMap" type="com.zhixinhuixue.armor.model.bo.DemandBO" extends="OrgIdFieldMap">
     <id column="id" property="id" jdbcType="BIGINT"></id>
     <result column="title" property="title" jdbcType="VARCHAR"></result>
     <result column="origin" property="origin" jdbcType="VARCHAR"></result>
@@ -102,7 +109,7 @@
     <result column="users" property="taskChargeMan" jdbcType="VARCHAR"></result>
   </resultMap>
 
-  <resultMap id="demandDetailMap" type="com.zhixinhuixue.armor.model.bo.DemandDetailBO">
+  <resultMap id="demandDetailMap" type="com.zhixinhuixue.armor.model.bo.DemandDetailBO" extends="OrgIdFieldMap">
     <id column="id" property="id" jdbcType="BIGINT"></id>
     <result column="title" property="title" jdbcType="VARCHAR"></result>
     <result column="origin" property="origin" jdbcType="VARCHAR"></result>
@@ -115,14 +122,14 @@
     <result column="target" jdbcType="VARCHAR" property="target"></result>
   </resultMap>
 
-  <resultMap id="demandReplyMap" type="com.zhixinhuixue.armor.model.bo.DemandReplyBO">
+  <resultMap id="demandReplyMap" type="com.zhixinhuixue.armor.model.bo.DemandReplyBO" extends="OrgIdFieldMap">
     <id column="feedback_id" property="id" jdbcType="BIGINT"></id>
     <result column="user" property="replyPeople" jdbcType="VARCHAR"></result>
     <result column="content" property="content" jdbcType="VARCHAR"></result>
     <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP"></result>
   </resultMap>
 
-  <resultMap id="demandJoinedMap" type="com.zhixinhuixue.armor.model.bo.DemandJoinedBO">
+  <resultMap id="demandJoinedMap" type="com.zhixinhuixue.armor.model.bo.DemandJoinedBO" extends="OrgIdFieldMap">
     <id column="id" property="id" jdbcType="BIGINT"></id>
     <result column="title" property="title" jdbcType="VARCHAR"></result>
     <result column="origin" property="origin" jdbcType="VARCHAR"></result>
@@ -133,12 +140,12 @@
     <result column="users" property="chargeMan" jdbcType="VARCHAR"></result>
   </resultMap>
 
-  <resultMap id="introducerMap" type="com.zhixinhuixue.armor.model.dto.response.IntroducerResDTO">
+  <resultMap id="introducerMap" type="com.zhixinhuixue.armor.model.dto.response.IntroducerResDTO" extends="OrgIdFieldMap">
     <id column="id" property="id" jdbcType="BIGINT"></id>
     <result column="name" property="name" jdbcType="VARCHAR"></result>
   </resultMap>
 
-  <resultMap id="replyMap" type="com.zhixinhuixue.armor.model.bo.DemandReplyBO">
+  <resultMap id="replyMap" type="com.zhixinhuixue.armor.model.bo.DemandReplyBO" extends="OrgIdFieldMap">
     <id column="id" property="id" jdbcType="BIGINT"></id>
     <result column="feedback_id" property="demandId" jdbcType="BIGINT"></result>
     <result column="reply_people" property="replyPeople" jdbcType="VARCHAR"></result>
@@ -150,74 +157,75 @@
 
 
   <insert id="insertFeedback" parameterType="com.zhixinhuixue.armor.model.pojo.Feedback">
-    insert into feedback ( id, title, origin, content, feedback_time, create_time, update_time, create_by, project_id, priority, status, is_delete)
+    insert into feedback ( id, title, origin, content, feedback_time, create_time, update_time, create_by, project_id, priority, status, is_delete,org_id)
     values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{origin,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
       #{feedbackTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},
-       #{createBy,jdbcType=BIGINT}, #{projectId,jdbcType=BIGINT}, #{priority,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{isDelete,jdbcType=INTEGER})
+       #{createBy,jdbcType=BIGINT}, #{projectId,jdbcType=BIGINT}, #{priority,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{isDelete,jdbcType=INTEGER},
+       #{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--点赞-->
   <insert id="insertDemandLikes">
-    insert into feedback_likes (id,user_id,like_people,feedback_id,create_time)
-    values (#{flId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{likePeople,jdbcType=VARCHAR},#{demandId,jdbcType=BIGINT},#{likeTime,jdbcType=TIMESTAMP})
+    insert into feedback_likes (id,user_id,like_people,feedback_id,create_time,org_id)
+    values (#{flId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{likePeople,jdbcType=VARCHAR},#{demandId,jdbcType=BIGINT},#{likeTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--学管端点赞需求-->
   <insert id="insertDemandLikesByCoach">
-    insert into feedback_likes (id,coach_id,like_people,feedback_id,create_time)
-    values (#{flId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{likePeople,jdbcType=VARCHAR},#{demandId,jdbcType=BIGINT},#{date,jdbcType=TIMESTAMP})
+    insert into feedback_likes (id,coach_id,like_people,feedback_id,create_time,org_id)
+    values (#{flId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{likePeople,jdbcType=VARCHAR},#{demandId,jdbcType=BIGINT},#{date,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--回复需求-->
   <insert id="insertReply">
-    insert into feedback_reply (id,user_id,feedback_id,content,reply_time,reply_people)
-    values (#{frId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{replyTime,jdbcType=TIMESTAMP},#{replyPeople,jdbcType=VARCHAR})
+    insert into feedback_reply (id,user_id,feedback_id,content,reply_time,reply_people,org_id)
+    values (#{frId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{replyTime,jdbcType=TIMESTAMP},#{replyPeople,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--学管端回复需求-->
   <insert id="insertReplyByCoach">
     insert into feedback_reply (id,coach_id,feedback_id,content,reply_time,reply_people)
-    values (#{frId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{date,jdbcType=TIMESTAMP},#{replyPeople,jdbcType=VARCHAR})
+    values (#{frId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{date,jdbcType=TIMESTAMP},#{replyPeople,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--新增需求到feedback_queue-->
   <insert id="insertDemandQueue">
-    insert into feedback_queue (id,demand_id,agree_user_id,agree_time)
-    values (#{fqId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{agreeTime,jdbcType=TIMESTAMP})
+    insert into feedback_queue (id,demand_id,agree_user_id,agree_time,org_id)
+    values (#{fqId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{agreeTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--新增需求到feedback_rejected-->
   <insert id="insertDemandReject">
-    insert into feedback_rejected (id,demand_id,reject_user_id,reject_time)
-    values (#{frId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{rejectTime,jdbcType=TIMESTAMP})
+    insert into feedback_rejected (id,demand_id,reject_user_id,reject_time,org_id)
+    values (#{frId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{rejectTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--新增需求-->
   <insert id="insertDemand" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
     insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,create_by,create_time,
-    is_delete,update_time,target,release_time,question,`type`,`source`,`charge_man`)
+    is_delete,update_time,target,release_time,question,`type`,`source`,`charge_man`,`org_id`)
     values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
     ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
     ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
     ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER}
-    ,#{source,jdbcType=INTEGER},#{chargeMan,jdbcType=BIGINT});
+    ,#{source,jdbcType=INTEGER},#{chargeMan,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT});
   </insert>
 
   <!--学管端新增需求-->
   <insert id="insertDemandByCoach" parameterType="com.zhixinhuixue.armor.model.pojo.Demand">
     insert into feedback (id,title,content,origin,project_id,priority,feedback_time,status,coach_id,create_time,
-    is_delete,update_time,target,release_time,question,`type`,`source`,`charge_man`)
+    is_delete,update_time,target,release_time,question,`type`,`source`,`charge_man`,`org_id`)
     values (#{id,jdbcType=BIGINT},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER},#{projectId,jdbcType=BIGINT}
     ,#{priority,jdbcType=INTEGER},#{feedbackTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{coachId,jdbcType=INTEGER}
     ,#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER},#{updateTime,jdbcType=TIMESTAMP},#{target,jdbcType=VARCHAR}
     ,#{releaseTime,jdbcType=TIMESTAMP},#{question,jdbcType=VARCHAR},#{type,jdbcType=INTEGER}
-    ,#{source,jdbcType=INTEGER},#{chargeMan,jdbcType=BIGINT});
+    ,#{source,jdbcType=INTEGER},#{chargeMan,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT});
   </insert>
 
   <!--新增已读-->
   <insert id="insertFeedbackRead" >
-    insert into feedback_read (id,feedback_id,user_id,read_time,read_people)
-    values (#{frId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{readTime,jdbcType=TIMESTAMP},#{readPeople,jdbcType=VARCHAR});
+    insert into feedback_read (id,feedback_id,user_id,read_time,read_people,`org_id`)
+    values (#{frId,jdbcType=BIGINT},#{demandId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{readTime,jdbcType=TIMESTAMP},#{readPeople,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT});
   </insert>
 
   <!--学管端读取需求-->
@@ -261,6 +269,9 @@
               </if>
               <if test="user!=null and user!=''">
                 and u.id = #{user}
+              </if>
+              <if test="orgId!=null and orgId!=''">
+                and f.org_id = #{orgId}
               </if>
             </where>
             GROUP BY f.id
@@ -436,7 +447,7 @@
   </delete>
 
   <select id="getOrigin" resultType="java.lang.String">
-      SELECT origin FROM feedback WHERE is_delete =0
+      SELECT origin FROM feedback WHERE is_delete =0 and org_id = #{orgId}
   </select>
 
   <select id="selectById" resultMap="BaseResultMap">
@@ -474,6 +485,9 @@
       <if test="fbTimeEnd != null">
         <![CDATA[ AND  fb.feedback_time <= #{fbTimeEnd,jdbcType=TIMESTAMP}]]>
       </if>
+      <if test="orgId != null">
+        <![CDATA[ AND  fb.org_id = #{orgId,jdbcType=BIGINT}]]>
+      </if>
     </where>
     order by fb.create_time desc
   </select>
@@ -500,6 +514,9 @@
       </if>
       <if test="fbTimeEnd != null">
         <![CDATA[ AND  feedback_time <= #{fbTimeEnd,jdbcType=TIMESTAMP}]]>
+      </if>
+      <if test="orgId != null">
+        <![CDATA[ AND  org_id <= #{orgId,jdbcType=BIGINT}]]>
       </if>
     </where>
     order by create_time desc
@@ -614,6 +631,9 @@
       <if test="chargeMan != null">
         and f.charge_man = #{chargeMan}
       </if>
+      <if test="orgId != null">
+        and f.org_id = #{orgId}
+      </if>
     </where>
     order by fr.reject_time desc
   </select>
@@ -632,6 +652,9 @@
       </if>
       <if test="type != null and type != -1">
         and f.type = #{type}
+      </if>
+      <if test="orgId != null">
+        and f.org_id = #{orgId}
       </if>
     </where>
     order by fr.reject_time desc
@@ -710,6 +733,9 @@
       <if test="source != null">
         and f.source = #{source}
       </if>
+      <if test="orgId != null">
+        and f.org_id = #{orgId}
+      </if>
     </where>
     order by fq.agree_time desc
   </select>
@@ -728,6 +754,9 @@
       </if>
       <if test="type != null and type != -1">
         and f.type = #{type}
+      </if>
+      <if test="orgId != null">
+        and f.org_id = #{orgId}
       </if>
     </where>
     order by fq.agree_time desc
@@ -804,6 +833,9 @@
       <if test="source != null">
         and f.source = #{source}
       </if>
+      <if test="orgId != null ">
+        and f.org_id = #{orgId,jdbcType=BIGINT}
+      </if>
     </where>
     GROUP BY f.id
     ORDER BY f.feedback_time DESC
@@ -864,6 +896,9 @@
       <if test="origin != null and origin != ''">
         and f.origin = #{origin}
       </if>
+      <if test="orgId != null">
+        and f.org_id = #{orgId}
+      </if>
     </where>
     GROUP BY f.id
     ORDER BY f.feedback_time DESC
@@ -892,6 +927,9 @@
       </if>
       <if test="origin != null and origin != ''">
         and f.origin = #{origin}
+      </if>
+      <if test="orgId != null">
+        and f.org_id = #{orgId}
       </if>
     </where>
     GROUP BY f.id
@@ -927,6 +965,9 @@
       </if>
       <if test="source != null">
         and f.source = #{source}
+      </if>
+      <if test="orgId != null">
+        and f.org_id = #{orgId}
       </if>
 
     </where>
@@ -1171,23 +1212,26 @@
       <if test="reqDTO.fbTimeEnd != null">
         <![CDATA[ AND  feedback_time <= #{reqDTO.fbTimeEnd,jdbcType=TIMESTAMP}]]>
       </if>
+      <if test="reqDTO.orgId != null">
+        <![CDATA[ AND  org_id <= #{reqDTO.orgId,jdbcType=BIGINT}]]>
+      </if>
     </where>
     order by feedback_time desc
   </select>
 
   <!--查询没有来源的需求-->
     <select id="selectSourceIsNull" resultMap="basicDemandMap">
-        SELECT * FROM `feedback` WHERE `source` is null
+        SELECT * FROM `feedback` WHERE `source` is null and org_id = #{orgId}
     </select>
 
   <!--查询没有负责人的需求-->
   <select id="selectChargeManIsNull" resultMap="basicDemandMap">
-        SELECT * FROM `feedback` WHERE `charge_man` is null
+        SELECT * FROM `feedback` WHERE `charge_man` is null and org_id = #{orgId}
   </select>
 
   <!--根据状态查询需求-->
   <select id="selectDemandExportByStatus" resultMap="exportMap">
-      SELECT * FROM `feedback` WHERE `is_delete` = 0 AND `status` = #{status}
+      SELECT * FROM `feedback` WHERE `is_delete` = 0 AND `status` = #{status} and org_id = #{orgId}
   </select>
 
   <!--查询点赞人-->

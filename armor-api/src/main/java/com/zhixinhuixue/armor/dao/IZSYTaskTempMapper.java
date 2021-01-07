@@ -98,7 +98,7 @@ public interface IZSYTaskTempMapper {
      * @param reviewStatus
      * @return
      */
-    Page<TaskTempBO> selectTaskTempPage(@Param("reviewStatus") Integer reviewStatus);
+    Page<TaskTempBO> selectTaskTempPage(@Param("reviewStatus") Integer reviewStatus,@Param("orgId")Long orgId);
 
     /**
      * 审核userWeekTemp

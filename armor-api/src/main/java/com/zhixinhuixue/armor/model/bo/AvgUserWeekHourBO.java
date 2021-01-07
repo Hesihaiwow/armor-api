@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * @author sch
  * @DATE 2019/7/11 14:42
  */
-public class AvgUserWeekHourBO {
+public class AvgUserWeekHourBO extends OrgIdField {
     /**
      * 人数
      */

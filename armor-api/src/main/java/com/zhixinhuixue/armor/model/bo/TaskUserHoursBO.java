@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 /**
  * @author sch
  * @DATE 2019/9/9 11:09
  */
-public class TaskUserHoursBO {
+public class TaskUserHoursBO extends OrgIdField {
     /**
      * id
      */

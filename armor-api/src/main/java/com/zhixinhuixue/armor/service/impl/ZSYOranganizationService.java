@@ -114,7 +114,6 @@ public class ZSYOranganizationService implements IZSYOranganizatinService {
         department.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         department.setParentId(uuid);
         department.setOrgId(uuid);
-
         izsyDepartmentMapper.insertDept(department);
 
     }

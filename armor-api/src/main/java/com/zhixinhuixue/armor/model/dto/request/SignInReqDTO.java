@@ -1,5 +1,8 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+import org.aspectj.weaver.ast.Or;
+
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +12,7 @@ import java.util.List;
  *
  * 分页查询考勤记录
  */
-public class SignInReqDTO {
+public class SignInReqDTO extends OrgIdField{
     /**
      * 页码
      */

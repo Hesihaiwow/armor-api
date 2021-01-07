@@ -69,14 +69,14 @@ public interface IZSYTaskModifyMapper {
      * @author sch
      * @return
      */
-    List<TaskModifyBO> selectList();
+    List<TaskModifyBO> selectList(@Param("orgId")Long orgId);
 
     /**
      * 管理员分页查看审核通过任务修改申请
      * @author sch
      * @return
      */
-    Page<TaskModifyBO> selectPage();
+    Page<TaskModifyBO> selectPage(@Param("orgId")Long orgId);
 
     /**
      * 更新任务修改申请

@@ -1,9 +1,11 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * Created by Lang on 2017/11/29 0029.
  */
-public class UserWeekBO {
+public class UserWeekBO  extends OrgIdField {
 
     private int weekNumber;
 

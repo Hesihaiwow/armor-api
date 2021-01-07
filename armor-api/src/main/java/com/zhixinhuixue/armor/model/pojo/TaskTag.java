@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.model.pojo;
 
-public class TaskTag {
+public class TaskTag extends OrgIdField{
 
     private Long id;
 

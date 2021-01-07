@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYNotificationMapper">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
 
-    <resultMap id="basicMap" type="com.zhixinhuixue.armor.model.pojo.Notification">
+
+    <resultMap id="basicMap" type="com.zhixinhuixue.armor.model.pojo.Notification" extends="OrgIdFieldMap">
         <id column="nid" property="nid" jdbcType="BIGINT"></id>
         <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
         <result column="user_id" property="userId" jdbcType="BIGINT"></result>
@@ -19,22 +24,22 @@
     <!-- 批量插入通知 -->
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO `notification`
-        (`nid`,`task_id`,`user_id`,`content`,`status`,`create_time`)
+        (`nid`,`task_id`,`user_id`,`content`,`status`,`create_time`,`org_id`)
         VALUES
         <foreach collection="list" item="item" separator="," >
             (#{item.nid,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
             ,#{item.userId,jdbcType=BIGINT},#{item.content,jdbcType=VARCHAR}
-            ,#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP})
+            ,#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
     <!--插入通知-->
     <insert id="insertNotice">
         INSERT INTO `notification`
-        (`nid`,`task_id`,`user_id`,`content`,`status`,`create_time`)
+        (`nid`,`task_id`,`user_id`,`content`,`status`,`create_time`,`org_id`)
         VALUES
         (#{notification.nid,jdbcType=BIGINT},#{notification.taskId,jdbcType=BIGINT},#{notification.userId,jdbcType=BIGINT}
-        ,#{notification.content,jdbcType=VARCHAR},#{notification.status,jdbcType=INTEGER},#{notification.createTime,jdbcType=TIMESTAMP})
+        ,#{notification.content,jdbcType=VARCHAR},#{notification.status,jdbcType=INTEGER},#{notification.createTime,jdbcType=TIMESTAMP},#{notification.orgId,jdbcType=BIGINT})
     </insert>
 
     <!--读取通知-->
@@ -89,6 +94,9 @@
         <if test="reqDTO.endTime != null">
             <![CDATA[  and n.create_time < #{reqDTO.endTime} ]]>
         </if>
+            <if test="reqDTO.orgId != null">
+                <![CDATA[  and n.org_id = #{reqDTO.orgId} ]]>
+            </if>
         </where>
         ORDER BY n.`status` ASC,n.`create_time` DESC
     </select>

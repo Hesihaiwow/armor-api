@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskBugMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskBug">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskBug" extends="OrgIdFieldMap">
         <id column="tb_id" jdbcType="BIGINT" property="tbId" />
         <result column="task_id" jdbcType="BIGINT" property="taskId" />
         <result column="handler_id" jdbcType="BIGINT" property="handlerId" />
@@ -26,17 +32,17 @@
         <result column="task_status" property="taskStatus" jdbcType="INTEGER"/>
     </resultMap>
 
-    <resultMap id="BugStatusMap" type="com.zhixinhuixue.armor.model.bo.TaskBugStatusPieBO">
+    <resultMap id="BugStatusMap" type="com.zhixinhuixue.armor.model.bo.TaskBugStatusPieBO" extends="OrgIdFieldMap">
         <result column="status" property="status" jdbcType="INTEGER"/>
         <result column="number" property="number" jdbcType="INTEGER"/>
     </resultMap>
 
-    <resultMap id="BugTypeMap" type="com.zhixinhuixue.armor.model.bo.TaskBugTypePieBO">
+    <resultMap id="BugTypeMap" type="com.zhixinhuixue.armor.model.bo.TaskBugTypePieBO" extends="OrgIdFieldMap">
         <result column="problem_type" property="problemType" jdbcType="INTEGER"/>
         <result column="number" property="number" jdbcType="INTEGER"/>
     </resultMap>
 
-    <resultMap id="BugUserMap" type="com.zhixinhuixue.armor.model.bo.TaskBugUserHistogramBO">
+    <resultMap id="BugUserMap" type="com.zhixinhuixue.armor.model.bo.TaskBugUserHistogramBO" extends="OrgIdFieldMap">
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="number" property="number" jdbcType="INTEGER"/>
@@ -44,7 +50,7 @@
         <result column="user_delete" property="userDelete" jdbcType="INTEGER"/>
     </resultMap>
 
-    <resultMap id="BugTestTaskMap" type="com.zhixinhuixue.armor.model.bo.BugTestTaskBO">
+    <resultMap id="BugTestTaskMap" type="com.zhixinhuixue.armor.model.bo.BugTestTaskBO" extends="OrgIdFieldMap">
         <result column="task_id" property="taskId" jdbcType="BIGINT"/>
         <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
@@ -53,13 +59,13 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskBug">
         INSERT INTO `task_bug`
         (`tb_id`,`task_id`,`handler_id`,`severity`,`frequency`,`title`,`description`
-        ,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`is_delete`,`tb_no`,`problem_type`)
+        ,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`is_delete`,`tb_no`,`problem_type`,`org_id`)
         VALUES
         (#{tbId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{handlerId,jdbcType=BIGINT}
         ,#{severity,jdbcType=INTEGER},#{frequency,jdbcType=INTEGER},#{title,jdbcType=VARCHAR}
         ,#{description,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
         ,#{createTime,jdbcType=TIMESTAMP},#{updateBy,jdbcType=BIGINT},#{updateTime,jdbcType=TIMESTAMP}
-        ,#{isDelete,jdbcType=INTEGER},#{tbNo,jdbcType=INTEGER},#{problemType,jdbcType=INTEGER})
+        ,#{isDelete,jdbcType=INTEGER},#{tbNo,jdbcType=INTEGER},#{problemType,jdbcType=INTEGER},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--更新-->
@@ -128,6 +134,9 @@
         <if test="reqDTO.problemType != null">
             AND tb.`problem_type` = #{reqDTO.problemType}
         </if>
+        <if test="reqDTO.orgId != null">
+            AND tb.`org_id` = #{reqDTO.orgId}
+        </if>
         <!--<choose>-->
             <!--<when test="reqDTO.status != null and reqDTO.status == 2">-->
                 <!--AND tb.`status` IN (1,4)-->
@@ -167,6 +176,9 @@
     <select id="selectTaskBugNum" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM `task_bug`
         WHERE `is_delete` = 0
+        <if test="orgId!= null ">
+            AND `org_id` = #{orgId}
+        </if>
         <if test="taskId!= null and  taskId!= 0">
             AND `task_id` = #{taskId}
         </if>
@@ -191,7 +203,7 @@
 
     <!--查询最后一个bug编号-->
     <select id="selectLastBugNo" resultType="java.lang.Integer">
-        SELECT `tb_no` FROM `task_bug` ORDER BY `tb_no` DESC LIMIT 1
+        SELECT `tb_no` FROM `task_bug` where org_id = #{orgId} ORDER BY `tb_no` DESC LIMIT 1
     </select>
 
     <!--根据条件查询-->
@@ -262,7 +274,7 @@
 
     <!--bug按状态分类-->
     <select id="selectBugStatusPie" resultMap="BugStatusMap">
-        SELECT `status`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0
+        SELECT `status`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0 and org_id = #{orgId}
         <if test="yearMonth != null and yearMonth != ''">
             AND DATE_FORMAT(create_time,'%Y-%m') = #{yearMonth}
         </if>
@@ -271,7 +283,7 @@
 
     <!--bug按类型分类-->
     <select id="selectBugTypePie" resultMap="BugTypeMap">
-        SELECT `problem_type`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0
+        SELECT `problem_type`,COUNT(*) AS number FROM task_bug WHERE is_delete = 0 and org_id = #{orgId}
         <if test="yearMonth != null and yearMonth != ''">
             AND DATE_FORMAT(create_time,'%Y-%m') = #{yearMonth}
         </if>
@@ -306,7 +318,7 @@
         u.`status` AS `user_status`
         FROM task_bug tb
         LEFT JOIN `user` u ON u.id = tb.create_by
-        WHERE tb.is_delete = 0
+        WHERE tb.is_delete = 0 and tb.org_id = #{orgId}
         <if test="yearMonth != null and yearMonth != ''">
             AND DATE_FORMAT(tb.create_time,'%Y-%m') = #{yearMonth}
         </if>
@@ -332,7 +344,7 @@
         LEFT JOIN task t ON t.id = tb.task_id
         LEFT JOIN user u1 ON u1.id = tb.create_by
         LEFT JOIN user u2 ON u2.id = tb.handler_id
-        WHERE tb.is_delete = 0
+        WHERE tb.is_delete = 0 and tb.org_id = #{orgId}
         <if test="yearMonth != null and yearMonth != ''">
             AND DATE_FORMAT(t.end_time,'%Y-%m') = #{yearMonth}
         </if>
@@ -349,7 +361,9 @@
         LEFT JOIN task_user tu ON tu.task_id = t.id
         AND tu.user_id = #{userId}
         WHERE t.`is_delete` = 0 AND t.`review_status` = 3
-                AND t.`status` = 1 AND t.`stage_id` IN (212754785051344895,212754785051344896)
+                AND t.`status` = 1
+                AND t.`stage_id` IN (212754785051344895,212754785051344896)
+                and t.org_id = #{orgId}
         ORDER BY tu.user_id DESC,t.create_time DESC
     </select>
 

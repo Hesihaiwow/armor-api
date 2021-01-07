@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYBugManageMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.BugManage">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="BIGINT" property="orgId" />
+    </resultMap>
+
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.BugManage" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="description" jdbcType="VARCHAR" property="description" />
         <result column="project_id" jdbcType="BIGINT" property="projectId" />
@@ -9,7 +16,7 @@
         <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
     </resultMap>
 
-    <resultMap id="OnlineBugMap" type="com.zhixinhuixue.armor.model.pojo.OnlineBugManage">
+    <resultMap id="OnlineBugMap" type="com.zhixinhuixue.armor.model.pojo.OnlineBugManage" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="description" jdbcType="VARCHAR" property="description" />
         <result column="project_id" jdbcType="BIGINT" property="projectId" />
@@ -64,10 +71,10 @@
     </resultMap>
     
     <insert id="insertBug" parameterType="com.zhixinhuixue.armor.model.pojo.BugManage">
-        insert into bug_manage (id, description, project_id, create_time, process_time)
+        insert into bug_manage (id, description, project_id, create_time, process_time, org_id)
         values
         (#{id,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR},
-        #{projectId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP} , #{processTime,jdbcType=TIMESTAMP} )
+        #{projectId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP} , #{processTime,jdbcType=TIMESTAMP}, #{orgId,jdbcType=BIGINT} )
     </insert>
 
     <!--插入线上bug-->
@@ -75,12 +82,12 @@
         INSERT INTO `bug_manage`
         (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`
         ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`
-        ,`bug_no`,`task_id`,`group_id`,`affect_scope`,`year`)
+        ,`bug_no`,`task_id`,`group_id`,`affect_scope`,`year`, org_id)
         VALUES
         (#{id,jdbcType=BIGINT},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{discoverTime,jdbcType=TIMESTAMP},#{processTime,jdbcType=TIMESTAMP},
         #{origin,jdbcType=VARCHAR},#{accountInfo,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{isSolved,jdbcType=INTEGER}
         ,#{remark,jdbcType=VARCHAR},#{demandSystemName,jdbcType=VARCHAR},#{demandSystemId,jdbcType=INTEGER},#{bugNo,jdbcType=INTEGER}
-        ,#{taskId,jdbcType=BIGINT},#{groupId,jdbcType=BIGINT},#{affectScope,jdbcType=INTEGER},#{year,jdbcType=INTEGER})
+        ,#{taskId,jdbcType=BIGINT},#{groupId,jdbcType=BIGINT},#{affectScope,jdbcType=INTEGER},#{year,jdbcType=INTEGER}, #{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--批量新增-->
@@ -88,7 +95,7 @@
         INSERT INTO `bug_manage`
         (`id`,`description`,`project_id`,`create_time`,`discover_time`,`process_time`
         ,`origin`,`account_info`,`type`,`is_solved`,`remark`,`demand_system`,`demand_system_id`
-        ,`bug_no`,`task_id`,`group_id`,`affect_scope`,`year`)
+        ,`bug_no`,`task_id`,`group_id`,`affect_scope`,`year`,`org_id`)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT},#{item.description,jdbcType=VARCHAR},#{item.projectId,jdbcType=BIGINT}
@@ -96,7 +103,7 @@
             #{item.origin,jdbcType=VARCHAR},#{item.accountInfo,jdbcType=VARCHAR},#{item.type,jdbcType=INTEGER}
             ,#{item.isSolved,jdbcType=INTEGER},#{item.remark,jdbcType=VARCHAR},#{item.demandSystemName,jdbcType=VARCHAR}
             ,#{item.demandSystemId,jdbcType=INTEGER},#{item.bugNo,jdbcType=INTEGER},#{item.taskId,jdbcType=BIGINT}
-            ,#{item.groupId,jdbcType=BIGINT},#{item.affectScope,jdbcType=INTEGER},#{item.year,jdbcType=INTEGER})
+            ,#{item.groupId,jdbcType=BIGINT},#{item.affectScope,jdbcType=INTEGER},#{item.year,jdbcType=INTEGER},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
@@ -140,6 +147,7 @@
         left join `task` t on t.id = bm.`task_id`
         <where>
             bm.demand_system_id is not null and bm.`is_delete` = 0
+            and bm.org_id = #{bugListReqDTO.orgId}
             <if test="bugListReqDTO.groupId != null">
                 and bm.group_id = #{bugListReqDTO.groupId}
             </if>
@@ -194,6 +202,7 @@
                 and bm.is_solved = #{bugListReqDTO.isSolved}
             </if>
             and bm.demand_system_id is null
+            and bm.org_id = #{orgId}
         </where>
         order by bm.create_time desc
     </select>
@@ -227,21 +236,22 @@
             and `year` = #{bugListReqDTO.year}
         </if>
         AND demand_system_id is not null AND `is_delete` = 0
+        AND org_id = #{orgId}
     </select>
 
     <!--查询总数-->
     <select id="selectCountTotal" resultType="java.lang.Integer">
-        SELECT COUNT(id) FROM `bug_manage` WHERE demand_system_id is not null and is_delete = 0
+        SELECT COUNT(id) FROM `bug_manage` WHERE demand_system_id is not null and is_delete = 0 and org_id = #{orgId}
     </select>
 
     <!--查询解决状态为空的数据-->
     <select id="selectIsSolvedIsNull" resultMap="OnlineBugMap">
-        SELECT * FROM `bug_manage` WHERE `is_solved` IS NULL
+        SELECT * FROM `bug_manage` WHERE `is_solved` IS NULL and org_id = #{orgId}
     </select>
 
     <!--查询最后一个bug编号-->
     <select id="selectLastBugNo" resultMap="OnlineBugMap">
-        SELECT * FROM bug_manage WHERE bug_no IS NOT NULL ORDER BY bug_no DESC LIMIT 1
+        SELECT * FROM bug_manage WHERE bug_no IS NOT NULL and org_id = #{orgId} ORDER BY bug_no DESC LIMIT 1
     </select>
 
     <!--根据主键查询-->
@@ -258,12 +268,16 @@
         <if test="endTime != null">
             <![CDATA[  AND discover_time <= #{endTime} ]]>
         </if>
+        <if test="orgId != null">
+            <![CDATA[  AND org_id <= #{orgId} ]]>
+        </if>
         GROUP BY `demand_system_id`
     </select>
 
     <!--根据反馈系统和类型查询数量-->
     <select id="selectNumBySystemAndType" resultType="java.lang.Integer">
         SELECT COUNT(`id`) FROM `bug_manage` WHERE `is_delete` = 0 AND `demand_system_id` = #{systemId} AND `type` = #{type}
+        and org_id = #{orgId}
     </select>
 
     <!--查询时间段内线上bug各个系统对应的各个类型的数量-->
@@ -272,6 +286,7 @@
         FROM `bug_manage` bm
         LEFT JOIN `work_group` wg ON wg.`id` = bm.`group_id`
         WHERE bm.`is_delete` = 0 AND bm.`demand_system_id` IS NOT NULL
+        and bm.org_id = #{orgId}
         <if test="startTime != null">
             <![CDATA[  AND bm.discover_time >= #{startTime} ]]>
         </if>
@@ -287,6 +302,7 @@
     <!--查询时间段内线上bug的业务组数量-->
     <select id="selectGroupsByTime" resultType="java.lang.Long">
         SELECT `group_id` FROM `bug_manage` WHERE `is_delete` = 0 AND `demand_system_id` IS NOT NULL AND `group_id` IS NOT NULL
+        and org_id = #{orgId}
         <if test="startTime != null">
             <![CDATA[  AND discover_time >= #{startTime} ]]>
         </if>

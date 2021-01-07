@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskSummaryMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskSummary">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskSummary" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="task_id" jdbcType="BIGINT" property="taskId" />
         <result column="comment" jdbcType="VARCHAR" property="comment" />
@@ -25,12 +31,12 @@
     <!--批量插入-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
         INSERT INTO `task_summary`
-        (`id`,`task_id`,`comment`,`gain`,`create_by`,`update_by`,`create_time`,`update_time`,`is_delete`)
+        (`id`,`task_id`,`comment`,`gain`,`create_by`,`update_by`,`create_time`,`update_time`,`is_delete`,`org_id`)
         VALUES
         <foreach collection="list" separator="," item="item">
             (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.comment,jdbcType=VARCHAR}
             ,#{item.gain,jdbcType=VARCHAR},#{item.createBy,jdbcType=BIGINT},#{item.updateBy,jdbcType=BIGINT}
-            ,#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP},#{item.isDelete,jdbcType=INTEGER})
+            ,#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP},#{item.isDelete,jdbcType=INTEGER},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
@@ -38,13 +44,13 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskSummary">
         INSERT INTO `task_summary`
         (`id`,`task_id`,`comment`,`gain`,`create_by`,`update_by`,`create_time`
-        ,`update_time`,`is_delete`,`begin_time`,`end_time`,`quality`,`is_delayed`,`has_communicate_problem`)
+        ,`update_time`,`is_delete`,`begin_time`,`end_time`,`quality`,`is_delayed`,`has_communicate_problem`,`org_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{comment,jdbcType=VARCHAR}
         ,#{gain,jdbcType=VARCHAR},#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT}
         ,#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER}
         ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP}
-        ,#{quality,jdbcType=DECIMAL},#{isDelayed,jdbcType=INTEGER},#{hasCommunicateProblem,jdbcType=INTEGER})
+        ,#{quality,jdbcType=DECIMAL},#{isDelayed,jdbcType=INTEGER},#{hasCommunicateProblem,jdbcType=INTEGER},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--更新-->
@@ -107,7 +113,8 @@
     <select id="selectAll" resultMap="BaseResultMap">
         SELECT ts.* FROM `task_summary` ts
         LEFT JOIN `task` t ON t.id = ts.task_id
-        WHERE ts.`is_delete` = 0 AND t.`is_delete` = 0 AND t.`review_status` = 3 AND t.`status` = 2;
+        WHERE ts.`is_delete` = 0 AND t.`is_delete` = 0 AND t.`review_status` = 3 AND t.`status` = 2
+        and ts.org_id = #{orgId};
     </select>
 
 

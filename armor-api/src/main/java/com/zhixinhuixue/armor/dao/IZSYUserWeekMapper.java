@@ -16,7 +16,7 @@ public interface IZSYUserWeekMapper {
 
     int insertList(List<UserWeek> userWeeks);
 
-    int deleteByTaskId(Long taskId);
+    int deleteByTaskId(@Param("taskId") Long taskId,@Param("orgId")Long orgId);
 
     /**
      * 周工作统计
@@ -25,18 +25,18 @@ public interface IZSYUserWeekMapper {
      * @return
      */
     List<StatsUserWeekBO> getUserWeekStats(@Param("weekNumber") int weeekNumber, @Param("year") int year
-            , @Param("departmentId") Long departmentId, @Param("jobRole") Integer jobRole);
+            , @Param("departmentId") Long departmentId, @Param("jobRole") Integer jobRole,@Param("orgId")Long orgId);
 
-    Double getUserWeekHours(@Param("taskId") Long taskId, @Param("userId") Long userId, @Param("weekNumber") int weekNumber, @Param("year") int year);
+    Double getUserWeekHours(@Param("taskId") Long taskId, @Param("userId") Long userId, @Param("weekNumber") int weekNumber, @Param("year") int year,@Param("orgId")Long orgId);
 
-    List<UserWeek> getTaskUserHours(@Param("taskId") Long taskId, @Param("userId") Long userId);
+    List<UserWeek> getTaskUserHours(@Param("taskId") Long taskId, @Param("userId") Long userId,@Param("orgId")Long orgId);
 
     /**
      * 延长时间，获取相同任务相同周的任务
      *
      * @return
      */
-    UserWeek getSameWeek(@Param("taskId") Long taskId, @Param("userId") Long userId, @Param("weekNumber") int weekNumber, @Param("year") int year);
+    UserWeek getSameWeek(@Param("taskId") Long taskId, @Param("userId") Long userId, @Param("weekNumber") int weekNumber, @Param("year") int year,@Param("orgId")Long orgId);
 
     int updateHours(@Param("id") Long id, @Param("hours") Double hours);
 
@@ -48,7 +48,7 @@ public interface IZSYUserWeekMapper {
      * @return
      * @author sch
      */
-    int deleteByTaskIdAndUserId(@Param("taskId") Long taskId, @Param("userId") Long userId);
+    int deleteByTaskIdAndUserId(@Param("taskId") Long taskId, @Param("userId") Long userId,@Param("orgId")Long orgId);
 
     /**
      * 查询userWeek
@@ -82,7 +82,7 @@ public interface IZSYUserWeekMapper {
      * @return
      * @author sch
      */
-    AvgUserWeekHourBO selectAvgWeekHour(@Param("jobRole") Integer jobRole, @Param("year") int year, @Param("weekOfYear") int weekOfYear);
+    AvgUserWeekHourBO selectAvgWeekHour(@Param("jobRole") Integer jobRole, @Param("year") int year, @Param("weekOfYear") int weekOfYear,@Param("orgId")Long orgId);
 
     /**
      * 根据团队查询周人员投入
@@ -93,7 +93,7 @@ public interface IZSYUserWeekMapper {
      * @return List<UserCostBO>
      * @author sch
      */
-    List<UserCostBO> selectUserCostByGroup(@Param("groupId") Long groupId, @Param("year") int year, @Param("weekNumber") Integer weekNumber);
+    List<UserCostBO> selectUserCostByGroup(@Param("groupId") Long groupId, @Param("year") int year, @Param("weekNumber") Integer weekNumber,@Param("orgId")Long orgId);
 
     /**
      * 查询当前任务之外的周工作量
@@ -116,5 +116,5 @@ public interface IZSYUserWeekMapper {
      * @return List<UserWeekHourBO>
      * @author sch
      */
-    List<UserWeekHourBO> selectUserWeekStats(@Param("year") int year, @Param("weeks") List<Integer> weeks, @Param("jobRole") Integer jobRole);
+    List<UserWeekHourBO> selectUserWeekStats(@Param("year") int year, @Param("weeks") List<Integer> weeks, @Param("jobRole") Integer jobRole,@Param("orgId")Long orgId);
 }

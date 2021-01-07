@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * 任务总结
  */
-public class TaskSummary {
+public class TaskSummary extends OrgIdField{
     /**
      * id
      */

@@ -36,6 +36,16 @@ public class ZSYUserController extends ZSYController {
     }
 
     /**
+     * 用户登陆
+     *
+     * @param userLoginReqDTO 参数
+     */
+    @PostMapping(value = "/admin/login")
+    public String adminLogin(@Valid @RequestBody UserLoginReqDTO userLoginReqDTO) {
+        return userService.adminLogin(userLoginReqDTO).build();
+    }
+
+    /**
      * 用户注册
      *
      * @param userReqDTO 参数

@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.model.pojo;
  *
  * 加班关联任务
  */
-public class ExtraWorkTask {
+public class ExtraWorkTask extends OrgIdField{
     /**
      * 主键id
      */

@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.dto.request.MyQuestionReqDTO;
 import com.zhixinhuixue.armor.model.pojo.OnlineQuestion;
 import com.zhixinhuixue.armor.model.pojo.QuestionUrl;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.List;
 
@@ -87,11 +88,11 @@ public interface IZSYOnlineQuestionMapper {
      * 查看待审核问题
      * @return
      */
-    Page<OnlineQuestionBO> selectWaitQuestion();
+    Page<OnlineQuestionBO> selectWaitQuestion(@Param("orgId")Long orgId);
 
     /**
      * 查看审核通过线上问题
      * @return
      */
-    Page<OnlineQuestionBO> selectAcceptedQuestion();
+    Page<OnlineQuestionBO> selectAcceptedQuestion(@Param("orgId")Long orgId);
 }

@@ -62,13 +62,14 @@ public class ZSYTagService implements IZSYTagService {
         tag.setCreateTime(new Date());
         tag.setId(snowFlakeIDHelper.nextId());
         tag.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
-        int count = tagMapper.countTag();
+        int count = tagMapper.countTag(null,ZSYTokenRequestContext.get().getOrgId());
         if (count < 8) {
             tag.setColor("" + (count + 1));
         } else {
             tag.setColor("7");
         }
         tag.setName(name);
+        tag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         tagMapper.insert(tag);
         return tag.getId();
     }
@@ -80,7 +81,7 @@ public class ZSYTagService implements IZSYTagService {
      */
     @Override
     public void deleteTag(Long id) {
-        if (tagMapper.countTag(id) != 0) {
+        if (tagMapper.countTag(id,ZSYTokenRequestContext.get().getOrgId()) != 0) {
             throw new ZSYServiceException("标签正在使用中，请修改或停止使用后删除");
         }
         if (tagMapper.deleteTag(id) == 0) {

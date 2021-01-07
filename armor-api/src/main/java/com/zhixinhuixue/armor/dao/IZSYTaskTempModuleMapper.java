@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.dao;
 
 import com.zhixinhuixue.armor.model.pojo.TaskTempModule;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public interface IZSYTaskTempModuleMapper {
      * @author sch
      * @return
      */
-    List<TaskTempModule> selectList();
+    List<TaskTempModule> selectList(@Param("orgId")Long orgId);
 
     /**
      * 修改
@@ -55,5 +56,5 @@ public interface IZSYTaskTempModuleMapper {
      * @param id
      * @return
      */
-    Integer selectCountInUse(@Param("id")Long id);
+    Integer selectCountInUse(@Param("id")Long id, @Param("orgId")Long orgId);
 }

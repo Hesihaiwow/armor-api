@@ -38,5 +38,5 @@ public interface IZSYUserGroupMapper {
      * @author hsh
      * @create 2020/11/5-17:12
      */
-    List<UserGroup> selectByGroupIds(@Param("groupIds")List<Long> groupIds);
+    List<UserGroup> selectByGroupIds(@Param("groupIds")List<Long> groupIds,@Param("orgId")Long orgId);
 }

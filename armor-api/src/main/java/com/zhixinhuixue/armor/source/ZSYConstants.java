@@ -26,6 +26,11 @@ public class ZSYConstants {
     public static final String LOGIN_URI = "/api/user/login";
 
     /**
+     * admin登陆URI
+     */
+    public static final String ADMIN_LOGIN_URI = "/api/user/admin/login";
+
+    /**
      * 登陆URI
      */
     public static final String REGISTER_URI = "/api/user/register";

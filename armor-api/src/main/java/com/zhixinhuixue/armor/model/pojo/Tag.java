@@ -1,8 +1,10 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.aspectj.weaver.ast.Or;
+
 import java.util.Date;
 
-public class Tag {
+public class Tag extends OrgIdField {
 
     private Long id;
 

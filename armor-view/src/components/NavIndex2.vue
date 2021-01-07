@@ -6410,6 +6410,7 @@
                     let vm = this;
                     http.zsyGetHttp('/stage/list', {}, (resp) => {
                         vm.stageList = resp.data
+                        vm.taskTempStageList = resp.data
                     })
                 }
             },

@@ -38,7 +38,7 @@ public interface IZSYFeedbackMapper {
      */
     int updateByFeedbackId(Feedback feedback);
 
-    List<String> getOrigin();
+    List<String> getOrigin(@Param("orgId")Long orgId);
 
 
     /**
@@ -50,7 +50,7 @@ public interface IZSYFeedbackMapper {
      */
     Page<DemandBO> selectDemandPage(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type
             ,@Param("fbTimeStart")Date fbTimeStart,@Param("fbTimeEnd")Date fbTimeEnd
-            ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title);
+            ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title,@Param("orgId")Long orgId);
 
     /**
      * 获取驳回需求反馈列表
@@ -60,7 +60,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandRejectedBO> selectDemandRejectedPage(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type
-                                        ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title);
+                                        ,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title,@Param("orgId")Long orgId);
     /**
      * 查询驳回需求集合
      * @param origin
@@ -68,7 +68,7 @@ public interface IZSYFeedbackMapper {
      * @param type
      * @return
      */
-    List<DemandRejectedBO> selectDemandRejectedList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
+    List<DemandRejectedBO> selectDemandRejectedList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type,@Param("orgId")Long orgId);
 
     /**
      * 获取驳回人姓名
@@ -85,9 +85,9 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandQueuedBO> selectDemandQueuedPage(@Param("origin") String origin, @Param("priority")Integer priority
-            ,@Param("type")Integer type,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title);
+            ,@Param("type")Integer type,@Param("chargeMan")Long chargeMan,@Param("source")Integer source,@Param("title") String title,@Param("orgId")Long orgId);
 
-    List<DemandQueuedBO> selectDemandQueuedList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type);
+    List<DemandQueuedBO> selectDemandQueuedList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type,@Param("orgId")Long orgId);
 
 
     /**
@@ -98,7 +98,7 @@ public interface IZSYFeedbackMapper {
      */
     Page<DemandCompletedBO> selectDemandCompletedPage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime,
                                                       @Param("origin")String origin,@Param("chargeMan")String chargeMan,
-                                                      @Param("source")Integer source,@Param("title") String title);
+                                                      @Param("source")Integer source,@Param("title") String title,@Param("orgId")Long orgId);
 
     /**
      * 获取我开发的需求
@@ -107,7 +107,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandJoinedBO> selectDemandDevelopPage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("chargeMan")Long chargeMan,@Param("origin")String origin,@Param("user")Long user);
+            ,@Param("chargeMan")Long chargeMan,@Param("origin")String origin,@Param("user")Long user,@Param("orgId")Long orgId);
 
     /**
      * 提出的需求
@@ -117,7 +117,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     Page<DemandJoinedBO> selectDemandCreatePage(@Param("beginTime")Date beginTime,@Param("endTime")Date endTime
-            ,@Param("chargeMan")Long chargeMan,@Param("origin")String origin,@Param("user")Long user);
+            ,@Param("chargeMan")Long chargeMan,@Param("origin")String origin,@Param("user")Long user,@Param("orgId")Long orgId);
 
     /**
      * 获取进行中需求列表
@@ -128,10 +128,10 @@ public interface IZSYFeedbackMapper {
      */
     Page<DemandRunningBO> selectDemandRunningPage(@Param("origin") String origin, @Param("priority")Integer priority,
                                                  @Param("type")Integer type,@Param("chargeMan")String chargeMan,
-                                                  @Param("source")Integer source,@Param("title") String title);
+                                                  @Param("source")Integer source,@Param("title") String title,@Param("orgId")Long orgId);
 
     List<DemandRunningBO> selectDemandRunningList(@Param("origin") String origin, @Param("priority")Integer priority,
-                                              @Param("type")Integer type, @Param("chargeMan")String chargeMan,@Param("source")Integer source);
+                                              @Param("type")Integer type, @Param("chargeMan")String chargeMan,@Param("source")Integer source,@Param("orgId")Long orgId);
 
 
     /**
@@ -176,7 +176,7 @@ public interface IZSYFeedbackMapper {
      * @param flId
      * @param likeTime
      */
-    void insertDemandLikes(@Param("demandId") Long demandId, @Param("userId")Long userId,@Param("likePeople")String likePeople, @Param("flId")Long flId, @Param("likeTime")Date likeTime);
+    void insertDemandLikes(@Param("demandId") Long demandId, @Param("userId")Long userId,@Param("likePeople")String likePeople, @Param("flId")Long flId, @Param("likeTime")Date likeTime, @Param("orgId")Long orgId);
 
     /**
      * 取消点赞
@@ -201,7 +201,7 @@ public interface IZSYFeedbackMapper {
      * @param replyTime
      */
     Integer insertReply(@Param("demandId") Long demandId, @Param("userId")Long userId, @Param("content")String content
-            , @Param("frId")Long frId, @Param("replyTime")Date replyTime,@Param("replyPeople")String replyPeople);
+            , @Param("frId")Long frId, @Param("replyTime")Date replyTime,@Param("replyPeople")String replyPeople,@Param("orgId")Long orgId);
 
     /**
      * 设置feedback中status为排队中(4)
@@ -218,7 +218,7 @@ public interface IZSYFeedbackMapper {
      * @param agreeTime
      */
     void insertDemandQueue(@Param("fqId")Long fqId, @Param("demandId")Long demandId
-            , @Param("userId")Long userId, @Param("agreeTime")Date agreeTime);
+            , @Param("userId")Long userId, @Param("agreeTime")Date agreeTime,@Param("orgId")Long orgId);
 
 
     /**
@@ -235,7 +235,7 @@ public interface IZSYFeedbackMapper {
      * @param rejectTime
      */
     void insertDemandReject(@Param("frId")Long frId, @Param("demandId")Long demandId
-            , @Param("userId")Long userId, @Param("rejectTime")Date rejectTime);
+            , @Param("userId")Long userId, @Param("rejectTime")Date rejectTime,@Param("orgId")Long orgId);
 
     /**
      * 删除feedback_queue中的需求
@@ -270,7 +270,7 @@ public interface IZSYFeedbackMapper {
      * @param userId
      * @param readTime
      */
-    Integer insertFeedbackRead(@Param("frId") Long frId, @Param("demandId")Long demandId, @Param("userId")Long userId, @Param("readPeople")String readPeople,@Param("readTime")Date readTime);
+    Integer insertFeedbackRead(@Param("frId") Long frId, @Param("demandId")Long demandId, @Param("userId")Long userId, @Param("readPeople")String readPeople,@Param("readTime")Date readTime,@Param("orgId")Long orgId);
 
     /**
      * 查询提出人员列表
@@ -454,7 +454,7 @@ public interface IZSYFeedbackMapper {
      * @param coachId
      * @param date
      */
-    Integer insertFeedbackReadByCoach(@Param("frId") Long frId, @Param("demandId") Long demandId, @Param("coachId") Integer coachId,@Param("readPeople")String readPeople, @Param("date") Date date);
+    Integer insertFeedbackReadByCoach(@Param("frId") Long frId, @Param("demandId") Long demandId, @Param("coachId") Integer coachId,@Param("readPeople")String readPeople, @Param("date") Date date,@Param("orgId") Long orgId);
 
     /**
      * 查看学管是否点赞需求
@@ -472,7 +472,7 @@ public interface IZSYFeedbackMapper {
      * @param date
      */
     void insertDemandLikesByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId, @Param("likePeople")String likePeople,
-                                  @Param("flId") Long flId, @Param("date") Date date);
+                                  @Param("flId") Long flId, @Param("date") Date date,@Param("orgId")Long orgId);
 
     /**
      * 学管端取消点赞需求
@@ -491,7 +491,7 @@ public interface IZSYFeedbackMapper {
      * @param date
      */
     Integer insertReplyByCoach(@Param("demandId") Long demandId, @Param("coachId") Integer coachId,
-                            @Param("content") String content, @Param("frId") Long frId, @Param("date") Date date,@Param("replyPeople")String replyPeople);
+                            @Param("content") String content, @Param("frId") Long frId, @Param("date") Date date,@Param("replyPeople")String replyPeople,@Param("orgId")Long orgId);
 
     /**
      * 学管端新增需求
@@ -507,7 +507,7 @@ public interface IZSYFeedbackMapper {
      * @return
      */
     List<DemandBO> selectDemandList(@Param("origin") String origin, @Param("priority")Integer priority,@Param("type")Integer type
-            ,@Param("fromCoach")Integer fromCoach,@Param("fbTimeStart")Date fbTimeStart,@Param("fbTimeEnd")Date fbTimeEnd);
+            ,@Param("fromCoach")Integer fromCoach,@Param("fbTimeStart")Date fbTimeStart,@Param("fbTimeEnd")Date fbTimeEnd,@Param("orgId")Long orgId);
 
 
     /**
@@ -528,7 +528,7 @@ public interface IZSYFeedbackMapper {
      * 查询没有来源的老需求
      * @return
      */
-    List<Demand> selectSourceIsNull();
+    List<Demand> selectSourceIsNull(@Param("orgId") Long orgId);
 
     /**
      * 批量更新需求来源
@@ -541,7 +541,7 @@ public interface IZSYFeedbackMapper {
      * 查询没有负责人的老需求
      * @return
      */
-    List<Demand> selectChargeManIsNull();
+    List<Demand> selectChargeManIsNull(@Param("orgId") Long orgId);
 
     /**
      * 批量更新需求负责人
@@ -554,5 +554,5 @@ public interface IZSYFeedbackMapper {
      * @author sch
      * @param status 状态
      */
-    List<DemandExportBO> selectDemandExportByStatus(@Param("status") Integer status);
+    List<DemandExportBO> selectDemandExportByStatus(@Param("status") Integer status,@Param("orgId") Long orgId);
 }

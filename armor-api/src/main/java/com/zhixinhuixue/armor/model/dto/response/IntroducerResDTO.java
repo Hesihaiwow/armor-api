@@ -1,5 +1,6 @@
 package com.zhixinhuixue.armor.model.dto.response;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -7,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by SCH on 2018-10-23
  */
 @ApiModel("需求提出人")
-public class IntroducerResDTO {
+public class IntroducerResDTO extends OrgIdField {
     @ApiModelProperty("提出人id")
     private Long id;
     @ApiModelProperty("姓名")

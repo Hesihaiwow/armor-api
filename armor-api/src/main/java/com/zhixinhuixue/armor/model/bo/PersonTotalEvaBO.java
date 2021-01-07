@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * @author sch
  * @DATE 2019/6/14 13:16
  */
-public class PersonTotalEvaBO {
+public class PersonTotalEvaBO extends OrgIdField {
     /**
      * 评分项
      */

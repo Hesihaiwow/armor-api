@@ -67,7 +67,7 @@ public class ZSYStatsService implements IZSYStatsService {
      */
     @Override
     public List<CalculateResDTO> calculate(CalculateReqDTO calculateReqDTO) {
-        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getCalculate(calculateReqDTO.getStartTime(), calculateReqDTO.getEndTime(), calculateReqDTO.getDatumIntegral(), ZSYTokenRequestContext.get().getDepartmentId());
+        List<UserIntegralInfoBO> userIntegralInfoBOS = userIntegralMapper.getCalculate(calculateReqDTO.getStartTime(), calculateReqDTO.getEndTime(), calculateReqDTO.getDatumIntegral(), ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
         //总绩效积分
         BigDecimal sumInt = new BigDecimal("0");
         for (UserIntegralInfoBO i : userIntegralInfoBOS) {
@@ -143,7 +143,7 @@ public class ZSYStatsService implements IZSYStatsService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(reqDTO.getWeekNumber(), year, departmentId, jobRole);
+        List<StatsUserWeekBO> statsUserWeekBOS = userWeekMapper.getUserWeekStats(reqDTO.getWeekNumber(), year, departmentId, jobRole,ZSYTokenRequestContext.get().getOrgId());
 
         List<StatsWeekResDTO> statsWeekResDTOS = new ArrayList<>();
         BeanUtils.copyProperties(statsUserWeekBOS, statsWeekResDTOS);
@@ -157,7 +157,7 @@ public class ZSYStatsService implements IZSYStatsService {
             statsWeekResDTO.setTaskId(userWeekBO.getTaskId());
 
             statsWeekResDTO.setLeaveHours(userWeekBO.getLeaveHours() == null ? 0 : userWeekBO.getLeaveHours());
-            statsWeekResDTO.setHours(userWeekMapper.getUserWeekHours(ZSYConstants.NO_DEPT_ID, userWeekBO.getUserId(), reqDTO.getWeekNumber(), year));
+            statsWeekResDTO.setHours(userWeekMapper.getUserWeekHours(ZSYConstants.NO_DEPT_ID, userWeekBO.getUserId(), reqDTO.getWeekNumber(), year,ZSYTokenRequestContext.get().getOrgId()));
 
             statsWeekResDTOS.add(statsWeekResDTO);
         }
@@ -173,6 +173,7 @@ public class ZSYStatsService implements IZSYStatsService {
     @Override
     public PageInfo<ExtraWorkStatsResDTO> getExtraWorkStats(ExtraWorkStatsReqDTO reqDTO) {
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<ExtraWorkStatsBO> extraWorkStatsBOS = statsMapper.selectExtraWorkStatsPage(reqDTO);
         Page<ExtraWorkStatsResDTO> page = new Page<>();
         BeanUtils.copyProperties(extraWorkStatsBOS, page);
@@ -194,6 +195,7 @@ public class ZSYStatsService implements IZSYStatsService {
                 }
                 ExtraWorkStatsResDTO resDTO = new ExtraWorkStatsResDTO();
                 BeanUtils.copyProperties(extraWorkStatsBO, resDTO);
+                reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 List<Date> dateList = signInMapper.selectCheckTimeByUser(reqDTO);
                 resDTO.setCheckRecords(dateList);
                 page.add(resDTO);
@@ -227,7 +229,7 @@ public class ZSYStatsService implements IZSYStatsService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        List<UserCostBO> userCostBOList = userWeekMapper.selectUserCostByGroup(groupId, year, weekNumber);
+        List<UserCostBO> userCostBOList = userWeekMapper.selectUserCostByGroup(groupId, year, weekNumber,ZSYTokenRequestContext.get().getOrgId());
         List<WeekUserCostResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userCostBOList)) {
             userCostBOList.forEach(userCostBO -> {
@@ -328,7 +330,7 @@ public class ZSYStatsService implements IZSYStatsService {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         Calendar calendar = Calendar.getInstance();
 
-        List<User> userList = signInMapper.selectEffectUsers();
+        List<User> userList = signInMapper.selectEffectUsers(ZSYTokenRequestContext.get().getOrgId());
         if (reqDTO.getJobRole() != null) {
             userList = userList.stream().filter(user -> user.getJobRole().equals(reqDTO.getJobRole())).collect(Collectors.toList());
         }
@@ -374,7 +376,7 @@ public class ZSYStatsService implements IZSYStatsService {
             //2.根据年 周 即可查出用户周工时分配情况
             for (Integer yearNo : yearMonthMap.keySet()) {
                 List<Integer> weeks = yearMonthMap.get(yearNo);
-                List<UserWeekHourBO> userWeekHourBOS = userWeekMapper.selectUserWeekStats(year, weeks, reqDTO.getJobRole());
+                List<UserWeekHourBO> userWeekHourBOS = userWeekMapper.selectUserWeekStats(year, weeks, reqDTO.getJobRole(),ZSYTokenRequestContext.get().getOrgId());
                 userWeekHourBOList.addAll(userWeekHourBOS);
             }
             Map<Long, List<UserWeekHourBO>> userHourMap = new HashMap<>();
@@ -383,7 +385,7 @@ public class ZSYStatsService implements IZSYStatsService {
             }
 
             //查询月请假情况
-            List<UserLeaveBO> userLeaveBOList = userLeaveMapper.selectUserLeaveMonthStats(monthFormat.format(queryDate), reqDTO.getJobRole());
+            List<UserLeaveBO> userLeaveBOList = userLeaveMapper.selectUserLeaveMonthStats(monthFormat.format(queryDate), reqDTO.getJobRole(),ZSYTokenRequestContext.get().getOrgId());
             Map<Long, List<UserLeaveBO>> userLeaveMap = new HashMap<>();
             if (!CollectionUtils.isEmpty(userLeaveBOList)) {
                 userLeaveMap = userLeaveBOList.stream().collect(Collectors.groupingBy(UserLeave::getUserId));
@@ -399,6 +401,7 @@ public class ZSYStatsService implements IZSYStatsService {
             SignInReqDTO signInReqDTO = new SignInReqDTO();
             signInReqDTO.setBeginTime(lastMonthLastDay);
             signInReqDTO.setEndTime(nextMonthFirstDay);
+            signInReqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             List<SignInOriginBO> signInOriginBOS = signInMapper.selectSignInOriginBOPage(signInReqDTO);
             Map<Long, List<SignInOriginBO>> userSignMap = new HashMap<>();
             if (!CollectionUtils.isEmpty(signInOriginBOS)) {

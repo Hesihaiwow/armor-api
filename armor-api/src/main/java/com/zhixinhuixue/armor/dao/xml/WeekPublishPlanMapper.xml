@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYWeekPublishPlanMapper">
 
-    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan" extends="OrgIdFieldMap">
         <id column="wpp_id" property="wppId" jdbcType="BIGINT"/>
         <result column="wpp_name" property="wppName" jdbcType="VARCHAR"/>
         <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP"/>
@@ -20,7 +25,7 @@
     <!--新增-->
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.WeekPublishPlan">
         INSERT INTO `week_publish_plan`
-        (`wpp_id`,`wpp_name`,`publish_time`,`create_time`,`create_by`,`remark`,`test_report`,`is_delete`)
+        (`wpp_id`,`wpp_name`,`publish_time`,`create_time`,`create_by`,`remark`,`test_report`,`is_delete`,`org_id`)
         VALUES
         (
         #{wppId,jdbcType=BIGINT},
@@ -30,7 +35,8 @@
         #{createBy,jdbcType=BIGINT},
         #{remark,jdbcType=VARCHAR},
         #{testReport,jdbcType=BIGINT},
-        #{isDelete,jdbcType=INTEGER}
+        #{isDelete,jdbcType=INTEGER},
+        #{orgId,jdbcType=BIGINT},
         )
     </insert>
 
@@ -62,12 +68,12 @@
 
     <!--根据名称查询-->
     <select id="selectByName" resultMap="BaseMap">
-        SELECT * FROM `week_publish_plan` WHERE `wpp_name` = #{name}
+        SELECT * FROM `week_publish_plan` WHERE `wpp_name` = #{name} and org_id = #{orgId}
     </select>
 
     <!--根据id查询-->
     <select id="selectById" resultMap="BaseMap">
-        SELECT * FROM `week_publish_plan` WHERE `wpp_id` = #{wppId}
+        SELECT * FROM `week_publish_plan` WHERE `wpp_id` = #{wppId} and `org_id`= #{orgId}
     </select>
 
     <!--分页查询-->
@@ -75,7 +81,7 @@
         SELECT wpp.*,u.name AS `create_name`
         FROM `week_publish_plan` wpp
         LEFT JOIN `user` u ON u.`id` = wpp.`create_by`
-        WHERE wpp.`is_delete` = 0
+        WHERE wpp.`is_delete` = 0 and wpp.org_id = #{orgId}
         <if test="beginTime != null">
             <![CDATA[  and  wpp.publish_time >= #{beginTime} ]]>
         </if>

@@ -1,6 +1,6 @@
 package com.zhixinhuixue.armor.model.pojo;
 
-public class Permission {
+public class Permission extends OrgIdField{
 
     private Long id;
 

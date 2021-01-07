@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserLeaveMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserLeave">
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserLeave" extends="OrgIdFieldMap">
   <id column="id" jdbcType="BIGINT" property="id" />
   <result column="description" jdbcType="VARCHAR" property="description" />
   <result column="hours" jdbcType="DECIMAL" property="hours" />
@@ -26,17 +32,17 @@
   </resultMap>
 
   <insert id="insertLeave" parameterType="com.zhixinhuixue.armor.model.pojo.UserLeave">
-    insert into user_leave (id, description, hours, type, review_status, begin_time, end_time, create_time, user_id)
+    insert into user_leave (id, description, hours, type, review_status, begin_time, end_time, create_time, user_id,org_id)
     values
       (#{id,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, #{hours,jdbcType=DECIMAL}, #{type,jdbcType=INTEGER},
-      #{reviewStatus,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP} , #{userId,jdbcType=BIGINT})
+      #{reviewStatus,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP} , #{userId,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <select id="getLeaveByReviewStatus" resultMap="ResultMap" parameterType="java.util.Map">
     SELECT user_leave.*, user.name, user.avatar_url FROM user_leave
     JOIN user on user_leave.user_id = user.id
     JOIN department on user.department_id = department.id
-    WHERE  review_status = #{reviewStatus} and department.parent_id = #{departmentId}
+    WHERE  review_status = #{reviewStatus} and department.parent_id = #{departmentId} and user_leave.org_id = #{orgId}
         <if test="userId!=null">
           and user_id = #{userId}
         </if>
@@ -45,7 +51,7 @@
 
   <select id="getUserLeaveById" parameterType="java.lang.Long" resultMap="ResultMap">
     SELECT  user_leave.*, user.name, user.avatar_url FROM user_leave JOIN  user on user_leave.user_id = user.id
-      WHERE user_leave.id = #{id}
+      WHERE user_leave.id = #{id} and user_leave.org_id = #{orgId}
   </select>
 
   <select id="getLeaveList" parameterType="com.zhixinhuixue.armor.model.dto.request.UserLeaveListReqDTO" resultMap="ResultMap">
@@ -53,6 +59,9 @@
     JOIN user on user_leave.user_id = user.id
     JOIN department on department.id = user.department_id
     WHERE  review_status = 3  AND department.parent_id = #{departmentId}
+    <if test="orgId!=null">
+      AND user_leave.org_id = #{orgId}
+    </if>
     <if test="userId!=null">
       AND user_id = #{userId}
     </if>
@@ -67,7 +76,7 @@
 
   <!--根据用户和起止时间查询请假-->
     <select id="selectByUserAndTime" resultMap="BaseResultMap">
-        SELECT * FROM `user_leave` WHERE `user_id` = #{userId} and `review_status` = 3
+        SELECT * FROM `user_leave` WHERE `user_id` = #{userId} and `review_status` = 3 and org_id = #{orgId}
         <![CDATA[ AND  (begin_time >= #{today0,jdbcType=TIMESTAMP} or end_time >= #{today0,jdbcType=TIMESTAMP}) ]]>
         <![CDATA[ AND  (begin_time <= #{today23,jdbcType=TIMESTAMP} or end_time <= #{today23,jdbcType=TIMESTAMP}) ]]>
       order by `begin_time` DESC LIMIT 1
@@ -75,14 +84,14 @@
 
   <!--根据用户和起止时间查询周请假时长-->
   <select id="selectWeekLeaveHoursByUser" resultType="java.lang.Double">
-      SELECT IFNULL(sum(hours),0) leaveHours FROM user_leave WHERE user_id = #{userId} AND `review_status` = 3
+      SELECT IFNULL(sum(hours),0) leaveHours FROM user_leave WHERE user_id = #{userId} AND `review_status` = 3 and org_id = #{orgId}
       <![CDATA[ AND  begin_time >= #{firstDay,jdbcType=TIMESTAMP} ]]>
       <![CDATA[ AND  end_time <= #{lastDay,jdbcType=TIMESTAMP} ]]>
   </select>
 
   <!--查询10月的请假-->
     <select id="selectListByTime" resultMap="BaseResultMap">
-      SELECT * FROM `user_leave` WHERE `review_status` = 3 AND `type` = 8 AND `begin_time` >= #{beginStr} AND `begin_time` &lt; #{endStr}
+      SELECT * FROM `user_leave` WHERE `review_status` = 3 AND `type` = 8 AND `begin_time` >= #{beginStr} AND `begin_time` &lt; #{endStr} and org_id = #{orgId}
     </select>
 
   <!--根据主键查询-->
@@ -95,7 +104,7 @@
       SELECT ul.user_id,u.`name`,ul.hours,ul.begin_time,ul.end_time,ul.id
       FROM user u
       LEFT JOIN user_leave ul ON ul.user_id = u.id
-      WHERE u.is_delete = 0 AND u.`status` = 0 AND ul.review_status = 3
+      WHERE u.is_delete = 0 AND u.`status` = 0 AND ul.review_status = 3 and u.org_id = #{orgId}
       AND (DATE_FORMAT(ul.begin_time,'%Y-%m') = #{yearAndMonth} OR DATE_FORMAT(ul.end_time,'%Y-%m') = #{yearAndMonth})
       <if test="jobRole != null">
         AND u.job_role = #{jobRole}

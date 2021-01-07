@@ -7,7 +7,7 @@ import java.util.Date;
  * @author sch
  * @DATE 2019/9/9 9:54
  */
-public class UserTaskIntegral {
+public class UserTaskIntegral extends OrgIdField {
     /**
      * id
      */

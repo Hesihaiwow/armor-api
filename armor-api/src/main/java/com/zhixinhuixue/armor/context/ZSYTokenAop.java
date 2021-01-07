@@ -61,7 +61,7 @@ public class ZSYTokenAop {
             loginInfo.setUserName("学管");
             ZSYTokenRequestContext.set(loginInfo);
         }else{
-            if (!request.getRequestURL().toString().contains(ZSYConstants.LOGIN_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.REGISTER_URI)){
+            if (!request.getRequestURL().toString().contains(ZSYConstants.LOGIN_URI)&&!request.getRequestURL().toString().contains(ZSYConstants.REGISTER_URI)&&!request.getRequestURI().toString().contains(ZSYConstants.ADMIN_LOGIN_URI)){
                 LoginInfoReqDTO loginInfo = new LoginInfoReqDTO();
                 loginInfo.setUserId(Optional.ofNullable(request.getAttribute("userId"))
                         .map(userId->Long.parseLong(userId.toString()))

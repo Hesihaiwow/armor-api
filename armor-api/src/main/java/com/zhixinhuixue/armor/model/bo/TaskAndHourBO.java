@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.math.BigDecimal;
 
 /**
  * @author sch
  * @time 2020/8/26 14:28
  */
-public class TaskAndHourBO {
+public class TaskAndHourBO extends OrgIdField {
     /**
      * 任务id
      */

@@ -54,13 +54,13 @@ public interface IZSYExtraWorkMapper {
      * 查询审核中的加班申请
      * @return
      */
-    Page<ExtraWork> selectCheckingExtraWorkByPage();
+    Page<ExtraWork> selectCheckingExtraWorkByPage(@Param("orgId")Long orgId);
 
     /**
      * 查询审核通过的加班申请
      * @return
      */
-    Page<ExtraWork> selectCheckedExtraWorkByPage();
+    Page<ExtraWork> selectCheckedExtraWorkByPage(@Param("orgId")Long orgId);
 
     /**
      * 根据id查加班申请
@@ -107,7 +107,7 @@ public interface IZSYExtraWorkMapper {
      * @param endStr
      * @return
      */
-    List<ExtraWork> selectListByTime(@Param("beginStr") String beginStr,@Param("endStr")  String endStr);
+    List<ExtraWork> selectListByTime(@Param("beginStr") String beginStr,@Param("endStr")  String endStr,@Param("orgId")Long orgId);
 
 
     /**

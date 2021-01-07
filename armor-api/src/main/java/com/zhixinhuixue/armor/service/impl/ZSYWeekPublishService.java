@@ -69,7 +69,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
             throw new ZSYServiceException("当前用户暂无权限");
         }
         //校验是否存在同名发版计划
-        WeekPublishPlan sameNameWpp = weekPublishPlanMapper.selectByName(reqDTO.getWppName().trim());
+        WeekPublishPlan sameNameWpp = weekPublishPlanMapper.selectByName(reqDTO.getWppName().trim(),ZSYTokenRequestContext.get().getOrgId());
         if (sameNameWpp != null){
             throw new ZSYServiceException("当前发版标题已存在,无法新增");
         }
@@ -86,6 +86,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
             weekPublishPlan.setTestReport(reqDTO.getTestReport());
         }
         weekPublishPlan.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        weekPublishPlan.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         weekPublishPlanMapper.insert(weekPublishPlan);
 
         List<Long> taskIds = reqDTO.getTaskIds();
@@ -130,6 +131,9 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 planPlatform.setPlatformId(platformId);
                 return planPlatform;
             }).collect(Collectors.toList());
+            for(WeekPublishPlanPlatform weekPublishPlanPlatform:publishPlanPlatforms){
+                weekPublishPlanPlatform.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             publishPlatformMapper.insertBatch(publishPlanPlatforms);
         }
 
@@ -146,6 +150,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 platformUser.setWppId(weekPublishPlan.getWppId());
                 platformUser.setPlatformId(item.getPlatformId());
                 platformUser.setUserId(item.getUserId());
+                platformUser.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 return platformUser;
             }).collect(Collectors.toList());
             platformUserMapper.insertBatch(collect);
@@ -164,7 +169,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
         if (userRole>ZSYUserRole.PROJECT_MANAGER.getValue()){
             throw new ZSYServiceException("当前用户暂无权限");
         }
-        WeekPublishPlan existPlan = weekPublishPlanMapper.selectById(wppId);
+        WeekPublishPlan existPlan = weekPublishPlanMapper.selectById(wppId,ZSYTokenRequestContext.get().getOrgId());
         if (existPlan == null){
             throw new ZSYServiceException("当前发版计划不存在");
         }
@@ -172,7 +177,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
             throw new ZSYServiceException(String.format("当前发版计划[%s]已删除",existPlan.getWppName()));
         }
         String wppName = reqDTO.getWppName();
-        WeekPublishPlan sameNameWpp = weekPublishPlanMapper.selectByName(wppName.trim());
+        WeekPublishPlan sameNameWpp = weekPublishPlanMapper.selectByName(wppName.trim(),ZSYTokenRequestContext.get().getOrgId());
         if (sameNameWpp != null && !sameNameWpp.getWppId().equals(wppId)){
             throw new ZSYServiceException("当前发版标题已存在");
         }
@@ -240,6 +245,9 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 planPlatform.setPlatformId(platformId);
                 return planPlatform;
             }).collect(Collectors.toList());
+            for(WeekPublishPlanPlatform weekPublishPlanPlatform:publishPlanPlatforms){
+                weekPublishPlanPlatform.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             publishPlatformMapper.insertBatch(publishPlanPlatforms);
         }
 
@@ -258,6 +266,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 platformUser.setWppId(weekPublishPlan.getWppId());
                 platformUser.setPlatformId(item.getPlatformId());
                 platformUser.setUserId(item.getUserId());
+                platformUser.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 return platformUser;
             }).collect(Collectors.toList());
             platformUserMapper.insertBatch(collect);
@@ -275,7 +284,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
         if (userRole>ZSYUserRole.PROJECT_MANAGER.getValue()){
             throw new ZSYServiceException("当前用户暂无权限");
         }
-        WeekPublishPlan existPlan = weekPublishPlanMapper.selectById(wppId);
+        WeekPublishPlan existPlan = weekPublishPlanMapper.selectById(wppId,ZSYTokenRequestContext.get().getOrgId());
         if (existPlan == null){
             throw new ZSYServiceException("当前发版计划不存在");
         }
@@ -299,7 +308,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
      */
     @Override
     public List<TaskBaseResDTO> getWaitDeployTasks() {
-        List<Task> waitDeployTasks = taskMapper.selectWaitDeployTasks();
+        List<Task> waitDeployTasks = taskMapper.selectWaitDeployTasks(ZSYTokenRequestContext.get().getOrgId());
         List<TaskBaseResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(waitDeployTasks)){
             list = getTaskBaseResDTOS(waitDeployTasks);
@@ -313,13 +322,13 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
     @Override
     public List<TaskBaseResDTO> getDevAndTestTasks(String wppIdStr) {
         //查询测试相关任务
-        List<Task> devAndTestTasks = taskMapper.selectDevAndTestTasks();
+        List<Task> devAndTestTasks = taskMapper.selectDevAndTestTasks(ZSYTokenRequestContext.get().getOrgId());
         //查询待发布任务
-        List<Task> waitDeployTasks = taskMapper.selectWaitDeployTasks();
+        List<Task> waitDeployTasks = taskMapper.selectWaitDeployTasks(ZSYTokenRequestContext.get().getOrgId());
         //查询发版计划关联的任务
         List<Task> planTasks = new ArrayList<>();
         if (!Strings.isNullOrEmpty(wppIdStr)){
-            planTasks = taskMapper.selectPublishPlanTask(Long.valueOf(wppIdStr));
+            planTasks = taskMapper.selectPublishPlanTask(Long.valueOf(wppIdStr),ZSYTokenRequestContext.get().getOrgId());
         }
         List<TaskBaseResDTO> list = new ArrayList<>();
         Set<TaskBaseResDTO> set = new HashSet<>();
@@ -349,6 +358,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
     @Override
     public PageInfo<WeekPublishPlanPageResDTO> getPage(WeekPublishQueryReqDTO reqDTO) {
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 1);
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<WeekPublishPlanBO> weekPublishPlanBOs = weekPublishPlanMapper.selectPage(reqDTO);
         Page<WeekPublishPlanPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(weekPublishPlanBOs,page);
@@ -449,7 +459,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
      */
     @Override
     public WeekPublishPlanDetailResDTO getPublishPlanById(Long wppId) {
-        WeekPublishPlan weekPublishPlan = weekPublishPlanMapper.selectById(wppId);
+        WeekPublishPlan weekPublishPlan = weekPublishPlanMapper.selectById(wppId,ZSYTokenRequestContext.get().getOrgId());
         if (weekPublishPlan == null){
             throw new ZSYServiceException("当前发版计划不存在");
         }

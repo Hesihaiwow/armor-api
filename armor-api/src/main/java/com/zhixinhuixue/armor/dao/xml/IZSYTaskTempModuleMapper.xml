@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTempModuleMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTempModule">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskTempModule" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="description" jdbcType="VARCHAR" property="description" />
@@ -14,11 +20,11 @@
     <!--新增-->
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTempModule">
         INSERT INTO `task_temp_module`
-        (`id`,`name`,`description`,`create_by`,`create_time`,`is_delete`,`image_url`)
+        (`id`,`name`,`description`,`create_by`,`create_time`,`is_delete`,`image_url`,`org_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR}
         ,#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER}
-        ,#{imageUrl,jdbcType=VARCHAR})
+        ,#{imageUrl,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--修改-->
@@ -48,7 +54,7 @@
 
     <!--查看列表-->
     <select id="selectList" resultMap="BaseResultMap">
-        SELECT * FROM `task_temp_module` WHERE `is_delete` = 0
+        SELECT * FROM `task_temp_module` WHERE `is_delete` = 0 and org_id = #{orgId}
     </select>
 
     <!--查询-->
@@ -58,7 +64,7 @@
 
     <!--校验是否关联任务-->
     <select id="selectCountInUse" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM `task_function` WHERE `module_id` = #{id}
+        SELECT COUNT(*) FROM `task_function` WHERE `module_id` = #{id} and org_id = #{orgId}
     </select>
 
 

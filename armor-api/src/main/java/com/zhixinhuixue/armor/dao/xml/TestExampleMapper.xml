@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTestExampleMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TestExample">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TestExample" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="task_id" jdbcType="BIGINT" property="taskId"/>
@@ -29,14 +35,14 @@
         INSERT INTO `test_example`
         (`id`,`name`,`task_id`,`function_id`,`check_point`,`expect_result`,`remark`
         ,`status`,`exam_status`,`create_by`,`update_by`,`create_name`,`update_name`
-        ,`create_time`,`update_time`,`type`)
+        ,`create_time`,`update_time`,`type`, `org_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{taskId,jdbcType=BIGINT}
         ,#{functionId,jdbcType=BIGINT},#{checkPoint,jdbcType=VARCHAR},#{expectResult,jdbcType=VARCHAR}
         ,#{remark,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{examStatus,jdbcType=INTEGER}
         ,#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT},#{createName,jdbcType=VARCHAR}
         ,#{updateName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP}
-        ,#{type,jdbcType=INTEGER})
+        ,#{type,jdbcType=INTEGER},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--批量插入-->
@@ -44,7 +50,7 @@
         INSERT INTO `test_example`
         (`id`,`name`,`task_id`,`function_id`,`check_point`,`expect_result`,`remark`
         ,`status`,`exam_status`,`create_by`,`update_by`,`create_name`,`update_name`
-        ,`create_time`,`update_time`,`type`)
+        ,`create_time`,`update_time`,`type`,`org_id`)
         VALUES
         <foreach collection="exampleList" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT},#{item.name,jdbcType=VARCHAR},#{item.taskId,jdbcType=BIGINT}
@@ -52,7 +58,7 @@
             ,#{item.remark,jdbcType=VARCHAR},#{item.status,jdbcType=INTEGER},#{item.examStatus,jdbcType=INTEGER}
             ,#{item.createBy,jdbcType=BIGINT},#{item.updateBy,jdbcType=BIGINT},#{item.createName,jdbcType=VARCHAR}
             ,#{item.updateName,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP}
-            ,#{item.type,jdbcType=INTEGER})
+            ,#{item.type,jdbcType=INTEGER},#{item.id,jdbcType=BIGINT})
         </foreach>
     </insert>
 
@@ -92,12 +98,12 @@
 
     <!--根据名称查询-->
     <select id="selectByNameAndTaskAndFunction" resultMap="BaseResultMap">
-        SELECT * FROM `test_example` WHERE `name` = #{name} AND `task_id` = #{taskId} AND `function_id` = #{functionId}
+        SELECT * FROM `test_example` WHERE `name` = #{name} AND `task_id` = #{taskId} AND `function_id` = #{functionId} and org_id = #{orgId}
     </select>
 
     <!--根据功能点id查询测试用例-->
     <select id="selectByFunction" resultMap="BaseResultMap">
-        SELECT * FROM `test_example` WHERE `function_id` = #{functionId}
+        SELECT * FROM `test_example` WHERE `function_id` = #{functionId} and org_id = #{orgId}
     </select>
 
     <!--查看测试用例详情-->
@@ -106,7 +112,7 @@
         FROM `test_example` te
         LEFT JOIN `task` t ON t.`id` = te.`task_id`
         LEFT JOIN `task_function` tf ON tf.`id` = te.`function_id`
-        WHERE te.`id` = #{exampleId}
+        WHERE te.`id` = #{exampleId} and te.org_id = #{orgId}
     </select>
 
     <!--根据taskId查询测试用例-->
@@ -115,7 +121,7 @@
         FROM `test_example` te
         LEFT JOIN `task` t ON t.`id` = te.`task_id`
         LEFT JOIN `task_function` tf ON tf.`id` = te.`function_id`
-        WHERE te.`task_id` = #{taskId}
+        WHERE te.`task_id` = #{taskId} and te.org_id = #{orgId}
     </select>
 
     <!--根据主键查询-->

@@ -59,5 +59,5 @@ public interface IZSYTaskReviewMapper {
      * 查询所有任务评审
      * @author sch
      */
-    List<TaskReview> selectAll();
+    List<TaskReview> selectAll(@Param("orgId")Long orgId);
 }

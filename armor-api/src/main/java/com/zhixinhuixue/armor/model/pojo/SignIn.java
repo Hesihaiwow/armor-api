@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * 考勤打卡记录
  */
-public class SignIn {
+public class SignIn extends OrgIdField{
     /**
      * 主键
      */

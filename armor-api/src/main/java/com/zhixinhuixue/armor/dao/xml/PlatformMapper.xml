@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYPlatformMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Platform">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Platform" extends="OrgIdFieldMap">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -11,11 +17,11 @@
 
   <!--新增平台-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Platform">
-      INSERT INTO `platform` (`id`,`name`,`create_by`,`create_time`,`group_mark`)
+      INSERT INTO `platform` (`id`,`name`,`create_by`,`create_time`,`group_mark`,`org_id`)
       VALUES
       (#{platform.id,jdbcType=BIGINT},#{platform.name,jdbcType=VARCHAR}
       ,#{platform.createBy,jdbcType=BIGINT},#{platform.createTime,jdbcType=TIMESTAMP}
-      ,#{platform.groupMark,jdbcType=INTEGER})
+      ,#{platform.groupMark,jdbcType=INTEGER},#{platform.orgId,jdbcType=INTEGER})
   </insert>
 
     <!--更新-->
@@ -39,7 +45,7 @@
 
     <!--校验是否同名-->
   <select id="selectByName" resultMap="BaseResultMap">
-      SELECT * FROM `platform` WHERE `name` = #{name}
+      SELECT * FROM `platform` WHERE `name` = #{name} and org_id = #{orgId}
   </select>
 
   <!--列表查询平台-->
@@ -48,6 +54,9 @@
       WHERE 1 = 1
       <if test="groupMark != null">
           AND `group_mark` = #{groupMark}
+      </if>
+      <if test="orgId != null">
+          AND `org_id` = #{orgId}
       </if>
       ORDER BY `group_mark`,`create_time` DESC
   </select>

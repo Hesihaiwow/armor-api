@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 import java.util.List;
 
@@ -7,7 +9,7 @@ import java.util.List;
  * @author sch
  * @DATE 2019/5/22 17:34
  */
-public class EvaluationBO {
+public class EvaluationBO extends OrgIdField {
     /**
      * 被评分人id
      */

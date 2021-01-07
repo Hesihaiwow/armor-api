@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * 测试用例
  */
-public class TestExample {
+public class TestExample extends OrgIdField{
     /**
      * id
      */

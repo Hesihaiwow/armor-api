@@ -65,7 +65,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void updateAfterJuly() {
         //查询2019-7 之后的没有功能点的多人任务
-        List<TaskUserHoursBO> taskUsers = taskUserMapper.selectWithoutFunctionMultiTask();
+        List<TaskUserHoursBO> taskUsers = taskUserMapper.selectWithoutFunctionMultiTask(ZSYTokenRequestContext.get().getOrgId());
         List<UserTaskIntegral> integralList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskUsers)){
             taskUsers.forEach(taskUser -> {
@@ -158,6 +158,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 }
             });
             if (!CollectionUtils.isEmpty(integralList)){
+                for(UserTaskIntegral userTaskIntegral:integralList){
+                    userTaskIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 userTaskIntegralMapper.insertBatch(integralList);
             }
         }
@@ -171,7 +174,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void updateAfterJulyFinished() {
         //查询2019-7 之后的有功能点的而且已经结束的多人任务
-        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithFunctionMultiTask();
+        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithFunctionMultiTask(ZSYTokenRequestContext.get().getOrgId());
         List<UserTaskIntegral> integralList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskUserHoursBOS)){
             taskUserHoursBOS.forEach(taskUser -> {
@@ -272,6 +275,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 }
             });
             if (!CollectionUtils.isEmpty(integralList)){
+                for(UserTaskIntegral userTaskIntegral:integralList){
+                    userTaskIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 userTaskIntegralMapper.insertBatch(integralList);
             }
         }
@@ -285,7 +291,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void updateAfterJulyPrivate() {
         //查询2019-7月之后的 没有任务级别的个人任务
-        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithoutTaskLevel();
+        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithoutTaskLevel(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskUserHoursBOS)){
             taskUserHoursBOS.forEach(taskUserHoursBO -> {
                 if (taskUserHoursBO.getUserLevel()==null){
@@ -336,6 +342,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                         integral.setCreateTime(new Date());
                     }
 
+                    integral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     if (userTaskIntegralMapper.insert(integral)==0){
                         throw new ZSYServiceException("插入积分失败");
                     }
@@ -355,7 +362,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void updateAfterJulyPrivateFinished() {
         //查询2019-7月之后的 有任务级别的而且已经完成的个人任务
-        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithTaskLevel();
+        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithTaskLevel(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskUserHoursBOS)){
             taskUserHoursBOS.forEach(taskUserHoursBO -> {
                 if (taskUserHoursBO.getUserLevel()==null){
@@ -419,6 +426,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                         integral.setCreateTime(new Date());
                     }
 
+                    integral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     if (userTaskIntegralMapper.insert(integral)==0){
                         throw new ZSYServiceException("插入积分失败");
                     }
@@ -637,6 +645,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
         userIntegral.setDescription(reqDTO.getDescription());
         userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.ARTIFICIAL.getValue());//手动添加
         userIntegral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
+        userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         userTaskIntegralMapper.insert(userIntegral);
     }
 
@@ -648,7 +657,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void updateAfterJulyWithEvaluation() {
         //统计7月之后的有功能点的且已评价多人任务积分(已完成,没结束)
-        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithEvaluationMultiTask();
+        List<TaskUserHoursBO> taskUserHoursBOS = taskUserMapper.selectWithEvaluationMultiTask(ZSYTokenRequestContext.get().getOrgId());
         List<UserTaskIntegral> integralList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskUserHoursBOS)){
             for (TaskUserHoursBO taskUser : taskUserHoursBOS) {
@@ -758,6 +767,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 }
             });
             if (!CollectionUtils.isEmpty(integralList)){
+                for(UserTaskIntegral userTaskIntegral:integralList){
+                    userTaskIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 userTaskIntegralMapper.insertBatch(integralList);
             }
         }
@@ -771,7 +783,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void updateAfterJulyWithoutEvaluation() {
         //统计7月之后的没有功能点的且已评价多人任务积分(已完成,没结束)
-        List<TaskUserHoursBO> taskUsers = taskUserMapper.selectWithoutEvaluationMultiTask();
+        List<TaskUserHoursBO> taskUsers = taskUserMapper.selectWithoutEvaluationMultiTask(ZSYTokenRequestContext.get().getOrgId());
         List<UserTaskIntegral> integralList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskUsers)){
             for (TaskUserHoursBO taskUser : taskUsers) {
@@ -874,6 +886,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 }
             });
             if (!CollectionUtils.isEmpty(integralList)){
+                for(UserTaskIntegral userTaskIntegral:integralList){
+                    userTaskIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 userTaskIntegralMapper.insertBatch(integralList);
             }
         }
@@ -887,7 +902,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void privateTaskAddLevel() {
         //查询7月后没有任务级别的个人任务
-        List<TaskUser> taskUserList = taskUserMapper.selectPrivateAfterJuly();
+        List<TaskUser> taskUserList = taskUserMapper.selectPrivateAfterJuly(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskUserList)){
             taskUserList.forEach(taskUser -> {
                 taskUser.setTaskLevel(1);
@@ -904,7 +919,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     @Transactional
     public void multiTaskAddLevel() {
         //查询7月后没有任务级别的多人任务
-        List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJuly();
+        List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJuly(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskUserList)){
             taskUserList.forEach(taskUser -> {
                 Double taskHours = taskUser.getTaskHours();
@@ -933,9 +948,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     public void countPrivateIntegral() {
         List<UserTaskIntegral> integralList = new ArrayList<>();
         //查询7月之后的任务
-        List<Task> taskList = taskMapper.selectListAfterJuly();
+        List<Task> taskList = taskMapper.selectListAfterJuly(ZSYTokenRequestContext.get().getOrgId());
         //查询7月之后已完成的个人任务
-        List<TaskUser> taskUserList = taskUserMapper.selectPrivateAfterJulyWithLevel();
+        List<TaskUser> taskUserList = taskUserMapper.selectPrivateAfterJulyWithLevel(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskUserList)){
             taskUserList.forEach(taskUser -> {
                 Integer taskLevel = taskUser.getTaskLevel();
@@ -963,6 +978,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 integralList.add(integral);
             });
             if (!CollectionUtils.isEmpty(integralList)){
+                for(UserTaskIntegral userTaskIntegral:integralList){
+                    userTaskIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 userTaskIntegralMapper.insertBatch(integralList);
             }
         }
@@ -977,7 +995,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     public void countMultiIntegral() {
         List<UserTaskIntegral> integralList = new ArrayList<>();
         //查询7月之后已结束的多人任务
-        List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJulyWithLevel(3);
+        List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJulyWithLevel(3,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskUserList)){
             taskUserList.forEach(taskUser -> {
                 Integer taskLevel = taskUser.getTaskLevel();
@@ -1016,6 +1034,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                 integralList.add(integral);
             });
             if (!CollectionUtils.isEmpty(integralList)){
+                for(UserTaskIntegral userTaskIntegral:integralList){
+                    userTaskIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 userTaskIntegralMapper.insertBatch(integralList);
             }
         }
@@ -1030,7 +1051,7 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
     public void countMultiCompletedIntegral() {
         List<UserTaskIntegral> integralList = new ArrayList<>();
         //查询7月之后完成但未结束的多人任务
-        List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJulyWithLevel(2);
+        List<TaskUser> taskUserList = taskUserMapper.selectMultiAfterJulyWithLevel(2,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskUserList)){
             for (TaskUser taskUser : taskUserList) {
                 //查询当前用户对别人的评价,如果没有评价,则当前任务没有完全评价完,过滤
@@ -1076,6 +1097,9 @@ public class ZSYUserTaskIntegralService implements IZSYUserTaskIntegralService {
                     integralList.add(integral);
                 });
                 if (!CollectionUtils.isEmpty(integralList)){
+                    for(UserTaskIntegral userTaskIntegral:integralList){
+                        userTaskIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                    }
                     userTaskIntegralMapper.insertBatch(integralList);
                 }
             }

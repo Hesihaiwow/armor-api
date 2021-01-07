@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * 周发版计划
  */
-public class WeekPublishPlan {
+public class WeekPublishPlan extends OrgIdField {
     /**
      * 主键
      */

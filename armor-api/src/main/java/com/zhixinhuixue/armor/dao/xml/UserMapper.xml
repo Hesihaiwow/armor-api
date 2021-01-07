@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserMapper">
 
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.User">
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.User" >
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="account" jdbcType="VARCHAR" property="account" />
@@ -33,7 +38,7 @@
                  select="com.zhixinhuixue.armor.dao.IZSYDepartmentMapper.selectById"/>
   </resultMap>
 
-  <resultMap id="UserCheckPeopleMap" type="com.zhixinhuixue.armor.model.pojo.UserCheckPeople">
+  <resultMap id="UserCheckPeopleMap" type="com.zhixinhuixue.armor.model.pojo.UserCheckPeople" extends="OrgIdFieldMap">
       <id column="id" property="id" jdbcType="BIGINT"/>
       <id column="user_id" property="userId" jdbcType="BIGINT"/>
       <id column="check_user_id" property="checkUserId" jdbcType="BIGINT"/>
@@ -62,10 +67,10 @@
 
   <!--批量插入用户创建任务审核人-->
     <insert id="insertUserCheckPeopleBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserCheckPeople">
-      INSERT INTO `user_check_people` (`id`,`user_id`,`check_user_id`,`status`,`level`) VALUES
+      INSERT INTO `user_check_people` (`id`,`user_id`,`check_user_id`,`status`,`level`,`org_id`) VALUES
       <foreach collection="list" item="item" separator=",">
         (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.checkUserId,jdbcType=BIGINT}
-        ,#{item.status,jdbcType=INTEGER},#{item.level,jdbcType=INTEGER})
+        ,#{item.status,jdbcType=INTEGER},#{item.level,jdbcType=INTEGER},#{item.orgId,jdbcType=BIGINT})
       </foreach>
     </insert>
 
@@ -177,7 +182,7 @@
     SELECT u.*,wg.name group_name FROM `user` u
     LEFT JOIN `user_group` ug ON ug.`user_id` = u.`id`
     LEFT JOIN `work_group` wg ON ug.`group_id` = wg.id
-    WHERE 1 = 1
+    WHERE 1 = 1 and u.org_id = #{orgId}
      <if test="deptIds!=null">
        AND u.department_id IN
        <foreach collection="deptIds" open="(" separator="," close=")" item="item">
@@ -247,7 +252,7 @@
 
   <!--根据姓名查询-->
     <select id="selectByName" resultMap="BaseResultMap">
-      SELECT * FROM `user` WHERE `name` = #{name}
+      SELECT * FROM `user` WHERE `name` = #{name} and org_id = #{orgId}
     </select>
 
   <!--查询任务人员信息-->
@@ -264,13 +269,13 @@
 
   <!--查询项目管理者-->
   <select id="selectManagers" resultMap="BaseResultMap">
-    SELECT * FROM `user` WHERE `user_role` IN (0,1) AND `is_delete` = 0 AND `status` = 0
+    SELECT * FROM `user` WHERE `user_role` IN (0,1) AND `is_delete` = 0 AND `status` = 0 and org_id  = #{orgId}
     ORDER BY `create_time` ASC
   </select>
 
   <!--查询用户剩余调休-->
   <select id="selectUserRestHours" resultMap="BaseResultMap">
-    SELECT * FROM `user` WHERE `is_delete` = 0
+    SELECT * FROM `user` WHERE `is_delete` = 0 and `org_id` = #{orgId}
     <if test="jobRole  != null">
         AND `job_role`= #{jobRole}
     </if>
@@ -287,6 +292,7 @@
   <select id="selectBugReporters" resultType="com.zhixinhuixue.armor.model.pojo.User">
      SELECT u.* FROM `task_bug` tb
      LEFT JOIN `user` u ON u.id = tb.create_by
+     where tb.org_id = #{orgId}
      GROUP BY tb.create_by
   </select>
 
@@ -294,6 +300,7 @@
   <select id="selectBugHandlers" resultType="com.zhixinhuixue.armor.model.pojo.User">
      SELECT u.* FROM `task_bug` tb
      LEFT JOIN `user` u ON u.id = tb.handler_id
+     where tb.org_id = #{orgId}
      GROUP BY tb.handler_id
   </select>
 
@@ -301,7 +308,7 @@
   <select id="selectUsersByGroup" resultMap="BaseResultMap">
       SELECT u.id,u.name FROM `user_group` ug
       LEFT JOIN `user` u ON u.id = ug.user_id
-      WHERE ug.`group_id` = #{groupId} AND u.is_delete = 0 AND u.status = 0
+      WHERE ug.`group_id` = #{groupId} AND u.is_delete = 0 AND u.status = 0 and ug.org_id = #{orgId}
   </select>
 
   <!--根据任务id查询参与人员-->
@@ -312,12 +319,12 @@
     </select>
 
   <select id="selectAll" resultMap="BaseResultMap">
-      select * from user
+      select * from user where org_id = #{orgId}
   </select>
 
   <!--查询所有未删除的用户-->
   <select id="selectNotDeleteUsers" resultMap="BaseResultMap">
-    SELECT * FROM `user` WHERE `is_delete` = 0 ORDER BY `create_time`
+    SELECT * FROM `user` WHERE `is_delete` = 0 and org_id = #{orgId} ORDER BY `create_time`
   </select>
 
   <!-- 查询机构下人员 -->

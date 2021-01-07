@@ -57,6 +57,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         Page<TaskBugBO> taskBugBOS;
         Page<TaskBugPageResDTO> page = new Page<>();
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         taskBugBOS = taskBugMapper.selectPage(reqDTO,null);
         BeanUtils.copyProperties(taskBugBOS,page);
         if (!CollectionUtils.isEmpty(taskBugBOS)){
@@ -108,7 +109,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (task == null){
             throw new ZSYServiceException("任务不存在,请检查");
         }
-        Integer lastBugNo = taskBugMapper.selectLastBugNo();
+        Integer lastBugNo = taskBugMapper.selectLastBugNo(ZSYTokenRequestContext.get().getOrgId());
         TaskBug taskBug = new TaskBug();
         BeanUtils.copyProperties(reqDTO,taskBug);
         Long userId = ZSYTokenRequestContext.get().getUserId();
@@ -125,6 +126,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         taskBug.setUpdateTime(new Date());
         taskBug.setStatus(TaskBugStatus.ASSIGNED.getValue());
         taskBug.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        taskBug.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         //新增任务bug
         if (taskBugMapper.insert(taskBug) == 0){
             throw new ZSYServiceException("新增任务bug失败");
@@ -241,15 +243,15 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         Integer solvedNum = 0;
         Integer closedNum = 0;
         if (selectAll == 0){
-            totalNum = taskBugMapper.selectTaskBugNum(1,userId,taskId);
-            notSolvedNum = taskBugMapper.selectTaskBugNum(2,userId,taskId);
-            solvedNum = taskBugMapper.selectTaskBugNum(3,userId,taskId);
-            closedNum = taskBugMapper.selectTaskBugNum(4,userId,taskId);
+            totalNum = taskBugMapper.selectTaskBugNum(1,userId,taskId,ZSYTokenRequestContext.get().getOrgId());
+            notSolvedNum = taskBugMapper.selectTaskBugNum(2,userId,taskId,ZSYTokenRequestContext.get().getOrgId());
+            solvedNum = taskBugMapper.selectTaskBugNum(3,userId,taskId,ZSYTokenRequestContext.get().getOrgId());
+            closedNum = taskBugMapper.selectTaskBugNum(4,userId,taskId,ZSYTokenRequestContext.get().getOrgId());
         }else {
-            totalNum = taskBugMapper.selectTaskBugNum(1,null,taskId);
-            notSolvedNum = taskBugMapper.selectTaskBugNum(2,null,taskId);
-            solvedNum = taskBugMapper.selectTaskBugNum(3,null,taskId);
-            closedNum = taskBugMapper.selectTaskBugNum(4,null,taskId);
+            totalNum = taskBugMapper.selectTaskBugNum(1,null,taskId,ZSYTokenRequestContext.get().getOrgId());
+            notSolvedNum = taskBugMapper.selectTaskBugNum(2,null,taskId,ZSYTokenRequestContext.get().getOrgId());
+            solvedNum = taskBugMapper.selectTaskBugNum(3,null,taskId,ZSYTokenRequestContext.get().getOrgId());
+            closedNum = taskBugMapper.selectTaskBugNum(4,null,taskId,ZSYTokenRequestContext.get().getOrgId());
         }
         resDTO.setTotalNum(totalNum);
         resDTO.setClosedNum(closedNum);
@@ -267,6 +269,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         Long userId = ZSYTokenRequestContext.get().getUserId();
         QueryTaskBugPageReqDTO reqDTO = new QueryTaskBugPageReqDTO();
         startPage(Optional.ofNullable(pageNum).orElse(1),ZSYConstants.PAGE_SIZE);
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<TaskBugBO> taskBugBOS = taskBugMapper.selectPage(reqDTO,userId);
         Page<TaskBugPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(taskBugBOS,page);
@@ -289,7 +292,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
     @Override
     public List<TaskBaseResDTO> getReadyTasks() {
         List<TaskBaseResDTO> list = new ArrayList<>();
-        List<Task> taskList = taskMapper.selectBugTasks();
+        List<Task> taskList = taskMapper.selectBugTasks(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskList)){
             taskList.forEach(task -> {
                 TaskBaseResDTO resDTO = new TaskBaseResDTO();
@@ -338,7 +341,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
     @Override
     public List<TaskBaseResDTO> getTaskTesting() {
         Long userId = ZSYTokenRequestContext.get().getUserId();
-        List<BugTestTaskBO> taskList = taskBugMapper.selectBugTestTaskList(userId);
+        List<BugTestTaskBO> taskList = taskBugMapper.selectBugTestTaskList(userId,ZSYTokenRequestContext.get().getOrgId());
         List<TaskBaseResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskList)){
             taskList.forEach(task -> {
@@ -358,7 +361,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
     @Override
     public List<EffectUserResDTO> getBugReporters() {
         List<EffectUserResDTO> list = new ArrayList<>();
-        List<User> users = userMapper.selectBugReporters();
+        List<User> users = userMapper.selectBugReporters(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(users)){
             users.forEach(user -> {
                 EffectUserResDTO resDTO = new EffectUserResDTO();
@@ -377,7 +380,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
     @Override
     public List<EffectUserResDTO> getBugHandlers() {
         List<EffectUserResDTO> list = new ArrayList<>();
-        List<User> users = userMapper.selectBugHandlers();
+        List<User> users = userMapper.selectBugHandlers(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(users)){
             users.forEach(user -> {
                 EffectUserResDTO resDTO = new EffectUserResDTO();
@@ -436,7 +439,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (yearAndMonth != null){
             yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
         }
-        List<TaskBugStatusPieBO> statusPieBOS = taskBugMapper.selectBugStatusPie(yearMonth);
+        List<TaskBugStatusPieBO> statusPieBOS = taskBugMapper.selectBugStatusPie(yearMonth,ZSYTokenRequestContext.get().getOrgId());
         List<TaskBugStatusPieResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(statusPieBOS)){
             list = statusPieBOS.stream().map(item->{
@@ -459,7 +462,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (yearAndMonth != null){
             yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
         }
-        List<TaskBugTypePieBO> typePieBOS = taskBugMapper.selectBugTypePie(yearMonth);
+        List<TaskBugTypePieBO> typePieBOS = taskBugMapper.selectBugTypePie(yearMonth,ZSYTokenRequestContext.get().getOrgId());
         List<TaskBugTypePieResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(typePieBOS)){
             list = typePieBOS.stream().map(item->{
@@ -492,7 +495,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
             //查询分配人的bug统计
             userHistogramBOS = taskBugMapper.selectBugHandlerHistogram(yearMonth,reqDTO.getGroupId());
         }else if (isTester == 1){
-            userHistogramBOS = taskBugMapper.selectBugCreatorHistogram(yearMonth);
+            userHistogramBOS = taskBugMapper.selectBugCreatorHistogram(yearMonth,ZSYTokenRequestContext.get().getOrgId());
         }
         List<TaskBugUserHistogramResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userHistogramBOS)){
@@ -518,7 +521,7 @@ public class ZSYTaskBugService implements IZSYTaskBugService {
         if (yearAndMonth != null){
             yearMonth = new SimpleDateFormat("yyyy-MM").format(yearAndMonth);
         }
-        List<TaskBugBO> allTaskBugBOS = taskBugMapper.selectTaskStat(yearMonth,reqDTO.getTaskName().trim());
+        List<TaskBugBO> allTaskBugBOS = taskBugMapper.selectTaskStat(yearMonth,reqDTO.getTaskName().trim(),ZSYTokenRequestContext.get().getOrgId());
         Page<TaskBugStatResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(allTaskBugBOS)){
             Map<Long, List<TaskBugBO>> taskMap = allTaskBugBOS.stream().collect(Collectors.groupingBy(TaskBug::getTaskId));

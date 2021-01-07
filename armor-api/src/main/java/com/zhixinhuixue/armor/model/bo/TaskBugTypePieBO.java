@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * @author sch
  * @time 2020/8/27 13:49
  */
-public class TaskBugTypePieBO {
+public class TaskBugTypePieBO extends OrgIdField {
     /**
      * 问题类型
      */

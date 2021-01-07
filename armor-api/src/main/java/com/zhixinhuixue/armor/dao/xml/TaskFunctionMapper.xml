@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskFunctionMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskFunction">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskFunction" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="task_id" jdbcType="BIGINT" property="taskId" />
         <result column="module_id" jdbcType="BIGINT" property="moduleId" />
@@ -16,11 +23,11 @@
     <!--批量插入任务功能点-->
     <insert id="insertBatch">
         INSERT INTO `task_function`
-        (`id`,`task_id`,`module_id`,`function`,`action`)
+        (`id`,`task_id`,`module_id`,`function`,`action`,`org_id`)
         VALUES
         <foreach collection="functions" separator="," item="item">
             (#{item.id,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.moduleId,jdbcType=BIGINT}
-            ,#{item.function,jdbcType=VARCHAR},#{item.action,jdbcType=INTEGER})
+            ,#{item.function,jdbcType=VARCHAR},#{item.action,jdbcType=INTEGER},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 

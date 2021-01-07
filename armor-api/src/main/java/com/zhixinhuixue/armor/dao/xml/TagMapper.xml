@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTagMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Tag">
+
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Tag" extends="OrgIdFieldMap">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="color" jdbcType="VARCHAR" property="color" />
@@ -21,7 +27,11 @@
   <select id="countTag" resultType="java.lang.Integer">
     SELECT  COUNT(*)   from task_tag
       LEFT JOIN task on task_tag.task_id = task.id
-      where task_tag.tag_id= #{id,jdbcType=BIGINT} and task.is_delete =0
+      where  1= 1
+      <if test="id != null">
+        and task_tag.tag_id= #{id,jdbcType=BIGINT}
+      </if>
+      and task.is_delete =0 and task.org_id = #{orgId,jdbcType=BIGINT}
   </select>
   <delete id="deleteTag" parameterType="java.lang.Long">
     delete from tag
@@ -29,9 +39,9 @@
   </delete>
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Tag">
     insert into tag (id, name, color, 
-      create_time, create_by, department_id)
+      create_time, create_by, department_id, org_id)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{color,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=BIGINT}, #{departmentId,jdbcType=BIGINT})
+      #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=BIGINT}, #{departmentId,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT})
   </insert>
   <!--验证标签名是否存在-->
   <select id="validateTag" parameterType="java.util.Map" resultType="java.lang.Integer">

@@ -63,6 +63,7 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
         onlineQuestion.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
         onlineQuestion.setStatus(ZSYTaskStatus.DOING.getValue());
         onlineQuestion.setReviewStatus(ZSYReviewStatus.PENDING.getValue());
+        onlineQuestion.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (onlineQuestionMapper.insertQuestion(onlineQuestion) == 0) {
             throw new ZSYServiceException("新增线上问题失败");
         }
@@ -178,7 +179,7 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
     @Override
     public PageInfo<OnlineQuestionResDTO> selectWaitQuestion(Integer pageNum) {
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
-        Page<OnlineQuestionBO> onlineQuestionBOList = onlineQuestionMapper.selectWaitQuestion();
+        Page<OnlineQuestionBO> onlineQuestionBOList = onlineQuestionMapper.selectWaitQuestion(ZSYTokenRequestContext.get().getOrgId());
         Page<OnlineQuestionResDTO> list = new Page<>();
         if (!CollectionUtils.isEmpty(onlineQuestionBOList)) {
             BeanUtils.copyProperties(onlineQuestionBOList, list);
@@ -222,7 +223,7 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
     @Override
     public PageInfo<OnlineQuestionResDTO> selectAcceptedQuestion(Integer pageNum) {
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
-        Page<OnlineQuestionBO> onlineQuestionBOS = onlineQuestionMapper.selectAcceptedQuestion();
+        Page<OnlineQuestionBO> onlineQuestionBOS = onlineQuestionMapper.selectAcceptedQuestion(ZSYTokenRequestContext.get().getOrgId());
         Page<OnlineQuestionResDTO> page = new Page<>();
         if (!CollectionUtils.isEmpty(onlineQuestionBOS)) {
             BeanUtils.copyProperties(onlineQuestionBOS, page);
@@ -251,6 +252,7 @@ public class ZSYOnlineQuestionService implements IZSYOnlineQuestionService {
     @Override
     public PageInfo<OnlineQuestionResDTO> selectCheckQuestionPage(MyQuestionReqDTO reqDTO) {
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<OnlineQuestionBO> onlineQuestionBOS = onlineQuestionMapper.selectCheckQuestionPageByReviewStatus(reqDTO);
         Page<OnlineQuestionResDTO> onlineQuestionResDTOS = new Page<>();
         if (!CollectionUtils.isEmpty(onlineQuestionBOS)) {

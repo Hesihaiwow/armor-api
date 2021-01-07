@@ -4,7 +4,7 @@ package com.zhixinhuixue.armor.model.pojo;
  * @author sch
  * @DATE 2019/6/11 13:53
  */
-public class WeekPublishPlanPlatform {
+public class WeekPublishPlanPlatform extends OrgIdField{
     /**
      * 主键
      */

@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by Lang on 2017/11/7 0007.
  */
-public class BugManage {
+public class BugManage extends OrgIdField{
 
     private Long id;
 

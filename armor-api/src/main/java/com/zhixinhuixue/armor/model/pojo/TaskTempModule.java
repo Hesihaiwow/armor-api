@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * 临时任务涉及项目
  */
-public class TaskTempModule {
+public class TaskTempModule extends OrgIdField{
     /**
      * id
      */

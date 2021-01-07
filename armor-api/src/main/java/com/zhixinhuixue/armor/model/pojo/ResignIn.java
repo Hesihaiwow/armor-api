@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.aspectj.weaver.ast.Or;
+
 import java.util.Date;
 
 /**
  * @author SCH
  * @date 2019/2/26 10:06
  */
-public class ResignIn {
+public class ResignIn extends OrgIdField {
     /**
      * 主键
      */

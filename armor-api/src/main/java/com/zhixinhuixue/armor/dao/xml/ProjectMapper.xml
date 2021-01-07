@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYProjectMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Project">
+
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Project" extends="OrgIdFieldMap">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
@@ -26,9 +32,9 @@
   <!--添加项目-->
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Project">
     insert into project (id, name, description, 
-      create_by, create_time, image_url, department_id)
+      create_by, create_time, image_url, department_id,org_id)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT})
+      #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT}, #{orgId,jdbcType=BIGINT})
   </insert>
 
   <!-- 更新项目 -->
@@ -58,6 +64,9 @@
     SELECT count(*) FROM project  WHERE name= #{name} AND is_delete = 0
     <if test="id != null and id!=''">
       AND id != #{id}
+    </if>
+    <if test="orgId != null and orgId !=''">
+      AND org_id != #{orgId}
     </if>
   </select>
 

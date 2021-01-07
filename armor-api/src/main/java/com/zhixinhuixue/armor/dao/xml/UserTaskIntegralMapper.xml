@@ -2,7 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserTaskIntegralMapper">
 
-    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="user_id" jdbcType="BIGINT" property="userId" />
         <result column="task_id" jdbcType="BIGINT" property="taskId" />
@@ -32,12 +38,12 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserTaskIntegral">
         REPLACE INTO `user_task_integral`
         (`id`,`user_id`,`task_id`,`integral`,`description`
-        ,`origin`,`review_status`,`create_by`,`create_time`,`score`,`bug_id`)
+        ,`origin`,`review_status`,`create_by`,`create_time`,`score`,`bug_id`,`org_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT}
         ,#{integral,jdbcType=DECIMAL},#{description,jdbcType=VARCHAR},#{origin,jdbcType=INTEGER}
         ,#{reviewStatus,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP}
-        ,#{score,jdbcType=DECIMAL},#{bugId,jdbcType=BIGINT})
+        ,#{score,jdbcType=DECIMAL},#{bugId,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--批量插入-->
@@ -45,13 +51,13 @@
         REPLACE INTO `user_task_integral`
         (`id`,`user_id`,`task_id`,`integral`,`description`
         ,`origin`,`review_status`,`create_by`,`create_time`
-        ,`score`,`bug_id`)
+        ,`score`,`bug_id`,`org_id`)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
             ,#{item.integral,jdbcType=DECIMAL},#{item.description,jdbcType=VARCHAR},#{item.origin,jdbcType=INTEGER}
             ,#{item.reviewStatus,jdbcType=INTEGER},#{item.createBy,jdbcType=BIGINT},#{item.createTime,jdbcType=TIMESTAMP}
-            ,#{item.score,jdbcType=DECIMAL},#{item.bugId,jdbcType=BIGINT})
+            ,#{item.score,jdbcType=DECIMAL},#{item.bugId,jdbcType=BIGINT},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 

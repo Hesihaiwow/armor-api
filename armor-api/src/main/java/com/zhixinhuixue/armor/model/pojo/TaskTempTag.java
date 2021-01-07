@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.aspectj.weaver.ast.Or;
+
 /**
  * 临时任务_标签
  *
  * @author SCH
  * @create 2020年12月09日
  */
-public class TaskTempTag {
+public class TaskTempTag extends OrgIdField {
     /**
      * 主键
      */

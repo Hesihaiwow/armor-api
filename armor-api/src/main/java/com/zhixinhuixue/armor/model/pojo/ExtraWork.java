@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * 加班申请
  */
-public class ExtraWork {
+public class ExtraWork extends OrgIdField{
     /**
      * 主键id
      */

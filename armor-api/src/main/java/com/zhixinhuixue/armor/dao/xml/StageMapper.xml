@@ -22,7 +22,7 @@
 
   <select id="selectStage" resultMap="BaseMap">
     SELECT (@rowid := @rowid+1) AS num, a.id, a.name,a.department_id  FROM(
-        SELECT *  FROM stage WHERE department_id = #{id}
+        SELECT *  FROM stage WHERE department_id = 1
       ORDER BY sort ASC)as a,
     (SELECT (@rowid:=0))as b
   </select>
@@ -68,11 +68,11 @@
 
   <!--查询排序目标上一个阶段的优先级-->
   <select id="selectBySort" resultType="java.lang.Long">
-    SELECT sort FROM stage ORDER BY sort limit #{sort},1
+    SELECT sort FROM stage where department_id = 1  ORDER BY sort limit #{sort},1
   </select>
 
   <select id="selectByDeptId" resultMap="BaseResultMap">
-    SELECT * FROM stage WHERE department_id=#{id}
+    SELECT * FROM stage WHERE department_id=1
     ORDER BY sort
   </select>
 

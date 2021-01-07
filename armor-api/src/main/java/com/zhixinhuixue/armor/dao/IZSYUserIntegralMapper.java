@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.bo.UserIntegralHistoryBO;
 import com.zhixinhuixue.armor.model.bo.UserIntegralInfoBO;
 import com.zhixinhuixue.armor.model.pojo.UserIntegral;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,7 +21,7 @@ public interface IZSYUserIntegralMapper {
      * @param endTime 结束时间
      * @return
      */
-    List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("departmentId")Long departmentId);
+    List<UserIntegralInfoBO> getIntegralPage(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("departmentId")Long departmentId, @Param("orgId")Long orgId);
 
     /**
      * 积分奖金计算
@@ -30,7 +31,7 @@ public interface IZSYUserIntegralMapper {
      * @param departmentId
      * @return
      */
-    List<UserIntegralInfoBO> getCalculate(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("integral") BigDecimal integral, @Param("departmentId")Long departmentId);
+    List<UserIntegralInfoBO> getCalculate(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("integral") BigDecimal integral, @Param("departmentId")Long departmentId, @Param("orgId")Long orgId);
 
     /**
      * 积分列数
@@ -38,7 +39,7 @@ public interface IZSYUserIntegralMapper {
      * @param endTime
      * @return
      */
-    int getIntegralCount(@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("departmentId") Long departmentId);
+    int getIntegralCount(@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("departmentId") Long departmentId, @Param("orgId")Long orgId);
 
     /**
      * 查询用户积分
@@ -47,7 +48,7 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    int getUserIntegral(@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("id") Long id);
+    int getUserIntegral(@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("id") Long id, @Param("orgId")Long orgId);
 
     /**
      * 插入用户积分
@@ -64,7 +65,7 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    Integer getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id, @Param("departmentId")Long departmentId);
+    Integer getRank(@Param("startTime")String startTime, @Param("endTime") String endTime,@Param("userId")Long id, @Param("departmentId")Long departmentId,@Param("orgId")Long orgId);
 
 
     /**
@@ -74,7 +75,7 @@ public interface IZSYUserIntegralMapper {
      * @param endTime
      * @return
      */
-    Page<UserIntegralHistoryBO> getIntegralHistory(@Param("id") Long id, @Param("startTime") String startTime, @Param("endTime") String endTime);
+    Page<UserIntegralHistoryBO> getIntegralHistory(@Param("id") Long id, @Param("startTime") String startTime, @Param("endTime") String endTime,@Param("orgId")Long orgId);
 
 
     /**
@@ -83,7 +84,7 @@ public interface IZSYUserIntegralMapper {
      * @param userId
      * @return
      */
-    int deleteUserIntegral(@Param("taskId") Long taskId, @Param("userId")Long userId);
+    int deleteUserIntegral(@Param("taskId") Long taskId, @Param("userId")Long userId,@Param("orgId")Long orgId);
 
     /**
      * 根据审核状态查询我的转移积分
@@ -91,7 +92,7 @@ public interface IZSYUserIntegralMapper {
      * @param status
      * @return
      */
-    Page<UserIntegralInfoBO> getIntegralByReviewStatus(@Param("userId") Long userId, @Param("status")int status, @Param("departmentId")Long departmentId);
+    Page<UserIntegralInfoBO> getIntegralByReviewStatus(@Param("userId") Long userId, @Param("status")int status, @Param("departmentId")Long departmentId,@Param("orgId")Long orgId);
 
     /**
      * 根据审核状态查询所有转移积分
@@ -105,14 +106,14 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    UserIntegral getHelpDetail(Long id);
+    UserIntegral getHelpDetail(@Param("id")Long id,@Param("orgId")Long orgId);
 
     /**
      * 删除积分求助转移
      * @param id
      * @return
      */
-    int deleteIntegralById(Long id);
+    int deleteIntegralById(@Param("id")Long id,@Param("orgId")Long orgId);
 
     /**
      * 编辑积分求助转移
@@ -134,7 +135,7 @@ public interface IZSYUserIntegralMapper {
      * @param id
      * @return
      */
-    List<UserIntegral> getUserIntegralByTaskId(@Param("id") Long id);
+    List<UserIntegral> getUserIntegralByTaskId(@Param("id") Long id,@Param("orgId")Long orgId);
 
     /**
      * 查询用户任务功能点结合,评价
@@ -143,5 +144,5 @@ public interface IZSYUserIntegralMapper {
      * @param endTime
      * @return
      */
-    List<TaskIntegralBO> selectTaskIntegralByUser(@Param("userId")Long userId, @Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
+    List<TaskIntegralBO> selectTaskIntegralByUser(@Param("userId")Long userId, @Param("beginTime")Date beginTime, @Param("endTime")Date endTime,@Param("orgId")Long orgId);
 }

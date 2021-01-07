@@ -19,7 +19,7 @@ public interface IZSYBugStatisticsMapper {
      * 查询上次导入时最后一天记录的bugId
      * @return
      */
-    Integer selectLastImportBugId();
+    Integer selectLastImportBugId(@Param("orgId")Long orgId);
 
     /**
      * 批量导入
@@ -63,14 +63,14 @@ public interface IZSYBugStatisticsMapper {
      * @author sch
      * @return
      */
-    List<MantisCategory> selectCategoryList();
+    List<MantisCategory> selectCategoryList(@Param("orgId")Long orgId);
 
     /**
      * 按年月查询测试人员bug统计情况
      * @author sch
      * @return
      */
-    List<MantisBugStatisticsBO> selectBugStatsGroupByUser(@Param("beginTime")Long beginTime,@Param("endTime")Long endTime);
+    List<MantisBugStatisticsBO> selectBugStatsGroupByUser(@Param("beginTime")Long beginTime,@Param("endTime")Long endTime,@Param("orgId")Long orgId);
 
     /**
      * 查询测试人员周bug数量图表
@@ -78,7 +78,7 @@ public interface IZSYBugStatisticsMapper {
      * @param endTime
      * @return
      */
-    List<MantisBugUserWeekBO> selectBugWeekGroupByUser(@Param("beginTime")Long beginTime,@Param("endTime")Long endTime);
+    List<MantisBugUserWeekBO> selectBugWeekGroupByUser(@Param("beginTime")Long beginTime,@Param("endTime")Long endTime,@Param("orgId")Long orgId);
 
     /**
      * 查询线上bug分类数量
@@ -87,7 +87,7 @@ public interface IZSYBugStatisticsMapper {
      * @param endTime
      * @return
      */
-    List<OnlineBugCategoryNumBO> selectBugCategoryNum(@Param("sysUserId")Long sysUserId, @Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
+    List<OnlineBugCategoryNumBO> selectBugCategoryNum(@Param("sysUserId")Long sysUserId, @Param("beginTime")Date beginTime, @Param("endTime")Date endTime,@Param("orgId")Long orgId);
 
     /**
      * 查询测试人员线上bug月数量图表
@@ -95,7 +95,7 @@ public interface IZSYBugStatisticsMapper {
      * @param endTime
      * @return
      */
-    List<OnlineBugUserMonthBO> selectBugMonthGroupByUser(@Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
+    List<OnlineBugUserMonthBO> selectBugMonthGroupByUser(@Param("beginTime")Date beginTime, @Param("endTime")Date endTime,@Param("orgId")Long orgId);
 
     /**
      * 按任务统计bug
@@ -103,7 +103,7 @@ public interface IZSYBugStatisticsMapper {
      * @param endTime
      * @return
      */
-    Page<MantisBugGroupByTaskBO> selectBugStatsGroupByTask(@Param("beginTime")Long beginTime, @Param("endTime")Long endTime);
+    Page<MantisBugGroupByTaskBO> selectBugStatsGroupByTask(@Param("beginTime")Long beginTime, @Param("endTime")Long endTime,@Param("orgId")Long orgId);
 
     /**
      * 清空原来的bug数据
@@ -116,5 +116,5 @@ public interface IZSYBugStatisticsMapper {
      * @param endTime
      * @return
      */
-    List<OnlineBugUserMonthBO> selectBugMonthGroupByDeveloper(@Param("beginTime")Date beginTime, @Param("endTime")Date endTime);
+    List<OnlineBugUserMonthBO> selectBugMonthGroupByDeveloper(@Param("beginTime")Date beginTime, @Param("endTime")Date endTime,@Param("orgId")Long orgId);
 }

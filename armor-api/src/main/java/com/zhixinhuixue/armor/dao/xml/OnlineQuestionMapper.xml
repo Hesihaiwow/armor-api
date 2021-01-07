@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYOnlineQuestionMapper">
-    <resultMap id="baseMap" type="com.zhixinhuixue.armor.model.pojo.OnlineQuestion">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+
+
+    <resultMap id="baseMap" type="com.zhixinhuixue.armor.model.pojo.OnlineQuestion" extends="OrgIdFieldMap">
         <id column="oqr_id" property="oqrId" jdbcType="BIGINT"></id>
         <result column="name" property="name" jdbcType="VARCHAR"></result>
         <result column="description" property="description" jdbcType="VARCHAR"></result>
@@ -37,12 +44,12 @@
     <insert id="insertQuestion" parameterType="com.zhixinhuixue.armor.model.pojo.OnlineQuestion">
         INSERT INTO `online_question_record`
         (`oqr_id`,`name`,`description`,`project_id`,`work_hour`,`begin_time`,`end_time`,
-        `status`,`review_status`,`is_delete`,`create_by`,`create_time`,`complete_time`)
+        `status`,`review_status`,`is_delete`,`create_by`,`create_time`,`complete_time`,`org_id`)
         VALUES
         (#{oqrId,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{projectId,jdbcType=BIGINT},
         #{workHour,jdbcType=INTEGER},#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},
         #{status,jdbcType=INTEGER},#{reviewStatus,jdbcType=INTEGER},#{isDelete,jdbcType=INTEGER},
-        #{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{completeTime,jdbcType=TIMESTAMP})
+        #{createBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{completeTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--新增线上问题图片地址-->
@@ -123,6 +130,9 @@
             <if test="reqDTO.reviewStatus != null">
                 AND review_status = #{reqDTO.reviewStatus}
             </if>
+            <if test="reqDTO.orgId != null">
+                AND org_id = #{reqDTO.orgId}
+            </if>
         </where>
     </select>
 
@@ -162,6 +172,7 @@
         LEFT JOIN `user` t2 on t1.create_by = t2.id
         LEFT JOIN `project` t3 on t1.project_id = t3.id
         WHERE t1.`status` = 1 and t1.`is_delete` = 0 and t1.`review_status` = 1
+        and t1.org_id = #{orgId}
         order by t1.create_time desc
     </select>
 
@@ -172,6 +183,7 @@
         LEFT JOIN `user` t2 on t1.create_by = t2.id
         LEFT JOIN `project` t3 on t1.project_id = t3.id
         WHERE t1.`is_delete` = 0 and t1.`review_status` = 3
+        and t1.org_id = #{orgId}
         order by t1.create_time desc
     </select>
 </mapper>

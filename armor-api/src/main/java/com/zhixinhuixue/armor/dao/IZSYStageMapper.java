@@ -3,6 +3,7 @@ package com.zhixinhuixue.armor.dao;
 import com.zhixinhuixue.armor.model.dto.response.StageResDTO;
 import com.zhixinhuixue.armor.model.pojo.Stage;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.List;
 
@@ -72,7 +73,7 @@ public interface IZSYStageMapper {
      * @param sort
      * @return
      */
-    Long selectBySort(Long sort);
+    Long selectBySort(@Param("sort") Long sort, @Param("orgId")Long orgId);
 
 
 }

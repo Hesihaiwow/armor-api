@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYExtraWorkMapper">
-    <resultMap id="BaseExtraWork" type="com.zhixinhuixue.armor.model.pojo.ExtraWork">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseExtraWork" type="com.zhixinhuixue.armor.model.pojo.ExtraWork" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"></id>
         <result column="user_id" property="userId" jdbcType="BIGINT"></result>
         <result column="reason" property="reason" jdbcType="VARCHAR"></result>
@@ -15,7 +21,7 @@
         <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"></result>
     </resultMap>
 
-    <resultMap id="BaseTaskMap" type="com.zhixinhuixue.armor.model.pojo.Task">
+    <resultMap id="BaseTaskMap" type="com.zhixinhuixue.armor.model.pojo.Task" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="description" jdbcType="LONGVARCHAR" property="description"/>
@@ -40,20 +46,20 @@
 
     <insert id="addExtraWork" parameterType="com.zhixinhuixue.armor.model.pojo.ExtraWork">
         INSERT INTO `extra_work`
-        (`id`,`user_id`,`reason`,`begin_time`,`end_time`,`work_hours`,`is_delete`,`review_status`,`check_time`,`create_time`,`update_time`)
+        (`id`,`user_id`,`reason`,`begin_time`,`end_time`,`work_hours`,`is_delete`,`review_status`,`check_time`,`create_time`,`update_time`,`org_id`)
         VALUES
         (#{extraWork.id,jdbcType=BIGINT},#{extraWork.userId,jdbcType=BIGINT},#{extraWork.reason,jdbcType=VARCHAR}
         ,#{extraWork.beginTime,jdbcType=TIMESTAMP},#{extraWork.endTime,jdbcType=TIMESTAMP},#{extraWork.workHours,jdbcType=FLOAT}
         ,#{extraWork.isDelete,jdbcType=INTEGER},#{extraWork.reviewStatus,jdbcType=INTEGER},#{extraWork.checkTime,jdbcType=TIMESTAMP}
-        ,#{extraWork.createTime,jdbcType=TIMESTAMP},#{extraWork.updateTime,jdbcType=TIMESTAMP})
+        ,#{extraWork.createTime,jdbcType=TIMESTAMP},#{extraWork.updateTime,jdbcType=TIMESTAMP},#{extraWork.orgId,jdbcType=BIGINT})
     </insert>
 
     <insert id="addExtraWorkTaskByList" parameterType="com.zhixinhuixue.armor.model.pojo.ExtraWorkTask">
         INSERT INTO `extra_work_task`
-        (`id`,`ew_id`,`task_id`)
+        (`id`,`ew_id`,`task_id`,`org_id`)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.id,jdbcType=BIGINT},#{item.ewId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT})
+            (#{item.id,jdbcType=BIGINT},#{item.ewId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
@@ -119,12 +125,12 @@
 
     <!--查询审核中的加班申请-->
     <select id="selectCheckingExtraWorkByPage" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0 ORDER BY `create_time` DESC
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 0 and org_id = #{orgId} ORDER BY `create_time` DESC
     </select>
 
     <!--查询审核通过的加班申请-->
     <select id="selectCheckedExtraWorkByPage" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 ORDER BY `check_time` DESC
+        SELECT * FROM `extra_work` WHERE `is_delete` = 0 AND `review_status` = 2 and org_id = #{orgId} ORDER BY `check_time` DESC
     </select>
 
     <!--根据id查加班申请-->
@@ -148,7 +154,7 @@
 
     <!--查询10月份之间  审核通过的加班申请-->
     <select id="selectListByTime" resultMap="BaseExtraWork">
-        SELECT * FROM `extra_work` WHERE `review_status` = 2 AND `is_delete` = 0
+        SELECT * FROM `extra_work` WHERE `review_status` = 2 AND `is_delete` = 0 and org_id = #{orgId}
         AND `begin_time` >= #{beginStr}
         AND `begin_time` &lt; #{endStr}
     </select>

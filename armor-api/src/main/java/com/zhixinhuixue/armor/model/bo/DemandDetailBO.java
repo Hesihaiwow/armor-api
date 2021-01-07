@@ -1,12 +1,15 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+import org.aspectj.weaver.ast.Or;
+
 import java.util.Date;
 
 /**
  * 需求详情
  * Created by SCH on 2018-10-22
  */
-public class DemandDetailBO {
+public class DemandDetailBO extends OrgIdField {
     /**
      * 需求id
      */

@@ -2,7 +2,7 @@ package com.zhixinhuixue.armor.model.pojo;
 
 import java.util.Date;
 
-public class TaskTest {
+public class TaskTest extends OrgIdField{
 
     private Long ttId;
 

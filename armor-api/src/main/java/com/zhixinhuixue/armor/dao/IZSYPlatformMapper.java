@@ -17,7 +17,7 @@ public interface IZSYPlatformMapper {
      * @param name
      * @return
      */
-    Platform selectByName(@Param("name") String name);
+    Platform selectByName(@Param("name") String name,@Param("orgId")Long orgId);
 
     /**
      * 新增平台
@@ -32,7 +32,7 @@ public interface IZSYPlatformMapper {
      * @author sch
      * @return List<Platform>
      */
-    List<Platform> selectList(@Param("groupMark") Integer groupMark);
+    List<Platform> selectList(@Param("groupMark") Integer groupMark,@Param("orgId")Long orgId);
 
     /**
      * 根据id集合查询

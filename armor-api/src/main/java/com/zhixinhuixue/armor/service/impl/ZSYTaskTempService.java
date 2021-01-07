@@ -118,17 +118,24 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             });
         }
 
+        taskTemp.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (taskTempMapper.insertTaskTemp(taskTemp) == 0) {
             throw new ZSYServiceException("新增任务(临时)失败");
         }
         if (!CollectionUtils.isEmpty(userWeekTempList)) {
             //删除原有的userWeekTemp
             taskTempMapper.deleteUserWeekTempByUserAndTask(userId, addTaskTempReqDTO.getTaskId());
+            for(UserWeekTemp temp:userWeekTempList){
+                temp.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             if (taskTempMapper.insertUserWeekTempBatch(userWeekTempList) == 0) {
                 throw new ZSYServiceException("批量插入周工作量(临时)失败");
             }
         }
         if (!CollectionUtils.isEmpty(functionList)) {
+            for(TaskTempFunction taskTempFunction:functionList){
+                taskTempFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             functionMapper.insertBatch(functionList);
         }
     }
@@ -182,6 +189,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         if (!CollectionUtils.isEmpty(userWeekTempList)) {
             //删除原有的userWeekTemp
             taskTempMapper.deleteUserWeekTempByUserAndTask(userId, taskId);
+            for(UserWeekTemp temp:userWeekTempList){
+                temp.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             if (taskTempMapper.insertUserWeekTempBatch(userWeekTempList) == 0) {
                 throw new ZSYServiceException("批量修改周工作量(临时)失败");
             }
@@ -201,6 +211,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         //删除原有的function
         functionMapper.deleteByTtId(editTaskTempReqDTO.getId());
         if (!CollectionUtils.isEmpty(functionList)) {
+            for(TaskTempFunction taskTempFunction:functionList){
+                taskTempFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             functionMapper.insertBatch(functionList);
         }
     }
@@ -934,6 +947,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         taskTemp.setDescription(description.trim());
         taskTemp.setLevel(1);
         taskTemp.setPriTaskName(taskName.trim());
+        taskTemp.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         taskTempMapper.insertTaskTemp(taskTemp);
 
         List<TaskTempTag> taskTempTagList = reqDTO.getTagList().stream().map(tagId -> {
@@ -941,6 +955,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             taskTempTag.setId(snowFlakeIDHelper.nextId());
             taskTempTag.setTtId(taskTemp.getId());
             taskTempTag.setTagId(tagId);
+            taskTempTag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             return taskTempTag;
         }).collect(Collectors.toList());
         taskTempTagMapper.insertBatch(taskTempTagList);
@@ -1004,6 +1019,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             taskTempTag.setId(snowFlakeIDHelper.nextId());
             taskTempTag.setTtId(taskTemp.getId());
             taskTempTag.setTagId(tagId);
+            taskTempTag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             return taskTempTag;
         }).collect(Collectors.toList());
         taskTempTagMapper.insertBatch(taskTempTagList);
@@ -1085,6 +1101,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             taskTempTag.setId(snowFlakeIDHelper.nextId());
             taskTempTag.setTtId(taskTemp.getId());
             taskTempTag.setTagId(tagId);
+            taskTempTag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             taskTempTagList.add(taskTempTag);
         });
 
@@ -1122,6 +1139,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             task.setBeginTime(reqDTO.getBeginTime());
             task.setEndTime(reqDTO.getEndTime());
             task.setFacility(1);
+            task.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             taskMapper.insert(task);
 
             taskTemp.setReviewStatus(2);
@@ -1139,6 +1157,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             taskUser.setStatus(ZSYTaskStatus.DOING.getValue());
             taskUser.setCreateTime(curDate);
             taskUser.setTaskLevel(reqDTO.getTaskLevel());
+            taskUser.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             taskUserMapper.insert(taskUser);
 
             UserWeek userWeek = new UserWeek();
@@ -1148,6 +1167,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
             userWeek.setTaskId(task.getId());
             userWeek.setWeekNumber(beginDayOfWeek);
             userWeek.setYear(DateHelper.getYears(reqDTO.getBeginTime()));
+            userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             List<UserWeek> userWeekList = new ArrayList<>();
             userWeekList.add(userWeek);
             userWeekMapper.insertList(userWeekList);
@@ -1157,6 +1177,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 taskTag.setId(snowFlakeIDHelper.nextId());
                 taskTag.setTaskId(task.getId());
                 taskTag.setTagId(tag.getTagId());
+                taskTag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 return taskTag;
             }).collect(Collectors.toList());
             taskTagMapper.insertList(taskTagList);
@@ -1167,6 +1188,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         //删除原来的tag
         taskTempTagMapper.deleteByTtId(ttId);
         //新增tag
+        for(TaskTempTag taskTempTag:taskTempTagList){
+            taskTempTag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+        }
         taskTempTagMapper.insertBatch(taskTempTagList);
         //新增审核记录
         taskTempMapper.insertTaskReviewLog(taskReviewLog);
@@ -1246,6 +1270,9 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         if (!CollectionUtils.isEmpty(userWeekTempList)) {
             //删除原有的userWeekTemp
             taskTempMapper.deleteUserWeekTempByUserAndTask(userId, taskId);
+            for(UserWeekTemp temp:userWeekTempList){
+                temp.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             if (taskTempMapper.insertUserWeekTempBatch(userWeekTempList) == 0) {
                 throw new ZSYServiceException("批量修改周工作量(临时)失败");
             }
@@ -1264,15 +1291,20 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
         //删除原有的function
         functionMapper.deleteByTtId(editTaskTempReqDTO.getId());
         if (!CollectionUtils.isEmpty(functionList)) {
+            for(TaskTempFunction taskTempFunction:functionList){
+                taskTempFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             functionMapper.insertBatch(functionList);
         }
 
         Long lastCheckUser = userMapper.selectUserLastCheckUser(userId);
         //当前情况:  不是最后一级审核
         if (!lastCheckUser.equals(ZSYTokenRequestContext.get().getUserId())) {
+            taskReviewLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             taskTempMapper.insertTaskReviewLog(taskReviewLog);
             taskLogMapper.insert(taskService.buildLog(ZSYTokenRequestContext.get().getUserName() + "通过了" + user.getName() + "的多人任务审核", existTaskTemp.getDescription(), taskId));
         } else {
+            taskReviewLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             taskTempMapper.insertTaskReviewLog(taskReviewLog);
 
             TaskDetailBO taskTemp = taskMapper.selectTaskDetailByTaskId(taskId);
@@ -1303,7 +1335,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 //删除taskUser
                 taskUserMapper.deleteByTaskIdAndUserId(taskId, userId);
                 //删除userWeek
-                userWeekMapper.deleteByTaskIdAndUserId(taskId, userId);
+                userWeekMapper.deleteByTaskIdAndUserId(taskId, userId,ZSYTokenRequestContext.get().getOrgId());
 
                 //新增taskUser
                 TaskUser taskUser = new TaskUser();
@@ -1320,6 +1352,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                 taskUser.setUserId(userId);
                 taskUser.setStageId(null);
                 taskUser.setTaskLevel(editTaskTempReqDTO.getTaskLevel());
+                taskUser.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 taskUserMapper.insert(taskUser);
 
 
@@ -1335,6 +1368,7 @@ public class ZSYTaskTempService implements IZSYTaskTempService {
                         userWeek.setYear(userWeekTemp.getYear());
                         userWeek.setWeekNumber(userWeekTemp.getWeekNumber());
                         userWeek.setHours(userWeekTemp.getHours().doubleValue());
+                        userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                         userWeekList.add(userWeek);
                     });
                 }

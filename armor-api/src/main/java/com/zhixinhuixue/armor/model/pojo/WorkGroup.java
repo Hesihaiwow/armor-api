@@ -6,7 +6,7 @@ import java.util.Date;
  * @author sch
  * @time 2020/1/8 9:37
  */
-public class WorkGroup {
+public class WorkGroup extends OrgIdField{
     /**
      * id
      */

@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.math.BigDecimal;
 
 /**
@@ -8,7 +10,7 @@ import java.math.BigDecimal;
  * @author SCH
  * @create 2020年11月05日
  */
-public class UserWeekHourBO {
+public class UserWeekHourBO extends OrgIdField {
     /**
      * 用户id
      */

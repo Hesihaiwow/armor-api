@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * @author sch
  * @DATE 2019/5/28 17:31
  */
-public class OptionScoreBO {
+public class OptionScoreBO extends OrgIdField {
     /**
      * 评分项
      */

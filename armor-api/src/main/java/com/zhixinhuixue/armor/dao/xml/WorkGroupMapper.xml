@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYWorkGroupMapper">
 
-  <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.WorkGroup">
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+  <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.WorkGroup" extends="OrgIdFieldMap">
     <id column="id" property="id" jdbcType="BIGINT"/>
     <result column="name" property="name" jdbcType="VARCHAR"/>
     <result column="description" property="description" jdbcType="VARCHAR"/>
@@ -22,11 +27,11 @@
   <insert id="insertGroup" parameterType="com.zhixinhuixue.armor.model.pojo.WorkGroup">
     INSERT INTO `work_group`
     (`id`,`name`,`description`,`leader`,`is_delete`
-    ,`create_by`,`update_by`,`create_time`,`update_time`)
+    ,`create_by`,`update_by`,`create_time`,`update_time`,`org_id`)
     VALUES
     (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR}
     ,#{leader,jdbcType=BIGINT},#{isDelete,jdbcType=INTEGER},#{createBy,jdbcType=BIGINT}
-    ,#{updateBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+    ,#{updateBy,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--更新团队-->
@@ -62,7 +67,7 @@
 
   <!--根据名称查询-->
   <select id="selectByName" resultMap="BaseMap">
-    SELECT * FROM `work_group` WHERE `name` = #{name} LIMIT 1
+    SELECT * FROM `work_group` WHERE `name` = #{name} and org_id = #{orgId} LIMIT 1
   </select>
 
   <!--根据主键查询-->
@@ -72,7 +77,7 @@
 
   <!--查询团队列表-->
   <select id="selectList" resultMap="BaseMap">
-    SELECT * FROM `work_group` WHERE `is_delete` = 0 ORDER BY create_time DESC
+    SELECT * FROM `work_group` WHERE `is_delete` = 0  and org_id = #{orgId}  ORDER BY create_time DESC
   </select>
 
   <!--查询团队详情-->
@@ -85,7 +90,7 @@
 
    <!--根据leaderId查询团队-->
     <select id="selectByLeaderId" resultMap="BaseMap">
-      SELECT * FROM `work_group` WHERE `is_delete` = 0 and `leader` = #{userId}
+      SELECT * FROM `work_group` WHERE `is_delete` = 0 and `leader` = #{userId} and org_id = #{orgId}
       ORDER BY create_time DESC
     </select>
 </mapper>

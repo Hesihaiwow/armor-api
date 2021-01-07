@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import javax.validation.constraints.NotNull;
 
 /**
  * @author sch
  * @time 2019/10/14 10:00
  */
-public class QueryTaskBugPageReqDTO {
+public class QueryTaskBugPageReqDTO extends OrgIdField {
     /**
      * 关联任务
      */

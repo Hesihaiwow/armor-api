@@ -150,7 +150,7 @@ public class ZSYSignInService implements IZSYSignInService {
             }
 
             //查询有工号的人员
-            List<User> users = signInMapper.selectEffectUsers();
+            List<User> users = signInMapper.selectEffectUsers(ZSYTokenRequestContext.get().getOrgId());
             Map<String, Long> userMap = new HashMap<>();
             Map<String, String> nameMap = new HashMap<>();
             for (User user : users) {
@@ -181,7 +181,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 throw new ZSYServiceException("获取Excel表格第一行日期信息有误");
             }
             //查询最后一条考勤记录
-            SignIn lastRecord = signInMapper.selectSingInLastRecord();
+            SignIn lastRecord = signInMapper.selectSingInLastRecord(ZSYTokenRequestContext.get().getOrgId());
             //如果有,那么此次只导入这条记录之后的数据
             Integer lastToBegin = 0;
             if (lastRecord != null) {
@@ -357,7 +357,21 @@ public class ZSYSignInService implements IZSYSignInService {
                             .collect(Collectors.toList());
                 }
 
-                if (signInMapper.insertSignInBatch(totalList) == 0) {
+                Long orgId = ZSYTokenRequestContext.get().getOrgId();
+
+                List<SignIn> totalListOrg = totalList.stream().map(signIn -> {
+
+                    SignIn signIn1 = new SignIn();
+
+                    BeanUtils.copyProperties(signIn,signIn1);
+
+                    signIn1.setOrgId(orgId);
+
+                    return signIn1;
+
+                }).collect(Collectors.toList());
+
+                if (signInMapper.insertSignInBatch(totalListOrg) == 0) {
                     throw new ZSYServiceException("导入考勤记录失败");
                 }
             }
@@ -375,7 +389,7 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     public SignInLastRecordResDTO getSignInLastRecord() {
-        SignIn signIn = signInMapper.selectSingInLastRecord();
+        SignIn signIn = signInMapper.selectSingInLastRecord(ZSYTokenRequestContext.get().getOrgId());
         SignInLastRecordResDTO resDTO = new SignInLastRecordResDTO();
         BeanUtils.copyProperties(signIn, resDTO);
         return resDTO;
@@ -416,7 +430,7 @@ public class ZSYSignInService implements IZSYSignInService {
             reqDTO.setUserIds(userIds);
         }
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 20);
-        Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO);
+        Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO,ZSYTokenRequestContext.get().getOrgId());
         Page<SignInResDTO> signInResDTOS = new Page<>();
         BeanUtils.copyProperties(signInPage, signInResDTOS);
         if (!CollectionUtils.isEmpty(signInPage)) {
@@ -479,7 +493,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     resDTO.setEWorkTime(null);
                     resDTO.setCheckInTime(null);
                     //查询当前用户第二天7点前是否有打卡记录,有的话取最后一个作为下班打卡时间
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero,ZSYTokenRequestContext.get().getOrgId());
                     if (!CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size() - 1).getCheckTime());
                         if (resDTO.getCheckOutTime().before(today18)) {
@@ -495,7 +509,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 }
                 //只有一条打卡记录
                 else if (dateList.size() == 1) {
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero,ZSYTokenRequestContext.get().getOrgId());
                     //第二天没有7点前的打卡记录,则当天漏打卡
                     if (CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setIsForget(1);
@@ -583,7 +597,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 }
                 //2条或以上
                 else {
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero, ZSYTokenRequestContext.get().getOrgId());
                     //第二天早于7点没有打卡记录
                     if (CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setCheckInTime(dateList.get(0));
@@ -663,7 +677,7 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                     }
                 }
-                UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23);
+                UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23,ZSYTokenRequestContext.get().getOrgId());
                 if (userLeave != null) {
                     // 1.先判断请假持续几天
                     List<String> leaveDays = DateHelper.getDaysBetweenTwoDate(userLeave.getBeginTime(), userLeave.getEndTime());
@@ -786,7 +800,7 @@ public class ZSYSignInService implements IZSYSignInService {
             }
         }
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 7);
-        Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO);
+        Page<SignInBO> signInPage = signInMapper.selectSignInPage(reqDTO,ZSYTokenRequestContext.get().getOrgId());
         Page<SignInResDTO> signInResDTOS = new Page<>();
         BeanUtils.copyProperties(signInPage, signInResDTOS);
         if (!CollectionUtils.isEmpty(signInPage)) {
@@ -849,7 +863,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     resDTO.setEWorkTime(null);
                     resDTO.setCheckInTime(null);
                     //查询当前用户第二天7点前是否有打卡记录,有的话取最后一个作为下班打卡时间
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero,ZSYTokenRequestContext.get().getOrgId());
                     if (!CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size() - 1).getCheckTime());
                         if (resDTO.getCheckOutTime().before(today18)) {
@@ -865,7 +879,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 }
                 //只有一条打卡记录
                 else if (dateList.size() == 1) {
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero,ZSYTokenRequestContext.get().getOrgId());
                     //第二天没有7点前的打卡记录,则当天漏打卡
                     if (CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setIsForget(1);
@@ -953,7 +967,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 }
                 //2条或以上
                 else {
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero,ZSYTokenRequestContext.get().getOrgId());
                     //第二天早于7点没有打卡记录
                     if (CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setCheckInTime(dateList.get(0));
@@ -1033,7 +1047,7 @@ public class ZSYSignInService implements IZSYSignInService {
                         }
                     }
                 }
-                UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23);
+                UserLeave userLeave = userLeaveMapper.selectByUserAndTime(user.getId(), today0, today23,ZSYTokenRequestContext.get().getOrgId());
                 if (userLeave != null) {
                     // 1.先判断请假持续几天
                     List<String> leaveDays = DateHelper.getDaysBetweenTwoDate(userLeave.getBeginTime(), userLeave.getEndTime());
@@ -1206,7 +1220,7 @@ public class ZSYSignInService implements IZSYSignInService {
                     resDTO.setEWorkTime(null);
                     resDTO.setCheckInTime(null);
                     //查询当前用户第二天7点前是否有打卡记录,有的话取最后一个作为下班打卡时间
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero, ZSYTokenRequestContext.get().getOrgId());
                     if (!CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setCheckOutTime(before7Clock.get(before7Clock.size() - 1).getCheckTime());
                         resDTO.setIsWorkToNextDay(1);
@@ -1218,7 +1232,7 @@ public class ZSYSignInService implements IZSYSignInService {
                 }
                 //只有一条打卡记录
                 else if (dateList.size() == 1) {
-                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero);
+                    List<SignIn> before7Clock = signInMapper.selectBefore7ByUserId(user.getId(), nextSeven, zero,ZSYTokenRequestContext.get().getOrgId());
                     //第二天没有7点前的打卡记录,则当天漏打卡
                     if (CollectionUtils.isEmpty(before7Clock)) {
                         resDTO.setIsForget(1);
@@ -1261,6 +1275,7 @@ public class ZSYSignInService implements IZSYSignInService {
             resignIn.setType(0);
             resignIn.setId(snowFlakeIDHelper.nextId());
             resignIn.setReviewStatus(0);
+            resignIn.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             if (signInMapper.addResignIn(resignIn) == 0) {
                 throw new ZSYServiceException("新增上班补打卡申请失败");
             }
@@ -1272,6 +1287,7 @@ public class ZSYSignInService implements IZSYSignInService {
             resignIn.setType(1);
             resignIn.setId(snowFlakeIDHelper.nextId());
             resignIn.setReviewStatus(0);
+            resignIn.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             if (signInMapper.addResignIn(resignIn) == 0) {
                 throw new ZSYServiceException("新增下班补打卡申请失败");
             }
@@ -1358,6 +1374,7 @@ public class ZSYSignInService implements IZSYSignInService {
         signIn.setUserId(resignIn.getUserId());
         signIn.setCheckTime(resignIn.getRecheckTime());
         signIn.setType(ZSYSignInType.RE_SIGN.getValue());
+        signIn.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (signInMapper.addSignIn(signIn) == 0) {
             throw new ZSYServiceException("审核通过补打卡申请失败");
         }
@@ -1765,12 +1782,12 @@ public class ZSYSignInService implements IZSYSignInService {
         }
         long time1 = System.currentTimeMillis();
         //查询给定年月的所有考勤记录
-        List<SignInBO> signInBOS = signInMapper.selectAllSignInByMonth(yearAndMonth);
+        List<SignInBO> signInBOS = signInMapper.selectAllSignInByMonth(yearAndMonth,ZSYTokenRequestContext.get().getOrgId());
         //查询给定年月的所有考勤人员
-        List<User> signInUsers = signInMapper.selectCheckInUsers(yearAndMonth);
+        List<User> signInUsers = signInMapper.selectCheckInUsers(yearAndMonth,ZSYTokenRequestContext.get().getOrgId());
         //查询给定年月每天0点到5点之间的考勤记录
-        List<SignIn> before7Clock = signInMapper.selectAllBetween0And7(yearAndMonth);
-        List<Date> dates = signInMapper.selectDatesByYearAndMonth(yearAndMonth);
+        List<SignIn> before7Clock = signInMapper.selectAllBetween0And7(yearAndMonth,ZSYTokenRequestContext.get().getOrgId());
+        List<Date> dates = signInMapper.selectDatesByYearAndMonth(yearAndMonth,ZSYTokenRequestContext.get().getOrgId());
         //根据用户id  获取对应的  userId--List<SignInBO>   的map
         Map<Long, List<SignInBO>> map = signInBOS.stream().collect(Collectors.groupingBy(SignInBO::getUserId));
         Map<Long, List<SignInResDTO>> resultMap = new HashMap<>();
@@ -2058,7 +2075,7 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     public List<SignInUser> getSignInUsers() {
-        List<User> userList = signInMapper.selectEffectUsers();
+        List<User> userList = signInMapper.selectEffectUsers(ZSYTokenRequestContext.get().getOrgId());
         List<SignInUser> signInUsers = new ArrayList<>();
         BeanUtils.copyProperties(userList, signInUsers);
         if (!CollectionUtils.isEmpty(userList)) {
@@ -2221,7 +2238,7 @@ public class ZSYSignInService implements IZSYSignInService {
     @Override
     public List<UserRestHoursListResDTO> getUserRestHoursList(QueryUserRestHoursReqDTO reqDTO) {
         //查询用户剩余调休
-        List<User> users = userMapper.selectUserRestHours(reqDTO.getJobRole(), reqDTO.getUserId());
+        List<User> users = userMapper.selectUserRestHours(reqDTO.getJobRole(), reqDTO.getUserId(),ZSYTokenRequestContext.get().getOrgId());
         List<UserRestHoursListResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(users)) {
             users.forEach(user -> {
@@ -2279,6 +2296,7 @@ public class ZSYSignInService implements IZSYSignInService {
         calendar.setTime(reqDTO.getRecordTime());
         int year = calendar.get(Calendar.YEAR);
         userRestHoursLog.setYear(year);
+        userRestHoursLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         restHoursLogMapper.insert(userRestHoursLog);
     }
 
@@ -2298,7 +2316,7 @@ public class ZSYSignInService implements IZSYSignInService {
             throw new ZSYServiceException("请选择截止时间");
         }
         List<UserRestHoursLog> userRestHoursLogList = new ArrayList<>();
-        List<UserLeave> leaveList = userLeaveMapper.selectListByTime(beginStr, endStr);
+        List<UserLeave> leaveList = userLeaveMapper.selectListByTime(beginStr, endStr,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(leaveList)) {
             for (UserLeave userLeave : leaveList) {
                 User user = userMapper.selectById(userLeave.getUserId());
@@ -2319,7 +2337,7 @@ public class ZSYSignInService implements IZSYSignInService {
             }
         }
         //查询10月份之间  审核通过的加班申请
-        List<ExtraWork> extraWorkList = extraWorkMapper.selectListByTime(beginStr, endStr);
+        List<ExtraWork> extraWorkList = extraWorkMapper.selectListByTime(beginStr, endStr,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(extraWorkList)) {
             for (ExtraWork extraWork : extraWorkList) {
                 User user = userMapper.selectById(extraWork.getUserId());
@@ -2341,7 +2359,13 @@ public class ZSYSignInService implements IZSYSignInService {
         }
 
         if (!CollectionUtils.isEmpty(userRestHoursLogList)) {
-            restHoursLogMapper.insertBatch(userRestHoursLogList);
+            List<UserRestHoursLog> collect = userRestHoursLogList.stream().map(x -> {
+                UserRestHoursLog userRestHoursLog = new UserRestHoursLog();
+                BeanUtils.copyProperties(x, userRestHoursLog);
+                userRestHoursLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return userRestHoursLog;
+            }).collect(Collectors.toList());
+            restHoursLogMapper.insertBatch(collect);
         }
     }
 
@@ -2388,6 +2412,7 @@ public class ZSYSignInService implements IZSYSignInService {
      */
     @Override
     public PageInfo<SignInOriginResDTO> getSignInOriginPage(SignInReqDTO reqDTO) {
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), 30);
         Page<SignInOriginBO> signInOriginBOS = signInMapper.selectSignInOriginBOPage(reqDTO);
         Page<SignInOriginResDTO> page = new Page<>();
@@ -2441,7 +2466,7 @@ public class ZSYSignInService implements IZSYSignInService {
 
         List<SignInUser> userList = new ArrayList<>();
         if (ZSYTokenRequestContext.get().getUserRole().intValue() == ZSYUserRole.ADMINISTRATOR.getValue()) {
-            List<User> users = signInMapper.selectEffectUsers();
+            List<User> users = signInMapper.selectEffectUsers(ZSYTokenRequestContext.get().getOrgId());
             for (User user : users) {
                 SignInUser signInUser = new SignInUser();
                 signInUser.setUserId(user.getId());
@@ -2452,10 +2477,10 @@ public class ZSYSignInService implements IZSYSignInService {
         }
 
         Long userId = ZSYTokenRequestContext.get().getUserId();
-        List<WorkGroup> workGroups = workGroupMapper.selectByLeaderId(userId);
+        List<WorkGroup> workGroups = workGroupMapper.selectByLeaderId(userId,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(workGroups)) {
             List<Long> groupList = workGroups.stream().map(WorkGroup::getId).distinct().collect(Collectors.toList());
-            List<UserGroup> userGroups = userGroupMapper.selectByGroupIds(groupList);
+            List<UserGroup> userGroups = userGroupMapper.selectByGroupIds(groupList,ZSYTokenRequestContext.get().getOrgId());
             List<Long> userIds = userGroups.stream().map(UserGroup::getUserId).distinct().collect(Collectors.toList());
             List<User> users = signInMapper.selectEffectUsersGroup(userIds);
             for (User user : users) {
@@ -2881,7 +2906,7 @@ public class ZSYSignInService implements IZSYSignInService {
     @Override
     public PageInfo<ResignInResDTO> getResignInByStatus(Integer status, Integer pageNum) {
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
-        Page<ResignIn> resignIns = signInMapper.selectResignInPage(status);
+        Page<ResignIn> resignIns = signInMapper.selectResignInPage(status,ZSYTokenRequestContext.get().getOrgId());
         Page<ResignInResDTO> resignInResDTOS = new Page<>();
         BeanUtils.copyProperties(resignIns, resignInResDTOS);
         if (!CollectionUtils.isEmpty(resignIns)) {

@@ -25,7 +25,7 @@ public interface IZSYProjectMapper {
      * 验证项目名是否存在,更新项目中排除项目本身
      * @return
      */
-    int validateProject(@Param("name") String name, @Param("id") Long id);
+    int validateProject(@Param("name") String name, @Param("id") Long id, @Param("orgId")Long orgId);
 
     /**
      * 更新项目

@@ -65,7 +65,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
         taskExpand.setUserId(ZSYTokenRequestContext.get().getUserId());
         BeanUtils.copyProperties(expandReqDTO, taskExpand);
         taskExpand.setStatus(ZSYTaskExpandStatus.PENDING.getValue());
-
+        taskExpand.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         taskExpandMapper.insert(taskExpand);
     }
 
@@ -89,7 +89,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
             userId = null;
         }
         startPage(reqDTO.getPageNum(), 5);
-        Page<TaskExpandBO> expandList = taskExpandMapper.getExpandList(reqDTO.getStatus(), userId);
+        Page<TaskExpandBO> expandList = taskExpandMapper.getExpandList(reqDTO.getStatus(), userId,ZSYTokenRequestContext.get().getOrgId());
 
         Page<TaskExpandResDTO> resDTOS = new Page<>();
         BeanUtils.copyProperties(expandList, resDTOS);
@@ -122,9 +122,9 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<TaskExpandBO> expandList;
         if (user.getUserRole() == ZSYUserRole.ADMINISTRATOR.getValue()) {
-            expandList = taskExpandMapper.getExpandList(status, null);
+            expandList = taskExpandMapper.getExpandList(status, null,ZSYTokenRequestContext.get().getOrgId());
         } else {
-            expandList = taskExpandMapper.getExpandList(status, ZSYTokenRequestContext.get().getUserId());
+            expandList = taskExpandMapper.getExpandList(status, ZSYTokenRequestContext.get().getUserId(),ZSYTokenRequestContext.get().getOrgId());
         }
 
         Page<TaskExpandResDTO> resDTOS = new Page<>();
@@ -159,7 +159,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
             }
 
             reviewReqDTO.getWeeks().forEach(userWeek -> {
-                UserWeek week = weekMapper.getSameWeek(expand.getTaskId(), expand.getUserId(), userWeek.getWeekNumber(), userWeek.getYear());
+                UserWeek week = weekMapper.getSameWeek(expand.getTaskId(), expand.getUserId(), userWeek.getWeekNumber(), userWeek.getYear(),ZSYTokenRequestContext.get().getOrgId());
                 if (week != null) {
                     week.setHours(userWeek.getHours() + week.getHours());
                     if (weekMapper.updateHours(week.getId(), week.getHours()) == 0) {
@@ -174,6 +174,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
                     newWeek.setUserId(expand.getUserId());
                     newWeek.setYear(userWeek.getYear());
                     newWeek.setHours(userWeek.getHours());
+                    newWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     userWeeks.add(newWeek);
                     weekMapper.insertList(userWeeks);
                 }
@@ -190,6 +191,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
             taskLog.setCreateTime(new Date());
             taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
             taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
+            taskLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             logMapper.insert(taskLog);
         }
 
@@ -199,7 +201,7 @@ public class ZSYTaskExpandService implements IZSYTaskExpandService {
     @Override
     public void deleteExpand(Long id) {
         taskExpandMapper.reviewStatus(id, ZSYTaskExpandStatus.REJECT.getValue());
-        weekMapper.deleteByTaskId(id);
+        weekMapper.deleteByTaskId(id,ZSYTokenRequestContext.get().getOrgId());
     }
 
 }

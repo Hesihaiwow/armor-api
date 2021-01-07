@@ -23,14 +23,14 @@ public interface IZSYTestFunctionMapper {
      * @param taskId
      * @return
      */
-    List<TestFunction> selectListByTask(@Param("taskId") Long taskId);
+    List<TestFunction> selectListByTask(@Param("taskId") Long taskId,@Param("orgId")Long orgId);
 
     /**
      * 根据id查询
      * @param functionId
      * @return
      */
-    TestFunction selectById(@Param("functionId") Long functionId);
+    TestFunction selectById(@Param("functionId") Long functionId,@Param("orgId")Long orgId);
 
     /**
      * 修改功能点

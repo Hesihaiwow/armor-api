@@ -41,7 +41,7 @@ public class ZSYDeptService implements IZSYDeptService {
             throw new ZSYAuthException("没有权限执行此操作");
         }
         //校验部门名称是否唯一
-        List<Department> departments = departmentMapper.selectByDeptName(deptReqDTO.getName(),ZSYTokenRequestContext.get().getDepartmentId());
+        List<Department> departments = departmentMapper.selectByDeptName(deptReqDTO.getName(),ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(departments)){
             throw new ZSYServiceException(String.format("部门(%s)已存在",deptReqDTO.getName()));
         }
@@ -50,13 +50,14 @@ public class ZSYDeptService implements IZSYDeptService {
         department.setId(snowFlakeIDHelper.nextId());
         department.setCreateTime(new Date());
         department.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        department.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         departmentMapper.insertDept(department);
     }
 
     @Override
     public void addOrganization(String name){
         //校验部门名称是否唯一
-        List<Department> departments = departmentMapper.selectByDeptName(name,null);
+        List<Department> departments = departmentMapper.selectByDeptName(name,null,ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(departments)){
             throw new ZSYServiceException(String.format("组织(%s)已存在",name));
         }
@@ -66,6 +67,7 @@ public class ZSYDeptService implements IZSYDeptService {
         department.setParentId(department.getId());
         department.setCreateTime(new Date());
         department.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        department.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         departmentMapper.insertDept(department);
     }
 
@@ -81,7 +83,7 @@ public class ZSYDeptService implements IZSYDeptService {
 
     @Override
     public List<DeptResDTO> getAllDept() {
-        List<DeptBo> deptBos = departmentMapper.getAllDept();
+        List<DeptBo> deptBos = departmentMapper.getAllDept(ZSYTokenRequestContext.get().getOrgId());
         List<DeptResDTO> deptResDTOS =  Lists.newArrayList();
         deptBos.forEach(deptBo->{
                 DeptResDTO deptResDTO = new DeptResDTO();
@@ -103,7 +105,7 @@ public class ZSYDeptService implements IZSYDeptService {
     @Override
     public List<DeptResDTO> getDeptList() {
         List<DeptResDTO> list = new ArrayList<>();
-        List<Department> departmentList = departmentMapper.selectAll();
+        List<Department> departmentList = departmentMapper.selectAll(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(departmentList)){
             departmentList.forEach(item->{
                 DeptResDTO resDTO = new DeptResDTO();

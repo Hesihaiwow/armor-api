@@ -123,6 +123,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                     BeanUtils.copyProperties(taskTempFunctionReqDTO, function);
                     function.setId(snowFlakeIDHelper.nextId());
                     function.setTmId(taskModify.getId());
+                    function.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     functionList.add(function);
                 });
                 taskModifyFuntionMapper.insertBatch(functionList);
@@ -149,8 +150,12 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             }
 
             if (!CollectionUtils.isEmpty(taskModifyUserWeekList)) {
+                taskModify.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 if (taskModifyMapper.insert(taskModify) == 0) {
                     throw new ZSYServiceException("新增任务修改申请失败");
+                }
+                for(TaskModifyUserWeek taskModifyUserWeek:taskModifyUserWeekList){
+                    taskModifyUserWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 }
                 if (taskModifyUserWeekMapper.insertBatch(taskModifyUserWeekList) == 0) {
                     throw new ZSYServiceException("新增任务修改周工时分配失败");
@@ -267,7 +272,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
         if (ZSYTokenRequestContext.get().getUserRole() > ZSYUserRole.PROJECT_MANAGER.getValue()) {
             throw new ZSYServiceException("当前账号无权限");
         }
-        List<TaskModifyBO> modifyBOS = taskModifyMapper.selectList();
+        List<TaskModifyBO> modifyBOS = taskModifyMapper.selectList(ZSYTokenRequestContext.get().getOrgId());
         List<TaskModifyListResDTO> modifyListResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(modifyBOS)) {
             modifyBOS.forEach(modifyBO -> {
@@ -306,7 +311,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             throw new ZSYServiceException("当前账号无权限");
         }
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
-        Page<TaskModifyBO> modifyBOPage = taskModifyMapper.selectPage();
+        Page<TaskModifyBO> modifyBOPage = taskModifyMapper.selectPage(ZSYTokenRequestContext.get().getOrgId());
         Page<TaskModifyListResDTO> modifyListResDTOPage = new Page<>();
         BeanUtils.copyProperties(modifyBOPage, modifyListResDTOPage);
         if (!CollectionUtils.isEmpty(modifyBOPage)) {
@@ -379,7 +384,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             taskUser.setTaskLevel(editTaskModifyReqDTO.getTaskLevel());
 
             //删除原来的周工时分配
-            userWeekMapper.deleteByTaskIdAndUserId(taskId, userId);
+            userWeekMapper.deleteByTaskIdAndUserId(taskId, userId,ZSYTokenRequestContext.get().getOrgId());
 
             //删除原来的任务修改申请周工时分配
             taskModifyUserWeekMapper.deleteByTmId(taskModify.getId());
@@ -419,10 +424,16 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                 throw new ZSYServiceException("审核任务修改申请失败");
             }
             //插入新的任务修改申请周工时分配状态
+            for(TaskModifyUserWeek taskModifyUserWeek:modifyUserWeekList){
+                taskModifyUserWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             if (taskModifyUserWeekMapper.insertBatch(modifyUserWeekList) == 0) {
                 throw new ZSYServiceException("批量更新任务修改申请周工时分审核状态失败");
             }
             //插入新的用户周工时分配
+            for(UserWeek userWeek:userWeekList){
+                userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             if (userWeekMapper.insertList(userWeekList) == 0) {
                 throw new ZSYServiceException("批量更新用户任务周工时分配失败");
             }
@@ -451,7 +462,13 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                         modifyFunction.setLevel(taskTempFunctionReqDTO.getLevel());
                         functionList2.add(modifyFunction);
                     });
+                    for(TaskTempFunction taskTempFunction:functionList){
+                        taskTempFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                    }
                     taskTempFunctionMapper.insertBatch(functionList);
+                    for(TaskModifyFunction taskModifyFunction:functionList2){
+                        taskModifyFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                    }
                     taskModifyFuntionMapper.insertBatch(functionList2);
                 }
             }
@@ -467,6 +484,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
             taskLog.setCreateTime(new Date());
             taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
             taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
+            taskLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             logMapper.insert(taskLog);
 
             //任务参与者,包括负责人和开发人员
@@ -485,6 +503,7 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                     notification.setContent("您参与的任务:( " + task.getName() + " )有修改: " + user.getName() + "修改了子任务");
                     notification.setCreateTime(new Date());
                     notification.setStatus(0);
+                    notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     list.add(notification);
                 });
             }
@@ -649,12 +668,16 @@ public class ZSYTaskModifyService implements IZSYTaskModifyService {
                     BeanUtils.copyProperties(taskTempFunctionReqDTO, function);
                     function.setId(snowFlakeIDHelper.nextId());
                     function.setTmId(editTaskModifyReqDTO.getId());
+                    function.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     functionList.add(function);
                 });
                 taskModifyFuntionMapper.insertBatch(functionList);
             }
             if (taskModifyMapper.updateById(taskModify) == 0) {
                 throw new ZSYServiceException("更新任务修改申请失败");
+            }
+            for(TaskModifyUserWeek taskModifyUserWeek:taskModifyUserWeekList){
+                taskModifyUserWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             }
             taskModifyUserWeekMapper.insertBatch(taskModifyUserWeekList);
         }

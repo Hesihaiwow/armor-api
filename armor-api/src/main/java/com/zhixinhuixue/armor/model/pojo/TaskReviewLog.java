@@ -6,7 +6,7 @@ import java.util.Date;
  * @author sch
  * @DATE 2019/5/6 15:12
  */
-public class TaskReviewLog {
+public class TaskReviewLog extends OrgIdField{
     /**
      * 主键
      */

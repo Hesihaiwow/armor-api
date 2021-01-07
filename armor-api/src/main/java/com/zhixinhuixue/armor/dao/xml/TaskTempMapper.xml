@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskTempMapper">
 
-    <resultMap id="BaseTaskTempMap" type="com.zhixinhuixue.armor.model.pojo.TaskTemp">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseTaskTempMap" type="com.zhixinhuixue.armor.model.pojo.TaskTemp" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="task_id" property="taskId" jdbcType="BIGINT"/>
         <result column="link_task_id" property="linkTaskId" jdbcType="BIGINT"/>
@@ -39,7 +44,7 @@
                     select="com.zhixinhuixue.armor.dao.IZSYTaskTempFunctionMapper.selectListByTtId"/>
     </resultMap>
 
-    <resultMap id="BaseTaskReviewLogMap" type="com.zhixinhuixue.armor.model.pojo.TaskReviewLog">
+    <resultMap id="BaseTaskReviewLogMap" type="com.zhixinhuixue.armor.model.pojo.TaskReviewLog" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="task_temp_id" property="taskTempId" jdbcType="BIGINT"/>
         <result column="task_id" property="taskId" jdbcType="BIGINT"/>
@@ -54,7 +59,7 @@
         <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <resultMap id="BaseUserWeekTempMap" type="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
+    <resultMap id="BaseUserWeekTempMap" type="com.zhixinhuixue.armor.model.pojo.UserWeekTemp" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="week_number" property="weekNumber" jdbcType="INTEGER"/>
         <result column="hours" property="hours" jdbcType="DECIMAL"/>
@@ -69,31 +74,31 @@
     <insert id="insertTaskTemp" parameterType="com.zhixinhuixue.armor.model.pojo.TaskTemp">
         INSERT INTO `task_temp`
         (`id`,`task_id`,`user_id`,`begin_time`,`end_time`,`work_hours`,`description`,`type`
-        ,`status`,`review_status`,`create_time`,`level`,`task_level`,`link_task_id`,`project_id`,`pri_task_name`)
+        ,`status`,`review_status`,`create_time`,`level`,`task_level`,`link_task_id`,`project_id`,`pri_task_name`,`org_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP}
         ,#{workHours,jdbcType=DECIMAL},#{description,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{status,jdbcType=INTEGER},#{reviewStatus,jdbcType=INTEGER}
         ,#{createTime,jdbcType=TIMESTAMP},#{level,jdbcType=INTEGER}
-        ,#{taskLevel,jdbcType=INTEGER},#{linkTaskId,jdbcType=BIGINT},#{projectId,jdbcType=BIGINT},#{priTaskName,jdbcType=VARCHAR})
+        ,#{taskLevel,jdbcType=INTEGER},#{linkTaskId,jdbcType=BIGINT},#{projectId,jdbcType=BIGINT},#{priTaskName,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--批量插入周工作量(临时)-->
     <insert id="insertUserWeekTempBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserWeekTemp">
         INSERT INTO `user_week_temp`
-        (`id`,`week_number`,`hours`,`user_id`,`task_id`,`year`,`status`,`create_time`)
+        (`id`,`week_number`,`hours`,`user_id`,`task_id`,`year`,`status`,`create_time`,`org_id`)
         VALUES
         <foreach collection="userWeekList" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT},#{item.weekNumber,jdbcType=INTEGER},#{item.hours,jdbcType=DECIMAL},#{item.userId,jdbcType=BIGINT}
-            ,#{item.taskId,jdbcType=BIGINT},#{item.year,jdbcType=INTEGER},#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP})
+            ,#{item.taskId,jdbcType=BIGINT},#{item.year,jdbcType=INTEGER},#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
     <!--插入临时任务审核日志-->
     <insert id="insertTaskReviewLog" parameterType="com.zhixinhuixue.armor.model.pojo.TaskReviewLog">
-        INSERT INTO `task_review_log` (`id`,`task_id`,`task_temp_id`,`check_user_id`,`check_user_name`,`level`,`suggest`,`review_time`)
+        INSERT INTO `task_review_log` (`id`,`task_id`,`task_temp_id`,`check_user_id`,`check_user_name`,`level`,`suggest`,`review_time`,`org_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{taskTempId,jdbcType=BIGINT},#{checkUserId,jdbcType=BIGINT}
-        ,#{checkUserName,jdbcType=VARCHAR},#{level,jdbcType=INTEGER},#{suggest,jdbcType=VARCHAR},#{reviewTime,jdbcType=TIMESTAMP})
+        ,#{checkUserName,jdbcType=VARCHAR},#{level,jdbcType=INTEGER},#{suggest,jdbcType=VARCHAR},#{reviewTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--修改任务(临时)-->
@@ -220,7 +225,7 @@
         LEFT JOIN `user` u ON u.id = tt.user_id
         LEFT JOIN `task` t ON tt.task_id = t.id
         LEFT JOIN `project` p ON p.id = t.project_id
-        WHERE  tt.`review_status` = #{reviewStatus}
+        WHERE  tt.`review_status` = #{reviewStatus} and tt.org_id = #{orgId}
         ORDER BY tt.`create_time` DESC
     </select>
 

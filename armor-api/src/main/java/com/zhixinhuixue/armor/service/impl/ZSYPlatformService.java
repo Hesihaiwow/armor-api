@@ -48,7 +48,7 @@ public class ZSYPlatformService implements IZSYPlatformService {
     @Transactional
     public void add(AddPlatformReqDTO reqDTO) {
         //校验是否存在
-        Platform existPlatform = platformMapper.selectByName(reqDTO.getName().trim());
+        Platform existPlatform = platformMapper.selectByName(reqDTO.getName().trim(),ZSYTokenRequestContext.get().getOrgId());
         if (existPlatform != null){
             throw new ZSYServiceException("当前名称已存在");
         }
@@ -60,6 +60,7 @@ public class ZSYPlatformService implements IZSYPlatformService {
         platform.setGroupMark(reqDTO.getGroupMark());
         platform.setName(reqDTO.getName().trim());
 
+        platform.setOrgId(ZSYTokenRequestContext.get().getOrgId());
 
         if (platformMapper.insert(platform) == 0){
             throw new ZSYServiceException("新增平台失败");
@@ -78,7 +79,7 @@ public class ZSYPlatformService implements IZSYPlatformService {
         if (existPlatform == null){
             throw new ZSYServiceException("当前发布平台不存在,请检查");
         }
-        Platform sameNamePlatform = platformMapper.selectByName(reqDTO.getName().trim());
+        Platform sameNamePlatform = platformMapper.selectByName(reqDTO.getName().trim(),ZSYTokenRequestContext.get().getOrgId());
         if (sameNamePlatform != null && !sameNamePlatform.getId().equals(id)){
             throw new ZSYServiceException("当前名称已存在");
         }
@@ -102,7 +103,7 @@ public class ZSYPlatformService implements IZSYPlatformService {
         if (!Strings.isNullOrEmpty(groupMark)){
             group = Integer.valueOf(groupMark);
         }
-        List<Platform> platforms = platformMapper.selectList(group);
+        List<Platform> platforms = platformMapper.selectList(group,ZSYTokenRequestContext.get().getOrgId());
         List<PlatformResDTO> platformResDTOList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(platforms)){
             platforms.forEach(platform -> {

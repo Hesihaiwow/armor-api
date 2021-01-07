@@ -8,7 +8,7 @@ import java.util.Date;
  * @DATE 2019/5/9 10:23
  * 修改任务  用户-周工作量
  */
-public class TaskModifyUserWeek {
+public class TaskModifyUserWeek extends OrgIdField {
     /**
      * 主键
      */

@@ -141,6 +141,67 @@ public class ZSYUserService implements IZSYUserService {
     }
 
     @Override
+    @Transactional
+    public ZSYResult<String> adminLogin(UserLoginReqDTO userLoginReqDTO) {
+        //验证登录用户
+        User user = userMapper.selectByAccountAndPassword(userLoginReqDTO.getAccount(),
+                MD5Helper.convert(
+                        String.format("%s%s", SHA1Helper.Sha1(userLoginReqDTO.getPassword()),
+                                ZSYConstants.HINT_PASSWORD_KEY), 32, false));
+        if (user == null) {
+            throw new ZSYServiceException("账号或密码错误");
+        }
+        if (user.getStatus() == 1) {
+            throw new ZSYServiceException("用户已冻结使用.");
+        }
+        if(user.getIsAdmin() != 1){
+            throw new ZSYServiceException("该用户没有权限登录！");
+        }
+        //验证通过
+        //修改登录时间
+        User modifyUser = new User();
+        modifyUser.setId(user.getId());
+        modifyUser.setLastLogin(new Date());
+        if (userMapper.updateSelectiveById(modifyUser) == 0) {
+            throw new ZSYServiceException("更新登录时间失败,登录异常.");
+        }
+        //生成Token
+        Algorithm algorithm = null;
+        try {
+            algorithm = Algorithm.HMAC256(jwtSecret);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Long departmentId = user.getDepartmentId();
+        if (user.getDepartmentId() != 0) {
+            departmentId = departmentMapper.selectById(user.getDepartmentId()).getParentId();
+        }
+
+        // token 中 增加 org_id,is_admin
+        Long orgId = user.getOrgId();
+        Integer isAdmin = user.getIsAdmin();
+
+        String jwt = JWT.create()
+                .withIssuer(jwtIssuer)
+                .withExpiresAt(DateHelper.afterDate(new Date(), jwtExp))
+                .withIssuedAt(new Date())
+                .withClaim("userId", String.valueOf(user.getId()))
+                .withClaim("userName", user.getName())
+                .withClaim("avatarUrl", user.getAvatarUrl())
+                .withClaim("userRole", user.getUserRole())
+                .withClaim("departmentId", departmentId)
+                .withClaim("orgId",orgId)
+                .withClaim("isAdmin",isAdmin)
+                .sign(algorithm);
+
+        String loginKey = String.format(ZSYConstants.LOGIN_KEY, user.getId());
+        stringRedisTemplate.opsForValue().set(loginKey, ZSYConstants.REDIS_DEFAULT_VALUE);
+        stringRedisTemplate.expire(loginKey, ZSYConstants.LOGIN_KEY_EXPIRE_DAYS, TimeUnit.DAYS);
+        logger.info("{}({})登录成功,token:{}", user.getName(), user.getId(), jwt);
+        return ZSYResult.success().data(jwt);
+    }
+
+    @Override
     public String createUserJwtToken(String account) {
         //验证登录用户
         List<User> users = userMapper.selectByAccount(account);
@@ -220,7 +281,7 @@ public class ZSYUserService implements IZSYUserService {
             reqDTO.setGroupId(null);
         }
         startPage(Optional.ofNullable(reqDTO.getPageIndex()).orElse(1), ZSYConstants.PAGE_SIZE);
-        Page<UserBo> userBos = userMapper.selectPage(deptIds, reqDTO);
+        Page<UserBo> userBos = userMapper.selectPage(deptIds, reqDTO,ZSYTokenRequestContext.get().getOrgId());
         Page<UserPageResDTO> page = new Page<>();
         BeanUtils.copyProperties(userBos, page);
         userBos.stream().forEach(userBo -> {
@@ -302,6 +363,7 @@ public class ZSYUserService implements IZSYUserService {
                 userCheckPeople.setCheckUserId(checkUser.getId());
                 userCheckPeople.setLevel(checkUser.getLevel());
                 userCheckPeople.setStatus(0);
+                userCheckPeople.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 userCheckPeopleList.add(userCheckPeople);
             });
             if (!CollectionUtils.isEmpty(userCheckPeopleList)) {
@@ -344,6 +406,7 @@ public class ZSYUserService implements IZSYUserService {
                     userCheckPeople.setCheckUserId(checkUser.getId());
                     userCheckPeople.setLevel(checkUser.getLevel());
                     userCheckPeople.setStatus(1);
+                    userCheckPeople.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     userCheckPeopleList.add(userCheckPeople);
                 });
                 if (!CollectionUtils.isEmpty(userCheckPeopleList)) {
@@ -363,6 +426,7 @@ public class ZSYUserService implements IZSYUserService {
                     userCheckPeople.setCheckUserId(checkUser.getId());
                     userCheckPeople.setLevel(checkUser.getLevel());
                     userCheckPeople.setStatus(0);
+                    userCheckPeople.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                     userCheckPeopleList.add(userCheckPeople);
                 });
                 if (!CollectionUtils.isEmpty(userCheckPeopleList)) {
@@ -655,7 +719,7 @@ public class ZSYUserService implements IZSYUserService {
         List<User> tmp = userMapper.selectByOrdId(orgId);
         List<Long> userIds = tmp.stream().map(User::getId).collect(Collectors.toList());
 
-        List<User> users = userMapper.selectManagers();
+        List<User> users = userMapper.selectManagers(ZSYTokenRequestContext.get().getOrgId());
         List<EffectUserResDTO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(users)) {
             users.forEach(user -> {
@@ -694,6 +758,7 @@ public class ZSYUserService implements IZSYUserService {
         restHoursLog.setContent("管理员手动重置");
         restHoursLog.setCreateTime(new Date());
         restHoursLog.setRecordTime(new Date());
+        restHoursLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         restHoursLogMapper.insert(restHoursLog);
     }
 
@@ -712,7 +777,7 @@ public class ZSYUserService implements IZSYUserService {
             return true;
         }
 
-        List<WorkGroup> workGroups = groupMapper.selectByLeaderId(ZSYTokenRequestContext.get().getUserId());
+        List<WorkGroup> workGroups = groupMapper.selectByLeaderId(ZSYTokenRequestContext.get().getUserId(),ZSYTokenRequestContext.get().getOrgId());
         return !CollectionUtils.isEmpty(workGroups);
     }
 
@@ -724,7 +789,7 @@ public class ZSYUserService implements IZSYUserService {
     @Override
     public List<EffectUserResDTO> getNotDeleteUserList() {
         List<EffectUserResDTO> list = new ArrayList<>();
-        List<User> notDeleteUsers = userMapper.selectNotDeleteUsers();
+        List<User> notDeleteUsers = userMapper.selectNotDeleteUsers(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(notDeleteUsers)) {
             notDeleteUsers.forEach(user -> {
                 EffectUserResDTO resDTO = new EffectUserResDTO();

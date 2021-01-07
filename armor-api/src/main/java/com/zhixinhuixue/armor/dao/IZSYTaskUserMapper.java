@@ -6,6 +6,7 @@ import com.zhixinhuixue.armor.model.bo.TaskUserHoursBO;
 import com.zhixinhuixue.armor.model.dto.request.PersonalTaskListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.TaskUser;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.Date;
 import java.util.List;
@@ -101,61 +102,61 @@ public interface IZSYTaskUserMapper {
      * 查询2019-7 之后的没有功能点的多人任务
      * @author sch
      */
-    List<TaskUserHoursBO> selectWithoutFunctionMultiTask();
+    List<TaskUserHoursBO> selectWithoutFunctionMultiTask(@Param("orgId")Long orgId);
 
     /**
      * 查询2019-7月之后的 没有任务级别的个人任务
      * @author sch
      */
-    List<TaskUserHoursBO> selectWithoutTaskLevel();
+    List<TaskUserHoursBO> selectWithoutTaskLevel(@Param("orgId")Long orgId);
 
     /**
      * 查询2019-7 之后的有功能点的而且已经结束的多人任务
      * @author sch
      */
-    List<TaskUserHoursBO> selectWithFunctionMultiTask();
+    List<TaskUserHoursBO> selectWithFunctionMultiTask(@Param("orgId")Long orgId);
 
     /**
      * 查询2019-7月之后的 有任务级别的而且已经完成的个人任务
      * @author sch
      */
-    List<TaskUserHoursBO> selectWithTaskLevel();
+    List<TaskUserHoursBO> selectWithTaskLevel(@Param("orgId")Long orgId);
 
     /**
      * 统计7月之后的有功能点的且已评价多人任务积分(已完成,没结束)
      * @author sch
      */
-    List<TaskUserHoursBO> selectWithEvaluationMultiTask();
+    List<TaskUserHoursBO> selectWithEvaluationMultiTask(@Param("orgId")Long orgId);
 
     /**
      * 统计7月之后的没有功能点的且已评价多人任务积分(已完成,没结束)
      * @author sch
      */
-    List<TaskUserHoursBO> selectWithoutEvaluationMultiTask();
+    List<TaskUserHoursBO> selectWithoutEvaluationMultiTask(@Param("orgId")Long orgId);
 
     /**
      * 查询7月后没有任务级别的个人任务
      * @author sch
      */
-    List<TaskUser> selectPrivateAfterJuly();
+    List<TaskUser> selectPrivateAfterJuly(@Param("orgId")Long orgId);
 
     /**
      * 查询7月后没有任务级别的多人任务
      * @author sch
      */
-    List<TaskUser> selectMultiAfterJuly();
+    List<TaskUser> selectMultiAfterJuly(@Param("orgId")Long orgId);
 
     /**
      * 查询7月之后已完成的个人任务
      * @author sch
      */
-    List<TaskUser> selectPrivateAfterJulyWithLevel();
+    List<TaskUser> selectPrivateAfterJulyWithLevel(@Param("orgId")Long orgId);
 
     /**
      * 查询7月之后已结束的多人任务
      * @author sch
      */
-    List<TaskUser> selectMultiAfterJulyWithLevel(@Param("status") Integer status);
+    List<TaskUser> selectMultiAfterJulyWithLevel(@Param("status") Integer status,@Param("orgId")Long orgId);
 
     /**
      * 更新状态为已结束

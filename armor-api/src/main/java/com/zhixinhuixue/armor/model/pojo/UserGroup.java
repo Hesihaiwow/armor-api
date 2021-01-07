@@ -4,7 +4,7 @@ package com.zhixinhuixue.armor.model.pojo;
  * @author sch
  * @time 2020/6/10 14:11
  */
-public class UserGroup {
+public class UserGroup extends OrgIdField{
 
     /**
      * id

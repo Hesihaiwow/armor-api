@@ -7,7 +7,7 @@ import java.util.Date;
  * @DATE 2019/5/22 10:13
  * 任务评分
  */
-public class TaskEvaluation {
+public class TaskEvaluation extends OrgIdField{
     /**
      * 主键
      */

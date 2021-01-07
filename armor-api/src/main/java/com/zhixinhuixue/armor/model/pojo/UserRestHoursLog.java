@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * 调休日志
  */
-public class UserRestHoursLog {
+public class UserRestHoursLog extends OrgIdField{
     /**
      * id
      */

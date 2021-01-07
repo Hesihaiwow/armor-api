@@ -89,6 +89,9 @@
         <if test="endTime != null">
             <![CDATA[  AND  ew.`end_time` <= #{endTime} ]]>
         </if>
+        <if test="orgId != null">
+            <![CDATA[  AND  ew.`org_id` = #{orgId} ]]>
+        </if>
         ORDER BY ew.`end_time` DESC
     </select>
 

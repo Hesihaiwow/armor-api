@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.model.pojo;
  *
  * mantis用户表
  */
-public class MantisUser {
+public class MantisUser extends OrgIdField{
     /**
      * 主键
      */

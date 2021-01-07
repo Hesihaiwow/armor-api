@@ -52,21 +52,21 @@ public interface IZSYSignInMapper {
      * 查询全部考勤记录
      * @return
      */
-    List<SignIn> selectSignInList();
+    List<SignIn> selectSignInList(@Param("orgId") Long orgId);
 
     /**
      * 分页查询考勤记录
      * @param reqDTO
      * @return
      */
-    Page<SignInBO> selectSignInPage(@Param("reqDTO") SignInReqDTO reqDTO);
+    Page<SignInBO> selectSignInPage(@Param("reqDTO") SignInReqDTO reqDTO,@Param("orgId")Long orgId);
 
     /**
      * 查询当前用户第二天7点前是否有打卡记录
      * @param userId
      * @return
      */
-    List<SignIn> selectBefore7ByUserId(@Param("userId") Long userId, @Param("seven") Date seven, @Param("zero") Date zero);
+    List<SignIn> selectBefore7ByUserId(@Param("userId") Long userId, @Param("seven") Date seven, @Param("zero") Date zero ,@Param("orgId")Long orgId);
 
     /**
      * 查询漏打卡考勤记录
@@ -110,7 +110,7 @@ public interface IZSYSignInMapper {
      * @param status
      * @return
      */
-    Page<ResignIn> selectResignInPage(@Param("status") Integer status);
+    Page<ResignIn> selectResignInPage(@Param("status") Integer status,@Param("orgId")Long orgId);
 
     /**
      * 删除补打卡申请
@@ -162,19 +162,19 @@ public interface IZSYSignInMapper {
      * 导入记录的最后一条记录打卡时间
      * @return
      */
-    SignIn selectSingInLastRecord();
+    SignIn selectSingInLastRecord(@Param("orgId")Long orgId);
 
     /**
      * 导入记录的最先一条记录打卡时间
      * @return
      */
-    SignIn selectSingInFirstRecord();
+    SignIn selectSingInFirstRecord(@Param("orgId")Long orgId);
 
     /**
      * 查询打卡人员列表
      * @return
      */
-    List<User> selectCheckInUsers(@Param("yearAndMonth") String yearAndMonth);
+    List<User> selectCheckInUsers(@Param("yearAndMonth") String yearAndMonth,@Param("orgId")Long orgId);
 
     /**
      * 根据用户id和给定年月查询考勤
@@ -189,14 +189,14 @@ public interface IZSYSignInMapper {
      * @param month
      * @return
      */
-    Date selectMonthFirstTime(@Param("month") Integer month);
+    Date selectMonthFirstTime(@Param("month") Integer month,@Param("orgId")Long orgId);
 
     /**
      * 根据月份查询当月有记录的最晚时间
      * @param month
      * @return
      */
-    Date selectMonthLastTime(@Param("month") Integer month);
+    Date selectMonthLastTime(@Param("month") Integer month,@Param("orgId")Long orgId);
 
     /**
      * 根据月份查询当月有记录的时间集合
@@ -209,27 +209,27 @@ public interface IZSYSignInMapper {
      * 查询有效打卡人员
      * @return
      */
-    List<User> selectEffectUsers();
+    List<User> selectEffectUsers(@Param("orgId")Long orgId);
 
     /**
      * 查询当月所有人的考勤记录
      * @param yearAndMonth
      * @return
      */
-    List<SignInBO> selectAllSignInByMonth(@Param("yearAndMonth") String yearAndMonth);
+    List<SignInBO> selectAllSignInByMonth(@Param("yearAndMonth") String yearAndMonth,@Param("orgId")Long orgId);
 
     /**
      * 查询给定年月每天0点到7点之间的考勤记录
      * @return
      */
-    List<SignIn> selectAllBetween0And7(@Param("yearAndMonth") String yearAndMonth);
+    List<SignIn> selectAllBetween0And7(@Param("yearAndMonth") String yearAndMonth,@Param("orgId")Long orgId);
 
     /**
      * 给定年月  查询打卡日期集合
      * @param yearAndMonth
      * @return
      */
-    List<Date> selectDatesByYearAndMonth(@Param("yearAndMonth")String yearAndMonth);
+    List<Date> selectDatesByYearAndMonth(@Param("yearAndMonth")String yearAndMonth,@Param("orgId")Long orgId);
 
     /**
      * 根据userId和给定月份查询每天0点到7点之间的数据

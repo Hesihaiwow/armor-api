@@ -1,5 +1,7 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.aspectj.weaver.ast.Or;
+
 import java.util.Date;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Date;
  *
  * mantis  bug统计
  */
-public class MantisBugStatistics {
+public class MantisBugStatistics extends OrgIdField {
     /**
      * 主键
      */

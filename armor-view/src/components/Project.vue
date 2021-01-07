@@ -23,7 +23,7 @@
                 </el-input>
                 <el-button v-else class="button-new-tag" size="large" @click="showTag">+ 新增标签</el-button>
             </el-tab-pane>
-            <el-tab-pane label="阶段管理" name="stage">
+            <el-tab-pane label="阶段管理" name="stage" v-if="!isShanghaiDept">
                 <el-button type="primary" size="middle" style="margin-bottom: 10px;margin-left: 1000px"
                            @click="addStageVisible=true;clearStage()">添加阶段
                 </el-button>
@@ -383,6 +383,9 @@
             },
             isAdmin() {
                 return Helper.decodeToken().userRole == 0;
+            },
+            isShanghaiDept() {
+                return Helper.decodeToken().orgId != 1
             }
         },
         methods: {

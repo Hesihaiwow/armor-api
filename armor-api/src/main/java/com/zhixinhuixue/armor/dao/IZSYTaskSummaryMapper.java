@@ -58,5 +58,5 @@ public interface IZSYTaskSummaryMapper {
      * 所有任务总结
      * @author sch
      */
-    List<TaskSummary> selectAll();
+    List<TaskSummary> selectAll(@Param("orgId")Long orgId);
 }

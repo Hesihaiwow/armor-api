@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserGroupMapper">
 
-    <resultMap id="baseMap" type="com.zhixinhuixue.armor.model.pojo.UserGroup">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="baseMap" type="com.zhixinhuixue.armor.model.pojo.UserGroup" extends="OrgIdFieldMap">
         <id column="ug_id" property="ugId" jdbcType="BIGINT"/>
         <result column="group_id" property="groupId" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
@@ -11,18 +16,18 @@
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserGroup">
      REPLACE INTO `user_group`
-     (`ug_id`,`group_id`,`user_id`)
+     (`ug_id`,`group_id`,`user_id`,`org_id`)
      VALUES
-     (#{ugId,jdbcType=BIGINT},#{groupId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT})
+     (#{ugId,jdbcType=BIGINT},#{groupId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT})
   </insert>
 
     <!--批量新增-->
     <insert id="insertBatch">
         INSERT INTO `user_group`
-        (`ug_id`,`group_id`,`user_id`)
+        (`ug_id`,`group_id`,`user_id`,`org_id`)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.ugId,jdbcType=BIGINT},#{item.groupId,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT})
+            (#{item.ugId,jdbcType=BIGINT},#{item.groupId,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
@@ -40,6 +45,9 @@
                 <foreach collection="groupIds" item="item" separator="," open="(" close=")">
                    #{item}
                 </foreach>
+            </if>
+            <if test="orgId != null">
+                and org_id = #{orgId}
             </if>
         </where>
     </select>

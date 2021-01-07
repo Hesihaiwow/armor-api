@@ -2,6 +2,7 @@ package com.zhixinhuixue.armor.service.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.zhixinhuixue.armor.context.ZSYTokenRequestContext;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackMapper;
 import com.zhixinhuixue.armor.dao.IZSYFeedbackPlanMapper;
 import com.zhixinhuixue.armor.helper.DateHelper;
@@ -37,6 +38,7 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
     @Override
     public List<FeedbackPlanListResDTO> getFeedbackPlanList(FeedbackPlanListReqDTO feedbackPlanListReqDTO) {
+        feedbackPlanListReqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         List<FeedbackPlanTaskListBO> feedbackPlanBOS = izsyFeedbackPlanMapper.getFeedbackPlanBySort(feedbackPlanListReqDTO);
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
 
@@ -91,7 +93,7 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
     @Override
     public List<FeedbackPlanListResDTO> getDemandPlanList(DemandPlanQueryReqDTO reqDTO) {
-
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         List<FeedbackPlanTaskListBO> feedbackPlanBOS = izsyFeedbackPlanMapper.getDemandPlanBySort(reqDTO);
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
         feedbackPlanBOS.forEach(planTask -> {
@@ -188,6 +190,7 @@ public class ZSYFeedbackPlanService implements IZSYFeedbackPlanService {
 
     @Override
     public List<FeedbackPlanListResDTO> getDemandPlanListByCoach(DemandPlanQueryReqDTO reqDTO) {
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         List<FeedbackPlanTaskListBO> feedbackPlanBOS = izsyFeedbackPlanMapper.getDemandPlanBySort(reqDTO);
         List<FeedbackPlanListResDTO> feedbackPlanListResDTOS = Lists.newArrayList();
         feedbackPlanBOS.forEach(planTask -> {

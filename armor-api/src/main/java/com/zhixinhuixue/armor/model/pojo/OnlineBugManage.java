@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * 线上bug
  */
-public class OnlineBugManage {
+public class OnlineBugManage extends OrgIdField {
     /**
      * id
      */

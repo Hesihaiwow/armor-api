@@ -17,9 +17,9 @@ public interface IZSYUserLeaveMapper {
 
     int insertLeave(UserLeave userLeave);
 
-    UserLeaveBO getUserLeaveById(Long id);
+    UserLeaveBO getUserLeaveById(@Param("id") Long id,@Param("orgId")Long orgId);
 
-    Page<UserLeaveBO> getLeaveByReviewStatus(@Param("userId") Long userId, @Param("reviewStatus") int reviewStatus, @Param("departmentId") Long departmentId);
+    Page<UserLeaveBO> getLeaveByReviewStatus(@Param("userId") Long userId, @Param("reviewStatus") int reviewStatus, @Param("departmentId") Long departmentId,@Param("orgId")Long orgId);
 
     int updateLeave(UserLeave userLeave);
 
@@ -36,7 +36,7 @@ public interface IZSYUserLeaveMapper {
      * @return
      * @author sch
      */
-    UserLeave selectByUserAndTime(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23);
+    UserLeave selectByUserAndTime(@Param("userId") Long userId, @Param("today0") Date today0, @Param("today23") Date today23,@Param("orgId")Long orgId);
 
     /**
      * 根据用户和起止时间查询周请假时长
@@ -47,7 +47,7 @@ public interface IZSYUserLeaveMapper {
      * @return
      * @author sch
      */
-    Double selectWeekLeaveHoursByUser(@Param("userId") Long userId, @Param("firstDay") Date firstDay, @Param("lastDay") Date lastDay);
+    Double selectWeekLeaveHoursByUser(@Param("userId") Long userId, @Param("firstDay") Date firstDay, @Param("lastDay") Date lastDay,@Param("orgId")Long orgId);
 
     /**
      * 查询10月的请假
@@ -55,7 +55,7 @@ public interface IZSYUserLeaveMapper {
      * @param beginStr 开始
      * @param endStr   截止
      */
-    List<UserLeave> selectListByTime(@Param("beginStr") String beginStr, @Param("endStr") String endStr);
+    List<UserLeave> selectListByTime(@Param("beginStr") String beginStr, @Param("endStr") String endStr,@Param("orgId")Long orgId);
 
     /**
      * 根据主键查询
@@ -72,5 +72,5 @@ public interface IZSYUserLeaveMapper {
      * @return List<UserLeaveBO>
      * @author sch
      */
-    List<UserLeaveBO> selectUserLeaveMonthStats(@Param("yearAndMonth") String yearAndMonth, @Param("jobRole") Integer jobRole);
+    List<UserLeaveBO> selectUserLeaveMonthStats(@Param("yearAndMonth") String yearAndMonth, @Param("jobRole") Integer jobRole,@Param("orgId")Long orgId);
 }

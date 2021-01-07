@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskMapper">
-    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Task">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Task" extends="OrgIdFieldMap">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="description" jdbcType="LONGVARCHAR" property="description"/>
@@ -125,7 +131,7 @@
 
     <!-- 查询已完成未结束的任务 -->
     <select id="findNotFinishedTask" resultMap="BaseResultMap">
-         select * from task where is_delete = 0 and `status` = 2 and `type` = 2
+         select * from task where is_delete = 0 and `status` = 2 and `type` = 2 and org_id = #{orgId}
     </select>
 
     <!-- 根据状态查询任务 -->
@@ -161,7 +167,7 @@
         left join project t3 on t1.project_id = t3.id
         left join `user` t4 on t1.create_by = t4.id
         left join department t5 on t4.department_id = t5.id
-        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0  and t5.parent_id = #{id}  order by t1.create_time desc
+        where t1.`status` =1 and t1.review_status =1 and t2.`status`=1 and t1.is_delete = 0  and t5.parent_id = #{id} and t1.org_id = #{orgId} order by t1.create_time desc
     </select>
 
     <!-- 查询还未评价完的任务 -->
@@ -211,6 +217,9 @@
         INNER JOIN  department t7 on t6.department_id = t7.id
         <where>
             t1.review_status = 3 and t1.is_delete = 0 and t7.parent_id = #{departmentId}
+            <if test="orgId!=null">
+                and t1.org_id = #{orgId}
+            </if>
             <if test="taskId!=null and taskId!=0">
                 and t1.id = #{taskId}
             </if>
@@ -297,7 +306,7 @@
         left join `user` t6 on t1.create_by = t6.id
         left join  department t7 on t6.department_id = t7.id
         where
-        t1.review_status = 3 and t1.is_delete = 0
+        t1.review_status = 3 and t1.is_delete = 0 and t1.org_id = #{orgId}
         and t1.create_time >='2018-07-01 00:00:00'
         GROUP BY t1.id
 
@@ -316,7 +325,7 @@
             left join project t3 on t1.project_id = t3.id
             left join `user` t4 on t1.create_by = t4.id
             left join department t5 on t4.department_id = t5.id
-            where t1.review_status =3 and t1.is_delete = 0 and t1.type=1 and t5.parent_id =#{id} order by t1.update_time desc
+            where t1.review_status =3 and t1.is_delete = 0 and t1.type=1 and t5.parent_id =#{id} and t1.org_id = #{orgId} order by t1.update_time desc
     </select>
 
     <!-- 查询任务用户评价 -->
@@ -338,6 +347,7 @@
          and t1.`type` = 2 and t1.stage_id = #{stageId}
          and t1.status != 3
          and t7.parent_id =#{departmentId}
+         and t1.org_id = #{orgId}
         <if test="userId != null and userId != 1">
             and t1.create_by = #{userId}
         </if>
@@ -357,6 +367,7 @@
         and t1.`type` = 2 and t1.stage_id = #{stageId}
         and t1.status != 3
         and t7.parent_id =#{departmentId}
+        and t1.org_id = #{orgId}
         <if test="userId != null and userId != 1">
             and t1.create_by = #{userId}
         </if>
@@ -403,14 +414,14 @@
 
     <!-- 查询阶段内任务最后一个index -->
     <select id="selectLastIndexByStageId" parameterType="java.lang.Long" resultType="java.lang.Integer">
-        select sort from task where stage_id = #{stageId}
+        select sort from task where stage_id = #{stageId} and org_id = #{orgId}
         and is_delete = 0 and type = 2 order by sort desc LIMIT 1
     </select>
 
     <!-- 修改任务下标 -->
     <update id="updateIndexByStageId">
         update task set sort = sort +1, update_time = now()
-        where stage_id = #{stageId} and is_delete = 0 and `type` = 2  and sort >=#{sort}
+        where stage_id = #{stageId} and is_delete = 0 and `type` = 2  and sort >=#{sort} and org_id = #{orgId}
     </update>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -429,7 +440,7 @@
       insert into task (id, name, description,
       project_id,stage_id, begin_time, test_time, end_time, `type`, status,
       review_status, priority, create_by,
-      complete_time, create_time, update_time, is_delete,sort, facility, examine,doc,test_doc,`link_task`
+      complete_time, create_time, update_time, is_delete,sort, facility, examine,doc,test_doc,`link_task`,org_id
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
       #{projectId,jdbcType=BIGINT},#{stageId,jdbcType=BIGINT}, #{beginTime,jdbcType=TIMESTAMP},
@@ -438,7 +449,7 @@
       #{reviewStatus,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT},
       #{completeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
        #{isDelete,jdbcType=INTEGER},#{sort,jdbcType=INTEGER},#{facility,jdbcType=INTEGER},#{examine,jdbcType=INTEGER}
-       ,#{doc,jdbcType=LONGVARCHAR},#{testDoc,jdbcType=LONGVARCHAR},#{linkTask,jdbcType=BIGINT}
+       ,#{doc,jdbcType=LONGVARCHAR},#{testDoc,jdbcType=LONGVARCHAR},#{linkTask,jdbcType=BIGINT},#{orgId,jdbcType=BIGINT}
       )
   </insert>
 
@@ -533,13 +544,13 @@
     <!--查询项目下超时的任务数-->
     <select id="getTaskPlanList" resultMap="BaseResultMap">
         select id,`name` from task
-        where status=1 AND is_delete = 0
+        where status=1 AND is_delete = 0 and org_id = #{orgId}
     </select>
 
     <!-- sch -->
     <!--查询审核通过,进行中的任务-->
     <select id="selectTaskList" resultMap="PageResultMap">
-        SELECT * FROM `task` WHERE `is_delete` = 0 AND `type` = 2 AND `status` = 1 and `review_status` = 3
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `type` = 2 AND `status` = 1 and `review_status` = 3  and org_id = #{orgId}
     </select>
 
     <!--查询审核通过,进行中的子任务-->
@@ -552,6 +563,7 @@
         and t2.`status`= 1
         and t1.is_delete = 0
         and t1.type = 2
+        and t1.org_id = #{orgId}
         order by t1.create_time desc
     </select>
 
@@ -642,7 +654,7 @@
 
     <!--所有进行中的多人任务-->
     <select id="selectAllTaskBase" resultMap="BaseResultMap">
-        SELECT * FROM `task` WHERE `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `is_delete` = 0 order by create_time desc
+        SELECT * FROM `task` WHERE `review_status` = 3 AND `status` = 1 AND `type` = 2 AND `is_delete` = 0 and `org_id` = #{orgId} order by create_time desc
     </select>
 
     <!--根据阶段查询可用的多人任务-->
@@ -666,7 +678,7 @@
 
     <!--查询7月之后的任务-->
     <select id="selectListAfterJuly" resultMap="BaseResultMap">
-        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `begin_time` >= '2019-07-01 00:00:00'
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `begin_time` >= '2019-07-01 00:00:00' and org_id = #{orgId}
     </select>
 
     <!--所有进行中的任务-->
@@ -675,24 +687,26 @@
         LEFT JOIN `user` u ON u.id = t.`create_by`
         WHERE t.`is_delete` = 0 AND t.`review_status` = 3 AND t.`status` = 1 AND t.`type` = 2
         AND u.`is_delete` = 0 AND u.`status` = 0 AND u.`user_role` IN (0,1)
+        and t.org_id = #{orgId}
     </select>
 
     <!--查询全部发布任务-->
     <select id="selectAllCompleteTasks" resultMap="BaseResultMap">
-        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 2 AND `type` = 2
+        SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 2 AND `type` = 2  and org_id = #{orgId}
     </select>
 
     <!--查询已经产生bug的任务-->
     <select id="selectBugTasks" resultMap="BaseResultMap">
         SELECT t.* FROM `task_bug` tb
         LEFT JOIN `task` t ON t.`id` = tb.`task_id`
+        where tb.org_id = #{orgId}
         GROUP BY tb.`task_id`
     </select>
 
     <!--测试相关阶段的任务-->
     <select id="selectTestTask" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3
-        AND `status` = 1 AND `stage_id` IN (212754785051344895,212754785051344896)
+        AND `status` = 1 AND `stage_id` IN (212754785051344895,212754785051344896) and org_id = #{orgId}
     </select>
 
     <!--当前用户参与的进行中的多人任务-->
@@ -705,13 +719,13 @@
     <!--查询待发布多人任务-->
     <select id="selectWaitDeployTasks" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` IN (1,2) AND `type` = 2
-        AND `stage_id` = 212754785051344897
+        AND `stage_id` = 212754785051344897 and org_id = #{orgId}
     </select>
 
     <!--获取开发和测试阶段任务-->
     <select id="selectDevAndTestTasks" resultMap="BaseResultMap">
         SELECT * FROM `task` WHERE `is_delete` = 0 AND `review_status` = 3 AND `status` = 1 AND `type` = 2
-        AND `stage_id` IN (212754785051344895,212754785051344896)
+        AND `stage_id` IN (212754785051344895,212754785051344896) and org_id = #{orgId}
     </select>
 
     <!--根据id集合批量查询-->
@@ -728,7 +742,7 @@
         SELECT t.id,t.name,wppt.wpp_id
         FROM week_publish_plan_task wppt
         LEFT JOIN task t ON t.id = wppt.task_id
-        WHERE wppt.wpp_id = #{wppId} and t.is_delete = 0
+        WHERE wppt.wpp_id = #{wppId} and t.is_delete = 0 and t.org_id = #{orgId}
         GROUP BY wppt.task_id
     </select>
     <!-- sch -->

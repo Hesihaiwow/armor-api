@@ -2,7 +2,7 @@ package com.zhixinhuixue.armor.model.pojo;
 
 import java.util.Date;
 
-public class Project {
+public class Project extends OrgIdField{
 
     private Long id;
 

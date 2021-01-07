@@ -84,6 +84,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         Float workHours = reqDTO.getWorkHours();
         int i = workHours.intValue();
         extraWork.setWorkHours((float) i);
+        extraWork.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (extraWorkMapper.addExtraWork(extraWork) == 0){
             throw new ZSYServiceException("新增加班申请失败");
         }
@@ -101,6 +102,9 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
             });
         }
         if (!CollectionUtils.isEmpty(list)){
+            for(ExtraWorkTask extraWorkTask:list){
+                extraWorkTask.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             if (extraWorkMapper.addExtraWorkTaskByList(list) == 0){
                 throw new ZSYServiceException("新增加班申请失败");
             }
@@ -163,6 +167,9 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
             });
         }
         if (!CollectionUtils.isEmpty(list)){
+            for(ExtraWorkTask extraWorkTask:list){
+                extraWorkTask.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             if (extraWorkMapper.addExtraWorkTaskByList(list) == 0){
                 throw new ZSYServiceException("更新加班申请失败");
             }
@@ -242,6 +249,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
         restHoursLog.setEwId(ewId);
         restHoursLog.setCreateTime(new Date());
         restHoursLog.setRecordTime(extraWork.getBeginTime());
+        restHoursLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         restHoursLogMapper.insert(restHoursLog);
     }
 
@@ -325,7 +333,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
     @Override
     public PageInfo<ExtraWorkResDTO> getCheckingExtraWorkByPage(Integer pageNum) {
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
-        Page<ExtraWork> page = extraWorkMapper.selectCheckingExtraWorkByPage();
+        Page<ExtraWork> page = extraWorkMapper.selectCheckingExtraWorkByPage(ZSYTokenRequestContext.get().getOrgId());
         Page<ExtraWorkResDTO> list = new Page<>();
         BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){
@@ -352,7 +360,7 @@ public class ZSYExtraWorkService implements IZSYExtraWorkService {
     @Override
     public PageInfo<ExtraWorkResDTO> getCheckedExtraWorkByPage(Integer pageNum) {
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
-        Page<ExtraWork> page = extraWorkMapper.selectCheckedExtraWorkByPage();
+        Page<ExtraWork> page = extraWorkMapper.selectCheckedExtraWorkByPage(ZSYTokenRequestContext.get().getOrgId());
         Page<ExtraWorkResDTO> list = new Page<>();
         BeanUtils.copyProperties(page,list);
         if (!CollectionUtils.isEmpty(page)){

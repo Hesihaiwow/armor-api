@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYBugStatisticsMapper">
 
-    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.MantisBugStatistics">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="BIGINT" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.MantisBugStatistics" extends="OrgIdFieldMap">
         <id column="bs_id" property="bsId" jdbcType="BIGINT"></id>
         <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
         <result column="bug_id" property="bugId" jdbcType="INTEGER"></result>
@@ -20,7 +25,7 @@
         <result column="last_updated" property="lastUpdated" jdbcType="INTEGER"></result>
     </resultMap>
 
-    <resultMap id="BaseCategoryMap" type="com.zhixinhuixue.armor.model.pojo.MantisCategory">
+    <resultMap id="BaseCategoryMap" type="com.zhixinhuixue.armor.model.pojo.MantisCategory" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"></id>
         <result column="category_id" property="categoryId" jdbcType="INTEGER"></result>
         <result column="category_name" property="categoryName" jdbcType="VARCHAR"></result>
@@ -126,7 +131,7 @@
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.MantisBugStatistics">
         INSERT INTO `mantis_bug_statistics`
         (`bs_id`,`task_id`,`bug_id`,`reporter_id`,`reporter_name`,`handler_id`,`handler_name`
-        ,`severity`,`priority`,`status`,`category_id`,`category_name`,`date_submitted`,`last_updated`,`import_time`)
+        ,`severity`,`priority`,`status`,`category_id`,`category_name`,`date_submitted`,`last_updated`,`import_time`,`org_id`)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.bsId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT},#{item.bugId,jdbcType=INTEGER}
@@ -134,30 +139,30 @@
             ,#{item.handlerId,jdbcType=INTEGER},#{item.handlerName,jdbcType=VARCHAR},#{item.severity,jdbcType=INTEGER}
             ,#{item.priority,jdbcType=INTEGER},#{item.status,jdbcType=INTEGER}
             ,#{item.categoryId,jdbcType=INTEGER},#{item.categoryName,jdbcType=VARCHAR},#{item.dateSubmitted,jdbcType=INTEGER}
-            ,#{item.lastUpdated,jdbcType=INTEGER},#{item.importTime,jdbcType=TIMESTAMP})
+            ,#{item.lastUpdated,jdbcType=INTEGER},#{item.importTime,jdbcType=TIMESTAMP},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
     <!--批量导入用户-->
     <insert id="insertUserBatch" parameterType="com.zhixinhuixue.armor.model.pojo.MantisUser">
         INSERT INTO `mantis_user`
-        (`id`,`user_id`,`user_name`,`real_name`)
+        (`id`,`user_id`,`user_name`,`real_name`,`org_id`)
         VALUES
         <foreach collection="userList" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT},#{item.userId,jdbcType=INTEGER}
-            ,#{item.userName,jdbcType=VARCHAR},#{item.realName,jdbcType=VARCHAR})
+            ,#{item.userName,jdbcType=VARCHAR},#{item.realName,jdbcType=VARCHAR},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
     <!--批量导入分类-->
     <insert id="insertCategoryBatch" parameterType="com.zhixinhuixue.armor.model.pojo.MantisCategory">
         INSERT INTO `mantis_category`
-        (`id`,`category_id`,`category_name`,`user_id`,`project_id`,`sys_user_id`,`user_name`)
+        (`id`,`category_id`,`category_name`,`user_id`,`project_id`,`sys_user_id`,`user_name`,`org_id`)
         VALUES
           <foreach collection="categoryList" item="item" separator=",">
               (#{item.id,jdbcType=BIGINT},#{item.categoryId,jdbcType=INTEGER},#{item.categoryName,jdbcType=VARCHAR}
               ,#{item.userId,jdbcType=INTEGER},#{item.projectId,jdbcType=INTEGER},#{item.sysUserId,jdbcType=BIGINT}
-              ,#{item.userName,jdbcType=VARCHAR})
+              ,#{item.userName,jdbcType=VARCHAR},#{item.orgId,jdbcType=BIGINT})
           </foreach>
     </insert>
 
@@ -178,7 +183,7 @@
 
     <!--查询上次导入时最后一天记录的bugId-->
     <select id="selectLastImportBugId" resultType="java.lang.Integer">
-        SELECT IFNULL(`bug_id`,0) FROM `mantis_bug_statistics` ORDER BY `bug_id` DESC LIMIT 1
+        SELECT IFNULL(`bug_id`,0) FROM `mantis_bug_statistics` where org_id = #{orgId} ORDER BY `bug_id` DESC LIMIT 1
     </select>
 
     <!--查询已存在的bugId集合-->
@@ -188,7 +193,7 @@
 
     <!--查询反馈系统(分类)-->
     <select id="selectCategoryList" resultMap="BaseCategoryMap">
-        SELECT * FROM  `mantis_category`
+        SELECT * FROM  `mantis_category` where org_id = #{orgId}
     </select>
 
     <!--按年月查询测试人员bug统计情况-->
@@ -199,6 +204,7 @@
         mu.user_id,mu.real_name user_name,mc.sys_user_id
         FROM `mantis_category` mc
         LEFT JOIN `mantis_user` mu ON mc.user_id = mu.user_id
+        where mc.org_id = #{orgId}
         GROUP BY mc.user_id
     </select>
 
@@ -264,7 +270,8 @@
         SELECT user_id,user_name,
         #{beginTime,jdbcType=INTEGER} as begin_time,
         #{endTime,jdbcType=INTEGER} as end_time
-        FROM `mantis_category` GROUP BY `user_id`
+        FROM `mantis_category` where org_id = #{orgId}
+        GROUP BY `user_id`
     </select>
 
     <select id="selectBugWeekNum" resultMap="BugWeekNumMap">
@@ -291,6 +298,7 @@
             <![CDATA[ AND  bm.discover_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
         </if>
         and bm.demand_system_id is not NULL AND bm.type = 0
+        and bm.org_id = #{orgId}
         GROUP BY bm.demand_system
     </select>
 
@@ -301,6 +309,7 @@
         LEFT JOIN bug_user bu ON bm.id = bu.bug_id
         LEFT JOIN user u ON u.id = bu.user_id
         WHERE bm.demand_system_id IS NOT NULL AND bm.`type` = 0
+        and bm.org_id = #{orgId}
         and bu.user_id in
         (SELECT DISTINCT sys_user_id FROM mantis_category)
         <if test="beginTime != null">

@@ -9,6 +9,7 @@ import com.zhixinhuixue.armor.model.dto.request.BugListReqDTO;
 import com.zhixinhuixue.armor.model.pojo.BugManage;
 import com.zhixinhuixue.armor.model.pojo.OnlineBugManage;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.access.method.P;
 
 import java.util.Date;
 import java.util.List;
@@ -89,13 +90,13 @@ public interface IZSYBugManageMapper {
      * @param type
      * @return
      */
-    Integer selectCountByType(@Param("type") int type,@Param("bugListReqDTO")BugListReqDTO bugListReqDTO);
+    Integer selectCountByType(@Param("type") int type,@Param("bugListReqDTO")BugListReqDTO bugListReqDTO,@Param("orgId")Long orgId);
 
     /**
      * 查询总数
      * @return
      */
-    Integer selectCountTotal();
+    Integer selectCountTotal(@Param("orgId")Long orgId);
 
     /**
      * 查询bug数据(老数据)
@@ -103,14 +104,14 @@ public interface IZSYBugManageMapper {
      * @param bugListReqDTO
      * @return
      */
-    Page<OnlineBugBO> selectOldOnlineBugPage(@Param("bugListReqDTO")BugListReqDTO bugListReqDTO);
+    Page<OnlineBugBO> selectOldOnlineBugPage(@Param("bugListReqDTO")BugListReqDTO bugListReqDTO, @Param("orgId")Long orgId);
 
     /**
      * 查询解决状态为空的数据
      * @author sch
      * @return
      */
-    List<OnlineBugManage> selectIsSolvedIsNull();
+    List<OnlineBugManage> selectIsSolvedIsNull( @Param("orgId")Long orgId);
 
     /**
      * 批量更新bug解决状态
@@ -124,7 +125,7 @@ public interface IZSYBugManageMapper {
      * @author sch
      * @return
      */
-    OnlineBugManage selectLastBugNo();
+    OnlineBugManage selectLastBugNo(@Param("orgId")Long orgId);
 
     /**
      * 根据主键查询
@@ -139,21 +140,21 @@ public interface IZSYBugManageMapper {
      * @param startTime 开始时间
      * @param endTime 截止时间
      */
-    List<Integer> selectSystemsByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<Integer> selectSystemsByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime,@Param("orgId")Long orgId);
 
     /**
      * 根据反馈系统和类型查询数量
      * @param systemId 系统id
      * @param type 类型
      */
-    Integer selectNumBySystemAndType(@Param("systemId") Integer systemId, @Param("type") int type);
+    Integer selectNumBySystemAndType(@Param("systemId") Integer systemId, @Param("type") int type,@Param("orgId")Long orgId);
 
     /**
      * 查询时间段内线上bug各个系统对应的各个类型的数量
      * @param startTime 开始时间
      * @param endTime 截止时间
      */
-    List<SystemBugTypeBO> selectSystemTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
+    List<SystemBugTypeBO> selectSystemTypeNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year, @Param("orgId")Long orgId);
 
     /**
      * 查询时间段内线上bug的业务组数量
@@ -161,7 +162,7 @@ public interface IZSYBugManageMapper {
      * @param endTime 截止时间
      * @param year 年份
      */
-    List<Long> selectGroupsByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year);
+    List<Long> selectGroupsByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("year")Integer year, @Param("orgId")Long orgId);
 
     /**
      * 批量新增

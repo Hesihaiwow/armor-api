@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskModifyMapper">
 
-    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskModify">
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskModify" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="task_id" property="taskId" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
@@ -40,12 +45,12 @@
     <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskModify">
         INSERT INTO `task_modify_table`
         (`id`,`task_id`,`user_id`,`work_hours`,`type`,`status`,`reason`,`review_status`
-        ,`begin_time`,`end_time`,`create_time`,`review_time`,`description`,`task_level`)
+        ,`begin_time`,`end_time`,`create_time`,`review_time`,`description`,`task_level`,`org_id`)
         VALUES
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{userId,jdbcType=BIGINT},#{workHours,jdbcType=DECIMAL}
         ,#{type,jdbcType=INTEGER},#{status,jdbcType=INTEGER},#{reason,jdbcType=VARCHAR},#{reviewStatus,jdbcType=INTEGER}
         ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{reviewTime,jdbcType=TIMESTAMP}
-        ,#{description,jdbcType=VARCHAR},#{taskLevel,jdbcType=INTEGER})
+        ,#{description,jdbcType=VARCHAR},#{taskLevel,jdbcType=INTEGER},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--更新任务修改申请-->
@@ -127,7 +132,7 @@
         SELECT tmt.*,t.name task_name,u.name user_name,u.avatar_url avatar_url FROM `task_modify_table` tmt
         LEFT JOIN `task` t ON t.id = tmt.task_id
         LEFT JOIN `user` u ON u.id = tmt.user_id
-        WHERE tmt.review_status = 1
+        WHERE tmt.review_status = 1 and tmt.org_id = #{orgId}
         ORDER BY tmt.create_time DESC
     </select>
 
@@ -136,7 +141,7 @@
         SELECT tmt.*,t.name task_name,u.name user_name,u.avatar_url avatar_url FROM `task_modify_table` tmt
         LEFT JOIN `task` t ON t.id = tmt.task_id
         LEFT JOIN `user` u ON u.id = tmt.user_id
-        WHERE tmt.review_status = 2
+        WHERE tmt.review_status = 2 and tmt.org_id = #{orgId}
         ORDER BY tmt.create_time DESC
     </select>
 

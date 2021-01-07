@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by Lang on 2018/1/2 0002.
  */
-public class PublishInfo {
+public class PublishInfo extends OrgIdField {
 
     private Long id;
 

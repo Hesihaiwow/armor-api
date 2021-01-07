@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by SCH on 2018-10-22
  */
-public class Demand {
+public class Demand extends OrgIdField{
     /**
      * 需求标题
      */

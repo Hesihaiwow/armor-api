@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 /**
  * @author sch
  * @DATE 2019/5/29 10:10
  */
-public class EvaluationPageQueryReqDTO {
+public class EvaluationPageQueryReqDTO extends OrgIdField {
     /**
      * 页码
      */

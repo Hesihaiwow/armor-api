@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by SCH on 2018-12-06
  */
-public class Notification {
+public class Notification extends OrgIdField{
     /**
      * 通知id
      */

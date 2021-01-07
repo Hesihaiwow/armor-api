@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by SCH on 2018-12-27
  */
-public class OnlineQuestion {
+public class OnlineQuestion extends OrgIdField{
     /**
      * 线上问题记录id
      */

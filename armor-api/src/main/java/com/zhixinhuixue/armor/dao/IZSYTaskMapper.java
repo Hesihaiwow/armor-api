@@ -88,20 +88,20 @@ public interface IZSYTaskMapper {
      */
     Page<TaskListBO> selectPage(TaskListReqDTO taskListReqDTO);
 
-    Page<TaskListBO>  selectPage1();
+    Page<TaskListBO>  selectPage1(@Param("orgId")Long orgId);
 
     /**
      * 查询所有待审核任务
      * @return
      */
-    List<TaskBO> selectAllWaitAudit(Long id);
+    List<TaskBO> selectAllWaitAudit(@Param("id")Long id,@Param("orgId")Long orgId);
 
     /**
      * 分页查询所有审核通过的任务
      * @param
      * @return
      */
-    Page<TaskBO> selectAllAuditSuccess(Long id);
+    Page<TaskBO> selectAllAuditSuccess(@Param("id")Long id,@Param("orgId")Long orgId);
 
     /**
      * 查询所有未评价完的任务
@@ -132,7 +132,7 @@ public interface IZSYTaskMapper {
      * 查询所有未结束已完成的任务
      * @return
      */
-    List<Task> findNotFinishedTask();
+    List<Task> findNotFinishedTask(@Param("orgId")Long orgId);
 
     /**
      * 查询阶段任务
@@ -140,7 +140,7 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<TaskListBO> selectTaskByStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId,
-                                         @Param("userId") Long userId);
+                                         @Param("userId") Long userId,@Param("orgId")Long orgId);
 
     /**
      * 查询阶段任务
@@ -148,7 +148,7 @@ public interface IZSYTaskMapper {
      * @return
      */
     List<TaskListBO> selectTaskByEndStageId(@Param("stageId") Long stageId,@Param("departmentId") Long departmentId,
-                                            @Param("userId") Long userId);
+                                            @Param("userId") Long userId,@Param("orgId")Long orgId);
 
 
     /**
@@ -175,14 +175,14 @@ public interface IZSYTaskMapper {
      * @param stageId
      * @return
      */
-    Integer selectLastIndexByStageId(Long stageId);
+    Integer selectLastIndexByStageId(@Param("stageId")Long stageId,@Param("orgId")Long orgId);
 
     /**
      * 修改任务下标
      * @param stageId
      * @param sort
      */
-    int updateIndexByStageId(@Param("stageId") Long stageId, @Param("sort") Integer sort);
+    int updateIndexByStageId(@Param("stageId") Long stageId, @Param("sort") Integer sort,@Param("orgId")Long orgId);
 
     /**
      * 修改评审状态
@@ -195,19 +195,19 @@ public interface IZSYTaskMapper {
      * 查询未关联计划任务
      * @return
      */
-    List<Task> getTaskPlanList();
+    List<Task> getTaskPlanList(@Param("orgId")Long orgId);
 
     /**
      * 查询审核通过,进行中的任务
      * @return
      */
-    List<TaskListBO> selectTaskList();
+    List<TaskListBO> selectTaskList(@Param("orgId")Long orgId);
 
     /**
      * 查询审核通过,进行中的子任务
      * @return
      */
-    List<TaskBO> selectSonTaskList();
+    List<TaskBO> selectSonTaskList(@Param("orgId")Long orgId);
 
     /**
      * 通过stageId查询我的已发布任务
@@ -270,7 +270,7 @@ public interface IZSYTaskMapper {
      * @author sch
      * @return
      */
-    List<Task> selectAllTaskBase();
+    List<Task> selectAllTaskBase(@Param("orgId")Long orgId);
 
     /**
      * 根据阶段查询可用的多人任务
@@ -292,31 +292,31 @@ public interface IZSYTaskMapper {
      * 查询7月之后的任务
      * @author sch
      */
-    List<Task> selectListAfterJuly();
+    List<Task> selectListAfterJuly(@Param("orgId")Long orgId);
 
     /**
      * 所有进行中的任务
      * @author sch
      */
-    List<Task> selectAllDoingTasks();
+    List<Task> selectAllDoingTasks(@Param("orgId")Long orgId);
 
     /**
      * 查询全部发布任务
      * @author sch
      */
-    List<Task> selectAllCompleteTasks();
+    List<Task> selectAllCompleteTasks(@Param("orgId")Long orgId);
 
     /**
      * 查询已经产生bug的任务
      * @author sch
      */
-    List<Task> selectBugTasks();
+    List<Task> selectBugTasks(@Param("orgId")Long orgId);
 
     /**
      * 测试相关阶段的任务
      * @author sch
      */
-    List<Task> selectTestTask();
+    List<Task> selectTestTask(@Param("orgId")Long orgId);
 
     /**
      * 当前用户参与的进行中的多人任务
@@ -329,13 +329,13 @@ public interface IZSYTaskMapper {
      * 获取待发布多人任务
      * @return List<Task>
      */
-    List<Task> selectWaitDeployTasks();
+    List<Task> selectWaitDeployTasks(@Param("orgId")Long orgId);
 
     /**
      * 获取开发和测试阶段任务
      * @return List<Task>
      */
-    List<Task> selectDevAndTestTasks();
+    List<Task> selectDevAndTestTasks(@Param("orgId")Long orgId);
 
     /**
      * 根据id集合批量查询
@@ -349,5 +349,5 @@ public interface IZSYTaskMapper {
      * @param wppId 发版计划id
      * @return List<Task>
      */
-    List<Task> selectPublishPlanTask(@Param("wppId") Long wppId);
+    List<Task> selectPublishPlanTask(@Param("wppId") Long wppId,@Param("orgId")Long orgId);
 }

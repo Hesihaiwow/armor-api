@@ -1,12 +1,14 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 import java.util.Date;
 
 /**
  * 计划查询条件
  * Created by SCH on 2018-10-25
  */
-public class DemandPlanQueryReqDTO {
+public class DemandPlanQueryReqDTO extends OrgIdField {
     /**
      * 开始时间
      */

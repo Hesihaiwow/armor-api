@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.bo;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * 我参与的需求
  * Created by SCH on 2018-10-22
  */
-public class DemandJoinedBO {
+public class DemandJoinedBO extends OrgIdField {
     /**
      * 需求id
      */

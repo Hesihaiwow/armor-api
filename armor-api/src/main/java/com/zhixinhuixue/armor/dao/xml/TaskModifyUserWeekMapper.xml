@@ -2,8 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskModifyUserWeekMapper">
 
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
 
-    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskModifyUserWeek">
+    <resultMap id="BaseMap" type="com.zhixinhuixue.armor.model.pojo.TaskModifyUserWeek" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"></id>
         <result column="tm_id" property="tmId" jdbcType="BIGINT"></result>
         <result column="task_id" property="taskId" jdbcType="BIGINT"></result>
@@ -18,12 +22,12 @@
     <!--新增任务修改周工时分配-->
     <insert id="insertBatch" parameterType="com.zhixinhuixue.armor.model.pojo.TaskModifyUserWeek">
         INSERT INTO `task_modify_user_week`
-        (`id`,`tm_id`,`task_id`,`user_id`,`status`,`create_time`,`year`,`week_number`,`hours`)
+        (`id`,`tm_id`,`task_id`,`user_id`,`status`,`create_time`,`year`,`week_number`,`hours`,`org_id`)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT},#{item.tmId,jdbcType=BIGINT},#{item.taskId,jdbcType=BIGINT}
             ,#{item.userId,jdbcType=BIGINT},#{item.status,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP}
-            ,#{item.year,jdbcType=INTEGER},#{item.weekNumber,jdbcType=INTEGER},#{item.hours,jdbcType=DECIMAL})
+            ,#{item.year,jdbcType=INTEGER},#{item.weekNumber,jdbcType=INTEGER},#{item.hours,jdbcType=DECIMAL},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 

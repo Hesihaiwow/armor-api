@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by Lang on 2017/12/7 0007.
  */
-public class UserLeave {
+public class UserLeave extends OrgIdField{
 
     private Long id;
 

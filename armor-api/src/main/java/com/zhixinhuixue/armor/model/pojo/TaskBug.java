@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * 任务id
  */
-public class TaskBug {
+public class TaskBug extends OrgIdField{
     /**
      * bugId
      */

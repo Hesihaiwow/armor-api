@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.model.pojo;
  *
  * 临时任务功能点
  */
-public class TaskTempFunction {
+public class TaskTempFunction extends OrgIdField{
     /**
      * id
      */

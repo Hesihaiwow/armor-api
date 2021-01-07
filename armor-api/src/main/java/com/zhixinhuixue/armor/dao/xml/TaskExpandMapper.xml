@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYTaskExpandMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskExpand">
+
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.TaskExpand" extends="OrgIdFieldMap">
     <id column="te_id" jdbcType="BIGINT" property="teId" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
@@ -20,9 +26,9 @@
   </resultMap>
 
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.TaskExpand">
-    insert into task_expand (te_id, task_id, user_id, status, hours, reason, end_time,create_time)
+    insert into task_expand (te_id, task_id, user_id, status, hours, reason, end_time,create_time,org_id)
     values (#{teId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER},
-     #{hours,jdbcType=DECIMAL} , #{reason,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+     #{hours,jdbcType=DECIMAL} , #{reason,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--延长任务时间-->
@@ -51,6 +57,9 @@
     </if>
     <if test="userId != null">
       AND te.user_id = #{userId}
+    </if>
+    <if test="orgId != null">
+        AND te.org_id = #{orgId}
     </if>
     ORDER BY te.create_time DESC,te.te_id DESC
   </select>

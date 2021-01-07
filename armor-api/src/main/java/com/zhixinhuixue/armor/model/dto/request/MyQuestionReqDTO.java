@@ -1,10 +1,12 @@
 package com.zhixinhuixue.armor.model.dto.request;
 
+import com.zhixinhuixue.armor.model.pojo.OrgIdField;
+
 /**
  * Created by SCH on 2018-12-27
  * 用户查看"我的线上问题"
  */
-public class MyQuestionReqDTO {
+public class MyQuestionReqDTO extends OrgIdField {
     /**
      * 页码
      */

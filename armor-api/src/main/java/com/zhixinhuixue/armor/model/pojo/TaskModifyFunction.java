@@ -6,7 +6,7 @@ package com.zhixinhuixue.armor.model.pojo;
  *
  * 修改任务关联功能点
  */
-public class TaskModifyFunction {
+public class TaskModifyFunction extends OrgIdField {
     /**
      * id
      */

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserIntegralMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserIntegral">
+
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserIntegral" extends="OrgIdFieldMap">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="task_id" jdbcType="BIGINT" property="taskId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
@@ -25,7 +31,7 @@
     <result column="id" jdbcType="BIGINT" property="id" />
   </resultMap>
 
-  <resultMap id="TaskIntegralBOMap" type="com.zhixinhuixue.armor.model.bo.TaskIntegralBO">
+  <resultMap id="TaskIntegralBOMap" type="com.zhixinhuixue.armor.model.bo.TaskIntegralBO" extends="OrgIdFieldMap">
     <result column="task_id" property="taskId" jdbcType="BIGINT"/>
     <result column="user_id" property="userId" jdbcType="BIGINT"/>
     <result column="tt_id" property="ttId" jdbcType="BIGINT"/>
@@ -46,7 +52,7 @@
     FROM user_integral i,`user` u
     LEFT JOIN department d on u.department_id = d.id
     <where>
-      i.user_id = u.id AND d.parent_id =#{departmentId} AND u.status = 0
+      i.user_id = u.id AND d.parent_id =#{departmentId} AND u.status = 0 and i.org_id = #{orgId}
       <if test="startTime!=null and startTime!=''">
       <![CDATA[AND i.create_time >= #{startTime}]]>
       </if>
@@ -62,7 +68,7 @@
   <select id="getUserIntegral" parameterType="String"  resultType="java.lang.Integer">
     SELECT  IFNULL(sum(integral),0) FROM user_integral
     <where>
-      user_id = #{id,jdbcType=BIGINT}
+      user_id = #{id,jdbcType=BIGINT} and org_id = #{orgId}
         AND (review_status!=1 OR review_status is null)
         <![CDATA[AND create_time > #{startTime,jdbcType=TIMESTAMP}
                   AND create_time < #{endTime,jdbcType=TIMESTAMP}]]>
@@ -77,7 +83,7 @@
     LEFT JOIN task t ON i.task_id = t.id
     LEFT JOIN task_user h ON i.task_id = h.task_id AND h.user_id = i.user_id
     <where>
-          i.user_id = #{id,jdbcType=BIGINT}  AND (i.review_status != 1  or i.review_status is null) AND u.status = 0
+          i.user_id = #{id,jdbcType=BIGINT}  AND (i.review_status != 1  or i.review_status is null) AND u.status = 0 and i.org_id = #{orgId}
         <if test="startTime!=null and startTime!=''">
           <![CDATA[AND i.create_time >= #{startTime}]]>
         </if>
@@ -102,6 +108,7 @@
     <if test="endTime!=null and endTime!=''" >
       <![CDATA[  i.create_time <=#{endTime}]]>
     </if>
+      and i.org_id = #{orgId}
   </select>
   <!--查询排名-->
   <select id="getRank" resultType="java.lang.Integer">
@@ -110,7 +117,7 @@
         SELECT sum(i.integral) as integral, u.name, i.user_id
         FROM user_integral i,`user` u
         LEFT JOIN department d on d.id = u.department_id
-        WHERE   i.user_id = u.id AND u.status = 0 AND d.parent_id= #{departmentId} AND (i.review_status != 1  or i.review_status is null)
+        WHERE   i.user_id = u.id AND u.status = 0 AND d.parent_id= #{departmentId} AND (i.review_status != 1  or i.review_status is null) and i.org_id = #{orgId}
         <![CDATA[ AND i.create_time > #{startTime,jdbcType=TIMESTAMP} AND i.create_time < #{endTime,jdbcType=TIMESTAMP}]]>
           GROUP BY i.user_id
           ORDER BY integral DESC)as a,
@@ -124,7 +131,7 @@
     SELECT i.id, i.user_id, i.create_time, i.description, i.integral, u.name ,i.create_by
     FROM user_integral i, `user` u
     WHERE i.review_status = #{status,jdbcType=INTEGER}
-    AND u.id = i.user_id
+    AND u.id = i.user_id and i.org_id = #{orgId}
     <if test="userId!=null">
      AND i.create_by =#{userId,jdbcType=BIGINT}
     </if>
@@ -137,23 +144,23 @@
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.UserIntegral">
     insert into user_integral (id, task_id, user_id,
     integral, create_time, origin,
-    create_by, description, review_status)
+    create_by, description, review_status,org_id)
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
     #{integral,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{origin,jdbcType=INTEGER},
-    #{createBy,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, #{reviewStatus,jdbcType=INTEGER})
+    #{createBy,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, #{reviewStatus,jdbcType=INTEGER},#{orgId,jdbcType=BIGINT})
   </insert>
   <!-- 删除积分 -->
   <delete id="deleteUserIntegral">
-    delete from user_integral where task_id=#{taskId} and user_id = #{userId}
+    delete from user_integral where task_id=#{taskId} and user_id = #{userId} and org_id = #{orgId}
   </delete>
 
   <!--获取积分求助转移详情 -->
   <select id="getHelpDetail" resultMap="BaseResultMap">
-    SELECT * FROM user_integral i WHERE i.id = #{id}
+    SELECT * FROM user_integral i WHERE i.id = #{id} and org_id = #{orgId}
   </select>
   <!--删除积分求助转移 -->
   <delete id="deleteIntegralById">
-    DELETE  FROM user_integral WHERE id = #{id}
+    DELETE  FROM user_integral WHERE id = #{id} and org_id = #{orgId}
   </delete>
   <!--编辑积分求助转移 -->
   <update id="updateIntegralById">
@@ -178,7 +185,7 @@
     FROM user_integral i,`user` u
     LEFT JOIN department d on u.department_id = d.id
     <where>
-      i.user_id = u.id AND d.parent_id =#{departmentId} AND u.status = 0
+      i.user_id = u.id AND d.parent_id =#{departmentId} AND u.status = 0 and i.org_id = #{orgId}
       <if test="startTime!=null and startTime!=''">
         <![CDATA[AND i.create_time >= #{startTime}]]>
       </if>
@@ -197,7 +204,7 @@
   </select>
 
   <select id="getUserIntegralByTaskId" resultMap="BaseResultMap" parameterType="Map">
-      SELECT * FROM user_integral WHERE task_id = #{id}
+      SELECT * FROM user_integral WHERE task_id = #{id} and org_id = #{orgId}
   </select>
 
   <!--查询用户任务功能点结合,评价-->
@@ -207,7 +214,7 @@
         <![CDATA[ AND t.complete_time >= #{beginTime}]]>
         <![CDATA[ AND t.complete_time <= #{endTime}]]>
         LEFT JOIN task_user tu ON tu.task_id = t.id AND tu.user_id = #{userId}
-        WHERE tt.review_status = 2 AND tt.user_id = #{userId} AND t.review_status = 3 AND t.`status` = 3;
+        WHERE tt.review_status = 2 AND tt.user_id = #{userId} AND t.review_status = 3 AND t.`status` = 3 and tt.org_id = #{orgId};
     </select>
 
 

@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.pagehelper.page.PageMethod.startPage;
 
@@ -110,6 +111,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskLog.setCreateTime(new Date());
         taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
         taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
+        taskLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         return taskLog;
     }
 
@@ -174,7 +176,7 @@ public class ZSYTaskService implements IZSYTaskService {
             // 多人任务直接通过
             task.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
             // 排序的index
-            Integer index = taskMapper.selectLastIndexByStageId(task.getStageId());
+            Integer index = taskMapper.selectLastIndexByStageId(task.getStageId(),ZSYTokenRequestContext.get().getOrgId());
             if (index == null) {
                 task.setSort(0);
             } else {
@@ -210,10 +212,14 @@ public class ZSYTaskService implements IZSYTaskService {
         }
 
         task.setExamine(ZSYTaskExamine.NOTEXAM.getValue());
+        task.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         // 插入新任务
         taskMapper.insert(task);
         //插入任务功能点
         if (!CollectionUtils.isEmpty(functions)) {
+            for(TaskFunction taskFunction:functions){
+                taskFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             taskFunctionMapper.insertBatch(functions);
         }
         // 插入任务用户
@@ -254,9 +260,15 @@ public class ZSYTaskService implements IZSYTaskService {
                         userWeeks.add(userWeek);
                     });
                 }
+                for(UserWeek userWeek:userWeeks){
+                    userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
 
                 userWeekMapper.insertList(userWeeks);
             });
+            for(TaskUser taskUser:taskUsers){
+                taskUser.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             taskUserMapper.insertList(taskUsers);
         }
         // 插入任务标签
@@ -267,6 +279,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskTag.setId(snowFlakeIDHelper.nextId());
                 taskTag.setTaskId(task.getId());
                 taskTag.setTagId(tag);
+                taskTag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 taskTags.add(taskTag);
             });
             taskTagMapper.insertList(taskTags);
@@ -404,7 +417,7 @@ public class ZSYTaskService implements IZSYTaskService {
         taskTagMapper.deleteByTaskId(taskId);
         taskUserMapper.deleteByTaskId(taskId);
         taskCommentMapper.deleteByTaskId(taskId);
-        userWeekMapper.deleteByTaskId(taskId);
+        userWeekMapper.deleteByTaskId(taskId,ZSYTokenRequestContext.get().getOrgId());
 
         // 判断含有重复的负责人
         if (taskReqDTO.getTaskUsers() != null && !CollectionUtils.isEmpty(taskReqDTO.getTaskUsers())) {
@@ -481,6 +494,9 @@ public class ZSYTaskService implements IZSYTaskService {
                     newFunctionList.add(function);
                 });
                 //批量插入新的功能点
+                for(TaskFunction taskFunction:newFunctionList){
+                    taskFunction.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 taskFunctionMapper.insertBatch(newFunctionList);
             }
 
@@ -540,8 +556,14 @@ public class ZSYTaskService implements IZSYTaskService {
                         userWeeks.add(userWeek);
                     });
                 }
+                for(UserWeek userWeek:userWeeks){
+                    userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                }
                 userWeekMapper.insertList(userWeeks);
             });
+            for(TaskUser taskUser:taskUsers){
+                taskUser.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+            }
             taskUserMapper.insertList(taskUsers);
             List<Long> newTaskUserIds = taskUsers.stream().map(TaskUser::getUserId).collect(Collectors.toList());
             List<Long> deleteTaskUserIds;
@@ -578,6 +600,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskTag.setId(snowFlakeIDHelper.nextId());
                 taskTag.setTaskId(task.getId());
                 taskTag.setTagId(tag);
+                taskTag.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 taskTags.add(taskTag);
             });
             taskTagMapper.insertList(taskTags);
@@ -603,7 +626,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userMapper.updateSelectiveById(userBO);
             });
             taskReqDTO.getTaskUsers().forEach(user -> {
-                userIntegralMapper.deleteUserIntegral(taskId, user.getUserId());
+                userIntegralMapper.deleteUserIntegral(taskId, user.getUserId(),ZSYTokenRequestContext.get().getOrgId());
                 UserIntegral userIntegral = new UserIntegral();
                 userIntegral.setId(snowFlakeIDHelper.nextId());
                 userIntegral.setTaskId(taskId);
@@ -612,6 +635,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setOrigin(ZSYIntegralOrigin.SYSTEM.getValue());
                 userIntegral.setDescription(String.format("完成了多人任务：{%s}", user.getDescription()));
                 userIntegral.setCreateTime(new Date());
+                userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 userIntegralMapper.insert(userIntegral);
                 // 修改用户积分
                 User userTemp = userMapper.selectById(user.getUserId());
@@ -766,6 +790,7 @@ public class ZSYTaskService implements IZSYTaskService {
         userIntegral.setOrigin(ZSYUserTaskIntegralOrigin.PRIVATE.getValue());
         userIntegral.setDescription("完成了单人任务:" + taskTemp.getDescription());
         userIntegral.setReviewStatus(ZSYReviewStatus.ACCEPT.getValue());
+        userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         userTaskIntegralMapper.insert(userIntegral);
 
         return ZSYResult.success();
@@ -1150,6 +1175,15 @@ public class ZSYTaskService implements IZSYTaskService {
                 taskDetailResDTO.setCanReview(true);
             }
 
+            // 每个机构sort最大stage id 作为已发布 stage id
+            List<Stage> stages = stageMapper.selectByDeptId(ZSYTokenRequestContext.get().getDepartmentId());
+            if(CollectionUtils.isEmpty(stages)){
+                throw new ZSYServiceException("未设置stage,请先设置stage!");
+            }
+            Collections.sort(stages, (o1, o2) -> o1.getSort().compareTo(o2.getSort()));
+            if (taskDetailBO.getStageId().equals(stages.get(stages.size() - 1).getId())) {
+                taskDetailResDTO.setCanSummarize(true);
+            }
             //已发布任务
             if (taskDetailBO.getStageId().equals(ZSYTaskStage.DEPLOYED.getValue())) {
                 taskDetailResDTO.setCanSummarize(true);
@@ -1440,7 +1474,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public void syncSettlementTask() {
-        List<Task> taskList = taskMapper.findNotFinishedTask();
+        List<Task> taskList = taskMapper.findNotFinishedTask(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskList)) {
             BlockingQueue<Task> queue = new ArrayBlockingQueue<>(taskList.size());
             for (Task task : taskList) {
@@ -1518,6 +1552,7 @@ public class ZSYTaskService implements IZSYTaskService {
                 userIntegral.setOrigin(1);
                 userIntegral.setDescription("完成了多人任务：" + taskDetailBO.getName());
                 userIntegral.setCreateTime(new Date());
+                userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 userIntegralMapper.insert(userIntegral);
                 Task task = new Task();
                 task.setId(taskId);
@@ -1559,6 +1594,7 @@ public class ZSYTaskService implements IZSYTaskService {
             startPage(taskListReqDTO.getPageNum(), taskListReqDTO.getPageSize());
         }
         taskListReqDTO.setDepartmentId(ZSYTokenRequestContext.get().getDepartmentId());
+        taskListReqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<TaskListBO> taskListBOS = taskMapper.selectPage(taskListReqDTO);
         long time2 = System.currentTimeMillis();
         logger.info("查询耗时: {}ms", (time2 - time1));
@@ -1588,7 +1624,7 @@ public class ZSYTaskService implements IZSYTaskService {
 
     @Override
     public List<TaskListResDTO> getTaskExport() {
-        List<TaskListBO> taskListBOS = taskMapper.selectPage1();
+        List<TaskListBO> taskListBOS = taskMapper.selectPage1(ZSYTokenRequestContext.get().getOrgId());
         List<TaskListResDTO> list = Lists.newArrayList();
         taskListBOS.forEach(taskListBO -> {
             TaskListResDTO taskListResDTO = new TaskListResDTO();
@@ -1605,7 +1641,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public ZSYResult<List<TaskResDTO>> getAllWaitAudit() {
-        List<TaskBO> taskBOS = taskMapper.selectAllWaitAudit(ZSYTokenRequestContext.get().getDepartmentId());
+        List<TaskBO> taskBOS = taskMapper.selectAllWaitAudit(ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
         List<TaskResDTO> taskList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(taskBOS)) {
             taskBOS.forEach(taskBO -> {
@@ -1650,7 +1686,7 @@ public class ZSYTaskService implements IZSYTaskService {
         if (pageNum != null) {
             startPage(pageNum, 5);
         }
-        Page<TaskBO> taskBOS = taskMapper.selectAllAuditSuccess(ZSYTokenRequestContext.get().getDepartmentId());
+        Page<TaskBO> taskBOS = taskMapper.selectAllAuditSuccess(ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
         Page<TaskResDTO> page = new Page<>();
         BeanUtils.copyProperties(taskBOS, page);
         taskBOS.forEach(taskBO -> {
@@ -1770,7 +1806,7 @@ public class ZSYTaskService implements IZSYTaskService {
         Task task = new Task();
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
-        userWeekMapper.deleteByTaskId(taskId);
+        userWeekMapper.deleteByTaskId(taskId,ZSYTokenRequestContext.get().getOrgId());
         feedbackPlanTaskMapper.deleteByTaskId(taskId);
         taskMapper.updateByPrimaryKeySelective(task);
         taskUserMapper.deleteByTaskId(taskId);
@@ -1818,7 +1854,7 @@ public class ZSYTaskService implements IZSYTaskService {
         task.setId(taskId);
         task.setIsDelete(ZSYDeleteStatus.DELETED.getValue());
         taskMapper.updateByPrimaryKeySelective(task);
-        userWeekMapper.deleteByTaskId(taskId);
+        userWeekMapper.deleteByTaskId(taskId,ZSYTokenRequestContext.get().getOrgId());
         taskUserMapper.deleteByTaskId(taskId);
 
     }
@@ -1872,11 +1908,11 @@ public class ZSYTaskService implements IZSYTaskService {
         long t3 = System.currentTimeMillis();
         List<TaskListBO> taskListBOS;
         if (stage.getName().equals("已发布")) {
-            taskListBOS = taskMapper.selectTaskByStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), userId);
+            taskListBOS = taskMapper.selectTaskByStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), userId,ZSYTokenRequestContext.get().getOrgId());
             long t4 = System.currentTimeMillis();
             logger.info("查询 已发布 阶段的任务耗时:{}ms ", (t4 - t3));
         } else {
-            taskListBOS = taskMapper.selectTaskByEndStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), userId);
+            taskListBOS = taskMapper.selectTaskByEndStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), userId,ZSYTokenRequestContext.get().getOrgId());
         }
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
@@ -1917,9 +1953,9 @@ public class ZSYTaskService implements IZSYTaskService {
         Stage stage = stageMapper.selectById(stageId);
         List<TaskListBO> taskListBOS;
         if (stage.getName().equals("已发布")) {
-            taskListBOS = taskMapper.selectTaskByStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), null);
+            taskListBOS = taskMapper.selectTaskByStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), null,ZSYTokenRequestContext.get().getOrgId());
         } else {
-            taskListBOS = taskMapper.selectTaskByEndStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), null);
+            taskListBOS = taskMapper.selectTaskByEndStageId(stageId, ZSYTokenRequestContext.get().getDepartmentId(), null,ZSYTokenRequestContext.get().getOrgId());
         }
         List<TaskListResDTO> list = new ArrayList<>();
         BeanUtils.copyProperties(taskListBOS, list);
@@ -1967,7 +2003,7 @@ public class ZSYTaskService implements IZSYTaskService {
         if (userRole == ZSYUserRole.ADMINISTRATOR.getValue()) {
             // 移动到阶段底部
             if (taskMoveReqDTO.getTargetId() == null) {
-                Integer lastIndex = taskMapper.selectLastIndexByStageId(taskMoveReqDTO.getTargetStageId());
+                Integer lastIndex = taskMapper.selectLastIndexByStageId(taskMoveReqDTO.getTargetStageId(),ZSYTokenRequestContext.get().getOrgId());
                 Task task = new Task();
                 task.setId(taskMoveReqDTO.getOriginId());
                 task.setStageId(taskMoveReqDTO.getTargetStageId());
@@ -2003,7 +2039,7 @@ public class ZSYTaskService implements IZSYTaskService {
 
                 } else { // 插入到其他阶段中
                     // 更新目标对象之后的下标+1
-                    taskMapper.updateIndexByStageId(targetTask.getStageId(), targetTask.getSort());
+                    taskMapper.updateIndexByStageId(targetTask.getStageId(), targetTask.getSort(),ZSYTokenRequestContext.get().getOrgId());
                     // 更新原对象下标
                     Task task = new Task();
                     task.setId(taskMoveReqDTO.getOriginId());
@@ -2023,7 +2059,7 @@ public class ZSYTaskService implements IZSYTaskService {
         } else {
             // 移动到阶段底部
             if (taskMoveReqDTO.getTargetId() == null) {
-                Integer lastIndex = taskMapper.selectLastIndexByStageId(taskMoveReqDTO.getTargetStageId());
+                Integer lastIndex = taskMapper.selectLastIndexByStageId(taskMoveReqDTO.getTargetStageId(),ZSYTokenRequestContext.get().getOrgId());
                 Task task = new Task();
                 task.setId(taskMoveReqDTO.getOriginId());
                 task.setStageId(taskMoveReqDTO.getTargetStageId());
@@ -2137,7 +2173,7 @@ public class ZSYTaskService implements IZSYTaskService {
 
                 } else { // 插入到其他阶段中
                     // 更新目标对象之后的下标+1
-                    taskMapper.updateIndexByStageId(targetTask.getStageId(), targetTask.getSort());
+                    taskMapper.updateIndexByStageId(targetTask.getStageId(), targetTask.getSort(),ZSYTokenRequestContext.get().getOrgId());
                     // 更新原对象下标
                     Task task = new Task();
                     task.setId(taskMoveReqDTO.getOriginId());
@@ -2263,7 +2299,13 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setStatus(0);
                 list.add(notification);
             });
-            if (notificationMapper.insertBatch(list) == 0) {
+            List<Notification> collect = list.stream().map(x -> {
+                Notification notification = new Notification();
+                BeanUtils.copyProperties(x, notification);
+                notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return notification;
+            }).collect(Collectors.toList());
+            if (notificationMapper.insertBatch(collect) == 0) {
                 throw new ZSYServiceException("新增任务阶段变化通知失败");
             }
 
@@ -2293,7 +2335,13 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setStatus(0);
                 list.add(notification);
             });
-            if (notificationMapper.insertBatch(list) == 0) {
+            List<Notification> collect = list.stream().map(x -> {
+                Notification notification = new Notification();
+                BeanUtils.copyProperties(x, notification);
+                notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return notification;
+            }).collect(Collectors.toList());
+            if (notificationMapper.insertBatch(collect) == 0) {
                 throw new ZSYServiceException("新增暂停任务通知失败");
             }
         } else {
@@ -2308,7 +2356,13 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setStatus(0);
                 list.add(notification);
             });
-            if (notificationMapper.insertBatch(list) == 0) {
+            List<Notification> collect = list.stream().map(x -> {
+                Notification notification = new Notification();
+                BeanUtils.copyProperties(x, notification);
+                notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return notification;
+            }).collect(Collectors.toList());
+            if (notificationMapper.insertBatch(collect) == 0) {
                 throw new ZSYServiceException("新增启动任务通知失败");
             }
         }
@@ -2337,7 +2391,13 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setStatus(0);
                 list.add(notification);
             });
-            if (notificationMapper.insertBatch(list) == 0) {
+            List<Notification> collect = list.stream().map(x -> {
+                Notification notification = new Notification();
+                BeanUtils.copyProperties(x, notification);
+                notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return notification;
+            }).collect(Collectors.toList());
+            if (notificationMapper.insertBatch(collect) == 0) {
                 throw new ZSYServiceException("新增主任务完成通知失败");
             }
         }
@@ -2462,7 +2522,13 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setStatus(0);
                 list.add(notification);
             });
-            if (notificationMapper.insertBatch(list) == 0) {
+            List<Notification> collect = list.stream().map(x -> {
+                Notification notification = new Notification();
+                BeanUtils.copyProperties(x, notification);
+                notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return notification;
+            }).collect(Collectors.toList());
+            if (notificationMapper.insertBatch(collect) == 0) {
                 throw new ZSYServiceException("新增任务修改通知失败");
             }
         }
@@ -2493,7 +2559,13 @@ public class ZSYTaskService implements IZSYTaskService {
                 notification.setStatus(0);
                 list.add(notification);
             });
-            if (notificationMapper.insertBatch(list) == 0) {
+            List<Notification> collect = list.stream().map(x -> {
+                Notification notification = new Notification();
+                BeanUtils.copyProperties(x, notification);
+                notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+                return notification;
+            }).collect(Collectors.toList());
+            if (notificationMapper.insertBatch(collect) == 0) {
                 throw new ZSYServiceException("新增完成子任务通知失败");
             }
         }
@@ -2617,7 +2689,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskBaseResDTO> getAllMultipleTask() {
-        List<Task> tasks = taskMapper.selectAllTaskBase();
+        List<Task> tasks = taskMapper.selectAllTaskBase(ZSYTokenRequestContext.get().getOrgId());
         List<TaskBaseResDTO> taskBaseResDTOList = new ArrayList<>();
         BeanUtils.copyProperties(tasks, taskBaseResDTOList);
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -2697,6 +2769,7 @@ public class ZSYTaskService implements IZSYTaskService {
         review.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         review.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
         review.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        review.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (taskReviewMapper.insert(review) == 0) {
             throw new ZSYServiceException("添加任务评审失败");
         }
@@ -2748,6 +2821,7 @@ public class ZSYTaskService implements IZSYTaskService {
         summary.setCreateBy(ZSYTokenRequestContext.get().getUserId());
         summary.setUpdateBy(ZSYTokenRequestContext.get().getUserId());
         summary.setIsDelete(ZSYDeleteStatus.NORMAL.getValue());
+        summary.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         if (taskSummaryMapper.insert(summary) == 0) {
             throw new ZSYServiceException("添加任务总结失败");
         }
@@ -2819,7 +2893,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public List<TaskBaseResDTO> getAllDoingTasks() {
         List<TaskBaseResDTO> list = new ArrayList<>();
-        List<Task> taskList = taskMapper.selectAllDoingTasks();
+        List<Task> taskList = taskMapper.selectAllDoingTasks(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskList)) {
             taskList.forEach(task -> {
                 TaskBaseResDTO resDTO = new TaskBaseResDTO();
@@ -2841,7 +2915,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Transactional
     public void updateTaskCompletedToFinished() {
         //查询所有已完成任务
-        List<Task> taskList = taskMapper.selectAllCompleteTasks();
+        List<Task> taskList = taskMapper.selectAllCompleteTasks(ZSYTokenRequestContext.get().getOrgId());
         if (!CollectionUtils.isEmpty(taskList)) {
             taskList.forEach(task -> {
                 List<Long> taskUserIds = taskUserMapper.selectUserByTaskId(task.getId());
@@ -2895,6 +2969,7 @@ public class ZSYTaskService implements IZSYTaskService {
                         integral.setReviewStatus(3);
                         integral.setCreateBy(ZSYTokenRequestContext.get().getUserId());
                         integral.setCreateTime(new Date());
+                        integral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                         userTaskIntegralMapper.insert(integral);
                     });
                 }
@@ -3020,7 +3095,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Transactional
     public void noticeDelayMasterTaskPrincipal() {
         //查询审核通过,进行中的任务
-        List<TaskListBO> taskListBOS = taskMapper.selectTaskList();
+        List<TaskListBO> taskListBOS = taskMapper.selectTaskList(ZSYTokenRequestContext.get().getOrgId());
         //有超时的任务集合
         List<TaskListBO> delayTaskList = Lists.newArrayList();
         taskListBOS.forEach(taskListBO -> {
@@ -3062,6 +3137,7 @@ public class ZSYTaskService implements IZSYTaskService {
             notification.setContent(content);
             notification.setCreateTime(new Date());
             notification.setStatus(0);
+            notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             if (notificationMapper.insertNotice(notification) == 0) {
                 throw new ZSYServiceException("新增任务超时通知失败");
             }
@@ -3115,7 +3191,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Transactional
     public void noticeDelaySonTaskPrincipal() {
         //查询审核通过,进行中的子任务
-        List<TaskBO> taskBOS = taskMapper.selectSonTaskList();
+        List<TaskBO> taskBOS = taskMapper.selectSonTaskList(ZSYTokenRequestContext.get().getOrgId());
         Map<Long, String> taskMap = new HashMap<>();
         taskBOS.forEach(taskBO -> {
             if (!CollectionUtils.isEmpty(taskBO.getTaskUsers())) {
@@ -3140,6 +3216,8 @@ public class ZSYTaskService implements IZSYTaskService {
                         notification.setContent(content);
                         notification.setCreateTime(new Date());
                         notification.setStatus(0);
+                        notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+
                         if (notificationMapper.insertNotice(notification) == 0) {
                             throw new ZSYServiceException("新增任务超时通知失败");
                         }
@@ -3187,7 +3265,7 @@ public class ZSYTaskService implements IZSYTaskService {
     @Override
     public void noticeDelaySonTaskChargeMan() {
         //查询审核通过,进行中的子任务
-        List<TaskBO> taskBOS = taskMapper.selectSonTaskList();
+        List<TaskBO> taskBOS = taskMapper.selectSonTaskList(ZSYTokenRequestContext.get().getOrgId());
         Map<Long, String> taskMap = new HashMap<>();
         taskBOS.forEach(taskBO -> {
             if (!CollectionUtils.isEmpty(taskBO.getTaskUsers())) {
@@ -3211,6 +3289,8 @@ public class ZSYTaskService implements IZSYTaskService {
                         notification.setContent(content);
                         notification.setCreateTime(new Date());
                         notification.setStatus(0);
+                        notification.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+
                         if (notificationMapper.insertNotice(notification) == 0) {
                             throw new ZSYServiceException("新增任务超时通知失败");
                         }
@@ -3247,6 +3327,7 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("当前账号无权限");
         }
         startPage(Optional.ofNullable(reqDTO.getPageNum()).orElse(1), ZSYConstants.PAGE_SIZE);
+        reqDTO.setOrgId(ZSYTokenRequestContext.get().getOrgId());
         Page<NotificationBO> notifications = notificationMapper.selectEveryoneNotice(reqDTO);
         Page<NoticeResDTO> noticeResDTOList = new Page<>();
         if (!CollectionUtils.isEmpty(notifications)) {
@@ -3313,7 +3394,7 @@ public class ZSYTaskService implements IZSYTaskService {
     public void setPublishTime(Date publishTime) {
         checkUser();
         if (publishInfoMapper.getPublishInfo(ZSYTokenRequestContext.get().getDepartmentId()) == null) {
-            publishInfoMapper.insertPublishInfo(publishTime, ZSYTokenRequestContext.get().getDepartmentId());
+            publishInfoMapper.insertPublishInfo(publishTime, ZSYTokenRequestContext.get().getDepartmentId(),ZSYTokenRequestContext.get().getOrgId());
         } else {
             publishInfoMapper.updatePublishInfo(publishTime, ZSYTokenRequestContext.get().getDepartmentId());
         }
@@ -3341,7 +3422,7 @@ public class ZSYTaskService implements IZSYTaskService {
      */
     @Override
     public List<TaskPlanResDTO> getPlanTask() {
-        List<Task> task = taskMapper.getTaskPlanList();
+        List<Task> task = taskMapper.getTaskPlanList(ZSYTokenRequestContext.get().getOrgId());
         List<TaskPlanResDTO> planResDTOS = new ArrayList<>();
         task.forEach(task1 -> {
             TaskPlanResDTO planResDTO = new TaskPlanResDTO();
@@ -3394,6 +3475,7 @@ public class ZSYTaskService implements IZSYTaskService {
             userIntegral.setOrigin(ZSYIntegralOrigin.BUG.getValue());
             userIntegral.setDescription("新增开发Bug修复时间：" + bo.getName());
             userIntegral.setCreateTime(new Date());
+            userIntegral.setOrgId(ZSYTokenRequestContext.get().getOrgId());
             userIntegralMapper.insert(userIntegral);
 
             // 修改用户积分
@@ -3409,7 +3491,13 @@ public class ZSYTaskService implements IZSYTaskService {
             throw new ZSYServiceException("没有开发任务，请检查");
         }
 
+        for(UserWeek userWeek:userWeeks){
+            userWeek.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+        }
         userWeekMapper.insertList(userWeeks);
+        for(TaskTest temp:taskTests){
+            temp.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+        }
         taskTestMapper.insertList(taskTests);
 
         //新增一条任务日志
@@ -3423,6 +3511,8 @@ public class ZSYTaskService implements IZSYTaskService {
         taskLog.setCreateTime(new Date());
         taskLog.setUserId(ZSYTokenRequestContext.get().getUserId());
         taskLog.setUserName(ZSYTokenRequestContext.get().getUserName());
+        taskLog.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+
         taskLogMapper.insert(taskLog);
 
     }

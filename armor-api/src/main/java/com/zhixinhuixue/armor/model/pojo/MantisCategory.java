@@ -1,12 +1,15 @@
 package com.zhixinhuixue.armor.model.pojo;
 
+import org.apache.ibatis.ognl.Ognl;
+import org.aspectj.weaver.ast.Or;
+
 /**
  * @author sch
  * @DATE 2019/4/18 10:16
  *
  * mantis分类表
  */
-public class MantisCategory {
+public class MantisCategory extends OrgIdField {
     /**
      * 主键
      */

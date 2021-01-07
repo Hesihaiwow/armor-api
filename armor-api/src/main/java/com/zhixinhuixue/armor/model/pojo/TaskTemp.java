@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * 任务临时表
  */
-public class TaskTemp {
+public class TaskTemp extends OrgIdField{
     /**
      * 主键
      */

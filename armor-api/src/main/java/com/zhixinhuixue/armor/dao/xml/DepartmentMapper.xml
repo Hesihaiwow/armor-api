@@ -2,7 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYDepartmentMapper">
 
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Department">
+  <!--  机构字段map  -->
+  <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+  </resultMap>
+
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.Department" extends="OrgIdFieldMap">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
@@ -30,7 +36,7 @@
 
   <!-- 校验部门名称 -->
   <select id="selectByDeptName" parameterType="java.util.Map" resultMap="BaseResultMap">
-    SELECT * FROM department WHERE `name` = #{deptName}
+    SELECT * FROM department WHERE `name` = #{deptName} and org_id = #{orgId}
     <if test="id!=null">
       AND parent_id = #{id}
     </if>
@@ -53,12 +59,12 @@
 
   <!-- 查询所有部门 -->
   <select id="getAllDept"  resultMap="TreeResultMap">
-    SELECT * FROM department WHERE is_delete = 0 AND `id` = parent_id
+    SELECT * FROM department WHERE is_delete = 0 AND `id` = parent_id and org_id = #{orgId}
   </select>
 
   <!--查询全部可用部门-->
   <select id="selectAll" resultMap="BaseResultMap">
-    SELECT * FROM department WHERE is_delete = 0
+    SELECT * FROM department WHERE is_delete = 0 and org_id = #{orgId}
   </select>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.zhixinhuixue.armor.model.pojo.Department">

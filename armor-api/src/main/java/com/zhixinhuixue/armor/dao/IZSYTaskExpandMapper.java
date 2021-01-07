@@ -19,7 +19,7 @@ public interface IZSYTaskExpandMapper {
 
     TaskExpandBO selectExpandDetail(Long teId);
 
-    Page<TaskExpandBO> getExpandList(@Param("status") int status, @Param("userId") Long userId);
+    Page<TaskExpandBO> getExpandList(@Param("status") int status, @Param("userId") Long userId,@Param("orgId")Long orgId);
 
     /**
      * 审核

@@ -21,7 +21,7 @@ public interface IZSYDepartmentMapper {
      * @param deptName 部门名称
      * @return
      */
-    List<Department> selectByDeptName(@Param("deptName") String deptName, @Param("id") Long id);
+    List<Department> selectByDeptName(@Param("deptName") String deptName, @Param("id") Long id,@Param("orgId")Long orgId);
 
     /**
      * 查询部门树结构
@@ -42,11 +42,13 @@ public interface IZSYDepartmentMapper {
     int updateByPrimaryKeySelective(Department record);
 
     /**
+     *
+     *
      * 查询所有部门
      *
      * @return
      */
-    List<DeptBo> getAllDept();
+    List<DeptBo> getAllDept(@Param("orgId")Long orgId);
 
     /**
      * 查询全部可用部门
@@ -54,5 +56,5 @@ public interface IZSYDepartmentMapper {
      * @return List<Department>
      * @author sch
      */
-    List<Department> selectAll();
+    List<Department> selectAll(@Param("orgId")Long orgId);
 }

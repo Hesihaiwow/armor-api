@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYUserWeekMapper">
-  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserWeek">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    </resultMap>
+
+
+  <resultMap id="BaseResultMap" type="com.zhixinhuixue.armor.model.pojo.UserWeek" extends="OrgIdFieldMap">
   <id column="id" jdbcType="BIGINT" property="id" />
   <result column="week_number" jdbcType="INTEGER" property="weekNumber" />
   <result column="hours" jdbcType="DECIMAL" property="hours" />
@@ -13,7 +20,7 @@
     id, week_number, hours, task_id, user_id, year
   </sql>
 
-  <resultMap id="WeekMap" type="com.zhixinhuixue.armor.model.bo.StatsUserWeekBO">
+  <resultMap id="WeekMap" type="com.zhixinhuixue.armor.model.bo.StatsUserWeekBO" extends="OrgIdFieldMap">
     <result column="id" jdbcType="INTEGER" property="id"/>
     <result column="name" jdbcType="VARCHAR" property="userName"/>
     <result column="taskName" jdbcType="VARCHAR" property="taskName"/>
@@ -23,7 +30,7 @@
     <association property="leaveHours" column="{weekNumber=week_number,year=year,userId=user_id}" select="getLeaveWeekHours"/>
   </resultMap>
 
-    <resultMap id="UserCostMap" type="com.zhixinhuixue.armor.model.bo.UserCostBO">
+    <resultMap id="UserCostMap" type="com.zhixinhuixue.armor.model.bo.UserCostBO" extends="OrgIdFieldMap">
         <result column="job_role" property="jobRole" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
@@ -33,12 +40,12 @@
         <result column="leave_hours" property="leaveHours" jdbcType="DECIMAL"/>
     </resultMap>
 
-    <resultMap id="AvgWeekHourBO" type="com.zhixinhuixue.armor.model.bo.AvgUserWeekHourBO">
+    <resultMap id="AvgWeekHourBO" type="com.zhixinhuixue.armor.model.bo.AvgUserWeekHourBO" extends="OrgIdFieldMap">
         <result column="workerNum" property="workerNum" jdbcType="INTEGER"></result>
         <result column="totalHours" property="totalHours" jdbcType="DECIMAL"></result>
     </resultMap>
 
-    <resultMap id="UserWeekStatMap" type="com.zhixinhuixue.armor.model.bo.UserWeekHourBO">
+    <resultMap id="UserWeekStatMap" type="com.zhixinhuixue.armor.model.bo.UserWeekHourBO" extends="OrgIdFieldMap">
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="year" property="year" jdbcType="INTEGER"/>
@@ -47,11 +54,11 @@
     </resultMap>
 
   <insert id="insertList" parameterType="java.util.List">
-    insert into user_week (id, week_number, hours, task_id, user_id ,year)
+    insert into user_week (id, week_number, hours, task_id, user_id ,year,`org_id`)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.weekNumber,jdbcType=INTEGER},
-      #{item.hours,jdbcType=DECIMAL}, #{item.taskId,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, #{item.year,jdbcType=INTEGER} )
+      #{item.hours,jdbcType=DECIMAL}, #{item.taskId,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, #{item.year,jdbcType=INTEGER} ,#{item.orgId,jdbcType=BIGINT})
     </foreach>
   </insert>
 
@@ -65,12 +72,12 @@
   </select>
 
   <delete id="deleteByTaskId" parameterType="java.lang.Long">
-    delete from user_week where task_id = #{taskId}
+    delete from user_week where task_id = #{taskId} and org_id = #{orgId}
   </delete>
 
     <!--删除userWeek-->
     <delete id="deleteByTaskIdAndUserId">
-        delete from user_week where task_id = #{taskId} and user_id =#{userId}
+        delete from user_week where task_id = #{taskId} and user_id =#{userId} and org_id = #{orgId}
     </delete>
 
     <select id="getUserWeekHours" parameterType="java.util.Map" resultType="java.lang.Double">
@@ -80,7 +87,7 @@
       <if test="taskId!=0">
         and task.id != #{taskId}
       </if>
-      where  ul.id is null and user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year}
+      where  ul.id is null and user_week.user_id = #{userId} and user_week.week_number = #{weekNumber} and user_week.year = #{year} and user_week.org_id = #{orgId}
   </select>
 
   <!-- 周任务统计 -->
@@ -96,7 +103,7 @@
         LEFT  JOIN  task_user tu on t.id = tu.task_id and u.id=tu.user_id
         LEFT JOIN task_test tt ON  u.id = tt.user_id AND w.task_id = tt.tt_id
         LEFT JOIN task t1 ON t1.id = tt.task_id
-        WHERE u.user_role>0  AND u.status =0 AND u.is_delete = 0 AND d.parent_id = #{departmentId}
+        WHERE u.user_role>0  AND u.status =0 AND u.is_delete = 0 AND d.parent_id = #{departmentId} and u.org_id = #{orgId}
       <if test="jobRole != null">
           AND u.job_role = #{jobRole}
       </if>
@@ -106,7 +113,7 @@
     <select id="getTaskUserHours" parameterType="java.util.Map" resultMap="BaseResultMap">
         SELECT * FROM  user_week
         WHERE user_id = #{userId}
-        and task_id = #{taskId}
+        and task_id = #{taskId} and org_id = #{orgId}
     </select>
 
     <select id="getSameWeek" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -115,6 +122,7 @@
         and task_id = #{taskId}
         and week_number = #{weekNumber}
         and year = #{year}
+        and org_id = #{orgId}
     </select>
 
     <!--查询userWeek-->
@@ -138,6 +146,7 @@
               LEFT JOIN user_leave ul on ul.id = uw.task_id
               WHERE uw.`year` = #{year} AND uw.week_number = #{weekOfYear} AND u.job_role = #{jobRole} AND ul.id IS NULL
               AND u.`is_delete` = 0 AND u.`status` = 0
+              and uw.org_id = #{orgId}
           GROUP BY u.`name`) t
     </select>
 
@@ -182,7 +191,7 @@
                      WHERE l.review_status=3 and w.week_number = #{weekNumber} and w.year= #{year}
                 GROUP BY w.user_id) ul ON ul.user_id = ug.user_id
         LEFT JOIN `user` u on u.id = ug.user_id
-        WHERE ug.group_id = #{groupId} AND u.is_delete = 0 AND u.`status` = 0
+        WHERE ug.group_id = #{groupId} AND u.is_delete = 0 AND u.`status` = 0 and ug.org_id = #{orgId}
         ORDER BY u.job_role,u.id;
     </select>
 
@@ -199,7 +208,7 @@
         LEFT JOIN user_week uw ON uw.user_id = u.id
         LEFT JOIN task t ON t.id = uw.task_id
         WHERE
-        u.is_delete = 0 AND u.`status` = 0
+        u.is_delete = 0 AND u.`status` = 0 and u.org_id = #{orgId}
         AND uw.`year` = #{year} AND uw.week_number IN
         <foreach collection="weeks" open="(" close=")" item="item" separator=",">
             #{item}

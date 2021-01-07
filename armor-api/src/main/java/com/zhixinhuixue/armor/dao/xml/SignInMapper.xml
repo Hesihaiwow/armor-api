@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhixinhuixue.armor.dao.IZSYSignInMapper">
+
+    <!--  机构字段map  -->
+    <resultMap id = "OrgIdFieldMap" type="com.zhixinhuixue.armor.model.pojo.OrgIdField">
+        <result column="org_id" jdbcType="BIGINT" property="orgId" />
+    </resultMap>
+
     <resultMap id="BaseExtraWork" type="com.zhixinhuixue.armor.model.pojo.ExtraWork">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
@@ -59,7 +65,7 @@
         <result column="job_number" jdbcType="VARCHAR" property="jobNumber" />
     </resultMap>
 
-    <resultMap id="BaseSignInMap" type="com.zhixinhuixue.armor.model.pojo.SignIn">
+    <resultMap id="BaseSignInMap" type="com.zhixinhuixue.armor.model.pojo.SignIn" extends="OrgIdFieldMap">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
         <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"/>
@@ -85,35 +91,35 @@
     <!--批量新增userSort-->
     <insert id="addUserSortBatch" parameterType="com.zhixinhuixue.armor.model.pojo.UserSort">
         INSERT INTO `user_sort`
-        (`sort`,`user_name`) VALUES
+        (`sort`,`user_name`,`org_id`) VALUES
         <foreach collection="userSortList" item="userSort" separator=",">
-            (#{userSort.sort,jdbcType=INTEGER},#{userSort.userName,jdbcType=VARCHAR})
+            (#{userSort.sort,jdbcType=INTEGER},#{userSort.userName,jdbcType=VARCHAR},#{userSort.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
     <!--批量导入考勤打卡记录-->
     <insert id="insertSignInBatch" parameterType="com.zhixinhuixue.armor.model.pojo.SignIn">
         INSERT INTO `sign_in`
-        (`id`,`user_id`,`check_time`,`type`) VALUES
+        (`id`,`user_id`,`check_time`,`type`,`org_id`) VALUES
         <foreach collection="signIns" item="signIn" separator=",">
-            (#{signIn.id,jdbcType=BIGINT},#{signIn.userId,jdbcType=BIGINT},#{signIn.checkTime,jdbcType=TIMESTAMP},#{signIn.type,jdbcType=INTEGER})
+            (#{signIn.id,jdbcType=BIGINT},#{signIn.userId,jdbcType=BIGINT},#{signIn.checkTime,jdbcType=TIMESTAMP},#{signIn.type,jdbcType=INTEGER},#{signIns.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 
     <!--新增补打卡申请-->
     <insert id="addResignIn" parameterType="com.zhixinhuixue.armor.model.pojo.ResignIn">
         INSERT INTO `resign_in`
-        (`id`,`user_id`,`recheck_time`,`reason`,`review_status`,`type`)
+        (`id`,`user_id`,`recheck_time`,`reason`,`review_status`,`type`,`org_id`)
         VALUES
         (#{resignIn.id,jdbcType=BIGINT},#{resignIn.userId,jdbcType=BIGINT},#{resignIn.recheckTime,jdbcType=TIMESTAMP}
-        ,#{resignIn.reason,jdbcType=VARCHAR},#{resignIn.reviewStatus,jdbcType=INTEGER},#{resignIn.type,jdbcType=INTEGER})
+        ,#{resignIn.reason,jdbcType=VARCHAR},#{resignIn.reviewStatus,jdbcType=INTEGER},#{resignIn.type,jdbcType=INTEGER},#{resignIn.orgId,jdbcType=BIGINT})
     </insert>
 
     <!--新增签到记录-->
     <insert id="addSignIn" parameterType="com.zhixinhuixue.armor.model.pojo.SignIn">
         INSERT INTO `sign_in`
-        (`id`,`user_id`,`check_time`,`type`) VALUES
-        (#{signIn.id,jdbcType=BIGINT},#{signIn.userId,jdbcType=BIGINT},#{signIn.checkTime,jdbcType=TIMESTAMP},#{signIn.type,jdbcType=INTEGER})
+        (`id`,`user_id`,`check_time`,`type`, 'org_id') VALUES
+        (#{signIn.id,jdbcType=BIGINT},#{signIn.userId,jdbcType=BIGINT},#{signIn.checkTime,jdbcType=TIMESTAMP},#{signIn.type,jdbcType=INTEGER},#{signIn.orgId,jdbcType=BIGINT})
     </insert>
 
     <!--修改补打卡申请-->
@@ -176,12 +182,12 @@
 
     <!--查询全部考勤记录-->
     <select id="selectSignInList" resultMap="BaseSignInMap">
-        SELECT * FROM `sign_in`
+        SELECT * FROM `sign_in` where org_id = #{orgId}
     </select>
 
     <!--导入记录的最后一条记录打卡时间-->
     <select id="selectSingInLastRecord" resultMap="BaseSignInMap">
-        SELECT * FROM `sign_in` where `type` = 0 ORDER BY `check_time` DESC LIMIT 1
+        SELECT * FROM `sign_in` where `type` = 0 and org_id = #{orgId} ORDER BY `check_time` DESC LIMIT 1
     </select>
 
     <!--分页查询考勤记录-->
@@ -205,6 +211,9 @@
             <if test="reqDTO.endTime != null">
                 <![CDATA[  and  si.`check_time` <= #{reqDTO.endTime} ]]>
             </if>
+            <if test="orgId != null">
+                <![CDATA[  and  si.`org_id` = #{orgId} ]]>
+            </if>
         </where>
         GROUP BY `user_id`,DATE(`check_time`) ORDER BY `check_time` DESC
     </select>
@@ -214,6 +223,9 @@
         SELECT * FROM `sign_in` WHERE `user_id` = #{userId} AND `type` != 2
         <![CDATA[  and  `check_time` >= #{zero} ]]>
         <![CDATA[  and  `check_time` <= #{seven} ]]>
+        <if test="orgId != null">
+            <![CDATA[  and  `org_id` = #{orgId} ]]>
+        </if>
     </select>
 
     <!--查询漏打卡考勤记录-->
@@ -235,7 +247,7 @@
 
     <!--管理员查询补打卡申请-->
     <select id="selectResignInPage" resultMap="BaseResignInMap">
-        SELECT * FROM `resign_in` WHERE `review_status` = #{status} ORDER BY `recheck_time` DESC
+        SELECT * FROM `resign_in` WHERE `review_status` = #{status} and org_id = #{orgId} ORDER BY `recheck_time` DESC
     </select>
 
     <!--根据userId和checkTime查询考勤记录-->
@@ -253,7 +265,7 @@
 
     <!--导入记录的最先一条记录打卡时间-->
     <select id="selectSingInFirstRecord" resultMap="BaseSignInMap">
-        SELECT * FROM `sign_in` ORDER BY `check_time` ASC LIMIT 1
+        SELECT * FROM `sign_in` where org_id = #{orgId} ORDER BY `check_time` ASC LIMIT 1
     </select>
 
     <!--查询打卡人员列表-->
@@ -261,6 +273,7 @@
         SELECT * FROM `user` WHERE id in (
         SELECT DISTINCT(user_id) FROM sign_in where
         check_time like "%"#{yearAndMonth}"%"
+        and org_id = #{orgId}
         )
     </select>
 
@@ -282,12 +295,12 @@
 
     <!--根据月份查询当月有记录的最早时间-->
     <select id="selectMonthFirstTime" resultType="java.util.Date">
-        SELECT `check_time` FROM `sign_in` where MONTH(`check_time`) = #{month} ORDER BY `check_time` ASC LIMIT 1
+        SELECT `check_time` FROM `sign_in` where MONTH(`check_time`) = #{month} and org_id = #{orgId} ORDER BY `check_time` ASC LIMIT 1
     </select>
 
     <!--根据月份查询当月有记录的最晚时间-->
     <select id="selectMonthLastTime" resultType="java.util.Date">
-        SELECT `check_time` FROM `sign_in` where MONTH(`check_time`) = #{month} ORDER BY `check_time` DESC LIMIT 1
+        SELECT `check_time` FROM `sign_in` where MONTH(`check_time`) = #{month} and org_id = #{orgId} ORDER BY `check_time` DESC LIMIT 1
     </select>
 
     <!--根据月份查询当月有记录的时间集合-->
@@ -297,7 +310,7 @@
 
     <!--查询有效打卡人员-->
     <select id="selectEffectUsers" resultMap="BaseUserMap">
-        select * from `user` where `is_delete` = 0  and `status` = 0 and `job_number` is not null
+        select * from `user` where `is_delete` = 0  and `status` = 0 and `job_number` is not null and org_id = #{orgId}
     </select>
 
     <!--查询当月所有人的考勤记录-->
@@ -305,6 +318,7 @@
         SELECT si.*,GROUP_CONCAT(`check_time`) check_time_str FROM `sign_in` si
         LEFT JOIN `user` u on si.user_id = u.id
         where u.`is_delete` = 0 and si.check_time like "%"#{yearAndMonth}"%"
+        and si.org_id = #{orgId}
         GROUP BY si.`user_id`,DATE(si.`check_time`) ORDER BY si.`check_time` DESC
     </select>
 
@@ -314,11 +328,13 @@
         <![CDATA[  and  time(check_time) >= '00:00:00' ]]>
         <![CDATA[  and  time(check_time) <= '05:00:00' ]]>
         and check_time like "%"#{yearAndMonth}"%"
+        and org_id = #{orgId}
     </select>
 
     <!--给定年月  查询打卡日期集合-->
     <select id="selectDatesByYearAndMonth" resultType="java.util.Date">
         SELECT check_time FROM sign_in WHERE check_time like "%"#{yearAndMonth}"%"
+        and org_id = #{orgId}
         GROUP BY date(check_time)
     </select>
 
@@ -342,6 +358,9 @@
             </if>
             <if test="endTime != null">
                 <![CDATA[  AND  `check_time` <= #{endTime} ]]>
+            </if>
+            <if test="orgId != null">
+                <![CDATA[  AND  `org_id` <= #{orgId} ]]>
             </if>
         </where>
         ORDER BY check_time
@@ -381,6 +400,9 @@
         </if>
         <if test="endTime != null">
             <![CDATA[  and  si.`check_time` <= #{endTime} ]]>
+        </if>
+        <if test="orgId != null">
+            <![CDATA[  and  si.`org_id` = #{orgId} ]]>
         </if>
         ORDER BY si.check_time DESC
     </select>
