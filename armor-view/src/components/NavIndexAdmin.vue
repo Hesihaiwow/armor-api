@@ -1,1584 +1,127 @@
 <template>
     <div class="nav-index-con">
-        <div v-show="userRole === 3 || userRole === 0" style="float: left">
-            <el-button v-loading.fullscreen.lock="fullscreenLoading"
-                       element-loading-text="拼命导入中,请稍后"
-                       element-loading-spinner="el-icon-loading"
-                       element-loading-background="rgba(0, 0, 0, 0.8)"
-                       type="primary" @click="uploadToMysqlVisible=true">导入考勤记录
-            </el-button>
-        </div>
-        <div v-show="userRole === 3 || userRole === 0">
+        <!-- 添加机构 -->
+        <div v-show="isAdmin === 1 ">
             <el-button v-loading.fullscreen.lock="fullscreenLoading"
                        element-loading-text="拼命导出中,请稍后"
                        element-loading-spinner="el-icon-loading"
                        element-loading-background="rgba(0, 0, 0, 0.8)"
-                       type="primary" @click="excelSignInVisible=true"
-                       style="margin-left: 20px;float: left">导出考勤记录
+                       type="primary" @click="addOran"
+                       style=" margin-bottom: 20px">添加机构
             </el-button>
         </div>
-        <div v-show="userRole === 3 || userRole === 0">
-            <el-button v-loading.fullscreen.lock="fullscreenLoading"
-                       element-loading-text="拼命导出中,请稍后"
-                       element-loading-spinner="el-icon-loading"
-                       element-loading-background="rgba(0, 0, 0, 0.8)"
-                       type="primary" @click="excelLeaveAndEWorkVisible=true"
-                       style="margin-left: 20px">导出调休加班统计
-            </el-button>
-        </div>
-        <div v-show="userRole === 0" style="margin-top: 10px">
-            <span style="font-size: 18px;color: black">项目管理者负责任务</span>
-            <el-table :data="principalAllTaskList" border style="width: 1100px"
-                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                <el-table-column prop="userName" label="负责人" align="center" width="100"></el-table-column>
-                <el-table-column prop="chargeTaskNum" label="负责任务数(进行中)" align="center" sortable></el-table-column>
-                <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center" sortable
-                                 width="140"></el-table-column>
-                <el-table-column prop="summarizeTaskNum" label="待总结任务数" align="center" sortable
-                                 width="140"></el-table-column>
-                <el-table-column prop="delayedTaskNum" label="已超时任务数" align="center" sortable width="140">
-                    <template slot-scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font></template>
-                </el-table-column>
-                <el-table-column prop="aboutDelayTaskNum" label="即将超时任务数" align="center" sortable>
-                    <template slot-scope="scope"><font style="color: orange">{{scope.row.aboutDelayTaskNum}}</font>
+
+
+        <el-card v-show="isAdmin === 1" >
+            <el-table
+                    :data="oranganizationList"
+                    border
+                    fit
+                    highlight-current-row
+                    element-loading-text="拼命加载中"
+            >
+                <el-table-column label="机构名称" prop="name" align="center" min-width="100" />
+                <el-table-column label="机构描述" prop="description" align="center" min-width="100" />
+                <el-table-column label="机构负责人" prop="userName" align="center" min-width="100" />
+                <el-table-column property="createTime" width="200" label="创建时间" align="center">
+                    <template slot-scope="scope">
+                        <span>{{scope.row.createTime | formatTime}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="messageFee" label="需缴纳短信费" align="center" sortable width="140">
-                    <template slot-scope="scope"><font style="color: red">{{scope.row.messageFee}}</font></template>
+                <!--<el-table-column label="创建时间" prop="createTime" align="center" min-width="100" />-->
+                <el-table-column label="操作" align="center" fixed="right" width="260">
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="editOran(scope.row)">编辑</el-button>
+                        <el-button type="text" @click="deleteOran(scope.row.id)">删除</el-button>
+                        <el-button v-show="scope.row.userId !== undefined" type="text" @click="editOranUser(scope.row)">编辑超管</el-button>
+                        <el-button v-show="scope.row.userId !== undefined" type="text" @click="deleteOranUser(scope.row.userId,scope.row.id)">删除超管</el-button>
+                        <el-button v-show="scope.row.userId === undefined" type="text" @click="addOranUser(scope.row.id)">新增超管</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
-        </div>
-        <div v-show="userRole === 0" style="margin-top: 10px">
-            <span style="font-size: 18px;color: black">员工周工作量</span>
-            <div class="add-member-basic-msg" style="margin-top: 5px;">
-                <el-select v-model="weekHourUserId" clearable filterable placeholder="筛选用户"
-                           @change="fetchUserWeekHourStats(weekHourUserId)" style="width: 150px">
-                    <el-option v-for="item in checkInUsers" :key="item.userId" :label="item.userName"
-                               :value="item.userId"></el-option>
-                </el-select>
+            <div class="pagination">
+                <el-pagination
+                        @current-change="handleOrgPage"
+                        :current-page.sync="orgPage.pageNum"
+                        :page-size="orgPage.pageSize"
+                        :layout="orgPageLayout"
+                        :total="orgPage.total">
+                </el-pagination>
             </div>
-            <div id="myChart2" :style="{width:'1100px',height:'250px',marginTop:'10px'}"
-                 v-show="weekHourStatsList.length>0"></div>
-            <div v-show="weekHourStatsList.length===0" class="empty">
-                <h2>暂无数据</h2>
-            </div>
-        </div>
-        <div class="my-integral-con" v-show="userRole>0 && userRole < 3" style="width: 1300px;margin-bottom: 10px">
-            <p class="mic-title">我的统计</p>
-            <div class="my-task-detail hh">
-                <el-tabs v-model="tabName" @tab-click="handleClickTab">
-                    <el-tab-pane label="负责任务" name="task" v-if="userRole == 1">
-                        <el-table :data="principalTaskList" border style="width: 1100px"
-                                  :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                            <el-table-column prop="chargeTaskNum" label="负责任务数(进行中)" align="center"></el-table-column>
-                            <el-table-column prop="reviewTaskNum" label="待评审任务数" align="center"></el-table-column>
-                            <el-table-column prop="summarizeTaskNum" label="待总结任务数" align="center"></el-table-column>
-                            <el-table-column prop="delayedTaskNum" label="已超时任务数" align="center">
-                                <template slot-scope="scope"><font style="color:red">{{scope.row.delayedTaskNum}}</font>
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="aboutDelayTaskNum" label="即将超时任务数" align="center">
-                                <template slot-scope="scope"><font
-                                        style="color: orange">{{scope.row.aboutDelayTaskNum}}</font></template>
-                            </el-table-column>
-                            <el-table-column prop="messageFee" label="需缴纳短信费" align="center">
-                                <template slot-scope="scope"><font style="color: red">{{scope.row.messageFee}}</font>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-tab-pane>
-                    <el-tab-pane label="任务积分" name="integral">
-                        <div style="margin-top: 0px;margin-right: 420px;font-size: 14px"
-                             @click="clickHistory">
-                            <span style="font-size:14px;color: #36A8FF;cursor: pointer;text-decoration: underline">查看积分记录</span>
-                            <!--<span class="task-time-opt" style="font-size:14px"><i class="el-icon-edit"></i></span>计算基准积分-->
-                        </div>
-                        <div class="mic-main clearfix">
-                            <div class="mic-item fl" v-for="(item,key) in taskIntegralItem" style="margin-left: 75px;">
-                                <div class="mic-item-title"><img :src="`${require(`../assets/img/icon_${key+6}.png`)}`"
-                                                                 class="icon-score">
-                                </div>
-                                <div class="mic-item-title" style="font-size: 12px">{{item.time}}</div>
-                                <div class="mic-item-integral">{{item.score}}</div>
-                            </div>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="周工时" name="weekHours">
-                        <div id="myChart1" :style="{width:'1100px',height:'250px'}"></div>
-                    </el-tab-pane>
-                    <el-tab-pane label="我的评价" name="evaluation">
-                        <div class="mic-main clearfix" style="float: left;">
-                            <div class="fl" style="margin-left: 0px;width: 430px">
-                                <div style="font-size: 16px;">本周综合评价</div>
-                                <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.weekTime}}</div>
-                                <div v-for="(item,index) in personalEvaluation.weekEvaluations"
-                                     v-if="personalEvaluation.weekEvaluations.length > 0">
-                                    <el-form label-position="left" inline class="demo-table-expand">
-                                        <el-form-item class="task-form" :label="item.evaluationOptionName"
-                                                      style="margin-top: -10px">
-                                            <el-rate v-model="item.avgScore"
-                                                     :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                                     :allow-half=true
-                                                     disabled
-                                                     style="float: left;margin-top: 7px">
-                                            </el-rate>
-                                            <span>{{item.avgScore}}</span>
-                                        </el-form-item>
-                                    </el-form>
-                                </div>
-                                <div v-show="personalEvaluation.weekEvaluations.length === 0" class="empty"
-                                     style="margin-left: -200px">
-                                    <h2>暂无评价</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mic-main clearfix" style="float:left;">
-                            <div class="fl" style="margin-left: 0px;width: 430px">
-                                <div style="font-size: 16px;">本月综合评价</div>
-                                <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.monthTime}}</div>
-                                <div v-for="(item,index) in personalEvaluation.monthEvaluations"
-                                     v-if="personalEvaluation.monthEvaluations.length > 0">
-                                    <el-form label-position="left" inline class="demo-table-expand">
-                                        <el-form-item class="task-form" :label="item.evaluationOptionName"
-                                                      style="margin-top: -10px">
-                                            <el-rate v-model="item.avgScore"
-                                                     :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                                     :allow-half=true
-                                                     disabled
-                                                     style="float: left;margin-top: 7px">
-                                            </el-rate>
-                                            <span>{{item.avgScore}}</span>
-                                        </el-form-item>
-                                    </el-form>
-                                </div>
-                                <div v-show="personalEvaluation.monthEvaluations.length === 0" class="empty"
-                                     style="margin-left: -200px">
-                                    <h2>暂无评价</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mic-main clearfix">
-                            <div class="fl" style="margin-left: 0px;width: 430px">
-                                <div style="font-size: 16px">年度综合评价</div>
-                                <div style="font-size: 15px;margin-bottom: 10px">{{personalEvaluation.yearTime}}</div>
-                                <div v-for="(item,index) in personalEvaluation.yearEvaluations"
-                                     v-if="personalEvaluation.yearEvaluations.length > 0">
-                                    <el-form label-position="left" inline class="demo-table-expand">
-                                        <el-form-item class="task-form" :label="item.evaluationOptionName"
-                                                      style="margin-top: -10px">
-                                            <el-rate v-model="item.avgScore"
-                                                     :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                                                     :allow-half=true
-                                                     disabled
-                                                     style="float: left;margin-top: 7px">
-                                            </el-rate>
-                                            <span>{{item.avgScore}}</span>
-                                        </el-form-item>
-                                    </el-form>
-                                </div>
-                                <div v-show="personalEvaluation.yearEvaluations.length === 0" class="empty"
-                                     style="margin-left: -200px;">
-                                    <h2>暂无评价</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-            <!--<div class="steps-body">-->
-            <!--<div id="myChart1" :style="{width:'1100px',height:'250px'}"></div>-->
-            <!--</div>-->
-            <!--<div><p class="mic-title">我的评价</p></div>-->
+        </el-card>
 
-        </div>
-        <div class="my-task-con" v-show="userRole === 3">
-            <p class="mic-title" style="margin-top: 20px">考勤记录</p>
-            <div class="my-task-detail" style="width: 1200px;">
-                <div class="add-member-basic-msg fl">
-                    <el-select v-model="signInReqDTO.userId" clearable filterable placeholder="筛选用户">
-                        <el-option v-for="item in notDeleteUserList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
+
+        <el-dialog title="新增/编辑" :visible.sync="editOranVisible" width="600px">
+            <el-form ref="org_form" :model="org"  label-width="100px">
+                <el-form-item label="机构名称" prop="name">
+                    <el-input v-model="org.name" />
+                </el-form-item>
+                <el-form-item label="机构描述"  prop="description">
+                    <el-input v-model="org.desc" />
+                </el-form-item>
+                <!--<el-form-item v-show="org.id" label="机构负责人" prop="userAccount">-->
+                    <!--<el-input v-model="org.userAccount" />-->
+                <!--</el-form-item>-->
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="closeOrg()">取 消</el-button>
+                <el-button :loading="isSaving" type="primary" @click="saveOrg()">确定</el-button>
+            </div>
+        </el-dialog>
+
+        <el-dialog title="新增/编辑超管" :visible.sync="addOranUserVisible" width="600px">
+            <el-form ref="user_form" :model="addForm"  label-width="100px">
+                <el-form-item label="姓名">
+                    <el-input class="w280" v-model="addForm.name" />
+                </el-form-item>
+                <el-form-item label="账号">
+                    <el-input class="w280" v-model="addForm.account" />
+                </el-form-item>
+                <el-form-item label="职位">
+                    <el-input class="w280" v-model="addForm.jobName" />
+                </el-form-item>
+                <el-form-item label="角色">
+                    <el-select  class="w280" v-model="addForm.jobRole" placeholder="请选择角色">
+                        <el-option
+                                v-for="item in rolesList"
+                                :key="item.roleId"
+                                :label="item.roleName"
+                                :value="item.roleId">
+                        </el-option>
                     </el-select>
-                </div>
-                <div class="add-member-basic-msg fl">
-                    <el-date-picker
-                            v-model="signInReqDTO.beginTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择开始时间"
-                    >
-                    </el-date-picker>
-                    <span style="font-size: 14px;color: #606266;">-</span>
-                    <el-date-picker
-                            v-model="signInReqDTO.endTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择截止时间"
-                    >
-                    </el-date-picker>
-                </div>
-                <el-button type="primary" @click="selectSignInData" style="margin-left: 10px" size="small">查询
-                </el-button>
-                <el-table :data="signInData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column prop="date" label="日期" align="center" width="120">
-                        <template slot-scope="scope">
-                            {{scope.row.date | formatDate2}}{{scope.row.weekday}}
-                            <span v-show="scope.row.isWeekend === 1" style="color: #3da7f5">(周末)</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="userName" label="用户" align="center" width="110">
-                        <template slot-scope="scope">
-                            <span style="color: red" v-if="scope.row.isForget === 1">(漏)</span>{{scope.row.userName}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="checkTimeList" label="打卡记录" align="left">
-                        <template slot-scope="scope">
-                            {{scope.row.checkTimeList}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="checkInTime" label="上班时间" align="center" width="120">
-                        <template slot-scope="scope">
-                            <span style="color: red" v-if="scope.row.isRecheckIn === 1">(补)</span>
-                            <span v-if="scope.row.isCheckInAfterTen === 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
-                            <span v-else>{{scope.row.checkInTime | formatTime2}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120">
-                        <template slot-scope="scope">
-                            <span style="color: red" v-if="scope.row.isRecheckOut === 1">(补)</span>
-                            <span style="color: green" v-if="scope.row.isWorkToNextDay === 1">(+1)</span>
-                            <span v-if="scope.row.isCheckOutBeforeSix === 1" style="color: red">{{scope.row.checkOutTime | formatTime2}}</span>
-                            <span v-else>{{scope.row.checkOutTime | formatTime2}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="workTime" label="上班时长" align="center" width="120">
-                        <template slot-scope="scope">
-                            <span v-if="scope.row.lessThanNine === 1" style="color: red">{{scope.row.workTime}}</span>
-                            <span v-else>{{scope.row.workTime}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100">
-                        <template slot-scope="scope">
-                            {{scope.row.eWorkHours}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="leaveTime" label="请假时长" align="center" width="100">
-                        <template slot-scope="scope">
-                            {{scope.row.leaveTime}}
-                        </template>
-                    </el-table-column>
-
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                            @current-change="signInHandleCurrentChange"
-                            :current-page.sync="signInReqDTO.pageNum"
-                            :page-size="signInPage.pageSize"
-                            :layout="signInPageLayout"
-                            :total="signInPage.total">
-                    </el-pagination>
-                </div>
-            </div>
-        </div>
-        <div class="my-task-con" v-show="userRole === 3">
-            <p class="mic-title" style="margin-top: 20px">调休统计</p>
-            <div class="my-task-detail" style="width: 1200px;">
-                <div class="add-member-basic-msg fl">
-                    <el-date-picker
-                            v-model="restHourYear"
-                            align="right"
-                            type="year"
-                            placeholder="选择年份">
-                    </el-date-picker>
-                </div>
-                <div class="add-member-basic-msg fl">
-                    <el-select v-model="restHourReqDTO.jobRole" clearable filterable placeholder="筛选角色">
-                        <el-option v-for="item in rolesList" :key="item.roleId" :label="item.roleName"
-                                   :value="item.roleId"></el-option>
+                </el-form-item>
+                <el-form-item label="级别">
+                    <el-select class="w280" v-model="addForm.level" placeholder="请选择级别">
+                        <el-option
+                                v-for="item in levelList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
                     </el-select>
-                </div>
-                <div class="add-member-basic-msg fl">
-                    <el-select v-model="restHourReqDTO.userId" clearable filterable placeholder="筛选用户">
-                        <el-option v-for="item in notDeleteUserList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <el-button type="primary" @click="fetchAllUsersRestHours" style="margin-left: 10px" size="small">查询
-                </el-button>
-                <el-table :data="restHoursData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column type="index" label="序号" width="80"></el-table-column>
-                    <el-table-column prop="userName" label="用户" align="center" width="100">
-                        <template slot-scope="sco">
-                            <a style="color:#20a0ff;cursor: pointer;"
-                               @click="showUserRestHoursLog(sco.row.userId,sco.row.userName)">{{sco.row.userName}}</a>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="totalRestHours" label="总调休" sortable align="center">
-                        <template slot-scope="sco">
-                            <div style="white-space: pre-wrap;text-align: center">{{sco.row.totalRestHours}}</div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="goneRestHours" label="已用调休" sortable align="center">
-                        <template slot-scope="scope">
-                            <span type="text">{{scope.row.goneRestHours}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="leftRestHours" label="剩余调休" sortable align="center"></el-table-column>
-                    <el-table-column prop="endDate" label="截止日期" width="200" align="center"></el-table-column>
-                </el-table>
+                </el-form-item>
+                <el-form-item label="手机号">
+                    <el-input class="w280" v-model="addForm.phone" />
+                </el-form-item>
+                <el-form-item label="邮箱地址">
+                    <el-input class="w280" v-model="addForm.email" />
+                </el-form-item>
+                <el-form-item label="考勤序号">
+                    <el-input class="w280" v-model="addForm.checkSort" />
+                </el-form-item>
+                <el-form-item label="工号">
+                    <el-input class="w280" v-model="addForm.jobNumber" />
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="closeSuperUser()">取 消</el-button>
+                <el-button :loading="isSaving" type="primary" @click="saveSuperUser()">确定</el-button>
             </div>
-        </div>
-        <div class="my-task-con" v-show="userRole === 3">
-            <p class="mic-title" style="margin-top: 20px">请假统计</p>
-            <div class="my-task-detail" style="width: 1200px;">
-                <div class="add-member-basic-msg fl">
-                    <el-select v-model="leaveReqDTO.userId" clearable filterable placeholder="筛选用户">
-                        <el-option v-for="item in notDeleteUserList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <div class="add-member-basic-msg fl">
-                    <el-date-picker
-                            v-model="leaveReqDTO.beginTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择开始时间"
-                    >
-                    </el-date-picker>
-                    <span style="font-size: 14px;color: #606266;">-</span>
-                    <el-date-picker
-                            v-model="leaveReqDTO.endTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择截止时间"
-                    >
-                    </el-date-picker>
-                </div>
-                <el-button type="primary" @click="getLeaveList" style="margin-left: 10px" size="small">查询</el-button>
-                <el-table :data="leaveManage" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column type="index" label="序号" width="80"></el-table-column>
-                    <el-table-column prop="description" label="请假原因" align="center"></el-table-column>
-                    <el-table-column prop="userName" label="请假人" align="center" width="130"></el-table-column>
-                    <el-table-column prop="hours" label="时长" align="center" width="80"></el-table-column>
-                    <el-table-column prop="typeName" label="类型" align="center" width="80"></el-table-column>
-                    <el-table-column prop="beginTime" label="开始日期" width="150" align="center">
-                        <template slot-scope="scope">
-                            <div type="text" size="small">{{scope.row.beginTime | formatTime}}</div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="endTime" label="结束日期" width="150" align="center">
-                        <template slot-scope="scope">
-                            <div type="text" size="small">{{scope.row.endTime | formatTime}}</div>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                            @current-change="leaveHandleCurrentChange"
-                            :current-page.sync="leaveReqDTO.pageNum"
-                            :page-size="leaveFormPage.pageSize"
-                            :layout="leavePageLayout"
-                            :total="leaveFormPage.total">
-                    </el-pagination>
-                </div>
-            </div>
-        </div>
-        <div class="my-task-con" v-show="userRole === 3">
-            <p class="mic-title" style="margin-top: 20px">加班统计</p>
-            <div class="my-task-detail" style="width: 1200px;">
-                <div class="add-member-basic-msg fl">
-                    <el-select v-model="extraWorkReqDTO.userId" clearable filterable placeholder="筛选用户">
-                        <el-option v-for="item in notDeleteUserList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <!--<span class="fl" style="font-size: 15px;margin-top: 5px;margin-left: 10px;color: #1d90e6">加班时间:</span>-->
-                <div class="add-member-basic-msg fl">
-                    <el-date-picker
-                            v-model="ewBeginTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="选择开始时间"
-                    >
-                    </el-date-picker>
-                    <span style="font-size: 14px;color: #606266;">-</span>
-                    <el-date-picker
-                            v-model="ewEndTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="选择截止时间"
-                    >
-                    </el-date-picker>
-                </div>
-                <el-button type="primary" @click="searchEWorkStats" style="margin-left: 10px" size="small">查询
-                </el-button>
-                <el-table :data="extraWorkStatsList" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column type="index" label="序号" align="center" width="80">
-                        <template slot-scope="scope">
-                            {{(extraWorkReqDTO.pageNum-1)*10 + scope.$index + 1}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="reason" label="加班原因" align="center"></el-table-column>
-                    <el-table-column prop="userName" label="申请人" align="center" width="130"></el-table-column>
-                    <el-table-column prop="workHours" label="时长" align="center" width="80"></el-table-column>
-                    <el-table-column prop="beginTime" label="开始日期" width="150" align="center">
-                        <template slot-scope="scope">
-                            <div type="text" size="small">{{scope.row.beginTime | formatTime}}</div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="endTime" label="结束日期" width="150" align="center">
-                        <template slot-scope="scope">
-                            <div type="text" size="small">{{scope.row.endTime | formatTime}}</div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="checkRecords" label="打卡记录" align="left">
-                        <template slot-scope="scope">
-                            <span v-if="scope.row.checkRecords.length === 0">暂无</span>
-                            <span v-else>{{scope.row.checkRecords}}</span>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                            @current-change="eWorkHandleCurrentChange"
-                            :current-page.sync="extraWorkReqDTO.pageNum"
-                            :page-size="extraWorkPage.pageSize"
-                            :layout="leavePageLayout"
-                            :total="extraWorkPage.total">
-                    </el-pagination>
-                </div>
-            </div>
+        </el-dialog>
 
-        </div>
-        <div class="my-task-con" v-show="userRole === 3">
-            <p class="mic-title" style="margin-top: 20px">考勤原始记录</p>
-            <div class="my-task-detail" style="width: 1200px;">
-                <div class="add-member-basic-msg fl">
-                    <el-select v-model="signInOriginReqDTO.userId" clearable filterable placeholder="筛选用户">
-                        <el-option v-for="item in notDeleteUserList" :key="item.id" :label="item.name"
-                                   :value="item.id"></el-option>
-                    </el-select>
-                </div>
-                <div class="add-member-basic-msg fl">
-                    <el-date-picker
-                            v-model="signInOriginReqDTO.beginTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择开始时间"
-                    >
-                    </el-date-picker>
-                    <span style="font-size: 14px;color: #606266;">-</span>
-                    <el-date-picker
-                            v-model="signInOriginReqDTO.endTime"
-                            align="right"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            clearable
-                            placeholder="请选择截止时间"
-                    >
-                    </el-date-picker>
-                </div>
-                <el-button type="primary" @click="selectSignInOriginData" style="margin-left: 10px" size="small">查询
-                </el-button>
-                <!--<el-button type="primary" @click="modifyUserRestHoursVisible = true" style="margin-left: 10px" size="small">修改调休时长</el-button>-->
-                <el-table :data="signInOriginData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                    <el-table-column prop="userName" label="用户" align="center" width="110"></el-table-column>
-                    <el-table-column prop="checkTime" label="打卡时间" align="center">
-                        <template slot-scope="scope">
-                            <div type="text" size="small">{{scope.row.checkTime | formatTime}}</div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="typeName" label="类型" align="center" width="110"></el-table-column>
-                    <el-table-column label="操作" align="center" width="130" v-show="permit">
-                        <template slot-scope="scope">
-                            <a style="color:#20a0ff;cursor: pointer;"
-                               @click="editSignIn(scope.row)">编辑</a>
-                            <a style="color:#20a0ff;cursor: pointer;"
-                               @click="deleteSignIn(scope.row.id)">删除</a>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                            @current-change="signInOriginHandleCurrentChange"
-                            :current-page.sync="signInOriginPage.pageNum"
-                            :page-size="signInOriginPage.pageSize"
-                            :layout="signInOriginPageLayout"
-                            :total="signInOriginPage.total">
-                    </el-pagination>
-                </div>
-            </div>
-        </div>
-        <div class="my-task-con">
-            <div v-show="userRole>0 && userRole < 3">
-                <div class="add-task" style="margin-right: 220px" @click="createExtraWork">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>加班申请</span>
-                </div>
-                <div class="add-task" @click="createQuestionClick">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建线上问题(数据)记录</span>
-                </div>
-                <div class="add-task  question" style="margin-right: -153px" @click="createTaskClick">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>创建任务</span>
-                </div>
 
-                <div class="add-task leave" @click="editLeaveVisible=true,clearLeaveForm()">
-                    <span class="add-task-icon"><i class="el-icon-plus"></i></span>
-                    <span>请假申请</span>
-                </div>
-                <div v-show="showTaskReviewTabVisible">
-                    <p class="mic-title">多人任务审核</p>
-                    <el-tabs v-model="taskTempActiveName2" @tab-click="handleClickMultiTask">
-                        <el-tab-pane label="待审核" name="wait">
-                            <div class="task-lis" v-for="item in taskTemp.waitAssess2" @click="getTaskTempDetail(item)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px">
-                                        <span style="color: red">(待审核 多人任务)</span>
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="this.taskTemp.waitAssess2.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="审核通过" name="access">
-                            <div class="task-lis" v-for="item in taskTemp.auditSuccess2"
-                                 @click="getTaskTempDetail(item)">
-                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
-                                        <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle;">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.taskTemp.auditSuccess2.length>0">
-                                <el-pagination
-                                        @current-change="handleAuditSuccessTaskTempPage2"
-                                        :current-page.sync="taskTempPage4.pageNum"
-                                        :page-size="taskTempPage4.pageSize"
-                                        :layout="taskTempAuditSuccessPageLayout2"
-                                        :total="taskTempPage4.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="this.taskTemp.auditSuccess2.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
 
-                    <p class="mic-title">个人任务审核</p>
-                    <el-tabs v-model="priTaskTempActive" @tab-click="handleClickPriTaskTemp">
-                        <el-tab-pane label="待审核" name="wait">
-                            <div class="task-lis" v-for="item in taskTemp.priTaskWait"
-                                 @click="getPriTaskTempDetail(item.id)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px">
-                                        <span style="color: red">(待审核 个人任务)</span>
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="this.taskTemp.priTaskWait.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="审核通过" name="access">
-                            <div class="task-lis" v-for="item in taskTemp.priTaskAccept"
-                                 @click="getPriTaskTempDetail(item.id)">
-                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
-                                        <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle;">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.taskTemp.priTaskAccept.length>0">
-                                <el-pagination
-                                        @current-change="priTaskTempChangePage"
-                                        :current-page.sync="taskTemp.priTaskTempPage.pageNum"
-                                        :page-size="taskTemp.priTaskTempPage.pageSize"
-                                        layout="total, prev, pager, next"
-                                        :total="taskTemp.priTaskTempPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="this.taskTemp.priTaskAccept.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-                <p class="mic-title">我的任务</p>
-                <div class="my-task-detail">
-                    <el-tabs v-model="activeName" @tab-click="handleClick">
-                        <el-tab-pane label="进行中" name="doing">
-                            <task-item :taskItems="task.doing" :isPrivate="true"
-                                       taskStatus="TaskDoing" @reload="reload"
-                                       :projectList="projectList"
-                                       :userList="checkInUsers"
-                                       :stageList="stageList"
-                                       :viewType="1"
-                                       :tagList="tagList"></task-item>
-                        </el-tab-pane>
-                        <el-tab-pane label="已完成" name="completed">
-                            <task-item :taskItems="task.finished" :isPrivate="true" taskStatus="finished"
-                                       :projectList="projectList"
-                                       :userList="checkInUsers"
-                                       :stageList="stageList"
-                                       :viewType="1"
-                                       :tagList="tagList"></task-item>
-                            <div class="pagination" v-show="this.task.finished.length>0">
-                                <el-pagination
-                                        @current-change="handleFinishedPage"
-                                        :current-page.sync="finishedPage.pageNum"
-                                        :page-size="finishedPage.pageSize"
-                                        :layout="finishedPageLayout"
-                                        :total="finishedPage.total">
-                                </el-pagination>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="测试中" name="test" v-if="developVisible">
-                            <div class="task-lis" v-for="test in task.test">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>任务名称：{{test.taskName}}：{{test.description}}</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">截止日期{{test.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-data-show">
-                                    <span class="task-score">测试时间：{{test.hours}} 小时</span>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="test.avatarUrl && test.avatarUrl!==''"
-                                         :src="test.avatarUrl">
-                                    <span v-else="">{{test.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="task.test.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <p class="mic-title">我的调休</p>
-                        <div class="my-task-detail" style="width: 1100px">
-                            <el-table :data="myRestHours" border
-                                      :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                                <el-table-column prop="totalRestHours" label="总调休" align="center">
-                                </el-table-column>
-                                <el-table-column prop="goneRestHours" label="已用调休" align="center">
-                                </el-table-column>
-                                <el-table-column prop="leftRestHours" label="剩余调休" align="center">
-                                </el-table-column>
-                                <el-table-column prop="endDate" label="截止日期" align="center">
-                                </el-table-column>
-                                <el-table-column label="操作" align="center" width="150">
-                                    <template slot-scope="scope">
-                                        <a style="color: blue;cursor: pointer" @click="showRestHoursDetail">查看调休日志</a>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
-                    </el-tabs>
-                </div>
 
-                <p class="mic-title">我的考勤</p>
-                <div class="my-task-detail" style="width: 1100px">
-                    <div class="add-member-basic-msg fl">
-                        <el-date-picker
-                                v-model="mySignInReqDTO.beginTime"
-                                align="right"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                clearable
-                                placeholder="请选择开始时间"
-                        >
-                        </el-date-picker>
-                        <span style="font-size: 14px;color: #606266;">-</span>
-                        <el-date-picker
-                                v-model="mySignInReqDTO.endTime"
-                                align="right"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                clearable
-                                placeholder="请选择截止时间"
-                        >
-                        </el-date-picker>
-                    </div>
-                    <el-button type="primary" @click="selectMySignInData" style="margin-left: 10px" size="small">查询
-                    </el-button>
-                    <!--<el-button type="primary" @click="showPersonalTotalEWrokTime = true" style="margin-left: 10px" size="small">加班总时长</el-button>-->
-                    <!--<span @click="showRestHoursDetail" style="font-size: 15px;cursor: pointer;text-decoration: underline">剩余调休(截止上月底): {{myRestHours}}H</span>-->
-                    <el-table :data="signInData" border :header-cell-style="{background:'#D9D9D9',color:'black'}">
-                        <el-table-column prop="date" label="日期" align="center" width="120">
-                            <template slot-scope="scope">
-                                {{scope.row.date | formatDate2}}{{scope.row.weekday}}
-                                <span v-show="scope.row.isWeekend === 1" style="color: #3da7f5">(周末)</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="userName" label="用户" align="center" width="110">
-                            <template slot-scope="scope">
-                                <span style="color: red" v-if="scope.row.isForget === 1">(漏)</span>{{scope.row.userName}}
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="checkTimeList" label="打卡记录" align="left">
-                            <template slot-scope="scope">
-                                {{scope.row.checkTimeList}}
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="checkInTime" label="上班时间" align="center" width="120">
-                            <template slot-scope="scope">
-                                <span style="color: red" v-if="scope.row.isRecheckIn === 1">(补)</span>
-                                <span v-if="scope.row.isCheckInAfterTen === 1" style="color: red">{{scope.row.checkInTime | formatTime2}}</span>
-                                <span v-else>{{scope.row.checkInTime | formatTime2}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="checkOutTime" label="下班时间" align="center" width="120">
-                            <template slot-scope="scope">
-                                <span style="color: red" v-if="scope.row.isRecheckOut === 1">(补)</span>
-                                <span style="color: green" v-if="scope.row.isWorkToNextDay === 1">(+1)</span>
-                                <span v-if="scope.row.isCheckOutBeforeSix === 1" style="color: red">{{scope.row.checkOutTime | formatTime2}}</span>
-                                <span v-else>{{scope.row.checkOutTime | formatTime2}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="workTime" label="上班时长" align="center" width="120">
-                            <template slot-scope="scope">
-                                <span v-if="scope.row.lessThanNine === 1"
-                                      style="color: red">{{scope.row.workTime}}</span>
-                                <span v-else>{{scope.row.workTime}}</span>
-                            </template>
-                        </el-table-column>
-                        <!--<el-table-column prop="eWorkTime" label="加班时长" align="center" width="120" >-->
-                        <!--<template slot-scope="scope">-->
-                        <!--{{scope.row.eWorkTime}}-->
-                        <!--</template>-->
-                        <!--</el-table-column>-->
-                        <el-table-column prop="eWorkHours" label="加班申请" align="center" width="100">
-                            <template slot-scope="scope">
-                                {{scope.row.eWorkHours}}
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="leaveTime" label="请假时长" align="center" width="100">
-                            <template slot-scope="scope">
-                                {{scope.row.leaveTime}}
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="操作" align="center" width="80">
-                            <template slot-scope="scope">
-                                <a v-show="scope.row.canReCheck === 1" style="color: blue;cursor: pointer"
-                                   @click="recheck(scope.row.userId,scope.row.date)">补签到</a>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <div class="pagination">
-                        <el-pagination
-                                @current-change="mySignInHandleCurrentChange"
-                                :current-page.sync="mySignInReqDTO.pageNum"
-                                :page-size="mySignInPage.pageSize"
-                                :layout="mySignInPageLayout"
-                                :total="mySignInPage.total">
-                        </el-pagination>
-                    </div>
-                </div>
-                <p class="mic-title">我的线上问题</p>
-                <div class="my-task-detail">
-                    <el-tabs v-model="activeQuestionName" @tab-click="handleClickMyOnlineQuestion">
-                        <el-tab-pane label="待审核" name="wait">
-                            <div class="task-lis" v-for="item in question.running"
-                                 @click="item.reviewStatus === 1 ? editQuestion(item) : finishQuestion(item)">
-                                <div class="head-img"><img src="../assets/img/doing.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span v-if="item.reviewStatus === 1" style="color: red">(待审核)</span><span>{{item.name}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span v-if="item.isToday === -1" class="task-end red">截止时间：{{item.endTime| formatDate }}</span>
-                                        <span v-if="item.isToday === 0" class="task-end orange">截止时间：{{item.endTime| formatDate }}</span>
-                                        <span v-if="item.isToday === 1" class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="question.running.length===0 || question.running == null" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="已完成" name="completed">
-                            <div class="task-lis" v-for="item in question.completed">
-                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span>{{item.name}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end green">完成时间：{{item.completeTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="question.completed.length===0 || question.completed == null" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                            <div class="pagination" v-show="this.question.completed.length>0">
-                                <el-pagination
-                                        @current-change="handleFinishedPage1"
-                                        :current-page.sync="finishedPage1.pageNum"
-                                        :page-size="finishedPage1.pageSize"
-                                        :layout="finishedPageLayout1"
-                                        :total="finishedPage1.total">
-                                </el-pagination>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-                <div>
-                    <p class="mic-title">评价任务</p>
-                    <el-tabs v-model="assessActiveName" @tab-click="handleClickEvaluate">
-                        <el-tab-pane label="待评价" name="waitAssess">
-                            <task-item :taskItems="task.waitAssess" :isPrivate="true" @reload="reload"
-                                       taskStatus="WaitAssess"
-                                       :projectList="projectList"
-                                       :userList="checkInUsers"
-                                       :stageList="stageList"
-                                       :viewType="1"
-                                       :tagList="tagList"></task-item>
-                        </el-tab-pane>
-
-                        <el-tab-pane label="已评价" name="commented">
-                            <task-item :taskItems="task.commented" :isPrivate="true" taskStatus="WaitAssess"
-                                       :projectList="projectList"
-                                       :userList="checkInUsers"
-                                       :stageList="stageList"
-                                       :viewType="1"
-                                       :tagList="tagList"></task-item>
-                            <div class="pagination" v-show="this.task.commented.length>0">
-                                <el-pagination
-                                        @current-change="handleEvaluatedPage"
-                                        :current-page.sync="commentedPage.pageNum"
-                                        :page-size="commentedPage.pageSize"
-                                        :layout="commentedPageLayout"
-                                        :total="commentedPage.total">
-                                </el-pagination>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-
-                <div>
-                    <p class="mic-title">任务修改申请</p>
-                    <el-tabs v-model="taskModifyTabsActiveName2" @tab-click="handleClickMyModify">
-                        <el-tab-pane label="待审核" name="wait">
-                            <div class="task-lis" v-for="modifyData in personalTaskModifyData.waitAssess"
-                                 @click="getTaskModifyDetail(modifyData.id,modifyData.taskId,modifyData.userId)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>{{modifyData.taskName}}:{{(modifyData.reason)}}</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{modifyData.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{modifyData.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="modifyData.avatarUrl && modifyData.avatarUrl!==''"
-                                         :src="modifyData.avatarUrl">
-                                    <span v-else="">{{modifyData.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="this.personalTaskModifyData.waitAssess.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="审核通过" name="accessed">
-                            <div class="task-lis" v-for="modifyData in personalTaskModifyData.auditSuccess"
-                                 @click="getTaskModifyDetail(modifyData.id,modifyData.taskId,modifyData.userId)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>{{modifyData.reason}}</span></div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{modifyData.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{modifyData.endTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="modifyData.avatarUrl && modifyData.avatarUrl!==''"
-                                         :src="modifyData.avatarUrl">
-                                    <span v-else="">{{modifyData.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.personalTaskModifyData.auditSuccess.length>0">
-                                <el-pagination
-                                        @current-change="handlePersonalTaskModifyPage"
-                                        :current-page.sync="personalTaskModifyPage.pageNum"
-                                        :page-size="personalTaskModifyPage.pageSize"
-                                        :layout="personalTaskModifyPageLayout"
-                                        :total="personalTaskModifyPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="personalTaskModifyData.auditSuccess.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-
-            </div>
-            <div v-show="userRole===0">
-                <div v-show="showTaskReviewTabVisible">
-                    <p class="mic-title">多人任务审核</p>
-                    <el-tabs v-model="taskTempActiveName2" @tab-click="handleClickMultiTask">
-                        <el-tab-pane label="待审核" name="wait">
-                            <div class="task-lis" v-for="item in taskTemp.waitAssess2" @click="getTaskTempDetail(item)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px">
-                                        <span style="color: red">(待审核 多人任务)</span>
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="this.taskTemp.waitAssess2.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="审核通过" name="access">
-                            <div class="task-lis" v-for="item in taskTemp.auditSuccess2"
-                                 @click="getTaskTempDetail(item)">
-                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
-                                        <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.taskTemp.auditSuccess2.length>0">
-                                <el-pagination
-                                        @current-change="handleAuditSuccessTaskTempPage2"
-                                        :current-page.sync="taskTempPage4.pageNum"
-                                        :page-size="taskTempPage4.pageSize"
-                                        :layout="taskTempAuditSuccessPageLayout2"
-                                        :total="taskTempPage4.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="this.taskTemp.auditSuccess2.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-
-                    <p class="mic-title">个人任务审核</p>
-                    <el-tabs v-model="priTaskTempActive" @tab-click="handleClickPriTaskTemp">
-                        <el-tab-pane label="待审核" name="wait">
-                            <div class="task-lis" v-for="item in taskTemp.priTaskWait"
-                                 @click="getPriTaskTempDetail(item.id)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px">
-                                        <span style="color: red">(待审核 个人任务)</span>
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div v-show="this.taskTemp.priTaskWait.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="审核通过" name="access">
-                            <div class="task-lis" v-for="item in taskTemp.priTaskAccept"
-                                 @click="getPriTaskTempDetail(item.id)">
-                                <div class="head-img"><img src="../assets/img/finished.jpg"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name" style="width: 700px;">
-                                        <span>{{item.taskName}}:({{item.description}})</span>
-                                    </div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人：{{item.userName}}</span>
-                                        <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
-                                        <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-mark" style="position:relative; left:-10px">
-                                    <img v-if="item.projectImage" :src="item.projectImage"
-                                         style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                    <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle;">
-                                    <!--<img src="../assets/img/u431.png" alt="">-->
-                                    <span class="mark-msg">{{item.projectName}}</span>
-                                </div>
-                                <div class="task-data-show">
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                         :src="item.avatarUrl" :alt="item.userName">
-                                    <span v-else="">{{item.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.taskTemp.priTaskAccept.length>0">
-                                <el-pagination
-                                        @current-change="priTaskTempChangePage"
-                                        :current-page.sync="taskTemp.priTaskTempPage.pageNum"
-                                        :page-size="taskTemp.priTaskTempPage.pageSize"
-                                        layout="total, prev, pager, next"
-                                        :total="taskTemp.priTaskTempPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="this.taskTemp.priTaskAccept.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-                <!--                <p class="mic-title">个人任务审核</p>-->
-                <!--                <el-tabs v-model="auditTabsActiveName" @tab-click="handleClickPrivateTask">-->
-                <!--                    <el-tab-pane label="待审核" name="wait">-->
-                <!--                        <task-item :taskItems="task.waitAudit" :isPrivate="true" @reload="reload"-->
-                <!--                                   taskStatus="WaitAuditing"-->
-                <!--                                   :projectList="projectList"-->
-                <!--                                   :userList="checkInUsers"-->
-                <!--                                   :stageList="stageList"-->
-                <!--                                   :viewType="1"-->
-                <!--                                   :tagList="tagList"></task-item>-->
-                <!--                        <div class="pagination" v-show="this.task.waitAudit.length>0">-->
-                <!--                            <el-pagination-->
-                <!--                                    @current-change="handleWaitAuditPage"-->
-                <!--                                    :current-page.sync="waitAuditPage.pageNum"-->
-                <!--                                    :page-size="waitAuditPage.pageSize"-->
-                <!--                                    :layout="waitAuditPageLayout"-->
-                <!--                                    :total="waitAuditPage.total">-->
-                <!--                            </el-pagination>-->
-                <!--                        </div>-->
-                <!--                    </el-tab-pane>-->
-                <!--                    <el-tab-pane label="审核通过" name="completed">-->
-                <!--                        <task-item :taskItems="task.auditSuccess" :isPrivate="true" @reload="reload"-->
-                <!--                                   taskStatus="auditSuccess"-->
-                <!--                                   :projectList="projectList"-->
-                <!--                                   :userList="checkInUsers"-->
-                <!--                                   :stageList="stageList"-->
-                <!--                                   :viewType="1"-->
-                <!--                                   :tagList="tagList"></task-item>-->
-                <!--                        <div class="pagination" v-show="this.task.auditSuccess.length>0">-->
-                <!--                            <el-pagination-->
-                <!--                                    @current-change="handleAuditSuccessPage"-->
-                <!--                                    :current-page.sync="auditSuccessPage.pageNum"-->
-                <!--                                    :page-size="auditSuccessPage.pageSize"-->
-                <!--                                    :layout="auditSuccessPageLayout"-->
-                <!--                                    :total="auditSuccessPage.total">-->
-                <!--                            </el-pagination>-->
-                <!--                        </div>-->
-                <!--                    </el-tab-pane>-->
-                <!--                </el-tabs>-->
-
-                <p class="mic-title">任务修改申请审核</p>
-                <el-tabs v-model="taskModifyTabsActiveName" @tab-click="handleClickTaskModify">
-                    <el-tab-pane label="待审核" name="wait">
-                        <div class="task-lis" v-for="modifyData in taskModifyData.waitAssess"
-                             @click="getTaskModifyDetail(modifyData.id,modifyData.taskId,modifyData.userId)">
-                            <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                            <div class="main-task-detail">
-                                <div class="task-name"><span>{{modifyData.taskName}}:{{(modifyData.reason)}}</span>
-                                </div>
-                                <div class="task-state">
-                                    <span class="task-end blue">申请人：{{modifyData.userName}}</span>
-                                    <span class="task-end blue">截止时间: {{modifyData.endTime| formatDate }}</span>
-                                </div>
-                            </div>
-                            <div class="task-username">
-                                <img class="task-avatar" v-if="modifyData.avatarUrl && modifyData.avatarUrl!==''"
-                                     :src="modifyData.avatarUrl">
-                                <span v-else="">{{modifyData.userName}}</span>
-                            </div>
-                        </div>
-                        <div v-show="taskModifyData.waitAssess.length===0" class="empty">
-                            <h2>暂无数据</h2>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="审核通过" name="accessed">
-                        <div class="task-lis" v-for="modifyData in taskModifyData.auditSuccess"
-                             @click="getTaskModifyDetail(modifyData.id,modifyData.taskId,modifyData.userId)">
-                            <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                            <div class="main-task-detail">
-                                <div class="task-name"><span>{{modifyData.taskName}}:{{modifyData.reason}}</span></div>
-                                <div class="task-state">
-                                    <span class="task-end blue">申请人：{{modifyData.userName}}</span>
-                                    <span class="task-end blue">截止时间：{{modifyData.endTime| formatDate }}</span>
-                                </div>
-                            </div>
-                            <div class="task-username">
-                                <img class="task-avatar" v-if="modifyData.avatarUrl && modifyData.avatarUrl!==''"
-                                     :src="modifyData.avatarUrl">
-                                <span v-else="">{{modifyData.userName}}</span>
-                            </div>
-                        </div>
-                        <div class="pagination" v-show="this.taskModifyData.auditSuccess.length>0">
-                            <el-pagination
-                                    @current-change="handleTaskModifyPage"
-                                    :current-page.sync="taskModifyPage.pageNum"
-                                    :page-size="taskModifyPage.pageSize"
-                                    :layout="taskModifyPageLayout"
-                                    :total="taskModifyPage.total">
-                            </el-pagination>
-                        </div>
-                        <div v-show="taskModifyData.auditSuccess.length===0" class="empty">
-                            <h2>暂无数据</h2>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
-                <p class="mic-title">线上问题审核</p>
-                <el-tabs v-model="questionActiveName" @tab-click="handleClickOnlineQuestion">
-                    <el-tab-pane label="待审核" name="wait">
-                        <div class="task-lis" v-for="item in question.wait" @click="checkQuestion(item)">
-                            <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                            <div class="main-task-detail">
-                                <div class="task-name" style="width: 700px">
-                                    <span>{{item.name}}:({{item.description}})</span></div>
-                                <div class="task-state">
-                                    <span class="task-end blue">申请人：{{item.userName}}</span>
-                                    <span v-if="item.isToday === -1" class="task-end red">截止时间：{{item.endTime| formatDate }}</span>
-                                    <span v-if="item.isToday === 0" class="task-end orange">截止时间：{{item.endTime| formatDate }}</span>
-                                    <span v-if="item.isToday === 1" class="task-end blue">截止时间：{{item.endTime| formatDate }}</span>
-                                </div>
-                            </div>
-                            <div class="task-mark" style="position:relative; left:-10px">
-                                <img v-if="item.projectImage" :src="item.projectImage"
-                                     style="width: 40px;height: 40px;border-radius: 50%;vertical-align: middle">
-                                <img v-else="" src="../assets/img/u431.png" alt="" style="vertical-align: middle">
-                                <!--<img src="../assets/img/u431.png" alt="">-->
-                                <span class="mark-msg">{{item.projectName}}</span>
-                            </div>
-                            <div class="task-username">
-                                <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                     :src="item.avatarUrl" :alt="item.userName">
-                                <span v-else="">{{item.userName}}</span>
-                            </div>
-                        </div>
-                        <div class="pagination" v-show="this.question.wait.length>0">
-                            <el-pagination
-                                    @current-change="handleFinishedPage3"
-                                    :current-page.sync="waitPage1.pageNum"
-                                    :page-size="waitPage1.pageSize"
-                                    :layout="finishedPageLayout3"
-                                    :total="waitPage1.total">
-                            </el-pagination>
-                        </div>
-                        <div v-show="question.wait.length===0" class="empty">
-                            <h2>暂无数据</h2>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="审核通过" name="completed">
-                        <div class="task-lis" v-for="item in question.accepted" @click="acceptedQuestion(item)">
-                            <div class="head-img"><img src="../assets/img/finished.jpg"></div>
-                            <div class="main-task-detail">
-                                <div class="task-name" style="width: 700px;">
-                                    <span>{{item.name}}:({{item.description}})</span>
-                                </div>
-                                <div class="task-state">
-                                    <span class="task-end blue">申请人：{{item.userName}}</span>
-                                    <span class="task-end green" v-if="item.completeTime">完成时间：{{item.completeTime| formatDate }}</span>
-                                    <span class="task-end blue" v-else>截止时间: {{item.endTime| formatDate }}</span>
-                                    <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                </div>
-                            </div>
-                            <div class="task-mark" style="position:relative; left:-10px">
-                                <img v-if="item.projectImage" :src="item.projectImage"
-                                     style="width: 40px;height: 40px;border-radius: 50%;">
-                                <img v-else="" src="../assets/img/u431.png" alt="">
-                                <!--<img src="../assets/img/u431.png" alt="">-->
-                                <span class="mark-msg">{{item.projectName}}</span>
-                            </div>
-                            <div class="task-data-show">
-                            </div>
-                            <div class="task-username">
-                                <img class="task-avatar" v-if="item.avatarUrl && item.avatarUrl!==''"
-                                     :src="item.avatarUrl" :alt="item.userName">
-                                <span v-else="">{{item.userName}}</span>
-                            </div>
-                        </div>
-                        <div class="pagination" v-show="this.question.accepted.length>0">
-                            <el-pagination
-                                    @current-change="handleFinishedPage2"
-                                    :current-page.sync="acceptedPage.pageNum"
-                                    :page-size="acceptedPage.pageSize"
-                                    :layout="finishedPageLayout2"
-                                    :total="acceptedPage.total">
-                            </el-pagination>
-                        </div>
-                        <div v-show="question.accepted.length===0" class="empty">
-                            <h2>暂无数据</h2>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
-
-            </div>
-            <div v-show="userRole < 3">
-                <p class="mic-title">{{userRole!==0?'请假申请':'请假申请审核'}}</p>
-                <div class="my-task-detail">
-                    <el-tabs v-model="activeLeaveName" @tab-click="handleClickLeave">
-                        <el-tab-pane :label="userRole!==0?'审核中':'待审核'" name="wait">
-                            <!--@click="reviewDetail(help)"-->
-                            <div class="task-lis" v-for="leave in leaveList.wait" @click="editLeaveDetail(leave,0)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>{{leave.description}}</span></div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人: {{leave.userName}}</span>
-                                        <span class="task-end blue">{{leave.createTime| formatDate }}</span>
-                                        <!--<span class="task-time-opt"><i class="el-icon-edit"></i></span>-->
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="leave.avatarUrl && leave.avatarUrl!==''"
-                                         :src="leave.avatarUrl">
-                                    <span v-else="">{{leave.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.leaveList.wait.length>0">
-                                <el-pagination
-                                        @current-change="handleLeaveWaitPage"
-                                        :current-page.sync="leaveWaitPage.pageNum"
-                                        :page-size="leaveWaitPage.pageSize"
-                                        :layout="leaveWaitPageLayout"
-                                        :total="leaveWaitPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="leaveList.wait.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane :label="userRole!==0?'完成审核':'审核通过'" name="review">
-                            <div class="task-lis" v-for="leave in leaveList.pass" @click="leaveDetail(leave)">
-                                <div class="head-img"><img src="../assets/img/auditSuccess.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>{{leave.description}}</span></div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">{{leave.createTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="leave.avatarUrl && leave.avatarUrl!==''"
-                                         :src="leave.avatarUrl">
-                                    <span v-else="">{{leave.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.leaveList.pass.length>0">
-                                <el-pagination
-                                        @current-change="handleLeavePassPage"
-                                        :current-page.sync="leavePassPage.pageNum"
-                                        :page-size="leavePassPage.pageSize"
-                                        :layout="leavePassPageLayout"
-                                        :total="leavePassPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="leaveList.pass.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-            </div>
-            <div v-show="userRole < 3">
-                <p class="mic-title">{{userRole!==0?'加班申请':'加班申请审核'}}</p>
-                <div class="my-task-detail">
-                    <el-tabs v-model="activeEWorkName" @tab-click="handleClickExtraWork">
-                        <el-tab-pane :label="userRole!==0?'审核中':'待审核'" name="wait">
-                            <div class="task-lis" v-for="eWork in eWorkList.wait"
-                                 @click="showExtraWorkDetail(eWork.id)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>{{eWork.reason}}</span></div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人: {{eWork.userName}}</span>
-                                        <span class="task-end blue">{{eWork.createTime| formatDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="eWork.avatarUrl && eWork.avatarUrl!==''"
-                                         :src="eWork.avatarUrl">
-                                    <span v-else="">{{eWork.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.eWorkList.wait.length>0">
-                                <el-pagination
-                                        @current-change="handleEWorkWaitPage"
-                                        :current-page.sync="eWorkWaitPage.pageNum"
-                                        :page-size="eWorkWaitPage.pageSize"
-                                        :layout="eWorkWaitPageLayout"
-                                        :total="eWorkWaitPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="eWorkList.wait.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane :label="userRole!==0?'完成审核':'审核通过'" name="review">
-                            <div class="task-lis" v-for="eWork in eWorkList.pass"
-                                 @click="showExtraWorkDetail(eWork.id),isEWorkEdit = false">
-                                <div class="head-img"><img src="../assets/img/auditSuccess.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>{{eWork.reason}}</span></div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">{{eWork.createTime| formatDate }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="eWork.avatarUrl && eWork.avatarUrl!==''"
-                                         :src="eWork.avatarUrl">
-                                    <span v-else="">{{eWork.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.eWorkList.pass.length>0">
-                                <el-pagination
-                                        @current-change="handleEWorkPassPage"
-                                        :current-page.sync="eWorkPassPage.pageNum"
-                                        :page-size="eWorkPassPage.pageSize"
-                                        :layout="eWorkPassPageLayout"
-                                        :total="eWorkPassPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="eWorkList.pass.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-            </div>
-            <div v-show="userRole < 3">
-                <p class="mic-title">{{userRole!==0?'补打卡申请':'补打卡申请审核'}}</p>
-                <div class="my-task-detail">
-                    <el-tabs v-model="activeRecheckName" @tab-click="handleClickRecheck">
-                        <el-tab-pane :label="userRole!==0?'审核中':'待审核'" name="wait">
-                            <div class="task-lis" v-for="recheck in recheckList.wait" @click="editRecheck(recheck)">
-                                <div class="head-img"><img src="../assets/img/waitAudit.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>补打卡原因: {{recheck.reason}}</span></div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">申请人: {{recheck.userName}}</span>
-                                        <span class="task-end blue">补打卡时间: {{recheck.recheckTime| formatTime }}</span>
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="recheck.avatarUrl && recheck.avatarUrl!==''"
-                                         :src="recheck.avatarUrl">
-                                    <span v-else="">{{recheck.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.recheckList.wait.length>0">
-                                <el-pagination
-                                        @current-change="handleRecheckWaitPage"
-                                        :current-page.sync="recheckWaitPage.pageNum"
-                                        :page-size="recheckWaitPage.pageSize"
-                                        :layout="recheckWaitPageLayout"
-                                        :total="recheckWaitPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="recheckList.wait.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane :label="userRole!==0?'完成审核':'审核通过'" name="review">
-                            <div class="task-lis" v-for="recheck in recheckList.pass" @click="showRecheck(recheck)">
-                                <div class="head-img"><img src="../assets/img/auditSuccess.png"></div>
-                                <div class="main-task-detail">
-                                    <div class="task-name"><span>原因: {{recheck.reason}}</span></div>
-                                    <div class="task-state">
-                                        <span class="task-end blue">补打卡时间: {{recheck.recheckTime| formatTime }}</span>
-                                        <span class="task-time-opt"><i class="el-icon-circle-check"></i></span>
-                                    </div>
-                                </div>
-                                <div class="task-username">
-                                    <img class="task-avatar" v-if="recheck.avatarUrl && recheck.avatarUrl!==''"
-                                         :src="recheck.avatarUrl">
-                                    <span v-else="">{{recheck.userName}}</span>
-                                </div>
-                            </div>
-                            <div class="pagination" v-show="this.recheckList.pass.length>0">
-                                <el-pagination
-                                        @current-change="handleRecheckPassPage"
-                                        :current-page.sync="recheckPassPage.pageNum"
-                                        :page-size="recheckPassPage.pageSize"
-                                        :layout="recheckPassPageLayout"
-                                        :total="recheckPassPage.total">
-                                </el-pagination>
-                            </div>
-                            <div v-show="recheckList.pass.length===0" class="empty">
-                                <h2>暂无数据</h2>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-            </div>
-        </div>
         <el-dialog title="创建个人任务"
                    size="tiny"
                    custom-class="myDialog"
@@ -3346,7 +1889,7 @@
     moment.locale('zh-cn');
 
     export default {
-        name: 'NavIndex',
+        name: 'NavIndexAdmin',
         data() {
             let validateEmpty = (rule, value, callback) => {
                 if (value.trim() === '') {
@@ -3356,6 +1899,129 @@
                 }
             };
             return {
+                form:{},
+                isAdmin: 0,
+                oranganizationList: [
+                ],
+                addOranUserVisible: false,
+                oranUsers: [],
+                editOranVisible: false,
+                org: {
+                    id: null,
+                    name: '',
+                    desc: '',
+                    createTime: '',
+                    userId: '',
+                },
+                orgPage: {
+                    pageNum: 1,
+                    pageSize: 5,
+                    total: 0,
+                },
+
+
+                //添加用户表单
+                addForm:{
+                    userId:null,
+                    name:'',
+                    account:'',
+                    jobName:'',
+                    phone:'',
+                    userRole:'0',
+                    groupId:null,
+                    jobRole:'',
+                    level:'',
+                    departmentId:'',
+                    checkSort:'',
+                    jobNumber:'',
+                    email:'',
+                    orgId:null,
+                    isAdmin:0,
+                    checkUserList:[]
+                },
+                //用户权限手
+                // options: [{
+                //     value: 0,
+                //     label: '超级管理员'
+                // }, {
+                //     value: 1,
+                //     label: '项目管理者'
+                // }, {
+                //     value: 2,
+                //     label: '普通成员'
+                // },
+                //     {
+                //         value: 3,
+                //         label: '人事行政'
+                //     }
+                // ],
+                rolesList:[
+                    {
+                        roleId: 3,
+                        roleName: '产品经理'
+                    },
+                    {
+                        roleId: 0,
+                        roleName: '测试'
+                    },
+                    {
+                        roleId: 2,
+                        roleName: 'UI设计'
+                    },
+                    {
+                        roleId: 1,
+                        roleName: 'JAVA开发'
+                    },
+                    {
+                        roleId: 4,
+                        roleName: 'C++开发'
+                    },
+                    {
+                        roleId: 5,
+                        roleName: 'PHP开发'
+                    },
+                    {
+                        roleId: 6,
+                        roleName: '前端开发'
+                    },
+                    {
+                        roleId: 7,
+                        roleName: 'IOS开发'
+                    },
+                    {
+                        roleId: 8,
+                        roleName: 'Android开发'
+                    },
+                    {
+                        roleId: 9,
+                        roleName: '人工智能'
+                    },
+                    {
+                        roleId: 10,
+                        roleName: '其他'
+                    }
+                ],
+
+                levelList:[
+                    {id:1,name:'一级'},
+                    {id:2,name:'二级'},
+                    {id:3,name:'三级'},
+                    {id:4,name:'四级'},
+                    {id:5,name:'五级'},
+                    {id:6,name:'六级'},
+                    {id:7,name:'七级'},
+                    {id:8,name:'八级'},
+                    {id:9,name:'九级'}
+                ],
+
+
+
+
+
+
+
+
+
                 isSaving: false,
                 activeName: 'doing',
                 assessActiveName: 'waitAssess',
@@ -4379,6 +3045,10 @@
         created() {
             this.reload();
         },
+        mounted() {
+            this.fetchOranganization()
+            this.isAdmin = helper.decodeToken().isAdmin
+        },
         //数据初始化
         beforeMount() {
             let _this = this;
@@ -4497,6 +3167,20 @@
                 let userId = helper.decodeToken().userId;
                 return userId;
             },
+
+            // IsAdmin() {
+            //     let isAdmin = helper.decodeToken().isAdmin;
+            //     return isAdmin;
+            // },
+
+
+            orgPageLayout() {
+                if (this.orgPage.total > 0) {
+                    return 'total, prev, pager, next'
+                }
+                return 'total, pager'
+            },
+
             finishedPageLayout() {
                 if (this.finishedPage.total > 0) {
                     return 'total, prev, pager, next'
@@ -4709,6 +3393,222 @@
             },
         },
         methods: {
+
+            addOran() {
+                this.org.id  = null
+                this.org.createTime = null
+                this.org.desc = null
+                this.org.isDelete = null
+                this.org.userId = null
+                this.org.userAccount = null
+                this.org.name = null
+                this.editOranVisible = true
+            },
+            deleteOran(id) {
+                this.$confirm('删除该机构后，该机构将无法登陆，不可恢复。确认删除？', '提示', { type: 'warning' }).then(() => {
+                        http.zsyDeleteHttp('/org/delete/' + id, null, (res => {
+                            this.$message({ showClose: true, message: '机构删除成功', type: 'success' });
+                            this.fetchOranganization();
+                    }))
+                }, err => {
+                })
+            },
+            editOran(oran) {
+                let that = this
+                that.org.id  = oran.id
+                that.org.createTime = oran.createTime
+                that.org.desc = oran.description
+                that.org.isDelete = oran.isDelete
+                that.org.userId = oran.userId
+                that.org.userAccount = oran.userAccount
+                that.org.name = oran.name
+                // that.org = oran
+                this.editOranVisible = true
+            },
+            addOranUser(orgId) {
+                // this .$refs['user_form'].resetFields()
+                this.addForm.orgId = orgId
+                this.addForm.userId = null
+                this.addOranUserVisible = true
+            },
+            deleteOranUser(userId,orgId) {
+                this.$confirm('删除该超管后，该超管将无法登陆，不可恢复。确认删除？', '提示', { type: 'warning' }).then(() => {
+                    http.zsyDeleteHttp(`/org/delete/` + userId + '/' + orgId, {}, (resp) => {
+                        this.$message({showClose: true, message: '删除成功', type: 'success'});
+                        this.fetchOranganization()
+                    });
+                }, err => {
+                })
+
+            },
+            editOranUser(row){
+                http.zsyGetHttp('/user/'+row.userId , {}, (res) => {
+                    let resp = res.data
+
+                    this.addForm.userId = resp.id
+                    this.addForm.account = resp.account
+                    this.addForm.name = resp.name
+                    this.addForm.jobName = resp.jobName
+                    this.addForm.phone = resp.phone
+                    this.addForm.jobRole = resp.jobRole
+                    this.addForm.level = resp.level
+                    this.addForm.checkSort = resp.checkSort
+                    this.addForm.jobNumber = resp.jobNumber
+                    this.addForm.email = resp.email
+                    this.addOranUserVisible = true
+                })
+            },
+            handleOrgPage(currentPage) {
+                this.orgPage.pageNum = currentPage;
+                this.fetchOranganization()
+            },
+            fetchOranganization() {
+                let vm = this;
+                console.log(vm.orgPage.pageNum)
+                http.zsyGetHttp(`/org/search/${vm.orgPage.pageNum}`, {}, (resp) => {
+                    console.log(resp.data)
+                    vm.orgPage.pageSize = resp.data.pageSize;
+                    vm.orgPage.total = resp.data.total;
+                    vm.oranganizationList = resp.data.list
+                })
+            },
+
+            closeOrg() {
+                this.$refs['org_form'].resetFields()
+                this.editOranVisible = false
+            },
+            saveOrg() {
+                if(this.org.id !== null && this.org.id !== ''){
+                    this.form.name = this.org.name;
+                    this.form.desc = this.org.desc;
+                    http.zsyPutHttp('/org/modify-org/' + this.org.id,this.form,(res) => {
+                        if (res.errCode === '00'){
+                            this.$message({showClose: true, message: '编辑机构成功!', type: 'success'});
+                            this.editOranVisible = false;
+                            this.isSaving = false
+                            this.fetchOranganization()
+                        }
+                    })
+                }else{
+                    this.form.name = this.org.name;
+                    this.form.desc = this.org.desc;
+                    http.zsyPostHttp('/org/add',this.form, (resp) => {
+                        if (resp.errCode === '00') {
+                            this.$message({showClose: true, message: '新建机构成功!', type: 'success'});
+                            this.editOranVisible = false;
+                            this.isSaving = false
+                            this.fetchOranganization()
+                        }
+                    })
+                }
+
+            },
+            closeSuperUser() {
+                this .$refs['user_form'].resetFields()
+                this.addOranUserVisible = false
+            },
+            saveSuperUser() {
+
+                    //添加用户
+                    if (helper.trim(this.addForm.name)==''){
+                        this.warnMsg("请填写用户名称");
+                        return;
+                    }
+                    if (helper.trim(this.addForm.account)==''){
+                        this.warnMsg("请填写用户账号");
+                        return;
+                    }
+                    if (helper.trim(this.addForm.jobName)==''){
+                        this.warnMsg("请填写用户职位");
+                        return;
+                    }
+                    if (helper.trim(this.addForm.phone)==''){
+                        this.warnMsg("请填写用户手机号");
+                        return;
+                    }
+                    // if (helper.trim(this.addForm.userRole)==''){
+                    //     this.warnMsg("请选择用户权限");
+                    //     return;
+                    // }
+                    if (helper.trim(this.addForm.jobRole)==''){
+                        this.warnMsg("请选择用户角色");
+                        return;
+                    }
+                    if (helper.trim(this.addForm.level)==''){
+                        this.warnMsg("请选择用户级别");
+                        return;
+                    }
+                    if (helper.trim(this.addForm.checkSort)==''){
+                        this.warnMsg("请选择用户考勤序号");
+                        return;
+                    }
+                    if (helper.trim(this.addForm.jobNumber)=='') {
+                        this.warnMsg("请输入用户工号");
+                        return;
+                    }
+
+                    // var checkUsers = this.addForm.checkUserList;
+                    // var checkUserIds = [];
+                    // checkUsers.forEach(checkUser =>{
+                    //     if (checkUser.id != null && checkUser.id != ''){
+                    //         checkUserIds.push(checkUser.id)
+                    //     }
+                    // })
+                    // if (checkUserIds == null || checkUserIds == [] || checkUserIds.length == 0 || checkUserIds.length != checkUsers.length){
+                    //     this.warnMsg("请选择审核人");
+                    //     return;
+                    // }
+                    // var nary = checkUserIds.sort();
+                    // for (var i = 0; i < checkUserIds.length; i++) {
+                    //     if (nary[i] == nary[i + 1]) {
+                    //         this.warnMsg("多级审核人重复,请检查");
+                    //         return;
+                    //     }
+                    // }
+                console.log("++++++++++++++++++++++++++++++++++++++")
+                console.log(this.addForm.userId)
+                if(this.addForm.userId === null || this.addForm.userId === undefined){
+                    http.zsyPostHttp('/org/add-user',this.addForm,(res)=>{
+                        // this.hide();
+                        if(res.errCode === '00'){
+
+                            this.$message({
+                                showClose: true,
+                                message: '用户添加成功',
+                                type: 'success'
+                            });
+                            // this.$emit("handleUserDataRefresh");
+
+                            this.addOranUserVisible = false
+                            this.fetchOranganization()
+                        }
+                    });
+                    this .$refs['user_form'].resetFields()
+
+                }else {
+                    http.zsyPostHttp('org/modify-user', this.addForm, (res) => {
+                        // this.hide();
+                        if (res.errCode === '00') {
+
+                            this.$message({
+                                showClose: true,
+                                message: '用户添加成功',
+                                type: 'success'
+                            });
+                            // this.$emit("handleUserDataRefresh");
+
+                            this.addOranUserVisible = false
+                            this.fetchOranganization()
+                        }
+                    });
+                    this .$refs['user_form'].resetFields()
+                }
+
+            },
+
+
+
+
             sortList1(a, b) {
                 if (a.weekNumber < b.weekNumber) {
                     return -1;
