@@ -66,6 +66,10 @@ export default {
                 if (res.errCode == "02") {
                     //重新登录
                     Message.warning(res.errMsg);
+                    if(window.location.href.indexOf("/admin") >= 0 ){
+                        window.vue.$router.push("/admin");
+                        return
+                    }
                     setTimeout(function () {
                         window.vue.$router.push("/");
                         window.localStorage.clear();
