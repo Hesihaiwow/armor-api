@@ -70,9 +70,6 @@ public class ZSYOranganizationService implements IZSYOranganizatinService {
 
         startPage(Optional.ofNullable(pageNum).orElse(1), ZSYConstants.PAGE_SIZE_WAIT);
         Page<OranganizationBo> page = oranganizationMapper.selectOrgByPage();
-        for(Oranganization oranganization: page.getResult()){
-            System.out.println(oranganization.toString());
-        }
 
         return new PageInfo<>(page);
     }

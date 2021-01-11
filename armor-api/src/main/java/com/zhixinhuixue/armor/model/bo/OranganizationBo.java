@@ -20,10 +20,10 @@ public class OranganizationBo extends Oranganization {
      */
     private String userName;
 
-//    /**
-//     * 账号
-//     */
-//    private String account;
+    /**
+     * 账号
+     */
+    private String account;
 //
 //    /**
 //     * 手机
@@ -74,13 +74,13 @@ public class OranganizationBo extends Oranganization {
         this.userName = userName;
     }
 
-//    public String getAccount() {
-//        return account;
-//    }
-//
-//    public void setAccount(String account) {
-//        this.account = account;
-//    }
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
 //
 //    public String getPhone() {
 //        return phone;

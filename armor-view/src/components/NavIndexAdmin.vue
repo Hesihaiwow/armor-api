@@ -21,8 +21,9 @@
                     element-loading-text="拼命加载中"
             >
                 <el-table-column label="机构名称" prop="name" align="center" min-width="100" />
-                <el-table-column label="机构描述" prop="description" align="center" min-width="100" />
+                <!--<el-table-column label="机构描述" prop="description" align="center" min-width="100" />-->
                 <el-table-column label="机构负责人" prop="userName" align="center" min-width="100" />
+                <el-table-column label="账号" prop="account" align="center" min-width="100" />
                 <el-table-column property="createTime" width="200" label="创建时间" align="center">
                     <template slot-scope="scope">
                         <span>{{scope.row.createTime | formatTime}}</span>
@@ -32,9 +33,9 @@
                 <el-table-column label="操作" align="center" fixed="right" width="260">
                     <template slot-scope="scope">
                         <el-button type="text" @click="editOran(scope.row)">编辑</el-button>
-                        <el-button type="text" @click="deleteOran(scope.row.id)">删除</el-button>
+                        <!--<el-button type="text" @click="deleteOran(scope.row.id)">删除</el-button>-->
                         <el-button v-show="scope.row.userId !== undefined" type="text" @click="editOranUser(scope.row)">编辑超管</el-button>
-                        <el-button v-show="scope.row.userId !== undefined" type="text" @click="deleteOranUser(scope.row.userId,scope.row.id)">删除超管</el-button>
+                        <!--<el-button v-show="scope.row.userId !== undefined" type="text" @click="deleteOranUser(scope.row.userId,scope.row.id)">删除超管</el-button>-->
                         <el-button v-show="scope.row.userId === undefined" type="text" @click="addOranUser(scope.row.id)">新增超管</el-button>
                     </template>
                 </el-table-column>

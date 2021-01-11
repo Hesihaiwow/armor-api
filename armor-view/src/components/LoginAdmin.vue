@@ -2,7 +2,7 @@
     <div class="login">
         <!-- <div class="login-title">用户积分管理系统</div> -->
         <el-form  label-position="left" label-width="0px" class="demo-ruleForm login-container" v-show="loginShow">
-            <h1 class="title">管理系统登录 <em> SYSTEM LOGIN</em></h1>
+            <h1 class="title">机构登录 <em> ORANGANIZATION LOGIN</em></h1>
             <div class="form-items">
                 <el-form-item prop="account">
                     <el-input type="text" v-model="loginForm.account" auto-complete="off" placeholder="账号" class="form-input"></el-input>
@@ -14,8 +14,11 @@
                 <el-form-item style="width:100%;">
                     <el-button type="primary" style="width:100%;" @click="login" :loading="button.loading" class="form-input">登录</el-button>
                 </el-form-item>
-                <el-form-item style="width:100%;height: 50%">
-                    <el-button type="text" style="width:100%;height: 50%" @click="registerShow=true,loginShow=false" class="form-input">没有账号？请注册</el-button>
+                <!--<el-form-item style="width:100%;height: 50%">-->
+                    <!--<el-button type="text" style="width:100%;height: 50%" @click="registerShow=true,loginShow=false" class="form-input">没有账号？请注册</el-button>-->
+                <!--</el-form-item>-->
+                <el-form-item style="width:30%;height: 10%;float:right">
+                    <el-button type="text" style="width:100%;height: 50%;" size="mini" @click="jump" class="form-input">系统登录</el-button>
                 </el-form-item>
             </div>
         </el-form>
@@ -105,6 +108,9 @@
             };
         },
         methods: {
+            jump () {
+              this.$router.push("/")
+            },
             login () {
                 let _this = this;
                 if (Helper.trim(_this.loginForm.account) == ''){

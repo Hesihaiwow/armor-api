@@ -37,7 +37,7 @@
 
     <!-- 查询机构   -->
     <select id="selectOrgByPage" resultMap="PageResultMap">
-        select org.*,tmp.name from oranganization org left join (select * from `user` where is_delete = 0) tmp on org.user_id = tmp.id  where org.is_delete = 0 order by create_time desc
+        select org.*,tmp.name,tmp.account from oranganization org left join (select * from `user` where is_delete = 0) tmp on org.user_id = tmp.id  where org.is_delete = 0 order by create_time desc
     </select>
 
     <select id="selectByName" resultMap="BaseResultMap">
