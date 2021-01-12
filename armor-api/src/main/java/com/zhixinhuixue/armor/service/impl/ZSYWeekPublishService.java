@@ -115,6 +115,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 WeekPublishPlanTask publishTask = new WeekPublishPlanTask();
                 publishTask.setWpptId(snowFlakeIDHelper.nextId());
                 publishTask.setWppId(weekPublishPlan.getWppId());
+                publishTask.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 publishTask.setTaskId(taskId);
                 return publishTask;
             }).collect(Collectors.toList());
@@ -229,6 +230,7 @@ public class ZSYWeekPublishService implements IZSYWeekPublishService {
                 WeekPublishPlanTask publishTask = new WeekPublishPlanTask();
                 publishTask.setWpptId(snowFlakeIDHelper.nextId());
                 publishTask.setWppId(weekPublishPlan.getWppId());
+                publishTask.setOrgId(ZSYTokenRequestContext.get().getOrgId());
                 publishTask.setTaskId(taskId);
                 return publishTask;
             }).collect(Collectors.toList());
