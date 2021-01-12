@@ -3427,9 +3427,18 @@
                 this.editOranVisible = true
             },
             addOranUser(orgId) {
-                // this .$refs['user_form'].resetFields()
+                // this.$refs['user_form'].resetFields()
                 this.addForm.orgId = orgId
                 this.addForm.userId = null
+                this.addForm.account = null
+                this.addForm.name = null
+                this.addForm.jobName = null
+                this.addForm.phone = null
+                this.addForm.jobRole = null
+                this.addForm.level = null
+                this.addForm.checkSort = null
+                this.addForm.jobNumber = null
+                this.addForm.email = null
                 this.addOranUserVisible = true
             },
             deleteOranUser(userId,orgId) {
@@ -3505,7 +3514,7 @@
 
             },
             closeSuperUser() {
-                this .$refs['user_form'].resetFields()
+                this.$refs['user_form'].resetFields()
                 this.addOranUserVisible = false
             },
             saveSuperUser() {
@@ -3566,8 +3575,6 @@
                     //         return;
                     //     }
                     // }
-                console.log("++++++++++++++++++++++++++++++++++++++")
-                console.log(this.addForm.userId)
                 if(this.addForm.userId === null || this.addForm.userId === undefined){
                     http.zsyPostHttp('/org/add-user',this.addForm,(res)=>{
                         // this.hide();

@@ -18,7 +18,7 @@
                     <!--<el-button type="text" style="width:100%;height: 50%" @click="registerShow=true,loginShow=false" class="form-input">没有账号？请注册</el-button>-->
                 <!--</el-form-item>-->
                 <el-form-item style="width:30%;height: 10%;float:right">
-                    <el-button type="text" style="width:100%;height: 50%;" size="mini" @click="jump" class="form-input">admin登录</el-button>
+                    <el-button type="text" style="width:100%;height: 50%;" size="mini" @click="jump" class="form-input">机构登录</el-button>
                 </el-form-item>
 
             </div>
