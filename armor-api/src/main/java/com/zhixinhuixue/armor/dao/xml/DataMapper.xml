@@ -164,7 +164,7 @@
 
     <!--查询年度完成任务总时长-->
     <select id="selectTaskTotalTime" resultType="java.lang.Float">
-        select sum(tu.task_hours) from task_user tu
+        select ifnull(sum(tu.task_hours),0) from task_user tu
         left join task t on tu.task_id = t.id
         where t.is_delete = 0 and t.review_status = 3 and t.status in (2,3) and t.type = 2 and tu.org_id = #{orgId}
         <![CDATA[  and tu.begin_time >= #{beginTime,jdbcType=TIMESTAMP} ]]>
