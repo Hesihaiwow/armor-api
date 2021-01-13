@@ -47,7 +47,7 @@
         (#{id,jdbcType=BIGINT},#{taskId,jdbcType=BIGINT},#{comment,jdbcType=VARCHAR}
         ,#{persons,jdbcType=VARCHAR},#{createBy,jdbcType=BIGINT},#{updateBy,jdbcType=BIGINT}
         ,#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{isDelete,jdbcType=INTEGER}
-        ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},#{id,jdbcType=BIGINT})
+        ,#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},#{orgId,jdbcType=BIGINT})
     </insert>
 
     <!--更新-->

@@ -27,7 +27,7 @@
   <insert id="insert" parameterType="com.zhixinhuixue.armor.model.pojo.Permission">
     insert into permission (id, code, name,org_id
       )
-    values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{org_id,jdbcType=BIGINT}
+    values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.zhixinhuixue.armor.model.pojo.Permission">
@@ -43,7 +43,7 @@
         name,
       </if>
       <if test="org_id != null">
-        org_id
+        orgId
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">

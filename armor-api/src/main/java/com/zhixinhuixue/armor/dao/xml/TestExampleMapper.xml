@@ -58,7 +58,7 @@
             ,#{item.remark,jdbcType=VARCHAR},#{item.status,jdbcType=INTEGER},#{item.examStatus,jdbcType=INTEGER}
             ,#{item.createBy,jdbcType=BIGINT},#{item.updateBy,jdbcType=BIGINT},#{item.createName,jdbcType=VARCHAR}
             ,#{item.updateName,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP}
-            ,#{item.type,jdbcType=INTEGER},#{item.id,jdbcType=BIGINT})
+            ,#{item.type,jdbcType=INTEGER},#{item.orgId,jdbcType=BIGINT})
         </foreach>
     </insert>
 

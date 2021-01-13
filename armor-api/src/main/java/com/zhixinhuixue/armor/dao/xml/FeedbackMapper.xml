@@ -184,7 +184,7 @@
 
   <!--学管端回复需求-->
   <insert id="insertReplyByCoach">
-    insert into feedback_reply (id,coach_id,feedback_id,content,reply_time,reply_people)
+    insert into feedback_reply (id,coach_id,feedback_id,content,reply_time,reply_people,org_id)
     values (#{frId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{demandId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},#{date,jdbcType=TIMESTAMP},#{replyPeople,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT})
   </insert>
 
@@ -230,8 +230,8 @@
 
   <!--学管端读取需求-->
   <insert id="insertFeedbackReadByCoach">
-    insert into feedback_read (id,coach_id,feedback_id,read_time,read_people)
-    values (#{frId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{demandId,jdbcType=BIGINT},#{date,jdbcType=TIMESTAMP},#{readPeople,jdbcType=VARCHAR})
+    insert into feedback_read (id,coach_id,feedback_id,read_time,read_people,org_id)
+    values (#{frId,jdbcType=BIGINT},#{coachId,jdbcType=INTEGER},#{demandId,jdbcType=BIGINT},#{date,jdbcType=TIMESTAMP},#{readPeople,jdbcType=VARCHAR},#{orgId,jdbcType=BIGINT})
   </insert>
 
   <!--新增需求附件地址-->
