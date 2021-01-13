@@ -987,7 +987,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
         //先根据coachId和需求id判断当前需求是否已读
         if (feedbackMapper.selectIsReadByCoach(Long.valueOf(reqDTO.getDemandId()), reqDTO.getCoachId()) == null) {
             feedbackMapper.insertFeedbackReadByCoach(snowFlakeIDHelper.nextId(), Long.valueOf(reqDTO.getDemandId())
-                    , reqDTO.getCoachId(), reqDTO.getReadPeople(), new Date(),ZSYTokenRequestContext.get().getOrgId());
+                    , reqDTO.getCoachId(), reqDTO.getReadPeople(), new Date(),1L);
         }
         //查询需求详情基本信息
         DemandDetailBO demandDetailBO = feedbackMapper.selectDemandDetail(Long.valueOf(reqDTO.getDemandId()), reqDTO.getStatus());
@@ -1365,7 +1365,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     @Transactional
     public void readDemandByCoach(Long id, DemandReadReqDTO reqDTO) {
         //添加feedback_read
-        if (feedbackMapper.insertFeedbackReadByCoach(snowFlakeIDHelper.nextId(), id, reqDTO.getCoachId(), reqDTO.getReadPeople(), new Date(),ZSYTokenRequestContext.get().getOrgId()) == 0) {
+        if (feedbackMapper.insertFeedbackReadByCoach(snowFlakeIDHelper.nextId(), id, reqDTO.getCoachId(), reqDTO.getReadPeople(), new Date(),1L) == 0) {
             throw new ZSYServiceException("读取需求失败");
         }
     }
@@ -1381,8 +1381,8 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     @Override
     @Transactional
     public void likeDemandByCoach(Long id, DemandLikeReqDTO reqDTO) {
-        //新增feedback_likes
-        feedbackMapper.insertDemandLikesByCoach(id, reqDTO.getCoachId(), reqDTO.getLikePeople(), snowFlakeIDHelper.nextId(), new Date(),ZSYTokenRequestContext.get().getOrgId());
+        //新增feedback_likes,学管端点赞默认机构为1
+        feedbackMapper.insertDemandLikesByCoach(id, reqDTO.getCoachId(), reqDTO.getLikePeople(), snowFlakeIDHelper.nextId(), new Date(),1L);
 
         //feedback中likesNum +1
         Integer likesNum = feedbackMapper.selectLikesNumById(id);
@@ -1409,7 +1409,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
     @Override
     public void replyDemandByCoach(DemandReplyReqDTO reqDTO, Integer coachId) {
         if (feedbackMapper.insertReplyByCoach(Long.valueOf(reqDTO.getDemandId()), coachId, reqDTO.getContent()
-                , snowFlakeIDHelper.nextId(), new Date(), reqDTO.getReplyPeople(),ZSYTokenRequestContext.get().getOrgId()) == 0) {
+                , snowFlakeIDHelper.nextId(), new Date(), reqDTO.getReplyPeople(),1L) == 0) {
             throw new ZSYServiceException("回复失败");
         }
     }
@@ -1435,7 +1435,7 @@ public class ZSYFeedbackService implements IZSYFeedbackService {
             throw new ZSYServiceException("当前用户不存在,请检查");
         }
         demand.setChargeMan(user.getId());
-        demand.setOrgId(ZSYTokenRequestContext.get().getOrgId());
+        demand.setOrgId(1L);
         if (feedbackMapper.insertDemandByCoach(demand) == 0) {
             throw new ZSYServiceException("提需求失败");
         }
